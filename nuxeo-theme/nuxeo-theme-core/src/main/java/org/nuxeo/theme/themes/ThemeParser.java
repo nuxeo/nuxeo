@@ -76,14 +76,13 @@ public class ThemeParser {
 
     private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
-    public static void registerTheme(final ThemeDescriptor themeDescriptor,
-            final boolean preload) throws ThemeIOException {
+    public static void registerTheme(final ThemeDescriptor themeDescriptor, final boolean preload)
+            throws ThemeIOException {
         registerTheme(themeDescriptor, null, preload);
     }
 
-    public static void registerTheme(final ThemeDescriptor themeDescriptor,
-            final String xmlSource, final boolean preload)
-            throws ThemeIOException {
+    public static void registerTheme(final ThemeDescriptor themeDescriptor, final String xmlSource,
+            final boolean preload) throws ThemeIOException {
         final String src = themeDescriptor.getSrc();
         InputStream in = null;
         try {
@@ -95,8 +94,7 @@ public class ThemeParser {
                     if (themeDescriptor.getContext() != null) {
                         url = themeDescriptor.getContext().getResource(src);
                     } else {
-                        url = Thread.currentThread().getContextClassLoader().getResource(
-                                src);
+                        url = Thread.currentThread().getContextClassLoader().getResource(src);
                     }
                 }
                 if (url == null) {
@@ -126,8 +124,7 @@ public class ThemeParser {
         }
     }
 
-    private static void registerThemeFromInputStream(
-            final ThemeDescriptor themeDescriptor, final InputStream in,
+    private static void registerThemeFromInputStream(final ThemeDescriptor themeDescriptor, final InputStream in,
             boolean preload) throws ThemeIOException, ThemeException {
         String themeName = null;
 
@@ -135,9 +132,7 @@ public class ThemeParser {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             dbf.setFeature("http://xml.org/sax/features/validation", false);
-            dbf.setFeature(
-                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
-                    false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         } catch (ParserConfigurationException e) {
             log.debug("Could not set DTD non-validation feature");
         }
@@ -158,24 +153,21 @@ public class ThemeParser {
         }
         final org.w3c.dom.Element docElem = document.getDocumentElement();
         if (!docElem.getNodeName().equals(DOCROOT_NAME)) {
-            throw new ThemeIOException("No <" + DOCROOT_NAME
-                    + "> document tag found in " + in.toString()
+            throw new ThemeIOException("No <" + DOCROOT_NAME + "> document tag found in " + in.toString()
                     + ", ignoring the resource.");
         }
 
         themeName = docElem.getAttributes().getNamedItem("name").getNodeValue();
         if (!ThemeManager.validateThemeName(themeName)) {
             throw new ThemeIOException(
-                    "Theme names may only contain alpha-numeric characters, underscores and hyphens: "
-                            + themeName);
+                    "Theme names may only contain alpha-numeric characters, underscores and hyphens: " + themeName);
         }
         themeDescriptor.setName(themeName);
 
         loadTheme(themeDescriptor, docElem, preload);
     }
 
-    private static void loadTheme(ThemeDescriptor themeDescriptor,
-            org.w3c.dom.Element docElem, boolean preload)
+    private static void loadTheme(ThemeDescriptor themeDescriptor, org.w3c.dom.Element docElem, boolean preload)
             throws ThemeException, ThemeIOException {
         final ThemeManager themeManager = Manager.getThemeManager();
 
@@ -186,8 +178,7 @@ public class ThemeParser {
             try {
                 themeManager.destroyElement(oldTheme);
             } catch (NodeException e) {
-                throw new ThemeIOException("Failed to destroy theme: "
-                        + themeName, e);
+                throw new ThemeIOException("Failed to destroy theme: " + themeName, e);
             }
         }
 
@@ -205,18 +196,15 @@ public class ThemeParser {
         }
 
         String resourceBankName = null;
-        Node resourceBankNode = docElem.getAttributes().getNamedItem(
-                "resource-bank");
+        Node resourceBankNode = docElem.getAttributes().getNamedItem("resource-bank");
         if (resourceBankNode != null) {
             resourceBankName = resourceBankNode.getNodeValue();
             themeDescriptor.setResourceBankName(resourceBankName);
         }
 
-        Node templateEngines = docElem.getAttributes().getNamedItem(
-                "template-engines");
+        Node templateEngines = docElem.getAttributes().getNamedItem("template-engines");
         if (templateEngines != null) {
-            themeDescriptor.setTemplateEngines(Arrays.asList(templateEngines.getNodeValue().split(
-                    ",")));
+            themeDescriptor.setTemplateEngines(Arrays.asList(templateEngines.getNodeValue().split(",")));
         }
 
         if (preload) {
@@ -249,11 +237,9 @@ public class ThemeParser {
                 Integer styleUid = entry.getKey();
                 String inheritedStyleName = entry.getValue();
                 Format style = ThemeManager.getFormatById(styleUid);
-                Format inheritedStyle = (Format) themeManager.getNamedObject(
-                        themeName, "style", inheritedStyleName);
+                Format inheritedStyle = (Format) themeManager.getNamedObject(themeName, "style", inheritedStyleName);
                 if (inheritedStyle == null) {
-                    log.warn("Cannot make style inherit from unknown style : "
-                            + inheritedStyleName);
+                    log.warn("Cannot make style inherit from unknown style : " + inheritedStyleName);
                     continue;
                 }
                 themeManager.makeFormatInherit(style, inheritedStyle);
@@ -288,8 +274,7 @@ public class ThemeParser {
         return name.matches("[a-z][a-z0-9_\\-\\s]+");
     }
 
-    public static void registerThemePages(final Element parent, Node node)
-            throws ThemeIOException, ThemeException {
+    public static void registerThemePages(final Element parent, Node node) throws ThemeIOException, ThemeException {
         for (Node n : getChildElements(node)) {
             String nodeName = n.getNodeName();
             NamedNodeMap attributes = n.getAttributes();
@@ -303,8 +288,7 @@ public class ThemeParser {
                     if (checkElementName(elementName)) {
                         elem.setName(elementName);
                     } else {
-                        throw new ThemeIOException("Page name not allowed: "
-                                + elementName);
+                        throw new ThemeIOException("Page name not allowed: " + elementName);
                     }
                 }
 
@@ -317,8 +301,7 @@ public class ThemeParser {
         }
     }
 
-    public static void parseLayout(final Element parent, Node node)
-            throws ThemeIOException, ThemeException {
+    public static void parseLayout(final Element parent, Node node) throws ThemeIOException, ThemeException {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ThemeManager themeManager = Manager.getThemeManager();
         for (String formatName : typeRegistry.getTypeNames(TypeFamily.FORMAT)) {
@@ -353,15 +336,13 @@ public class ThemeParser {
                 Fragment fragment = (Fragment) elem;
                 Node perspectives = attributes.getNamedItem("perspectives");
                 if (perspectives != null) {
-                    for (String perspectiveName : perspectives.getNodeValue().split(
-                            ",")) {
+                    for (String perspectiveName : perspectives.getNodeValue().split(",")) {
 
-                        PerspectiveType perspective = (PerspectiveType) typeRegistry.lookup(
-                                TypeFamily.PERSPECTIVE, perspectiveName);
+                        PerspectiveType perspective = (PerspectiveType) typeRegistry.lookup(TypeFamily.PERSPECTIVE,
+                                perspectiveName);
 
                         if (perspective == null) {
-                            log.warn("Could not find perspective: "
-                                    + perspectiveName);
+                            log.warn("Could not find perspective: " + perspectiveName);
                         } else {
                             fragment.setVisibleInPerspective(perspective);
                         }
@@ -429,16 +410,13 @@ public class ThemeParser {
                 description = descriptionAttr.getNodeValue();
             }
 
-            PresetType preset = new CustomPresetType(name, value, group,
-                    category, label, description);
+            PresetType preset = new CustomPresetType(name, value, group, category, label, description);
             typeRegistry.register(preset);
         }
     }
 
-    public static void parseFormats(final ThemeElement theme,
-            org.w3c.dom.Element doc,
-            Map<Style, Map<String, Properties>> commonStyles,
-            Map<Integer, String> inheritanceMap, Node node)
+    public static void parseFormats(final ThemeElement theme, org.w3c.dom.Element doc,
+            Map<Style, Map<String, Properties>> commonStyles, Map<Integer, String> inheritanceMap, Node node)
             throws ThemeIOException, ThemeException {
         Node baseNode = getBaseNode(doc);
         String themeName = theme.getName();
@@ -491,8 +469,7 @@ public class ThemeParser {
                 if (nameAttr != null) {
                     styleName = nameAttr.getNodeValue();
                     // the style may have been registered already
-                    Style registeredStyle = (Style) themeManager.getNamedObject(
-                            themeName, "style", styleName);
+                    Style registeredStyle = (Style) themeManager.getNamedObject(themeName, "style", styleName);
                     if (registeredStyle == null) {
                         style.setName(styleName);
                         themeManager.setNamedObject(themeName, "style", style);
@@ -516,20 +493,17 @@ public class ThemeParser {
                     if (style.isNamed()) {
                         style.setRemote(remote);
                     } else {
-                        log.warn("Only named styles can be remote, ignoring remote attribute on"
-                                + style.getUid());
+                        log.warn("Only named styles can be remote, ignoring remote attribute on" + style.getUid());
                     }
                 }
 
                 if (styleName != null && elementXPath != null) {
-                    log.warn("Style parser: named style '" + styleName
-                            + "' cannot have an 'element' attribute: '"
+                    log.warn("Style parser: named style '" + styleName + "' cannot have an 'element' attribute: '"
                             + elementXPath + "'.");
                     continue;
                 }
 
-                List<Node> selectorNodes = getChildElementsByTagName(n,
-                        "selector");
+                List<Node> selectorNodes = getChildElementsByTagName(n, "selector");
 
                 if (style.isRemote() && resourceBankName != null) {
                     if (!selectorNodes.isEmpty()) {
@@ -542,8 +516,7 @@ public class ThemeParser {
                     NamedNodeMap attrs = selectorNode.getAttributes();
                     Node pathAttr = attrs.getNamedItem("path");
                     if (pathAttr == null) {
-                        log.warn(String.format(
-                                "Style parser: named style '%s' has a selector with no path: ignored",
+                        log.warn(String.format("Style parser: named style '%s' has a selector with no path: ignored",
                                 styleName));
                         continue;
                     }
@@ -557,38 +530,31 @@ public class ThemeParser {
 
                     String selectorDescription = getCommentAssociatedTo(selectorNode);
                     if (selectorDescription != null) {
-                        style.setSelectorDescription(path, viewName,
-                                selectorDescription);
+                        style.setSelectorDescription(path, viewName, selectorDescription);
                     }
 
                     // BBB: remove in a later release
-                    if (elementXPath != null
-                            && (viewName == null || viewName.equals("*"))) {
-                        log.warn("Style parser: trying to guess the view name for: "
-                                + elementXPath);
+                    if (elementXPath != null && (viewName == null || viewName.equals("*"))) {
+                        log.warn("Style parser: trying to guess the view name for: " + elementXPath);
                         viewName = guessViewNameFor(doc, elementXPath);
                         if (viewName == null) {
                             if (!commonStyles.containsKey(style)) {
-                                commonStyles.put(style,
-                                        new LinkedHashMap<String, Properties>());
+                                commonStyles.put(style, new LinkedHashMap<String, Properties>());
                             }
-                            commonStyles.get(style).put(path,
-                                    getPropertiesFromNode(selectorNode));
+                            commonStyles.get(style).put(path, getPropertiesFromNode(selectorNode));
                         }
                     }
 
                     if (styleName != null) {
                         if (viewName != null) {
-                            log.info("Style parser: ignoring view name '"
-                                    + viewName + "' in named style '"
-                                    + styleName + "'.");
+                            log.info("Style parser: ignoring view name '" + viewName + "' in named style '" + styleName
+                                    + "'.");
                         }
                         viewName = "*";
                     }
 
                     if (viewName != null) {
-                        style.setPropertiesFor(viewName, path,
-                                getPropertiesFromNode(selectorNode));
+                        style.setPropertiesFor(viewName, path, getPropertiesFromNode(selectorNode));
                     }
                 }
             }
@@ -607,8 +573,7 @@ public class ThemeParser {
 
     }
 
-    public static void createCommonStyles(String themeName,
-            Map<Style, Map<String, Properties>> commonStyles)
+    public static void createCommonStyles(String themeName, Map<Style, Map<String, Properties>> commonStyles)
             throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         int count = 1;
@@ -640,27 +605,23 @@ public class ThemeParser {
         }
     }
 
-    public static void parseProperties(org.w3c.dom.Element doc, Node node)
-            throws ThemeIOException {
+    public static void parseProperties(org.w3c.dom.Element doc, Node node) throws ThemeIOException {
         NamedNodeMap attributes = node.getAttributes();
         Node elementAttr = attributes.getNamedItem("element");
         if (elementAttr == null) {
-            throw new ThemeIOException(
-                    "<properties> node has no 'element' attribute.");
+            throw new ThemeIOException("<properties> node has no 'element' attribute.");
         }
         String elementXPath = elementAttr.getNodeValue();
 
         Node baseNode = getBaseNode(doc);
         Node element = null;
         try {
-            element = (Node) xpath.evaluate(elementXPath, baseNode,
-                    XPathConstants.NODE);
+            element = (Node) xpath.evaluate(elementXPath, baseNode, XPathConstants.NODE);
         } catch (XPathExpressionException e) {
             throw new ThemeIOException(e);
         }
         if (element == null) {
-            throw new ThemeIOException(
-                    "Could not find the element associated to: " + elementXPath);
+            throw new ThemeIOException("Could not find the element associated to: " + elementXPath);
         }
         Properties properties = getPropertiesFromNode(node);
         if (properties != null) {
@@ -679,8 +640,7 @@ public class ThemeParser {
                     textContent = String.format("\"%s\"", presetName);
                 }
             }
-            properties.setProperty(n.getNodeName(),
-                    Framework.expandVars(textContent));
+            properties.setProperty(n.getNodeName(), Framework.expandVars(textContent));
         }
         return properties;
     }
@@ -702,20 +662,17 @@ public class ThemeParser {
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node n = childNodes.item(i);
-            if (n.getNodeType() == Node.ELEMENT_NODE
-                    && tagName.equals(n.getNodeName())) {
+            if (n.getNodeType() == Node.ELEMENT_NODE && tagName.equals(n.getNodeName())) {
                 nodes.add(n);
             }
         }
         return nodes;
     }
 
-    public static Node getBaseNode(org.w3c.dom.Element doc)
-            throws ThemeIOException {
+    public static Node getBaseNode(org.w3c.dom.Element doc) throws ThemeIOException {
         Node baseNode = null;
         try {
-            baseNode = (Node) xpath.evaluate('/' + DOCROOT_NAME + "/layout",
-                    doc, XPathConstants.NODE);
+            baseNode = (Node) xpath.evaluate('/' + DOCROOT_NAME + "/layout", doc, XPathConstants.NODE);
         } catch (XPathExpressionException e) {
             throw new ThemeIOException(e);
         }
@@ -743,8 +700,7 @@ public class ThemeParser {
     }
 
     // BBB shouldn't have to guess view names
-    private static String guessViewNameFor(org.w3c.dom.Element doc,
-            String elementXPath) {
+    private static String guessViewNameFor(org.w3c.dom.Element doc, String elementXPath) {
         NodeList widgetNodes = doc.getElementsByTagName("widget");
         Set<String> candidates = new HashSet<String>();
         String[] elements = elementXPath.split("\\|");
@@ -753,13 +709,11 @@ public class ThemeParser {
             NamedNodeMap attributes = node.getAttributes();
             Node elementAttr = attributes.getNamedItem("element");
             if (elementAttr != null) {
-                String[] widgetElements = elementAttr.getNodeValue().split(
-                        "\\|");
+                String[] widgetElements = elementAttr.getNodeValue().split("\\|");
                 for (String element : elements) {
                     for (String widgetElement : widgetElements) {
                         if (element.equals(widgetElement)) {
-                            List<Node> viewNodes = getChildElementsByTagName(
-                                    node, "view");
+                            List<Node> viewNodes = getChildElementsByTagName(node, "view");
                             if (!viewNodes.isEmpty()) {
                                 candidates.add(viewNodes.get(0).getTextContent());
                             }
@@ -774,13 +728,11 @@ public class ThemeParser {
         return null;
     }
 
-    private static List<Node> getNodesByXPath(Node baseNode, String elementXPath)
-            throws ThemeIOException {
+    private static List<Node> getNodesByXPath(Node baseNode, String elementXPath) throws ThemeIOException {
         final List<Node> nodes = new ArrayList<Node>();
         if (elementXPath != null) {
             try {
-                NodeList elementNodes = (NodeList) xpath.evaluate(elementXPath,
-                        baseNode, XPathConstants.NODESET);
+                NodeList elementNodes = (NodeList) xpath.evaluate(elementXPath, baseNode, XPathConstants.NODESET);
                 for (int i = 0; i < elementNodes.getLength(); i++) {
                     nodes.add(elementNodes.item(i));
                 }

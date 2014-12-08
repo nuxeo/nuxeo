@@ -67,22 +67,19 @@ public class DocumentListTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
 
         // When I query for it children
-        ClientResponse response = getResponse(RequestType.GET,
-                "id/" + folder.getId() + "/@" + ChildrenAdapter.NAME);
+        ClientResponse response = getResponse(RequestType.GET, "id/" + folder.getId() + "/@" + ChildrenAdapter.NAME);
 
         // Then I get its children as JSON
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(session.getChildren(folder.getRef()).size(),
-                getLogEntries(node).size());
+        assertEquals(session.getChildren(folder.getRef()).size(), getLogEntries(node).size());
     }
 
     @Test
     public void iCanSearchInFullTextForDocuments() throws Exception {
         // Given a note with "nuxeo" in its description
         DocumentModel note = RestServerInit.getNote(0, session);
-        note.setPropertyValue("dc:description",
-                "nuxeo one platform to rule them all");
+        note.setPropertyValue("dc:description", "nuxeo one platform to rule them all");
         session.saveDocument(note);
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -95,8 +92,7 @@ public class DocumentListTest extends BaseTest {
         // When I search for "nuxeo"
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("fullText", "nuxeo");
-        ClientResponse response = getResponse(RequestType.GET, "path/@"
-                + SearchAdapter.NAME, queryParams);
+        ClientResponse response = getResponse(RequestType.GET, "path/@" + SearchAdapter.NAME, queryParams);
 
         // Then I get the document in the result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -110,8 +106,7 @@ public class DocumentListTest extends BaseTest {
         // Given a repository, when I perform a query in NXQL on it
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("query", "SELECT * FROM Document");
-        ClientResponse response = getResponse(RequestType.GET,
-                "query", queryParams);
+        ClientResponse response = getResponse(RequestType.GET, "query", queryParams);
 
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -119,8 +114,7 @@ public class DocumentListTest extends BaseTest {
         assertEquals(15, getLogEntries(node).size());
 
         // Given a repository, when I perform a query in NXQL on it
-        response = getResponse(RequestType.GET, QueryObject.PATH + "/" +
-                QueryObject.NXQL, queryParams);
+        response = getResponse(RequestType.GET, QueryObject.PATH + "/" + QueryObject.NXQL, queryParams);
 
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -131,12 +125,10 @@ public class DocumentListTest extends BaseTest {
         queryParams.clear();
         queryParams.add("pageSize", "2");
         queryParams.add("queryParams", "$currentUser");
-        queryParams.add("query", "select * from Document where " +
-                "dc:creator = ?");
+        queryParams.add("query", "select * from Document where " + "dc:creator = ?");
 
         // Given a repository, when I perform a query in NXQL on it
-        response = getResponse(RequestType.GET, QueryObject.PATH + "/" +
-                QueryObject.NXQL, queryParams);
+        response = getResponse(RequestType.GET, QueryObject.PATH + "/" + QueryObject.NXQL, queryParams);
 
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -145,24 +137,19 @@ public class DocumentListTest extends BaseTest {
     }
 
     @Test
-    public void iCanPerformQueriesWithNamedParametersOnRepository() throws
-            IOException {
+    public void iCanPerformQueriesWithNamedParametersOnRepository() throws IOException {
         // Given a repository and named parameters, when I perform a query in
         // NXQL on it
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.add("query", "SELECT * FROM Document WHERE " +
-                "ecm:parentId = :parentIdVar AND\n" +
-                "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " +
-                "IN (:note1,:note2)\n" +
-                "        AND ecm:isCheckedInVersion = 0 AND " +
-                "ecm:currentLifeCycleState !=\n" +
-                "        'deleted'");
+        queryParams.add("query", "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
+                + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:note1,:note2)\n"
+                + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
+                + "        'deleted'");
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET,
-                QueryObject.PATH, queryParams);
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH, queryParams);
 
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -176,8 +163,7 @@ public class DocumentListTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("queryParams", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET,
-                QueryObject.PATH + "/TEST_PP", queryParams);
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/TEST_PP", queryParams);
 
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -186,16 +172,14 @@ public class DocumentListTest extends BaseTest {
     }
 
     @Test
-    public void iCanPerformPageProviderWithNamedParametersOnRepository() throws
-            IOException {
+    public void iCanPerformPageProviderWithNamedParametersOnRepository() throws IOException {
         // Given a repository, when I perform a pageprovider on it
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET,
-                QueryObject.PATH + "/TEST_PP_PARAM", queryParams);
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/TEST_PP_PARAM", queryParams);
 
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -205,17 +189,15 @@ public class DocumentListTest extends BaseTest {
 
     @Test
     public void itCanGetAdapterForRootDocument() throws Exception {
-        //Given the root document
+        // Given the root document
         DocumentModel rootDocument = session.getRootDocument();
 
-        //When i ask for an adapter
-        JsonNode node = getResponseAsJson(RequestType.GET, "path"
-                + rootDocument.getPathAsString() + "@children");
+        // When i ask for an adapter
+        JsonNode node = getResponseAsJson(RequestType.GET, "path" + rootDocument.getPathAsString() + "@children");
 
-        //The it return a response
+        // The it return a response
         ArrayNode jsonNode = (ArrayNode) node.get("entries");
-        assertEquals(session.getChildren(rootDocument.getRef()).size(),
-                jsonNode.size());
+        assertEquals(session.getChildren(rootDocument.getRef()).size(), jsonNode.size());
     }
 
     @Test
@@ -224,9 +206,8 @@ public class DocumentListTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
 
         // When I search for "nuxeo"
-        ClientResponse response = getResponse(RequestType.GET,
-                "path" + folder.getPathAsString() + "/@"
-                        + PageProviderAdapter.NAME + "/TEST_PP");
+        ClientResponse response = getResponse(RequestType.GET, "path" + folder.getPathAsString() + "/@"
+                + PageProviderAdapter.NAME + "/TEST_PP");
 
         // Then I get the two document in the result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -243,10 +224,8 @@ public class DocumentListTest extends BaseTest {
 
         // When i call a bulk delete
         String data = Joiner.on(";").join(
-                Arrays.asList(new String[] { "id=" + note1.getId(),
-                        "id=" + folder0.getId() }));
-        ClientResponse response = getResponse(RequestType.DELETE, "/bulk;"
-                + data);
+                Arrays.asList(new String[] { "id=" + note1.getId(), "id=" + folder0.getId() }));
+        ClientResponse response = getResponse(RequestType.DELETE, "/bulk;" + data);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Then the documents are removed from repository
@@ -263,24 +242,19 @@ public class DocumentListTest extends BaseTest {
         DocumentModel note1 = RestServerInit.getNote(1, session);
         DocumentModel note2 = RestServerInit.getNote(2, session);
 
-        String data = "{\"entity-type\":\"document\"," + "\"type\":\"Note\","
-                + "\"properties\":{"
+        String data = "{\"entity-type\":\"document\"," + "\"type\":\"Note\"," + "\"properties\":{"
                 + "    \"dc:description\":\"bulk description\"" + "  }" + "}";
 
         // When i call a bulk update
-        String ids = Joiner.on(";").join(
-                Arrays.asList(new String[] { "id=" + note1.getId(),
-                        "id=" + note2.getId() }));
-        ClientResponse response = getResponse(RequestType.PUT, "/bulk;" + ids,
-                data);
+        String ids = Joiner.on(";").join(Arrays.asList(new String[] { "id=" + note1.getId(), "id=" + note2.getId() }));
+        ClientResponse response = getResponse(RequestType.PUT, "/bulk;" + ids, data);
 
         // Then the documents are updated accordingly
         fetchInvalidations();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         for (int i : new int[] { 1, 2 }) {
             note1 = RestServerInit.getNote(i, session);
-            assertEquals("bulk description",
-                    note1.getPropertyValue("dc:description"));
+            assertEquals("bulk description", note1.getPropertyValue("dc:description"));
         }
 
     }

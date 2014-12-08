@@ -57,8 +57,7 @@ public class TestExpressionEvaluator {
         return Arrays.asList(createSampleBean());
     }
 
-    private final ExpressionEvaluator evaluatorUnderTest = new ExpressionEvaluator(
-            new ExpressionFactoryImpl());
+    private final ExpressionEvaluator evaluatorUnderTest = new ExpressionEvaluator(new ExpressionFactoryImpl());
 
     private final ExpressionContext context = new ExpressionContext();
 
@@ -72,8 +71,7 @@ public class TestExpressionEvaluator {
     public void testProperty() {
         SampleBean sampleBean = createSampleBean();
         evaluatorUnderTest.bindValue(context, "bean", sampleBean);
-        Object value = evaluatorUnderTest.evaluateExpression(context,
-                "${bean.sampleValue}", String.class);
+        Object value = evaluatorUnderTest.evaluateExpression(context, "${bean.sampleValue}", String.class);
         assertNotNull(value);
         assertTrue(value instanceof String);
         String stringValue = (String) value;
@@ -84,8 +82,7 @@ public class TestExpressionEvaluator {
     public void testMap() {
         Map<String, SampleBean> sampleMap = createSampleMap();
         evaluatorUnderTest.bindValue(context, "map", sampleMap);
-        Object value = evaluatorUnderTest.evaluateExpression(context,
-                "${map.key.sampleValue}", String.class);
+        Object value = evaluatorUnderTest.evaluateExpression(context, "${map.key.sampleValue}", String.class);
         assertNotNull(value);
     }
 
@@ -93,8 +90,7 @@ public class TestExpressionEvaluator {
     public void testArray() {
         SampleBean[] sampleArray = createSampleArray();
         evaluatorUnderTest.bindValue(context, "array", sampleArray);
-        Object value = evaluatorUnderTest.evaluateExpression(context,
-                "${array[0].sampleValue}", String.class);
+        Object value = evaluatorUnderTest.evaluateExpression(context, "${array[0].sampleValue}", String.class);
         assertNotNull(value);
     }
 
@@ -102,11 +98,9 @@ public class TestExpressionEvaluator {
     public void testList() {
         List<SampleBean> sampleList = createSampleList();
         evaluatorUnderTest.bindValue(context, "list", sampleList);
-        Object value = evaluatorUnderTest.evaluateExpression(context,
-                "${list[0].sampleValue}", String.class);
+        Object value = evaluatorUnderTest.evaluateExpression(context, "${list[0].sampleValue}", String.class);
         assertNotNull(value);
-        value = evaluatorUnderTest.evaluateExpression(context,
-                "${list.get(0).sampleValue}", String.class);
+        value = evaluatorUnderTest.evaluateExpression(context, "${list.get(0).sampleValue}", String.class);
         assertNotNull(value);
     }
 

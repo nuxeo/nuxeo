@@ -23,14 +23,12 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.9.2
  */
-public class ClientRegistryImpl extends DefaultComponent implements
-        ClientRegistry {
+public class ClientRegistryImpl extends DefaultComponent implements ClientRegistry {
 
     private static final Log log = LogFactory.getLog(ClientRegistry.class);
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         switch (extensionPoint) {
         case "clients":
             OAuth2Client client = (OAuth2Client) contribution;
@@ -64,8 +62,7 @@ public class ClientRegistryImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean isValidClient(String clientId, String clientSecret)
-            throws ClientException {
+    public boolean isValidClient(String clientId, String clientSecret) throws ClientException {
         DocumentModel docClient = getClientModel(clientId);
         if (docClient != null) {
             OAuth2Client client = OAuth2Client.fromDocumentModel(docClient);
@@ -87,8 +84,7 @@ public class ClientRegistryImpl extends DefaultComponent implements
         try {
             session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
             if (session.hasEntry(client.getId())) {
-                log.debug(String.format("ClientId is already registered: %s",
-                        client.getId()));
+                log.debug(String.format("ClientId is already registered: %s", client.getId()));
                 return false;
             }
 

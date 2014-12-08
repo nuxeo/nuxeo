@@ -19,9 +19,8 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Interface for a factory that will provide a custom DocumentReader implementation.
- * The params are used by specific factories to properly instantiate the custom
- * DocumentReader.
+ * Interface for a factory that will provide a custom DocumentReader implementation. The params are used by specific
+ * factories to properly instantiate the custom DocumentReader.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */

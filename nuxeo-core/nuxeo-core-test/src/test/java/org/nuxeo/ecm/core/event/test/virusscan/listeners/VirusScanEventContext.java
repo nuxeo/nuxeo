@@ -26,14 +26,11 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.test.virusscan.VirusScanConsts;
 
 /**
- * Custom EventContext used to propagate info between the synchronous listener
- * and the Asynchrous listener
+ * Custom EventContext used to propagate info between the synchronous listener and the Asynchrous listener
  * <p/>
- * The Blob xpaths are propagated using a List of String inside the
- * {@link EventContext}.
+ * The Blob xpaths are propagated using a List of String inside the {@link EventContext}.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class VirusScanEventContext extends DocumentEventContext {
 
@@ -46,15 +43,12 @@ public class VirusScanEventContext extends DocumentEventContext {
     public static final String MARKER_VALUE = "SizeUpdateEventContext";
 
     protected VirusScanEventContext(DocumentEventContext evtCtx) {
-        super(evtCtx.getCoreSession(), evtCtx.getPrincipal(),
-                evtCtx.getSourceDocument(), evtCtx.getDestination());
+        super(evtCtx.getCoreSession(), evtCtx.getPrincipal(), evtCtx.getSourceDocument(), evtCtx.getDestination());
         setProperty(MARKER_KEY, MARKER_VALUE);
     }
 
-    public VirusScanEventContext(DocumentEventContext evtCtx,
-            List<String> blobXPaths) {
-        super(evtCtx.getCoreSession(), evtCtx.getPrincipal(),
-                evtCtx.getSourceDocument(), evtCtx.getDestination());
+    public VirusScanEventContext(DocumentEventContext evtCtx, List<String> blobXPaths) {
+        super(evtCtx.getCoreSession(), evtCtx.getPrincipal(), evtCtx.getSourceDocument(), evtCtx.getDestination());
         setProperty(MARKER_KEY, MARKER_VALUE);
         setProperty(VIRUS_SCAN_BLOB_XPATHS, (Serializable) blobXPaths);
     }

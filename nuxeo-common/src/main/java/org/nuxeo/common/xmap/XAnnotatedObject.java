@@ -35,14 +35,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.w3c.dom.Element;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class XAnnotatedObject {
 
     final XMap xmap;
+
     final Class<?> klass;
+
     final Constructor<?> ctor;
+
     final Path path;
 
     final List<XAnnotatedMember> members;
@@ -64,8 +66,7 @@ public class XAnnotatedObject {
         } catch (SecurityException e) {
             throw new IllegalArgumentException(e);
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException(
-                    "Invalid xmap class - no default constructor found", e);
+            throw new IllegalArgumentException("Invalid xmap class - no default constructor found", e);
         }
     }
 

@@ -44,11 +44,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, user = "Administrator")
-@Deploy( { "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.localconf",
-        "org.nuxeo.ecm.directory.api",
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.localconf", "org.nuxeo.ecm.directory.api",
         "org.nuxeo.ecm.platform.userpreferences" })
 public class TestUserPreferencesService {
 
@@ -64,8 +61,7 @@ public class TestUserPreferencesService {
     @Test
     public void testGetSimpleUserPreferences() throws Exception {
         SimpleUserPreferences simpleUserPref = userPreferencesService.getSimpleUserPreferences(session);
-        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session, null);
+        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
         assertEquals(userWorkspace.getRef(), simpleUserPref.getDocumentRef());
         simpleUserPref.put("foo", "bar");
         simpleUserPref.save(session);

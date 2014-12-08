@@ -25,11 +25,10 @@ import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.packageadmin.RequiredBundle;
 
 /**
- * Dummy implementation of {@link PackageAdmin} service.
- * Only {@link PackageAdmin#getBundles(String, String)} is implemented
+ * Dummy implementation of {@link PackageAdmin} service. Only {@link PackageAdmin#getBundles(String, String)} is
+ * implemented
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PackageAdminImpl implements PackageAdmin {
 
@@ -41,7 +40,7 @@ public class PackageAdminImpl implements PackageAdmin {
 
     @Override
     public Bundle[] getBundles(String symbolicName, String versionRange) {
-        return new Bundle[] {osgi.getBundle(symbolicName)};
+        return new Bundle[] { osgi.getBundle(symbolicName) };
     }
 
     @Override
@@ -76,7 +75,7 @@ public class PackageAdminImpl implements PackageAdmin {
 
     @Override
     public Bundle[] getFragments(Bundle bundle) {
-        return  osgi.getRegistry().getFragments(bundle.getSymbolicName());
+        return osgi.getRegistry().getFragments(bundle.getSymbolicName());
     }
 
     @Override

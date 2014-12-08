@@ -31,10 +31,8 @@ public class ThemeIORoundTrip extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
         deployContrib("org.nuxeo.theme.core.tests", "theme-bank-config.xml");
     }
@@ -48,8 +46,7 @@ public class ThemeIORoundTrip extends NXRuntimeTestCase {
         Manager.getTypeRegistry().register(themeDef);
         final boolean preload = false;
         ThemeParser.registerTheme(themeDef, preload);
-        final String output = new ThemeSerializer().serializeToXml(
-                "roundtrip-theme.xml", 2);
+        final String output = new ThemeSerializer().serializeToXml("roundtrip-theme.xml", 2);
         final String input = Utils.readResourceAsString("roundtrip-theme.xml");
         // FIXME: the "special fonts" style is not getting exported because the
         // the resource bank is not registered

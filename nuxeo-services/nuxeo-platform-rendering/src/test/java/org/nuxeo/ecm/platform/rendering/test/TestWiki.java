@@ -39,8 +39,7 @@ public class TestWiki {
         WikiSerializer engine = new WikiSerializer();
         engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
         engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
-        engine.addFilter(new PatternFilter("NXP-[0-9]+",
-                "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+        engine.addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
 
         StringWriter writer = new StringWriter();
         engine.serialize(reader, writer);
@@ -57,8 +56,7 @@ public class TestWiki {
         WikiSerializer engine = new WikiSerializer();
         engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
         engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
-        engine.addFilter(new PatternFilter("NXP-[0-9]+",
-                "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+        engine.addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
 
         StringWriter writer = new StringWriter();
         engine.serialize(reader, writer);
@@ -74,8 +72,7 @@ public class TestWiki {
         WikiSerializer engine = new WikiSerializer();
         engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
         engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
-        engine.addFilter(new PatternFilter("NXP-[0-9]+",
-                "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+        engine.addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
 
         StringWriter writer = new StringWriter();
         engine.serialize(reader, writer);

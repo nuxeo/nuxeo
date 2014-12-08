@@ -25,7 +25,6 @@ import com.google.gwt.core.client.EntryPoint;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class TilingPreview implements EntryPoint {
 

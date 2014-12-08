@@ -24,14 +24,15 @@ package org.nuxeo.common.xmap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class XMethodAccessor implements XAccessor {
 
     private final Method setter;
+
     private final Class klass;
+
     Method getter;
 
     public XMethodAccessor(Method method, Class klass) {
@@ -104,8 +105,7 @@ public class XMethodAccessor implements XAccessor {
             } catch (SecurityException e) {
                 throw new IllegalArgumentException(e);
             } catch (NoSuchMethodException e) {
-                throw new IllegalArgumentException(
-                        "there is NO getter defined for annotated setter: " + setterName, e);
+                throw new IllegalArgumentException("there is NO getter defined for annotated setter: " + setterName, e);
             }
         }
         return null;

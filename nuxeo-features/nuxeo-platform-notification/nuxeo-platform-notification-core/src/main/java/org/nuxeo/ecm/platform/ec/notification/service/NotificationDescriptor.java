@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.notification.api.Notification;
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
- *
  */
 @XObject("notification")
 public class NotificationDescriptor implements Notification {
@@ -125,7 +124,7 @@ public class NotificationDescriptor implements Notification {
     }
 
     @Override
-    public String getTemplateExpr(){
+    public String getTemplateExpr() {
         return templateExpr;
     }
 }

@@ -41,7 +41,9 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
     private static final Log log = LogFactory.getLog(NuxeoAbstractServerLoginModule.class);
 
     protected Subject subject;
+
     protected Map sharedState;
+
     protected Map options;
 
     protected boolean loginOk;
@@ -57,13 +59,11 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
     /** Flag indicating if the shared credential should be used */
     protected boolean useFirstPass;
 
-
     protected abstract Principal getIdentity();
 
     protected abstract Group[] getRoleSets() throws LoginException;
 
     protected abstract Principal createIdentity(String username) throws LoginException;
-
 
     public boolean abort() throws LoginException {
         log.trace("abort");
@@ -85,9 +85,8 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
             Group subjectGroup = createGroup(name, principals);
 
             /*
-             * if( subjectGroup instanceof NestableGroup ) { SimpleGroup tmp =
-             * new SimpleGroup("Roles"); subjectGroup.addMember(tmp);
-             * subjectGroup = tmp; }
+             * if( subjectGroup instanceof NestableGroup ) { SimpleGroup tmp = new SimpleGroup("Roles");
+             * subjectGroup.addMember(tmp); subjectGroup = tmp; }
              */
 
             // Copy the group members to the Subject group
@@ -100,8 +99,8 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
         return true;
     }
 
-    public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map<String, ?> sharedState, Map<String, ?> options) {
+    public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
+            Map<String, ?> options) {
         this.subject = subject;
         this.callbackHandler = callbackHandler;
         this.sharedState = sharedState;
@@ -111,13 +110,11 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
         }
 
         /*
-         * Check for password sharing options. Any non-null value for
-         * password_stacking sets useFirstPass as this module has no way to
-         * validate any shared password.
+         * Check for password sharing options. Any non-null value for password_stacking sets useFirstPass as this module
+         * has no way to validate any shared password.
          */
         String passwordStacking = (String) options.get("password-stacking");
-        if (passwordStacking != null
-                && passwordStacking.equalsIgnoreCase("useFirstPass")) {
+        if (passwordStacking != null && passwordStacking.equalsIgnoreCase("useFirstPass")) {
             useFirstPass = true;
         }
 
@@ -140,15 +137,15 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
         log.trace("logout");
         // Remove the user identity
         Principal identity = getIdentity();
-        Set<Principal>principals = subject.getPrincipals();
+        Set<Principal> principals = subject.getPrincipals();
         principals.remove(identity);
         // Remove any added Groups...
         return true;
     }
 
     /**
-     * Finds or creates a Group with the given name. Subclasses should use this
-     * method to locate the 'Roles' group or create additional types of groups.
+     * Finds or creates a Group with the given name. Subclasses should use this method to locate the 'Roles' group or
+     * create additional types of groups.
      *
      * @return A named Group from the principals set.
      */

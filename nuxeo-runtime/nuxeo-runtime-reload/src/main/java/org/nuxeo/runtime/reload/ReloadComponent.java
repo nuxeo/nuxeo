@@ -85,8 +85,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             throw new RuntimeServiceException(e);
         }
         EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.sendEvent(new Event(RELOAD_TOPIC, RELOAD_EVENT_ID, this,
-                null));
+        eventService.sendEvent(new Event(RELOAD_TOPIC, RELOAD_EVENT_ID, this, null));
         if (log.isDebugEnabled()) {
             log.debug("Reload done");
         }
@@ -119,8 +118,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
         flushJaasCache();
         EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this,
-                null));
+        eventService.sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this, null));
         setFlushedNow();
         if (log.isDebugEnabled()) {
             log.debug("Flush done");
@@ -131,8 +129,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     public void flushJaasCache() {
         log.info("Flush the JAAS cache");
         EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.sendEvent(new Event("usermanager", "user_changed", this,
-                "Deployer")); // the data argument is optional
+        eventService.sendEvent(new Event("usermanager", "user_changed", this, "Deployer")); // the data argument is
+                                                                                            // optional
         setFlushedNow();
     }
 
@@ -150,21 +148,16 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public String deployBundle(File file, boolean reloadResourceClasspath)
-            throws BundleException {
+    public String deployBundle(File file, boolean reloadResourceClasspath) throws BundleException {
         String name = getOSGIBundleName(file);
         if (name == null) {
-            log.error(String.format(
-                    "No Bundle-SymbolicName found in MANIFEST for jar at '%s'",
-                    file.getAbsolutePath()));
+            log.error(String.format("No Bundle-SymbolicName found in MANIFEST for jar at '%s'", file.getAbsolutePath()));
             return null;
         }
 
         String path = file.getAbsolutePath();
 
-        log.info(String.format(
-                "Before deploy bundle for file at '%s'\n" + "%s", path,
-                getRuntimeStatus()));
+        log.info(String.format("Before deploy bundle for file at '%s'\n" + "%s", path, getRuntimeStatus()));
 
         if (reloadResourceClasspath) {
             URL url;
@@ -179,26 +172,22 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         // check if this is a bundle first
         Bundle newBundle = getBundleContext().installBundle(path);
         if (newBundle == null) {
-            throw new IllegalArgumentException(
-                    "Could not find a valid bundle at path: " + path);
+            throw new IllegalArgumentException("Could not find a valid bundle at path: " + path);
         }
         newBundle.start();
 
-        log.info(String.format("Deploy done for bundle with name '%s'.\n"
-                + "%s", newBundle.getSymbolicName(), getRuntimeStatus()));
+        log.info(String.format("Deploy done for bundle with name '%s'.\n" + "%s", newBundle.getSymbolicName(),
+                getRuntimeStatus()));
 
         return newBundle.getSymbolicName();
     }
 
     @Override
-    public void undeployBundle(File file, boolean reloadResources)
-            throws BundleException {
+    public void undeployBundle(File file, boolean reloadResources) throws BundleException {
         String name = getOSGIBundleName(file);
         String path = file.getAbsolutePath();
         if (name == null) {
-            log.error(String.format(
-                    "No Bundle-SymbolicName found in MANIFEST for jar at '%s'",
-                    path));
+            log.error(String.format("No Bundle-SymbolicName found in MANIFEST for jar at '%s'", path));
             return;
         }
 
@@ -221,8 +210,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             // ignore
             return;
         }
-        log.info(String.format("Before undeploy bundle with name '%s'.\n"
-                + "%s", bundleName, getRuntimeStatus()));
+        log.info(String.format("Before undeploy bundle with name '%s'.\n" + "%s", bundleName, getRuntimeStatus()));
         BundleContext ctx = getBundleContext();
         ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
         PackageAdmin srv = (PackageAdmin) ctx.getService(ref);
@@ -309,8 +297,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         if (mf == null) {
             return null;
         }
-        String bundleName = mf.getMainAttributes().getValue(
-                "Bundle-SymbolicName");
+        String bundleName = mf.getMainAttributes().getValue("Bundle-SymbolicName");
         if (bundleName == null) {
             return null;
         }

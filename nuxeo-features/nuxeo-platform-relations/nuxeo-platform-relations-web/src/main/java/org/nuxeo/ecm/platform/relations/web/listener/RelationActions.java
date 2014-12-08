@@ -33,7 +33,6 @@ import org.nuxeo.ecm.platform.relations.web.StatementInfo;
  * Relation actions.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface RelationActions {
 
@@ -49,8 +48,7 @@ public interface RelationActions {
 
     String deleteStatement(StatementInfo statementInfo) throws ClientException;
 
-    QNameResource getDocumentResource(DocumentModel document)
-            throws ClientException;
+    QNameResource getDocumentResource(DocumentModel document) throws ClientException;
 
     DocumentModel getDocumentModel(Node node) throws ClientException;
 

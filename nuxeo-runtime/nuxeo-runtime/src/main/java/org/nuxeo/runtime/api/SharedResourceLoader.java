@@ -28,5 +28,4 @@ public class SharedResourceLoader extends URLClassLoader {
         super.addURL(url);
     }
 
-
 }

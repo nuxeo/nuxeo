@@ -32,8 +32,7 @@ public class MockEnricher extends AbstractContentEnricher {
     Map<String, String> parameters;
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec)
-        throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
         //
     }
 
@@ -42,7 +41,7 @@ public class MockEnricher extends AbstractContentEnricher {
         this.parameters = parameters;
     }
 
-    public Map<String,String> getParameters() {
+    public Map<String, String> getParameters() {
         return parameters;
     }
 }

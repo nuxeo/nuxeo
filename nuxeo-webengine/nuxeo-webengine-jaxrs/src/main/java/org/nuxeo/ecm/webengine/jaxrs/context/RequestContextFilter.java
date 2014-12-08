@@ -22,11 +22,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.ecm.webengine.jaxrs.HttpFilter;
 
 /**
- * Manage the context of the current HTTP request and made it available through a thread local variable
- * to web components that are invoked inside the request.
+ * Manage the context of the current HTTP request and made it available through a thread local variable to web
+ * components that are invoked inside the request.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RequestContextFilter extends HttpFilter {
 
@@ -35,8 +34,8 @@ public class RequestContextFilter extends HttpFilter {
     }
 
     @Override
-    public void run(HttpServletRequest request, HttpServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void run(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         RequestContext ctx = new RequestContext(request, response);
         try {
             chain.doFilter(request, response);

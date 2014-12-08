@@ -54,8 +54,7 @@ public class AutomationModule extends WebEngineModule {
             try {
                 result.add(readerKlass.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
-                log.error("Unable to instanciate MessageBodyReader : "
-                        + readerKlass, e);
+                log.error("Unable to instanciate MessageBodyReader : " + readerKlass, e);
             }
         }
 
@@ -63,8 +62,7 @@ public class AutomationModule extends WebEngineModule {
             try {
                 result.add(writerKlass.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
-                log.error("Unable to instanciate MessageBodyWriter : "
-                        + writerKlass, e);
+                log.error("Unable to instanciate MessageBodyWriter : " + writerKlass, e);
             }
         }
 

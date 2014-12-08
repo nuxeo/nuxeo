@@ -16,16 +16,13 @@
  */
 package org.nuxeo.ecm.webengine.forms.validation;
 
-
 /**
- *
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LengthValidator implements FieldValidator {
 
     protected int min;
+
     protected int max;
 
     public LengthValidator(int min, int max) {

@@ -32,8 +32,7 @@ public class LayoutConversionContext {
 
     protected Map<String, Serializable> properties;
 
-    public LayoutConversionContext(String language,
-            Map<String, Serializable> properties) {
+    public LayoutConversionContext(String language, Map<String, Serializable> properties) {
         super();
         this.language = language;
         this.properties = properties;

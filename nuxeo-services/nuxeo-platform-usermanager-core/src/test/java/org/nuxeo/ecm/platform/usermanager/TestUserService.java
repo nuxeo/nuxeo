@@ -36,7 +36,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Florent Guillaume
- *
  */
 public class TestUserService extends NXRuntimeTestCase {
 
@@ -45,10 +44,8 @@ public class TestUserService extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.usermanager",
-                "OSGI-INF/UserService.xml");
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-userservice-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager", "OSGI-INF/UserService.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-userservice-config.xml");
         userManager = Framework.getService(UserManager.class);
     }
 
@@ -63,15 +60,14 @@ public class TestUserService extends NXRuntimeTestCase {
         assertEquals("search_only", userManager.getUserListingMode());
         assertEquals("search_oh_yeah", userManager.getGroupListingMode());
         assertEquals(Arrays.asList("tehroot"), fum.defaultAdministratorIds);
-        assertEquals(Collections.<String>emptyList(), fum.administratorsGroups);
+        assertEquals(Collections.<String> emptyList(), fum.administratorsGroups);
         assertEquals("defgr", userManager.getDefaultGroup());
         assertEquals("name", userManager.getUserSortField());
         assertEquals("sn", fum.groupSortField);
         assertEquals("somedir", fum.userDirectoryName);
         assertEquals("mail", fum.userEmailField);
         // append mode:
-        assertEquals(new HashSet<String>(Arrays.asList("first", "last",
-                "username", "firstName", "lastName", "email")),
+        assertEquals(new HashSet<String>(Arrays.asList("first", "last", "username", "firstName", "lastName", "email")),
                 fum.getUserSearchFields());
         assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("username"));
         assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("firstName"));
@@ -125,12 +121,10 @@ public class TestUserService extends NXRuntimeTestCase {
 
     @Test
     public void testOverride() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-userservice-override-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-userservice-override-config.xml");
         userManager = Framework.getService(UserManager.class);
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
-        assertEquals(Arrays.asList("tehroot", "bob", "bobette"),
-                fum.defaultAdministratorIds);
+        assertEquals(Arrays.asList("tehroot", "bob", "bobette"), fum.defaultAdministratorIds);
         assertEquals(Arrays.asList("myAdministrators"), fum.administratorsGroups);
         assertEquals("id", userManager.getUserSortField());
         // the rest should be unchanged
@@ -164,8 +158,7 @@ public class TestUserService extends NXRuntimeTestCase {
     public void testValidatePassword() throws Exception {
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
         assertTrue(fum.validatePassword(""));
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-userservice-override-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-userservice-override-config.xml");
         userManager = Framework.getService(UserManager.class);
         fum = (FakeUserManagerImpl) userManager;
         assertFalse(fum.validatePassword(""));

@@ -36,8 +36,7 @@ public class TableUpgrader {
 
         public final String testProp;
 
-        public TableUpgrade(String tableKey, String columnName,
-                String sqlProcedure, String testProp) {
+        public TableUpgrade(String tableKey, String columnName, String sqlProcedure, String testProp) {
             this.tableKey = tableKey;
             this.columnName = columnName;
             this.sqlProcedure = sqlProcedure;
@@ -56,31 +55,27 @@ public class TableUpgrader {
     }
 
     /**
-     * Add a couple table/column associated with a sql procedure to be executed
-     * when the column is added and a a test flag to force his execution.
+     * Add a couple table/column associated with a sql procedure to be executed when the column is added and a a test
+     * flag to force his execution.
      *
      * @param tableKey table name
      * @param columnName desired added column
      * @param sqlProcedure sql procedure name
      * @param testProp test flag name
      */
-    public void add(String tableKey, String columnName, String sqlProcedure,
-            String testProp) {
-        tableUpgrades.add(new TableUpgrade(tableKey, columnName, sqlProcedure,
-                testProp));
+    public void add(String tableKey, String columnName, String sqlProcedure, String testProp) {
+        tableUpgrades.add(new TableUpgrade(tableKey, columnName, sqlProcedure, testProp));
     }
 
     /**
-     * Check if there is an added column that match with a upgrade process. If
-     * one exists, it executes the associated sql in the category. If not,
-     * nothing happend.
+     * Check if there is an added column that match with a upgrade process. If one exists, it executes the associated
+     * sql in the category. If not, nothing happend.
      *
      * @param tableKey table name
      * @param addedColumns list of added column
      * @throws SQLException Exception thrown by JDBC
      */
-    public void upgrade(String tableKey, List<Column> addedColumns)
-            throws SQLException {
+    public void upgrade(String tableKey, List<Column> addedColumns) throws SQLException {
         for (TableUpgrade upgrade : tableUpgrades) {
             if (!upgrade.tableKey.equals(tableKey)) {
                 continue;
@@ -101,8 +96,7 @@ public class TableUpgrader {
             }
             if (doUpgrade) {
                 log.info("Upgrading table: " + tableKey);
-                mapper.sqlInfo.executeSQLStatements(upgrade.sqlProcedure,
-                        mapper);
+                mapper.sqlInfo.executeSQLStatements(upgrade.sqlProcedure, mapper);
             }
         }
     }

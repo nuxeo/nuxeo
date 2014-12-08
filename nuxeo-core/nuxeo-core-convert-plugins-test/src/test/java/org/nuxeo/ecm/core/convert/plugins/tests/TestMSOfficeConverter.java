@@ -36,14 +36,12 @@ public class TestMSOfficeConverter extends SimpleConverterTest {
 
     @Test
     public void testWordArabicConverter() throws Exception {
-        doTestArabicTextConverter("application/msword", "msoffice2text",
-                "wikipedia-internet-ar.doc");
+        doTestArabicTextConverter("application/msword", "msoffice2text", "wikipedia-internet-ar.doc");
     }
 
     @Test
     public void testPptConverter() throws Exception {
-        doTestTextConverter("application/vnd.ms-powerpoint", "msoffice2text",
-                "hello.ppt");
+        doTestTextConverter("application/vnd.ms-powerpoint", "msoffice2text", "hello.ppt");
     }
 
     @Test
@@ -53,9 +51,8 @@ public class TestMSOfficeConverter extends SimpleConverterTest {
 
     @Test
     public void testDocxConverter() throws Exception {
-        doTestTextConverter(
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "docx2text", "hello.docx");
+        doTestTextConverter("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx2text",
+                "hello.docx");
     }
 
     @Test
@@ -66,28 +63,24 @@ public class TestMSOfficeConverter extends SimpleConverterTest {
 
     @Test
     public void testPptxConverter() throws Exception {
-        doTestTextConverter(
-                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                "pptx2text", "hello.pptx");
+        doTestTextConverter("application/vnd.openxmlformats-officedocument.presentationml.presentation", "pptx2text",
+                "hello.pptx");
     }
 
     @Test
     public void testXlsxConverter() throws Exception {
-        doTestTextConverter(
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "xlx2text", "hello.xlsx");
+        doTestTextConverter("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlx2text",
+                "hello.xlsx");
     }
 
     @Test
     public void testAnyToTextConverterWord() throws Exception {
-        doTestAny2TextConverter("application/msword", "msoffice2text",
-                "hello.doc");
+        doTestAny2TextConverter("application/msword", "msoffice2text", "hello.doc");
     }
 
     @Test
     public void testAnyToTextExcelConverter() throws Exception {
-        doTestAny2TextConverter("application/vnd.ms-excel", "xl2text",
-                "hello.xls");
+        doTestAny2TextConverter("application/vnd.ms-excel", "xl2text", "hello.xls");
     }
 
     @Test
@@ -97,8 +90,7 @@ public class TestMSOfficeConverter extends SimpleConverterTest {
 
     @Test
     public void testAnyToTextXlsxConverter() throws Exception {
-        doTestAny2TextConverter(
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "xlx2text", "hello.xlsx");
+        doTestAny2TextConverter("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlx2text",
+                "hello.xlsx");
     }
 }

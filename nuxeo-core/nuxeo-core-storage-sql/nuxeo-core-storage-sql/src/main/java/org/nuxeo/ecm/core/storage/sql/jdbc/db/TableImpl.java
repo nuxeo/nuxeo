@@ -127,8 +127,7 @@ public class TableImpl implements Table {
     }
 
     /**
-     * Adds a column without dialect physical name canonicalization (for
-     * directories).
+     * Adds a column without dialect physical name canonicalization (for directories).
      */
     public Column addColumn(String name, Column column) {
         if (columns.containsKey(name)) {
@@ -139,8 +138,7 @@ public class TableImpl implements Table {
     }
 
     @Override
-    public Column addColumn(String name, ColumnType type, String key,
-            Model model) {
+    public Column addColumn(String name, ColumnType type, String key, Model model) {
         String physicalName = dialect.getColumnName(name);
         Column column = new Column(this, physicalName, type, key);
         return addColumn(name, column);
@@ -157,8 +155,7 @@ public class TableImpl implements Table {
     }
 
     @Override
-    public void addIndex(String indexName, IndexType indexType,
-            String... columnNames) {
+    public void addIndex(String indexName, IndexType indexType, String... columnNames) {
         addIndex(columnNames);
         indexNames.put(columnNames, indexName);
         indexTypes.put(columnNames, indexType);
@@ -220,8 +217,7 @@ public class TableImpl implements Table {
     }
 
     /**
-     * Adds to buf the column name and its type and constraints for create /
-     * alter.
+     * Adds to buf the column name and its type and constraints for create / alter.
      */
     protected void addOneColumn(StringBuilder buf, Column column) {
         buf.append(column.getQuotedName());
@@ -258,11 +254,9 @@ public class TableImpl implements Table {
     }
 
     protected void postAddColumn(Column column, List<String> sqls, Model model) {
-        if (column.isPrimary()
-                && !(column.isIdentity() && dialect.isIdentityAlreadyPrimary())) {
+        if (column.isPrimary() && !(column.isIdentity() && dialect.isIdentityAlreadyPrimary())) {
             StringBuilder buf = new StringBuilder();
-            String constraintName = dialect.openQuote()
-                    + dialect.getPrimaryKeyConstraintName(key)
+            String constraintName = dialect.openQuote() + dialect.getPrimaryKeyConstraintName(key)
                     + dialect.closeQuote();
             buf.append("ALTER TABLE ");
             buf.append(getQuotedName());
@@ -280,15 +274,13 @@ public class TableImpl implements Table {
         if (ft != null) {
             Column fc = ft.getColumn(column.getForeignKey());
             String constraintName = dialect.openQuote()
-                    + dialect.getForeignKeyConstraintName(key,
-                            column.getPhysicalName(), ft.getPhysicalName())
+                    + dialect.getForeignKeyConstraintName(key, column.getPhysicalName(), ft.getPhysicalName())
                     + dialect.closeQuote();
             StringBuilder buf = new StringBuilder();
             buf.append("ALTER TABLE ");
             buf.append(getQuotedName());
             buf.append(dialect.getAddForeignKeyConstraintString(constraintName,
-                    new String[] { column.getQuotedName() },
-                    ft.getQuotedName(), new String[] { fc.getQuotedName() },
+                    new String[] { column.getQuotedName() }, ft.getQuotedName(), new String[] { fc.getQuotedName() },
                     true));
             if (dialect.supportsCircularCascadeDeleteConstraints()
                     || (Model.MAIN_KEY.equals(fc.getPhysicalName()) && Model.MAIN_KEY.equals(column.getPhysicalName()))) {
@@ -305,8 +297,7 @@ public class TableImpl implements Table {
         String columnName = column.getKey();
         INDEXES: //
         for (String[] columnNames : indexedColumns) {
-            List<String> names = new ArrayList<String>(
-                    Arrays.asList(columnNames));
+            List<String> names = new ArrayList<String>(Arrays.asList(columnNames));
             // check that column is part of this index
             if (!names.contains(columnName)) {
                 continue;
@@ -331,8 +322,7 @@ public class TableImpl implements Table {
             }
             String indexName = indexNames.get(columnNames);
             IndexType indexType = indexTypes.get(columnNames);
-            String createIndexSql = dialect.getCreateIndexSql(indexName,
-                    indexType, this, cols, model);
+            String createIndexSql = dialect.getCreateIndexSql(indexName, indexType, this, cols, model);
             sqls.add(createIndexSql);
         }
     }

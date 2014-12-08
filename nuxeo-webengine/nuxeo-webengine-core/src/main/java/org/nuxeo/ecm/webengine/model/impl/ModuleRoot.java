@@ -47,29 +47,33 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ModuleRoot extends DefaultObject implements ModuleResource {
 
     protected HttpServletRequest request;
+
     protected UriInfo uriInfo;
+
     protected HttpHeaders httpHeaders;
 
-    @Context public void setUriInfo(UriInfo info) {
+    @Context
+    public void setUriInfo(UriInfo info) {
         this.uriInfo = info;
         if (request != null && httpHeaders != null) {
             init();
         }
     }
 
-    @Context public void setHttpHeaders(HttpHeaders headers) {
+    @Context
+    public void setHttpHeaders(HttpHeaders headers) {
         this.httpHeaders = headers;
         if (request != null && uriInfo != null) {
             init();
         }
     }
 
-    @Context public void setHttpRequest(HttpServletRequest request) {
+    @Context
+    public void setHttpRequest(HttpServletRequest request) {
         this.request = request;
         if (uriInfo != null && httpHeaders != null) {
             init();
@@ -77,9 +81,10 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
     }
 
     private void init() {
-        DefaultContext ctx = (DefaultContext)request.getAttribute(WebContext.class.getName());
+        DefaultContext ctx = (DefaultContext) request.getAttribute(WebContext.class.getName());
         if (ctx == null) {
-            throw new java.lang.IllegalStateException("No WebContext found in http request! You should install the WebEngineFilter");
+            throw new java.lang.IllegalStateException(
+                    "No WebContext found in http request! You should install the WebEngineFilter");
         }
         ctx.setHttpHeaders(httpHeaders);
         ctx.setUriInfo(uriInfo);
@@ -94,15 +99,14 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
     private Module findModule(DefaultContext ctx) {
         Path path = getClass().getAnnotation(Path.class);
         if (path == null) {
-            throw new java.lang.IllegalStateException("ModuleRoot not annotated with @Path: "+getClass());
+            throw new java.lang.IllegalStateException("ModuleRoot not annotated with @Path: " + getClass());
         }
-         ModuleConfiguration mc = ctx.getEngine().getModuleManager().getModuleByRootClass(getClass());
-         if (mc == null) {
-             throw new java.lang.IllegalStateException("No module found for root resource: "+getClass());
-         }
-         return mc.get();
+        ModuleConfiguration mc = ctx.getEngine().getModuleManager().getModuleByRootClass(getClass());
+        if (mc == null) {
+            throw new java.lang.IllegalStateException("No module found for root resource: " + getClass());
+        }
+        return mc.get();
     }
-
 
     @GET
     @Path("skin/{path:.*}")
@@ -111,12 +115,10 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
             ScriptFile file = getModule().getSkinResource("/resources/" + path);
             if (file != null) {
                 long lastModified = file.lastModified();
-                ResponseBuilder resp = Response.ok(file.getFile()).lastModified(
-                        new Date(lastModified)).header("Cache-Control",
-                        "public").header("Server", "Nuxeo/WebEngine-1.0");
+                ResponseBuilder resp = Response.ok(file.getFile()).lastModified(new Date(lastModified)).header(
+                        "Cache-Control", "public").header("Server", "Nuxeo/WebEngine-1.0");
 
-                String mimeType = ctx.getEngine().getMimeType(
-                        file.getExtension());
+                String mimeType = ctx.getEngine().getMimeType(file.getExtension());
                 if (mimeType == null) {
                     mimeType = "text/plain";
                 }
@@ -130,16 +132,14 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
     }
 
     /**
-     * You should override this method to resolve objects to links. This method
-     * is usually called by a search view to generate links for object that are
-     * listed
+     * You should override this method to resolve objects to links. This method is usually called by a search view to
+     * generate links for object that are listed
      *
      * @param doc the document
      * @return the link corresponding to that object
      */
     public String getLink(DocumentModel doc) {
-        return new StringBuilder().append(getPath()).append("/@nxdoc/").append(
-                doc.getId()).toString();
+        return new StringBuilder().append(getPath()).append("/@nxdoc/").append(doc.getId()).toString();
     }
 
     public Object handleError(WebApplicationException e) {

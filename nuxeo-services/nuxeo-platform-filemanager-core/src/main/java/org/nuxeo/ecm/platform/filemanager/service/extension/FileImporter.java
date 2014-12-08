@@ -29,11 +29,9 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 /**
  * FileManagerServiceCommon plugin default interface.
  * <p>
- * Responsible for converting given sources to a given type of Document using
- * default.
+ * Responsible for converting given sources to a given type of Document using default.
  *
- * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
- *         Kalogeropoulos</a>
+ * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas Kalogeropoulos</a>
  * @author Anahide Tchertchian
  */
 public interface FileImporter extends Serializable, Comparable<FileImporter> {
@@ -48,8 +46,9 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
     String getName();
 
     /**
-     * Returns the document type configured for this {@code FileImporter},
-     * {@code null} if no document type is configured.
+     * Returns the document type configured for this {@code FileImporter}, {@code null} if no document type is
+     * configured.
+     *
      * @since 5.5
      */
     String getDocType();
@@ -57,6 +56,7 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
     /**
      * Sets the document type configured for this importer.
      * <p>
+     *
      * @since 5.5
      */
     void setDocType(String docType);
@@ -87,12 +87,10 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
     void setFilters(List<String> filters);
 
     /**
-     * Embeds a reference to the holding FileManagerService instance to be able
-     * to reuse generic file creation utility methods in specific plugin
-     * implementations.
+     * Embeds a reference to the holding FileManagerService instance to be able to reuse generic file creation utility
+     * methods in specific plugin implementations.
      *
-     * @param fileManagerService instance where the Plugin is registered as a
-     *            contribution
+     * @param fileManagerService instance where the Plugin is registered as a contribution
      */
     void setFileManagerService(FileManagerService fileManagerService);
 
@@ -109,12 +107,10 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
      * @param documentManager the manager used to create the Document
      * @param content the content of the File
      * @param path the path of current document
-     * @param overwrite a boolean deciding whether to create or update if we
-     *            find a document with the same fileName
+     * @param overwrite a boolean deciding whether to create or update if we find a document with the same fileName
      * @param filename the filename of the File
      */
-    DocumentModel create(CoreSession documentManager, Blob content,
-            String path, boolean overwrite, String filename,
+    DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite, String filename,
             TypeManager typeService) throws ClientException, IOException;
 
     boolean isEnabled();

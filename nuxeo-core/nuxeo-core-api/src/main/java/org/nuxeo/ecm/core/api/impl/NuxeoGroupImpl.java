@@ -70,8 +70,7 @@ public class NuxeoGroupImpl implements NuxeoGroup {
     @Override
     public void setMemberUsers(List<String> users) {
         if (users == null) {
-            throw new IllegalArgumentException(
-                    "member users list cannot be null");
+            throw new IllegalArgumentException("member users list cannot be null");
         }
         this.users.clear();
         this.users.addAll(users);
@@ -80,8 +79,7 @@ public class NuxeoGroupImpl implements NuxeoGroup {
     @Override
     public void setMemberGroups(List<String> groups) {
         if (groups == null) {
-            throw new IllegalArgumentException(
-                    "member groups list cannot be null");
+            throw new IllegalArgumentException("member groups list cannot be null");
         }
         this.groups.clear();
         this.groups.addAll(groups);
@@ -90,8 +88,7 @@ public class NuxeoGroupImpl implements NuxeoGroup {
     @Override
     public void setParentGroups(List<String> groups) {
         if (groups == null) {
-            throw new IllegalArgumentException(
-                    "parent groups list cannot be null");
+            throw new IllegalArgumentException("parent groups list cannot be null");
         }
         parentGroups.clear();
         parentGroups.addAll(groups);

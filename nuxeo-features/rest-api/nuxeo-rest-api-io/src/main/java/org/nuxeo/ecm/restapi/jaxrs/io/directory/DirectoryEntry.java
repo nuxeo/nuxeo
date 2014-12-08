@@ -19,14 +19,14 @@ package org.nuxeo.ecm.restapi.jaxrs.io.directory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Directory entries are basically DocumentModels. So we have to wrap them in an
- * object that has its own writer.
+ * Directory entries are basically DocumentModels. So we have to wrap them in an object that has its own writer.
  *
  * @since 5.7.3
  */
 public class DirectoryEntry {
 
     private DocumentModel doc;
+
     private String dirName;
 
     /**
@@ -41,7 +41,6 @@ public class DirectoryEntry {
 
     /**
      * @return
-     *
      */
     public String getDirectoryName() {
         return dirName;
@@ -49,11 +48,9 @@ public class DirectoryEntry {
 
     /**
      * @return
-     *
      */
     public DocumentModel getDocumentModel() {
         return doc;
     }
-
 
 }

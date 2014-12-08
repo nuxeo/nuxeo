@@ -18,22 +18,19 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 
 /**
- * Interface for the policy that decides which versions have to be removed when
- * a working document is removed. This policy is called at the AbstractSession
- * level.
+ * Interface for the policy that decides which versions have to be removed when a working document is removed. This
+ * policy is called at the AbstractSession level.
  *
  * @author Florent Guillaume
  */
 public interface VersionRemovalPolicy {
 
     /**
-     * Removes the versions when a given working document is about to be
-     * removed.
+     * Removes the versions when a given working document is about to be removed.
      *
      * @param session the current session
      * @param doc the document that is about to be removed
      */
-    void removeVersions(Session session, Document doc,
-            CoreSession coreSession) throws ClientException;
+    void removeVersions(Session session, Document doc, CoreSession coreSession) throws ClientException;
 
 }

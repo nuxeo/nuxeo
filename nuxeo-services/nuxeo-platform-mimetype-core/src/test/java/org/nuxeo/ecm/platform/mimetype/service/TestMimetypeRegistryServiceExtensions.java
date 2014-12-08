@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.mimetype.service;
 
-
 import java.util.List;
 
 import org.junit.Before;
@@ -40,15 +39,17 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
 
     private MimetypeRegistryService mimetypeRegistryService;
+
     private MimetypeEntry wordMimeType;
+
     private MimetypeEntry pdfMimeType;
+
     private ExtensionDescriptor xmlExtension;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests",
-                "nxmimetype-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests", "nxmimetype-service.xml");
         mimetypeRegistryService = NXMimeType.getMimetypeRegistryService();
 
         wordMimeType = mimetypeRegistryService.getMimetypeEntryByName("application/msword");
@@ -136,8 +137,7 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
     }
 
     public void xtestRemote() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests",
-                "nxmimetype-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests", "nxmimetype-service.xml");
         MimetypeRegistry mimetypeRegistryService = Framework.getService(MimetypeRegistry.class);
 
         wordMimeType = mimetypeRegistryService.getMimetypeEntryByName("application/msword");

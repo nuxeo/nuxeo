@@ -18,15 +18,14 @@ package org.nuxeo.ecm.webengine.test;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AdminModulePage extends ModulePage {
 
     public DocumentPage getDocumentPage(String path) {
         if (!path.startsWith("/")) {
-            path="/"+path;
+            path = "/" + path;
         }
-        to(config.getHome()+"/admin/repository"+path);
+        to(config.getHome() + "/admin/repository" + path);
         return getPage(DocumentPage.class);
     }
 

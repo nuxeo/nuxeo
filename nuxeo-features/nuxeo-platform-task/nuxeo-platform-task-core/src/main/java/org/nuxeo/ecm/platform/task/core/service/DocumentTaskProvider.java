@@ -56,8 +56,7 @@ public class DocumentTaskProvider implements TaskProvider {
     private final static Log log = LogFactory.getLog(DocumentTaskProvider.class);
 
     @Override
-    public List<Task> getCurrentTaskInstances(CoreSession coreSession)
-            throws ClientException {
+    public List<Task> getCurrentTaskInstances(CoreSession coreSession) throws ClientException {
 
         // Get tasks for current user
         // We need to build the task actors list: prefixed and unprefixed names
@@ -69,14 +68,12 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     /**
-     * Provide @param sortInfo to handle sort page-provider contributions (see
-     * {@link #getCurrentTaskInstances})
+     * Provide @param sortInfo to handle sort page-provider contributions (see {@link #getCurrentTaskInstances})
      *
      * @since 5.9.3
      */
     @Override
-    public List<Task> getCurrentTaskInstances(CoreSession coreSession,
-            List<SortInfo> sortInfos) throws ClientException {
+    public List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos) throws ClientException {
 
         // Get tasks for current user
         // We need to build the task actors list: prefixed and unprefixed names
@@ -88,8 +85,7 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     /**
-     * Returns a list of task instances assigned to one of the actors in the
-     * list or to its pool.
+     * Returns a list of task instances assigned to one of the actors in the list or to its pool.
      *
      * @param actors a list used as actorId to retrieve the tasks.
      * @param filter
@@ -97,77 +93,66 @@ public class DocumentTaskProvider implements TaskProvider {
      * @throws ClientException
      */
     @Override
-    public List<Task> getCurrentTaskInstances(List<String> actors,
-            CoreSession coreSession) throws ClientException {
+    public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession) throws ClientException {
         if (actors == null || actors.isEmpty()) {
             return new ArrayList<Task>();
         }
-        return getTasks(TaskQueryConstant.GET_TASKS_FOR_ACTORS_PP, coreSession,
-                true, null, actors);
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_ACTORS_PP, coreSession, true, null, actors);
     }
 
     /**
-     * Provide @param sortInfo to handle sort page-provider contributions (see
-     * {@link #getCurrentTaskInstances})
+     * Provide @param sortInfo to handle sort page-provider contributions (see {@link #getCurrentTaskInstances})
      *
      * @since 5.9.3
      */
     @Override
-    public List<Task> getCurrentTaskInstances(List<String> actors,
-            CoreSession coreSession, List<SortInfo> sortInfos)
+    public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession, List<SortInfo> sortInfos)
             throws ClientException {
         if (actors == null || actors.isEmpty()) {
             return new ArrayList<Task>();
         }
-        return getTasks(TaskQueryConstant.GET_TASKS_FOR_ACTORS_PP, coreSession,
-                true, sortInfos, actors);
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_ACTORS_PP, coreSession, true, sortInfos, actors);
     }
 
     @Override
-    public List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user,
-            CoreSession coreSession) throws ClientException {
+    public List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSession)
+            throws ClientException {
         if (user == null) {
-            return getTasks(
-                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_PP,
-                    coreSession, true, null, dm.getId(), dm.getId());
+            return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_PP, coreSession, true, null, dm.getId(),
+                    dm.getId());
         } else {
             List<String> actors = TaskActorsHelper.getTaskActors(user);
-            return getTasks(
-                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP,
-                    coreSession, true, null, dm.getId(), dm.getId(), actors);
+            return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP, coreSession, true, null,
+                    dm.getId(), dm.getId(), actors);
         }
     }
 
     @Override
-    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
-            CoreSession coreSession) throws ClientException {
+    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, CoreSession coreSession)
+            throws ClientException {
         if (actors == null || actors.isEmpty()) {
             return new ArrayList<Task>();
         }
-        return getTasks(
-                TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP,
-                coreSession, true, null, dm.getId(), dm.getId(), actors);
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP, coreSession, true, null,
+                dm.getId(), dm.getId(), actors);
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId, CoreSession session)
+    public List<Task> getAllTaskInstances(String processId, CoreSession session) throws ClientException {
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_PP, session, true, null, processId);
+    }
+
+    @Override
+    public List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user, CoreSession session)
             throws ClientException {
-        return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_PP, session,
-                true, null, processId);
-    }
-
-    @Override
-    public List<Task> getAllTaskInstances(String processId,
-            NuxeoPrincipal user, CoreSession session) throws ClientException {
         List<String> actors = TaskActorsHelper.getTaskActors(user);
         return getAllTaskInstances(processId, actors, session);
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId,
-            List<String> actors, CoreSession session) throws ClientException {
-        return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_AND_ACTORS_PP,
-                session, true, null, processId, actors);
+    public List<Task> getAllTaskInstances(String processId, List<String> actors, CoreSession session)
+            throws ClientException {
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_AND_ACTORS_PP, session, true, null, processId, actors);
     }
 
     /**
@@ -176,8 +161,7 @@ public class DocumentTaskProvider implements TaskProvider {
      * @since 6.0
      * @param taskDocuments
      */
-    public static List<Task> wrapDocModelInTask(
-            List<DocumentModel> taskDocuments) {
+    public static List<Task> wrapDocModelInTask(List<DocumentModel> taskDocuments) {
         List<Task> tasks = new ArrayList<Task>();
         for (DocumentModel doc : taskDocuments) {
             tasks.add(doc.getAdapter(Task.class));
@@ -189,22 +173,18 @@ public class DocumentTaskProvider implements TaskProvider {
      * @deprecated since 6.0, use {@link #wrapDocModelInTask(List)} instead.
      */
     @Deprecated
-    public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments)
-            throws ClientException {
+    public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments) throws ClientException {
         return wrapDocModelInTask(taskDocuments, false);
     }
 
     /**
      * Converts a {@link DocumentModelList} to a list of {@link Task}s.
      *
-     * @param detach if {@code true}, detach each document before converting it
-     *            to a {@code Task}.
+     * @param detach if {@code true}, detach each document before converting it to a {@code Task}.
      * @deprecated since 6.0, use {@link #wrapDocModelInTask(List)} instead.
      */
     @Deprecated
-    public static List<Task> wrapDocModelInTask(
-            DocumentModelList taskDocuments, boolean detach)
-            throws ClientException {
+    public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments, boolean detach) throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         for (DocumentModel doc : taskDocuments) {
             if (detach) {
@@ -216,9 +196,8 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     @Override
-    public String endTask(CoreSession coreSession, NuxeoPrincipal principal,
-            Task task, String comment, String eventName, boolean isValidated)
-            throws ClientException {
+    public String endTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment,
+            String eventName, boolean isValidated) throws ClientException {
 
         // put user comment on the task
         if (!StringUtils.isEmpty(comment)) {
@@ -227,8 +206,7 @@ public class DocumentTaskProvider implements TaskProvider {
 
         // end the task, adding boolean marker that task was validated or
         // rejected
-        task.setVariable(TaskService.VariableName.validated.name(),
-                String.valueOf(isValidated));
+        task.setVariable(TaskService.VariableName.validated.name(), String.valueOf(isValidated));
         task.end(coreSession);
         // make sure taskDoc is attached to prevent sending event with null session
         DocumentModel taskDocument = task.getDocument();
@@ -241,8 +219,7 @@ public class DocumentTaskProvider implements TaskProvider {
         ArrayList<String> notificationRecipients = new ArrayList<String>();
         notificationRecipients.add(task.getInitiator());
         notificationRecipients.addAll(task.getActors());
-        eventProperties.put(NotificationConstants.RECIPIENTS_KEY,
-                notificationRecipients);
+        eventProperties.put(NotificationConstants.RECIPIENTS_KEY, notificationRecipients);
         // try to resolve document when notifying
         DocumentModel document = null;
 
@@ -267,23 +244,18 @@ public class DocumentTaskProvider implements TaskProvider {
                     documents.add(document);
                 }
             } catch (ClientException e) {
-                log.error(
-                        String.format(
-                                "Could not fetch document with id '%s:%s' for notification",
-                                docRepo, docId), e);
+                log.error(String.format("Could not fetch document with id '%s:%s' for notification", docRepo, docId), e);
             }
         } else {
-            log.error(String.format(
-                    "Could not resolve document for notification: "
-                            + "document is on repository '%s' and given session is on "
-                            + "repository '%s'", docRepo,
+            log.error(String.format("Could not resolve document for notification: "
+                    + "document is on repository '%s' and given session is on " + "repository '%s'", docRepo,
                     coreSession.getRepositoryName()));
         }
         boolean taskEndedByDelegatedActor = task.getDelegatedActors() != null
                 && task.getDelegatedActors().contains(principal.getName());
         for (DocumentModel doc : documents) {
-            TaskEventNotificationHelper.notifyEvent(coreSession, doc,
-                    principal, task, eventName, eventProperties, comment, null);
+            TaskEventNotificationHelper.notifyEvent(coreSession, doc, principal, task, eventName, eventProperties,
+                    comment, null);
             if (taskEndedByDelegatedActor) {
                 TaskEventNotificationHelper.notifyEvent(
                         coreSession,
@@ -292,11 +264,9 @@ public class DocumentTaskProvider implements TaskProvider {
                         task,
                         eventName,
                         eventProperties,
-                        String.format("Task ended by an delegated actor '%s' ",
-                                principal.getName())
-                                + (!StringUtils.isEmpty(comment) ? " with the following comment: "
-                                        + comment
-                                        : ""), null);
+                        String.format("Task ended by an delegated actor '%s' ", principal.getName())
+                                + (!StringUtils.isEmpty(comment) ? " with the following comment: " + comment : ""),
+                        null);
             }
         }
         String seamEventName = isValidated ? TaskEventNames.WORKFLOW_TASK_COMPLETED
@@ -305,24 +275,19 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId, String nodeId,
-            CoreSession session) throws ClientException {
-        return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_AND_NODE_PP,
-                session, true, null, processId, nodeId);
+    public List<Task> getAllTaskInstances(String processId, String nodeId, CoreSession session) throws ClientException {
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_AND_NODE_PP, session, true, null, processId, nodeId);
     }
 
     @Override
-    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
-            boolean includeDelegatedTasks, CoreSession session)
-            throws ClientException {
+    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, boolean includeDelegatedTasks,
+            CoreSession session) throws ClientException {
         if (includeDelegatedTasks) {
-            return getTasks(
-                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_OR_DELEGATED_ACTORS_PP,
+            return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_OR_DELEGATED_ACTORS_PP,
                     session, true, null, dm.getId(), dm.getId(), actors, actors);
         } else {
-            return getTasks(
-                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP,
-                    session, true, null, dm.getId(), dm.getId(), actors);
+            return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP, session, true, null,
+                    dm.getId(), dm.getId(), actors);
         }
     }
 
@@ -330,8 +295,7 @@ public class DocumentTaskProvider implements TaskProvider {
      * @since 6.0
      */
     @SuppressWarnings("unchecked")
-    public static List<Task> getTasks(String pageProviderName,
-            CoreSession session, boolean unrestricted,
+    public static List<Task> getTasks(String pageProviderName, CoreSession session, boolean unrestricted,
             List<SortInfo> sortInfos, Object... params) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         if (ppService == null) {
@@ -346,18 +310,14 @@ public class DocumentTaskProvider implements TaskProvider {
                 props.putAll(defProps);
             }
         }
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         if (unrestricted) {
-            props.put(
-                    CoreQueryDocumentPageProvider.USE_UNRESTRICTED_SESSION_PROPERTY,
-                    Boolean.TRUE);
+            props.put(CoreQueryDocumentPageProvider.USE_UNRESTRICTED_SESSION_PROPERTY, Boolean.TRUE);
         }
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                pageProviderName, sortInfos, null, null, props, params);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(pageProviderName,
+                sortInfos, null, null, props, params);
         if (pp == null) {
-            throw new ClientException("Page provider not found: "
-                    + pageProviderName);
+            throw new ClientException("Page provider not found: " + pageProviderName);
         }
         return wrapDocModelInTask(pp.getCurrentPage());
     }

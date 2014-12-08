@@ -35,8 +35,7 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ComponentDeploymentTest extends NXRuntimeTestCase {
 

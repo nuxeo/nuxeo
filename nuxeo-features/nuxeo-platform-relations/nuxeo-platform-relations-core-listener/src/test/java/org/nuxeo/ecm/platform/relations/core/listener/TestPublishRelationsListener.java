@@ -41,8 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestPublishRelationsListener extends SQLRepositoryTestCase {
 
-    protected static final Resource conformsTo = new ResourceImpl(
-            "http://purl.org/dc/terms/ConformsTo");
+    protected static final Resource conformsTo = new ResourceImpl("http://purl.org/dc/terms/ConformsTo");
 
     protected static final String COMMENTS_GRAPH_NAME = "documentComments";
 
@@ -105,31 +104,24 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
         // Create a first commentary
         CommentableDocument cDoc = docToComment.getAdapter(CommentableDocument.class);
         DocumentModel comment = session.createDocumentModel("Comment");
-        comment.setProperty("comment", "text", "This is my comment for "
-                + docToComment.getTitle());
+        comment.setProperty("comment", "text", "This is my comment for " + docToComment.getTitle());
         comment.setProperty("comment", "author", "Me");
         comment = cDoc.addComment(comment);
 
         // Create a second commentary
         DocumentModel comment2 = session.createDocumentModel("Comment");
-        comment2.setProperty("comment", "text", "This is another  comment for "
-                + docToComment.getTitle());
+        comment2.setProperty("comment", "text", "This is another  comment for " + docToComment.getTitle());
         comment2.setProperty("comment", "author", "the other author");
         comment2 = cDoc.addComment(comment2);
     }
 
-    protected void addSomeRelations(Resource documentResource)
-            throws ClientException {
-        Resource otherDocResource = relationManager.getResource(
-                RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
+    protected void addSomeRelations(Resource documentResource) throws ClientException {
+        Resource otherDocResource = relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
 
         List<Statement> originalStatements = new ArrayList<Statement>();
-        originalStatements.add(new StatementImpl(documentResource, conformsTo,
-                new LiteralImpl("some conformance")));
-        originalStatements.add(new StatementImpl(otherDocResource, conformsTo,
-                documentResource));
-        relationManager.getGraphByName(RelationConstants.GRAPH_NAME).add(
-                originalStatements);
+        originalStatements.add(new StatementImpl(documentResource, conformsTo, new LiteralImpl("some conformance")));
+        originalStatements.add(new StatementImpl(otherDocResource, conformsTo, documentResource));
+        relationManager.getGraphByName(RelationConstants.GRAPH_NAME).add(originalStatements);
     }
 
     @Test
@@ -139,8 +131,7 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
 
         // add some real document relations (like those from the Relations tab
         // in DM
-        Resource docResource = relationManager.getResource(
-                RelationConstants.DOCUMENT_NAMESPACE, doc1, null);
+        Resource docResource = relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE, doc1, null);
         addSomeRelations(docResource);
 
         // publish the document
@@ -149,22 +140,19 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
 
         // read the relations carried by the proxy, comments should not be
         // copied on the proxy, just ordinary relations
-        Resource publishedResource = relationManager.getResource(
-                RelationConstants.DOCUMENT_NAMESPACE, publishedProxy, null);
+        Resource publishedResource = relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE, publishedProxy,
+                null);
         Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
-        List<Statement> statements = graph.getStatements(new StatementImpl(
-                publishedResource, null, null));
+        List<Statement> statements = graph.getStatements(new StatementImpl(publishedResource, null, null));
         assertNotNull(statements);
         assertEquals(1, statements.size());
 
-        statements = graph.getStatements(new StatementImpl(null, null,
-                publishedResource));
+        statements = graph.getStatements(new StatementImpl(null, null, publishedResource));
         assertNotNull(statements);
         assertEquals(1, statements.size());
 
         // no comments where copied
-        List<Statement> comments = relationManager.getGraphByName(
-                COMMENTS_GRAPH_NAME).getStatements(
+        List<Statement> comments = relationManager.getGraphByName(COMMENTS_GRAPH_NAME).getStatements(
                 new StatementImpl(null, null, publishedResource));
         assertNotNull(comments);
         assertEquals(0, comments.size());
@@ -184,8 +172,7 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
 
         // add some real document relations (like those from the Relations tab
         // in DM
-        Resource publishedResource = relationManager.getResource(
-                DOCUMENT_NAMESPACE_NOSLASH, publishedProxy, null);
+        Resource publishedResource = relationManager.getResource(DOCUMENT_NAMESPACE_NOSLASH, publishedProxy, null);
         addSomeRelations(publishedResource);
 
         // publish again
@@ -194,8 +181,7 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
 
         // check that the old relations are still there
         Graph defaultGraph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
-        List<Statement> statements = defaultGraph.getStatements(
-                publishedResource, null, null);
+        List<Statement> statements = defaultGraph.getStatements(publishedResource, null, null);
         assertNotNull(statements);
         assertEquals(1, statements.size());
 
@@ -206,8 +192,7 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
         // previous comments are still there, but not the comments from the
         // source document
         Graph commentGraph = relationManager.getGraphByName(COMMENTS_GRAPH_NAME);
-        List<Statement> comments = commentGraph.getStatements(null, null,
-                publishedResource);
+        List<Statement> comments = commentGraph.getStatements(null, null, publishedResource);
         assertNotNull(comments);
         assertEquals(2, comments.size());
     }
@@ -218,24 +203,21 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
         // add some real document relations (like those from the Relations tab
         // in DM between 2 resources :
 
-        Resource docToDeleteResource = relationManager.getResource(
-                RelationConstants.DOCUMENT_NAMESPACE, docToDelete, null);
-        Resource docResource2 = relationManager.getResource(
-                RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
+        Resource docToDeleteResource = relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE, docToDelete,
+                null);
+        Resource docResource2 = relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
         addSomeRelations(docToDeleteResource);
 
         // now check that the relations were added
 
-        List<Statement> statementsOnDeleted = getRelations(docResource2,
-                docToDeleteResource);
+        List<Statement> statementsOnDeleted = getRelations(docResource2, docToDeleteResource);
         assertEquals(1, statementsOnDeleted.size());
 
         // publish the document
-        DocumentModel publishedProxy = session.publishDocument(docToDelete,
-                section);
+        DocumentModel publishedProxy = session.publishDocument(docToDelete, section);
         session.save();
-        Resource publishedResource = relationManager.getResource(
-                RelationConstants.DOCUMENT_NAMESPACE, publishedProxy, null);
+        Resource publishedResource = relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE, publishedProxy,
+                null);
 
         // now delete the document and check that the relations on the original
         // doc are deleted
@@ -244,8 +226,7 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
 
         // check that relations are still there on the published doc after the
         // doc was deleted
-        List<Statement> statementsOnPublishedResource = getRelations(
-                publishedResource, null);
+        List<Statement> statementsOnPublishedResource = getRelations(publishedResource, null);
         assertNotNull(statementsOnPublishedResource);
         assertEquals(2, statementsOnPublishedResource.size());
 
@@ -265,14 +246,11 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
         return doc;
     }
 
-    private List<Statement> getRelations(Resource resource1, Resource resource2)
-            throws ClientException {
+    private List<Statement> getRelations(Resource resource1, Resource resource2) throws ClientException {
         Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
-        List<Statement> statements = graph.getStatements(new StatementImpl(
-                resource1, null, resource2));
+        List<Statement> statements = graph.getStatements(new StatementImpl(resource1, null, resource2));
         if (statements != null) {
-            statements.addAll(graph.getStatements(new StatementImpl(resource2,
-                    null, resource1)));
+            statements.addAll(graph.getStatements(new StatementImpl(resource2, null, resource1)));
         }
         return statements;
 

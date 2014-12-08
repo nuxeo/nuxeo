@@ -56,9 +56,8 @@ public interface QueryMaker {
      * @param queryFilter the query filter
      * @param params additional parameters, maker-specific
      */
-    Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver,
-            String query, QueryFilter queryFilter, Object... params)
-            throws StorageException;
+    Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String query, QueryFilter queryFilter,
+            Object... params) throws StorageException;
 
     /**
      * A SQL query that can be executed by the backend.

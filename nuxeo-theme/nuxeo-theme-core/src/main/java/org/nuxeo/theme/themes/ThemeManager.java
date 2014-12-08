@@ -115,8 +115,7 @@ public final class ThemeManager implements Registrable {
 
     private final Map<String, Info> infoMap = new HashMap<String, Info>();
 
-    private static final Predicate PREDICATE_FORMAT_INHERIT = new DefaultPredicate(
-            "_ inherits from _");
+    private static final Predicate PREDICATE_FORMAT_INHERIT = new DefaultPredicate("_ inherits from _");
 
     private final Map<String, String> cachedStyles = new HashMap<String, String>();
 
@@ -134,8 +133,7 @@ public final class ThemeManager implements Registrable {
 
     private static final String COLLECTION_CSS_MARKER = "COLLECTION";
 
-    private static final Pattern styleResourceNamePattern = Pattern.compile(
-            "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
+    private static final Pattern styleResourceNamePattern = Pattern.compile("(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
 
     public static void createThemeDir() {
         THEME_DIR = new File(Environment.getDefault().getData(), "themes");
@@ -173,15 +171,13 @@ public final class ThemeManager implements Registrable {
         return (themeName.matches("^([a-zA-Z]|[a-zA-Z][a-zA-Z0-9_\\-]*?[a-zA-Z0-9])$"));
     }
 
-    public static String getCustomThemePath(String themeName)
-            throws ThemeIOException {
+    public static String getCustomThemePath(String themeName) throws ThemeIOException {
         String themeFileName = String.format("theme-%s.xml", themeName);
         File file = new File(getThemeDir(), themeFileName);
         try {
             return file.getCanonicalPath();
         } catch (IOException e) {
-            throw new ThemeIOException("Could not get custom theme path: "
-                    + themeName, e);
+            throw new ThemeIOException("Could not get custom theme path: " + themeName, e);
         }
     }
 
@@ -193,12 +189,10 @@ public final class ThemeManager implements Registrable {
         return files;
     }
 
-    public static ThemeDescriptor customizeTheme(ThemeDescriptor themeDescriptor)
-            throws ThemeException {
+    public static ThemeDescriptor customizeTheme(ThemeDescriptor themeDescriptor) throws ThemeException {
         String themeName = themeDescriptor.getName();
         if (!themeDescriptor.isCustomizable()) {
-            throw new ThemeException("Theme : " + themeName
-                    + " cannot be customized.");
+            throw new ThemeException("Theme : " + themeName + " cannot be customized.");
         }
 
         ThemeSerializer serializer = new ThemeSerializer();
@@ -206,8 +200,7 @@ public final class ThemeManager implements Registrable {
         try {
             xmlSource = serializer.serializeToXml(themeDescriptor.getSrc(), 0);
         } catch (ThemeIOException e) {
-            throw new ThemeException("Could not serialize theme: " + themeName,
-                    e);
+            throw new ThemeException("Could not serialize theme: " + themeName, e);
         }
         ThemeDescriptor newThemeDescriptor = createCustomTheme(themeName);
         String newSrc = newThemeDescriptor.getSrc();
@@ -226,14 +219,12 @@ public final class ThemeManager implements Registrable {
         return newThemeDescriptor;
     }
 
-    public static ThemeDescriptor uncustomizeTheme(
-            ThemeDescriptor themeDescriptor) throws ThemeException {
+    public static ThemeDescriptor uncustomizeTheme(ThemeDescriptor themeDescriptor) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         String themeName = themeDescriptor.getName();
 
         if (!themeDescriptor.isCustomization()) {
-            throw new ThemeException("Theme : " + themeName
-                    + " cannot be uncustomized.");
+            throw new ThemeException("Theme : " + themeName + " cannot be uncustomized.");
         }
 
         String themeSrc = themeDescriptor.getSrc();
@@ -248,8 +239,7 @@ public final class ThemeManager implements Registrable {
         return newThemeDescriptor;
     }
 
-    public static ThemeDescriptor createCustomTheme(String name)
-            throws ThemeException {
+    public static ThemeDescriptor createCustomTheme(String name) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName(name);
@@ -278,8 +268,7 @@ public final class ThemeManager implements Registrable {
         try {
             path = ThemeManager.getCustomThemePath(name);
         } catch (ThemeIOException e) {
-            throw new ThemeException("Could not get file path for theme: "
-                    + name);
+            throw new ThemeException("Could not get file path for theme: " + name);
         }
         final String src = String.format("file:///%s", path);
         themeDescriptor.setSrc(src);
@@ -326,8 +315,7 @@ public final class ThemeManager implements Registrable {
         String defaultTheme = "";
         ApplicationType application = null;
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        application = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, paths);
+        application = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION, paths);
         if (application != null) {
             NegotiationDef negotiation = application.getNegotiation();
             if (negotiation != null) {
@@ -344,8 +332,7 @@ public final class ThemeManager implements Registrable {
             if (themeDef.isCustomized()) {
                 continue;
             }
-            if (templateEngine != null
-                    && !themeDef.isCompatibleWith(templateEngine)) {
+            if (templateEngine != null && !themeDef.isCompatibleWith(templateEngine)) {
                 continue;
             }
             names.add(themeDef.getName());
@@ -353,15 +340,13 @@ public final class ThemeManager implements Registrable {
         return names;
     }
 
-    public static ThemeDescriptor getThemeDescriptorByThemeName(
-            final String templateEngine, final String themeName) {
+    public static ThemeDescriptor getThemeDescriptorByThemeName(final String templateEngine, final String themeName) {
         for (ThemeDescriptor themeDef : getThemeDescriptors()) {
             // Skip customized themes
             if (themeDef.isCustomized()) {
                 continue;
             }
-            if (templateEngine != null
-                    && !themeDef.isCompatibleWith(templateEngine)) {
+            if (templateEngine != null && !themeDef.isCompatibleWith(templateEngine)) {
                 continue;
             }
             final String name = themeDef.getName();
@@ -372,8 +357,7 @@ public final class ThemeManager implements Registrable {
         return null;
     }
 
-    public static ThemeDescriptor getThemeDescriptorByThemeName(
-            final String themeName) {
+    public static ThemeDescriptor getThemeDescriptorByThemeName(final String themeName) {
         return getThemeDescriptorByThemeName(null, themeName);
     }
 
@@ -422,8 +406,7 @@ public final class ThemeManager implements Registrable {
         return theme;
     }
 
-    public static boolean belongToSameTheme(final Element element1,
-            final Element element2) {
+    public static boolean belongToSameTheme(final Element element1, final Element element2) {
         return getThemeOf(element1) == getThemeOf(element2);
     }
 
@@ -437,8 +420,7 @@ public final class ThemeManager implements Registrable {
             return null;
         }
         final String engineName = path[1];
-        return (EngineType) Manager.getTypeRegistry().lookup(TypeFamily.ENGINE,
-                engineName);
+        return (EngineType) Manager.getTypeRegistry().lookup(TypeFamily.ENGINE, engineName);
     }
 
     public static String getViewModeByUrl(final URL url) {
@@ -461,8 +443,7 @@ public final class ThemeManager implements Registrable {
             return null;
         }
         final String templateEngineName = path[3];
-        return (TemplateEngineType) Manager.getTypeRegistry().lookup(
-                TypeFamily.TEMPLATE_ENGINE, templateEngineName);
+        return (TemplateEngineType) Manager.getTypeRegistry().lookup(TypeFamily.TEMPLATE_ENGINE, templateEngineName);
     }
 
     public ThemeElement getThemeBySrc(final String src) throws ThemeException {
@@ -537,8 +518,7 @@ public final class ThemeManager implements Registrable {
         return themes.get(name);
     }
 
-    public void fillScratchPage(final String themeName, final Element element)
-            throws NodeException, ThemeException {
+    public void fillScratchPage(final String themeName, final Element element) throws NodeException, ThemeException {
         String pagePath = String.format("%s/~", themeName);
 
         PageElement scratchPage = getPageByPath(pagePath);
@@ -575,8 +555,7 @@ public final class ThemeManager implements Registrable {
             return null;
         }
         final String uid = path[path.length - 1];
-        return (Element) Manager.getUidManager().getObjectByUid(
-                Integer.valueOf(uid));
+        return (Element) Manager.getUidManager().getObjectByUid(Integer.valueOf(uid));
     }
 
     public static PerspectiveType getPerspectiveByUrl(final URL url) {
@@ -591,8 +570,7 @@ public final class ThemeManager implements Registrable {
             return null;
         }
         final String perspectiveName = path[6];
-        return (PerspectiveType) Manager.getTypeRegistry().lookup(
-                TypeFamily.PERSPECTIVE, perspectiveName);
+        return (PerspectiveType) Manager.getTypeRegistry().lookup(TypeFamily.PERSPECTIVE, perspectiveName);
     }
 
     public static String getCollectionNameByUrl(final URL url) {
@@ -616,26 +594,22 @@ public final class ThemeManager implements Registrable {
         String host = url.getHost();
         String description = "[???]";
         if ("theme".equals(host)) {
-            description = String.format(
-                    "[THEME %s, PAGE %s, ENGINE %s, TEMPLATE %s, PERSPECTIVE %s, MODE %s]",
+            description = String.format("[THEME %s, PAGE %s, ENGINE %s, TEMPLATE %s, PERSPECTIVE %s, MODE %s]",
                     path[4], path[5], path[1], path[3], path[6], path[2]);
         } else if ("element".equals(host)) {
-            description = String.format(
-                    "[ELEMENT %s, ENGINE %s, TEMPLATE %s, MODE %s]", path[4],
-                    path[1], path[3], path[2]);
+            description = String.format("[ELEMENT %s, ENGINE %s, TEMPLATE %s, MODE %s]", path[4], path[1], path[3],
+                    path[2]);
         }
         return description;
     }
 
     // Named objects
-    public Identifiable getNamedObject(final String themeName,
-            final String realm, final String name) {
+    public Identifiable getNamedObject(final String themeName, final String realm, final String name) {
         final Map<String, Integer> objectsInTheme = namedObjectsByTheme.get(themeName);
         if (objectsInTheme == null) {
             return null;
         }
-        final Integer uid = objectsInTheme.get(String.format("%s/%s", realm,
-                name));
+        final Integer uid = objectsInTheme.get(String.format("%s/%s", realm, name));
 
         if (uid != null) {
             return (Identifiable) Manager.getUidManager().getObjectByUid(uid);
@@ -647,25 +621,21 @@ public final class ThemeManager implements Registrable {
         return themeOfNamedObjects.get(object.getUid());
     }
 
-    public void setNamedObject(final String themeName, final String realm,
-            final Identifiable object) throws ThemeException {
+    public void setNamedObject(final String themeName, final String realm, final Identifiable object)
+            throws ThemeException {
         if (!namedObjectsByTheme.containsKey(themeName)) {
-            namedObjectsByTheme.put(themeName,
-                    new LinkedHashMap<String, Integer>());
+            namedObjectsByTheme.put(themeName, new LinkedHashMap<String, Integer>());
         }
         final Integer uid = object.getUid();
         final String name = object.getName();
         if (name == null) {
-            throw new ThemeException("Cannot register unnamed object, uid: "
-                    + uid);
+            throw new ThemeException("Cannot register unnamed object, uid: " + uid);
         }
-        namedObjectsByTheme.get(themeName).put(
-                String.format("%s/%s", realm, name), uid);
+        namedObjectsByTheme.get(themeName).put(String.format("%s/%s", realm, name), uid);
         themeOfNamedObjects.put(uid, themeName);
     }
 
-    public List<Identifiable> getNamedObjects(final String themeName,
-            final String realm) {
+    public List<Identifiable> getNamedObjects(final String themeName, final String realm) {
         final List<Identifiable> objects = new ArrayList<Identifiable>();
         final Map<String, Integer> objectsInTheme = namedObjectsByTheme.get(themeName);
         final String prefix = String.format("%s/", realm);
@@ -681,8 +651,7 @@ public final class ThemeManager implements Registrable {
         return objects;
     }
 
-    public void removeNamedObject(final String themeName, final String realm,
-            final String name) {
+    public void removeNamedObject(final String themeName, final String realm, final String name) {
         final String key = String.format("%s/%s", realm, name);
         Identifiable object = getNamedObject(themeName, realm, name);
         themeOfNamedObjects.remove(object.getUid());
@@ -703,53 +672,43 @@ public final class ThemeManager implements Registrable {
         toDelete = null;
     }
 
-    public void makeElementUseNamedStyle(final Element element,
-            final String inheritedName, final String themeName)
+    public void makeElementUseNamedStyle(final Element element, final String inheritedName, final String themeName)
             throws ThemeException {
-        final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
-                TypeFamily.FORMAT, "style");
-        Style style = (Style) ElementFormatter.getFormatByType(element,
-                styleType);
+        final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style");
+        Style style = (Style) ElementFormatter.getFormatByType(element, styleType);
 
         if (style == null) {
-            throw new ThemeException("Element has no assigned style: "
-                    + element.computeXPath());
+            throw new ThemeException("Element has no assigned style: " + element.computeXPath());
         }
         // Make the style no longer inherits from other another style if
         // 'inheritedName' is null
         if (inheritedName == null) {
             ThemeManager.removeInheritanceTowards(style);
         } else {
-            Style inheritedStyle = (Style) getNamedObject(themeName, "style",
-                    inheritedName);
+            Style inheritedStyle = (Style) getNamedObject(themeName, "style", inheritedName);
             if (inheritedStyle == null) {
-                throw new ThemeException("Could not find named style: "
-                        + inheritedName);
+                throw new ThemeException("Could not find named style: " + inheritedName);
             }
             makeFormatInherit(style, inheritedStyle);
         }
     }
 
-    public static void setStyleInheritance(String styleName,
-            String ancestorStyleName, String themeName, boolean allowMany)
-            throws ThemeException {
+    public static void setStyleInheritance(String styleName, String ancestorStyleName, String themeName,
+            boolean allowMany) throws ThemeException {
 
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
         if (themeDescriptor == null) {
             throw new ThemeException("Theme not found: " + themeName);
         }
-        Style style = (Style) themeManager.getNamedObject(themeName, "style",
-                styleName);
+        Style style = (Style) themeManager.getNamedObject(themeName, "style", styleName);
         if (style == null) {
             throw new ThemeException("Could not find named style: " + styleName);
         }
 
-        Style ancestorStyle = (Style) themeManager.getNamedObject(themeName,
-                "style", ancestorStyleName);
+        Style ancestorStyle = (Style) themeManager.getNamedObject(themeName, "style", ancestorStyleName);
         if (ancestorStyle == null) {
-            throw new ThemeException("Could not find named style: "
-                    + ancestorStyleName);
+            throw new ThemeException("Could not find named style: " + ancestorStyleName);
         }
         if (!allowMany) {
             ThemeManager.removeInheritanceFrom(ancestorStyle);
@@ -757,30 +716,25 @@ public final class ThemeManager implements Registrable {
         themeManager.makeFormatInherit(style, ancestorStyle);
     }
 
-    public static void loadRemoteStyle(String resourceBankName, Style style)
-            throws ThemeException {
+    public static void loadRemoteStyle(String resourceBankName, Style style) throws ThemeException {
         if (!style.isNamed()) {
-            throw new ThemeException(
-                    "Only named styles can be loaded from resource banks.");
+            throw new ThemeException("Only named styles can be loaded from resource banks.");
         }
         String styleName = style.getName();
         final Matcher resourceNameMatcher = styleResourceNamePattern.matcher(styleName);
         if (resourceNameMatcher.find()) {
             String collectionName = resourceNameMatcher.group(2);
             String resourceId = resourceNameMatcher.group(1) + ".css";
-            String cssSource = ResourceManager.getBankResource(
-                    resourceBankName, collectionName, "style", resourceId);
+            String cssSource = ResourceManager.getBankResource(resourceBankName, collectionName, "style", resourceId);
             style.setCollection(collectionName);
             Utils.loadCss(style, cssSource, "*");
         } else {
-            throw new ThemeException("Incorrect remote style name: "
-                    + styleName);
+            throw new ThemeException("Incorrect remote style name: " + styleName);
         }
     }
 
     // Element actions
-    public Element duplicateElement(final Element element,
-            final boolean duplicateFormats) throws ThemeException {
+    public Element duplicateElement(final Element element, final boolean duplicateFormats) throws ThemeException {
         Element duplicate;
         final String typeName = element.getElementType().getTypeName();
 
@@ -796,8 +750,7 @@ public final class ThemeManager implements Registrable {
         } else {
             // duplicate the fields
             try {
-                FieldIO.updateFieldsFromProperties(duplicate,
-                        FieldIO.dumpFieldsToProperties(element));
+                FieldIO.updateFieldsFromProperties(duplicate, FieldIO.dumpFieldsToProperties(element));
             } catch (ThemeIOException e) {
                 log.warn("Could not copy the fields of: " + element);
                 log.debug(e.getMessage(), e);
@@ -817,15 +770,13 @@ public final class ThemeManager implements Registrable {
             // duplicate visibility
             PerspectiveManager perspectiveManager = Manager.getPerspectiveManager();
             for (PerspectiveType perspective : perspectiveManager.getPerspectivesFor(element)) {
-                PerspectiveManager.setVisibleInPerspective(duplicate,
-                        perspective);
+                PerspectiveManager.setVisibleInPerspective(duplicate, perspective);
             }
         }
         return duplicate;
     }
 
-    public void destroyElement(final Element element) throws ThemeException,
-            NodeException {
+    public void destroyElement(final Element element) throws ThemeException, NodeException {
         final Element parent = (Element) element.getParent();
 
         if (element instanceof ThemeElement) {
@@ -919,14 +870,12 @@ public final class ThemeManager implements Registrable {
         }
         final String formatTypeName = format.getFormatType().getTypeName();
         if (formatTypeName == null) {
-            throw new ThemeException(
-                    "Cannot unregister a format without a type");
+            throw new ThemeException("Cannot unregister a format without a type");
         }
         if (formatsByTypeName.containsKey(formatTypeName)) {
             final List<Integer> ids = formatsByTypeName.get(formatTypeName);
             if (!ids.contains(id)) {
-                throw new ThemeException("Format with id: " + id
-                        + " is not registered.");
+                throw new ThemeException("Format with id: " + id + " is not registered.");
             }
             ids.remove(id);
         }
@@ -962,8 +911,7 @@ public final class ThemeManager implements Registrable {
                 ThemeElement theme = getThemeOfFormat(style);
                 if (theme == null) {
                     if (!style.isNamed()) {
-                        log.warn("THEME inconsistency: " + style
-                                + " is not associated to any element.");
+                        log.warn("THEME inconsistency: " + style + " is not associated to any element.");
                     }
                     continue;
                 }
@@ -1069,15 +1017,13 @@ public final class ThemeManager implements Registrable {
 
         // hook to notify potential listeners that the theme was registered
         EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.sendEvent(new Event(THEME_TOPIC,
-                THEME_REGISTERED_EVENT_ID, this, themeName));
+        eventService.sendEvent(new Event(THEME_TOPIC, THEME_REGISTERED_EVENT_ID, this, themeName));
 
         themeModified(themeName);
         stylesModified(themeName);
     }
 
-    public void registerPage(final ThemeElement theme, final PageElement page)
-            throws NodeException {
+    public void registerPage(final ThemeElement theme, final PageElement page) throws NodeException {
         theme.addChild(page);
         String themeName = theme.getName();
         String pageName = page.getName();
@@ -1125,8 +1071,7 @@ public final class ThemeManager implements Registrable {
     }
 
     // Theme management
-    public void loadTheme(String src, String xmlSource)
-            throws ThemeIOException, ThemeException {
+    public void loadTheme(String src, String xmlSource) throws ThemeIOException, ThemeException {
         ThemeDescriptor themeDescriptor = getThemeDescriptor(src);
         if (themeDescriptor == null) {
             throw new ThemeIOException("Theme not found: " + src);
@@ -1145,8 +1090,7 @@ public final class ThemeManager implements Registrable {
         if (!themeName.equals(oldThemeName)) {
             themes.remove(oldThemeName);
             for (ThemeDescriptor themeDef : getThemeDescriptors()) {
-                if (oldThemeName.equals(themeDef.getName())
-                        && !themeDef.isCustomized()) {
+                if (oldThemeName.equals(themeDef.getName()) && !themeDef.isCustomized()) {
                     loadTheme(themeDef.getSrc());
                 }
             }
@@ -1160,9 +1104,7 @@ public final class ThemeManager implements Registrable {
     public void deleteTheme(String src) throws ThemeIOException, ThemeException {
         ThemeDescriptor themeDescriptor = getThemeDescriptor(src);
         if (themeDescriptor.isXmlConfigured()) {
-            throw new ThemeIOException(
-                    "Themes registered as contributions cannot be deleted: "
-                            + src);
+            throw new ThemeIOException("Themes registered as contributions cannot be deleted: " + src);
         }
         final ThemeManager themeManager = Manager.getThemeManager();
         final String themeName = themeDescriptor.getName();
@@ -1179,8 +1121,7 @@ public final class ThemeManager implements Registrable {
         }
 
         if (!url.getProtocol().equals("file")) {
-            throw new ThemeIOException("Theme source is not that of a file: "
-                    + src);
+            throw new ThemeIOException("Theme source is not that of a file: " + src);
         }
 
         final File file = new File(url.getFile());
@@ -1192,23 +1133,19 @@ public final class ThemeManager implements Registrable {
         final File backupFile = new File(getThemeDir(), themeFileName);
         if (backupFile.exists()) {
             if (!backupFile.delete()) {
-                throw new ThemeIOException("Error while deleting backup file: "
-                        + backupFile.getPath());
+                throw new ThemeIOException("Error while deleting backup file: " + backupFile.getPath());
             }
         }
         if (!file.renameTo(backupFile)) {
-            throw new ThemeIOException("Error while creating backup file: "
-                    + backupFile.getPath());
+            throw new ThemeIOException("Error while creating backup file: " + backupFile.getPath());
         }
 
         try {
             themeManager.destroyElement(theme);
         } catch (NodeException e) {
-            throw new ThemeIOException("Failed to delete theme: " + themeName,
-                    e);
+            throw new ThemeIOException("Failed to delete theme: " + themeName, e);
         } catch (ThemeException e) {
-            throw new ThemeIOException("Failed to delete theme: " + themeName,
-                    e);
+            throw new ThemeIOException("Failed to delete theme: " + themeName, e);
         }
 
         themes.remove(themeName);
@@ -1217,8 +1154,7 @@ public final class ThemeManager implements Registrable {
         updateThemeDescriptors();
 
         for (ThemeDescriptor themeDef : getThemeDescriptors()) {
-            if (themeName.equals(themeDef.getName())
-                    && !themeDef.isCustomized()) {
+            if (themeName.equals(themeDef.getName()) && !themeDef.isCustomized()) {
                 loadTheme(themeDef.getSrc());
             }
         }
@@ -1236,13 +1172,11 @@ public final class ThemeManager implements Registrable {
         }
     }
 
-    public static void saveTheme(final String src) throws ThemeIOException,
-            ThemeException {
+    public static void saveTheme(final String src) throws ThemeIOException, ThemeException {
         saveTheme(src, DEFAULT_THEME_INDENT);
     }
 
-    public static void saveTheme(final String src, final int indent)
-            throws ThemeIOException, ThemeException {
+    public static void saveTheme(final String src, final int indent) throws ThemeIOException, ThemeException {
         ThemeDescriptor themeDescriptor = getThemeDescriptor(src);
 
         if (themeDescriptor == null) {
@@ -1250,8 +1184,7 @@ public final class ThemeManager implements Registrable {
         }
 
         if (!themeDescriptor.isWritable()) {
-            throw new ThemeIOException("Protocol does not support output: "
-                    + src);
+            throw new ThemeIOException("Protocol does not support output: " + src);
         }
 
         ThemeSerializer serializer = new ThemeSerializer();
@@ -1277,8 +1210,7 @@ public final class ThemeManager implements Registrable {
         try {
             ThemeRepairer.repair(theme);
         } catch (ThemeException e) {
-            throw new ThemeIOException("Could not repair theme: "
-                    + theme.getName(), e);
+            throw new ThemeIOException("Could not repair theme: " + theme.getName(), e);
         }
         log.debug("Repaired theme: " + theme.getName());
     }
@@ -1345,8 +1277,7 @@ public final class ThemeManager implements Registrable {
         uidManager.unregister(element);
     }
 
-    private static void destroyDescendants(Element element)
-            throws NodeException {
+    private static void destroyDescendants(Element element) throws NodeException {
         for (Node node : element.getDescendants()) {
             removeRelationsOf((Element) node);
         }
@@ -1357,10 +1288,8 @@ public final class ThemeManager implements Registrable {
     public void makeFormatInherit(Format format, Format ancestor) {
         if (format.equals(ancestor)) {
             FormatType formatType = format.getFormatType();
-            String formatName = formatType != null ? formatType.getTypeName()
-                    : "unknown";
-            log.error(String.format(
-                    "A format ('%s' with type '%s') cannot inherit from itself, aborting",
+            String formatName = formatType != null ? formatType.getTypeName() : "unknown";
+            log.error(String.format("A format ('%s' with type '%s') cannot inherit from itself, aborting",
                     format.getName(), formatName));
             return;
         }
@@ -1371,14 +1300,12 @@ public final class ThemeManager implements Registrable {
         // remove old inheritance relations
         removeInheritanceTowards(format);
         // set new ancestor
-        DyadicRelation relation = new DyadicRelation(PREDICATE_FORMAT_INHERIT,
-                format, ancestor);
+        DyadicRelation relation = new DyadicRelation(PREDICATE_FORMAT_INHERIT, format, ancestor);
         Manager.getRelationStorage().add(relation);
     }
 
     public static void removeInheritanceTowards(Format descendant) {
-        Collection<Relation> relations = Manager.getRelationStorage().search(
-                PREDICATE_FORMAT_INHERIT, descendant, null);
+        Collection<Relation> relations = Manager.getRelationStorage().search(PREDICATE_FORMAT_INHERIT, descendant, null);
         Iterator<Relation> it = relations.iterator();
         while (it.hasNext()) {
             Relation relation = it.next();
@@ -1387,8 +1314,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public static void removeInheritanceFrom(Format ancestor) {
-        Collection<Relation> relations = Manager.getRelationStorage().search(
-                PREDICATE_FORMAT_INHERIT, null, ancestor);
+        Collection<Relation> relations = Manager.getRelationStorage().search(PREDICATE_FORMAT_INHERIT, null, ancestor);
         Iterator<Relation> it = relations.iterator();
         while (it.hasNext()) {
             Relation relation = it.next();
@@ -1397,8 +1323,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public static Format getAncestorFormatOf(Format format) {
-        Collection<Relation> relations = Manager.getRelationStorage().search(
-                PREDICATE_FORMAT_INHERIT, format, null);
+        Collection<Relation> relations = Manager.getRelationStorage().search(PREDICATE_FORMAT_INHERIT, format, null);
         Iterator<Relation> it = relations.iterator();
         if (it.hasNext()) {
             return (Format) it.next().getRelate(2);
@@ -1425,8 +1350,7 @@ public final class ThemeManager implements Registrable {
 
     public static List<Format> listFormatsDirectlyInheritingFrom(Format format) {
         List<Format> formats = new ArrayList<Format>();
-        Collection<Relation> relations = Manager.getRelationStorage().search(
-                PREDICATE_FORMAT_INHERIT, null, format);
+        Collection<Relation> relations = Manager.getRelationStorage().search(PREDICATE_FORMAT_INHERIT, null, format);
         Iterator<Relation> it = relations.iterator();
         while (it.hasNext()) {
             formats.add((Format) it.next().getRelate(1));
@@ -1446,8 +1370,7 @@ public final class ThemeManager implements Registrable {
             return views;
         }
         for (Element element : ElementFormatter.getElementsFor(style)) {
-            Widget widget = (Widget) ElementFormatter.getFormatFor(element,
-                    "widget");
+            Widget widget = (Widget) ElementFormatter.getFormatFor(element, "widget");
             String viewName = widget.getName();
             for (String name : style.getSelectorViewNames()) {
                 if (!name.equals(viewName)) {
@@ -1459,18 +1382,14 @@ public final class ThemeManager implements Registrable {
     }
 
     // Cached styles
-    public String getCachedStyles(String themeName, String basePath,
-            String collectionName) {
-        String key = String.format("%s|%s|%s", themeName,
-                basePath != null ? basePath : "",
+    public String getCachedStyles(String themeName, String basePath, String collectionName) {
+        String key = String.format("%s|%s|%s", themeName, basePath != null ? basePath : "",
                 collectionName != null ? collectionName : "");
         return cachedStyles.get(key);
     }
 
-    public synchronized void setCachedStyles(String themeName, String basePath,
-            String collectionName, String css) {
-        String key = String.format("%s|%s|%s", themeName,
-                basePath != null ? basePath : "",
+    public synchronized void setCachedStyles(String themeName, String basePath, String collectionName, String css) {
+        String key = String.format("%s|%s|%s", themeName, basePath != null ? basePath : "",
                 collectionName != null ? collectionName : "");
         cachedStyles.put(key, css);
     }
@@ -1518,8 +1437,7 @@ public final class ThemeManager implements Registrable {
     }
 
     /**
-     * Returns all the ordered resource names and their dependencies, given a
-     * list of resources names.
+     * Returns all the ordered resource names and their dependencies, given a list of resources names.
      *
      * @since 5.5
      * @param resourceNames
@@ -1532,11 +1450,9 @@ public final class ThemeManager implements Registrable {
         }
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         for (String resourceName : resourceNames) {
-            ResourceType resource = (ResourceType) typeRegistry.lookup(
-                    TypeFamily.RESOURCE, resourceName);
+            ResourceType resource = (ResourceType) typeRegistry.lookup(TypeFamily.RESOURCE, resourceName);
             if (resource == null) {
-                log.error(String.format("Resource not registered %s.",
-                        resourceName));
+                log.error(String.format("Resource not registered %s.", resourceName));
                 continue;
             }
             String[] deps = resource.getDependencies();
@@ -1577,15 +1493,13 @@ public final class ThemeManager implements Registrable {
             String resourceBankName = parts[0];
             String collectionName = parts[1];
             String resourceName = parts[2];
-            data = ResourceManager.getBinaryBankResource(resourceBankName,
-                    collectionName, "image", resourceName);
+            data = ResourceManager.getBinaryBankResource(resourceBankName, collectionName, "image", resourceName);
             cachedBinaries.put(key, data);
         }
         return data;
     }
 
-    public static List<ViewType> getViewTypesForFragmentType(
-            final FragmentType fragmentType) {
+    public static List<ViewType> getViewTypesForFragmentType(final FragmentType fragmentType) {
         final List<ViewType> viewTypes = new ArrayList<ViewType>();
 
         for (Type v : Manager.getTypeRegistry().getTypes(TypeFamily.VIEW)) {
@@ -1598,8 +1512,7 @@ public final class ThemeManager implements Registrable {
 
             // select fragment views
             final ElementType elementType = viewType.getElementType();
-            if (elementType != null
-                    && !elementType.getTypeName().equals("fragment")) {
+            if (elementType != null && !elementType.getTypeName().equals("fragment")) {
                 continue;
             }
 
@@ -1619,14 +1532,12 @@ public final class ThemeManager implements Registrable {
     }
 
     // Resource banks
-    public static ResourceBank getResourceBank(String name)
-            throws ThemeException {
+    public static ResourceBank getResourceBank(String name) throws ThemeException {
         if (name == null) {
             throw new ThemeException("Resource bank name not set");
         }
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        ResourceBank resourceBank = (ResourceBank) typeRegistry.lookup(
-                TypeFamily.RESOURCE_BANK, name);
+        ResourceBank resourceBank = (ResourceBank) typeRegistry.lookup(TypeFamily.RESOURCE_BANK, name);
         if (resourceBank != null) {
             return resourceBank;
         } else {
@@ -1656,10 +1567,8 @@ public final class ThemeManager implements Registrable {
         return themeDescriptors;
     }
 
-    public static ThemeDescriptor getThemeDescriptor(String src)
-            throws ThemeException {
-        ThemeDescriptor themeDef = (ThemeDescriptor) Manager.getTypeRegistry().lookup(
-                TypeFamily.THEME, src);
+    public static ThemeDescriptor getThemeDescriptor(String src) throws ThemeException {
+        ThemeDescriptor themeDef = (ThemeDescriptor) Manager.getTypeRegistry().lookup(TypeFamily.THEME, src);
         if (themeDef == null) {
             throw new ThemeException("Unknown theme: " + src);
         }
@@ -1674,8 +1583,7 @@ public final class ThemeManager implements Registrable {
     // Template engines
     public static List<String> getTemplateEngineNames() {
         List<String> types = new ArrayList<String>();
-        for (Type type : Manager.getTypeRegistry().getTypes(
-                TypeFamily.TEMPLATE_ENGINE)) {
+        for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.TEMPLATE_ENGINE)) {
             types.add(type.getTypeName());
         }
         return types;
@@ -1686,8 +1594,8 @@ public final class ThemeManager implements Registrable {
         if (applicationPath == null) {
             return ThemeManager.getDefaultTemplateEngineName();
         }
-        final ApplicationType application = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, applicationPath);
+        final ApplicationType application = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION,
+                applicationPath);
 
         if (application != null) {
             return application.getTemplateEngine();

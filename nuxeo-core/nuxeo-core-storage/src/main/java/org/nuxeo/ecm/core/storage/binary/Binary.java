@@ -56,12 +56,9 @@ public class Binary implements Serializable {
     }
 
     /**
-     * Compute length on demand, default implementation only works if
-     * the file referenced contains the binary original content. If you're contributing
-     * a binary type, you should adapt this in case you're encoding the content.
-     *
-     * This method is only used when users make a direct access to the binary.
-     * Persisted blobs don't use that API.
+     * Compute length on demand, default implementation only works if the file referenced contains the binary original
+     * content. If you're contributing a binary type, you should adapt this in case you're encoding the content. This
+     * method is only used when users make a direct access to the binary. Persisted blobs don't use that API.
      *
      * @since 5.7.3
      */
@@ -112,16 +109,14 @@ public class Binary implements Serializable {
         return new FileSource(file);
     }
 
-    private void writeObject(java.io.ObjectOutputStream oos)
-            throws IOException, ClassNotFoundException {
+    private void writeObject(java.io.ObjectOutputStream oos) throws IOException, ClassNotFoundException {
         oos.defaultWriteObject();
         if (repoName == null) {
             oos.writeObject(file);
         }
     }
 
-    private void readObject(java.io.ObjectInputStream ois) throws IOException,
-            ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         file = repoName == null ? (File) ois.readObject() : fetchData();
     }

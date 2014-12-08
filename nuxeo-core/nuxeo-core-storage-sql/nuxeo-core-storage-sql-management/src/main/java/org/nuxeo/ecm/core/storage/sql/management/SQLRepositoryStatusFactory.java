@@ -22,8 +22,7 @@ public class SQLRepositoryStatusFactory extends AbstractResourceFactory {
     @Override
     public void registerResources() {
         SQLRepositoryStatus instance = new SQLRepositoryStatus();
-        service.registerResource("SQLRepositoryStatus",
-                ObjectNameFactory.formatQualifiedName("SQLStorage"),
+        service.registerResource("SQLRepositoryStatus", ObjectNameFactory.formatQualifiedName("SQLStorage"),
                 SQLRepositoryStatusMBean.class, instance);
     }
 

@@ -32,23 +32,19 @@ public class LocalConfRepositoryInit extends DefaultRepositoryInit {
     public void populate(CoreSession session) throws ClientException {
         super.populate(session);
 
-        DocumentModel doc = session.createDocumentModel(
-                "/default-domain/workspaces", "workspace", "Workspace");
+        DocumentModel doc = session.createDocumentModel("/default-domain/workspaces", "workspace", "Workspace");
         doc.setProperty("dublincore", "title", "workspace");
         doc = session.createDocument(doc);
         session.saveDocument(doc);
         session.save();
 
-        doc = session.createDocumentModel(
-                "/default-domain/workspaces/workspace", "a-folder", "Folder");
+        doc = session.createDocumentModel("/default-domain/workspaces/workspace", "a-folder", "Folder");
         doc.setProperty("dublincore", "title", "a folder");
         doc = session.createDocument(doc);
         session.saveDocument(doc);
         session.save();
 
-        doc = session.createDocumentModel(
-                "/default-domain/workspaces/workspace", "workspace2",
-                "Workspace");
+        doc = session.createDocumentModel("/default-domain/workspaces/workspace", "workspace2", "Workspace");
         doc.setProperty("dublincore", "title", "workspace 2");
         doc = session.createDocument(doc);
         session.saveDocument(doc);

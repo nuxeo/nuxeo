@@ -41,8 +41,7 @@ public class ImagePlugin extends AbstractFileImporter {
     }
 
     @Override
-    public void updateDocument(DocumentModel doc, Blob content)
-            throws ClientException {
+    public void updateDocument(DocumentModel doc, Blob content) throws ClientException {
         try {
             content = content.persist();
         } catch (IOException e) {

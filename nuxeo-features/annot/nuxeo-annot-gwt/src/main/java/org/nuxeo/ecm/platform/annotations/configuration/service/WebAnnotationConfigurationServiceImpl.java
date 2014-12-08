@@ -37,10 +37,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
- *
  */
-public class WebAnnotationConfigurationServiceImpl extends DefaultComponent
-        implements WebAnnotationConfigurationService {
+public class WebAnnotationConfigurationServiceImpl extends DefaultComponent implements
+        WebAnnotationConfigurationService {
 
     private static final Log log = LogFactory.getLog(WebAnnotationConfigurationServiceImpl.class);
 
@@ -84,14 +83,11 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (ANNOTATION_TYPES_EXTENSION_POINT.equals(extensionPoint)) {
             WebAnnotationDefinitionDescriptor descriptor = (WebAnnotationDefinitionDescriptor) contribution;
-            if (annotationDefinitionsDescriptors.put(descriptor.getName(),
-                    descriptor) != null) {
-                log.info("Already registered annotation type: "
-                        + descriptor.getName() + ", storing the new one.");
+            if (annotationDefinitionsDescriptors.put(descriptor.getName(), descriptor) != null) {
+                log.info("Already registered annotation type: " + descriptor.getName() + ", storing the new one.");
             }
         } else if (USER_INFO_EXTENSION_POINT.equals(extensionPoint)) {
             UserInfoMapperDescriptor descriptor = (UserInfoMapperDescriptor) contribution;
@@ -102,8 +98,7 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent
         } else if (FILTERS_EXTENSION_POINT.equals(extensionPoint)) {
             FilterDescriptor descriptor = (FilterDescriptor) contribution;
             if (filterDescriptors.put(descriptor.getName(), descriptor) != null) {
-                log.info("Already registered annotation filter: "
-                        + descriptor.getName() + ", storing the new one.");
+                log.info("Already registered annotation filter: " + descriptor.getName() + ", storing the new one.");
             }
         } else if (DISPLAYED_FIELDS_EXTENSION_POINT.equals(extensionPoint)) {
             DisplayedFieldsDescriptor descriptor = (DisplayedFieldsDescriptor) contribution;
@@ -130,8 +125,7 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (ANNOTATION_TYPES_EXTENSION_POINT.equals(extensionPoint)) {
             WebAnnotationDefinitionDescriptor descriptor = (WebAnnotationDefinitionDescriptor) contribution;
             annotationDefinitionsDescriptors.remove(descriptor.getName());
@@ -147,8 +141,7 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent
     }
 
     public List<WebAnnotationDefinitionDescriptor> getAllWebAnnotationDefinitions() {
-        return new ArrayList<WebAnnotationDefinitionDescriptor>(
-                annotationDefinitionsDescriptors.values());
+        return new ArrayList<WebAnnotationDefinitionDescriptor>(annotationDefinitionsDescriptors.values());
     }
 
     public List<WebAnnotationDefinitionDescriptor> getEnabledWebAnnotationDefinitions() {

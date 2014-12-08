@@ -32,14 +32,12 @@ public class DocumentChildrenReader extends DocumentModelReader {
 
     private DocumentModelIterator iterator;
 
-    public DocumentChildrenReader(CoreSession session, DocumentModel root)
-            throws ClientException {
+    public DocumentChildrenReader(CoreSession session, DocumentModel root) throws ClientException {
         super(session);
         iterator = session.getChildrenIterator(root.getRef(), null, null, null);
     }
 
-    public DocumentChildrenReader(CoreSession session, DocumentRef root)
-            throws ClientException {
+    public DocumentChildrenReader(CoreSession session, DocumentRef root) throws ClientException {
         this(session, session.getDocument(root));
     }
 

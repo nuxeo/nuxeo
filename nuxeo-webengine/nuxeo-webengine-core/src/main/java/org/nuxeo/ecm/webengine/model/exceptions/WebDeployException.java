@@ -23,12 +23,10 @@ import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebDeployException extends WebException {
 
     private static final long serialVersionUID = 1L;
-
 
     public WebDeployException(String message) {
         super(message);

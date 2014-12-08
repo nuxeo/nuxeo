@@ -54,17 +54,14 @@ public interface TypeInfo {
     String getId();
 
     /**
-     * Returns layout names for this mode, defaulting to layouts defined for
-     * mode {@link BuiltinModes#ANY}
+     * Returns layout names for this mode, defaulting to layouts defined for mode {@link BuiltinModes#ANY}
      */
     String[] getLayouts(String mode);
 
     /**
-     * Returns layout names for this mode, defaulting to layouts defined for
-     * given default mode name.
+     * Returns layout names for this mode, defaulting to layouts defined for given default mode name.
      * <p>
-     * If parameter "defaultMode" is null, returns only layout defined for
-     * given mode.
+     * If parameter "defaultMode" is null, returns only layout defined for given mode.
      *
      * @Since 5.3.1
      */
@@ -97,8 +94,7 @@ public interface TypeInfo {
     Map<String, String[]> getContentViews();
 
     /**
-     * Returns content views defined on this document type for all categories
-     * that are shown in export views.
+     * Returns content views defined on this document type for all categories that are shown in export views.
      * <p>
      * Categories holding no content view shown in export views are omitted.
      *

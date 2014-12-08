@@ -24,9 +24,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- *
  * @since 5.6
- *
  */
 @XObject("mapping")
 public class PropertiesMappingDescriptor {

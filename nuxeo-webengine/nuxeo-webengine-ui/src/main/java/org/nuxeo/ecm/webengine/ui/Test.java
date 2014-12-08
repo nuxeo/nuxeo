@@ -31,10 +31,9 @@ import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.ecm.webengine.ui.tree.document.DocumentTree;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- * When calling GET ${This.path}?root=source -  the content of the root is required
- * When calling GET ${This.path}?root=/default-domain/... - the content of the given path folder is required
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> When calling GET ${This.path}?root=source - the content
+ *         of the root is required When calling GET ${This.path}?root=/default-domain/... - the content of the given
+ *         path folder is required
  */
 @Path("/ui")
 @WebObject(type = "ui")
@@ -48,19 +47,19 @@ public class Test extends ModuleRoot {
 
     @GET
     @Path("tree")
-    public Response getContent(@QueryParam("root") String root)
-            throws ClientException {
+    public Response getContent(@QueryParam("root") String root) throws ClientException {
         // TODO here you may want to put tree in httpsession to have state
         // preserved after reload
         UserSession us = UserSession.getCurrentSession(ctx.getRequest());
-        DocumentTree tree = (DocumentTree)us.get("TREE");
+        DocumentTree tree = (DocumentTree) us.get("TREE");
         if (tree == null) {
             DocumentModel rootDoc = ctx.getCoreSession().getDocument(new PathRef("/default-domain"));
             tree = new DocumentTree(ctx, rootDoc);
             us.put("TREE", tree);
         }
         String result = "";
-        if (root == null || "source".equals(root)) { // ask for the the root content (if the tree is stateful this will return the tree in the current state)
+        if (root == null || "source".equals(root)) { // ask for the the root content (if the tree is stateful this will
+                                                     // return the tree in the current state)
             tree.enter(ctx, "/"); // expand root by default - comment this to avoid expanding first level
             result = tree.getTreeAsJSONArray(ctx);
         } else { // ask for the content of the tree which path is given by root parameter

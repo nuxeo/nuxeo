@@ -42,8 +42,7 @@ public class TaskActorsHelperTest {
         final String username = "joe";
 
         // Test unprefixed user name
-        NuxeoPrincipal principal = new UserPrincipal(username, null, false,
-                false);
+        NuxeoPrincipal principal = new UserPrincipal(username, null, false, false);
 
         List<String> actors = TaskActorsHelper.getTaskActors(principal);
         assertEquals(2, actors.size());

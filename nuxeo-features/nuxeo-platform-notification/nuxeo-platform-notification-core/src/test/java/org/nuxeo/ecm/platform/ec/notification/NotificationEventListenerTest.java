@@ -71,8 +71,7 @@ public class NotificationEventListenerTest extends SQLRepositoryTestCase {
         List<PostCommitEventListener> listeners = eventService.getPostCommitEventListeners();
 
         for (PostCommitEventListener postCommitEventListener : listeners) {
-            if (postCommitEventListener.getClass().equals(
-                    NotificationEventListener.class)) {
+            if (postCommitEventListener.getClass().equals(NotificationEventListener.class)) {
                 ((NotificationEventListener) postCommitEventListener).setEmailHelper(emailHelperMock);
             }
         }
@@ -87,14 +86,12 @@ public class NotificationEventListenerTest extends SQLRepositoryTestCase {
     }
 
     protected DocumentModel createNoteDocument() throws ClientException {
-        DocumentModel folder = session.createDocumentModel("/",
-                "test", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "test", "Folder");
 
         folder = session.createDocument(folder);
         session.saveDocument(folder);
 
-        DocumentModel noteDoc = session.createDocumentModel("/test/",
-                "testFile", "Note");
+        DocumentModel noteDoc = session.createDocumentModel("/test/", "testFile", "Note");
 
         noteDoc.setProperty("dublincore", "title", "TestFile");
         noteDoc.setProperty("dublincore", "description", "RAS");

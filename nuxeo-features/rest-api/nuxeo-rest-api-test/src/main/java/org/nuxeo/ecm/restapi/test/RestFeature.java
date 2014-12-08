@@ -19,14 +19,10 @@ package org.nuxeo.ecm.restapi.test;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 
-
-
 /**
  * Shortcut to deploy bundles required by rest-api in your test.
- *
- *
  */
-@Deploy({"org.nuxeo.ecm.restapi.io","org.nuxeo.ecm.restapi.server"})
+@Deploy({ "org.nuxeo.ecm.restapi.io", "org.nuxeo.ecm.restapi.server" })
 public class RestFeature extends EmbeddedAutomationServerFeature {
 
 }

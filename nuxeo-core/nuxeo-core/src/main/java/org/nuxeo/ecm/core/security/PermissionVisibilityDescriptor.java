@@ -61,8 +61,7 @@ public class PermissionVisibilityDescriptor {
     }
 
     public void merge(PermissionVisibilityDescriptor other) {
-        List<PermissionUIItemDescriptor> otherItems = new ArrayList<PermissionUIItemDescriptor>(
-                other.items);
+        List<PermissionUIItemDescriptor> otherItems = new ArrayList<PermissionUIItemDescriptor>(other.items);
         List<PermissionUIItemDescriptor> mergedItems = new LinkedList<PermissionUIItemDescriptor>();
 
         // merge items with common permission names
@@ -90,12 +89,10 @@ public class PermissionVisibilityDescriptor {
                     filteredPermissions.add(pid.getPermission());
                 }
             }
-            sortedPermissionNames = filteredPermissions.toArray(
-                    new String[filteredPermissions.size()]);
+            sortedPermissionNames = filteredPermissions.toArray(new String[filteredPermissions.size()]);
         }
         return sortedPermissionNames;
     }
-
 
     public List<UserVisiblePermission> getSortedUIPermissionDescriptor() {
         Collections.sort(items, new PermissionUIItemComparator());

@@ -52,5 +52,5 @@ public class RequireTag extends UIComponentELTag {
     public void setResource(String resource) {
         this.resource = resource;
     }
-    
+
 }

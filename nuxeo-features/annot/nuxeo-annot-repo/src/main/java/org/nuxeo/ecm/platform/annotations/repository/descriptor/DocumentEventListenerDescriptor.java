@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.annotations.repository.service.AnnotatedDocumentEv
 
 /**
  * @author Alexandre Russel
- *
  */
 @XObject("listener")
 public class DocumentEventListenerDescriptor {

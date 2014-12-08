@@ -34,18 +34,16 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentRenderUtils;
 
 /**
- * Managed bean, request-scoped, that resets the components value for ajax
- * interactions.
+ * Managed bean, request-scoped, that resets the components value for ajax interactions.
  * <p>
  * Resets are done using the following rule:
  * <ul>
- * <li>if the component implements {@link ResettableComponent} interface, its
- * method {@link ResettableComponent#resetCachedModel()} is called</li>
- * <li>if the component implements {@link EditableValueHolder}, its submitted
- * value is reset, and its local value is reset only if it holds a value
- * binding for the "value" attribute</li>
- * <li>if the component implements {@link ValueHolder}, its its local value is
- * reset only if it holds a value binding for the "value" attribute.</li>
+ * <li>if the component implements {@link ResettableComponent} interface, its method
+ * {@link ResettableComponent#resetCachedModel()} is called</li>
+ * <li>if the component implements {@link EditableValueHolder}, its submitted value is reset, and its local value is
+ * reset only if it holds a value binding for the "value" attribute</li>
+ * <li>if the component implements {@link ValueHolder}, its its local value is reset only if it holds a value binding
+ * for the "value" attribute.</li>
  * </ul>
  *
  * @since 5.7
@@ -64,8 +62,8 @@ public class JSFResetActionsBean {
     protected String baseComponentId;
 
     /**
-     * Returns the base component id, if {@link #setBaseComponentId(String)}
-     * was previously called in the same request, or null.
+     * Returns the base component id, if {@link #setBaseComponentId(String)} was previously called in the same request,
+     * or null.
      *
      * @since 5.9.1
      */
@@ -74,9 +72,8 @@ public class JSFResetActionsBean {
     }
 
     /**
-     * Sets the base component id so that
-     * {@link #resetComponentsFor(ActionEvent)} can look it up in the hierarchy
-     * of components, and reset component states recursively from it.
+     * Sets the base component id so that {@link #resetComponentsFor(ActionEvent)} can look it up in the hierarchy of
+     * components, and reset component states recursively from it.
      *
      * @since 5.9.1
      * @see #resetComponentsFor(ActionEvent)
@@ -86,8 +83,8 @@ public class JSFResetActionsBean {
     }
 
     /**
-     * Looks up the parent naming container for the component source of the
-     * action event, and reset components recursively within this container.
+     * Looks up the parent naming container for the component source of the action event, and reset components
+     * recursively within this container.
      *
      * @since 5.9.1
      */
@@ -98,26 +95,24 @@ public class JSFResetActionsBean {
         }
         String baseCompId = getBaseComponentId();
         if (baseCompId != null) {
-            UIComponent anchor = ComponentRenderUtils.getComponent(component,
-                    baseCompId);
+            UIComponent anchor = ComponentRenderUtils.getComponent(component, baseCompId);
             resetComponentResursive(anchor);
         } else {
-            log.error("No base component id given => cannot reset "
-                    + "components state.");
+            log.error("No base component id given => cannot reset " + "components state.");
         }
     }
 
     /**
-     * Looks up the parent naming container for the component source of the
-     * action event, and reset components recursively within this container.
+     * Looks up the parent naming container for the component source of the action event, and reset components
+     * recursively within this container.
      */
     public void resetComponents(ActionEvent event) {
         resetComponents((FacesEvent) event);
     }
 
     /**
-     * Looks up the parent naming container for the component source of the
-     * action event, and reset components recursively within this container.
+     * Looks up the parent naming container for the component source of the action event, and reset components
+     * recursively within this container.
      *
      * @since 6.0
      */

@@ -19,7 +19,6 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleTransition;
  * Life cycle transition implementation.
  *
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycleTransition
- *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class LifeCycleTransitionImpl implements LifeCycleTransition {
@@ -32,7 +31,6 @@ public class LifeCycleTransitionImpl implements LifeCycleTransition {
 
     /** Destination state name for this transition. */
     private final String destinationStateName;
-
 
     public LifeCycleTransitionImpl(String name, String description, String destinationState) {
         this.name = name;

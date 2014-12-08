@@ -64,8 +64,7 @@ public class PictureBlobHolder extends DocumentBlobHolder {
             parent = session.getDocument(new PathRef(parentPath.toString()));
         }
 
-        if (parent != null
-                && ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME.equals(parent.getType())) {
+        if (parent != null && ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME.equals(parent.getType())) {
             // use PictureBook Properties
             pictureConversions = (ArrayList<Map<String, Object>>) parent.getPropertyValue("picturebook:picturetemplates");
             if (pictureConversions.isEmpty()) {

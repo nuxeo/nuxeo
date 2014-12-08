@@ -24,8 +24,7 @@ import java.util.List;
  *
  * @since 5.5
  */
-public class SubjectsWidgetConverter extends
-        AbstractChainedVocabularyWidgetConverter {
+public class SubjectsWidgetConverter extends AbstractChainedVocabularyWidgetConverter {
 
     @Override
     protected List<String> getAcceptedWidgetNames() {

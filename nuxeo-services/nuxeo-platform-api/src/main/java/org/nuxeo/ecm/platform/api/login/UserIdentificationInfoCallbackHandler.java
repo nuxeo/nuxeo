@@ -31,13 +31,11 @@ public class UserIdentificationInfoCallbackHandler implements CallbackHandler {
 
     protected final UserIdentificationInfo userIdent;
 
-    public UserIdentificationInfoCallbackHandler(
-            UserIdentificationInfo userIdent) {
+    public UserIdentificationInfoCallbackHandler(UserIdentificationInfo userIdent) {
         this.userIdent = userIdent;
     }
 
-    public void handle(Callback[] callbacks) throws IOException,
-            UnsupportedCallbackException {
+    public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
 
         for (Callback c : callbacks) {
             if (c instanceof NameCallback) {
@@ -51,13 +49,11 @@ public class UserIdentificationInfoCallbackHandler implements CallbackHandler {
             } else if (c instanceof UserIdentificationInfoCallback) {
                 UserIdentificationInfoCallback uic = (UserIdentificationInfoCallback) c;
                 uic.setUserInfo(userIdent);
-            } else if (c.getClass().getName().equals(
-                    "org.jboss.security.auth.callback.SecurityAssociationCallback")) {
+            } else if (c.getClass().getName().equals("org.jboss.security.auth.callback.SecurityAssociationCallback")) {
                 // we do nothing but do not raise error
 
             } else {
-                throw new UnsupportedCallbackException(c,
-                        "Unrecognized Callback:" + c.getClass().getName());
+                throw new UnsupportedCallbackException(c, "Unrecognized Callback:" + c.getClass().getName());
             }
         }
     }

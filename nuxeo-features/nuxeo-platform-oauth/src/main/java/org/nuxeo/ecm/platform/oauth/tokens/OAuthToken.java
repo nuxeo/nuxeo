@@ -24,9 +24,8 @@ import java.util.Calendar;
 import org.nuxeo.ecm.platform.oauth.consumers.OAuthConsumerRegistry;
 
 /**
- * Represents Token data as manipulated in OAuth during the 3 legged
- * authentication. The same interface is used for Request Token and Access
- * Token.
+ * Represents Token data as manipulated in OAuth during the 3 legged authentication. The same interface is used for
+ * Request Token and Access Token.
  *
  * @author tiry
  */
@@ -42,8 +41,7 @@ public interface OAuthToken {
     String getAppId();
 
     /**
-     * Returns consumer call back url (may be used to override what is provided
-     * in the {@link OAuthConsumerRegistry}.
+     * Returns consumer call back url (may be used to override what is provided in the {@link OAuthConsumerRegistry}.
      */
     String getCallbackUrl();
 

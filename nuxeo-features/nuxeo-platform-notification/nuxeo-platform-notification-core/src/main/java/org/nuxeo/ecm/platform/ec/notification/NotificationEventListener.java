@@ -62,8 +62,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
-public class NotificationEventListener implements
-        PostCommitFilteringEventListener {
+public class NotificationEventListener implements PostCommitFilteringEventListener {
 
     private static final Log log = LogFactory.getLog(NotificationEventListener.class);
 
@@ -99,11 +98,11 @@ public class NotificationEventListener implements
                 break;
             }
         }
-        if (! processEvents) {
+        if (!processEvents) {
             return;
         }
         for (Event event : events) {
-            Boolean block = (Boolean)event.getContext().getProperty(NotificationConstants.DISABLE_NOTIFICATION_SERVICE);
+            Boolean block = (Boolean) event.getContext().getProperty(NotificationConstants.DISABLE_NOTIFICATION_SERVICE);
             if (block != null && block) {
                 // ignore the event - we are blocked by the caller
                 continue;
@@ -137,12 +136,11 @@ public class NotificationEventListener implements
             }
         }
 
-        for(NotificationListenerHook hookListener:notificationService.getListenerHooks()) {
+        for (NotificationListenerHook hookListener : notificationService.getListenerHooks()) {
             hookListener.handleNotifications(event);
         }
 
-        gatherConcernedUsersForDocument(coreSession,
-                docCtx.getSourceDocument(), notifs, targetUsers);
+        gatherConcernedUsersForDocument(coreSession, docCtx.getSourceDocument(), notifs, targetUsers);
 
         for (Notification notif : targetUsers.keySet()) {
             if (!notif.getAutoSubscribed()) {
@@ -150,12 +148,12 @@ public class NotificationEventListener implements
                     sendNotificationSignalForUser(notif, user, event, docCtx);
                 }
             } else {
-                Object recipientProperty =  properties.get(NotificationConstants.RECIPIENTS_KEY);
+                Object recipientProperty = properties.get(NotificationConstants.RECIPIENTS_KEY);
                 String[] recipients = null;
                 if (recipientProperty != null) {
                     if (recipientProperty instanceof String[]) {
                         recipients = (String[]) properties.get(NotificationConstants.RECIPIENTS_KEY);
-                    } else if (recipientProperty instanceof String ) {
+                    } else if (recipientProperty instanceof String) {
                         recipients = new String[1];
                         recipients[0] = (String) recipientProperty;
                     }
@@ -171,16 +169,14 @@ public class NotificationEventListener implements
                     if (recipient.contains(NuxeoPrincipal.PREFIX)) {
                         users.add(recipient.replace(NuxeoPrincipal.PREFIX, ""));
                     } else if (recipient.contains(NuxeoGroup.PREFIX)) {
-                        List<String> groupMembers = getGroupMembers(recipient.replace(
-                                NuxeoGroup.PREFIX, ""));
+                        List<String> groupMembers = getGroupMembers(recipient.replace(NuxeoGroup.PREFIX, ""));
                         for (String member : groupMembers) {
                             users.add(member);
                         }
                     } else {
                         // test if the unprefixed recipient corresponds to a
                         // group, to fetch its members
-                        if (NotificationServiceHelper.getUsersService().getGroup(
-                                recipient) != null) {
+                        if (NotificationServiceHelper.getUsersService().getGroup(recipient) != null) {
                             users.addAll(getGroupMembers(recipient));
                         } else {
                             users.add(recipient);
@@ -204,14 +200,12 @@ public class NotificationEventListener implements
         return userManager;
     }
 
-    protected List<String> getGroupMembers(String groupId)
-            throws ClientException {
+    protected List<String> getGroupMembers(String groupId) throws ClientException {
         return getUserManager().getUsersInGroupAndSubGroups(groupId);
     }
 
-    private void sendNotificationSignalForUser(Notification notification,
-            String subscriptor, Event event, DocumentEventContext ctx)
-            throws ClientException {
+    private void sendNotificationSignalForUser(Notification notification, String subscriptor, Event event,
+            DocumentEventContext ctx) throws ClientException {
 
         Principal principal;
         if (LoginComponent.SYSTEM_USERNAME.equals(subscriptor)) {
@@ -226,11 +220,9 @@ public class NotificationEventListener implements
         }
 
         if (Boolean.parseBoolean(Framework.getProperty(CHECK_READ_PERMISSION_PROPERTY))) {
-            if (!ctx.getCoreSession().hasPermission(principal,
-                    ctx.getSourceDocument().getRef(), SecurityConstants.READ)) {
+            if (!ctx.getCoreSession().hasPermission(principal, ctx.getSourceDocument().getRef(), SecurityConstants.READ)) {
                 log.debug("Notification will not be sent: + '" + subscriptor
-                        + "' do not have Read permission on document "
-                        + ctx.getSourceDocument().getId());
+                        + "' do not have Read permission on document " + ctx.getSourceDocument().getId());
                 return;
             }
         }
@@ -240,89 +232,67 @@ public class NotificationEventListener implements
         Map<String, Serializable> eventInfo = ctx.getProperties();
         DocumentModel doc = ctx.getSourceDocument();
         String author = ctx.getPrincipal().getName();
-        Calendar created = (Calendar) ctx.getSourceDocument().getPropertyValue(
-                "dc:created");
+        Calendar created = (Calendar) ctx.getSourceDocument().getPropertyValue("dc:created");
 
         eventInfo.put(NotificationConstants.DESTINATION_KEY, subscriptor);
         eventInfo.put(NotificationConstants.NOTIFICATION_KEY, notification);
         eventInfo.put(NotificationConstants.DOCUMENT_ID_KEY, doc.getId());
-        eventInfo.put(NotificationConstants.DATE_TIME_KEY,
-                new Date(event.getTime()));
+        eventInfo.put(NotificationConstants.DATE_TIME_KEY, new Date(event.getTime()));
         eventInfo.put(NotificationConstants.AUTHOR_KEY, author);
-        eventInfo.put(NotificationConstants.DOCUMENT_VERSION,
-                doc.getVersionLabel());
-        eventInfo.put(NotificationConstants.DOCUMENT_STATE,
-                doc.getCurrentLifeCycleState());
+        eventInfo.put(NotificationConstants.DOCUMENT_VERSION, doc.getVersionLabel());
+        eventInfo.put(NotificationConstants.DOCUMENT_STATE, doc.getCurrentLifeCycleState());
         eventInfo.put(NotificationConstants.DOCUMENT_CREATED, created.getTime());
         StringBuilder userUrl = new StringBuilder();
-        userUrl.append(
-                notificationService.getServerUrlPrefix()).append(
-                "user/").append(ctx.getPrincipal().getName());
+        userUrl.append(notificationService.getServerUrlPrefix()).append("user/").append(ctx.getPrincipal().getName());
         eventInfo.put(NotificationConstants.USER_URL_KEY, userUrl.toString());
-        eventInfo.put(NotificationConstants.DOCUMENT_LOCATION,
-                doc.getPathAsString());
+        eventInfo.put(NotificationConstants.DOCUMENT_LOCATION, doc.getPathAsString());
         // Main file link for downloading
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh != null && bh.getBlob() != null) {
             StringBuilder docMainFile = new StringBuilder();
-            docMainFile.append(
-                    notificationService.getServerUrlPrefix()).append(
-                    "nxfile/default/").append(doc.getId()).append(
+            docMainFile.append(notificationService.getServerUrlPrefix()).append("nxfile/default/").append(doc.getId()).append(
                     "/blobholder:0/").append(bh.getBlob().getFilename());
-            eventInfo.put(NotificationConstants.DOCUMENT_MAIN_FILE,
-                    docMainFile.toString());
+            eventInfo.put(NotificationConstants.DOCUMENT_MAIN_FILE, docMainFile.toString());
         }
 
         if (!isDeleteEvent(event.getName())) {
             DocumentView docView = new DocumentViewImpl(doc);
             DocumentViewCodecManager docLocator = getDocLocator();
             if (docLocator != null) {
-                eventInfo.put(
-                        NotificationConstants.DOCUMENT_URL_KEY,
-                        getDocLocator().getUrlFromDocumentView(
-                                docView,
-                                true,
-                                notificationService.getServerUrlPrefix()));
+                eventInfo.put(NotificationConstants.DOCUMENT_URL_KEY,
+                        getDocLocator().getUrlFromDocumentView(docView, true, notificationService.getServerUrlPrefix()));
             } else {
                 eventInfo.put(NotificationConstants.DOCUMENT_URL_KEY, "");
             }
-            eventInfo.put(NotificationConstants.DOCUMENT_TITLE_KEY,
-                    doc.getTitle());
+            eventInfo.put(NotificationConstants.DOCUMENT_TITLE_KEY, doc.getTitle());
         }
 
         if (isInterestedInNotification(notification)) {
             try {
                 sendNotification(event, ctx);
                 if (log.isDebugEnabled()) {
-                    log.debug("notification " + notification.getName()
-                            + " sent to " + notification.getSubject());
+                    log.debug("notification " + notification.getName() + " sent to " + notification.getSubject());
                 }
             } catch (ClientException e) {
-                log.error(
-                        "An error occurred while trying to send user notification",
-                        e);
+                log.error("An error occurred while trying to send user notification", e);
             }
 
         }
     }
 
-    public void sendNotification(Event event, DocumentEventContext ctx)
-            throws ClientException {
+    public void sendNotification(Event event, DocumentEventContext ctx) throws ClientException {
 
         String eventId = event.getName();
-        log.debug("Received a message for notification sender with eventId : "
-                + eventId);
+        log.debug("Received a message for notification sender with eventId : " + eventId);
 
         Map<String, Serializable> eventInfo = ctx.getProperties();
         String userDest = (String) eventInfo.get(NotificationConstants.DESTINATION_KEY);
         NotificationImpl notif = (NotificationImpl) eventInfo.get(NotificationConstants.NOTIFICATION_KEY);
 
         // send email
-        NuxeoPrincipal recepient = NotificationServiceHelper.getUsersService().getPrincipal(
-                userDest);
+        NuxeoPrincipal recepient = NotificationServiceHelper.getUsersService().getPrincipal(userDest);
         if (recepient == null) {
-            log.error("Couldn't find user: " + userDest
-                    + " to send her a mail.");
+            log.error("Couldn't find user: " + userDest + " to send her a mail.");
             return;
         }
         // XXX hack, principals have only one model
@@ -339,13 +309,11 @@ public class NotificationEventListener implements
         // mail template can be dynamically computed from a MVEL expression
         if (notif.getTemplateExpr() != null) {
             try {
-                mailTemplate = emailHelper.evaluateMvelExpresssion(
-                        notif.getTemplateExpr(), eventInfo);
+                mailTemplate = emailHelper.evaluateMvelExpresssion(notif.getTemplateExpr(), eventInfo);
             } catch (PropertyAccessException pae) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Cannot evaluate mail template expression '"
-                            + notif.getTemplateExpr() + "' in that context "
-                            + eventInfo, pae);
+                    log.debug("Cannot evaluate mail template expression '" + notif.getTemplateExpr()
+                            + "' in that context " + eventInfo, pae);
                 }
             }
         }
@@ -364,16 +332,13 @@ public class NotificationEventListener implements
         String authorUsername = (String) eventInfo.get(NotificationConstants.AUTHOR_KEY);
 
         if (authorUsername != null) {
-            NuxeoPrincipal author = NotificationServiceHelper.getUsersService().getPrincipal(
-                    authorUsername);
+            NuxeoPrincipal author = NotificationServiceHelper.getUsersService().getPrincipal(authorUsername);
             mail.put(NotificationConstants.PRINCIPAL_AUTHOR_KEY, author);
         }
 
         mail.put(NotificationConstants.DOCUMENT_KEY, ctx.getSourceDocument());
-        String subject = notif.getSubject() == null ? NotificationConstants.NOTIFICATION_KEY
-                : notif.getSubject();
-        subject = notificationService.getEMailSubjectPrefix()
-                + subject;
+        String subject = notif.getSubject() == null ? NotificationConstants.NOTIFICATION_KEY : notif.getSubject();
+        subject = notificationService.getEMailSubjectPrefix() + subject;
         mail.put("subject", subject);
         mail.put("template", mailTemplate);
         mail.put("subjectTemplate", subjectTemplate);
@@ -393,57 +358,49 @@ public class NotificationEventListener implements
             if ((e instanceof SendFailedException) && (e.getCause() instanceof SendFailedException)) {
                 cause = " - Cause: " + e.getCause().getMessage();
             }
-            log.warn("Failed to send notification email to '" + email + "': "
-                    + e.getClass().getName() + ": " + e.getMessage() + cause);
+            log.warn("Failed to send notification email to '" + email + "': " + e.getClass().getName() + ": "
+                    + e.getMessage() + cause);
         }
     }
 
     /**
-     * Adds the concerned users to the list of targeted users for these
-     * notifications.
+     * Adds the concerned users to the list of targeted users for these notifications.
      */
-    private void gatherConcernedUsersForDocument(CoreSession coreSession,
-            DocumentModel doc, List<Notification> notifs,
+    private void gatherConcernedUsersForDocument(CoreSession coreSession, DocumentModel doc, List<Notification> notifs,
             Map<Notification, List<String>> targetUsers) {
         if (doc.getPath().segmentCount() > 1) {
             log.debug("Searching document: " + doc.getName());
             getInterstedUsers(doc, notifs, targetUsers);
             if (doc.getParentRef() != null && coreSession.exists(doc.getParentRef())) {
                 DocumentModel parent = getDocumentParent(coreSession, doc);
-                gatherConcernedUsersForDocument(coreSession, parent, notifs,
-                        targetUsers);
+                gatherConcernedUsersForDocument(coreSession, parent, notifs, targetUsers);
             }
         }
     }
 
-    private DocumentModel getDocumentParent(CoreSession coreSession,
-            DocumentModel doc) throws ClientException {
+    private DocumentModel getDocumentParent(CoreSession coreSession, DocumentModel doc) throws ClientException {
         if (doc == null) {
             return null;
         }
         return coreSession.getDocument(doc.getParentRef());
     }
 
-    private void getInterstedUsers(DocumentModel doc,
-            List<Notification> notifs,
+    private void getInterstedUsers(DocumentModel doc, List<Notification> notifs,
             Map<Notification, List<String>> targetUsers) {
         for (Notification notification : notifs) {
             if (!notification.getAutoSubscribed()) {
-                List<String> userGroup = notificationService.getSubscribers(
-                        notification.getName(), doc.getId());
+                List<String> userGroup = notificationService.getSubscribers(notification.getName(), doc.getId());
                 for (String subscriptor : userGroup) {
                     if (subscriptor != null) {
                         if (isUser(subscriptor)) {
-                            storeUserForNotification(notification,
-                                    subscriptor.substring(5), targetUsers);
+                            storeUserForNotification(notification, subscriptor.substring(5), targetUsers);
                         } else {
                             // it is a group - get all users and send
                             // notifications to them
                             List<String> usersOfGroup = getGroupMembers(subscriptor.substring(6));
                             if (usersOfGroup != null && !usersOfGroup.isEmpty()) {
                                 for (String usr : usersOfGroup) {
-                                    storeUserForNotification(notification, usr,
-                                            targetUsers);
+                                    storeUserForNotification(notification, usr, targetUsers);
                                 }
                             }
                         }
@@ -457,8 +414,8 @@ public class NotificationEventListener implements
         }
     }
 
-    private static void storeUserForNotification(Notification notification,
-            String user, Map<Notification, List<String>> targetUsers) {
+    private static void storeUserForNotification(Notification notification, String user,
+            Map<Notification, List<String>> targetUsers) {
         List<String> subscribedUsers = targetUsers.get(notification);
         if (subscribedUsers == null) {
             targetUsers.put(notification, new ArrayList<String>());

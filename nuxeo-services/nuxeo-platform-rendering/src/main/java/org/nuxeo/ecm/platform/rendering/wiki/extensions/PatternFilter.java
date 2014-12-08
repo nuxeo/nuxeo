@@ -23,7 +23,6 @@ import org.nuxeo.ecm.platform.rendering.wiki.WikiFilter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("filter")
 public class PatternFilter implements WikiFilter {

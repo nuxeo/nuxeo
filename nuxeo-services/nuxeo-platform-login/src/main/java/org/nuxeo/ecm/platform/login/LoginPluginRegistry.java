@@ -34,8 +34,7 @@ import org.nuxeo.runtime.model.Extension;
 
 public class LoginPluginRegistry extends DefaultComponent {
 
-    public static final ComponentName NAME =
-        new ComponentName("org.nuxeo.ecm.platform.login.LoginPluginRegistry");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.platform.login.LoginPluginRegistry");
 
     public static final String EP_PLUGIN = "plugin";
 
@@ -56,8 +55,7 @@ public class LoginPluginRegistry extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(EP_PLUGIN)) {
             log.info("registering Login Plugin ... ");
             registerPlugin((LoginPluginDescriptor) contribution);
@@ -93,8 +91,7 @@ public class LoginPluginRegistry extends DefaultComponent {
             oldLoginPlugin.setParameters(mergedParams);
             if (!oldLoginPlugin.initLoginModule()) {
                 oldLoginPluginDescriptor.setInitialized(false);
-                log.warn("Unable to initialize LoginPlugin for class "
-                        + className.getName());
+                log.warn("Unable to initialize LoginPlugin for class " + className.getName());
             } else {
                 oldLoginPluginDescriptor.setInitialized(true);
             }
@@ -106,23 +103,19 @@ public class LoginPluginRegistry extends DefaultComponent {
             try {
                 newLoginPlugin = className.newInstance();
             } catch (InstantiationException e) {
-                log.error("Unable to create LoginPlugin for class "
-                        + className.getName() + ":" + e.getMessage(), e);
+                log.error("Unable to create LoginPlugin for class " + className.getName() + ":" + e.getMessage(), e);
                 return;
             } catch (IllegalAccessException e) {
-                log.error("Unable to create LoginPlugin for class "
-                        + className.getName() + ":" + e.getMessage(), e);
+                log.error("Unable to create LoginPlugin for class " + className.getName() + ":" + e.getMessage(), e);
                 return;
             }
             newLoginPlugin.setParameters(pluginExtension.getParameters());
             if (newLoginPlugin.initLoginModule()) {
                 pluginExtension.setInitialized(true);
-                log.info("LoginPlugin initialized for class "
-                        + className.getName());
+                log.info("LoginPlugin initialized for class " + className.getName());
             } else {
                 pluginExtension.setInitialized(false);
-                log.warn("Unable to initialize LoginPlugin for class "
-                        + className.getName());
+                log.warn("Unable to initialize LoginPlugin for class " + className.getName());
             }
             pluginDescriptorStack.put(pluginName, pluginExtension);
             loginPluginStack.put(pluginName, newLoginPlugin);

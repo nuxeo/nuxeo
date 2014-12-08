@@ -40,16 +40,18 @@ public interface RepositoryManagement {
 
     /**
      * Evaluate number of elements in hier cache
+     *
      * @since 5.7.2
      */
     long getCachePristineSize();
 
-
     /**
      * Evaluate number of elements in selection cache
+     *
      * @since 5.7.2
      */
     long getCacheSelectionSize();
+
     /**
      * Clears all the caches.
      *
@@ -70,21 +72,17 @@ public interface RepositoryManagement {
     BinaryGarbageCollector getBinaryGarbageCollector();
 
     /**
-     * Marks the binaries actually in use with the GC so that they won't be
-     * deleted.
+     * Marks the binaries actually in use with the GC so that they won't be deleted.
      * <p>
-     * The passed GC may or may not be the one returned by
-     * {@link #getBinaryGarbageCollector} in case it's been determined that
-     * another repository's GC is pointing to the same binary data.
+     * The passed GC may or may not be the one returned by {@link #getBinaryGarbageCollector} in case it's been
+     * determined that another repository's GC is pointing to the same binary data.
      *
-     * @param gc the binary garbage collector to use for this repository's
-     *            binaries
+     * @param gc the binary garbage collector to use for this repository's binaries
      */
     void markReferencedBinaries(BinaryGarbageCollector gc);
 
     /**
-     * Cleans up (hard-deletes) any documents that have been soft-deleted in the
-     * database.
+     * Cleans up (hard-deletes) any documents that have been soft-deleted in the database.
      *
      * @param max the maximum number of documents to delete at a time
      * @param beforeTime the maximum deletion time of the documents to delete

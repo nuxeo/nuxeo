@@ -30,11 +30,11 @@ import org.osgi.framework.Bundle;
  * Template for compatibility with Nuxeo WebEngine
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TemplateView {
 
     private static final FreemarkerEngine engine = new FreemarkerEngine(null, new Locator());
+
     private static final Map<String, TemplateView> locators = new HashMap<String, TemplateView>();
 
     public static URL resolveFile(File file) throws ViewNotFoundException {
@@ -74,13 +74,12 @@ public class TemplateView {
 
     protected final Map<String, Object> vars;
 
-
     public TemplateView(String name) {
-        this (null, null, name);
+        this(null, null, name);
     }
 
     public TemplateView(Object owner, String name) {
-        this (null, owner, name);
+        this(null, owner, name);
     }
 
     public TemplateView(Bundle bundle, Object owner, String name) {
@@ -126,7 +125,6 @@ public class TemplateView {
         return this;
     }
 
-
     public void render(Writer writer) throws RenderingException, IOException {
         String id = addLocator(this);
         try {
@@ -160,6 +158,7 @@ public class TemplateView {
         public File getResourceFile(String key) {
             return null;
         }
+
         @Override
         public URL getResourceURL(String key) {
             TemplateView view = getLocator(key);

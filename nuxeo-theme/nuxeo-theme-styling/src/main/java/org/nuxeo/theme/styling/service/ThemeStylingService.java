@@ -24,12 +24,10 @@ import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.Logo;
 
 /**
- * Service handling the mapping between a theme page and its resources (styling
- * and flavors)
+ * Service handling the mapping between a theme page and its resources (styling and flavors)
  * <p>
- * Registers corresponding contributions to the {@link ThemeService} so that
- * styling of the page is handled as if styling was provided by the theme
- * definition. Also handles related flavors as theme collections.
+ * Registers corresponding contributions to the {@link ThemeService} so that styling of the page is handled as if
+ * styling was provided by the theme definition. Also handles related flavors as theme collections.
  *
  * @see Flavor
  * @since 5.5
@@ -64,9 +62,8 @@ public interface ThemeStylingService {
     /**
      * Returns the flavor for given name, or null if not found.
      * <p>
-     * If not defined on the local flavor, flavor attributes will be resolved
-     * from the extended flavor if any (except presets that just need to be
-     * resolved at registration to the {@link ThemeService}.
+     * If not defined on the local flavor, flavor attributes will be resolved from the extended flavor if any (except
+     * presets that just need to be resolved at registration to the {@link ThemeService}.
      * </p>
      *
      * @param flavorName
@@ -74,8 +71,7 @@ public interface ThemeStylingService {
     Flavor getFlavor(String flavorName);
 
     /**
-     * Returns the logo configured for given flavor name, and fallbacks on the
-     * extends flavor logo if not set.
+     * Returns the logo configured for given flavor name, and fallbacks on the extends flavor logo if not set.
      *
      * @param flavor
      */
@@ -89,8 +85,7 @@ public interface ThemeStylingService {
     void themeRegistered(String themeName);
 
     /**
-     * Hook to notify the service that global resources for a theme need to be
-     * registered
+     * Hook to notify the service that global resources for a theme need to be registered
      *
      * @param themeUrl
      */

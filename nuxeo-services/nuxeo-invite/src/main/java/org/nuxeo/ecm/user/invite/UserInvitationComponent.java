@@ -67,8 +67,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class UserInvitationComponent extends DefaultComponent implements
-        UserInvitationService {
+public class UserInvitationComponent extends DefaultComponent implements UserInvitationService {
 
     protected static Log log = LogFactory.getLog(UserInvitationService.class);
 
@@ -102,8 +101,7 @@ public class UserInvitationComponent extends DefaultComponent implements
         return repoName;
     }
 
-    protected boolean userAlreadyExists(
-            UserRegistrationInfo userRegistrationInfo) {
+    protected boolean userAlreadyExists(UserRegistrationInfo userRegistrationInfo) {
         try {
             DocumentModel user = Framework.getLocalService(UserManager.class).getUserModel(
                     userRegistrationInfo.getLogin());
@@ -119,39 +117,34 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     @Override
-    public DocumentModel getUserRegistrationModel(String configurationName)
-            throws ClientException {
+    public DocumentModel getUserRegistrationModel(String configurationName) throws ClientException {
         // Test if the configuration is defined
         if (StringUtils.isEmpty(configurationName)) {
             configurationName = DEFAULT_CONFIGURATION_NAME;
         }
         // Get the DocumentModel for the doctype defined in the configuration
-        UserRegistrationModelCreator creator = new UserRegistrationModelCreator(
-                configurationName);
+        UserRegistrationModelCreator creator = new UserRegistrationModelCreator(configurationName);
         creator.runUnrestricted();
         return creator.getUserRegistrationModel();
     }
 
     @Override
-    public DocumentModel getRegistrationRulesDocument(CoreSession session,
-            String configurationName) throws ClientException {
+    public DocumentModel getRegistrationRulesDocument(CoreSession session, String configurationName)
+            throws ClientException {
         // By default, configuration is hold by the root request document
         return getOrCreateRootDocument(session, configurationName);
     }
 
-    public DocumentModel getOrCreateRootDocument(CoreSession session,
-            String configurationName) throws ClientException {
+    public DocumentModel getOrCreateRootDocument(CoreSession session, String configurationName) throws ClientException {
         UserRegistrationConfiguration configuration = getConfiguration(configurationName);
 
-        String targetPath = configuration.getContainerParentPath()
-                + configuration.getContainerName();
+        String targetPath = configuration.getContainerParentPath() + configuration.getContainerName();
         DocumentRef targetRef = new PathRef(targetPath);
         DocumentModel root;
 
         if (!session.exists(targetRef)) {
             root = session.createDocumentModel(configuration.getContainerDocType());
-            root.setPathInfo(configuration.getContainerParentPath(),
-                    configuration.getContainerName());
+            root.setPathInfo(configuration.getContainerParentPath(), configuration.getContainerName());
             root.setPropertyValue("dc:title", configuration.getContainerTitle());
             // XXX ACLs ?!!!
             root = session.createDocument(root);
@@ -162,15 +155,13 @@ public class UserInvitationComponent extends DefaultComponent implements
         // Add configuration facet
         if (!root.hasFacet(FACET_REGISTRATION_CONFIGURATION)) {
             root.addFacet(FACET_REGISTRATION_CONFIGURATION);
-            root.setPropertyValue(FIELD_CONFIGURATION_NAME,
-                    configuration.getName());
+            root.setPropertyValue(FIELD_CONFIGURATION_NAME, configuration.getName());
             root = session.saveDocument(root);
         }
         return root;
     }
 
-    protected class UserRegistrationModelCreator extends
-            UnrestrictedSessionRunner {
+    protected class UserRegistrationModelCreator extends UnrestrictedSessionRunner {
 
         DocumentModel userRegistrationModel;
 
@@ -207,10 +198,8 @@ public class UserInvitationComponent extends DefaultComponent implements
             return registrationUuid;
         }
 
-        public RegistrationCreator(String configurationName,
-                DocumentModel userRegistrationModel,
-                Map<String, Serializable> additionnalInfo,
-                ValidationMethod validationMethod) {
+        public RegistrationCreator(String configurationName, DocumentModel userRegistrationModel,
+                Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod) {
             super(getTargetRepositoryName());
             this.userRegistrationModel = userRegistrationModel;
             this.additionnalInfo = additionnalInfo;
@@ -222,32 +211,24 @@ public class UserInvitationComponent extends DefaultComponent implements
         public void run() throws ClientException {
 
             String title = "registration request for "
-                    + userRegistrationModel.getPropertyValue(configuration.getUserInfoUsernameField())
-                    + " ("
-                    + userRegistrationModel.getPropertyValue(configuration.getUserInfoEmailField())
-                    + " "
-                    + userRegistrationModel.getPropertyValue(configuration.getUserInfoCompanyField())
-                    + ") ";
-            String name = IdUtils.generateId(
-                    title + "-" + System.currentTimeMillis(), "-", true, 24);
+                    + userRegistrationModel.getPropertyValue(configuration.getUserInfoUsernameField()) + " ("
+                    + userRegistrationModel.getPropertyValue(configuration.getUserInfoEmailField()) + " "
+                    + userRegistrationModel.getPropertyValue(configuration.getUserInfoCompanyField()) + ") ";
+            String name = IdUtils.generateId(title + "-" + System.currentTimeMillis(), "-", true, 24);
 
-            String targetPath = getOrCreateRootDocument(session,
-                    configuration.getName()).getPathAsString();
+            String targetPath = getOrCreateRootDocument(session, configuration.getName()).getPathAsString();
 
             userRegistrationModel.setPathInfo(targetPath, name);
             userRegistrationModel.setPropertyValue("dc:title", title);
 
             // validation method
-            userRegistrationModel.setPropertyValue(
-                    "registration:validationMethod",
-                    validationMethod.toString());
+            userRegistrationModel.setPropertyValue("registration:validationMethod", validationMethod.toString());
 
             // additionnal infos
             if (additionnalInfo != null && !additionnalInfo.isEmpty()) {
                 for (String key : additionnalInfo.keySet()) {
                     try {
-                        userRegistrationModel.setPropertyValue(key,
-                                additionnalInfo.get(key));
+                        userRegistrationModel.setPropertyValue(key, additionnalInfo.get(key));
                     } catch (PropertyException e) {
                         // skip silently
                     }
@@ -258,8 +239,7 @@ public class UserInvitationComponent extends DefaultComponent implements
 
             registrationUuid = userRegistrationModel.getId();
 
-            sendEvent(session, userRegistrationModel,
-                    getNameEventRegistrationSubmitted());
+            sendEvent(session, userRegistrationModel, getNameEventRegistrationSubmitted());
 
             session.save();
         }
@@ -272,8 +252,7 @@ public class UserInvitationComponent extends DefaultComponent implements
 
         protected Map<String, Serializable> additionnalInfo;
 
-        public RegistrationAcceptor(String registrationUuid,
-                Map<String, Serializable> additionnalInfo) {
+        public RegistrationAcceptor(String registrationUuid, Map<String, Serializable> additionnalInfo) {
             super(getTargetRepositoryName());
             uuid = registrationUuid;
             this.additionnalInfo = additionnalInfo;
@@ -307,8 +286,7 @@ public class UserInvitationComponent extends DefaultComponent implements
 
         protected Map<String, Serializable> additionnalInfo;
 
-        public RegistrationRejector(String registrationUuid,
-                Map<String, Serializable> additionnalInfo) {
+        public RegistrationRejector(String registrationUuid, Map<String, Serializable> additionnalInfo) {
             super(getTargetRepositoryName());
             uuid = registrationUuid;
             this.additionnalInfo = additionnalInfo;
@@ -338,8 +316,7 @@ public class UserInvitationComponent extends DefaultComponent implements
 
         protected Map<String, Serializable> additionnalInfo;
 
-        public RegistrationValidator(String uuid,
-                Map<String, Serializable> additionnalInfo) {
+        public RegistrationValidator(String uuid, Map<String, Serializable> additionnalInfo) {
             super(getTargetRepositoryName());
             this.uuid = uuid;
             this.additionnalInfo = additionnalInfo;
@@ -358,39 +335,32 @@ public class UserInvitationComponent extends DefaultComponent implements
             // additionnal infos
             for (String key : additionnalInfo.keySet()) {
                 try {
-                    registrationDoc.setPropertyValue(key,
-                            additionnalInfo.get(key));
+                    registrationDoc.setPropertyValue(key, additionnalInfo.get(key));
                 } catch (PropertyException e) {
                     // skip silently
                 }
             }
 
-            if (registrationDoc.getLifeCyclePolicy().equals(
-                    "registrationRequest")) {
-                if (registrationDoc.getCurrentLifeCycleState().equals(
-                        "accepted")) {
+            if (registrationDoc.getLifeCyclePolicy().equals("registrationRequest")) {
+                if (registrationDoc.getCurrentLifeCycleState().equals("accepted")) {
                     registrationDoc.followTransition("validate");
                 } else {
-                    if (registrationDoc.getCurrentLifeCycleState().equals(
-                            "validated")) {
+                    if (registrationDoc.getCurrentLifeCycleState().equals("validated")) {
                         throw new AlreadyProcessedRegistrationException(
                                 "Registration request has already been processed.");
                     } else {
-                        throw new UserRegistrationException(
-                                "Registration request has not been accepted yet.");
+                        throw new UserRegistrationException("Registration request has not been accepted yet.");
                     }
                 }
             }
 
             session.saveDocument(registrationDoc);
             session.save();
-            EventContext evContext = sendEvent(session, registrationDoc,
-                    getNameEventRegistrationValidated());
+            EventContext evContext = sendEvent(session, registrationDoc, getNameEventRegistrationValidated());
 
             ((DocumentModelImpl) registrationDoc).detach(sessionIsAlreadyUnrestricted);
             registrationData.put(REGISTRATION_DATA_DOC, registrationDoc);
-            registrationData.put(REGISTRATION_DATA_USER,
-                    evContext.getProperty("registeredUser"));
+            registrationData.put(REGISTRATION_DATA_USER, evContext.getProperty("registeredUser"));
         }
 
     }
@@ -409,26 +379,22 @@ public class UserInvitationComponent extends DefaultComponent implements
             DocumentRef idRef = new IdRef(uuid);
             // Check if the id matches an existing document
             if (!session.exists(idRef)) {
-                throw new UserRegistrationException(
-                        "There is no existing registration request with id "
-                                + uuid);
+                throw new UserRegistrationException("There is no existing registration request with id " + uuid);
             }
 
             // Check if the request has not been already validated
             DocumentModel registrationDoc = session.getDocument(idRef);
             if (registrationDoc.getCurrentLifeCycleState().equals("validated")) {
-                throw new AlreadyProcessedRegistrationException(
-                        "Registration request has already been processed.");
+                throw new AlreadyProcessedRegistrationException("Registration request has already been processed.");
             }
         }
     }
 
-    protected EventContext sendEvent(CoreSession session, DocumentModel source,
-            String evName) throws UserRegistrationException {
+    protected EventContext sendEvent(CoreSession session, DocumentModel source, String evName)
+            throws UserRegistrationException {
         try {
             EventService evService = Framework.getService(EventService.class);
-            EventContext evContext = new DocumentEventContext(session,
-                    session.getPrincipal(), source);
+            EventContext evContext = new DocumentEventContext(session, session.getPrincipal(), source);
 
             Event event = evContext.newEvent(evName);
 
@@ -445,9 +411,8 @@ public class UserInvitationComponent extends DefaultComponent implements
 
     }
 
-    protected void sendValidationEmail(
-            Map<String, Serializable> additionnalInfo,
-            DocumentModel registrationDoc) throws ClientException {
+    protected void sendValidationEmail(Map<String, Serializable> additionnalInfo, DocumentModel registrationDoc)
+            throws ClientException {
 
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
 
@@ -455,15 +420,9 @@ public class UserInvitationComponent extends DefaultComponent implements
 
         Map<String, Serializable> input = new HashMap<String, Serializable>();
         Map<String, Serializable> userinfo = new HashMap<String, Serializable>();
-        userinfo.put(
-                "firstName",
-                registrationDoc.getPropertyValue(configuration.getUserInfoFirstnameField()));
-        userinfo.put(
-                "lastName",
-                registrationDoc.getPropertyValue(configuration.getUserInfoLastnameField()));
-        userinfo.put(
-                "login",
-                registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField()));
+        userinfo.put("firstName", registrationDoc.getPropertyValue(configuration.getUserInfoFirstnameField()));
+        userinfo.put("lastName", registrationDoc.getPropertyValue(configuration.getUserInfoLastnameField()));
+        userinfo.put("login", registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField()));
         userinfo.put("id", registrationDoc.getId());
 
         String documentTitle = "";
@@ -473,19 +432,15 @@ public class UserInvitationComponent extends DefaultComponent implements
         }
         input.put("documentTitle", documentTitle);
         input.put("configurationName", configuration.getName());
-        input.put("comment",
-                registrationDoc.getPropertyValue("registration:comment"));
-        input.put(UserInvitationService.REGISTRATION_CONFIGURATION_NAME,
-                configuration.getName());
+        input.put("comment", registrationDoc.getPropertyValue("registration:comment"));
+        input.put(UserInvitationService.REGISTRATION_CONFIGURATION_NAME, configuration.getName());
         input.put("userinfo", (Serializable) userinfo);
         input.put("info", (Serializable) additionnalInfo);
-        input.put("userAlreadyExists",
-                checkUserFromRegistrationExistence(registrationDoc));
+        input.put("userAlreadyExists", checkUserFromRegistrationExistence(registrationDoc));
         StringWriter writer = new StringWriter();
 
         try {
-            rh.getRenderingEngine().render(
-                    configuration.getValidationEmailTemplate(), input, writer);
+            rh.getRenderingEngine().render(configuration.getValidationEmailTemplate(), input, writer);
         } catch (RenderingException e) {
             throw new ClientException("Error during rendering email", e);
         }
@@ -506,30 +461,26 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     protected static boolean isTestModeSet() {
-        return Framework.isTestModeSet()
-                || !StringUtils.isBlank(Framework.getProperty("org.nuxeo.ecm.tester.name"));
+        return Framework.isTestModeSet() || !StringUtils.isBlank(Framework.getProperty("org.nuxeo.ecm.tester.name"));
     }
 
-    protected boolean checkUserFromRegistrationExistence(
-            DocumentModel registrationDoc) throws ClientException {
+    protected boolean checkUserFromRegistrationExistence(DocumentModel registrationDoc) throws ClientException {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         return null != Framework.getLocalService(UserManager.class).getPrincipal(
                 (String) registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField()));
     }
 
-    protected void generateMail(String destination, String copy, String title,
-            String content) throws NamingException, MessagingException {
+    protected void generateMail(String destination, String copy, String title, String content) throws NamingException,
+            MessagingException {
 
         InitialContext ic = new InitialContext();
         Session session = (Session) ic.lookup(getJavaMailJndiName());
 
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
-        msg.setRecipients(Message.RecipientType.TO,
-                InternetAddress.parse(destination, false));
+        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destination, false));
         if (!StringUtils.isBlank(copy)) {
-            msg.addRecipient(Message.RecipientType.CC, new InternetAddress(
-                    copy, false));
+            msg.addRecipient(Message.RecipientType.CC, new InternetAddress(copy, false));
         }
 
         msg.setSubject(title, "UTF-8");
@@ -540,27 +491,22 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     @Override
-    public String submitRegistrationRequest(
-            DocumentModel userRegistrationModel,
-            Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept)
+    public String submitRegistrationRequest(DocumentModel userRegistrationModel,
+            Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept)
             throws ClientException {
-        return submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME,
-                userRegistrationModel, additionnalInfo, validationMethod,
-                autoAccept);
+        return submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userRegistrationModel, additionnalInfo,
+                validationMethod, autoAccept);
     }
 
     @Override
-    public DocumentModelList getRegistrationsForUser(final String docId,
-            final String username, final String configurationName)
-            throws ClientException {
+    public DocumentModelList getRegistrationsForUser(final String docId, final String username,
+            final String configurationName) throws ClientException {
         final DocumentModelList registrationDocs = new DocumentModelListImpl();
         new UnrestrictedSessionRunner(getTargetRepositoryName()) {
             @Override
             public void run() throws ClientException {
                 String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND"
-                        + " ecm:mixinType = '"
-                        + getConfiguration(configurationName).getRequestDocType()
+                        + " ecm:mixinType = '" + getConfiguration(configurationName).getRequestDocType()
                         + "' AND docinfo:documentId = '%s' AND"
                         + getConfiguration(configurationName).getUserInfoUsernameField()
                         + " = '%s' AND ecm:isCheckedInVersion = 0";
@@ -572,27 +518,21 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     @Override
-    public String submitRegistrationRequest(String configurationName,
-            DocumentModel userRegistrationModel,
-            Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept)
+    public String submitRegistrationRequest(String configurationName, DocumentModel userRegistrationModel,
+            Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept)
             throws ClientException, UserRegistrationException {
-        RegistrationCreator creator = new RegistrationCreator(
-                configurationName, userRegistrationModel, additionnalInfo,
-                validationMethod);
+        RegistrationCreator creator = new RegistrationCreator(configurationName, userRegistrationModel,
+                additionnalInfo, validationMethod);
         creator.runUnrestricted();
         String registrationUuid = creator.getRegistrationUuid();
 
-        boolean userAlreadyExists = null != Framework.getLocalService(
-                UserManager.class).getPrincipal(
-                (String) userRegistrationModel.getPropertyValue(getConfiguration(
-                        configurationName).getUserInfoUsernameField()));
+        boolean userAlreadyExists = null != Framework.getLocalService(UserManager.class).getPrincipal(
+                (String) userRegistrationModel.getPropertyValue(getConfiguration(configurationName).getUserInfoUsernameField()));
         // Directly accept registration if the configuration allow it and the
         // user already exists
         RegistrationRules registrationRules = getRegistrationRules(configurationName);
         boolean byPassAdminValidation = autoAccept;
-        byPassAdminValidation |= userAlreadyExists
-                && registrationRules.allowDirectValidationForExistingUser();
+        byPassAdminValidation |= userAlreadyExists && registrationRules.allowDirectValidationForExistingUser();
         byPassAdminValidation |= registrationRules.allowDirectValidationForExistingUser()
                 && registrationRules.allowDirectValidationForNonExistingUser();
         if (byPassAdminValidation) {
@@ -609,8 +549,7 @@ public class UserInvitationComponent extends DefaultComponent implements
                 if (enterPasswordUrl.startsWith("/")) {
                     enterPasswordUrl = enterPasswordUrl.substring(1);
                 }
-                additionnalInfo.put("enterPasswordUrl",
-                        baseUrl.concat(enterPasswordUrl));
+                additionnalInfo.put("enterPasswordUrl", baseUrl.concat(enterPasswordUrl));
             }
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
@@ -618,43 +557,35 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     @Override
-    public void acceptRegistrationRequest(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException,
-            UserRegistrationException {
-        RegistrationAcceptor acceptor = new RegistrationAcceptor(requestId,
-                additionnalInfo);
+    public void acceptRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo)
+            throws ClientException, UserRegistrationException {
+        RegistrationAcceptor acceptor = new RegistrationAcceptor(requestId, additionnalInfo);
         acceptor.runUnrestricted();
 
     }
 
     @Override
-    public void rejectRegistrationRequest(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException,
-            UserRegistrationException {
+    public void rejectRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo)
+            throws ClientException, UserRegistrationException {
 
-        RegistrationRejector rejector = new RegistrationRejector(requestId,
-                additionnalInfo);
+        RegistrationRejector rejector = new RegistrationRejector(requestId, additionnalInfo);
         rejector.runUnrestricted();
 
     }
 
     @Override
-    public Map<String, Serializable> validateRegistration(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException,
-            UserRegistrationException {
-        RegistrationValidator validator = new RegistrationValidator(requestId,
-                additionnalInfo);
+    public Map<String, Serializable> validateRegistration(String requestId, Map<String, Serializable> additionnalInfo)
+            throws ClientException, UserRegistrationException {
+        RegistrationValidator validator = new RegistrationValidator(requestId, additionnalInfo);
         validator.runUnrestricted();
         return validator.getRegistrationData();
     }
 
     @Override
-    public Map<String, Serializable> validateRegistrationAndSendEmail(
-            String requestId, Map<String, Serializable> additionnalInfo)
-            throws ClientException, UserRegistrationException {
+    public Map<String, Serializable> validateRegistrationAndSendEmail(String requestId,
+            Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException {
 
-        Map<String, Serializable> registrationInfo = validateRegistration(
-                requestId, additionnalInfo);
+        Map<String, Serializable> registrationInfo = validateRegistration(requestId, additionnalInfo);
 
         Map<String, Serializable> input = new HashMap<String, Serializable>();
         input.putAll(registrationInfo);
@@ -663,8 +594,7 @@ public class UserInvitationComponent extends DefaultComponent implements
 
         UserRegistrationConfiguration configuration = getConfiguration((DocumentModel) registrationInfo.get(REGISTRATION_DATA_DOC));
         try {
-            rh.getRenderingEngine().render(
-                    configuration.getSuccessEmailTemplate(), input, writer);
+            rh.getRenderingEngine().render(configuration.getSuccessEmailTemplate(), input, writer);
         } catch (RenderingException e) {
             throw new ClientException("Error during rendering email", e);
         }
@@ -686,8 +616,7 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("configuration".equals(extensionPoint)) {
             UserRegistrationConfiguration newConfig = (UserRegistrationConfiguration) contribution;
 
@@ -706,8 +635,7 @@ public class UserInvitationComponent extends DefaultComponent implements
         }
     }
 
-    protected InvitationUserFactory getRegistrationUserFactory(
-            UserRegistrationConfiguration configuration) {
+    protected InvitationUserFactory getRegistrationUserFactory(UserRegistrationConfiguration configuration) {
         InvitationUserFactory factory = null;
         Class<? extends InvitationUserFactory> factoryClass = configuration.getRegistrationUserFactory();
         if (factoryClass != null) {
@@ -726,12 +654,10 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     @Override
-    public NuxeoPrincipal createUser(CoreSession session,
-            DocumentModel registrationDoc) throws ClientException,
+    public NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc) throws ClientException,
             UserRegistrationException {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
-        return getRegistrationUserFactory(configuration).doCreateUser(session,
-                registrationDoc, configuration);
+        return getRegistrationUserFactory(configuration).doCreateUser(session, registrationDoc, configuration);
     }
 
     protected class RootDocumentGetter extends UnrestrictedSessionRunner {
@@ -762,11 +688,9 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     @Override
-    public UserRegistrationConfiguration getConfiguration(
-            DocumentModel requestDoc) {
+    public UserRegistrationConfiguration getConfiguration(DocumentModel requestDoc) {
         try {
-            DocumentModel parent = requestDoc.getCoreSession().getDocument(
-                    requestDoc.getParentRef());
+            DocumentModel parent = requestDoc.getCoreSession().getDocument(requestDoc.getParentRef());
             String configurationName = DEFAULT_CONFIGURATION_NAME;
             if (parent.hasFacet(FACET_REGISTRATION_CONFIGURATION)) {
                 configurationName = (String) parent.getPropertyValue(FIELD_CONFIGURATION_NAME);
@@ -775,8 +699,7 @@ public class UserInvitationComponent extends DefaultComponent implements
             }
 
             if (!configurations.containsKey(configurationName)) {
-                throw new ClientException("Configuration " + configurationName
-                        + " is not registered");
+                throw new ClientException("Configuration " + configurationName + " is not registered");
             }
             return configurations.get(configurationName);
         } catch (ClientException e) {
@@ -788,32 +711,28 @@ public class UserInvitationComponent extends DefaultComponent implements
     @Override
     public UserRegistrationConfiguration getConfiguration(String name) {
         if (!configurations.containsKey(name)) {
-            throw new ClientRuntimeException(
-                    "Trying to get unknown user registration configuration.");
+            throw new ClientRuntimeException("Trying to get unknown user registration configuration.");
         }
         return configurations.get(name);
     }
 
     @Override
-    public RegistrationRules getRegistrationRules(String configurationName)
-            throws ClientException {
+    public RegistrationRules getRegistrationRules(String configurationName) throws ClientException {
         RootDocumentGetter rdg = new RootDocumentGetter(configurationName);
         rdg.runUnrestricted();
         return rdg.getDoc().getAdapter(RegistrationRules.class);
     }
 
     @Override
-    public void reviveRegistrationRequests(CoreSession session,
-            List<DocumentModel> registrationDocs) throws ClientException {
+    public void reviveRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs)
+            throws ClientException {
         for (DocumentModel registrationDoc : registrationDocs) {
-            reviveRegistrationRequest(session, registrationDoc,
-                    new HashMap<String, Object>());
+            reviveRegistrationRequest(session, registrationDoc, new HashMap<String, Object>());
         }
     }
 
-    protected void reviveRegistrationRequest(CoreSession session,
-            DocumentModel registrationDoc, Map<String, Object> additionalInfos)
-            throws ClientException {
+    protected void reviveRegistrationRequest(CoreSession session, DocumentModel registrationDoc,
+            Map<String, Object> additionalInfos) throws ClientException {
         StringWriter writer = new StringWriter();
         Map<String, Object> input = new HashMap<String, Object>();
 
@@ -825,21 +744,15 @@ public class UserInvitationComponent extends DefaultComponent implements
             baseUrl += "/";
         }
 
-        additionalInfos.put(
-                "validationBaseURL",
-                baseUrl
-                        + getConfiguration(registrationDoc).getValidationRelUrl());
+        additionalInfos.put("validationBaseURL", baseUrl + getConfiguration(registrationDoc).getValidationRelUrl());
         input.put("info", additionalInfos);
-        input.put("userAlreadyExists",
-                checkUserFromRegistrationExistence(registrationDoc));
+        input.put("userAlreadyExists", checkUserFromRegistrationExistence(registrationDoc));
         input.put(REGISTRATION_DATA_DOC, registrationDoc);
-        input.put(UserInvitationService.REGISTRATION_CONFIGURATION_NAME,
-                getConfiguration(registrationDoc).getName());
+        input.put(UserInvitationService.REGISTRATION_CONFIGURATION_NAME, getConfiguration(registrationDoc).getName());
 
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         try {
-            rh.getRenderingEngine().render(
-                    configuration.getReviveEmailTemplate(), input, writer);
+            rh.getRenderingEngine().render(configuration.getReviveEmailTemplate(), input, writer);
         } catch (RenderingException e) {
             throw new ClientException("Error during templating email : ", e);
         }
@@ -860,13 +773,12 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     @Override
-    public void deleteRegistrationRequests(CoreSession session,
-            List<DocumentModel> registrationDocs) throws ClientException {
+    public void deleteRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs)
+            throws ClientException {
         for (DocumentModel registration : registrationDocs) {
             UserRegistrationConfiguration configuration = getConfiguration(registration);
             if (!registration.hasSchema(configuration.getUserInfoSchemaName())) {
-                throw new ClientException(
-                        "Registration document do not contains needed schema");
+                throw new ClientException("Registration document do not contains needed schema");
             }
 
             session.removeDocument(registration.getRef());
@@ -879,8 +791,7 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     @Override
-    public void checkRequestId(final String requestId) throws ClientException,
-            UserRegistrationException {
+    public void checkRequestId(final String requestId) throws ClientException, UserRegistrationException {
         RequestIdValidator runner = new RequestIdValidator(requestId);
         runner.runUnrestricted();
     }

@@ -28,7 +28,6 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
  * XML serializer for PictureTiles structure
  *
  * @author tiry
- *
  */
 public class XMLPictureTilesSerializer implements PictureTilesSerializer {
 
@@ -36,8 +35,8 @@ public class XMLPictureTilesSerializer implements PictureTilesSerializer {
 
     private static final String picturetilesNSPrefix = "nxpt";
 
-    private static QName rootTag = DocumentFactory.getInstance().createQName(
-            "pictureTiles", picturetilesNSPrefix, picturetilesNS);
+    private static QName rootTag = DocumentFactory.getInstance().createQName("pictureTiles", picturetilesNSPrefix,
+            picturetilesNS);
 
     protected void dumpImageInfo(ImageInfo info, org.dom4j.Element root) {
         root.addElement("format").setText(info.getFormat());
@@ -46,11 +45,9 @@ public class XMLPictureTilesSerializer implements PictureTilesSerializer {
     }
 
     public String serialize(PictureTiles tiles) {
-        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(
-                rootTag);
+        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(rootTag);
         rootElem.addNamespace(picturetilesNSPrefix, picturetilesNS);
-        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(
-                rootElem);
+        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(rootElem);
 
         // tile info
         org.dom4j.Element tileInfo = rootElem.addElement("tileInfo");

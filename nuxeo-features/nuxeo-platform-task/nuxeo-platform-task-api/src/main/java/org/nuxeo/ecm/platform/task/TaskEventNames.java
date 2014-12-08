@@ -25,8 +25,7 @@ package org.nuxeo.ecm.platform.task;
 public final class TaskEventNames {
 
     /**
-     * Fired when WF Seam Bean are first created. Used to create the WF
-     * EventListener that catches Seam events
+     * Fired when WF Seam Bean are first created. Used to create the WF EventListener that catches Seam events
      */
     public static final String WF_INIT = "workflowInit";
 
@@ -112,8 +111,7 @@ public final class TaskEventNames {
     public static final String WORK_ITEMS_LIST_LOADED = "workItemsListLoaded";
 
     /**
-     * A task variable key to disable the notification service. (i.e. no email
-     * sending through this service)
+     * A task variable key to disable the notification service. (i.e. no email sending through this service)
      */
     public static final String DISABLE_NOTIFICATION_SERVICE = "disableNotificationService";
 

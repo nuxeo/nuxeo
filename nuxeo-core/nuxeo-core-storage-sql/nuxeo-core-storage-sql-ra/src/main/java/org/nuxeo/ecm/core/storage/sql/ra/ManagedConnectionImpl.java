@@ -35,19 +35,16 @@ import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 
 /**
- * The managed connection represents an actual physical connection to the
- * underlying storage. It is created by the {@link ManagedConnectionFactory},
- * and then encapsulated into a {@link Connection} which is then returned to the
+ * The managed connection represents an actual physical connection to the underlying storage. It is created by the
+ * {@link ManagedConnectionFactory}, and then encapsulated into a {@link Connection} which is then returned to the
  * application (via the {@link ConnectionFactory}).
  * <p>
- * If sharing is allowed, several different {@link Connection}s may be
- * associated to a given {@link ManagedConnection}, although not at the same
- * time.
+ * If sharing is allowed, several different {@link Connection}s may be associated to a given {@link ManagedConnection},
+ * although not at the same time.
  *
  * @author Florent Guillaume
  */
-public class ManagedConnectionImpl implements ManagedConnection,
-        ManagedConnectionMetaData {
+public class ManagedConnectionImpl implements ManagedConnection, ManagedConnectionMetaData {
 
     private static final Log log = LogFactory.getLog(ManagedConnectionImpl.class);
 
@@ -56,8 +53,8 @@ public class ManagedConnectionImpl implements ManagedConnection,
     private final ManagedConnectionFactoryImpl managedConnectionFactory;
 
     /**
-     * All the {@link Connection} handles for this managed connection. There is
-     * usually only one, unless sharing is in effect.
+     * All the {@link Connection} handles for this managed connection. There is usually only one, unless sharing is in
+     * effect.
      */
     private final Set<ConnectionImpl> connections;
 
@@ -72,20 +69,18 @@ public class ManagedConnectionImpl implements ManagedConnection,
     private final XAResource xaresource;
 
     /**
-     * List of listeners set by the application server which we must notify of
-     * all activity happening on our {@link Connection}.
+     * List of listeners set by the application server which we must notify of all activity happening on our
+     * {@link Connection}.
      */
     private final ListenerList listeners;
 
     /**
-     * Creates a new physical connection to the underlying storage. Called by
-     * the {@link ManagedConnectionFactory} when it needs a new connection.
+     * Creates a new physical connection to the underlying storage. Called by the {@link ManagedConnectionFactory} when
+     * it needs a new connection.
      *
      * @throws ResourceException
      */
-    public ManagedConnectionImpl(
-            ManagedConnectionFactoryImpl managedConnectionFactory)
-            throws ResourceException {
+    public ManagedConnectionImpl(ManagedConnectionFactoryImpl managedConnectionFactory) throws ResourceException {
         log.debug("construct: " + this);
         if (log.isTraceEnabled()) {
             log.trace("debug stack trace", new Exception());
@@ -104,12 +99,10 @@ public class ManagedConnectionImpl implements ManagedConnection,
      */
 
     /**
-     * Creates a new {@link Connection} handle to this {@link ManagedConnection}
-     * .
+     * Creates a new {@link Connection} handle to this {@link ManagedConnection} .
      */
     @Override
-    public synchronized Connection getConnection(Subject subject,
-            ConnectionRequestInfo connectionRequestInfo)
+    public synchronized Connection getConnection(Subject subject, ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
         // connectionRequestInfo unused
         log.debug("getConnection: " + this);
@@ -121,8 +114,8 @@ public class ManagedConnectionImpl implements ManagedConnection,
     /**
      * Cleans up the physical connection, so that it may be reused.
      * <p>
-     * Called by the application server before putting back this
-     * {@link ManagedConnection} into the application server pool.
+     * Called by the application server before putting back this {@link ManagedConnection} into the application server
+     * pool.
      * <p>
      * Later, the application server may call {@link #getConnection} again.
      */
@@ -141,8 +134,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
     /**
      * Destroys the physical connection.
      * <p>
-     * Called by the application server before this {@link ManagedConnection} is
-     * destroyed.
+     * Called by the application server before this {@link ManagedConnection} is destroyed.
      */
     @Override
     public void destroy() throws ResourceException {
@@ -152,15 +144,13 @@ public class ManagedConnectionImpl implements ManagedConnection,
     }
 
     /**
-     * Called by the application server to change the association of an
-     * application-level {@link Connection} handle with a
-     * {@link ManagedConnection} instance.
+     * Called by the application server to change the association of an application-level {@link Connection} handle with
+     * a {@link ManagedConnection} instance.
      */
     @Override
     public void associateConnection(Object object) throws ResourceException {
         ConnectionImpl connection = (ConnectionImpl) object;
-        log.debug("associateConnection: " + this + ", connection: "
-                + connection);
+        log.debug("associateConnection: " + this + ", connection: " + connection);
         ManagedConnectionImpl other = connection.getManagedConnection();
         if (other != this) {
             log.debug("associateConnection other: " + other);
@@ -176,13 +166,12 @@ public class ManagedConnectionImpl implements ManagedConnection,
 
     @Override
     public LocalTransaction getLocalTransaction() {
-        throw new UnsupportedOperationException(
-                "Local transactions not supported");
+        throw new UnsupportedOperationException("Local transactions not supported");
     }
 
     /**
-     * Called by the application server to add a listener who should be notified
-     * of all relevant events on this connection.
+     * Called by the application server to add a listener who should be notified of all relevant events on this
+     * connection.
      */
     @Override
     public void addConnectionEventListener(ConnectionEventListener listener) {
@@ -297,8 +286,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
     }
 
     protected void sendTxRolledbackEvent(ConnectionImpl connection) {
-        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_ROLLEDBACK, connection,
-                null);
+        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_ROLLEDBACK, connection, null);
     }
 
     protected void sendErrorEvent(ConnectionImpl connection, Exception cause) {
@@ -314,8 +302,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
     }
 
     /**
-     * Notifies the application server, through the
-     * {@link ConnectionEventListener}s it has registered with us, of what
+     * Notifies the application server, through the {@link ConnectionEventListener}s it has registered with us, of what
      * happens with this connection.
      */
     private void sendEvent(ConnectionEvent event) {

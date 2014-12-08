@@ -95,8 +95,7 @@ public class TestNodeFactory {
 
     @Test
     public void testCreateQNameResource() {
-        QNameResource res = NodeFactory.createQNameResource("http://dummy/",
-                "uri");
+        QNameResource res = NodeFactory.createQNameResource("http://dummy/", "uri");
         assertNotNull(res);
         assertFalse(res.isLiteral());
         assertFalse(res.isBlank());

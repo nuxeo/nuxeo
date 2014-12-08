@@ -21,18 +21,16 @@ package org.nuxeo.ecm.webengine.ui.tree;
 
 import java.io.Serializable;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ContentProvider extends Serializable {
 
     /**
      * Gets the name of the object.
      * <p>
-     * The name must be an unique identifier relative to the parent item.
-     * It will be used as node names in the tree so that they will construct the item path.
+     * The name must be an unique identifier relative to the parent item. It will be used as node names in the tree so
+     * that they will construct the item path.
      *
      * @param obj the object
      * @return the name
@@ -50,8 +48,7 @@ public interface ContentProvider extends Serializable {
     /**
      * Gets the object facets.
      * <p>
-     * Facets are arbitrary strings that should describe object capabilities and
-     * can be used to decorate later the item.
+     * Facets are arbitrary strings that should describe object capabilities and can be used to decorate later the item.
      * <p>
      * In a web environment they may be translated to CSS classes.
      *
@@ -70,9 +67,8 @@ public interface ContentProvider extends Serializable {
     /**
      * Gets the top level items.
      * <p>
-     * The items will be shown on the top level of the tree.
-     * These items are computed from the tree input that will be considered the tree root.
-     * The tree root is not visible.
+     * The items will be shown on the top level of the tree. These items are computed from the tree input that will be
+     * considered the tree root. The tree root is not visible.
      *
      * @param input the tree view input
      * @return the top level items

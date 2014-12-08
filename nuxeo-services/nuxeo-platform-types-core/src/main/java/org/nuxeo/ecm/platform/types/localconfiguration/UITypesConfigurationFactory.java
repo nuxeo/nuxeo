@@ -22,8 +22,8 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET;
 
 /**
- * Factory creating the {@code UITypesConfigurationAdapter} adapter if the
- * document has the {@code UITypesLocalConfiguration} facet.
+ * Factory creating the {@code UITypesConfigurationAdapter} adapter if the document has the
+ * {@code UITypesLocalConfiguration} facet.
  *
  * @see UITypesConfigurationAdapter
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

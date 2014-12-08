@@ -33,9 +33,8 @@ import javax.faces.view.facelets.TagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 
 /**
- * Dev tag container, displaying a div and decorating the dev handler for dev
- * mode rendering, and displaying the original handler (layout or widget
- * handler) after that.
+ * Dev tag container, displaying a div and decorating the dev handler for dev mode rendering, and displaying the
+ * original handler (layout or widget handler) after that.
  *
  * @since 6.0
  */
@@ -51,8 +50,7 @@ public class DevTagHandler extends TagHandler {
 
     protected static final String PANEL_COMPONENT_TYPE = "org.richfaces.OutputPanel";
 
-    public DevTagHandler(TagConfig config, String refId,
-            FaceletHandler originalHandler, FaceletHandler devHandler) {
+    public DevTagHandler(TagConfig config, String refId, FaceletHandler originalHandler, FaceletHandler devHandler) {
         super(config);
         this.refId = refId;
         this.config = config;
@@ -61,28 +59,22 @@ public class DevTagHandler extends TagHandler {
     }
 
     @Override
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
+            ELException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
         TagAttributes devAttrs = FaceletHandlerHelper.getTagAttributes(
-                helper.createAttribute("id",
-                        helper.generateDevContainerId(refId)),
+                helper.createAttribute("id", helper.generateDevContainerId(refId)),
                 helper.createAttribute("styleClass", "displayN nxlDevContainer"),
                 helper.createAttribute("layout", "block"));
-        ComponentHandler dComp = helper.getHtmlComponentHandler(
-                config.getTagId(), devAttrs, devHandler, PANEL_COMPONENT_TYPE,
-                null);
-        FaceletHandler nextHandler = new CompositeFaceletHandler(
-                new FaceletHandler[] {
-                        helper.getDisableDevModeTagHandler(config.getTagId(),
-                                dComp), originalHandler });
+        ComponentHandler dComp = helper.getHtmlComponentHandler(config.getTagId(), devAttrs, devHandler,
+                PANEL_COMPONENT_TYPE, null);
+        FaceletHandler nextHandler = new CompositeFaceletHandler(new FaceletHandler[] {
+                helper.getDisableDevModeTagHandler(config.getTagId(), dComp), originalHandler });
         TagAttributes cAttrs = FaceletHandlerHelper.getTagAttributes(
                 helper.createAttribute("id", helper.generateDevRegionId(refId)),
-                helper.createAttribute("styleClass", "nxlDevRegion"),
-                helper.createAttribute("layout", "block"));
-        ComponentHandler cComp = helper.getHtmlComponentHandler(
-                config.getTagId(), cAttrs, nextHandler, PANEL_COMPONENT_TYPE,
-                null);
+                helper.createAttribute("styleClass", "nxlDevRegion"), helper.createAttribute("layout", "block"));
+        ComponentHandler cComp = helper.getHtmlComponentHandler(config.getTagId(), cAttrs, nextHandler,
+                PANEL_COMPONENT_TYPE, null);
         cComp.apply(ctx, parent);
     }
 

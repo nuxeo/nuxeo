@@ -27,8 +27,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @Provider
@@ -46,8 +44,7 @@ public class NuxeoPrincipalListWriter extends EntityListWriter<NuxeoPrincipal> {
     }
 
     @Override
-    protected void writeItem(JsonGenerator jg, NuxeoPrincipal item)
-            throws ClientException, IOException {
+    protected void writeItem(JsonGenerator jg, NuxeoPrincipal item) throws ClientException, IOException {
 
         NuxeoPrincipalWriter npw = new NuxeoPrincipalWriter();
         npw.writeEntity(jg, item);

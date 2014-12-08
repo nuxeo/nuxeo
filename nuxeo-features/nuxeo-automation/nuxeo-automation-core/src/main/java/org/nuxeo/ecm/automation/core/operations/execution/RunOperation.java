@@ -25,8 +25,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 
 /**
- * Run an embedded operation chain using the current input. The output is
- * undefined (Void)
+ * Run an embedded operation chain using the current input. The output is undefined (Void)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

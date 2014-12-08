@@ -16,7 +16,6 @@
  *
  */
 
-
 package org.nuxeo.ecm.core.event.test.virusscan.listeners;
 
 import java.util.ArrayList;
@@ -39,16 +38,13 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Synchronous listener that intercept Document create/update events.
  * <p/>
- * This listener detects if Blobs have been modified inside the doc, and if yes,
- * it will raise the virusScanNeeded so that the async listener can do the real
- * job in async mode.
+ * This listener detects if Blobs have been modified inside the doc, and if yes, it will raise the virusScanNeeded so
+ * that the async listener can do the real job in async mode.
  * <p/>
- * The work done in sync includes extracting dirty Blobs xpath that are then
- * tranmisted to the Async listener using a custom extended
- * {@link VirusScanEventContext}
+ * The work done in sync includes extracting dirty Blobs xpath that are then tranmisted to the Async listener using a
+ * custom extended {@link VirusScanEventContext}
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class VirusScanSyncListener implements EventListener {
 
@@ -61,8 +57,7 @@ public class VirusScanSyncListener implements EventListener {
             DocumentEventContext docCtx = (DocumentEventContext) event.getContext();
             DocumentModel targetDoc = docCtx.getSourceDocument();
 
-            Boolean block = (Boolean) event.getContext().getProperty(
-                    VirusScanConsts.DISABLE_VIRUSSCAN_LISTENER);
+            Boolean block = (Boolean) event.getContext().getProperty(VirusScanConsts.DISABLE_VIRUSSCAN_LISTENER);
             if (block != null && block) {
                 // ignore the event - we are blocked by the caller
                 return;
@@ -83,8 +78,7 @@ public class VirusScanSyncListener implements EventListener {
             }
 
             if (propertiesPath != null && propertiesPath.size() > 0) {
-                VirusScanEventContext virusScanCtx = new VirusScanEventContext(
-                        docCtx, propertiesPath);
+                VirusScanEventContext virusScanCtx = new VirusScanEventContext(docCtx, propertiesPath);
 
                 EventService eventService = Framework.getLocalService(EventService.class);
                 eventService.fireEvent(virusScanCtx.newVirusScanEvent());
@@ -92,17 +86,14 @@ public class VirusScanSyncListener implements EventListener {
         }
     }
 
-    protected void markDocumentForScaning(DocumentModel doc)
-            throws ClientException {
+    protected void markDocumentForScaning(DocumentModel doc) throws ClientException {
         if (!doc.hasFacet(VirusScanConsts.VIRUSSCAN_FACET)) {
             doc.addFacet(VirusScanConsts.VIRUSSCAN_FACET);
         }
-        doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP,
-                VirusScanConsts.VIRUSSCAN_STATUS_PENDING);
+        doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP, VirusScanConsts.VIRUSSCAN_STATUS_PENDING);
     }
 
-    protected List<String> getBlobsXPath(DocumentModel doc,
-            boolean onlyChangedBlob) throws ClientException {
+    protected List<String> getBlobsXPath(DocumentModel doc, boolean onlyChangedBlob) throws ClientException {
 
         List<String> propertiesPath = new ArrayList<String>();
         BlobsExtractor extractor = new BlobsExtractor();

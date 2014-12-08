@@ -40,6 +40,7 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**
  * Thumbnail Manager seam bean
+ *
  * @since 5.7
  */
 @Name("thumbnailManager")
@@ -61,8 +62,7 @@ public class ThumbnailManagerBean implements Serializable {
         if (docView != null) {
             DocumentLocation docLoc = docView.getDocumentLocation();
             if (documentManager == null) {
-                RepositoryLocation loc = new RepositoryLocation(
-                        docLoc.getServerName());
+                RepositoryLocation loc = new RepositoryLocation(docLoc.getServerName());
                 navigationContext.setCurrentServerLocation(loc);
                 documentManager = navigationContext.getOrCreateDocumentManager();
             }

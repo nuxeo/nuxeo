@@ -37,8 +37,7 @@ public interface DocumentActions extends Serializable {
     /**
      * Returns the edit view of a document.
      *
-     * @deprecated since 5.3: edit views are managed through tabs, the edit
-     *             view is not used.
+     * @deprecated since 5.3: edit views are managed through tabs, the edit view is not used.
      */
     @Deprecated
     String editDocument() throws ClientException;
@@ -46,50 +45,43 @@ public interface DocumentActions extends Serializable {
     /**
      * Saves changes held by the changeableDocument document model.
      *
-     * @deprecated since 5.4.2, currentDocument should be used in edition
-     *             screens instead of changeableDocument, so
+     * @deprecated since 5.4.2, currentDocument should be used in edition screens instead of changeableDocument, so
      *             {@link #updateCurrentDocument()} should be used instead
      */
     @Deprecated
     String updateDocument() throws ClientException;
 
     /**
-     * Saves changes held by the given document, and updates the current
-     * document context with the new version.
+     * Saves changes held by the given document, and updates the current document context with the new version.
      * <p>
-     * Makes it possible to specify whether current tabs should be restored or
-     * not after edition.
+     * Makes it possible to specify whether current tabs should be restored or not after edition.
      *
      * @since 5.7
      * @param restoreCurrentTabs
      * @return the JSF outcome for navigation after document edition.
      */
-    String updateDocument(DocumentModel document, Boolean restoreCurrentTabs)
-            throws ClientException;
+    String updateDocument(DocumentModel document, Boolean restoreCurrentTabs) throws ClientException;
 
     /**
-     * Saves changes held by the changeableDocument document model in current
-     * version and then create a new current one.
+     * Saves changes held by the changeableDocument document model in current version and then create a new current one.
      */
     String updateDocumentAsNewVersion() throws ClientException;
 
     /**
-     * Updates document considering that current document model holds edited
-     * values.
+     * Updates document considering that current document model holds edited values.
      */
     String updateCurrentDocument() throws ClientException;
 
     /**
-     * Creates a document with type given by {@link TypesTool} and stores it in
-     * the context as the current changeable document.
+     * Creates a document with type given by {@link TypesTool} and stores it in the context as the current changeable
+     * document.
      * <p>
      * Returns the create view of given document type.
      */
     String createDocument() throws ClientException;
 
     /**
-     * Creates a document with given type and stores it in the context as the
-     * current changeable document.
+     * Creates a document with given type and stores it in the context as the current changeable document.
      * <p>
      * Returns the create view of given document type.
      */
@@ -114,8 +106,7 @@ public interface DocumentActions extends Serializable {
      * To be used by url pattern descriptors performing a download.
      *
      * @param docView the document view as generated through the url service
-     * @throws ClientException when document is not found or file is not
-     *             retrieved correctly.
+     * @throws ClientException when document is not found or file is not retrieved correctly.
      */
     void download(DocumentView docView) throws ClientException;
 
@@ -123,8 +114,7 @@ public interface DocumentActions extends Serializable {
     String downloadFromList() throws ClientException;
 
     /**
-     * @return ecm type for current document, <code>null</code> if current doc
-     *         is null.
+     * @return ecm type for current document, <code>null</code> if current doc is null.
      */
     Type getCurrentType();
 
@@ -133,8 +123,7 @@ public interface DocumentActions extends Serializable {
     /**
      * Checks the current document write permission.
      *
-     * @return <code>true</code> if the user has WRITE permission on current
-     *         document
+     * @return <code>true</code> if the user has WRITE permission on current document
      * @throws ClientException
      */
     boolean getWriteRight() throws ClientException;
@@ -142,8 +131,7 @@ public interface DocumentActions extends Serializable {
     /**
      * Returns the comment to attach to the document
      *
-     * @deprecated since 5.4: comment can be put directly in the document
-     *             context data using key 'request/comment'.
+     * @deprecated since 5.4: comment can be put directly in the document context data using key 'request/comment'.
      */
     @Deprecated
     String getComment();
@@ -151,15 +139,13 @@ public interface DocumentActions extends Serializable {
     /**
      * Sets the comment to attach to a document
      *
-     * @deprecated since 5.4: comment can be put directly in the document
-     *             context data using key 'request/comment'.
+     * @deprecated since 5.4: comment can be put directly in the document context data using key 'request/comment'.
      */
     @Deprecated
     void setComment(String comment);
 
     /**
-     * This method is used to test whether the logged user has enough rights
-     * for the unpublish support.
+     * This method is used to test whether the logged user has enough rights for the unpublish support.
      *
      * @return true if the user can unpublish, false otherwise
      * @throws ClientException
@@ -167,8 +153,7 @@ public interface DocumentActions extends Serializable {
     boolean getCanUnpublish();
 
     /**
-     * @deprecated since 5.6: nxl:documentLayout tag now offers the same
-     *             features
+     * @deprecated since 5.6: nxl:documentLayout tag now offers the same features
      */
     @Deprecated
     String getCurrentDocumentSummaryLayout();

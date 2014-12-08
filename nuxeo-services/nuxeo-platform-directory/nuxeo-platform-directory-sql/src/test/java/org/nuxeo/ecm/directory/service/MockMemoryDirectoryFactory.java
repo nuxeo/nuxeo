@@ -33,8 +33,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * @since 5.6
  */
-public class MockMemoryDirectoryFactory extends DefaultComponent implements
-        DirectoryFactory {
+public class MockMemoryDirectoryFactory extends DefaultComponent implements DirectoryFactory {
 
     protected Map<String, MockMemoryDirectoryDescriptor> reg = new HashMap<String, MockMemoryDirectoryDescriptor>();
 
@@ -44,8 +43,7 @@ public class MockMemoryDirectoryFactory extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         MockMemoryDirectoryDescriptor desc = (MockMemoryDirectoryDescriptor) contribution;
         String directoryName = desc.name;
         reg.put(directoryName, desc);
@@ -58,8 +56,7 @@ public class MockMemoryDirectoryFactory extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         String directoryName = ((MockMemoryDirectoryDescriptor) contribution).name;
         reg.remove(directoryName);
         try {

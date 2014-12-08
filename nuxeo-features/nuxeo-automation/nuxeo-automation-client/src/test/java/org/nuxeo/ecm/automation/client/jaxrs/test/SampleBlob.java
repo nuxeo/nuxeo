@@ -30,29 +30,23 @@ public class SampleBlob {
 
     public static void main(String[] args) throws Exception {
         try {
-            HttpAutomationClient client = new HttpAutomationClient(
-                    "http://192.168.1.200:8080/nuxeo/site/automation");
+            HttpAutomationClient client = new HttpAutomationClient("http://192.168.1.200:8080/nuxeo/site/automation");
             long start = System.currentTimeMillis();
             // SessionImpl session = (SessionImpl)client.getSession(null);
-            Session session = client.getSession("Administrator",
-                    "Administrator");
+            Session session = client.getSession("Administrator", "Administrator");
             // FileBlob fb = new FileBlob(new
             // File("/Users/bstefanescu/operations.jpg"));
-            FileBlob fb = new FileBlob(new File(
-                    "/Users/fermigier/Pictures/bart.jpg"));
+            FileBlob fb = new FileBlob(new File("/Users/fermigier/Pictures/bart.jpg"));
             fb.setMimeType("image/jpeg");
 
             // TODO avoid getting the output from server
-            Blob blob = (Blob) session.newRequest("Blob.Attach").setHeader(
-                    Constants.HEADER_NX_VOIDOP, "true").setInput(fb).set(
-                    "document", "/titi").execute();
+            Blob blob = (Blob) session.newRequest("Blob.Attach").setHeader(Constants.HEADER_NX_VOIDOP, "true").setInput(
+                    fb).set("document", "/titi").execute();
             System.out.println(blob);
             // System.out.println(((FileBlob)blob).getFile());
 
-            Document doc = (Document) session.newRequest(
-                    DocumentService.FetchDocument).setHeader(
-                    Constants.HEADER_NX_SCHEMAS, "*").set("value",
-                    "/default-domain/workspaces/myws/file").execute();
+            Document doc = (Document) session.newRequest(DocumentService.FetchDocument).setHeader(
+                    Constants.HEADER_NX_SCHEMAS, "*").set("value", "/default-domain/workspaces/myws/file").execute();
 
             System.out.println(doc);
             System.out.println(doc.getProperties().map());
@@ -64,18 +58,14 @@ public class SampleBlob {
             System.out.println("----------");
             System.out.println(map);
 
-            System.out.println("took: "
-                    + ((double) System.currentTimeMillis() - start) / 1000);
+            System.out.println("took: " + ((double) System.currentTimeMillis() - start) / 1000);
 
             start = System.currentTimeMillis();
             for (int i = 0; i < 60; i++) {
-                doc = (Document) session.newRequest(
-                        DocumentService.FetchDocument).setHeader(
-                        Constants.HEADER_NX_SCHEMAS, "*").set("value",
-                        "/default-domain/workspaces/myws/file").execute();
+                doc = (Document) session.newRequest(DocumentService.FetchDocument).setHeader(
+                        Constants.HEADER_NX_SCHEMAS, "*").set("value", "/default-domain/workspaces/myws/file").execute();
             }
-            System.out.println("60 full docs took: "
-                    + ((double) System.currentTimeMillis() - start) / 1000);
+            System.out.println("60 full docs took: " + ((double) System.currentTimeMillis() - start) / 1000);
             client.shutdown();
         } catch (RemoteException e) {
             e.printStackTrace();

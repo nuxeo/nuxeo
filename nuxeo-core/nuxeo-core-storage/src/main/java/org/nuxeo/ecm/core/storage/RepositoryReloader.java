@@ -32,8 +32,7 @@ public class RepositoryReloader implements EventListener {
     @Override
     public void handleEvent(Event event) {
         final String id = event.getId();
-        if (ReloadService.RELOAD_REPOSITORIES_ID.equals(id)
-                || ReloadService.FLUSH_EVENT_ID.equals(id)) {
+        if (ReloadService.RELOAD_REPOSITORIES_ID.equals(id) || ReloadService.FLUSH_EVENT_ID.equals(id)) {
             reloadRepositories();
         }
     }
@@ -46,8 +45,7 @@ public class RepositoryReloader implements EventListener {
         try {
             Class<?> nuxeoContainerClass = Class.forName("org.nuxeo.runtime.jtajca.NuxeoContainer");
             if (nuxeoContainerClass != null) {
-                nuxeoContainerClass.getMethod("resetConnectionManager").invoke(
-                        null);
+                nuxeoContainerClass.getMethod("resetConnectionManager").invoke(null);
             }
         } catch (ClassNotFoundException e) {
             // no container

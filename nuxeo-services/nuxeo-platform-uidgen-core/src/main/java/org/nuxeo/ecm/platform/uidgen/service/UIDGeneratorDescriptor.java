@@ -35,8 +35,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("generator")
 public class UIDGeneratorDescriptor {
 
-    private static final Log log = LogFactory
-            .getLog(UIDGeneratorDescriptor.class);
+    private static final Log log = LogFactory.getLog(UIDGeneratorDescriptor.class);
 
     private static final int DEFAULT_COUNTER_START = 1;
 
@@ -80,8 +79,7 @@ public class UIDGeneratorDescriptor {
     /**
      * Explicit constructor.
      */
-    public UIDGeneratorDescriptor(String generationExp, Set<?> generationCrit,
-            int counterStart) {
+    public UIDGeneratorDescriptor(String generationExp, Set<?> generationCrit, int counterStart) {
         generationExpression = generationExp;
         generationCriteria = generationCrit;
         this.counterStart = counterStart;
@@ -124,8 +122,7 @@ public class UIDGeneratorDescriptor {
     }
 
     /**
-     * Kept for convenience. If there is only one property to be set with
-     * generated UID.
+     * Kept for convenience. If there is only one property to be set with generated UID.
      *
      * @return first propertyName
      */
@@ -138,8 +135,7 @@ public class UIDGeneratorDescriptor {
     }
 
     /**
-     * Set the value as first property name.
-     * Kept for convenience. If there is only one property to be set with
+     * Set the value as first property name. Kept for convenience. If there is only one property to be set with
      * generated UID.
      */
     public void setPropertyName(String propertyName) {

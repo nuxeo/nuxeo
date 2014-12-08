@@ -28,9 +28,8 @@ import java.io.ObjectOutputStream;
 /**
  * Deep copy utils.
  * <p>
- * Most classes implementing the {@link Cloneable} interface only perform a
- * shallow copy of an object. This class performs deep cloning serializing and
- * deserializing an object. Therefore only serializable objects can be copied
+ * Most classes implementing the {@link Cloneable} interface only perform a shallow copy of an object. This class
+ * performs deep cloning serializing and deserializing an object. Therefore only serializable objects can be copied
  * using this util.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -55,8 +54,7 @@ public final class DeepCopy {
 
             // Make an input stream from the byte array and read
             // a copy of the object back in.
-            ObjectInputStream in = new ObjectInputStream(
-                    new ByteArrayInputStream(bos.toByteArray()));
+            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
             copy = in.readObject();
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -57,16 +57,14 @@ public interface WidgetDefinition extends Serializable {
     void setType(String type);
 
     /**
-     * Returns the type category to use when retrieving the corresponding
-     * widget type.
+     * Returns the type category to use when retrieving the corresponding widget type.
      *
      * @since 5.7.3
      */
     String getTypeCategory();
 
     /**
-     * Sets the type category to use when retrieving the corresponding widget
-     * type.
+     * Sets the type category to use when retrieving the corresponding widget type.
      *
      * @since 5.7.3
      */
@@ -100,11 +98,10 @@ public interface WidgetDefinition extends Serializable {
     void setModes(Map<String, String> modes);
 
     /**
-     * Returns an EL expression evaluating to true if the widget is required in
-     * given mode.
+     * Returns an EL expression evaluating to true if the widget is required in given mode.
      * <p>
-     * This value is computed from the property "required" in given mode. and
-     * can be a string or an EL ValueExpression. Defaults to "false".
+     * This value is computed from the property "required" in given mode. and can be a string or an EL ValueExpression.
+     * Defaults to "false".
      */
     String getRequired(String layoutMode, String mode);
 
@@ -152,15 +149,13 @@ public interface WidgetDefinition extends Serializable {
     void setTranslated(boolean translated);
 
     /**
-     * Returns true if the widget is handling his own labels display (usual
-     * label and help label). This can be checked by the layout template to
-     * render the widget using both label and widget usual places.
+     * Returns true if the widget is handling his own labels display (usual label and help label). This can be checked
+     * by the layout template to render the widget using both label and widget usual places.
      * <p>
      * Defaults to false.
      *
      * @since 5.6
-     * @deprecated since 5.7: this was added prematurely, see
-     *             {@link #getControls()} for a more generic management of
+     * @deprecated since 5.7: this was added prematurely, see {@link #getControls()} for a more generic management of
      *             rendering controls
      */
     @Deprecated
@@ -169,8 +164,7 @@ public interface WidgetDefinition extends Serializable {
     /**
      * @since 5.6
      * @see #isHandlingLabels()
-     * @deprecated since 5.7: this was added prematurely, see
-     *             {@link #setControls()} for a more generic management of
+     * @deprecated since 5.7: this was added prematurely, see {@link #setControls()} for a more generic management of
      *             rendering controls
      */
     @Deprecated
@@ -181,8 +175,7 @@ public interface WidgetDefinition extends Serializable {
      * <p>
      * A property value can be a string or an EL ValueExpression.
      * <p>
-     * The way that properties will be mapped to rendered components is managed
-     * by the widget type.
+     * The way that properties will be mapped to rendered components is managed by the widget type.
      */
     Map<String, Serializable> getProperties(String layoutMode, String mode);
 
@@ -204,8 +197,7 @@ public interface WidgetDefinition extends Serializable {
     /**
      * @since 5.5
      */
-    void setWidgetModeProperties(
-            Map<String, Map<String, Serializable>> properties);
+    void setWidgetModeProperties(Map<String, Map<String, Serializable>> properties);
 
     /**
      * Returns controls for given mode.
@@ -218,13 +210,11 @@ public interface WidgetDefinition extends Serializable {
     /**
      * Returns controls by mode.
      * <p>
-     * Controls are property-like markers on widget instances, expect these are
-     * not forwarded to the underlying rendering object (like the JSF component
-     * attributes).
+     * Controls are property-like markers on widget instances, expect these are not forwarded to the underlying
+     * rendering object (like the JSF component attributes).
      * <p>
-     * This makes it possible to keep "flags" on widgets that can be checked by
-     * parent widget or layout, for instance "addForm" or "handlingLabels"
-     * markers.
+     * This makes it possible to keep "flags" on widgets that can be checked by parent widget or layout, for instance
+     * "addForm" or "handlingLabels" markers.
      *
      * @since 5.7
      */
@@ -274,9 +264,8 @@ public interface WidgetDefinition extends Serializable {
     /**
      * Returns the map of rendering information per mode.
      * <p>
-     * Useful for preview management where some configuration needs to be
-     * changed: what's changed can be set as rendering information here to be
-     * displayed.
+     * Useful for preview management where some configuration needs to be changed: what's changed can be set as
+     * rendering information here to be displayed.
      *
      * @since 5.5
      */
@@ -295,32 +284,29 @@ public interface WidgetDefinition extends Serializable {
     void setRenderingInfos(Map<String, List<RenderingInfo>> renderingInfos);
 
     /**
-     * Return alias names for this widget definition (useful for compatibility
-     * on old widget names).
+     * Return alias names for this widget definition (useful for compatibility on old widget names).
      *
      * @since 6.0
      */
     List<String> getAliases();
 
     /**
-     * Returns true if the widget is defined globally (as opposed to being held
-     * by a layout definition).
+     * Returns true if the widget is defined globally (as opposed to being held by a layout definition).
      *
      * @since 6.0
      */
     boolean isGlobal();
 
     /**
-     * Sets the global status on this definition, depending on how it's been
-     * retrievd by the service.
+     * Sets the global status on this definition, depending on how it's been retrievd by the service.
      *
      * @since 6.0
      */
     void setGlobal(boolean global);
 
     /**
-     * Returns true if this widget was generated from configuration on a
-     * service, and not generated on-the-fly using dynamic behaviors.
+     * Returns true if this widget was generated from configuration on a service, and not generated on-the-fly using
+     * dynamic behaviors.
      *
      * @since 6.0
      */

@@ -113,8 +113,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             }
             if (logEntries != null) {
                 if (logEntries.size() > nbLogEntries) {
-                    latestLogEntries = new ArrayList<LogEntry>(
-                            logEntries.subList(0, nbLogEntries));
+                    latestLogEntries = new ArrayList<LogEntry>(logEntries.subList(0, nbLogEntries));
                 } else {
                     latestLogEntries = logEntries;
                 }
@@ -141,8 +140,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
     }
 
     @Factory(value = "logEntriesLinkedDocs", scope = EVENT)
-    public Map<Long, LinkedDocument> computeLogEntrieslinkedDocs()
-            throws AuditException {
+    public Map<Long, LinkedDocument> computeLogEntrieslinkedDocs() throws AuditException {
         if (logEntriesLinkedDocs == null) {
             computeLogEntries();
             postProcessComments(logEntries);
@@ -150,8 +148,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         return logEntriesLinkedDocs;
     }
 
-    public List<LogEntry> computeLogEntries(DocumentModel document)
-            throws AuditException {
+    public List<LogEntry> computeLogEntries(DocumentModel document) throws AuditException {
         if (document == null) {
             return null;
         } else {
@@ -159,32 +156,26 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                 Logs service = Framework.getLocalService(Logs.class);
                 Logs logsBean = service;
                 /*
-                 * In case the document is a proxy,meaning is the result of a
-                 * publishing,to have the history of the document from which
-                 * this proxy was created,first we have to get to the version
-                 * that was created when the document was publish,and to which
-                 * the proxy document indicates,and then from that version we
-                 * have to get to the root document.
+                 * In case the document is a proxy,meaning is the result of a publishing,to have the history of the
+                 * document from which this proxy was created,first we have to get to the version that was created when
+                 * the document was publish,and to which the proxy document indicates,and then from that version we have
+                 * to get to the root document.
                  */
                 boolean doDefaultSort = comparator == null;
                 if (document.isProxy()) {
                     // all users should have access to logs
-                    GetVersionInfoForDocumentRunner runner = new GetVersionInfoForDocumentRunner(
-                            documentManager, document);
+                    GetVersionInfoForDocumentRunner runner = new GetVersionInfoForDocumentRunner(documentManager,
+                            document);
                     runner.runUnrestricted();
-                    if (runner.sourceDocForVersionId == null
-                            || runner.version == null) {
-                        String message = "An error occurred while grabbing log entries for "
-                                + document.getId();
+                    if (runner.sourceDocForVersionId == null || runner.version == null) {
+                        String message = "An error occurred while grabbing log entries for " + document.getId();
                         throw new AuditException(message);
                     }
 
-                    Date versionCreationDate = getCreationDateForVersion(
-                            logsBean, runner.version);
+                    Date versionCreationDate = getCreationDateForVersion(logsBean, runner.version);
                     // add all the logs from the source document until the
                     // version was created
-                    addLogEntries(getLogsForDocUntilDate(logsBean,
-                            runner.sourceDocForVersionId, versionCreationDate,
+                    addLogEntries(getLogsForDocUntilDate(logsBean, runner.sourceDocForVersionId, versionCreationDate,
                             doDefaultSort));
 
                     // !! add the first publishing
@@ -192,30 +183,25 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                     // event is logged few milliseconds after the version is
                     // created
 
-                    List<LogEntry> publishingLogs = getLogsForDocUntilDateWithEvent(
-                            logsBean, runner.sourceDocForVersionId,
-                            versionCreationDate,
-                            DocumentEventTypes.DOCUMENT_PUBLISHED,
+                    List<LogEntry> publishingLogs = getLogsForDocUntilDateWithEvent(logsBean,
+                            runner.sourceDocForVersionId, versionCreationDate, DocumentEventTypes.DOCUMENT_PUBLISHED,
                             doDefaultSort);
                     if (!publishingLogs.isEmpty()) {
                         addLogEntry(publishingLogs.get(0));
                     }
                     // add logs from the actual version
                     filterMap = new HashMap<String, FilterMapEntry>();
-                    addLogEntries(logsBean.getLogEntriesFor(
-                            runner.version.getId(), filterMap, doDefaultSort));
+                    addLogEntries(logsBean.getLogEntriesFor(runner.version.getId(), filterMap, doDefaultSort));
 
                 } else {
-                    addLogEntries(logsBean.getLogEntriesFor(document.getId(),
-                            filterMap, doDefaultSort));
+                    addLogEntries(logsBean.getLogEntriesFor(document.getId(), filterMap, doDefaultSort));
                 }
 
                 if (log.isDebugEnabled()) {
                     log.debug("logEntries computed .................!");
                 }
             } catch (ClientException e) {
-                String message = "An error occurred while grabbing log entries for "
-                        + document.getId();
+                String message = "An error occurred while grabbing log entries for " + document.getId();
                 throw new AuditException(message, e);
             }
             return logEntries;
@@ -241,16 +227,13 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
     }
 
     /**
-     * Post-process log entries comments to add links.
-     * e5e7b4ba-0ffb-492d-8bf2-f2f2e6683ae2
+     * Post-process log entries comments to add links. e5e7b4ba-0ffb-492d-8bf2-f2f2e6683ae2
      */
     private void postProcessComments(List<LogEntry> logEntries) {
         logEntriesComments = new HashMap<Long, String>();
         logEntriesLinkedDocs = new HashMap<Long, LinkedDocument>();
 
-
         CommentProcessorHelper cph = new CommentProcessorHelper(documentManager);
-
 
         if (logEntries == null) {
             return;
@@ -281,13 +264,10 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         return sortInfo;
     }
 
-    private Date getCreationDateForVersion(Logs logsService,
-            DocumentModel version) {
-        List<LogEntry> logs = logsService.getLogEntriesFor(version.getId(),
-                filterMap, true);
+    private Date getCreationDateForVersion(Logs logsService, DocumentModel version) {
+        List<LogEntry> logs = logsService.getLogEntriesFor(version.getId(), filterMap, true);
         for (LogEntry logEntry : logs) {
-            if (logEntry.getEventId().equals(
-                    DocumentEventTypes.DOCUMENT_CREATED)) {
+            if (logEntry.getEventId().equals(DocumentEventTypes.DOCUMENT_CREATED)) {
                 return logEntry.getEventDate();
             }
         }
@@ -338,27 +318,22 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         return filterByDate;
     }
 
-    private List<LogEntry> getLogsForDocUntilDate(Logs logsService,
-            String docId, Date date, boolean doDefaultSort) {
+    private List<LogEntry> getLogsForDocUntilDate(Logs logsService, String docId, Date date, boolean doDefaultSort) {
         filterMap = new HashMap<String, FilterMapEntry>();
-        filterMap.put(BuiltinLogEntryData.LOG_EVENT_DATE,
-                computeQueryForLogsOnDocUntilDate(date));
+        filterMap.put(BuiltinLogEntryData.LOG_EVENT_DATE, computeQueryForLogsOnDocUntilDate(date));
         return logsService.getLogEntriesFor(docId, filterMap, doDefaultSort);
     }
 
-    private List<LogEntry> getLogsForDocUntilDateWithEvent(Logs logsService,
-            String docId, Date date, String eventName, boolean doDefaultSort) {
+    private List<LogEntry> getLogsForDocUntilDateWithEvent(Logs logsService, String docId, Date date, String eventName,
+            boolean doDefaultSort) {
         filterMap = new HashMap<String, FilterMapEntry>();
-        filterMap.put(BuiltinLogEntryData.LOG_EVENT_DATE,
-                computeQueryForLogsOnDocAfterDate(date));
-        filterMap.put(BuiltinLogEntryData.LOG_EVENT_ID,
-                computeQueryForLogsWithEvent(eventName));
+        filterMap.put(BuiltinLogEntryData.LOG_EVENT_DATE, computeQueryForLogsOnDocAfterDate(date));
+        filterMap.put(BuiltinLogEntryData.LOG_EVENT_ID, computeQueryForLogsWithEvent(eventName));
         return logsService.getLogEntriesFor(docId, filterMap, doDefaultSort);
 
     }
 
-    private class GetVersionInfoForDocumentRunner extends
-            UnrestrictedSessionRunner {
+    private class GetVersionInfoForDocumentRunner extends UnrestrictedSessionRunner {
 
         public String sourceDocForVersionId;
 
@@ -366,8 +341,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
 
         DocumentModel document;
 
-        public GetVersionInfoForDocumentRunner(CoreSession session,
-                DocumentModel document) {
+        public GetVersionInfoForDocumentRunner(CoreSession session, DocumentModel document) {
             super(session);
             this.document = document;
         }
@@ -376,8 +350,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         public void run() throws ClientException {
             version = documentManager.getSourceDocument(document.getRef());
             if (version != null) {
-                sourceDocForVersionId = session.getSourceDocument(
-                        version.getRef()).getId();
+                sourceDocForVersionId = session.getSourceDocument(version.getRef()).getId();
             }
         }
     }

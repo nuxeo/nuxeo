@@ -83,19 +83,16 @@ public class ExportedDocumentImpl implements ExportedDocument {
     protected final Map<String, Blob> blobs = new HashMap<String, Blob>(4);
 
     // the optional attached documents
-    protected final Map<String, Document> documents = new HashMap<String, Document>(
-            4);
+    protected final Map<String, Document> documents = new HashMap<String, Document>(4);
 
     public ExportedDocumentImpl() {
     }
 
     /**
      * @param doc
-     * @param path the path to use for this document this is used to remove full
-     *            paths
+     * @param path the path to use for this document this is used to remove full paths
      */
-    public ExportedDocumentImpl(DocumentModel doc, Path path,
-            boolean inlineBlobs) throws IOException {
+    public ExportedDocumentImpl(DocumentModel doc, Path path, boolean inlineBlobs) throws IOException {
         id = doc.getId();
         if (path == null) {
             this.path = new Path("");
@@ -115,8 +112,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         this(doc, false);
     }
 
-    public ExportedDocumentImpl(DocumentModel doc, boolean inlineBlobs)
-            throws IOException {
+    public ExportedDocumentImpl(DocumentModel doc, boolean inlineBlobs) throws IOException {
         this(doc, doc.getPath(), inlineBlobs);
     }
 
@@ -150,8 +146,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
 
     @Override
     public String getType() {
-        return document.getRootElement().element(ExportConstants.SYSTEM_TAG).elementText(
-                "type");
+        return document.getRootElement().element(ExportConstants.SYSTEM_TAG).elementText("type");
     }
 
     @Override
@@ -163,8 +158,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
     public void setDocument(Document document) {
         this.document = document;
         id = document.getRootElement().attributeValue(ExportConstants.ID_ATTR);
-        String repName = document.getRootElement().attributeValue(
-                ExportConstants.REP_NAME);
+        String repName = document.getRootElement().attributeValue(ExportConstants.REP_NAME);
         srcLocation = new DocumentLocationImpl(repName, new IdRef(id));
     }
 
@@ -221,20 +215,15 @@ public class ExportedDocumentImpl implements ExportedDocument {
         return 1 + documents.size() + blobs.size();
     }
 
-    protected void readDocument(DocumentModel doc, boolean inlineBlobs)
-            throws IOException, ClientException {
+    protected void readDocument(DocumentModel doc, boolean inlineBlobs) throws IOException, ClientException {
         document = DocumentFactory.getInstance().createDocument();
         document.setName(doc.getName());
         Element rootElement = document.addElement(ExportConstants.DOCUMENT_TAG);
-        rootElement.addAttribute(ExportConstants.REP_NAME,
-                doc.getRepositoryName());
-        rootElement.addAttribute(ExportConstants.ID_ATTR,
-                doc.getRef().toString());
+        rootElement.addAttribute(ExportConstants.REP_NAME, doc.getRepositoryName());
+        rootElement.addAttribute(ExportConstants.ID_ATTR, doc.getRef().toString());
         Element systemElement = rootElement.addElement(ExportConstants.SYSTEM_TAG);
-        systemElement.addElement(ExportConstants.TYPE_TAG).addText(
-                doc.getType());
-        systemElement.addElement(ExportConstants.PATH_TAG).addText(
-                path.toString());
+        systemElement.addElement(ExportConstants.TYPE_TAG).addText(doc.getType());
+        systemElement.addElement(ExportConstants.PATH_TAG).addText(path.toString());
         // lifecycle
         readLifeCycleInfo(systemElement, doc);
 
@@ -254,13 +243,11 @@ public class ExportedDocumentImpl implements ExportedDocument {
         try {
             String lifeCycleState = doc.getCurrentLifeCycleState();
             if (lifeCycleState != null && lifeCycleState.length() > 0) {
-                element.addElement(ExportConstants.LIFECYCLE_STATE_TAG).addText(
-                        lifeCycleState);
+                element.addElement(ExportConstants.LIFECYCLE_STATE_TAG).addText(lifeCycleState);
             }
             String lifeCyclePolicy = doc.getLifeCyclePolicy();
             if (lifeCyclePolicy != null && lifeCyclePolicy.length() > 0) {
-                element.addElement(ExportConstants.LIFECYCLE_POLICY_TAG).addText(
-                        lifeCyclePolicy);
+                element.addElement(ExportConstants.LIFECYCLE_POLICY_TAG).addText(lifeCyclePolicy);
             }
         } catch (ClientException e) {
             log.error(e, e);
@@ -274,13 +261,12 @@ public class ExportedDocumentImpl implements ExportedDocument {
         }
     }
 
-    protected void readDocumentSchemas(Element element, DocumentModel doc,
-            boolean inlineBlobs) throws ClientException, IOException {
+    protected void readDocumentSchemas(Element element, DocumentModel doc, boolean inlineBlobs) throws ClientException,
+            IOException {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         String[] schemaNames = doc.getSchemas();
         for (String schemaName : schemaNames) {
-            Element schemaElement = element.addElement(
-                    ExportConstants.SCHEMA_TAG).addAttribute("name", schemaName);
+            Element schemaElement = element.addElement(ExportConstants.SCHEMA_TAG).addAttribute("name", schemaName);
             Schema schema = schemaManager.getSchema(schemaName);
             Namespace targetNs = schema.getNamespace();
             // If namespace prefix is empty, use schema name
@@ -297,11 +283,10 @@ public class ExportedDocumentImpl implements ExportedDocument {
 
     }
 
-    protected void readProperty(Element parent, Namespace targetNs,
-            Field field, Object value, boolean inlineBlobs) throws IOException {
+    protected void readProperty(Element parent, Namespace targetNs, Field field, Object value, boolean inlineBlobs)
+            throws IOException {
         Type type = field.getType();
-        QName name = QName.get(field.getName().getLocalName(), targetNs.prefix,
-                targetNs.uri);
+        QName name = QName.get(field.getName().getLocalName(), targetNs.prefix, targetNs.uri);
         Element element = parent.addElement(name);
         if (value == null) {
             return; // have no content
@@ -323,25 +308,19 @@ public class ExportedDocumentImpl implements ExportedDocument {
             if (value instanceof List) {
                 readList(element, (ListType) type, (List) value, inlineBlobs);
             } else if (value.getClass().getComponentType() != null) {
-                readList(element, (ListType) type,
-                        PrimitiveArrays.toList(value), inlineBlobs);
+                readList(element, (ListType) type, PrimitiveArrays.toList(value), inlineBlobs);
             } else {
-                throw new IllegalArgumentException(
-                        "A value of list type is neither list neither array: "
-                                + value);
+                throw new IllegalArgumentException("A value of list type is neither list neither array: " + value);
             }
         }
     }
 
-    protected final void readBlob(Element element, ComplexType ctype,
-            Blob blob, boolean inlineBlobs) throws IOException {
+    protected final void readBlob(Element element, ComplexType ctype, Blob blob, boolean inlineBlobs)
+            throws IOException {
         String blobPath = Integer.toHexString(random.nextInt()) + ".blob";
-        element.addElement(ExportConstants.BLOB_ENCODING).addText(
-                blob.getEncoding() != null ? blob.getEncoding() : "");
-        element.addElement(ExportConstants.BLOB_MIME_TYPE).addText(
-                blob.getMimeType() != null ? blob.getMimeType() : "");
-        element.addElement(ExportConstants.BLOB_FILENAME).addText(
-                blob.getFilename() != null ? blob.getFilename() : "");
+        element.addElement(ExportConstants.BLOB_ENCODING).addText(blob.getEncoding() != null ? blob.getEncoding() : "");
+        element.addElement(ExportConstants.BLOB_MIME_TYPE).addText(blob.getMimeType() != null ? blob.getMimeType() : "");
+        element.addElement(ExportConstants.BLOB_FILENAME).addText(blob.getFilename() != null ? blob.getFilename() : "");
         Element data = element.addElement(ExportConstants.BLOB_DATA);
         if (inlineBlobs) {
             String content = Base64.encodeBytes(blob.getByteArray());
@@ -350,23 +329,20 @@ public class ExportedDocumentImpl implements ExportedDocument {
             data.setText(blobPath);
             blobs.put(blobPath, blob);
         }
-        element.addElement(ExportConstants.BLOB_DIGEST).addText(
-                blob.getDigest() != null ? blob.getDigest() : "");
+        element.addElement(ExportConstants.BLOB_DIGEST).addText(blob.getDigest() != null ? blob.getDigest() : "");
     }
 
-    protected final void readComplex(Element element, ComplexType ctype,
-            Map map, boolean inlineBlobs) throws IOException {
+    protected final void readComplex(Element element, ComplexType ctype, Map map, boolean inlineBlobs)
+            throws IOException {
         Iterator<Map.Entry> it = map.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry entry = it.next();
-            readProperty(element, ctype.getNamespace(),
-                    ctype.getField(entry.getKey().toString()),
-                    entry.getValue(), inlineBlobs);
+            readProperty(element, ctype.getNamespace(), ctype.getField(entry.getKey().toString()), entry.getValue(),
+                    inlineBlobs);
         }
     }
 
-    protected final void readList(Element element, ListType ltype, List list,
-            boolean inlineBlobs) throws IOException {
+    protected final void readList(Element element, ListType ltype, List list, boolean inlineBlobs) throws IOException {
         Field field = ltype.getField();
         for (Object obj : list) {
             readProperty(element, Namespace.DEFAULT_NS, field, obj, inlineBlobs);
@@ -381,12 +357,9 @@ public class ExportedDocumentImpl implements ExportedDocument {
             ACE[] aces = acl.getACEs();
             for (ACE ace : aces) {
                 Element aceElement = aclElement.addElement(ExportConstants.ACE_TAG);
-                aceElement.addAttribute(ExportConstants.PRINCIPAL_ATTR,
-                        ace.getUsername());
-                aceElement.addAttribute(ExportConstants.PERMISSION_ATTR,
-                        ace.getPermission());
-                aceElement.addAttribute(ExportConstants.GRANT_ATTR,
-                        String.valueOf(ace.isGranted()));
+                aceElement.addAttribute(ExportConstants.PRINCIPAL_ATTR, ace.getUsername());
+                aceElement.addAttribute(ExportConstants.PERMISSION_ATTR, ace.getPermission());
+                aceElement.addAttribute(ExportConstants.GRANT_ATTR, String.valueOf(ace.isGranted()));
             }
         }
     }

@@ -46,10 +46,8 @@ public class PathSegmentServiceTest extends NXRuntimeTestCase {
     public static class DocumentModelProxy implements InvocationHandler {
 
         public static DocumentModel newDocumentModel(String title) {
-            return (DocumentModel) Proxy.newProxyInstance(
-                    DocumentModelProxy.class.getClassLoader(),
-                    new Class<?>[] { DocumentModel.class },
-                    new DocumentModelProxy(title));
+            return (DocumentModel) Proxy.newProxyInstance(DocumentModelProxy.class.getClassLoader(),
+                    new Class<?>[] { DocumentModel.class }, new DocumentModelProxy(title));
         }
 
         public String title;
@@ -59,8 +57,7 @@ public class PathSegmentServiceTest extends NXRuntimeTestCase {
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             String name = method.getName();
             if (name.equals("getTitle")) {
                 return title;
@@ -86,8 +83,7 @@ public class PathSegmentServiceTest extends NXRuntimeTestCase {
 
     @Test
     public void testContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.api.tests",
-                "OSGI-INF/test-pathsegment-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-pathsegment-contrib.xml");
         PathSegmentService service = Framework.getService(PathSegmentService.class);
         assertNotNull(service);
         DocumentModel doc = DocumentModelProxy.newDocumentModel("My Document");
@@ -97,12 +93,10 @@ public class PathSegmentServiceTest extends NXRuntimeTestCase {
     @Test
     public void testContribOverride() throws Exception {
         PathSegmentService service = Framework.getService(PathSegmentService.class);
-        deployContrib("org.nuxeo.ecm.core.api.tests",
-                "OSGI-INF/test-pathsegment-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-pathsegment-contrib.xml");
         DocumentModel doc = DocumentModelProxy.newDocumentModel("My Document");
         assertEquals("my-document", service.generatePathSegment(doc));
-        deployContrib("org.nuxeo.ecm.core.api.tests",
-                "OSGI-INF/test-pathsegment-contrib2.xml");
+        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-pathsegment-contrib2.xml");
         assertEquals("My Document", service.generatePathSegment(doc));
     }
 

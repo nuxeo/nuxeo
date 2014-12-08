@@ -31,8 +31,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  */
 public class ArrayStringToDocModelList implements TypeAdapter {
 
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
-            throws TypeAdaptException {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         String[] content = (String[]) objectToAdapt;
         DocumentModelList result = new DocumentModelListImpl();
         try {

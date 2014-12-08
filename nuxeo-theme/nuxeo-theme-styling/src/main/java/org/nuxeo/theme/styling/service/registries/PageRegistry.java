@@ -25,8 +25,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.theme.styling.service.descriptors.ThemePage;
 
 /**
- * Registry for theme page resources, handling merge of registered
- * {@link ThemePage} elements.
+ * Registry for theme page resources, handling merge of registered {@link ThemePage} elements.
  *
  * @since 5.5
  */
@@ -40,8 +39,7 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
     }
 
     @Override
-    public void contributionUpdated(String id, ThemePage contrib,
-            ThemePage newOrigContrib) {
+    public void contributionUpdated(String id, ThemePage contrib, ThemePage newOrigContrib) {
         themePageResources.put(id, contrib);
     }
 
@@ -85,8 +83,7 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
         if (newStyles != null) {
             List<String> merged = new ArrayList<String>();
             merged.addAll(newStyles);
-            boolean keepOld = src.getAppendStyles()
-                    || (newStyles.isEmpty() && !src.getAppendStyles());
+            boolean keepOld = src.getAppendStyles() || (newStyles.isEmpty() && !src.getAppendStyles());
             if (keepOld) {
                 // add back old contributions
                 List<String> oldStyles = dst.getStyles();
@@ -101,8 +98,7 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
         if (newFlavors != null) {
             List<String> merged = new ArrayList<String>();
             merged.addAll(newFlavors);
-            boolean keepOld = src.getAppendFlavors()
-                    || (newFlavors.isEmpty() && !src.getAppendFlavors());
+            boolean keepOld = src.getAppendFlavors() || (newFlavors.isEmpty() && !src.getAppendFlavors());
             if (keepOld) {
                 // add back old contributions
                 List<String> oldFlavors = dst.getFlavors();
@@ -117,8 +113,7 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
         if (newResources != null) {
             List<String> merged = new ArrayList<String>();
             merged.addAll(newResources);
-            boolean keepOld = src.getAppendResources()
-                    || (newResources.isEmpty() && !src.getAppendResources());
+            boolean keepOld = src.getAppendResources() || (newResources.isEmpty() && !src.getAppendResources());
             if (keepOld) {
                 // add back old contributions
                 List<String> oldResources = dst.getResources();

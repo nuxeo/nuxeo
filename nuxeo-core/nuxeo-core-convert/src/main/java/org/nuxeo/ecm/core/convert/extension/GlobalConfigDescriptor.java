@@ -22,8 +22,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * XMap Descriptor for the
- * {@link org.nuxeo.ecm.core.convert.api.ConversionService} configuration.
+ * XMap Descriptor for the {@link org.nuxeo.ecm.core.convert.api.ConversionService} configuration.
  *
  * @author tiry
  */
@@ -63,7 +62,7 @@ public class GlobalConfigDescriptor implements Serializable {
 
     @XNode("diskCacheSize")
     public void setDiskCacheSize(int size) {
-        diskCacheSize = size == 0  ? DEFAULT_DISK_CACHE_IN_KB : size;
+        diskCacheSize = size == 0 ? DEFAULT_DISK_CACHE_IN_KB : size;
     }
 
     public boolean isCacheEnabled() {
@@ -86,14 +85,12 @@ public class GlobalConfigDescriptor implements Serializable {
     }
 
     protected File defaultCachingDirectory() {
-        File data = new File(Environment.getDefault().getData(),
-                CACHING_DIRECTORY);
+        File data = new File(Environment.getDefault().getData(), CACHING_DIRECTORY);
         if (data.exists()) {
             try {
                 FileUtils.deleteDirectory(data);
             } catch (IOException cause) {
-                throw new RuntimeException("Cannot create cache dir " + data,
-                        cause);
+                throw new RuntimeException("Cannot create cache dir " + data, cause);
             }
         }
         data.mkdirs();

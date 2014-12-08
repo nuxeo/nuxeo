@@ -45,26 +45,20 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
-        deployContrib("org.nuxeo.theme.html",
-                "OSGI-INF/nxthemes-html-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.html", "OSGI-INF/nxthemes-html-contrib.xml");
 
         // create the elements to render
         PageElement page = (PageElement) ElementFactory.create("page");
         page.setUid(1);
 
-        ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
-                ThemeService.ID);
+        ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(ThemeService.ID);
 
-        URL themeUrl = new URL(
-                "nxtheme://theme/default/mode/html/theme/page/perspective");
+        URL themeUrl = new URL("nxtheme://theme/default/mode/html/theme/page/perspective");
 
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
-        formatType = (FormatType) typeRegistry.lookup(TypeFamily.FORMAT,
-                "layout");
+        formatType = (FormatType) typeRegistry.lookup(TypeFamily.FORMAT, "layout");
 
         info = new DummyRenderingInfo(page, themeUrl);
 
@@ -89,8 +83,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
         info.setMarkup("<div>content</div>");
         format.setProperty("width", "100px");
         filter.process(info, false);
-        assertEquals("<div style=\"width:100px;\">content</div>",
-                info.getMarkup());
+        assertEquals("<div style=\"width:100px;\">content</div>", info.getMarkup());
     }
 
     @Test
@@ -99,8 +92,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
         format.setProperty("width", "50px");
         format.setProperty("height", "60px");
         filter.process(info, false);
-        assertEquals("<div style=\"height:60px;width:50px;\">content</div>",
-                info.getMarkup());
+        assertEquals("<div style=\"height:60px;width:50px;\">content</div>", info.getMarkup());
     }
 
     @Test
@@ -109,9 +101,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
         format.setProperty("width", "10px");
         format.setProperty("height", "20px");
         filter.process(info, false);
-        assertEquals(
-                "<div style=\"color:red;height:20px;width:10px;\">content</div>",
-                info.getMarkup());
+        assertEquals("<div style=\"color:red;height:20px;width:10px;\">content</div>", info.getMarkup());
     }
 
     @Test
@@ -120,9 +110,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
         format.setProperty("width", "10px");
         format.setProperty("height", "20px");
         filter.process(info, false);
-        assertEquals(
-                "<div class=\"test\" style=\"height:20px;width:10px;\">content</div>",
-                info.getMarkup());
+        assertEquals("<div class=\"test\" style=\"height:20px;width:10px;\">content</div>", info.getMarkup());
     }
 
     @Test
@@ -131,8 +119,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
         info.setMarkup("<div\n>content\n</div>");
         format.setProperty("width", "10px");
         filter.process(info, false);
-        assertEquals("<div\n style=\"width:10px;\">content\n</div>",
-                info.getMarkup());
+        assertEquals("<div\n style=\"width:10px;\">content\n</div>", info.getMarkup());
     }
 
     @Test
@@ -141,8 +128,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
         info.setMarkup("<div\r\n>content\r\n</div>");
         format.setProperty("width", "10px");
         filter.process(info, false);
-        assertEquals("<div\r\n style=\"width:10px;\">content\r\n</div>",
-                info.getMarkup());
+        assertEquals("<div\r\n style=\"width:10px;\">content\r\n</div>", info.getMarkup());
     }
 
     @Test
@@ -151,8 +137,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
         info.setMarkup("<div\r>content\r</div>");
         format.setProperty("width", "10px");
         filter.process(info, false);
-        assertEquals("<div\r style=\"width:10px;\">content\r</div>",
-                info.getMarkup());
+        assertEquals("<div\r style=\"width:10px;\">content\r</div>", info.getMarkup());
     }
 
     @Test
@@ -161,20 +146,17 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
         format.setProperty("width", "10px");
         format.setProperty("height", "20px");
         filter.process(info, false);
-        assertEquals(
-                "<div style=\"height:20px;width:10px;\"><div style=\"color:red\">content</div></div>",
+        assertEquals("<div style=\"height:20px;width:10px;\"><div style=\"color:red\">content</div></div>",
                 info.getMarkup());
     }
 
     @Test
     public void testFilter10() {
-        info.setMarkup("<div style=\"color:red\">"
-                + "<div style=\"color:red\">content</div></div>");
+        info.setMarkup("<div style=\"color:red\">" + "<div style=\"color:red\">content</div></div>");
         format.setProperty("width", "10px");
         format.setProperty("height", "20px");
         filter.process(info, false);
-        assertEquals(
-                "<div style=\"color:red;height:20px;width:10px;\"><div style=\"color:red\">content</div></div>",
+        assertEquals("<div style=\"color:red;height:20px;width:10px;\"><div style=\"color:red\">content</div></div>",
                 info.getMarkup());
     }
 
@@ -184,8 +166,6 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
         format.setProperty("width", "10px");
         format.setProperty("height", "20px");
         filter.process(info, false);
-        assertEquals(
-                "<img src=\"/logo.png\" style=\"height:20px;width:10px;\" />",
-                info.getMarkup());
+        assertEquals("<img src=\"/logo.png\" style=\"height:20px;width:10px;\" />", info.getMarkup());
     }
 }

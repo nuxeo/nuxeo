@@ -21,9 +21,8 @@ import org.nuxeo.ecm.core.api.DataModelMap;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class DataModelMapImpl extends HashMap<String, DataModel>  implements DataModelMap {
+public class DataModelMapImpl extends HashMap<String, DataModel> implements DataModelMap {
 
     private static final long serialVersionUID = 8797227773838852959L;
 

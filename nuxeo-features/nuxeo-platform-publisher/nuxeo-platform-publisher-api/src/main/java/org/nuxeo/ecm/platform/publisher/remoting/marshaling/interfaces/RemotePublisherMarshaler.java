@@ -29,11 +29,9 @@ import java.util.Map;
  */
 public interface RemotePublisherMarshaler {
 
-    String marshallParameters(List<Object> params)
-            throws PublishingMarshalingException;
+    String marshallParameters(List<Object> params) throws PublishingMarshalingException;
 
-    List<Object> unMarshallParameters(String data)
-            throws PublishingMarshalingException;
+    List<Object> unMarshallParameters(String data) throws PublishingMarshalingException;
 
     String marshallResult(Object result) throws PublishingMarshalingException;
 

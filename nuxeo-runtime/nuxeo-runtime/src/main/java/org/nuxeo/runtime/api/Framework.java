@@ -41,17 +41,14 @@ import org.nuxeo.runtime.trackers.files.FileEventTracker;
 /**
  * This class is the main entry point to a Nuxeo runtime application.
  * <p>
- * It offers an easy way to create new sessions, to access system services and
- * other resources.
+ * It offers an easy way to create new sessions, to access system services and other resources.
  * <p>
  * There are two type of services:
  * <ul>
- * <li>Global Services - these services are uniquely defined by a service
- * class, and there is an unique instance of the service in the system per
- * class.
- * <li>Local Services - these services are defined by a class and an URI. This
- * type of service allows multiple service instances for the same class of
- * services. Each instance is uniquely defined in the system by an URI.
+ * <li>Global Services - these services are uniquely defined by a service class, and there is an unique instance of the
+ * service in the system per class.
+ * <li>Local Services - these services are defined by a class and an URI. This type of service allows multiple service
+ * instances for the same class of services. Each instance is uniquely defined in the system by an URI.
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -94,21 +91,19 @@ public final class Framework {
     /**
      * A class loader used to share resources between all bundles.
      * <p>
-     * This is useful to put resources outside any bundle (in a directory on
-     * the file system) and then refer them from XML contributions.
+     * This is useful to put resources outside any bundle (in a directory on the file system) and then refer them from
+     * XML contributions.
      * <p>
-     * The resource directory used by this loader is
-     * ${nuxeo_data_dir}/resources whee ${nuxeo_data_dir} is usually
+     * The resource directory used by this loader is ${nuxeo_data_dir}/resources whee ${nuxeo_data_dir} is usually
      * ${nuxeo_home}/data
      */
     protected static SharedResourceLoader resourceLoader;
 
     /**
-     * Whether or not services should be exported as OSGI services. This is
-     * controlled by the ${ecr.osgi.services} property. The default is false.
+     * Whether or not services should be exported as OSGI services. This is controlled by the ${ecr.osgi.services}
+     * property. The default is false.
      */
     protected static Boolean isOSGiServiceSupported;
-
 
     // Utility class.
     private Framework() {
@@ -116,8 +111,7 @@ public final class Framework {
 
     public static void initialize(RuntimeService runtimeService) {
         if (runtime != null) {
-            throw new RuntimeServiceException(
-                    "Nuxeo Framework was already initialized");
+            throw new RuntimeServiceException("Nuxeo Framework was already initialized");
         }
         runtime = runtimeService;
         reloadResourceLoader();
@@ -133,20 +127,17 @@ public final class Framework {
         } catch (MalformedURLException e) {
             throw new RuntimeServiceException(e);
         }
-        resourceLoader = new SharedResourceLoader(new URL[] { url },
-                Framework.class.getClassLoader());
+        resourceLoader = new SharedResourceLoader(new URL[] { url }, Framework.class.getClassLoader());
     }
 
     /**
-     * Reload the resources loader, keeping URLs already tracked, and adding
-     * possibility to add or remove some URLs.
+     * Reload the resources loader, keeping URLs already tracked, and adding possibility to add or remove some URLs.
      * <p>
      * Useful for hot reload of jars.
      *
      * @since 5.6
      */
-    public static void reloadResourceLoader(List<URL> urlsToAdd,
-            List<URL> urlsToRemove) {
+    public static void reloadResourceLoader(List<URL> urlsToAdd, List<URL> urlsToRemove) {
         File rs = new File(Environment.getDefault().getData(), "resources");
         rs.mkdirs();
         URL[] existing = null;
@@ -160,8 +151,7 @@ public final class Framework {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        resourceLoader = new SharedResourceLoader(new URL[] { url },
-                Framework.class.getClassLoader());
+        resourceLoader = new SharedResourceLoader(new URL[] { url }, Framework.class.getClassLoader());
         // add back existing urls unless they should be removed, and add new
         // urls
         if (existing != null) {
@@ -239,8 +229,7 @@ public final class Framework {
     }
 
     /**
-     * Login in the system as the system user (a pseudo-user having all
-     * privileges).
+     * Login in the system as the system user (a pseudo-user having all privileges).
      *
      * @return the login session if successful. Never returns null.
      * @throws LoginException on login failure
@@ -255,9 +244,8 @@ public final class Framework {
     }
 
     /**
-     * Login in the system as the system user (a pseudo-user having all
-     * privileges). The given username will be used to identify the user id
-     * that called this method.
+     * Login in the system as the system user (a pseudo-user having all privileges). The given username will be used to
+     * identify the user id that called this method.
      *
      * @param username the originating user id
      * @return the login session if successful. Never returns null.
@@ -280,8 +268,7 @@ public final class Framework {
      * @throws LoginException if any error occurs
      * @since 5.4.2
      */
-    public static LoginContext loginAsUser(String username)
-            throws LoginException {
+    public static LoginContext loginAsUser(String username) throws LoginException {
         return getLocalService(LoginAs.class).loginAs(username);
     }
 
@@ -293,8 +280,7 @@ public final class Framework {
      * @return a login session if login was successful. Never returns null.
      * @throws LoginException if login failed
      */
-    public static LoginContext login(String username, Object password)
-            throws LoginException {
+    public static LoginContext login(String username, Object password) throws LoginException {
         checkRuntimeInitialized();
         LoginService loginService = runtime.getService(LoginService.class);
         if (loginService != null) {
@@ -304,15 +290,13 @@ public final class Framework {
     }
 
     /**
-     * Login in the system using the given callback handler for login info
-     * resolution.
+     * Login in the system using the given callback handler for login info resolution.
      *
      * @param cbHandler used to fetch the login info
      * @return the login context
      * @throws LoginException
      */
-    public static LoginContext login(CallbackHandler cbHandler)
-            throws LoginException {
+    public static LoginContext login(CallbackHandler cbHandler) throws LoginException {
         checkRuntimeInitialized();
         LoginService loginService = runtime.getService(LoginService.class);
         if (loginService != null) {
@@ -353,8 +337,8 @@ public final class Framework {
     /**
      * Gets the given property value if any, otherwise null.
      * <p>
-     * The framework properties will be searched first then if any matching
-     * property is found the system properties are searched too.
+     * The framework properties will be searched first then if any matching property is found the system properties are
+     * searched too.
      *
      * @param key the property key
      * @return the property value if any or null otherwise
@@ -364,11 +348,10 @@ public final class Framework {
     }
 
     /**
-     * Gets the given property value if any, otherwise returns the given
-     * default value.
+     * Gets the given property value if any, otherwise returns the given default value.
      * <p>
-     * The framework properties will be searched first then if any matching
-     * property is found the system properties are searched too.
+     * The framework properties will be searched first then if any matching property is found the system properties are
+     * searched too.
      *
      * @param key the property key
      * @param defValue the default value to use
@@ -380,8 +363,7 @@ public final class Framework {
     }
 
     /**
-     * Gets all the framework properties. The system properties are not
-     * included in the returned map.
+     * Gets all the framework properties. The system properties are not included in the returned map.
      *
      * @return the framework properties map. Never returns null.
      */
@@ -391,8 +373,7 @@ public final class Framework {
     }
 
     /**
-     * Expands any variable found in the given expression with the value of the
-     * corresponding framework property.
+     * Expands any variable found in the given expression with the value of the corresponding framework property.
      * <p>
      * The variable format is ${property_key}.
      * <p>
@@ -413,17 +394,14 @@ public final class Framework {
     /**
      * Returns true if dev mode is set.
      * <p>
-     * Activating this mode, some of the code may not behave as it would in
-     * production, to ease up debugging and working on developing the
-     * application.
+     * Activating this mode, some of the code may not behave as it would in production, to ease up debugging and working
+     * on developing the application.
      * <p>
-     * For instance, it'll enable hot-reload if some packages are installed
-     * while the framework is running. It will also reset some caches when that
-     * happens.
+     * For instance, it'll enable hot-reload if some packages are installed while the framework is running. It will also
+     * reset some caches when that happens.
      * <p>
-     * Before 5.6, when activating this mode, the Runtime Framework stopped on
-     * low-level errors, see {@link #handleDevError(Throwable)} but this
-     * behaviour has been removed.
+     * Before 5.6, when activating this mode, the Runtime Framework stopped on low-level errors, see
+     * {@link #handleDevError(Throwable)} but this behaviour has been removed.
      */
     public static boolean isDevModeSet() {
         return isBooleanPropertyTrue(NUXEO_DEV_SYSTEM_PROP);
@@ -432,19 +410,17 @@ public final class Framework {
     /**
      * Returns true if test mode is set.
      * <p>
-     * Activating this mode, some of the code may not behave as it would in
-     * production, to ease up testing.
+     * Activating this mode, some of the code may not behave as it would in production, to ease up testing.
      */
     public static boolean isTestModeSet() {
         return isBooleanPropertyTrue(NUXEO_TESTING_SYSTEM_PROP);
     }
 
     /**
-     * Returns true if given property is false when compared to a boolean
-     * value. Returns false if given property in unset.
+     * Returns true if given property is false when compared to a boolean value. Returns false if given property in
+     * unset.
      * <p>
-     * Checks for the system properties if property is not found in the runtime
-     * properties.
+     * Checks for the system properties if property is not found in the runtime properties.
      *
      * @since 5.8
      */
@@ -462,8 +438,7 @@ public final class Framework {
     /**
      * Returns true if given property is true when compared to a boolean value.
      * <p>
-     * Checks for the system properties if property is not found in the runtime
-     * properties.
+     * Checks for the system properties if property is not found in the runtime properties.
      *
      * @since 5.6
      */
@@ -476,33 +451,27 @@ public final class Framework {
     }
 
     /**
-     * Since 5.6, this method stops the application if property
-     * {@link #NUXEO_STRICT_RUNTIME_SYSTEM_PROP} is set to true, and one of the
-     * following errors occurred during startup.
+     * Since 5.6, this method stops the application if property {@link #NUXEO_STRICT_RUNTIME_SYSTEM_PROP} is set to
+     * true, and one of the following errors occurred during startup.
      * <ul>
      * <li>Component XML parse error.
      * <li>Contribution to an unknown extension point.
-     * <li>Component with an unknown implementation class (the implementation
-     * entry exists in the XML descriptor but cannot be resolved to a class).
-     * <li>Uncatched exception on extension registration / unregistration
-     * (either in framework or user component code)
-     * <li>Uncatched exception on component activation / deactivation (either
-     * in framework or user component code)
-     * <li>Broken Nuxeo-Component MANIFEST entry. (i.e. the entry cannot be
-     * resolved to a resource)
+     * <li>Component with an unknown implementation class (the implementation entry exists in the XML descriptor but
+     * cannot be resolved to a class).
+     * <li>Uncatched exception on extension registration / unregistration (either in framework or user component code)
+     * <li>Uncatched exception on component activation / deactivation (either in framework or user component code)
+     * <li>Broken Nuxeo-Component MANIFEST entry. (i.e. the entry cannot be resolved to a resource)
      * </ul>
      * <p>
-     * Before 5.6, this method stopped the application if development mode was
-     * enabled (i.e. org.nuxeo.dev system property is set) but this is not the
-     * case anymore to handle a dev mode that does not stop the runtime
-     * framework when using hot reload.
+     * Before 5.6, this method stopped the application if development mode was enabled (i.e. org.nuxeo.dev system
+     * property is set) but this is not the case anymore to handle a dev mode that does not stop the runtime framework
+     * when using hot reload.
      *
      * @param t the exception or null if none
      */
     public static void handleDevError(Throwable t) {
         if (isBooleanPropertyTrue(NUXEO_STRICT_RUNTIME_SYSTEM_PROP)) {
-            System.err.println("Fatal error caught in strict "
-                    + "runtime mode => exiting.");
+            System.err.println("Fatal error caught in strict " + "runtime mode => exiting.");
             t.printStackTrace();
             System.exit(1);
         } else {
@@ -520,8 +489,7 @@ public final class Framework {
     }
 
     /**
-     * Strategy is now always FileDeleteStrategy.FORCE unless you've specified
-     * another one
+     * Strategy is now always FileDeleteStrategy.FORCE unless you've specified another one
      *
      * @deprecated
      * @since 6.0
@@ -531,8 +499,7 @@ public final class Framework {
      * @param fileDeleteStrategy add a custom delete strategy
      */
     @Deprecated
-    public static void trackFile(File file, Object marker,
-            FileDeleteStrategy fileDeleteStrategy) {
+    public static void trackFile(File file, Object marker, FileDeleteStrategy fileDeleteStrategy) {
         trackFile(file, marker);
     }
 

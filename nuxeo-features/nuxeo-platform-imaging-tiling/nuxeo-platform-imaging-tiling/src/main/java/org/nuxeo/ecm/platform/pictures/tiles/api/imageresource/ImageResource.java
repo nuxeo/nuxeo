@@ -26,12 +26,10 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- *
- * An ImageResource represents way to get a Blob Image. Underlying
- * implementation may be Blob based or DocumentModel based.
+ * An ImageResource represents way to get a Blob Image. Underlying implementation may be Blob based or DocumentModel
+ * based.
  *
  * @author tiry
- *
  */
 public interface ImageResource extends Serializable {
 

@@ -17,21 +17,18 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * This is a copy of OperationDocumentation from automation-core - must be keep
- * in sync
+ * This is a copy of OperationDocumentation from automation-core - must be keep in sync
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class OperationDocumentation implements
-        Comparable<OperationDocumentation>, Serializable {
+public class OperationDocumentation implements Comparable<OperationDocumentation>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public String id;
 
     /**
-     * An array of size multiple of 2. Each pair in the array is the input and
-     * output type of a method.
+     * An array of size multiple of 2. Each pair in the array is the input and output type of a method.
      */
     public String[] signature;
 
@@ -56,7 +53,7 @@ public class OperationDocumentation implements
      * Should only be used by marshaller
      */
     public OperationDocumentation() {
-        this (null);
+        this(null);
     }
 
     public OperationDocumentation(String id) {
@@ -105,8 +102,7 @@ public class OperationDocumentation implements
 
     @Override
     public String toString() {
-        return category + " > " + label + " [" + id + ": "
-                + Arrays.asList(signature) + "] (" + params + ")\n"
+        return category + " > " + label + " [" + id + ": " + Arrays.asList(signature) + "] (" + params + ")\n"
                 + description;
     }
 
@@ -154,8 +150,7 @@ public class OperationDocumentation implements
 
         @Override
         public String toString() {
-            return name + " [" + type + "] "
-                    + (isRequired ? "required" : "optional");
+            return name + " [" + type + "] " + (isRequired ? "required" : "optional");
         }
 
         public int compareTo(Param o) {

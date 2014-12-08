@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 /**
  * @since 5.5
  */
-public class TaskAdapterFactory implements DocumentAdapterFactory{
+public class TaskAdapterFactory implements DocumentAdapterFactory {
 
     @Override
     public Object getAdapter(DocumentModel doc, Class<?> itf) {

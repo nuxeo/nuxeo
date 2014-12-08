@@ -32,8 +32,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  *
  * @since 5.6
  */
-public class WorkQueueDescriptorRegistry extends
-        ContributionFragmentRegistry<WorkQueueDescriptor> {
+public class WorkQueueDescriptorRegistry extends ContributionFragmentRegistry<WorkQueueDescriptor> {
 
     private static final Log log = LogFactory.getLog(WorkQueueDescriptorRegistry.class);
 
@@ -74,8 +73,7 @@ public class WorkQueueDescriptorRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, WorkQueueDescriptor contrib,
-            WorkQueueDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, WorkQueueDescriptor contrib, WorkQueueDescriptor newOrigContrib) {
         registry.put(id, contrib);
         refresh = true;
         if (works.started) {
@@ -98,12 +96,8 @@ public class WorkQueueDescriptorRegistry extends
             for (String category : es.getValue().categories) {
                 String old = categoryToQueueId.get("category");
                 if (old != null) {
-                    log.error("Work category '"
-                            + category
-                            + "' cannot be assigned to work queue '"
-                            + queueId
-                            + "' because it is already assigned to work queue '"
-                            + old + "'");
+                    log.error("Work category '" + category + "' cannot be assigned to work queue '" + queueId
+                            + "' because it is already assigned to work queue '" + old + "'");
                 } else {
                     categoryToQueueId.put(category, queueId);
                 }

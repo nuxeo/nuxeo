@@ -45,7 +45,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-@SuppressWarnings({"IOResourceOpenedButNotSafelyClosed"})
+@SuppressWarnings({ "IOResourceOpenedButNotSafelyClosed" })
 public class TestJenaGraphReification extends NXRuntimeTestCase {
 
     private JenaGraph graph;
@@ -77,8 +77,7 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
-        deployContrib("org.nuxeo.ecm.relations.jena.tests",
-                "jena-test-bundle.xml");
+        deployContrib("org.nuxeo.ecm.relations.jena.tests", "jena-test-bundle.xml");
         RelationManager service = Framework.getService(RelationManager.class);
         Graph graph = service.getGraphByName("myrelations");
         assertNotNull(graph);
@@ -114,8 +113,7 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
 
             int index = first.indexOf(secondStmt);
             Statement firstStmt = first.get(index);
-            assertSame(firstStmt.getProperties().size(),
-                    secondStmt.getProperties().size());
+            assertSame(firstStmt.getProperties().size(), secondStmt.getProperties().size());
 
             List<Node> firstProps = Arrays.asList(firstStmt.getProperties(createdBy));
             Collections.sort(firstProps);

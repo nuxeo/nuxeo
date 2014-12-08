@@ -48,10 +48,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.thumbnail",
-        "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.url.core",
-        "org.nuxeo.ecm.platform.web.common" })
+@Deploy({ "org.nuxeo.ecm.platform.thumbnail", "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.thumbnail:test-thumbnail-factories-contrib.xml" })
 public class TestThumbnailFactories {
 
@@ -63,34 +61,27 @@ public class TestThumbnailFactories {
     CoreSession session;
 
     @Test
-    public void testThumbnailFactoryContribution() throws ClientException,
-            IOException {
+    public void testThumbnailFactoryContribution() throws ClientException, IOException {
         // Test folderish thumbnail factory
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
-                "Folder", "Folder");
+        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "Folder", "Folder");
         folder.addFacet(FacetNames.FOLDERISH);
         session.createDocument(folder);
         session.save();
         ThumbnailAdapter folderThumbnail = folder.getAdapter(ThumbnailAdapter.class);
-        Assert.assertEquals(folderThumbnail.getThumbnail(session).getString(),
-                "folderish");
+        Assert.assertEquals(folderThumbnail.getThumbnail(session).getString(), "folderish");
 
         // Test document thumbnail factory
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "File", "File");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "File", "File");
         session.createDocument(doc);
         session.save();
         ThumbnailAdapter docThumbnail = doc.getAdapter(ThumbnailAdapter.class);
-        Assert.assertEquals(docThumbnail.getThumbnail(session).getString(),
-                "default");
+        Assert.assertEquals(docThumbnail.getThumbnail(session).getString(), "default");
     }
 
-    public static class DocumentTypeThumbnailFolderishFactory implements
-            ThumbnailFactory {
+    public static class DocumentTypeThumbnailFolderishFactory implements ThumbnailFactory {
 
-        public Blob getThumbnail(DocumentModel doc, CoreSession session)
-                throws ClientException {
+        public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
             if (!doc.isFolder()) {
                 throw new ClientException("Document is not folderish");
             }
@@ -104,10 +95,8 @@ public class TestThumbnailFactories {
 
     }
 
-    public static class DocumentTypeThumbnailDocumentFactory implements
-            ThumbnailFactory {
-        public Blob getThumbnail(DocumentModel doc, CoreSession session)
-                throws ClientException {
+    public static class DocumentTypeThumbnailDocumentFactory implements ThumbnailFactory {
+        public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
             return defaultThumbnail;
         }
 

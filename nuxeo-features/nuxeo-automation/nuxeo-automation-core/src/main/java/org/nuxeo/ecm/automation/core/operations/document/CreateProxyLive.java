@@ -42,9 +42,7 @@ public class CreateProxyLive {
     public DocumentModel run(DocumentModel input) throws ClientException {
         DocumentRef docRef = new PathRef(path);
         if (!session.exists(docRef)) {
-            throw new ClientException(String.format(
-                    "Destination \"%s\" specified into operation not found",
-                    path));
+            throw new ClientException(String.format("Destination \"%s\" specified into operation not found", path));
         }
 
         DocumentModel proxy = session.createProxy(input.getRef(), docRef);

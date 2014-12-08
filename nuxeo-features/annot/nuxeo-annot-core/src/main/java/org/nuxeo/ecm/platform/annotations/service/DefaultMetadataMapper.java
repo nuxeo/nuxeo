@@ -31,11 +31,11 @@ import org.nuxeo.ecm.platform.annotations.api.AnnotationsConstants;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class DefaultMetadataMapper implements MetadataMapper {
 
     private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
     private final TimeZone timezone = TimeZone.getDefault();
 
     public void updateMetadata(Annotation annotation, NuxeoPrincipal user) {

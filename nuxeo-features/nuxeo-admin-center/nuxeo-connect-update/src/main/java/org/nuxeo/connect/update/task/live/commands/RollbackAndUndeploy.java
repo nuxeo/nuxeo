@@ -43,8 +43,7 @@ public class RollbackAndUndeploy extends Rollback {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         Command res = null;
         try {
             res = super.doRun(task, prefs);

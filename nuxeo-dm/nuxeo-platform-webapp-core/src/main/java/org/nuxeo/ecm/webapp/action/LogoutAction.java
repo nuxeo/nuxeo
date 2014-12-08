@@ -58,8 +58,7 @@ public class LogoutAction extends InputController implements Serializable {
     }
 
     /**
-     * Logs the user out. Invalidates the HTTP session so that it cannot be
-     * used anymore.
+     * Logs the user out. Invalidates the HTTP session so that it cannot be used anymore.
      *
      * @return the next page that is going to be displayed
      */
@@ -84,8 +83,7 @@ public class LogoutAction extends InputController implements Serializable {
                 parameters.put(FORCE_ANONYMOUS_LOGIN, "true");
             }
         }
-        if (response != null && request != null
-                && !context.getResponseComplete()) {
+        if (response != null && request != null && !context.getResponseComplete()) {
             String baseURL = BaseURL.getBaseURL(request) + LOGOUT_PAGE;
             request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, true);
             baseURL = URIUtils.addParametersToURIQuery(baseURL, parameters);

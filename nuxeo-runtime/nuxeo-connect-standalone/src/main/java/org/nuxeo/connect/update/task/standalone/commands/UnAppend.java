@@ -35,8 +35,7 @@ import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
- * Rollback command for {@link Append} and {@link Copy} (with
- * {@link Copy#append}=true) commands.
+ * Rollback command for {@link Append} and {@link Copy} (with {@link Copy#append}=true) commands.
  *
  * @since 5.5
  */
@@ -81,8 +80,7 @@ public class UnAppend extends AbstractCommand {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         BufferedReader brToRemove = null, brFromFile = null;
         File bak;
         StringBuilder linesToKeep = new StringBuilder();
@@ -109,15 +107,13 @@ public class UnAppend extends AbstractCommand {
                             linesToKeep.append(linesToRemove.toString());
                             linesToRemove = new StringBuilder();
                             org.apache.commons.io.IOUtils.closeQuietly(brToRemove);
-                            brToRemove = new BufferedReader(new FileReader(
-                                    contentToRemove));
+                            brToRemove = new BufferedReader(new FileReader(contentToRemove));
                         }
                         linesToKeep.append(lineToCheck + newLine);
                     }
                 }
                 if (lineToRemove != null) {
-                    throw new PackageException(
-                            "All lines to remove were not found.");
+                    throw new PackageException("All lines to remove were not found.");
                 }
             } finally {
                 org.apache.commons.io.IOUtils.closeQuietly(brToRemove);
@@ -138,8 +134,7 @@ public class UnAppend extends AbstractCommand {
     }
 
     @Override
-    protected void doValidate(Task task, ValidationStatus status)
-            throws PackageException {
+    protected void doValidate(Task task, ValidationStatus status) throws PackageException {
         if (contentToRemove == null || fromFile == null) {
             status.addError("Cannot execute command in installer."
                     + " Invalid unappend syntax: contentToRemove or fromFile was not specified.");

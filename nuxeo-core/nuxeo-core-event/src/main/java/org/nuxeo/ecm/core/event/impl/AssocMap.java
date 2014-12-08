@@ -19,15 +19,13 @@ import java.util.Set;
 /**
  * A map used to track duplicates.
  * <p>
- * This class is not synchronized on read; this means you need to populate the
- * map before using it.
+ * This class is not synchronized on read; this means you need to populate the map before using it.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AssocMap {
 
     protected final Map<String, Set<String>> peers = new HashMap<String, Set<String>>();
-
 
     public synchronized void put(String x, String y) {
         Set<String> px = peers.get(x);

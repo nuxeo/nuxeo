@@ -27,11 +27,11 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class AnnotationPopupMenu extends PopupPanel {
 
     private List<AbstractAnnotationCommand> commands;
+
     private boolean initialized = false;
 
     public AnnotationPopupMenu(List<AbstractAnnotationCommand> commands) {
@@ -57,7 +57,7 @@ public class AnnotationPopupMenu extends PopupPanel {
         for (AbstractAnnotationCommand command : commands) {
             command.setAnnotationPopupMenu(this);
 
-            MenuItem item =  new MenuItem(command.getTitle(), true, command);
+            MenuItem item = new MenuItem(command.getTitle(), true, command);
             item.addStyleName("annotationPopupMenuItem");
             popupMenuBar.addItem(item);
         }

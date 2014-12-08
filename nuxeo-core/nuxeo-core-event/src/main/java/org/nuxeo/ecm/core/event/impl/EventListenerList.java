@@ -64,25 +64,21 @@ public class EventListenerList {
         if (descriptor.isPostCommit) {
             if (descriptor.getIsAsync()) {
                 asyncPostCommitListenersDescriptors.add(descriptor);
-                Collections.sort(asyncPostCommitListenersDescriptors,
-                        new EventListenerDescriptorComparator());
+                Collections.sort(asyncPostCommitListenersDescriptors, new EventListenerDescriptorComparator());
             } else {
                 syncPostCommitListenersDescriptors.add(descriptor);
-                Collections.sort(syncPostCommitListenersDescriptors,
-                        new EventListenerDescriptorComparator());
+                Collections.sort(syncPostCommitListenersDescriptors, new EventListenerDescriptorComparator());
             }
 
         } else {
             inlineListenersDescriptors.add(descriptor);
-            Collections.sort(inlineListenersDescriptors,
-                    new EventListenerDescriptorComparator());
+            Collections.sort(inlineListenersDescriptors, new EventListenerDescriptorComparator());
         }
 
         descriptors.put(descriptor.getName(), descriptor);
     }
 
-    protected EventListenerDescriptor mergeDescriptor(
-            EventListenerDescriptor descriptor) {
+    protected EventListenerDescriptor mergeDescriptor(EventListenerDescriptor descriptor) {
         EventListenerDescriptor existingDesc = getDescriptor(descriptor.getName());
         removeDescriptor(existingDesc);
         existingDesc.merge(descriptor);
@@ -170,24 +166,21 @@ public class EventListenerList {
         if (enabledInlineListenersDescriptors == null) {
             recomputeEnabledListeners();
         }
-        return new ArrayList<EventListenerDescriptor>(
-                enabledInlineListenersDescriptors);
+        return new ArrayList<EventListenerDescriptor>(enabledInlineListenersDescriptors);
     }
 
     public synchronized List<EventListenerDescriptor> getEnabledSyncPostCommitListenersDescriptors() {
         if (enabledSyncPostCommitListenersDescriptors == null) {
             recomputeEnabledListeners();
         }
-        return new ArrayList<EventListenerDescriptor>(
-                enabledSyncPostCommitListenersDescriptors);
+        return new ArrayList<EventListenerDescriptor>(enabledSyncPostCommitListenersDescriptors);
     }
 
     public synchronized List<EventListenerDescriptor> getEnabledAsyncPostCommitListenersDescriptors() {
         if (enabledAsyncPostCommitListenersDescriptors == null) {
             recomputeEnabledListeners();
         }
-        return new ArrayList<EventListenerDescriptor>(
-                enabledAsyncPostCommitListenersDescriptors);
+        return new ArrayList<EventListenerDescriptor>(enabledAsyncPostCommitListenersDescriptors);
     }
 
     public List<String> getListenerNames() {

@@ -40,9 +40,9 @@ public interface DocumentPart extends Property {
 
     void importDiff(PropertyDiff diff) throws PropertyException;
 
-//
-//    public void setContextData(String key, Object value);
-//
-//    public Object getContextData(String key);
+    //
+    // public void setContextData(String key, Object value);
+    //
+    // public Object getContextData(String key);
 
 }

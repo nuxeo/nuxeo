@@ -52,8 +52,7 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             fail("This test is not configured for an external server");
         } else {
-            deployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                    INTERNAL_SERVER_SETUP_UPPER_ID);
+            deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_UPPER_ID);
             getLDAPDirectory("userDirectory").setTestServer(server);
             getLDAPDirectory("groupDirectory").setTestServer(server);
         }
@@ -69,13 +68,10 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
             DocumentModel entry = session.getEntry("Administrator");
             assertNotNull(entry);
             assertEquals("ADMINISTRATOR", entry.getId());
-            assertEquals("ADMINISTRATOR", entry.getProperty(USER_SCHEMANAME,
-                    "username"));
-            assertEquals("Manager", entry.getProperty(USER_SCHEMANAME,
-                    "lastName"));
+            assertEquals("ADMINISTRATOR", entry.getProperty(USER_SCHEMANAME, "username"));
+            assertEquals("Manager", entry.getProperty(USER_SCHEMANAME, "lastName"));
 
-            assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME,
-                    "firstName"));
+            assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME, "firstName"));
             assertNull(entry.getProperty(USER_SCHEMANAME, "password"));
 
             List val = (List) entry.getProperty(USER_SCHEMANAME, "employeeType");
@@ -84,11 +80,9 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
             DocumentModel entry2 = session.getEntry("user1");
             assertNotNull(entry2);
             assertEquals("USER1", entry2.getId());
-            assertEquals("USER1",
-                    entry2.getProperty(USER_SCHEMANAME, "username"));
+            assertEquals("USER1", entry2.getProperty(USER_SCHEMANAME, "username"));
             assertEquals("One", entry2.getProperty(USER_SCHEMANAME, "lastName"));
-            assertEquals("User", entry2.getProperty(USER_SCHEMANAME,
-                    "firstName"));
+            assertEquals("User", entry2.getProperty(USER_SCHEMANAME, "firstName"));
             assertNull(entry2.getProperty(USER_SCHEMANAME, "password"));
 
             try {
@@ -97,8 +91,7 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
             } catch (ClientException ce) {
                 // expected
             }
-            assertEquals(Arrays.asList("Boss"), entry2.getProperty(
-                    USER_SCHEMANAME, "employeeType"));
+            assertEquals(Arrays.asList("Boss"), entry2.getProperty(USER_SCHEMANAME, "employeeType"));
 
             DocumentModel entry3 = session.getEntry("UnexistingEntry");
             assertNull(entry3);

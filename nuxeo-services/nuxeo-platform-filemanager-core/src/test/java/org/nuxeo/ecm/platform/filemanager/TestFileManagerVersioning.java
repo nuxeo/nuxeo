@@ -50,14 +50,10 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.dublincore",
-        "org.nuxeo.ecm.platform.versioning.api",
-        "org.nuxeo.ecm.platform.versioning",
-        "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core" })
+@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.dublincore",
+        "org.nuxeo.ecm.platform.versioning.api", "org.nuxeo.ecm.platform.versioning",
+        "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core" })
 @LocalDeploy("org.nuxeo.ecm.platform.types.core:ecm-types-test-contrib.xml")
 public class TestFileManagerVersioning {
 
@@ -114,8 +110,7 @@ public class TestFileManagerVersioning {
         File file = getTestFile(HELLO_DOC);
         byte[] content = FileManagerUtils.getBytesFromFile(file);
         ByteArrayBlob input = new ByteArrayBlob(content, APPLICATION_MSWORD);
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, HELLO_DOC);
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, root.getPathAsString(), true, HELLO_DOC);
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc.getPropertyValue("file:content"));
@@ -124,16 +119,14 @@ public class TestFileManagerVersioning {
         assertEquals("0.0", doc.getVersionLabel());
 
         // overwrite file
-        doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, HELLO_DOC);
+        doc = service.createDocumentFromBlob(coreSession, input, root.getPathAsString(), true, HELLO_DOC);
 
         assertTrue(doc.isCheckedOut());
         assertEquals(1, coreSession.getVersions(docRef).size());
         assertEquals("1.0+", doc.getVersionLabel());
 
         // overwrite again
-        doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, HELLO_DOC);
+        doc = service.createDocumentFromBlob(coreSession, input, root.getPathAsString(), true, HELLO_DOC);
 
         assertTrue(doc.isCheckedOut());
         assertEquals(2, coreSession.getVersions(docRef).size());
@@ -151,8 +144,7 @@ public class TestFileManagerVersioning {
         File file = getTestFile(HELLO_DOC);
         byte[] content = FileManagerUtils.getBytesFromFile(file);
         ByteArrayBlob input = new ByteArrayBlob(content, APPLICATION_MSWORD);
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, HELLO_DOC);
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, root.getPathAsString(), true, HELLO_DOC);
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc.getPropertyValue("file:content"));
@@ -161,16 +153,14 @@ public class TestFileManagerVersioning {
         assertEquals("0.1", doc.getVersionLabel());
 
         // overwrite file
-        doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, HELLO_DOC);
+        doc = service.createDocumentFromBlob(coreSession, input, root.getPathAsString(), true, HELLO_DOC);
 
         assertFalse(doc.isCheckedOut());
         assertEquals(2, coreSession.getVersions(docRef).size());
         assertEquals("0.2", doc.getVersionLabel());
 
         // overwrite again
-        doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, HELLO_DOC);
+        doc = service.createDocumentFromBlob(coreSession, input, root.getPathAsString(), true, HELLO_DOC);
 
         assertFalse(doc.isCheckedOut());
         assertEquals(3, coreSession.getVersions(docRef).size());

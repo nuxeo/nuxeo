@@ -24,8 +24,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.ServiceProvider;
 
 /**
- *
- *
  * @since 5.7.8
  */
 public class MockProvider implements ServiceProvider {
@@ -33,7 +31,6 @@ public class MockProvider implements ServiceProvider {
     protected ServiceProvider next;
 
     protected final Map<Class<?>, Object> mocks = new HashMap<>();
-
 
     public MockProvider() {
     }

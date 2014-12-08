@@ -40,7 +40,7 @@ public class StringArrayEditor extends PropertyEditorSupport {
     public String getAsText() {
         String sep = "";
         String text = "";
-        for (String element:(String[])getValue()) {
+        for (String element : (String[]) getValue()) {
             text += sep + element;
             sep = ", ";
         }

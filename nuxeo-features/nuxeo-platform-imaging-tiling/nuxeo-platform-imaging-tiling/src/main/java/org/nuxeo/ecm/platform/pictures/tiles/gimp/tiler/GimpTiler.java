@@ -32,12 +32,10 @@ import org.nuxeo.ecm.platform.pictures.tiles.gimp.GimpExecutor;
 import org.nuxeo.ecm.platform.pictures.tiles.tilers.BasePictureTiler;
 
 /**
- *
- * Gimp based tiler uses a Gimp specific procedure to generate tiles from an
- * picture file Tiles can be generated one by one or 9 by 9
+ * Gimp based tiler uses a Gimp specific procedure to generate tiles from an picture file Tiles can be generated one by
+ * one or 9 by 9
  *
  * @author tiry
- *
  */
 public class GimpTiler extends BasePictureTiler {
 
@@ -49,9 +47,9 @@ public class GimpTiler extends BasePictureTiler {
         return true;
     }
 
-    public PictureTiles getTilesFromFile(ImageInfo input, String outputDirPath,
-            int tileWidth, int tileHeight, int maxTiles, int xCenter,
-            int yCenter, long lastModificationTime, boolean fullGeneration) throws ClientException {
+    public PictureTiles getTilesFromFile(ImageInfo input, String outputDirPath, int tileWidth, int tileHeight,
+            int maxTiles, int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration)
+            throws ClientException {
 
         String inputFilePath = input.getFilePath();
 
@@ -67,11 +65,10 @@ public class GimpTiler extends BasePictureTiler {
             outputDirPath += "/";
 
         try {
-            result = exec("python-fu-nx-tiles", inputFilePath, outputDirPath,
-                    tileWidth, tileHeight, maxTiles, xCenter, yCenter);
+            result = exec("python-fu-nx-tiles", inputFilePath, outputDirPath, tileWidth, tileHeight, maxTiles, xCenter,
+                    yCenter);
         } catch (IOException e) {
-            throw new ClientException("Error while calling gimp command line",
-                    e);
+            throw new ClientException("Error while calling gimp command line", e);
         }
 
         result.put(PictureTilesImpl.TILE_INPUT_FILE_KEY, inputFilePath);
@@ -81,8 +78,7 @@ public class GimpTiler extends BasePictureTiler {
         result.put(PictureTilesImpl.TILE_OUTPUT_DIR_KEY, outputDirPath);
         result.put(PictureTilesImpl.TILES_PREFIX_KEY, "tile");
         result.put(PictureTilesImpl.TILES_SUFFIX_KEY, ".jpg");
-        result.put(PictureTilesImpl.PROGRESSIVE_TILING_KEY,
-                Boolean.toString(!fullGeneration));
+        result.put(PictureTilesImpl.PROGRESSIVE_TILING_KEY, Boolean.toString(!fullGeneration));
 
         PictureTiles tiles = null;
         tiles = new PictureTilesImpl(result);
@@ -90,9 +86,8 @@ public class GimpTiler extends BasePictureTiler {
 
     }
 
-    protected Map<String, String> exec(String procName, String inputFilePath,
-            String outputPath, int tileX, int tileY, int nbTiles,
-            int centerXTile, int centerYTile) throws IOException {
+    protected Map<String, String> exec(String procName, String inputFilePath, String outputPath, int tileX, int tileY,
+            int nbTiles, int centerXTile, int centerYTile) throws IOException {
 
         List<Object> params = new ArrayList<Object>();
 

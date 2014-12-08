@@ -32,8 +32,7 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.imageresource.ImageResource;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Default implementation for the PictureTilesAdapter. This implementation
- * simply uses a xPath to get the target blob.
+ * Default implementation for the PictureTilesAdapter. This implementation simply uses a xPath to get the target blob.
  * 
  * @author tiry
  */
@@ -75,14 +74,12 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
         return pts;
     }
 
-    public PictureTiles getTiles(int tileWidth, int tileHeight, int maxTiles)
-            throws ClientException {
+    public PictureTiles getTiles(int tileWidth, int tileHeight, int maxTiles) throws ClientException {
 
         String key = tileWidth + "-" + tileHeight + "-" + maxTiles;
 
         if (!tiles.containsKey(key)) {
-            PictureTiles tile = getService().getTiles(getResource(), tileWidth,
-                    tileHeight, maxTiles, 0, 0, false);
+            PictureTiles tile = getService().getTiles(getResource(), tileWidth, tileHeight, maxTiles, 0, 0, false);
             tiles.put(key, tile);
         }
         return tiles.get(key);

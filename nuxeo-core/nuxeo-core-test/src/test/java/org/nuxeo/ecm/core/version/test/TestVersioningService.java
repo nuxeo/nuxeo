@@ -61,8 +61,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         return getVersion(doc, VersioningService.MINOR_VERSION_PROP);
     }
 
-    protected long getVersion(DocumentModel doc, String prop)
-            throws ClientException {
+    protected long getVersion(DocumentModel doc, String prop) throws ClientException {
         Object propVal = doc.getPropertyValue(prop);
         if (propVal == null || !(propVal instanceof Long)) {
             return -1;
@@ -71,15 +70,12 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         }
     }
 
-    protected void assertVersion(String expected, DocumentModel doc)
-            throws Exception {
+    protected void assertVersion(String expected, DocumentModel doc) throws Exception {
         assertEquals(expected, getMajor(doc) + "." + getMinor(doc));
     }
 
-    protected void assertLatestVersion(String expected, DocumentModel doc)
-            throws Exception {
-        DocumentModel ver = doc.getCoreSession().getLastDocumentVersion(
-                doc.getRef());
+    protected void assertLatestVersion(String expected, DocumentModel doc) throws Exception {
+        DocumentModel ver = doc.getCoreSession().getLastDocumentVersion(doc.getRef());
         if (ver == null) {
             assertNull(expected);
         } else {
@@ -93,11 +89,9 @@ public class TestVersioningService extends SQLRepositoryTestCase {
 
     @Test
     public void testStandardVersioning() throws Exception {
-        DocumentModel folder = session.createDocumentModel("/", "folder",
-                "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
-        DocumentModel doc = session.createDocumentModel("/", "testfile1",
-                "File");
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         doc.setPropertyValue("dc:title", "A");
         doc = session.saveDocument(doc);
@@ -117,8 +111,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
 
         // change and save with new minor
         doc.setPropertyValue("dc:title", "C");
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MINOR);
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         doc = session.saveDocument(doc);
         assertFalse(doc.isCheckedOut());
         assertVersion("0.1", doc);
@@ -136,8 +129,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
 
         // change and save with new major
         doc.setPropertyValue("dc:title", "D");
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MAJOR);
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
         doc = session.saveDocument(doc);
         assertFalse(doc.isCheckedOut());
         assertVersion("1.0", doc);
@@ -160,8 +152,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         assertVersion("1.1", doc);
         assertVersionLabel("1.1", doc);
         assertLatestVersion("1.1", doc);
-        assertEquals(v11ref.reference(),
-                session.getBaseVersion(docRef).reference());
+        assertEquals(v11ref.reference(), session.getBaseVersion(docRef).reference());
 
         // restore 0.1
         doc = session.restoreToVersion(docRef, v01.getRef());
@@ -207,15 +198,12 @@ public class TestVersioningService extends SQLRepositoryTestCase {
     @SuppressWarnings("deprecation")
     @Test
     public void testOldNuxeoVersioning() throws Exception {
-        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
-                "test-versioningservice-contrib.xml");
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE, "test-versioningservice-contrib.xml");
         service.service = new CompatVersioningService();
 
-        DocumentModel folder = session.createDocumentModel("/", "folder",
-                "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
-        DocumentModel doc = session.createDocumentModel("/", "testfile1",
-                "File");
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         doc.setPropertyValue("dc:title", "A");
         doc = session.saveDocument(doc);
@@ -226,16 +214,14 @@ public class TestVersioningService extends SQLRepositoryTestCase {
 
         // snapshot A=1.0 and save B
         doc.setPropertyValue("dc:title", "B");
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MINOR);
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         doc = session.saveDocument(doc);
         assertTrue(doc.isCheckedOut());
         assertVersion("1.1", doc);
         assertLatestVersion("1.0", doc);
 
         // another snapshot for B=1.1, using major inc
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MAJOR);
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
         doc = session.saveDocument(doc);
         assertTrue(doc.isCheckedOut());
         assertVersion("2.0", doc);
@@ -245,8 +231,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
 
         // another snapshot but no increment doesn't change anything, doc is
         // clean
-        doc.putContextData(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        doc.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         doc = session.saveDocument(doc);
         assertTrue(doc.isCheckedOut());
         assertVersion("2.0", doc);
@@ -255,8 +240,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         // now dirty doc and snapshot+inc
         doc.setPropertyValue("dc:title", "C");
         doc = session.saveDocument(doc);
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MINOR);
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         doc = session.saveDocument(doc);
         assertTrue(doc.isCheckedOut());
         assertVersion("2.1", doc);
@@ -264,8 +248,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
 
         // another save+inc, no snapshot
         doc.setPropertyValue("dc:title", "D");
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MAJOR);
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
         doc = session.saveDocument(doc);
         assertTrue(doc.isCheckedOut());
         assertVersion("3.0", doc);
@@ -296,8 +279,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
 
     @Test
     public void testNoOptions() throws Exception {
-        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
-                "test-versioning-nooptions.xml");
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE, "test-versioning-nooptions.xml");
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
 

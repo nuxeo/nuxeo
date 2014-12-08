@@ -55,8 +55,6 @@ import com.google.inject.Inject;
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @RunWith(FeaturesRunner.class)
@@ -96,11 +94,9 @@ public class DirectoryTest extends BaseTest {
         DocumentModel docEntry = dirSession.getEntry("test1");
 
         // When I call the Rest endpoint
-        JsonNode node = getResponseAsJson(RequestType.GET, "/directory/"
-                + TESTDIRNAME + "/test1");
+        JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + TESTDIRNAME + "/test1");
 
-        assertEquals(DirectoryEntryWriter.ENTITY_TYPE,
-                node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryEntryWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         assertEquals(TESTDIRNAME, node.get("directoryName").getValueAsText());
         assertEquals(docEntry.getPropertyValue("vocabulary:label"),
                 node.get("properties").get("label").getValueAsText());
@@ -113,12 +109,10 @@ public class DirectoryTest extends BaseTest {
         DocumentModelList entries = dirSession.getEntries();
 
         // When i do a request on the directory endpoint
-        JsonNode node = getResponseAsJson(RequestType.GET, "/directory/"
-                + TESTDIRNAME);
+        JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + TESTDIRNAME);
 
         // Then i receive the response as json
-        assertEquals(DirectoryEntriesWriter.ENTITY_TYPE,
-                node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryEntriesWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         ArrayNode jsonEntries = (ArrayNode) node.get("entries");
         assertEquals(entries.size(), jsonEntries.size());
 
@@ -132,8 +126,8 @@ public class DirectoryTest extends BaseTest {
         String jsonEntry = getDirectoryEntryAsJson(docEntry);
 
         // When i do an update request on the entry endpoint
-        ClientResponse response = getResponse(RequestType.PUT, "/directory/"
-                + TESTDIRNAME + "/" + docEntry.getId(), jsonEntry);
+        ClientResponse response = getResponse(RequestType.PUT, "/directory/" + TESTDIRNAME + "/" + docEntry.getId(),
+                jsonEntry);
 
         // Then the entry is updated
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -153,12 +147,10 @@ public class DirectoryTest extends BaseTest {
         String jsonEntry = getDirectoryEntryAsJson(docEntry);
 
         // When i do an update request on the entry endpoint
-        ClientResponse response = getResponse(RequestType.POST, "/directory/"
-                + TESTDIRNAME, jsonEntry);
+        ClientResponse response = getResponse(RequestType.POST, "/directory/" + TESTDIRNAME, jsonEntry);
 
         // Then the entry is updated
-        assertEquals(Response.Status.CREATED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         docEntry = dirSession.getEntry("newtest");
         assertEquals("newlabel", docEntry.getPropertyValue("vocabulary:label"));
@@ -172,8 +164,7 @@ public class DirectoryTest extends BaseTest {
         assertNotNull(docEntry);
 
         // When i do a DELETE request on the entry endpoint
-        getResponse(RequestType.DELETE, "/directory/" + TESTDIRNAME + "/"
-                + docEntry.getId());
+        getResponse(RequestType.DELETE, "/directory/" + TESTDIRNAME + "/" + docEntry.getId());
 
         // Then the entry is deleted
         assertNull(dirSession.getEntry("test2"));
@@ -182,18 +173,14 @@ public class DirectoryTest extends BaseTest {
 
     @Test
     public void itSends404OnnotExistentDirectory() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET,
-                "/directory/nonexistendirectory");
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(),
-                response.getStatus());
+        ClientResponse response = getResponse(RequestType.GET, "/directory/nonexistendirectory");
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void itSends404OnnotExistentDirectoryEntry() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET, "/directory/"
-                + TESTDIRNAME + "/nonexistententry");
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(),
-                response.getStatus());
+        ClientResponse response = getResponse(RequestType.GET, "/directory/" + TESTDIRNAME + "/nonexistententry");
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
     @Test
@@ -206,25 +193,20 @@ public class DirectoryTest extends BaseTest {
         String jsonEntry = getDirectoryEntryAsJson(docEntry);
 
         // When i do an update request on the entry endpoint
-        ClientResponse response = getResponse(RequestType.PUT, "/directory/"
-                + TESTDIRNAME + "/" + docEntry.getId(), jsonEntry);
-        // Then it is unauthorized
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
-
-        // When i do an create request on the entry endpoint
-        response = getResponse(RequestType.POST, "/directory/" + TESTDIRNAME,
+        ClientResponse response = getResponse(RequestType.PUT, "/directory/" + TESTDIRNAME + "/" + docEntry.getId(),
                 jsonEntry);
         // Then it is unauthorized
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+
+        // When i do an create request on the entry endpoint
+        response = getResponse(RequestType.POST, "/directory/" + TESTDIRNAME, jsonEntry);
+        // Then it is unauthorized
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
         // When i do an delete request on the entry endpoint
-        response = getResponse(RequestType.DELETE, "/directory/" + TESTDIRNAME
-                + "/" + docEntry.getId());
+        response = getResponse(RequestType.DELETE, "/directory/" + TESTDIRNAME + "/" + docEntry.getId());
         // Then it is unauthorized
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
     }
 
@@ -238,26 +220,22 @@ public class DirectoryTest extends BaseTest {
         String jsonEntry = getDirectoryEntryAsJson(userDirectoryName, model);
 
         // When i do an update request on it
-        ClientResponse response = getResponse(RequestType.POST, "/directory/"
-                + userDirectoryName, jsonEntry);
+        ClientResponse response = getResponse(RequestType.POST, "/directory/" + userDirectoryName, jsonEntry);
         // Then it is unauthorized
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
     }
 
     @Test
     public void itShouldNotWritePasswordFieldInResponse() throws Exception {
-     // Given a user directory entry
+        // Given a user directory entry
         UserManager um = Framework.getLocalService(UserManager.class);
         String userDirectoryName = um.getUserDirectoryName();
 
         // When i do an update request on it
-        JsonNode node = getResponseAsJson(RequestType.GET, "/directory/"
-                + userDirectoryName + "/user1");
+        JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + userDirectoryName + "/user1");
 
-        assertEquals("",node.get("properties").get("password").getValueAsText());
-
+        assertEquals("", node.get("properties").get("password").getValueAsText());
 
     }
 
@@ -271,21 +249,18 @@ public class DirectoryTest extends BaseTest {
         String jsonEntry = getDirectoryEntryAsJson(groupDirectoryName, model);
 
         // When i do an create request on it
-        ClientResponse response = getResponse(RequestType.POST, "/directory/"
-                + groupDirectoryName, jsonEntry);
+        ClientResponse response = getResponse(RequestType.POST, "/directory/" + groupDirectoryName, jsonEntry);
         // Then it is unauthorized
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
     }
 
-    private String getDirectoryEntryAsJson(DocumentModel dirEntry)
-            throws IOException, JsonGenerationException, ClientException {
+    private String getDirectoryEntryAsJson(DocumentModel dirEntry) throws IOException, JsonGenerationException,
+            ClientException {
         return getDirectoryEntryAsJson(TESTDIRNAME, dirEntry);
     }
 
-    private String getDirectoryEntryAsJson(String dirName,
-            DocumentModel dirEntry) throws IOException,
+    private String getDirectoryEntryAsJson(String dirName, DocumentModel dirEntry) throws IOException,
             JsonGenerationException, ClientException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = JsonHelper.createJsonGenerator(out);

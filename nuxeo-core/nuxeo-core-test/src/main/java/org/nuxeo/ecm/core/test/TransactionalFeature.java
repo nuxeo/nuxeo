@@ -21,7 +21,7 @@ import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@RepositoryConfig(cleanup=Granularity.METHOD, repositoryFactoryClass=PoolingRepositoryFactory.class)
+@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 public class TransactionalFeature extends ContainerFeature {
 
     protected TransactionalConfig config;
@@ -52,10 +52,11 @@ public class TransactionalFeature extends ContainerFeature {
         if (txStarted == false) {
             if (TransactionHelper.isTransactionActive()) {
                 try {
-                TransactionHelper.setTransactionRollbackOnly();
-                TransactionHelper.commitOrRollbackTransaction();
+                    TransactionHelper.setTransactionRollbackOnly();
+                    TransactionHelper.commitOrRollbackTransaction();
                 } finally {
-                    Logger.getLogger(TransactionalFeature.class).warn("Committing a transaction for your, please do it yourself");
+                    Logger.getLogger(TransactionalFeature.class).warn(
+                            "Committing a transaction for your, please do it yourself");
                 }
             }
             return;

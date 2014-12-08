@@ -198,11 +198,9 @@ public class TestHtmlSanitizerServiceImpl {
     public void testSanitizeSpaces() {
         HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
         assertEquals("<strong>strong</strong>\n<em>content</em>",
-                service.sanitizeString(
-                        "<strong>strong</strong><em>content</em>", null));
+                service.sanitizeString("<strong>strong</strong><em>content</em>", null));
         assertEquals("<p><strong>strong</strong><em>content</em></p>",
-                service.sanitizeString(
-                        "<p><strong>strong</strong><em>content</em></p>", null));
+                service.sanitizeString("<p><strong>strong</strong><em>content</em></p>", null));
     }
 
     @Test

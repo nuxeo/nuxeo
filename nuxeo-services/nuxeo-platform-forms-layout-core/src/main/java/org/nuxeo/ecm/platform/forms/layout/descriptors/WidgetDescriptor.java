@@ -80,16 +80,14 @@ public class WidgetDescriptor {
     Map<String, String> helpLabels = new HashMap<String, String>();
 
     /**
-     * Defaults to true, contrary to {@link WidgetDefinition} interface, but
-     * kept as is for compatibility.
+     * Defaults to true, contrary to {@link WidgetDefinition} interface, but kept as is for compatibility.
      */
     @XNode("translated")
     boolean translated = true;
 
     /**
      * @since 5.6
-     * @deprecated since 5.7: use {@link #controls} instead, with name
-     *             "handleLabels".
+     * @deprecated since 5.7: use {@link #controls} instead, with name "handleLabels".
      */
     @Deprecated
     @XNode("handlingLabels")
@@ -162,14 +160,12 @@ public class WidgetDescriptor {
     public String getRequired(String layoutMode, String mode) {
         String res = "false";
         Map<String, Serializable> props = getProperties(layoutMode, mode);
-        if (props != null
-                && props.containsKey(WidgetDefinition.REQUIRED_PROPERTY_NAME)) {
+        if (props != null && props.containsKey(WidgetDefinition.REQUIRED_PROPERTY_NAME)) {
             Object value = props.get(WidgetDefinition.REQUIRED_PROPERTY_NAME);
             if (value instanceof String) {
                 res = (String) value;
             } else {
-                log.error(String.format(
-                        "Invalid property \"%s\" on widget %s: %s",
+                log.error(String.format("Invalid property \"%s\" on widget %s: %s",
                         WidgetDefinition.REQUIRED_PROPERTY_NAME, value, name));
             }
         }
@@ -204,12 +200,9 @@ public class WidgetDescriptor {
         return translated;
     }
 
-    public Map<String, Serializable> getProperties(String layoutMode,
-            String mode) {
-        Map<String, Serializable> modeProps = getProperties(properties,
-                layoutMode);
-        Map<String, Serializable> widgetModeProps = getProperties(
-                widgetModeProperties, mode);
+    public Map<String, Serializable> getProperties(String layoutMode, String mode) {
+        Map<String, Serializable> modeProps = getProperties(properties, layoutMode);
+        Map<String, Serializable> widgetModeProps = getProperties(widgetModeProperties, mode);
         if (modeProps == null && widgetModeProps == null) {
             return null;
         } else if (widgetModeProps == null) {
@@ -218,8 +211,7 @@ public class WidgetDescriptor {
             return widgetModeProps;
         } else {
             // take mode values, and override with widget mode values
-            Map<String, Serializable> res = new HashMap<String, Serializable>(
-                    modeProps);
+            Map<String, Serializable> res = new HashMap<String, Serializable>(modeProps);
             res.putAll(widgetModeProps);
             return res;
         }
@@ -266,16 +258,13 @@ public class WidgetDescriptor {
         if (subWidgetRefs != null) {
             csubWidgets = new WidgetReference[subWidgetRefs.length];
             for (int i = 0; i < subWidgetRefs.length; i++) {
-                csubWidgets[i] = new WidgetReferenceImpl(
-                        subWidgetRefs[i].getCategory(),
-                        subWidgetRefs[i].getName());
+                csubWidgets[i] = new WidgetReferenceImpl(subWidgetRefs[i].getCategory(), subWidgetRefs[i].getName());
             }
         }
         return csubWidgets;
     }
 
-    public static Map<String, Serializable> getProperties(
-            Map<String, PropertiesDescriptor> map, String mode) {
+    public static Map<String, Serializable> getProperties(Map<String, PropertiesDescriptor> map, String mode) {
         if (map == null) {
             return null;
         }
@@ -290,15 +279,13 @@ public class WidgetDescriptor {
             return defaultProps.getProperties();
         } else {
             // take any mode values, and override with given mode values
-            Map<String, Serializable> res = new HashMap<String, Serializable>(
-                    defaultProps.getProperties());
+            Map<String, Serializable> res = new HashMap<String, Serializable>(defaultProps.getProperties());
             res.putAll(props.getProperties());
             return res;
         }
     }
 
-    public static Map<String, Map<String, Serializable>> getProperties(
-            Map<String, PropertiesDescriptor> map) {
+    public static Map<String, Map<String, Serializable>> getProperties(Map<String, PropertiesDescriptor> map) {
         if (map == null) {
             return null;
         }
@@ -339,8 +326,7 @@ public class WidgetDescriptor {
     }
 
     /**
-     * Returns the categories for this widget type, so that it can be stored in
-     * the corresponding registry.
+     * Returns the categories for this widget type, so that it can be stored in the corresponding registry.
      *
      * @since 5.5
      */
@@ -396,10 +382,8 @@ public class WidgetDescriptor {
                 crenderingInfos.put(item.getKey(), clonedInfos);
             }
         }
-        WidgetDefinitionImpl clone = new WidgetDefinitionImpl(name, type,
-                clabels, chelpLabels, translated, cmodes, cfieldDefinitions,
-                getProperties(), getWidgetModeProperties(), csubWidgets,
-                cselectOptions);
+        WidgetDefinitionImpl clone = new WidgetDefinitionImpl(name, type, clabels, chelpLabels, translated, cmodes,
+                cfieldDefinitions, getProperties(), getWidgetModeProperties(), csubWidgets, cselectOptions);
         clone.setRenderingInfos(crenderingInfos);
         clone.setSubWidgetReferences(csubwidgetRefs);
         clone.setHandlingLabels(handlingLabels);

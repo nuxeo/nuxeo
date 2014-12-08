@@ -35,15 +35,15 @@ import com.google.inject.Inject;
 @Ignore("This is working only if admin module is loaded from a jar -> otherwise webengine types are missing from META-INF")
 @RunWith(FeaturesRunner.class)
 @Features(WebEngineFeature.class)
-@Browser(type=BrowserFamily.FIREFOX)
-@HomePage(type=WebEngineHomePage.class, url="http://localhost:8082")
-@Jetty(port=8082)
-//@RepositoryConfig(type=BackendType.H2)
+@Browser(type = BrowserFamily.FIREFOX)
+@HomePage(type = WebEngineHomePage.class, url = "http://localhost:8082")
+@Jetty(port = 8082)
+// @RepositoryConfig(type=BackendType.H2)
 public class WebEngineTest {
 
-//    @Inject protected CoreSession session;
-//
-//    @Inject protected WebEngine we;
+    // @Inject protected CoreSession session;
+    //
+    // @Inject protected WebEngine we;
 
     @Inject
     private WebEngineHomePage home;
@@ -56,8 +56,8 @@ public class WebEngineTest {
         login.ensureLogin("Administrator", "Administrator");
         assertTrue(login.isAuthenticated());
         AdminModulePage admin = home.getModulePage("Admin", AdminModulePage.class);
-//        DocumentPage doc = admin.getDocumentPage("default-domain");
-//        Assert.assertEquals("Default domain", doc.getTitle());
+        // DocumentPage doc = admin.getDocumentPage("default-domain");
+        // Assert.assertEquals("Default domain", doc.getTitle());
     }
 
 }

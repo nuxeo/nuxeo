@@ -97,8 +97,7 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNull(config.getDisableBackgroundSizeCover());
 
         assertEquals("XXXX", config.getProvider("google").getLink(null, null));
-        deployContrib(WEB_BUNDLE_TEST,
-                "OSGI-INF/test-loginscreenconfig-merge.xml");
+        deployContrib(WEB_BUNDLE_TEST, "OSGI-INF/test-loginscreenconfig-merge.xml");
 
         assertEquals("#DDDDDD", config.getHeaderStyle());
         assertEquals("Something", config.getFooterStyle());
@@ -125,10 +124,8 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNotNull(config.getProvider("linkedin"));
         assertEquals("XXXX", config.getProvider("google").getLink(null, null));
 
-        LoginScreenHelper.registerLoginProvider("google", "XXX", "new", null,
-                null, null);
-        LoginScreenHelper.registerLoginProvider("OuvertId", "AAA", "BBB", null,
-                null, null);
+        LoginScreenHelper.registerLoginProvider("google", "XXX", "new", null, null, null);
+        LoginScreenHelper.registerLoginProvider("OuvertId", "AAA", "BBB", null, null, null);
 
         assertEquals(4, config.getProviders().size());
         assertNotNull(config.getProvider("google"));

@@ -32,8 +32,7 @@ public class CreateDocumentForm {
 
     @OperationMethod
     public void run() {
-        ctx.put(SeamOperation.OUTCOME,
-                OperationHelper.getDocumentActions().createDocument(type));
+        ctx.put(SeamOperation.OUTCOME, OperationHelper.getDocumentActions().createDocument(type));
     }
 
 }

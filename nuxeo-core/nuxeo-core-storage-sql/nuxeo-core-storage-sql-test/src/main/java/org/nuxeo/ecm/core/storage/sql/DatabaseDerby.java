@@ -44,23 +44,20 @@ public class DatabaseDerby extends DatabaseHelper {
     protected String url;
 
     protected void setProperties() {
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY,
-                repositoryName);
+        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(DATABASE_PROPERTY, new File(DIRECTORY).getAbsolutePath());
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
         // for sql directory tests
         setProperty(DRIVER_PROPERTY, DRIVER);
-        url = String.format("jdbc:derby:%s;create=true",
-                Framework.getProperty(DATABASE_PROPERTY));
+        url = String.format("jdbc:derby:%s;create=true", Framework.getProperty(DATABASE_PROPERTY));
         setProperty(URL_PROPERTY, url);
     }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        System.setProperty("derby.stream.error.file",
-                new File(LOG).getAbsolutePath());
+        System.setProperty("derby.stream.error.file", new File(LOG).getAbsolutePath());
         // newInstance needed after a previous shutdown
         Class.forName(DRIVER).newInstance();
         File dbdir = new File(DIRECTORY);
@@ -91,8 +88,7 @@ public class DatabaseDerby extends DatabaseHelper {
         } finally {
             super.tearDown();
         }
-        throw new RuntimeException("Expected Derby shutdown exception instead",
-                ex);
+        throw new RuntimeException("Expected Derby shutdown exception instead", ex);
     }
 
     @Override

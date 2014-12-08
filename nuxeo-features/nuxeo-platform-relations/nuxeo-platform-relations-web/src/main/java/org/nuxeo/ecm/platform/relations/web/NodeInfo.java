@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.relations.api.Node;
  * Node representation for easier display.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface NodeInfo extends Node {
 

@@ -29,11 +29,9 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Property handling an external blob: create/edit is done from a map, and the
- * value returned is a blob.
+ * Property handling an external blob: create/edit is done from a map, and the value returned is a blob.
  * <p>
- * Create/edit from a blob is not handled, and the blob uri cannot be retrieved
- * from the blob (no api for now).
+ * Create/edit from a blob is not handled, and the blob uri cannot be retrieved from the blob (no api for now).
  *
  * @author Anahide Tchertchian
  */
@@ -78,9 +76,7 @@ public class ExternalBlobProperty extends MapProperty {
             // the Blob
             map = getMapFromBlobWithUri((Blob) value);
         } else {
-            throw new PropertyException(
-                    "Invalid value for external blob (map or blob needed): "
-                            + value);
+            throw new PropertyException("Invalid value for external blob (map or blob needed): " + value);
         }
         for (Entry<String, Serializable> entry : map.entrySet()) {
             Property property = get(entry.getKey());
@@ -100,8 +96,7 @@ public class ExternalBlobProperty extends MapProperty {
             }
             return (Serializable) blob;
         } else if (mapValue != null) {
-            throw new PropertyException(
-                    "Invalid value for external blob (map needed): " + mapValue);
+            throw new PropertyException("Invalid value for external blob (map needed): " + mapValue);
         }
         return null;
     }
@@ -132,12 +127,10 @@ public class ExternalBlobProperty extends MapProperty {
     /**
      * Overridden to be able to set a blob from a given map.
      * <p>
-     * Take care of not overriding the uri if set as this information is not on
-     * the blob.
+     * Take care of not overriding the uri if set as this information is not on the blob.
      *
-     * @throws PropertyException if one of the sub properties throws an
-     *             exception or if trying to set values to a blob without any
-     *             already existing uri set.
+     * @throws PropertyException if one of the sub properties throws an exception or if trying to set values to a blob
+     *             without any already existing uri set.
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -157,9 +150,7 @@ public class ExternalBlobProperty extends MapProperty {
             Property property = get(URI);
             Object uri = property.getValue();
             if (uri == null) {
-                throw new PropertyException(
-                        "Cannot set blob properties without "
-                                + "an existing uri set");
+                throw new PropertyException("Cannot set blob properties without " + "an existing uri set");
             }
             // only update additional properties
             Map<String, Serializable> map = getMapFromBlob((Blob) value);
@@ -197,8 +188,7 @@ public class ExternalBlobProperty extends MapProperty {
         try {
             BlobHolderAdapterService service = Framework.getService(BlobHolderAdapterService.class);
             if (service == null) {
-                throw new DocumentException(
-                        "BlobHolderAdapterService not found");
+                throw new DocumentException("BlobHolderAdapterService not found");
             }
             Blob blob = service.getExternalBlobForUri(uri);
             if (filename != null) {
@@ -214,8 +204,7 @@ public class ExternalBlobProperty extends MapProperty {
         }
     }
 
-    public Map<String, Serializable> getMapFromBlobWithUri(Blob blob)
-            throws PropertyException {
+    public Map<String, Serializable> getMapFromBlobWithUri(Blob blob) throws PropertyException {
         Map<String, Serializable> map = getMapFromBlob(blob);
         Property property = get(URI);
         Serializable uri = property.getValue();

@@ -23,8 +23,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 /**
  * @since 6.0
  */
-public class LayoutTypeDefinitionComparator implements
-        Comparator<LayoutTypeDefinition> {
+public class LayoutTypeDefinitionComparator implements Comparator<LayoutTypeDefinition> {
 
     @Override
     public int compare(LayoutTypeDefinition o1, LayoutTypeDefinition o2) {

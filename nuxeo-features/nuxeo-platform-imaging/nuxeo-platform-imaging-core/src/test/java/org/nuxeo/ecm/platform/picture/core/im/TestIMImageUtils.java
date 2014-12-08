@@ -39,12 +39,10 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.ecm.platform.picture.core",
-                "OSGI-INF/commandline-imagemagick-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.picture.core", "OSGI-INF/commandline-imagemagick-contrib.xml");
     }
 
-    protected String checkFileBlob(String filename, boolean usefilename,
-            String targetExt) throws Exception {
+    protected String checkFileBlob(String filename, boolean usefilename, String targetExt) throws Exception {
         File file = FileUtils.getResourceFileFromContext(filename);
         Blob blob = new FileBlob(file);
         if (usefilename) {
@@ -53,8 +51,7 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
         return check(blob, targetExt);
     }
 
-    protected String checkStringBlob(String filename, boolean usefilename,
-            String targetExt) throws Exception {
+    protected String checkStringBlob(String filename, boolean usefilename, String targetExt) throws Exception {
         File file = FileUtils.getResourceFileFromContext(filename);
         byte[] bytes = org.apache.commons.io.FileUtils.readFileToByteArray(file);
         Blob blob = new ByteArrayBlob(bytes);
@@ -74,13 +71,9 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
         };
         try {
             imc.makeFiles(blob, targetExt);
-            return "src="
-                    + FilenameUtils.getExtension(imc.sourceFile.getName())
-                    + " dst="
-                    + FilenameUtils.getExtension(imc.targetFile.getName())
-                    + " tmp="
-                    + FilenameUtils.getExtension(imc.tmpFile == null ? ""
-                            : imc.tmpFile.getName());
+            return "src=" + FilenameUtils.getExtension(imc.sourceFile.getName()) + " dst="
+                    + FilenameUtils.getExtension(imc.targetFile.getName()) + " tmp="
+                    + FilenameUtils.getExtension(imc.tmpFile == null ? "" : imc.tmpFile.getName());
         } finally {
             if (imc.targetFile != null) {
                 imc.targetFile.delete();
@@ -95,23 +88,15 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
     public void testImageMagickCaller_MakeFiles() throws Exception {
         String filename = "images/test.jpg";
         // FileBlob
-        assertEquals("src=jpg dst=jpg tmp=",
-                checkFileBlob(filename, true, null));
-        assertEquals("src=jpg dst=jpg tmp=",
-                checkFileBlob(filename, false, null));
-        assertEquals("src=jpg dst=png tmp=",
-                checkFileBlob(filename, true, "png"));
-        assertEquals("src=jpg dst=png tmp=",
-                checkFileBlob(filename, false, "png"));
+        assertEquals("src=jpg dst=jpg tmp=", checkFileBlob(filename, true, null));
+        assertEquals("src=jpg dst=jpg tmp=", checkFileBlob(filename, false, null));
+        assertEquals("src=jpg dst=png tmp=", checkFileBlob(filename, true, "png"));
+        assertEquals("src=jpg dst=png tmp=", checkFileBlob(filename, false, "png"));
         // StringBlob
-        assertEquals("src=jpg dst=jpg tmp=jpg",
-                checkStringBlob(filename, true, null));
-        assertEquals("src=JPEG dst=JPEG tmp=JPEG",
-                checkStringBlob(filename, false, null));
-        assertEquals("src=jpg dst=png tmp=jpg",
-                checkStringBlob(filename, true, "png"));
-        assertEquals("src=JPEG dst=png tmp=JPEG",
-                checkStringBlob(filename, false, "png"));
+        assertEquals("src=jpg dst=jpg tmp=jpg", checkStringBlob(filename, true, null));
+        assertEquals("src=JPEG dst=JPEG tmp=JPEG", checkStringBlob(filename, false, null));
+        assertEquals("src=jpg dst=png tmp=jpg", checkStringBlob(filename, true, "png"));
+        assertEquals("src=JPEG dst=png tmp=JPEG", checkStringBlob(filename, false, "png"));
     }
 
 }

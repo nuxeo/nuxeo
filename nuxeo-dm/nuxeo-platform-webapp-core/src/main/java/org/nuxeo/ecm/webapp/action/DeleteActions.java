@@ -42,8 +42,7 @@ public interface DeleteActions {
     /**
      * Definitively deletes param documents.
      */
-    String purgeSelection(List<DocumentModel> docsToPurge)
-            throws ClientException;
+    String purgeSelection(List<DocumentModel> docsToPurge) throws ClientException;
 
     /**
      * Moves to trash (delete state) the selected documents.
@@ -58,8 +57,7 @@ public interface DeleteActions {
     /**
      * Moves to trash (delete state) the documents.
      */
-    String deleteSelection(List<DocumentModel> docsToDelete)
-            throws ClientException;
+    String deleteSelection(List<DocumentModel> docsToDelete) throws ClientException;
 
     /**
      * Undeletes the selected documents from trash (recycle bin).
@@ -69,8 +67,7 @@ public interface DeleteActions {
     /**
      * Undeletes the args docs from trash (recycle bin).
      */
-    String undeleteSelection(List<DocumentModel> docsToUndelete)
-            throws ClientException;
+    String undeleteSelection(List<DocumentModel> docsToUndelete) throws ClientException;
 
     boolean getCanDeleteItem(DocumentModel container) throws ClientException;
 

@@ -68,7 +68,6 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.versioning");
         deployBundle("org.nuxeo.ecm.platform.query.api");
 
-
         deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployBundle("org.nuxeo.ecm.platform.publisher.core");
 
@@ -85,34 +84,27 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
     protected void createInitialDocs() throws Exception {
 
-        DocumentModel wsRoot = session.getDocument(new PathRef(
-                "default-domain/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
 
-        DocumentModel ws = session.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
+        DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");
         ws = session.createDocument(ws);
 
-        DocumentModel sectionsRoot = session.getDocument(new PathRef(
-                "default-domain/sections"));
+        DocumentModel sectionsRoot = session.getDocument(new PathRef("default-domain/sections"));
 
-        DocumentModel section1 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), "section1", "Section");
+        DocumentModel section1 = session.createDocumentModel(sectionsRoot.getPathAsString(), "section1", "Section");
         section1.setProperty("dublincore", "title", "section1");
         section1 = session.createDocument(section1);
 
-        DocumentModel section2 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), "section2", "Section");
+        DocumentModel section2 = session.createDocumentModel(sectionsRoot.getPathAsString(), "section2", "Section");
         section2.setProperty("dublincore", "title", "section2");
         section2 = session.createDocument(section2);
 
-        DocumentModel section11 = session.createDocumentModel(
-                section1.getPathAsString(), "section11", "Section");
+        DocumentModel section11 = session.createDocumentModel(section1.getPathAsString(), "section11", "Section");
         section11.setProperty("dublincore", "title", "section11");
         section11 = session.createDocument(section11);
 
-        doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file",
-                "File");
+        doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file", "File");
         doc2Publish.setProperty("dublincore", "title", "MyDoc");
 
         Blob blob = new StringBlob("SomeDummyContent");
@@ -134,18 +126,13 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         rootFolder = new File(tmpPath);
         rootFolder.mkdirs();
 
-        new File(
-                new Path(rootFolder.getAbsolutePath()).append("section1").toString()).mkdirs();
-        File section2 = new File(new Path(rootFolder.getAbsolutePath()).append(
-                "section2").toString());
+        new File(new Path(rootFolder.getAbsolutePath()).append("section1").toString()).mkdirs();
+        File section2 = new File(new Path(rootFolder.getAbsolutePath()).append("section2").toString());
         section2.mkdirs();
-        new File(
-                new Path(rootFolder.getAbsolutePath()).append("section3").toString()).mkdirs();
+        new File(new Path(rootFolder.getAbsolutePath()).append("section3").toString()).mkdirs();
 
-        new File(
-                new Path(section2.getAbsolutePath()).append("section21").toString()).mkdirs();
-        new File(
-                new Path(section2.getAbsolutePath()).append("section22").toString()).mkdirs();
+        new File(new Path(section2.getAbsolutePath()).append("section21").toString()).mkdirs();
+        new File(new Path(section2.getAbsolutePath()).append("section22").toString()).mkdirs();
     }
 
     @Test
@@ -156,8 +143,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         registerFSTree("TestingFSTree");
 
         PublisherService service = Framework.getLocalService(PublisherService.class);
-        PublicationTree tree = service.getPublicationTree("TestingFSTree",
-                session, null);
+        PublicationTree tree = service.getPublicationTree("TestingFSTree", session, null);
 
         // check browsing
         List<PublicationNode> sectionsNodes = tree.getChildrenNodes();
@@ -166,8 +152,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
         PublicationNode section2 = sectionsNodes.get(1);
         assertEquals("section2", section2.getName());
-        assertEquals(
-                FilenameUtils.separatorsToSystem(rootFolder + "/section2"),
+        assertEquals(FilenameUtils.separatorsToSystem(rootFolder + "/section2"),
                 FilenameUtils.separatorsToSystem(section2.getPath()));
 
         List<PublicationNode> subSectionsNodes = section2.getChildrenNodes();
@@ -176,9 +161,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
         PublicationNode section22 = subSectionsNodes.get(1);
         assertEquals("section22", section22.getName());
-        assertEquals(
-                FilenameUtils.separatorsToSystem(rootFolder
-                        + "/section2/section22"),
+        assertEquals(FilenameUtils.separatorsToSystem(rootFolder + "/section2/section22"),
                 FilenameUtils.separatorsToSystem(section22.getPath()));
 
         // check treeconfigName propagation
@@ -193,8 +176,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         File[] files = container.listFiles();
         assertEquals(1, files.length);
 
-        assertEquals(doc2Publish.getRepositoryName(),
-                pubDoc.getSourceRepositoryName());
+        assertEquals(doc2Publish.getRepositoryName(), pubDoc.getSourceRepositoryName());
         assertEquals(doc2Publish.getRef(), pubDoc.getSourceDocumentRef());
 
         List<PublishedDocument> foundDocs = tree.getExistingPublishedDocument(doc2publishLocation);
@@ -238,21 +220,18 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         // dynamic contrib
         PublicationTreeConfigDescriptor desc = new PublicationTreeConfigDescriptor();
         Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put(AbstractBasePublicationTree.ROOT_PATH_KEY,
-                rootFolder.getAbsolutePath());
+        parameters.put(AbstractBasePublicationTree.ROOT_PATH_KEY, rootFolder.getAbsolutePath());
         desc.setName(treeName);
         desc.setTree("LocalFSTree");
         desc.setFactory("LocalFile");
         desc.setParameters(parameters);
 
-        fullService.registerContribution(desc,
-                PublisherServiceImpl.TREE_CONFIG_EP, null);
+        fullService.registerContribution(desc, PublisherServiceImpl.TREE_CONFIG_EP, null);
 
         List<String> treeNames = service.getAvailablePublicationTree();
         assertTrue(treeNames.contains("TestingFSTree"));
 
-        PublicationTree tree = service.getPublicationTree("TestingFSTree",
-                session, null);
+        PublicationTree tree = service.getPublicationTree("TestingFSTree", session, null);
         assertNotNull(tree);
         assertEquals(treeName, tree.getConfigName());
         assertEquals(rootFolder.getName(), tree.getName());
@@ -266,25 +245,19 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         createFSDirs();
 
         // add dummy file
-        File dummyFile = new File(
-                new Path(rootFolder.getAbsolutePath()).append("section1").toString(),
-                "dummyFile");
+        File dummyFile = new File(new Path(rootFolder.getAbsolutePath()).append("section1").toString(), "dummyFile");
         writeFile(dummyFile, "Dummy File");
 
         // add xml file
-        File xmlFile = new File(new Path(rootFolder.getAbsolutePath()).append(
-                "section2").toString(), "xmlFile");
-        String xmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                + "<html>" + "</html>";
+        File xmlFile = new File(new Path(rootFolder.getAbsolutePath()).append("section2").toString(), "xmlFile");
+        String xmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<html>" + "</html>";
         writeFile(xmlFile, xmlContent);
 
         registerFSTree("TestingFSTree");
         PublisherService service = Framework.getLocalService(PublisherService.class);
-        PublicationTree tree = service.getPublicationTree("TestingFSTree",
-                session, null);
+        PublicationTree tree = service.getPublicationTree("TestingFSTree", session, null);
 
-        assertEquals(0,
-                tree.getExistingPublishedDocument(doc2publishLocation).size());
+        assertEquals(0, tree.getExistingPublishedDocument(doc2publishLocation).size());
     }
 
     private static void writeFile(File file, String content) throws Exception {
@@ -308,8 +281,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         registerFSTree("TestingFSTree");
 
         PublisherService service = Framework.getLocalService(PublisherService.class);
-        PublicationTree tree = service.getPublicationTree("TestingFSTree",
-                session, null);
+        PublicationTree tree = service.getPublicationTree("TestingFSTree", session, null);
 
         List<PublicationNode> sectionsNodes = tree.getChildrenNodes();
         assertNotNull(sectionsNodes);
@@ -319,11 +291,9 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         PublicationNode section1 = sectionsNodes.get(0);
         PublishedDocument pubDoc = tree.publish(doc2Publish, section1);
         assertNotNull(pubDoc);
-        assertEquals(1,
-                tree.getExistingPublishedDocument(doc2publishLocation).size());
+        assertEquals(1, tree.getExistingPublishedDocument(doc2publishLocation).size());
 
-        File indexFile = new File(rootFolder,
-                LocalFSPublicationTree.INDEX_FILENAME);
+        File indexFile = new File(rootFolder, LocalFSPublicationTree.INDEX_FILENAME);
         assertTrue(indexFile.exists());
 
         List<String> indexFileLines = FileUtils.readLines(indexFile);
@@ -332,8 +302,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         PublicationNode section2 = sectionsNodes.get(1);
         PublishedDocument pubDoc2 = tree.publish(doc2Publish, section2);
         assertNotNull(pubDoc);
-        assertEquals(2,
-                tree.getExistingPublishedDocument(doc2publishLocation).size());
+        assertEquals(2, tree.getExistingPublishedDocument(doc2publishLocation).size());
 
         assertTrue(indexFile.exists());
 
@@ -342,17 +311,14 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
         // unpublish
         tree.unpublish(pubDoc);
-        assertEquals(1,
-                tree.getExistingPublishedDocument(doc2publishLocation).size());
+        assertEquals(1, tree.getExistingPublishedDocument(doc2publishLocation).size());
         indexFileLines = FileUtils.readLines(indexFile);
         assertEquals(1, indexFileLines.size());
-        File indexFileTmp = new File(rootFolder,
-                LocalFSPublicationTree.INDEX_FILENAME_TMP);
+        File indexFileTmp = new File(rootFolder, LocalFSPublicationTree.INDEX_FILENAME_TMP);
         assertFalse(indexFileTmp.exists());
 
         tree.unpublish(pubDoc2);
-        assertEquals(0,
-                tree.getExistingPublishedDocument(doc2publishLocation).size());
+        assertEquals(0, tree.getExistingPublishedDocument(doc2publishLocation).size());
         indexFileLines = FileUtils.readLines(indexFile);
         assertEquals(0, indexFileLines.size());
     }

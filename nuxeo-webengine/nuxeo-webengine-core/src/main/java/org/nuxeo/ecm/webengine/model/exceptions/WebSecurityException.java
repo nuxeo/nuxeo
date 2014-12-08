@@ -24,7 +24,6 @@ import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebSecurityException extends WebException {
 

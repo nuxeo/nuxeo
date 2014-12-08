@@ -29,14 +29,12 @@ import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
 public interface ContentViewConfiguration extends LocalConfiguration<ContentViewConfiguration> {
 
     /**
-     * Returns the ContentView name for a specified document type if any is configured.
-     * Else, returns null.
+     * Returns the ContentView name for a specified document type if any is configured. Else, returns null.
      */
     List<String> getContentViewsForType(String docType);
 
     /**
-     * Returns the ContentView names for all the configured types.
-     * Used for merging configurations.
+     * Returns the ContentView names for all the configured types. Used for merging configurations.
      */
     Map<String, List<String>> getTypeToContentViewNames();
 

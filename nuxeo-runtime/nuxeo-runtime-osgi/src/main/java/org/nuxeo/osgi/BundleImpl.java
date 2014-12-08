@@ -44,7 +44,6 @@ import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BundleImpl implements Bundle {
 
@@ -72,13 +71,12 @@ public class BundleImpl implements Bundle {
 
     protected boolean allowHostOverride;
 
-    public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader)
-            throws BundleException {
+    public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader) throws BundleException {
         this(osgi, file, loader, false);
     }
 
-    public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader,
-            boolean isSystemBundle) throws BundleException {
+    public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader, boolean isSystemBundle)
+            throws BundleException {
         this.osgi = osgi;
         this.loader = loader;
         this.file = file;
@@ -93,8 +91,7 @@ public class BundleImpl implements Bundle {
         try {
             headers = BundleManifestReader.getHeaders(mf);
         } catch (BundleException e) {
-            throw new BundleException("Invalid OSGi Manifest in file " + file
-                    + " : " + e.getMessage(), e);
+            throw new BundleException("Invalid OSGi Manifest in file " + file + " : " + e.getMessage(), e);
         }
         symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);
         allowHostOverride = Boolean.parseBoolean(headers.get(BundleManifestReader.ALLOW_HOST_OVERRIDE));
@@ -179,17 +176,14 @@ public class BundleImpl implements Bundle {
         }
 
         public Enumeration<URL> build() {
-            return new CompoundEnumeration<>(
-                    collected.toArray(new Enumeration[collected.size()]));
+            return new CompoundEnumeration<>(collected.toArray(new Enumeration[collected.size()]));
         }
 
     }
 
     @Override
-    public Enumeration<URL> findEntries(String path, String filePattern,
-            boolean recurse) {
-        Enumeration<URL> hostEntries = file.findEntries(path, filePattern,
-                recurse);
+    public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
+        Enumeration<URL> hostEntries = file.findEntries(path, filePattern, recurse);
         Bundle[] fragments = osgi.getRegistry().getFragments(symbolicName);
         if (fragments.length == 0) {
             return hostEntries;
@@ -201,8 +195,7 @@ public class BundleImpl implements Bundle {
         }
 
         for (Bundle fragment : fragments) {
-            Enumeration<URL> fragmentEntries = fragment.findEntries(path,
-                    filePattern, recurse);
+            Enumeration<URL> fragmentEntries = fragment.findEntries(path, filePattern, recurse);
             builder.add(fragmentEntries);
         }
 
@@ -281,14 +274,11 @@ public class BundleImpl implements Bundle {
             try {
                 activator = (BundleActivator) loadClass(className).newInstance();
             } catch (ClassNotFoundException e) {
-                throw new BundleException("Activator not found: " + className,
-                        e);
+                throw new BundleException("Activator not found: " + className, e);
             } catch (InstantiationException e) {
-                throw new BundleException("Activator not instantiable: "
-                        + className, e);
+                throw new BundleException("Activator not instantiable: " + className, e);
             } catch (IllegalAccessException e) {
-                throw new BundleException("Activator not accessible: "
-                        + className, e);
+                throw new BundleException("Activator not accessible: " + className, e);
             }
         }
         return activator;
@@ -301,12 +291,12 @@ public class BundleImpl implements Bundle {
             getActivator().start(context);
             setStarted();
         } catch (BundleException e) {
-            throw new BundleException("Failed to start bundle at: " + file
-                    + " with activator: " + getActivatorClassName(), e);
+            throw new BundleException("Failed to start bundle at: " + file + " with activator: "
+                    + getActivatorClassName(), e);
         } catch (Exception e) { // stupid OSGi API throws Exception
             RuntimeException re = ExceptionUtils.runtimeException(e);
-            throw new BundleException("Failed to start bundle at: " + file
-                    + " with activator: " + getActivatorClassName(), re);
+            throw new BundleException("Failed to start bundle at: " + file + " with activator: "
+                    + getActivatorClassName(), re);
         }
     }
 
@@ -317,12 +307,10 @@ public class BundleImpl implements Bundle {
             getActivator().stop(context);
             setStopped();
         } catch (BundleException e) {
-            throw new BundleException("Failed to stop activator: "
-                    + getActivatorClassName(), e);
+            throw new BundleException("Failed to stop activator: " + getActivatorClassName(), e);
         } catch (Exception e) { // stupid OSGi API throws Exception
             RuntimeException re = ExceptionUtils.runtimeException(e);
-            throw new BundleException("Failed to stop activator: "
-                    + getActivatorClassName(), re);
+            throw new BundleException("Failed to stop activator: " + getActivatorClassName(), re);
         }
     }
 
@@ -333,12 +321,10 @@ public class BundleImpl implements Bundle {
             lastModified = System.currentTimeMillis();
             state = UNINSTALLED;
         } catch (BundleException e) {
-            throw new BundleException("Failed to stop activator: "
-                    + getActivatorClassName(), e);
+            throw new BundleException("Failed to stop activator: " + getActivatorClassName(), e);
         } catch (Exception e) { // stupid OSGi API throws Exception
             RuntimeException re = ExceptionUtils.runtimeException(e);
-            throw new BundleException("Failed to stop activator: "
-                    + getActivatorClassName(), re);
+            throw new BundleException("Failed to stop activator: " + getActivatorClassName(), re);
         }
     }
 
@@ -348,23 +334,20 @@ public class BundleImpl implements Bundle {
         try {
             file.close(osgi);
         } catch (IOException e) {
-            throw new BundleException("Cannot close underlying file resources "
-                    + symbolicName, e);
+            throw new BundleException("Cannot close underlying file resources " + symbolicName, e);
         }
     }
 
     @Override
     public void update() throws BundleException {
         lastModified = System.currentTimeMillis();
-        throw new UnsupportedOperationException(
-                "Bundle.update() operations was not yet implemented");
+        throw new UnsupportedOperationException("Bundle.update() operations was not yet implemented");
     }
 
     @Override
     public void update(InputStream in) throws BundleException {
         lastModified = System.currentTimeMillis();
-        throw new UnsupportedOperationException(
-                "Bundle.update() operations was not yet implemented");
+        throw new UnsupportedOperationException("Bundle.update() operations was not yet implemented");
     }
 
     void setInstalled() {

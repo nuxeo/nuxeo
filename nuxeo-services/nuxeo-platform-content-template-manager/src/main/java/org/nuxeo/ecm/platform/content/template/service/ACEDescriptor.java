@@ -45,7 +45,8 @@ public class ACEDescriptor {
         return permission;
     }
 
-    @Deprecated // use getPrincipal() instead
+    @Deprecated
+    // use getPrincipal() instead
     public String getUserName() {
         return principal;
     }

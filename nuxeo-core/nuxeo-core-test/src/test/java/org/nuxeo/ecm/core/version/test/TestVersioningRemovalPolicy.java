@@ -40,8 +40,7 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
     @Test
     public void shouldRemoveOrphanVersions() throws Exception {
 
-        DocumentModel doc = session.createDocumentModel("/", "testfile1",
-                "File");
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
         assertNotNull(vdoc);
@@ -74,10 +73,8 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void shouldRemoveOrphanVersionsWhenProxyRemovedLast()
-            throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "testfile1",
-                "File");
+    public void shouldRemoveOrphanVersionsWhenProxyRemovedLast() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         DocumentRef ver = doc.checkIn(VersioningOption.MINOR, "");
         DocumentModel proxy = session.createProxy(ver, session.getRootDocument().getRef());
@@ -100,10 +97,8 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void shouldNotRemoveOrphanVersionsWhenProxyRemovedButLiveRemains()
-            throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "testfile1",
-                "File");
+    public void shouldNotRemoveOrphanVersionsWhenProxyRemovedButLiveRemains() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         DocumentRef ver = doc.checkIn(VersioningOption.MINOR, "");
         DocumentModel proxy = session.createProxy(ver, session.getRootDocument().getRef());
@@ -120,11 +115,9 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
     @Test
     public void shouldNotRemoveOrphanVersions() throws Exception {
 
-        deployContrib("org.nuxeo.ecm.core.test.tests",
-                "test-versioning-removal-nullcontrib.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "test-versioning-removal-nullcontrib.xml");
 
-        DocumentModel doc = session.createDocumentModel("/", "testfile1",
-                "File");
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
         assertNotNull(vdoc);
@@ -159,11 +152,9 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
     @Test
     public void shouldRemoveOrphanFileVersionsOnly() throws Exception {
 
-        deployContrib("org.nuxeo.ecm.core.test.tests",
-                "test-versioning-removal-filtercontrib.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "test-versioning-removal-filtercontrib.xml");
 
-        DocumentModel doc = session.createDocumentModel("/", "testfile1",
-                "File");
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
         assertNotNull(vdoc);
@@ -178,8 +169,7 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         assertTrue(doc.isCheckedOut());
         assertEquals("0.1+", vdoc.getVersionLabel());
 
-        DocumentModel note = session.createDocumentModel("/", "testnote1",
-                "Note");
+        DocumentModel note = session.createDocumentModel("/", "testnote1", "Note");
         note = session.createDocument(note);
         VersioningDocument vnote = note.getAdapter(VersioningDocument.class);
         assertNotNull(vnote);

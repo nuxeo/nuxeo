@@ -23,15 +23,13 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
 @XObject("service")
 public class ServiceDescriptor implements Serializable {
 
     private static final long serialVersionUID = 6338431911839779273L;
 
-    protected ServiceDescriptor(String qualifiedName,
-            Class<?> implClass) {
+    protected ServiceDescriptor(String qualifiedName, Class<?> implClass) {
         name = qualifiedName;
         resourceClass = implClass;
         ifaceClass = null;
@@ -45,7 +43,6 @@ public class ServiceDescriptor implements Serializable {
 
     @XNode("@class")
     private Class<?> resourceClass;
-
 
     @XNode("@iface")
     private Class<?> ifaceClass;

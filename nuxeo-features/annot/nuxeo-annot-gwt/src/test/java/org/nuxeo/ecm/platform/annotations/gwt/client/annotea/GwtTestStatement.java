@@ -26,7 +26,6 @@ import com.google.gwt.xml.client.XMLParser;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class GwtTestStatement extends GWTTestCase {
 
@@ -51,9 +50,7 @@ public class GwtTestStatement extends GWTTestCase {
         }
         s = new Statement(nodes.item(x));
         assertEquals(RDFConstant.A_CONTEXT, s.getPredicate());
-        assertEquals(
-                "http://serv1.example.com/some/page.html#xpointer(id(\"Main\")/p[2])",
-                s.getObject());
+        assertEquals("http://serv1.example.com/some/page.html#xpointer(id(\"Main\")/p[2])", s.getObject());
         x++;
         while (nodes.item(x).getNodeName().equals("#text")) {
             x++;
@@ -72,11 +69,9 @@ public class GwtTestStatement extends GWTTestCase {
             + " <r:RDF xmlns:r=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" "
             + "    xmlns:a=\"http://www.w3.org/2000/10/annotation-ns#\" "
             + "    xmlns:d=\"http://purl.org/dc/elements/1.1/\"> "
-            + "        <d:title>Annotation of Sample Page 1</d:title>"
-            + "        <a:context>"
+            + "        <d:title>Annotation of Sample Page 1</d:title>" + "        <a:context>"
             + "            http://serv1.example.com/some/page.html#xpointer(id(\"Main\")/p[2])"
             + "        </a:context>"
             + "        <a:body r:datatype=\"http://www.w3.org/1999/02/22-r-syntax-ns#XMLLiteral\">fqsdfqsdf</a:body>"
-            + "        <a:body r:resource=\"http://annotea.example.org/Annotation/body/3ACF6D754\" />"
-            + "</r:RDF>";
+            + "        <a:body r:resource=\"http://annotea.example.org/Annotation/body/3ACF6D754\" />" + "</r:RDF>";
 }

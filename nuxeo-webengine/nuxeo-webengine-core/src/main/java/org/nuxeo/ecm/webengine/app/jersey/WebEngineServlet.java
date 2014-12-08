@@ -39,8 +39,7 @@ public class WebEngineServlet extends ApplicationServlet {
 
     protected final String MIME_TYPE = "X-File-Type";
 
-    private final class DefaultContentTypeRequestWrapper extends
-            HttpServletRequestWrapper {
+    private final class DefaultContentTypeRequestWrapper extends HttpServletRequestWrapper {
 
         protected final Hashtable<String, String[]> headers;
 
@@ -48,14 +47,12 @@ public class WebEngineServlet extends ApplicationServlet {
 
         protected final String lFILE_TYPE = MIME_TYPE.toLowerCase();
 
-        protected DefaultContentTypeRequestWrapper(HttpServletRequest request,
-                boolean patchCType, boolean patchMType) {
+        protected DefaultContentTypeRequestWrapper(HttpServletRequest request, boolean patchCType, boolean patchMType) {
             super(request);
             headers = patchHeaders(request, patchCType, patchMType);
         }
 
-        protected Hashtable<String, String[]> patchHeaders(
-                HttpServletRequest request, boolean patchCType,
+        protected Hashtable<String, String[]> patchHeaders(HttpServletRequest request, boolean patchCType,
                 boolean patchMType) {
             Hashtable<String, String[]> headers = new Hashtable<String, String[]>();
             // collect headers from request
@@ -129,8 +126,7 @@ public class WebEngineServlet extends ApplicationServlet {
                 @Override
                 public String nextElement() {
                     if (index >= values.length) {
-                        throw new NoSuchElementException(index
-                                + " is higher than " + values.length);
+                        throw new NoSuchElementException(index + " is higher than " + values.length);
                     }
                     return values[index++];
                 }
@@ -148,14 +144,13 @@ public class WebEngineServlet extends ApplicationServlet {
     }
 
     @Override
-    public void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         containerService(request, response);
     }
 
     @Override
-    protected void containerService(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+    protected void containerService(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
         if (isDirty) {
             reloadContainer();
         }
@@ -168,12 +163,10 @@ public class WebEngineServlet extends ApplicationServlet {
         }
         final String ctype = request.getHeader(HttpHeaders.CONTENT_TYPE);
         final String mtype = request.getHeader(MIME_TYPE);
-        boolean patchCType = ctype == null || ctype.length() == 0
-                || !ctype.contains("/");
+        boolean patchCType = ctype == null || ctype.length() == 0 || !ctype.contains("/");
         boolean patchMMType = mtype != null && !mtype.contains("/");
         if (patchCType || patchMMType) {
-            request = new DefaultContentTypeRequestWrapper(request, patchCType,
-                    patchMMType);
+            request = new DefaultContentTypeRequestWrapper(request, patchCType, patchMMType);
         }
         container.service(request, response);
     }

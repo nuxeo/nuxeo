@@ -23,7 +23,6 @@ import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -33,6 +32,5 @@ public @interface NotNull {
      * A default value if null (empty).
      */
     String value() default "";
-
 
 }

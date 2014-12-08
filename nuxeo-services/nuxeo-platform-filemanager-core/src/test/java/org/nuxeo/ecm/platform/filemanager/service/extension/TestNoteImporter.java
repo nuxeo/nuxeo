@@ -41,8 +41,7 @@ public class TestNoteImporter {
         assertNull(NoteImporter.guessEncoding(blob));
 
         // MIME type with charset
-        blob = new ByteArrayBlob(new byte[] { (byte) 0xe9 },
-                "text/plain; charset=iso-8859-1; x=y", null);
+        blob = new ByteArrayBlob(new byte[] { (byte) 0xe9 }, "text/plain; charset=iso-8859-1; x=y", null);
         assertEquals("\u00e9", NoteImporter.guessEncoding(blob));
         assertEquals("text/plain", blob.getMimeType());
 
@@ -52,14 +51,12 @@ public class TestNoteImporter {
         assertEquals("text/plain", blob.getMimeType());
 
         // MIME type but no charset -> autodetect utf8
-        blob = new ByteArrayBlob(new byte[] { (byte) 0xc3, (byte) 0xa9 },
-                "text/plain", null);
+        blob = new ByteArrayBlob(new byte[] { (byte) 0xc3, (byte) 0xa9 }, "text/plain", null);
         assertEquals("\u00e9", NoteImporter.guessEncoding(blob));
         assertEquals("text/plain", blob.getMimeType());
 
         // MIME type with invalid charset -> autodetect
-        blob = new ByteArrayBlob(new byte[] { (byte) 0xe9 },
-                "text/plain; charset=utf-8; x=y", null);
+        blob = new ByteArrayBlob(new byte[] { (byte) 0xe9 }, "text/plain; charset=utf-8; x=y", null);
         assertEquals("\u00e9", NoteImporter.guessEncoding(blob));
         assertEquals("text/plain", blob.getMimeType());
     }

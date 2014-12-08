@@ -44,7 +44,6 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WikiTransformer implements TemplateDirectiveModel {
 
@@ -57,15 +56,14 @@ public class WikiTransformer implements TemplateDirectiveModel {
     public WikiTransformer(WikiSerializer serializer) {
         this.serializer = serializer;
         this.serializer.registerMacro(new FreemarkerMacro());
-        //TODO implement and register a JEXL extension
+        // TODO implement and register a JEXL extension
     }
 
     public WikiSerializer getSerializer() {
         return serializer;
     }
 
-    public void transform(Reader reader, Writer writer)
-            throws RenderingException {
+    public void transform(Reader reader, Writer writer) throws RenderingException {
         try {
             serializer.serialize(reader, writer);
         } catch (IOException | WikiParserException e) {
@@ -73,8 +71,7 @@ public class WikiTransformer implements TemplateDirectiveModel {
         }
     }
 
-    public void transform(URL url, Writer writer)
-            throws RenderingException {
+    public void transform(URL url, Writer writer) throws RenderingException {
         Reader reader = null;
         try {
             InputStream in = url.openStream();
@@ -89,12 +86,12 @@ public class WikiTransformer implements TemplateDirectiveModel {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public void execute(Environment env, Map params, TemplateModel[] loopVars,
-            TemplateDirectiveBody body) throws TemplateException, IOException {
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+            throws TemplateException, IOException {
 
         // TODO: not used for now.
         String syntax = null;
-        SimpleScalar scalar = (SimpleScalar)params.get("syntax");
+        SimpleScalar scalar = (SimpleScalar) params.get("syntax");
         if (scalar != null) {
             syntax = scalar.getAsString();
         }
@@ -108,20 +105,20 @@ public class WikiTransformer implements TemplateDirectiveModel {
         ComplexPropertyTemplate complex = (ComplexPropertyTemplate) params.get("property");
         Property property = null;
         if (complex != null) {
-            property = (Property)complex.getAdaptedObject(null);
+            property = (Property) complex.getAdaptedObject(null);
         }
 
-        FreemarkerEngine engine = (FreemarkerEngine)env.getCustomAttribute(FreemarkerEngine.RENDERING_ENGINE_KEY);
+        FreemarkerEngine engine = (FreemarkerEngine) env.getCustomAttribute(FreemarkerEngine.RENDERING_ENGINE_KEY);
         if (engine == null) {
             throw new TemplateModelException("Not in a nuxeo rendering context");
         }
 
         try {
             if (property != null) {
-                //TODO XXX implement property support (with caching)
+                // TODO XXX implement property support (with caching)
                 throw new UnsupportedOperationException("Not Yet Implemented");
-//                URL url = PropertyURL.getURL(ctxModel.getDocument(), property.getPath());
-//                tr.transform(url, env.getOut(), ctxModel.getContext());
+                // URL url = PropertyURL.getURL(ctxModel.getDocument(), property.getPath());
+                // tr.transform(url, env.getOut(), ctxModel.getContext());
             } else if (src == null) {
                 if (body == null) {
                     throw new TemplateModelException(
@@ -138,14 +135,14 @@ public class WikiTransformer implements TemplateDirectiveModel {
                     if (url != null) {
                         transform(url, env.getOut());
                     } else {
-                        throw new IllegalArgumentException("Cannot resolve the src attribute: "+src);
+                        throw new IllegalArgumentException("Cannot resolve the src attribute: " + src);
                     }
                 } else {
                     File file = engine.getResourceLocator().getResourceFile(src);
                     if (file != null) {
                         transform(file.toURI().toURL(), env.getOut());
                     } else {
-                        throw new IllegalArgumentException("Cannot resolve the src attribute: "+src);
+                        throw new IllegalArgumentException("Cannot resolve the src attribute: " + src);
                     }
                 }
             }

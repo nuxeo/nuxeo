@@ -28,17 +28,15 @@ import org.nuxeo.ecm.platform.ui.web.renderer.NxListboxRenderer;
 /**
  * @since 6.0
  */
-public class SelectManyListboxDirectoryAggregateWidgetTypeHandler extends
-        SelectDirectoryAggregateWidgetTypeHandler {
+public class SelectManyListboxDirectoryAggregateWidgetTypeHandler extends SelectDirectoryAggregateWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
-        return getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                HtmlSelectManyListbox.COMPONENT_TYPE, NxListboxRenderer.RENDERER_TYPE);
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
+        return getFaceletHandler(ctx, tagConfig, widget, subHandlers, HtmlSelectManyListbox.COMPONENT_TYPE,
+                NxListboxRenderer.RENDERER_TYPE);
     }
 
 }

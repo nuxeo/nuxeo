@@ -23,48 +23,44 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class AdapterManager {
 
-	protected final Set<AdapterFactory<?>> factories = new HashSet<AdapterFactory<?>>();
+    protected final Set<AdapterFactory<?>> factories = new HashSet<AdapterFactory<?>>();
 
-	// put(BusinessObjectService.class,
-	public <T> T getAdapter(Session session, Class<T> adapterType) {
-		for (AdapterFactory<?> f : factories) {
-			if (!factoryAccept(f, adapterType)) {
-				continue;
-			}
-			@SuppressWarnings("unchecked")
-			AdapterFactory<T> tFactory = (AdapterFactory<T>) f;
-			return adapterType.cast(tFactory.getAdapter(session, adapterType));
-		}
-		return null;
-	}
+    // put(BusinessObjectService.class,
+    public <T> T getAdapter(Session session, Class<T> adapterType) {
+        for (AdapterFactory<?> f : factories) {
+            if (!factoryAccept(f, adapterType)) {
+                continue;
+            }
+            @SuppressWarnings("unchecked")
+            AdapterFactory<T> tFactory = (AdapterFactory<T>) f;
+            return adapterType.cast(tFactory.getAdapter(session, adapterType));
+        }
+        return null;
+    }
 
-	protected boolean factoryAccept(AdapterFactory<?> factory,
-			Class<?> adapterType) {
-		ParameterizedType itf = (ParameterizedType) factory.getClass()
-				.getGenericInterfaces()[0];
-		Type type = itf.getActualTypeArguments()[0];
-		Class<?> clazz;
-		if (type instanceof Class) {
-			clazz = (Class<?>) type;
-		} else if (type instanceof ParameterizedType) {
-			clazz = (Class<?>)((ParameterizedType) type).getRawType();
-		} else {			
-			throw new UnsupportedOperationException("Don't know how to handle "
-					+ type.getClass());
-		}
-		return clazz.isAssignableFrom(adapterType);
-	}
+    protected boolean factoryAccept(AdapterFactory<?> factory, Class<?> adapterType) {
+        ParameterizedType itf = (ParameterizedType) factory.getClass().getGenericInterfaces()[0];
+        Type type = itf.getActualTypeArguments()[0];
+        Class<?> clazz;
+        if (type instanceof Class) {
+            clazz = (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
+            clazz = (Class<?>) ((ParameterizedType) type).getRawType();
+        } else {
+            throw new UnsupportedOperationException("Don't know how to handle " + type.getClass());
+        }
+        return clazz.isAssignableFrom(adapterType);
+    }
 
-	public void registerAdapter(AdapterFactory<?> factory) {
-		factories.add(factory);
-	}
+    public void registerAdapter(AdapterFactory<?> factory) {
+        factories.add(factory);
+    }
 
-	public void clear() {
-		factories.clear();
-	}
+    public void clear() {
+        factories.clear();
+    }
 
 }

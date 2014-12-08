@@ -36,8 +36,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
-public class LDAPDirectoryFactory extends DefaultComponent implements
-        DirectoryFactory {
+public class LDAPDirectoryFactory extends DefaultComponent implements DirectoryFactory {
 
     public static final String NAME = "org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory";
 
@@ -94,8 +93,7 @@ public class LDAPDirectoryFactory extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterExtension(Extension extension)
-            throws DirectoryException {
+    public void unregisterExtension(Extension extension) throws DirectoryException {
         String xp = extension.getExtensionPoint();
         if (xp.equals("directories")) {
             unregisterDirectoryExtension(extension);
@@ -130,8 +128,7 @@ public class LDAPDirectoryFactory extends DefaultComponent implements
         }
     }
 
-    public void unregisterDirectoryExtension(Extension extension)
-            throws DirectoryException {
+    public void unregisterDirectoryExtension(Extension extension) throws DirectoryException {
         Object[] contribs = extension.getContributions();
         DirectoryServiceImpl dirService = getDirectoryService();
         for (Object contrib : contribs) {

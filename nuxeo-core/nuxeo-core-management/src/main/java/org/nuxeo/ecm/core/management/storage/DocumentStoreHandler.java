@@ -21,6 +21,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  */
 public interface DocumentStoreHandler {
 
-    void onStorageInitialization(CoreSession session, DocumentRef rootletRef );
+    void onStorageInitialization(CoreSession session, DocumentRef rootletRef);
 
 }

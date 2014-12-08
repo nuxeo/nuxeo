@@ -43,13 +43,11 @@ public class BasicPublicationNode implements PublicationNode {
 
     protected String sid;
 
-    public BasicPublicationNode(String nodeType, String nodePath,
-            String nodeTitle, String treeName) {
+    public BasicPublicationNode(String nodeType, String nodePath, String nodeTitle, String treeName) {
         this(nodeType, nodePath, nodeTitle, treeName, null);
     }
 
-    public BasicPublicationNode(String nodeType, String nodePath,
-            String nodeTitle, String treeName, String sid) {
+    public BasicPublicationNode(String nodeType, String nodePath, String nodeTitle, String treeName, String sid) {
         this.nodePath = nodePath;
         this.nodeType = nodeType;
         this.nodeTitle = nodeTitle;
@@ -57,8 +55,7 @@ public class BasicPublicationNode implements PublicationNode {
         this.sid = sid;
     }
 
-    public List<PublishedDocument> getChildrenDocuments()
-            throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
         throw new ClientException("Can not be called on a remote node");
     }
 

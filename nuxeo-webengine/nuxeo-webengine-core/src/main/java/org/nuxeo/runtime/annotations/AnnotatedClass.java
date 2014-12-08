@@ -31,8 +31,11 @@ import java.util.Map;
 public class AnnotatedClass<T> {
 
     protected AnnotatedClass<?> superClass;
+
     protected final Class<T> clazz;
+
     protected final Map<Class<? extends Annotation>, Annotation> annotations;
+
     protected final Map<Method, AnnotatedMethod> methods;
 
     public AnnotatedClass(Class<T> clazz) {
@@ -74,8 +77,7 @@ public class AnnotatedClass<T> {
         return methods.get(method);
     }
 
-    public AnnotatedMethod getAnnotatedMethod(String name, Class<?>... parameterTypes)
-            throws NoSuchMethodException {
+    public AnnotatedMethod getAnnotatedMethod(String name, Class<?>... parameterTypes) throws NoSuchMethodException {
         return getAnnotatedMethod(clazz.getMethod(name, parameterTypes));
     }
 
@@ -114,7 +116,7 @@ public class AnnotatedClass<T> {
         return result.toArray(new AnnotatedMethod[result.size()]);
     }
 
-    //TODO: cache this?
+    // TODO: cache this?
     public AnnotatedMethod[] getAnnotatedMethods(Class<? extends Annotation> annotationClass) {
         ArrayList<AnnotatedMethod> result = new ArrayList<AnnotatedMethod>();
         for (AnnotatedMethod am : methods.values()) {
@@ -128,8 +130,7 @@ public class AnnotatedClass<T> {
     public AnnotatedMethod[] getDeclaredAnnotatedMethods(Class<? extends Annotation> annotationClass) {
         ArrayList<AnnotatedMethod> result = new ArrayList<AnnotatedMethod>();
         for (AnnotatedMethod am : methods.values()) {
-            if (am.method.getDeclaringClass() == clazz
-                    && am.annotations.containsKey(annotationClass)) {
+            if (am.method.getDeclaringClass() == clazz && am.annotations.containsKey(annotationClass)) {
                 result.add(am);
             }
         }
@@ -138,7 +139,7 @@ public class AnnotatedClass<T> {
 
     public void addMethod(AnnotatedMethod method) {
         methods.put(method.method, method);
-        //TODO cache annotations to annotated method?
+        // TODO cache annotations to annotated method?
     }
 
     @Override

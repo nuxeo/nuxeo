@@ -46,12 +46,11 @@ public class DialectDB2 extends Dialect {
 
     protected String usersSeparator;
 
-    public DialectDB2(DatabaseMetaData metadata, BinaryManager binaryManager,
-            RepositoryDescriptor repositoryDescriptor) throws StorageException {
+    public DialectDB2(DatabaseMetaData metadata, BinaryManager binaryManager, RepositoryDescriptor repositoryDescriptor)
+            throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
-        fulltextParameters = repositoryDescriptor == null ? null
-                : repositoryDescriptor.fulltextAnalyzer == null ? ""
-                        : repositoryDescriptor.fulltextAnalyzer;
+        fulltextParameters = repositoryDescriptor == null ? null : repositoryDescriptor.fulltextAnalyzer == null ? ""
+                : repositoryDescriptor.fulltextAnalyzer;
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
@@ -119,8 +118,7 @@ public class DialectDB2 extends Dialect {
     }
 
     @Override
-    public boolean isAllowedConversion(int expected, int actual,
-            String actualName, int actualSize) {
+    public boolean isAllowedConversion(int expected, int actual, String actualName, int actualSize) {
         if (expected == Types.BIT && actual == Types.SMALLINT) {
             return true;
         }
@@ -128,8 +126,8 @@ public class DialectDB2 extends Dialect {
     }
 
     @Override
-    public void setToPreparedStatement(PreparedStatement ps, int index,
-            Serializable value, Column column) throws SQLException {
+    public void setToPreparedStatement(PreparedStatement ps, int index, Serializable value, Column column)
+            throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
@@ -153,15 +151,13 @@ public class DialectDB2 extends Dialect {
             setToPreparedStatementTimestamp(ps, index, value, column);
             return;
         default:
-            throw new SQLException("Unhandled JDBC type: "
-                    + column.getJdbcType());
+            throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
         }
     }
 
     @Override
     @SuppressWarnings("boxing")
-    public Serializable getFromResultSet(ResultSet rs, int index, Column column)
-            throws SQLException {
+    public Serializable getFromResultSet(ResultSet rs, int index, Column column) throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
@@ -223,8 +219,7 @@ public class DialectDB2 extends Dialect {
     }
 
     @Override
-    public Map<String, Serializable> getSQLStatementsProperties(Model model,
-            Database database) {
+    public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("idType", "VARCHAR(36)");
         properties.put("argIdType", "VARCHAR(36)"); // in function args
@@ -254,9 +249,8 @@ public class DialectDB2 extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, Table table, List<Column> columns,
-            Model model) {
+    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table,
+            List<Column> columns, Model model) {
         throw new UnsupportedOperationException();
     }
 
@@ -266,9 +260,8 @@ public class DialectDB2 extends Dialect {
     }
 
     @Override
-    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
-            String indexName, int nthMatch, Column mainColumn, Model model,
-            Database database) {
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery, String indexName, int nthMatch,
+            Column mainColumn, Model model, Database database) {
         throw new UnsupportedOperationException();
     }
 

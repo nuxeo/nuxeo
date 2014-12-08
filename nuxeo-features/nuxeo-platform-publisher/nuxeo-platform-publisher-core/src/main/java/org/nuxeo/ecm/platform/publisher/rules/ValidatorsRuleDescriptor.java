@@ -27,9 +27,8 @@ import java.io.Serializable;
 /**
  * Validators rule descriptor.
  * <p>
- * Mostly references the underlying <code>ValidatorRule</code> implementation.
- * It might be useful in the future to extend the members of this object to hold
- * other information about the way we should apply this validator.
+ * Mostly references the underlying <code>ValidatorRule</code> implementation. It might be useful in the future to
+ * extend the members of this object to hold other information about the way we should apply this validator.
  * (placefulness for instance).
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>

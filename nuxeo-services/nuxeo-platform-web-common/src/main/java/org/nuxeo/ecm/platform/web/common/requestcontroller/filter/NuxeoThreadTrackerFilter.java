@@ -21,8 +21,8 @@ public class NuxeoThreadTrackerFilter implements javax.servlet.Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         ThreadEvent.onEnter(this, false).send();
         try {
             chain.doFilter(request, response);

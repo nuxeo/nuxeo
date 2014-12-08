@@ -117,8 +117,7 @@ public class DirectoryUIActionsBean implements Serializable {
             directoryNames = directoryUIManager.getDirectoryNames();
             if (directoryNames.size() > 0) {
                 // preserve selected directory if present
-                if (selectedDirectoryName == null
-                        || !directoryNames.contains(selectedDirectoryName)) {
+                if (selectedDirectoryName == null || !directoryNames.contains(selectedDirectoryName)) {
                     selectedDirectoryName = directoryNames.get(0);
                 }
                 selectDirectory();
@@ -155,8 +154,7 @@ public class DirectoryUIActionsBean implements Serializable {
         return currentDirectoryInfo;
     }
 
-    public DocumentModelList getCurrentDirectoryEntries()
-            throws ClientException {
+    public DocumentModelList getCurrentDirectoryEntries() throws ClientException {
         if (currentDirectoryEntries == null) {
             currentDirectoryEntries = new DocumentModelListImpl();
             Session dirSession = null;
@@ -165,8 +163,7 @@ public class DirectoryUIActionsBean implements Serializable {
                 dirSession = dirService.open(dirName);
                 Map<String, Serializable> emptyMap = Collections.emptyMap();
                 Set<String> emptySet = Collections.emptySet();
-                DocumentModelList entries = dirSession.query(emptyMap,
-                        emptySet, null, true);
+                DocumentModelList entries = dirSession.query(emptyMap, emptySet, null, true);
                 if (entries != null && !entries.isEmpty()) {
                     currentDirectoryEntries.addAll(entries);
                 }
@@ -178,10 +175,8 @@ public class DirectoryUIActionsBean implements Serializable {
                 // sort
                 Map<String, String> orderBy = new HashMap<String, String>();
                 orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
-                Collections.sort(
-                        currentDirectoryEntries,
-                        new DocumentModelComparator(
-                                dirService.getDirectorySchema(dirName), orderBy));
+                Collections.sort(currentDirectoryEntries,
+                        new DocumentModelComparator(dirService.getDirectorySchema(dirName), orderBy));
             } catch (DirectoryException e) {
                 throw new ClientException(e);
             } finally {
@@ -214,8 +209,7 @@ public class DirectoryUIActionsBean implements Serializable {
             try {
                 String dirName = currentDirectoryInfo.getName();
                 String schema = dirService.getDirectorySchema(dirName);
-                creationDirectoryEntry = BaseSession.createEntryModel(null,
-                        schema, null, null);
+                creationDirectoryEntry = BaseSession.createEntryModel(null, schema, null, null);
             } catch (DirectoryException e) {
                 throw new ClientException(e);
             }
@@ -233,8 +227,7 @@ public class DirectoryUIActionsBean implements Serializable {
             Object id = creationDirectoryEntry.getProperty(schema, idField);
             dirSession = dirService.open(dirName);
             if (id instanceof String && dirSession.hasEntry((String) id)) {
-                facesMessages.add(
-                        StatusMessage.Severity.ERROR,
+                facesMessages.add(StatusMessage.Severity.ERROR,
                         messages.get("vocabulary.entry.identifier.already.exists"));
                 return;
             }
@@ -245,8 +238,7 @@ public class DirectoryUIActionsBean implements Serializable {
             currentDirectoryEntries = null;
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get("vocabulary.entry.added"));
+            facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.added"));
         } catch (DirectoryException e) {
             throw new ClientException(e);
         } finally {
@@ -295,8 +287,7 @@ public class DirectoryUIActionsBean implements Serializable {
             currentDirectoryEntries = null;
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get("vocabulary.entry.edited"));
+            facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.edited"));
         } catch (DirectoryException e) {
             throw new ClientException(e);
         } finally {
@@ -312,8 +303,7 @@ public class DirectoryUIActionsBean implements Serializable {
         if (deleteConstraints != null && !deleteConstraints.isEmpty()) {
             for (DirectoryUIDeleteConstraint deleteConstraint : deleteConstraints) {
                 if (!deleteConstraint.canDelete(dirService, entryId)) {
-                    facesMessages.add(
-                            StatusMessage.Severity.ERROR,
+                    facesMessages.add(StatusMessage.Severity.ERROR,
                             messages.get("feedback.directory.deleteEntry.constraintError"));
                     return;
                 }
@@ -326,8 +316,7 @@ public class DirectoryUIActionsBean implements Serializable {
             // invalidate directory entries list
             currentDirectoryEntries = null;
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get("vocabulary.entry.deleted"));
+            facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.deleted"));
         } catch (DirectoryException e) {
             throw new ClientException(e);
         } finally {
@@ -388,17 +377,14 @@ public class DirectoryUIActionsBean implements Serializable {
     }
 
     public boolean checkContextualDirectoryFilter(String filterName) {
-        return actionManager.checkFilter(filterName,
-                createDirectoryActionContext());
+        return actionManager.checkFilter(filterName, createDirectoryActionContext());
     }
 
     /**
      * @since 5.9.1
      */
-    public boolean checkContextualDirectoryFilter(String filterName,
-            String directoryName) {
-        return actionManager.checkFilter(filterName,
-                createDirectoryActionContext(directoryName));
+    public boolean checkContextualDirectoryFilter(String filterName, String directoryName) {
+        return actionManager.checkFilter(filterName, createDirectoryActionContext(directoryName));
     }
 
 }

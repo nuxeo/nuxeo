@@ -41,8 +41,7 @@ public class FacetDescriptor {
 
     @Override
     public String toString() {
-        return "Facet(" + name + ',' + SchemaDescriptor.getSchemaNames(schemas)
-                + ')';
+        return "Facet(" + name + ',' + SchemaDescriptor.getSchemaNames(schemas) + ')';
     }
 
 }

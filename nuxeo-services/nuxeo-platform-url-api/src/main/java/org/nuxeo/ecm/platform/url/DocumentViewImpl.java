@@ -56,16 +56,15 @@ public class DocumentViewImpl implements DocumentView, Serializable {
         this.viewId = viewId;
     }
 
-    public DocumentViewImpl(DocumentLocation documentLocation, String viewId,
-            Map<String, String> parameters) {
+    public DocumentViewImpl(DocumentLocation documentLocation, String viewId, Map<String, String> parameters) {
         this.documentLocation = documentLocation;
         this.viewId = viewId;
         this.parameters = parameters;
     }
 
     // Not used. Deprecate? please keep: this is the most complete constructor.
-    public DocumentViewImpl(DocumentLocation documentLocation, String viewId,
-            String subURI, Map<String, String> parameters) {
+    public DocumentViewImpl(DocumentLocation documentLocation, String viewId, String subURI,
+            Map<String, String> parameters) {
         this.documentLocation = documentLocation;
         this.viewId = viewId;
         this.subURI = subURI;
@@ -79,8 +78,7 @@ public class DocumentViewImpl implements DocumentView, Serializable {
     }
 
     @Deprecated
-    public DocumentViewImpl(DocumentLocation docLoc, String viewId,
-            String tabId, String subURI) {
+    public DocumentViewImpl(DocumentLocation docLoc, String viewId, String tabId, String subURI) {
         documentLocation = docLoc;
         this.viewId = viewId;
         this.tabId = tabId;
@@ -174,11 +172,9 @@ public class DocumentViewImpl implements DocumentView, Serializable {
 
     @Override
     public String toString() {
-        return String.format(
-                "DocumentViewImpl [documentLocation=%s, "
-                        + "parameters=%s, patternName=%s, subURI=%s, tabId=%s, viewId=%s]",
-                documentLocation, parameters, patternName, subURI, tabId,
-                viewId);
+        return String.format("DocumentViewImpl [documentLocation=%s, "
+                + "parameters=%s, patternName=%s, subURI=%s, tabId=%s, viewId=%s]", documentLocation, parameters,
+                patternName, subURI, tabId, viewId);
     }
 
 }

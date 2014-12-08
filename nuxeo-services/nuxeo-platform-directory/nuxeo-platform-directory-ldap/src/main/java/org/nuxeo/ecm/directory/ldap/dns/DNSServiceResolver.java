@@ -22,8 +22,8 @@ import java.util.List;
 import javax.naming.NamingException;
 
 /**
- * Utility to fetch SRV records from a DNS server to get the list of available
- * ldap servers from the DN representation of the domain.
+ * Utility to fetch SRV records from a DNS server to get the list of available ldap servers from the DN representation
+ * of the domain.
  * <p>
  * See: http://en.wikipedia.org/wiki/SRV_record
  *
@@ -45,26 +45,23 @@ public interface DNSServiceResolver {
     String LDAP_SERVICE_PREFIX = "_ldap._tcp";
 
     /**
-     * Returns a list of LDAP servers for the specified domain by performing an
-     * SRV DNS lookup on _ldap._tcp.${domain}.
+     * Returns a list of LDAP servers for the specified domain by performing an SRV DNS lookup on _ldap._tcp.${domain}.
      *
      * @param domain
      * @return the list of SRV dns entries
      * @throws NamingException
      */
-    List<DNSServiceEntry> resolveLDAPDomainServers(final String domain)
-            throws NamingException;
+    List<DNSServiceEntry> resolveLDAPDomainServers(final String domain) throws NamingException;
 
     /**
-     * Returns a list of LDAP servers for the specified domain by performing an
-     * SRV DNS lookup using a custom DNS service prefix.
+     * Returns a list of LDAP servers for the specified domain by performing an SRV DNS lookup using a custom DNS
+     * service prefix.
      *
      * @param domain
      * @param prefix custom SRV prefix such as "_gc._tcp"
      * @return the list of SRV dns entries
      * @throws NamingException
      */
-    List<DNSServiceEntry> resolveLDAPDomainServers(final String domain,
-            final String prefix) throws NamingException;
+    List<DNSServiceEntry> resolveLDAPDomainServers(final String domain, final String prefix) throws NamingException;
 
 }

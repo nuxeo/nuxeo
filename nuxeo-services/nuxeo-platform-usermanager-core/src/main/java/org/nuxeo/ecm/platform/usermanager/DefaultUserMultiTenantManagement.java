@@ -32,10 +32,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author bjalon
- *
  */
-public class DefaultUserMultiTenantManagement implements
-        UserMultiTenantManagement {
+public class DefaultUserMultiTenantManagement implements UserMultiTenantManagement {
 
     protected static final Log log = LogFactory.getLog(DefaultUserMultiTenantManagement.class);
 
@@ -43,9 +41,8 @@ public class DefaultUserMultiTenantManagement implements
 
     protected String getDirectorySuffix(DocumentModel documentContext) {
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-        DirectoryConfiguration configuration = localConfigurationService.getConfiguration(
-                DirectoryConfiguration.class, DIRECTORY_CONFIGURATION_FACET,
-                documentContext);
+        DirectoryConfiguration configuration = localConfigurationService.getConfiguration(DirectoryConfiguration.class,
+                DIRECTORY_CONFIGURATION_FACET, documentContext);
         if (configuration != null && configuration.getDirectorySuffix() != null) {
             return SUFFIX_SEPARATOR + configuration.getDirectorySuffix();
         }
@@ -53,13 +50,11 @@ public class DefaultUserMultiTenantManagement implements
     }
 
     @Override
-    public void queryTransformer(UserManager um,
-            Map<String, Serializable> filter, Set<String> fulltext,
+    public void queryTransformer(UserManager um, Map<String, Serializable> filter, Set<String> fulltext,
             DocumentModel context) throws ClientException {
         String groupId = um.getGroupIdField();
         if (filter == null || fulltext == null) {
-            throw new ClientException(
-                    "Filter and Fulltext must be not null, please check");
+            throw new ClientException("Filter and Fulltext must be not null, please check");
         }
 
         if (getDirectorySuffix(context) == null) {
@@ -70,19 +65,16 @@ public class DefaultUserMultiTenantManagement implements
         String groupIdSuffix = getDirectorySuffix(context);
 
         if (!filter.containsKey(groupId)) {
-            log.debug("no filter on group id, need to filter with the directory local "
-                    + "configuration suffix : "
-                    + groupId
-                    + " = %"
-                    + groupIdSuffix);
+            log.debug("no filter on group id, need to filter with the directory local " + "configuration suffix : "
+                    + groupId + " = %" + groupIdSuffix);
             filter.put(groupId, "%" + groupIdSuffix);
             fulltext.add(groupId);
             return;
         }
 
         if (!(filter.get(groupId) instanceof String)) {
-            throw new UnsupportedOperationException("Filter value on "
-                    + "group id is not a string : " + filter.get(groupId));
+            throw new UnsupportedOperationException("Filter value on " + "group id is not a string : "
+                    + filter.get(groupId));
         }
 
         String filterIdValue = (String) filter.get(um.getGroupIdField());
@@ -90,13 +82,12 @@ public class DefaultUserMultiTenantManagement implements
     }
 
     @Override
-    public DocumentModel groupTransformer(UserManager um,
-            DocumentModel group, DocumentModel context) throws ClientException {
+    public DocumentModel groupTransformer(UserManager um, DocumentModel group, DocumentModel context)
+            throws ClientException {
         if (context == null) {
             return group;
         }
-        String groupIdValue = group.getPropertyValue(um.getGroupIdField())
-                + getDirectorySuffix(context);
+        String groupIdValue = group.getPropertyValue(um.getGroupIdField()) + getDirectorySuffix(context);
         group.setPropertyValue(um.getGroupIdField(), groupIdValue);
         return group;
     }

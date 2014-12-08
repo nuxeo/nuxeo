@@ -26,7 +26,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 public class MockitoFeature extends SimpleFeature {
 
-
     protected final MockProvider provider = new MockProvider();
 
     @Override
@@ -43,7 +42,7 @@ public class MockitoFeature extends SimpleFeature {
 
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
-       cleanupThread();
+        cleanupThread();
     }
 
     @Override
@@ -52,11 +51,11 @@ public class MockitoFeature extends SimpleFeature {
         provider.uninstallSelf();
     }
 
-    protected void cleanupThread() throws NoSuchFieldException,
-            SecurityException, IllegalArgumentException, IllegalAccessException {
+    protected void cleanupThread() throws NoSuchFieldException, SecurityException, IllegalArgumentException,
+            IllegalAccessException {
         Field f = GlobalConfiguration.class.getDeclaredField("globalConfiguration");
-           f.setAccessible(true);
-           ThreadLocal<IMockitoConfiguration> holder = (ThreadLocal<IMockitoConfiguration>) f.get(null);
-           holder.remove();
+        f.setAccessible(true);
+        ThreadLocal<IMockitoConfiguration> holder = (ThreadLocal<IMockitoConfiguration>) f.get(null);
+        holder.remove();
     }
 }

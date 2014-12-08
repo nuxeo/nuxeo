@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.collections.core.adapter;
 
-
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
@@ -34,6 +33,5 @@ public class CollectionAdapterFactory implements DocumentAdapterFactory {
 
         return null;
     }
-
 
 }

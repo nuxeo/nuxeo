@@ -26,7 +26,6 @@ import org.w3c.dom.NodeList;
  *
  * @see org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleDescriptor
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycleState
- *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class LifeCycleStateConfiguration {
@@ -65,10 +64,8 @@ public class LifeCycleStateConfiguration {
         int len = elements.getLength();
         for (int i = 0; i < len; i++) {
             Element element = (Element) elements.item(i);
-            states.add(new LifeCycleStateImpl(
-                    element.getAttribute(ATTR_STATE_NAME),
-                    element.getAttribute(ATTR_STATE_DESCRIPTION),
-                    getAllowedTransitionsFor(element),
+            states.add(new LifeCycleStateImpl(element.getAttribute(ATTR_STATE_NAME),
+                    element.getAttribute(ATTR_STATE_DESCRIPTION), getAllowedTransitionsFor(element),
                     Boolean.valueOf(element.getAttribute(ATTR_STATE_INITIAL))));
         }
         return states;

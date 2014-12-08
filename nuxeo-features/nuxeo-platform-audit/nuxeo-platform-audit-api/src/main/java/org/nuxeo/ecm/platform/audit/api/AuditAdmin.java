@@ -24,12 +24,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 public interface AuditAdmin {
 
     /**
-     * Forces log Synchronisation for a branch of the repository. This can be
-     * useful to add the create entries if DB was initialized from a bulk
-     * import.
+     * Forces log Synchronisation for a branch of the repository. This can be useful to add the create entries if DB was
+     * initialized from a bulk import.
      */
-    long syncLogCreationEntries(String repoId, String path, Boolean recurs)
-            throws ClientException;
-    
+    long syncLogCreationEntries(String repoId, String path, Boolean recurs) throws ClientException;
+
     Long getEventsCount(final String eventId);
 }

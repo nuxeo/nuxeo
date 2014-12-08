@@ -38,26 +38,19 @@ public class TestRFC2231 {
         RFC2231.percentEscape(buf, "foo bar");
         assertEquals("foo%20bar", buf.toString());
         buf.setLength(0);
-        RFC2231.percentEscape(
-                buf, "R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).");
-        assertEquals(
-                "R%C3%A9sultat%20d%27Activit%C3%A9%20%28%3Bprovisoire/draft%29.",
-                buf.toString());
+        RFC2231.percentEscape(buf, "R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).");
+        assertEquals("R%C3%A9sultat%20d%27Activit%C3%A9%20%28%3Bprovisoire/draft%29.", buf.toString());
     }
 
     @Test
     public void testEncodeContentDisposition() throws Exception {
         assertEquals("inline; filename*=UTF-8''caf%C3%A9",
                 RFC2231.encodeContentDisposition("caf\u00e9", true, "Firefox"));
-        assertEquals("attachment; filename=caf%C3%A9",
-                RFC2231.encodeContentDisposition("caf\u00e9", false, "MSIE"));
-        assertEquals("attachment; filename=caf\u00e9",
-                RFC2231.encodeContentDisposition("caf\u00e9", false, null));
+        assertEquals("attachment; filename=caf%C3%A9", RFC2231.encodeContentDisposition("caf\u00e9", false, "MSIE"));
+        assertEquals("attachment; filename=caf\u00e9", RFC2231.encodeContentDisposition("caf\u00e9", false, null));
         assertEquals(
                 "attachment; filename*=UTF-8''R%C3%A9sultat%20d%27Activit%C3%A9%20%28%3Bprovisoire/draft%29.",
-                RFC2231.encodeContentDisposition(
-                        "R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).",
-                        false, "Firefox"));
+                RFC2231.encodeContentDisposition("R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).", false, "Firefox"));
     }
 
 }

@@ -28,9 +28,8 @@ import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * A reader to read zip files. If the zip file is recognized as a nuxeo archive
- * then the {@link NuxeoArchiveReader} will be used to read the zip otherwise
- * the zip will be deflated to a temporary directory and then
+ * A reader to read zip files. If the zip file is recognized as a nuxeo archive then the {@link NuxeoArchiveReader} will
+ * be used to read the zip otherwise the zip will be deflated to a temporary directory and then
  * {@link XMLDirectoryReader} will be used to read the zip.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -82,14 +81,12 @@ public class ZipReader extends AbstractDocumentReader {
         delegate.close();
     }
 
-    private static void extract(ZipInputStream in, ZipEntry entry, File root)
-            throws IOException {
+    private static void extract(ZipInputStream in, ZipEntry entry, File root) throws IOException {
         if (!entry.isDirectory()) { // create the directtory
             File file = new File(root, entry.getName());
             if (!file.getParentFile().mkdirs()) { // make sure all parent
                                                   // directory exists
-                throw new IOException("Failed to create directory: "
-                        + file.getParent());
+                throw new IOException("Failed to create directory: " + file.getParent());
             }
             // write the file content
             FileOutputStream out = new FileOutputStream(file);

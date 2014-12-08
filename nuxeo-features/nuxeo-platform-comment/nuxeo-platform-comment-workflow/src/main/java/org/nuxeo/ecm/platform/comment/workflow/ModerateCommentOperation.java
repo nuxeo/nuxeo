@@ -60,15 +60,13 @@ public class ModerateCommentOperation {
     protected void moderate(DocumentRef docRef) throws ClientException {
         DocumentModel taskDoc = (DocumentModel) ctx.get(OperationTaskVariableName.taskDocument.name());
         Task task = taskDoc.getAdapter(Task.class);
-        DocumentRef targetDocRef = new IdRef(
-                task.getVariable(CommentsConstants.COMMENT_ID));
+        DocumentRef targetDocRef = new IdRef(task.getVariable(CommentsConstants.COMMENT_ID));
         FollowTransitionUnrestricted runner;
         if (accept) {
             runner = new FollowTransitionUnrestricted(session, targetDocRef,
                     CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
         } else {
-            runner = new FollowTransitionUnrestricted(session, targetDocRef,
-                    CommentsConstants.REJECT_STATE);
+            runner = new FollowTransitionUnrestricted(session, targetDocRef, CommentsConstants.REJECT_STATE);
         }
         runner.runUnrestricted();
     }

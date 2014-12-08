@@ -48,8 +48,7 @@ public class Undeploy extends UndeployPlaceholder {
         super(file);
     }
 
-    protected void undeployFile(File file, ReloadService service)
-            throws PackageException {
+    protected void undeployFile(File file, ReloadService service) throws PackageException {
         String name = service.getOSGIBundleName(file);
         if (name == null) {
             // not an OSGI bundle => ignore
@@ -62,8 +61,7 @@ public class Undeploy extends UndeployPlaceholder {
         }
     }
 
-    protected void undeployDirectory(File dir, ReloadService service)
-            throws PackageException {
+    protected void undeployDirectory(File dir, ReloadService service) throws PackageException {
         File[] files = dir.listFiles();
         if (files != null) {
             for (File fileInDir : files) {
@@ -73,8 +71,7 @@ public class Undeploy extends UndeployPlaceholder {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         if (!file.exists()) {
             log.warn("Can't undeploy file " + file + ". File is missing.");
             return null;

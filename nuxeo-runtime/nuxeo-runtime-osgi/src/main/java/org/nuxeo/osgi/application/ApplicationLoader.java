@@ -34,12 +34,13 @@ import org.osgi.framework.BundleException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class ApplicationLoader {
 
     protected final OSGiAdapter osgi;
+
     protected boolean extractNestedJARs = false;
+
     protected boolean scanForNestedJARs = false;
 
     private FileNamePattern[] patterns = BundleWalker.DEFAULT_PATTERNS;
@@ -51,7 +52,6 @@ public abstract class ApplicationLoader {
         tmpDir = new File(osgi.getDataDir(), "nested-bundles");
         tmpDir.mkdirs();
     }
-
 
     public abstract void installBundle(BundleFile bundleFile) throws BundleException;
 
@@ -92,8 +92,7 @@ public abstract class ApplicationLoader {
     }
 
     /**
-     * Scans and loads the given directory for OSGi bundles and regular JARs and
-     * fills the given lists appropriately.
+     * Scans and loads the given directory for OSGi bundles and regular JARs and fills the given lists appropriately.
      * <p>
      * Loading means registering with the given shared class loader each bundle found.
      *
@@ -133,8 +132,7 @@ public abstract class ApplicationLoader {
     }
 
     /**
-     * Scans the given directory for OSGi bundles and regular JARs and fills
-     * the given lists appropriately.
+     * Scans the given directory for OSGi bundles and regular JARs and fills the given lists appropriately.
      *
      * @param root the directory to recursively scan
      * @param bundles the list to fill with found bundles
@@ -151,7 +149,7 @@ public abstract class ApplicationLoader {
      *
      * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
      */
-    public class BundleInstaller  extends DefaultCallback {
+    public class BundleInstaller extends DefaultCallback {
 
         @Override
         public void visitBundle(BundleFile bundleFile) throws IOException {
@@ -170,6 +168,7 @@ public abstract class ApplicationLoader {
     public class BundleFileScanner extends DefaultCallback {
 
         final List<BundleFile> bundles;
+
         final List<BundleFile> jars;
 
         public BundleFileScanner(List<BundleFile> bundles, List<BundleFile> jars) {
@@ -199,10 +198,10 @@ public abstract class ApplicationLoader {
 
     }
 
-
     public class BundleFileLoader extends DefaultCallback {
 
         final List<BundleFile> bundles;
+
         final List<BundleFile> jars;
 
         public BundleFileLoader(List<BundleFile> bundles, List<BundleFile> jars) {
@@ -212,7 +211,7 @@ public abstract class ApplicationLoader {
 
         @Override
         public void visitBundle(BundleFile bundleFile) throws IOException {
-            //System.out.println(">>>> FOUND BUNDLE: "+bundleFile.getFileName());
+            // System.out.println(">>>> FOUND BUNDLE: "+bundleFile.getFileName());
             loadBundle(bundleFile);
             bundles.add(bundleFile);
             visitNestedBundles(bundleFile);
@@ -220,7 +219,7 @@ public abstract class ApplicationLoader {
 
         @Override
         public void visitJar(BundleFile bundleFile) throws IOException {
-            //System.out.println(">>>> FOUND JAR: "+bundleFile.getFileName());
+            // System.out.println(">>>> FOUND JAR: "+bundleFile.getFileName());
             loadJAR(bundleFile);
             jars.add(bundleFile);
             visitNestedBundles(bundleFile);
@@ -236,7 +235,6 @@ public abstract class ApplicationLoader {
 
     }
 
-
     public abstract class DefaultCallback implements BundleWalker.Callback {
 
         @Override
@@ -251,7 +249,7 @@ public abstract class ApplicationLoader {
 
         public void visitNestedBundles(BundleFile bundleFile) throws IOException {
             if (bundleFile instanceof NestedJarBundleFile) {
-                return; //do not allows more than one level of nesting
+                return; // do not allows more than one level of nesting
             }
             if (extractNestedJARs) {
                 Collection<BundleFile> bundles;

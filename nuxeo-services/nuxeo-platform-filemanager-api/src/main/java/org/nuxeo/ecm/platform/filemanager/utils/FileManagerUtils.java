@@ -54,8 +54,7 @@ public final class FileManagerUtils {
             // Read in the bytes
             int offset = 0;
             int numRead = 0;
-            while (offset < bytes.length
-                    && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+            while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
                 offset += numRead;
             }
 
@@ -118,8 +117,7 @@ public final class FileManagerUtils {
     /**
      * Looks if an existing Document with the same filename exists.
      */
-    public static DocumentModel getExistingDocByFileName(
-            CoreSession documentManager, String path, String filename)
+    public static DocumentModel getExistingDocByFileName(CoreSession documentManager, String path, String filename)
             throws ClientException {
         // We must use the "file:content/name" sub-property which is the only
         // one on which we can rely (and not "file:filename" which can possibly
@@ -127,33 +125,27 @@ public final class FileManagerUtils {
         // Note that the "file:content" property is handled in a particular way
         // by NXQL, so we must use "content/name" instead of
         // "file:content/name".
-        return getExistingDocByPropertyName(documentManager, path, filename,
-                "content/name");
+        return getExistingDocByPropertyName(documentManager, path, filename, "content/name");
     }
 
     /**
      * Looks if an existing Document with the same title exists.
      */
-    public static DocumentModel getExistingDocByTitle(
-            CoreSession documentManager, String path, String title)
+    public static DocumentModel getExistingDocByTitle(CoreSession documentManager, String path, String title)
             throws ClientException {
-        return getExistingDocByPropertyName(documentManager, path, title,
-                "dc:title");
+        return getExistingDocByPropertyName(documentManager, path, title, "dc:title");
     }
 
     /**
      * Looks if an existing Document has the same value for a given property.
      */
-    public static DocumentModel getExistingDocByPropertyName(
-            CoreSession documentManager, String path, String value,
+    public static DocumentModel getExistingDocByPropertyName(CoreSession documentManager, String path, String value,
             String propertyName) throws ClientException {
         value = Normalizer.normalize(value, Normalizer.Form.NFC);
         DocumentModel existing = null;
         String parentId = documentManager.getDocument(new PathRef(path)).getId();
-        String query = "SELECT * FROM Document WHERE ecm:parentId = '"
-                + parentId + "' AND " + propertyName + " = '"
-                + value.replace("'", "\\\'")
-                + "' AND ecm:currentLifeCycleState != '"
+        String query = "SELECT * FROM Document WHERE ecm:parentId = '" + parentId + "' AND " + propertyName + " = '"
+                + value.replace("'", "\\\'") + "' AND ecm:currentLifeCycleState != '"
                 + LifeCycleConstants.DELETED_STATE + "'";
         DocumentModelList docs = documentManager.query(query, 1);
         if (docs.size() > 0) {

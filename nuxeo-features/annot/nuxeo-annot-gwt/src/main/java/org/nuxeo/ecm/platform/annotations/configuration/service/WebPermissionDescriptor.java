@@ -22,7 +22,6 @@ import org.nuxeo.ecm.platform.annotations.gwt.server.configuration.WebPermission
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 @XObject("webPermission")
 public class WebPermissionDescriptor {

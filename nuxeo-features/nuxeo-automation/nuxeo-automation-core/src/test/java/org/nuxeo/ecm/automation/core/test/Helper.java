@@ -21,15 +21,13 @@ public class Helper {
     private Helper() {
     }
 
-    public static void updateContext(OperationContext ctx, String id,
-            String message, String title) {
+    public static void updateContext(OperationContext ctx, String id, String message, String title) {
         updateTestParam(ctx, "chain", id);
         updateTestParam(ctx, "message", message);
         updateTestParam(ctx, "title", title);
     }
 
-    protected static void updateTestParam(OperationContext ctx, String param,
-            String value) {
+    protected static void updateTestParam(OperationContext ctx, String param, String value) {
         String v = (String) ctx.get(param);
         if (v == null) {
             v = value;

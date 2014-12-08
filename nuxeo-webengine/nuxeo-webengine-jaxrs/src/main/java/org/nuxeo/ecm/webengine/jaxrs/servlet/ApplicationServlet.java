@@ -41,13 +41,11 @@ import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 /**
- * A hot re-loadable JAX-RS servlet.
- *
- * This servlet is building a Jersey JAX-RS Application. If you need to support
- * other JAX-RS containers than Jersey you need to write your own servlet.
+ * A hot re-loadable JAX-RS servlet. This servlet is building a Jersey JAX-RS Application. If you need to support other
+ * JAX-RS containers than Jersey you need to write your own servlet.
  * <p>
- * Use it as the webengine servlet in web.xml if you want hot reload, otherwise
- * directly use the Jersey servlet: {@link ServletContainer}.
+ * Use it as the webengine servlet in web.xml if you want hot reload, otherwise directly use the Jersey servlet:
+ * {@link ServletContainer}.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -64,7 +62,6 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
     protected ServletContainer container;
 
     protected String resourcesPrefix;
-
 
     @Override
     public void setDescriptor(ServletDescriptor sd) {
@@ -119,8 +116,7 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
     }
 
     @Override
-    public void service(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pinfo = request.getPathInfo();
         if (pinfo != null && pinfo.startsWith(resourcesPrefix)) {
             super.service(request, response);
@@ -129,8 +125,8 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
         }
     }
 
-    protected void containerService(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+    protected void containerService(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
         if (isDirty) {
             reloadContainer();
         }
@@ -154,8 +150,7 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
         InputStream in = getServletContext().getResourceAsStream(pathInfo.substring(resourcesPrefix.length()));
         if (in != null) {
@@ -165,7 +160,7 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
             }
             try {
                 OutputStream out = resp.getOutputStream();
-                byte[] bytes = new byte[1024*64];
+                byte[] bytes = new byte[1024 * 64];
                 int r = in.read(bytes);
                 while (r > -1) {
                     if (r > 0) {
@@ -185,10 +180,10 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
         try {
             String v = config.getInitParameter(RenderingEngine.class.getName());
             if (v != null) {
-                rendering = (RenderingEngine)Utils.getClassRef(v, bundle).newInstance();
+                rendering = (RenderingEngine) Utils.getClassRef(v, bundle).newInstance();
             } else { // default settings
                 rendering = new FreemarkerEngine();
-                ((FreemarkerEngine)rendering).getConfiguration().setClassicCompatible(false);
+                ((FreemarkerEngine) rendering).getConfiguration().setClassicCompatible(false);
             }
             rendering.setResourceLocator(this);
             return rendering;

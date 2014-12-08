@@ -41,18 +41,16 @@ import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
  *
  * @since 6.0
  */
-@ResourceDependencies({
-        @ResourceDependency(library = "javax.faces", name = "jsf.js"),
+@ResourceDependencies({ @ResourceDependency(library = "javax.faces", name = "jsf.js"),
         @ResourceDependency(library = "org.richfaces", name = "jquery.js"),
         @ResourceDependency(library = "org.richfaces", name = "richfaces.js"),
         @ResourceDependency(library = "org.richfaces", name = "richfaces-queue.js"),
         @ResourceDependency(library = "org.nuxeo", name = "widget-utils.js"),
-        @ResourceDependency(library = "org.nuxeo.select2", name = "select2.js")})
+        @ResourceDependency(library = "org.nuxeo.select2", name = "select2.js") })
 public class ResourcesRenderer extends ScriptStyleBaseRenderer {
 
     @Override
-    protected void startElement(ResponseWriter writer, UIComponent component)
-            throws IOException {
+    protected void startElement(ResponseWriter writer, UIComponent component) throws IOException {
     }
 
     @Override
@@ -60,8 +58,7 @@ public class ResourcesRenderer extends ScriptStyleBaseRenderer {
     }
 
     @Override
-    public void encodeEnd(FacesContext context, UIComponent component)
-            throws IOException {
+    public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
         final ExternalContext externalContext = context.getExternalContext();
 

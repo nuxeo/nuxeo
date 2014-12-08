@@ -25,8 +25,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Implementation of the {@link OAuthToken} interface. Provides mapping features
- * to DocumentModel so that Token can be stored in a SQL Directory
+ * Implementation of the {@link OAuthToken} interface. Provides mapping features to DocumentModel so that Token can be
+ * stored in a SQL Directory
  *
  * @author tiry
  */
@@ -87,12 +87,11 @@ public class NuxeoOAuthToken implements OAuthToken {
         this.consumerKey = (String) entry.getProperty(SCHEMA, "consumerKey");
         this.type = OAuthToken.Type.ACCESS;
         this.verifier = (String) entry.getProperty(SCHEMA, "verifier");
-        this.durationInMinutes = (Long) entry.getProperty(SCHEMA,
-                "durationInMinutes");
+        this.durationInMinutes = (Long) entry.getProperty(SCHEMA, "durationInMinutes");
         this.creationDate = (Calendar) entry.getProperty(SCHEMA, "creationDate");
 
         Long clientTokenL = (Long) entry.getProperty(SCHEMA, "clientToken");
-        if (clientTokenL!=null && clientTokenL.equals(1)) {
+        if (clientTokenL != null && clientTokenL.equals(1)) {
             this.clientToken = true;
         }
         this.clientId = (String) entry.getProperty(SCHEMA, "clientId");

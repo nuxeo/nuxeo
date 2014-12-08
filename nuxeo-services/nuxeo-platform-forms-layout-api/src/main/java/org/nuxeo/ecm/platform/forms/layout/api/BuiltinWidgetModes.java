@@ -52,8 +52,7 @@ public class BuiltinWidgetModes {
     private BuiltinWidgetModes() {
     }
 
-    public static boolean isModeSupported(String widgetMode,
-            List<String> supportedModes) {
+    public static boolean isModeSupported(String widgetMode, List<String> supportedModes) {
         if (BuiltinWidgetModes.HIDDEN.equals(widgetMode)) {
             // always supported
             return true;
@@ -78,8 +77,8 @@ public class BuiltinWidgetModes {
     }
 
     /**
-     * Returns true if given mode is not null and is not one of {@link #EDIT},
-     * {@link #PLAIN}, {@link #CSV}, {@link #PDF} or {@link #HIDDEN} mode.
+     * Returns true if given mode is not null and is not one of {@link #EDIT}, {@link #PLAIN}, {@link #CSV},
+     * {@link #PDF} or {@link #HIDDEN} mode.
      *
      * @since 5.4.2
      * @param widgetMode
@@ -89,10 +88,8 @@ public class BuiltinWidgetModes {
         if (widgetMode == null) {
             return false;
         }
-        if (BuiltinWidgetModes.EDIT.equals(widgetMode)
-                || BuiltinWidgetModes.PLAIN.equals(widgetMode)
-                || BuiltinWidgetModes.CSV.equals(widgetMode)
-                || BuiltinWidgetModes.PDF.equals(widgetMode)
+        if (BuiltinWidgetModes.EDIT.equals(widgetMode) || BuiltinWidgetModes.PLAIN.equals(widgetMode)
+                || BuiltinWidgetModes.CSV.equals(widgetMode) || BuiltinWidgetModes.PDF.equals(widgetMode)
                 || BuiltinWidgetModes.HIDDEN.equals(widgetMode)) {
             return false;
         }

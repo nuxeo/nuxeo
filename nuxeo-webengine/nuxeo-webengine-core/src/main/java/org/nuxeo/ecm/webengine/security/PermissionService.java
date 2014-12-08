@@ -38,7 +38,6 @@ import org.nuxeo.ecm.webengine.security.guards.UserGuard;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PermissionService implements PostfixExpression.Visitor {
 
@@ -70,12 +69,12 @@ public class PermissionService implements PostfixExpression.Visitor {
         return (Guard) new PostfixExpression(expr).visit(instance);
     }
 
-    public Guard parse(String expr, final Map<String,Guard> localGuards) throws ParseException {
+    public Guard parse(String expr, final Map<String, Guard> localGuards) throws ParseException {
         PostfixExpression.Visitor visitor = new PostfixExpression.Visitor() {
-            public Object createOperation(Token token, Object lparam,
-                    Object rparam) {
+            public Object createOperation(Token token, Object lparam, Object rparam) {
                 return PermissionService.this.createOperation(token, lparam, rparam);
             }
+
             public Object createParameter(Token token) {
                 Guard guard = localGuards.get(token.name);
                 if (guard == null) { // assume a built-in permission name
@@ -84,7 +83,7 @@ public class PermissionService implements PostfixExpression.Visitor {
                 return guard;
             }
         };
-        return (Guard)new PostfixExpression(expr).visit(visitor);
+        return (Guard) new PostfixExpression(expr).visit(visitor);
     }
 
     public Object createOperation(Token token, Object lparam, Object rparam) {
@@ -104,7 +103,7 @@ public class PermissionService implements PostfixExpression.Visitor {
         int p = name.indexOf('=');
         if (p > -1) {
             String key = name.substring(0, p).trim();
-            String value = name.substring(p+1).trim();
+            String value = name.substring(p + 1).trim();
             if ("user".equals(key)) {
                 return new UserGuard(value);
             } else if ("group".equals(key)) {
@@ -120,7 +119,7 @@ public class PermissionService implements PostfixExpression.Visitor {
             } else if ("permission".equals(key)) {
                 return new PermissionGuard(value);
             }
-            throw new IllegalArgumentException("Invalid argument: "+name);
+            throw new IllegalArgumentException("Invalid argument: " + name);
         } else {
             Guard guard = guards.get(token.name);
             if (guard == null) { // assume a built-in permission name

@@ -19,7 +19,6 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("resources")
 public class ResourcesDescriptor {
@@ -43,7 +42,7 @@ public class ResourcesDescriptor {
         } else {
             resolver = new BundleResourceResolver(bundle, path);
         }
-        id = bundle.getSymbolicName()+":"+servlet+":"+path;
+        id = bundle.getSymbolicName() + ":" + servlet + ":" + path;
     }
 
     public void setResolver(ResourceResolver resolver) {
@@ -76,7 +75,7 @@ public class ResourcesDescriptor {
             return true;
         }
         if (obj instanceof ResourcesDescriptor) {
-            return id.equals(((ResourcesDescriptor)obj).id);
+            return id.equals(((ResourcesDescriptor) obj).id);
         }
         return false;
     }

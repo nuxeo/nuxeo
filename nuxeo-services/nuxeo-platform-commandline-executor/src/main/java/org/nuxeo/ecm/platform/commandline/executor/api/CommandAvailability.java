@@ -23,9 +23,8 @@ package org.nuxeo.ecm.platform.commandline.executor.api;
 import java.io.Serializable;
 
 /**
- * Represents the availability status of a command.
- * If command is not available, {@link CommandAvailability}
- * contains the errorMessage and some installation instructions.
+ * Represents the availability status of a command. If command is not available, {@link CommandAvailability} contains
+ * the errorMessage and some installation instructions.
  *
  * @author tiry
  */

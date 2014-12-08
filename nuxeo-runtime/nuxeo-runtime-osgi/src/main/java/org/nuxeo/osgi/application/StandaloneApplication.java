@@ -80,8 +80,7 @@ public class StandaloneApplication extends OSGiAdapter {
         return instance;
     }
 
-    public static StandaloneApplication createInstance(SharedClassLoader cl)
-            throws IOException {
+    public static StandaloneApplication createInstance(SharedClassLoader cl) throws IOException {
         if (instance != null) {
             throw new IllegalStateException("Application already instantiated");
         }
@@ -127,8 +126,7 @@ public class StandaloneApplication extends OSGiAdapter {
 
     public void start() throws IOException, BundleException {
         if (isStarted) {
-            throw new IllegalStateException(
-                    "OSGi Application is already started");
+            throw new IllegalStateException("OSGi Application is already started");
         }
         List<BundleFile> preBundles = loadUserBundles("pre-bundles");
         List<BundleFile> postBundles = loadUserBundles("post-bundles");
@@ -145,8 +143,7 @@ public class StandaloneApplication extends OSGiAdapter {
         if (postBundles != null) {
             startBundles(postBundles);
         }
-        fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
-                getSystemBundle(), null));
+        fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, getSystemBundle(), null));
         isStarted = true;
     }
 
@@ -166,8 +163,7 @@ public class StandaloneApplication extends OSGiAdapter {
         }
     }
 
-    protected void startBundles(List<BundleFile> bundles)
-            throws BundleException {
+    protected void startBundles(List<BundleFile> bundles) throws BundleException {
         for (BundleFile bf : bundles) {
             this.install(new BundleImpl(this, bf, classLoader.getLoader()));
         }
@@ -223,8 +219,7 @@ public class StandaloneApplication extends OSGiAdapter {
             return;
         }
         boolean clear = hasCommandLineOption("clear");
-        ClassPath cpath = new ClassPath(classLoader, new File(env.getData(),
-                "nested-jars"));
+        ClassPath cpath = new ClassPath(classLoader, new File(env.getData(), "nested-jars"));
         File cache = new File(env.getData(), "bundles.cache");
         if (!clear && cache.exists()) {
             try {
@@ -252,11 +247,9 @@ public class StandaloneApplication extends OSGiAdapter {
     }
 
     /**
-     * Creates the system bundle from the jar specified by the
-     * nuxeo.osgi.system.bundle property.
+     * Creates the system bundle from the jar specified by the nuxeo.osgi.system.bundle property.
      */
-    public static BundleFile createSystemBundle(URL systemBundle)
-            throws IOException {
+    public static BundleFile createSystemBundle(URL systemBundle) throws IOException {
         URI uri;
         try {
             uri = systemBundle.toURI();
@@ -337,8 +330,7 @@ public class StandaloneApplication extends OSGiAdapter {
         return mainTask;
     }
 
-    public static void main(URL systemBundle, List<File> classPath,
-            String[] args) throws Exception {
+    public static void main(URL systemBundle, List<File> classPath, String[] args) throws Exception {
         SharedClassLoader classLoader = (SharedClassLoader) Thread.currentThread().getContextClassLoader();
         long startTime = System.currentTimeMillis();
         // parse command line args
@@ -348,12 +340,10 @@ public class StandaloneApplication extends OSGiAdapter {
         StandaloneApplication app = createInstance(classLoader);
         // start level 0
         app.setClassPath(classPath);
-        app.setSystemBundle(new SystemBundle(app,
-                createSystemBundle(systemBundle), classLoader.getLoader()));
+        app.setSystemBundle(new SystemBundle(app, createSystemBundle(systemBundle), classLoader.getLoader()));
         // start level 1
         app.start();
-        log.info("Framework started in "
-                + ((System.currentTimeMillis() - startTime) / 1000) + " sec.");
+        log.info("Framework started in " + ((System.currentTimeMillis() - startTime) / 1000) + " sec.");
         if (mainTask != null) {
             mainTask.run();
         }

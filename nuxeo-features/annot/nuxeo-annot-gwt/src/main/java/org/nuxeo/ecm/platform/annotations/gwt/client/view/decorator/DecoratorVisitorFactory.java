@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.annotations.gwt.client.util.StringRangeXPointer;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class DecoratorVisitorFactory {
 
@@ -34,20 +33,18 @@ public class DecoratorVisitorFactory {
         // factory
     }
 
-    public static DecoratorVisitor forAnnotation(Annotation annotation,
-            AnnotationController controller) {
+    public static DecoratorVisitor forAnnotation(Annotation annotation, AnnotationController controller) {
         if (annotation.hasStartContainer() && annotation.hasEndContainer()) {
             return new NuxeoDecoratorVisitor(annotation, controller);
         } else {
             StringRangeXPointer xp = (StringRangeXPointer) annotation.getXpointer();
-            return new AnnoteaDecoratorVisitor(xp.getFirstNode(),
-                    xp.getLength(), xp.getStartOffset(), annotation, controller);
+            return new AnnoteaDecoratorVisitor(xp.getFirstNode(), xp.getLength(), xp.getStartOffset(), annotation,
+                    controller);
         }
     }
 
     public static DecoratorVisitor forSelectedText(Annotation annotation) {
-        return new NuxeoSelectedTextDecoratorVisitor(annotation,
-                AnnotationFrameApplication.getController());
+        return new NuxeoSelectedTextDecoratorVisitor(annotation, AnnotationFrameApplication.getController());
     }
 
 }

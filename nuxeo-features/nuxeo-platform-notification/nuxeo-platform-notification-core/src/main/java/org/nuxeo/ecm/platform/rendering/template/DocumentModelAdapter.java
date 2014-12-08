@@ -41,13 +41,15 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplateModel {
 
     protected final DocumentModel doc;
+
     protected final ObjectWrapper wrapper;
+
     private TemplateCollectionModel keys;
+
     private int size = -1;
 
     // id, name, path, type, schemas, facets, system, schema1, schema2, ...
@@ -87,15 +89,13 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
                 Map<String, Serializable> map = (Map<String, Serializable>) part.getValue();
                 return wrapper.wrap(unPrefixedMap(map));
             } catch (PropertyException e) {
-                throw new TemplateModelException(
-                        "Failed to get value for schema root property: "+key, e);
+                throw new TemplateModelException("Failed to get value for schema root property: " + key, e);
             }
         }
         return wrapper.wrap(null);
     }
 
-    private static Map<String, Serializable> unPrefixedMap(
-            Map<String, Serializable> map) {
+    private static Map<String, Serializable> unPrefixedMap(Map<String, Serializable> map) {
         Map<String, Serializable> res = new HashMap<String, Serializable>();
         for (Entry<String, Serializable> e : map.entrySet()) {
             String key = e.getKey();
@@ -124,7 +124,7 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
             String[] schemas = doc.getSchemas();
             keysCol.addAll(Arrays.asList(schemas));
             size = keysCol.size();
-            keys = (TemplateCollectionModel)wrapper.wrap(keysCol);
+            keys = (TemplateCollectionModel) wrapper.wrap(keysCol);
         }
         return keys;
     }
@@ -144,7 +144,7 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
         } catch (ClientException e) {
             throw new TemplateModelException(e);
         }
-        return (TemplateCollectionModel)wrapper.wrap(values);
+        return (TemplateCollectionModel) wrapper.wrap(values);
     }
 
     @Override

@@ -41,8 +41,7 @@ public class XMapTest {
         XMap xmap = new XMap();
         xmap.register(Author.class);
 
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                "test-xmap.xml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap.xml");
 
         checkAuthor((Author) xmap.load(url));
     }
@@ -52,8 +51,7 @@ public class XMapTest {
         XMap xmap = new XMap();
         xmap.register(InheritedAuthor.class);
 
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                "second-test-xmap.xml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("second-test-xmap.xml");
         InheritedAuthor inheritedAuthor = (InheritedAuthor) xmap.load(url);
         checkAuthor(inheritedAuthor);
         assertEquals("dummyContent", inheritedAuthor.notInherited);
@@ -87,25 +85,20 @@ public class XMapTest {
         assertEquals("friend2_fn", author.friends.get(1).firstName);
         assertEquals("friend2_ln", author.friends.get(1).lastName);
         assertEquals("toUnescape", author.friends.get(2).firstName);
-        assertEquals("Map with parameters to < unescape",
-                author.friends.get(2).lastName);
+        assertEquals("Map with parameters to < unescape", author.friends.get(2).lastName);
 
         assertEquals(4, author.properties.size());
         assertEquals("theName", author.properties.get("name"));
         assertEquals("theColor", author.properties.get("color"));
         assertEquals("theWeight", author.properties.get("weight"));
-        assertEquals("Prop with parameters to < unescape",
-                author.properties.get("toUnescape"));
+        assertEquals("Prop with parameters to < unescape", author.properties.get("toUnescape"));
 
         // note the additional \n char after each tag (not sure if it's wanted)
-        assertEquals("Test\n      <b>content</b>\n not to &lt; unescape",
-                author.testContent.trim());
+        assertEquals("Test\n      <b>content</b>\n not to &lt; unescape", author.testContent.trim());
         String t = author.testContent2.getFirstChild().getTextContent().trim();
         assertEquals("Test", t);
 
-        assertEquals(
-                "SELECT * FROM Document WHERE dc:created < DATE '2013-08-19'",
-                author.textToUnescape);
+        assertEquals("SELECT * FROM Document WHERE dc:created < DATE '2013-08-19'", author.textToUnescape);
 
         assertFalse(author.content.equals(author.content.trim()));
 

@@ -84,8 +84,7 @@ public class CreatePicture {
                     if (entry.getValue().isInt() || entry.getValue().isLong()) {
                         map.put(entry.getKey(), entry.getValue().getLongValue());
                     } else {
-                        map.put(entry.getKey(),
-                                entry.getValue().getValueAsText());
+                        map.put(entry.getKey(), entry.getValue().getValueAsText());
                     }
                 }
                 templates.add(map);
@@ -107,8 +106,7 @@ public class CreatePicture {
 
         ArrayList<Map<String, Object>> templates = computePictureTemplates();
 
-        DocumentModel newDoc = session.createDocumentModel(
-                doc.getPathAsString(), name, "Picture");
+        DocumentModel newDoc = session.createDocumentModel(doc.getPathAsString(), name, "Picture");
         if (content != null) {
             DocumentHelper.setProperties(session, newDoc, content);
         }
@@ -122,8 +120,7 @@ public class CreatePicture {
                 log.warn("Unable to read Blob from properties");
             } else {
                 PictureResourceAdapter adapter = picture.getAdapter(PictureResourceAdapter.class);
-                adapter.fillPictureViews(blob, blob.getFilename(),
-                        picture.getTitle(), templates);
+                adapter.fillPictureViews(blob, blob.getFilename(), picture.getTitle(), templates);
                 picture = session.saveDocument(picture);
             }
         }

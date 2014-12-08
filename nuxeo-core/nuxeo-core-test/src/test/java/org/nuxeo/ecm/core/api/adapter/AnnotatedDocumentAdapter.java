@@ -25,12 +25,12 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AnnotatedDocumentAdapter implements AnnotatedDocument {
 
     final DocumentModel doc;
+
     final Map<String, Object> annotations;
 
     public AnnotatedDocumentAdapter(DocumentModel doc) {

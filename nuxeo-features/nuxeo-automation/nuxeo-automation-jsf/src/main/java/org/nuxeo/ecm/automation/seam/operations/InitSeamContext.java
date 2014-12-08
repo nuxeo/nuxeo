@@ -28,7 +28,6 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  * Initialise Seam Context so that next operation can use Seam components
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 @Operation(id = InitSeamContext.ID, category = Constants.CAT_UI, label = "Init Seam Context", description = "Initialize a Seam context (including Conversation if needed)")
 public class InitSeamContext {

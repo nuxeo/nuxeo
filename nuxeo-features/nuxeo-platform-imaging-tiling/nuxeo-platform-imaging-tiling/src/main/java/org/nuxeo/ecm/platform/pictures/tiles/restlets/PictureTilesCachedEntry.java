@@ -38,8 +38,7 @@ public class PictureTilesCachedEntry {
 
     protected String xpath;
 
-    public PictureTilesCachedEntry(Calendar modified,
-            PictureTilesAdapter adapter, String xpath) {
+    public PictureTilesCachedEntry(Calendar modified, PictureTilesAdapter adapter, String xpath) {
         this.modified = modified;
         this.adapter = adapter;
         this.xpath = xpath;

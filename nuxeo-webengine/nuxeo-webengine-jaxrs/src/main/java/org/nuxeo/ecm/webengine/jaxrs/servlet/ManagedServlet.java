@@ -14,13 +14,12 @@ package org.nuxeo.ecm.webengine.jaxrs.servlet;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletDescriptor;
 
 /**
- * Can be implemented by managed servlets that belong to a bundle to have the servlet descriptor
- * injected by the container just before the init() method is called.
+ * Can be implemented by managed servlets that belong to a bundle to have the servlet descriptor injected by the
+ * container just before the init() method is called.
  * <p>
  * The descriptor can be used to retrieve the bundle declaring the servlet or other settings.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ManagedServlet {
 

@@ -34,10 +34,9 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Given a File document holding a pdf on the file:content property and 2 pdfs
- * on the files:files property, the following operation will provide a pdf that
- * is the result of the merge of all the pdfs, with the content of the one in
- * file:content property first.
+ * Given a File document holding a pdf on the file:content property and 2 pdfs on the files:files property, the
+ * following operation will provide a pdf that is the result of the merge of all the pdfs, with the content of the one
+ * in file:content property first.
  *
  * @since 5.8
  */
@@ -56,8 +55,7 @@ public class ConcatenatePDFs {
     protected String filename;
 
     @OperationMethod
-    public Blob run(Blob blob) throws OperationException, IOException,
-            COSVisitorException {
+    public Blob run(Blob blob) throws OperationException, IOException, COSVisitorException {
         PDFMergerUtility ut = new PDFMergerUtility();
         checkPdf(blob);
         if (xpathBlobToAppend.isEmpty()) {
@@ -69,8 +67,7 @@ public class ConcatenatePDFs {
     }
 
     @OperationMethod
-    public Blob run(BlobList blobs) throws IOException, OperationException,
-            COSVisitorException {
+    public Blob run(BlobList blobs) throws IOException, OperationException, COSVisitorException {
         PDFMergerUtility ut = new PDFMergerUtility();
         if (!xpathBlobToAppend.isEmpty()) {
             handleBlobToAppend(ut);
@@ -82,8 +79,7 @@ public class ConcatenatePDFs {
         return appendPDFs(ut);
     }
 
-    protected FileBlob appendPDFs(PDFMergerUtility ut) throws IOException,
-            COSVisitorException {
+    protected FileBlob appendPDFs(PDFMergerUtility ut) throws IOException, COSVisitorException {
         File tempFile = File.createTempFile(filename, ".pdf");
         ut.setDestinationFileName(tempFile.getAbsolutePath());
         ut.mergeDocuments();
@@ -96,21 +92,18 @@ public class ConcatenatePDFs {
     /**
      * Check if blob to append is a PDF blob.
      */
-    protected void handleBlobToAppend(PDFMergerUtility ut) throws IOException,
-            OperationException {
+    protected void handleBlobToAppend(PDFMergerUtility ut) throws IOException, OperationException {
         try {
             Blob blobToAppend = (Blob) ctx.get(xpathBlobToAppend);
             if (blobToAppend == null) {
-                throw new OperationException(
-                        "The blob to append from variable context: '"
-                                + xpathBlobToAppend + "' is null.");
+                throw new OperationException("The blob to append from variable context: '" + xpathBlobToAppend
+                        + "' is null.");
             }
             checkPdf(blobToAppend);
             ut.addSource(blobToAppend.getStream());
         } catch (ClassCastException e) {
-            throw new OperationException(
-                    "The blob to append from variable context: '"
-                            + xpathBlobToAppend + "' is not a blob.", e);
+            throw new OperationException("The blob to append from variable context: '" + xpathBlobToAppend
+                    + "' is not a blob.", e);
         }
     }
 
@@ -119,8 +112,7 @@ public class ConcatenatePDFs {
      */
     protected void checkPdf(Blob blob) throws OperationException {
         if (!"application/pdf".equals(blob.getMimeType())) {
-            throw new OperationException("Blob " + blob.getFilename()
-                    + " is not a PDF.");
+            throw new OperationException("Blob " + blob.getFilename() + " is not a PDF.");
         }
     }
 }

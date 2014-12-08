@@ -27,16 +27,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Web service base document descriptor.
  * <p>
- * The document descriptor contains minimal information about a document as
- * needed by a client to display it and navigate through the repository tree.
+ * The document descriptor contains minimal information about a document as needed by a client to display it and
+ * navigate through the repository tree.
  * <p>
  * The descriptor exposes:
  * <ul>
- * <li> the document UUID
- * <li> the document type
- * <li> the document title
+ * <li>the document UUID
+ * <li>the document type
+ * <li>the document title
  * </ul>
- *
  * <p>
  * In the case of version document versions the title is the version label
  *

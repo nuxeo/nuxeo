@@ -38,14 +38,18 @@ import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 public class AggregateBase<B extends Bucket> implements Aggregate<B> {
 
     protected final AggregateDefinition definition;
-    protected final DocumentModel searchDocument;
-    protected List<String> selection;
-    protected List<B> buckets;
-    protected List<Bucket> extendedBuckets;
-    protected Map<String,Bucket> bucketMap = null;
 
-    public AggregateBase(AggregateDefinition definition,
-                         DocumentModel searchDocument) {
+    protected final DocumentModel searchDocument;
+
+    protected List<String> selection;
+
+    protected List<B> buckets;
+
+    protected List<Bucket> extendedBuckets;
+
+    protected Map<String, Bucket> bucketMap = null;
+
+    public AggregateBase(AggregateDefinition definition, DocumentModel searchDocument) {
         assert (definition != null);
         this.definition = definition;
         this.searchDocument = searchDocument;
@@ -89,13 +93,11 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
             if (searchDocument != null) {
                 // property must be nxs:stringList
                 List<String> value = null;
-                Object resolvedProperties =  searchDocument.getProperty(
-                        field.getSchema(), field.getName());
+                Object resolvedProperties = searchDocument.getProperty(field.getSchema(), field.getName());
                 if (resolvedProperties instanceof String[]) {
                     value = Arrays.asList((String[]) resolvedProperties);
                 } else if (resolvedProperties instanceof List<?>) {
-                    value = (List<String>) searchDocument.getProperty(
-                            field.getSchema(), field.getName());
+                    value = (List<String>) searchDocument.getProperty(field.getSchema(), field.getName());
                 }
                 selection = value;
             }
@@ -147,10 +149,9 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
 
     @Override
     public String toString() {
-        return String.format("Aggregate(%s, %s, %s, %s, %s)", getId(),
-                getType(), getField(),
-                (getSelection() != null) ? Arrays.toString(getSelection().toArray()): null,
-                (buckets != null) ? Arrays.toString(buckets.toArray()): null);
+        return String.format("Aggregate(%s, %s, %s, %s, %s)", getId(), getType(), getField(),
+                (getSelection() != null) ? Arrays.toString(getSelection().toArray()) : null,
+                (buckets != null) ? Arrays.toString(buckets.toArray()) : null);
     }
 
     @Override

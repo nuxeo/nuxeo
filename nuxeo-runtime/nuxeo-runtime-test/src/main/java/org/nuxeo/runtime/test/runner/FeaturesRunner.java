@@ -51,8 +51,7 @@ import com.google.inject.Stage;
 import com.google.inject.name.Names;
 
 /**
- * A Test Case runner that can be extended through features and provide
- * injection though Guice.
+ * A Test Case runner that can be extended through features and provide injection though Guice.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -125,13 +124,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     /**
-     * Get the annotation on the test method, if no annotation has been found,
-     * get the annotation from the test class (See {@link #getConfig(Class)})
+     * Get the annotation on the test method, if no annotation has been found, get the annotation from the test class
+     * (See {@link #getConfig(Class)})
      *
      * @since 5.7
      */
-    public <T extends Annotation> T getConfig(FrameworkMethod method,
-            Class<T> type) {
+    public <T extends Annotation> T getConfig(FrameworkMethod method, Class<T> type) {
         T config = method.getAnnotation(type);
         if (config != null) {
             return config;
@@ -157,20 +155,17 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         });
     }
 
-    protected void beforeMethodRun(final FrameworkMethod method,
-            final Object test) throws Exception {
+    protected void beforeMethodRun(final FrameworkMethod method, final Object test) throws Exception {
         loader.apply(Direction.FORWARD, new Callable() {
 
             @Override
             public void call(Holder holder) throws Exception {
-                holder.feature.beforeMethodRun(FeaturesRunner.this, method,
-                        test);
+                holder.feature.beforeMethodRun(FeaturesRunner.this, method, test);
             }
         });
     }
 
-    protected void afterMethodRun(final FrameworkMethod method,
-            final Object test) throws Exception {
+    protected void afterMethodRun(final FrameworkMethod method, final Object test) throws Exception {
         loader.apply(Direction.FORWARD, new Callable() {
 
             @Override
@@ -244,8 +239,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
             @Override
             public void configure(Binder aBinder) {
-                aBinder.bind(FeaturesRunner.class).toInstance(
-                        FeaturesRunner.this);
+                aBinder.bind(FeaturesRunner.class).toInstance(FeaturesRunner.this);
                 aBinder.bind(RunNotifier.class).toInstance(aNotifier);
                 aBinder.bind(TargetResourceLocator.class).toInstance(locator);
             }
@@ -309,8 +303,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected List<TestRule> classRules() {
-        final RulesFactory<ClassRule, TestRule> factory = new RulesFactory<>(
-                ClassRule.class, TestRule.class);
+        final RulesFactory<ClassRule, TestRule> factory = new RulesFactory<>(ClassRule.class, TestRule.class);
 
         factory.withRule(new TestRule() {
             @Override
@@ -337,8 +330,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
         protected final Object target;
 
-        protected BeforeMethodRunStatement(FrameworkMethod aMethod,
-                Object aTarget, Statement aStatement) {
+        protected BeforeMethodRunStatement(FrameworkMethod aMethod, Object aTarget, Statement aStatement) {
             method = aMethod;
             target = aTarget;
             next = aStatement;
@@ -369,8 +361,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     @Override
-    protected Statement withBefores(FrameworkMethod method, Object target,
-            Statement statement) {
+    protected Statement withBefores(FrameworkMethod method, Object target, Statement statement) {
         Statement actual = statement;
         actual = new BeforeMethodRunStatement(method, target, actual);
         actual = super.withBefores(method, target, actual);
@@ -386,8 +377,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
         protected final Object target;
 
-        protected AfterMethodRunStatement(FrameworkMethod aMethod,
-                Object aTarget, Statement aStatement) {
+        protected AfterMethodRunStatement(FrameworkMethod aMethod, Object aTarget, Statement aStatement) {
             method = aMethod;
             target = aTarget;
             previous = aStatement;
@@ -424,8 +414,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     @Override
-    protected Statement withAfters(FrameworkMethod method, Object target,
-            Statement statement) {
+    protected Statement withAfters(FrameworkMethod method, Object target, Statement statement) {
         Statement actual = statement;
         actual = new AfterMethodRunStatement(method, target, actual);
         actual = super.withAfters(method, target, actual);
@@ -435,8 +424,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected List<TestRule> getTestRules(Object target) {
-        final RulesFactory<Rule, TestRule> factory = new RulesFactory<Rule, TestRule>(
-                Rule.class, TestRule.class);
+        final RulesFactory<Rule, TestRule> factory = new RulesFactory<Rule, TestRule>(Rule.class, TestRule.class);
         loader.apply(Direction.FORWARD, new Callable() {
 
             @Override
@@ -451,8 +439,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected List<MethodRule> rules(Object target) {
-        final RulesFactory<Rule, MethodRule> factory = new RulesFactory<>(
-                Rule.class, MethodRule.class);
+        final RulesFactory<Rule, MethodRule> factory = new RulesFactory<>(Rule.class, MethodRule.class);
         loader.apply(Direction.FORWARD, new Callable() {
 
             @Override
@@ -523,8 +510,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                         @Override
                         public void configure(Binder binder) {
                             for (Object each : rules) {
-                                binder.bind((Class) each.getClass()).annotatedWith(
-                                        Names.named(name)).toInstance(each);
+                                binder.bind((Class) each.getClass()).annotatedWith(Names.named(name)).toInstance(each);
                                 binder.requestInjection(each);
                             }
                         }
@@ -546,12 +532,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         protected class BindRule implements TestRule, MethodRule {
 
             @Override
-            public Statement apply(Statement base, FrameworkMethod method,
-                    Object target) {
+            public Statement apply(Statement base, FrameworkMethod method, Object target) {
                 Statement statement = build(base, "method");
                 for (Object each : rules) {
-                    statement = ((MethodRule) each).apply(statement, method,
-                            target);
+                    statement = ((MethodRule) each).apply(statement, method, target);
                 }
                 return statement;
             }
@@ -593,8 +577,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         }
 
         public RulesFactory<A, R> withRules(TestClass aType, Object aTest) {
-            for (R each : aType.getAnnotatedFieldValues(aTest, annotationType,
-                    ruleType)) {
+            for (R each : aType.getAnnotatedFieldValues(aTest, annotationType, ruleType)) {
                 withRule(each);
             }
 
@@ -610,14 +593,11 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             return Collections.singletonList(ruleType.cast(new BindRule()));
         }
 
-        protected R onMethod(Class<R> aRuleType, FrameworkMethod aMethod,
-                Object aTarget, Object... someParms) {
+        protected R onMethod(Class<R> aRuleType, FrameworkMethod aMethod, Object aTarget, Object... someParms) {
             try {
-                return aRuleType.cast(aMethod.invokeExplosively(aTarget,
-                        someParms));
+                return aRuleType.cast(aMethod.invokeExplosively(aTarget, someParms));
             } catch (Throwable cause) {
-                throw new RuntimeException(
-                        "Errors in rules factory " + aMethod, cause);
+                throw new RuntimeException("Errors in rules factory " + aMethod, cause);
             }
         }
 

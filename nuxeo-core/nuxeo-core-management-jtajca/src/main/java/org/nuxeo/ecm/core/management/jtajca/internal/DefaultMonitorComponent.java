@@ -51,8 +51,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Component used to install/uninstall the monitors (transaction and
- * connections).
+ * Component used to install/uninstall the monitors (transaction and connections).
  *
  * @since 5.6
  */
@@ -62,17 +61,14 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     private class ConnectionManagerUpdater implements NuxeoContainerListener {
         @Override
-        public void handleNewConnectionManager(String name,
-                AbstractConnectionManager cm) {
-            ConnectionPoolMonitor monitor = new DefaultConnectionPoolMonitor(
-                    name, cm);
+        public void handleNewConnectionManager(String name, AbstractConnectionManager cm) {
+            ConnectionPoolMonitor monitor = new DefaultConnectionPoolMonitor(name, cm);
             monitor.install();
             poolConnectionMonitors.put(name, monitor);
         }
 
         @Override
-        public void handleConnectionManagerReset(String name,
-                AbstractConnectionManager cm) {
+        public void handleConnectionManagerReset(String name, AbstractConnectionManager cm) {
             DefaultConnectionPoolMonitor monitor = (DefaultConnectionPoolMonitor) poolConnectionMonitors.get(name);
             monitor.handleNewConnectionManager(cm);
         }
@@ -103,8 +99,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
     @Override
     public int getApplicationStartedOrder() {
         // should deploy after metrics service
-        return ((MetricsServiceImpl) Framework.getRuntime().getComponent(
-                MetricsService.class.getName())).getApplicationStartedOrder() + 1;
+        return ((MetricsServiceImpl) Framework.getRuntime().getComponent(MetricsService.class.getName())).getApplicationStartedOrder() + 1;
     }
 
     @Override
@@ -137,8 +132,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
         ClientException errors = new ClientException("Cannot install pool monitors");
         LoginContext loginContext = Framework.login();
         try {
-            for (String name : Framework.getLocalService(
-                    RepositoryService.class).getRepositoryNames()) {
+            for (String name : Framework.getLocalService(RepositoryService.class).getRepositoryNames()) {
                 try (CoreSession session = CoreInstance.openCoreSession(name)) {
                     ;
                 } catch (ClientException cause) {
@@ -153,12 +147,10 @@ public class DefaultMonitorComponent extends DefaultComponent {
         }
     }
 
-
     /**
      * Make sure we open the repository, to initialize its connection manager.
      */
-    protected void activateRepository(String repositoryName)
-            throws ClientException {
+    protected void activateRepository(String repositoryName) throws ClientException {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
             // do nothing, just open and close
         }
@@ -192,16 +184,14 @@ public class DefaultMonitorComponent extends DefaultComponent {
         return bind(managed.getClass().getInterfaces()[0], managed, name);
     }
 
-    protected static ObjectInstance bind(Class<?> itf, Object managed,
-            String name) {
+    protected static ObjectInstance bind(Class<?> itf, Object managed, String name) {
         MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
         name = Defaults.instance.name(itf, name);
         try {
             return mbs.registerMBean(managed, new ObjectName(name));
-        } catch (InstanceAlreadyExistsException | MBeanRegistrationException
-                | NotCompliantMBeanException | MalformedObjectNameException e) {
-            throw new UnsupportedOperationException("Cannot bind " + managed
-                    + " on " + name, e);
+        } catch (InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException
+                | MalformedObjectNameException e) {
+            throw new UnsupportedOperationException("Cannot bind " + managed + " on " + name, e);
         }
     }
 
@@ -210,8 +200,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
         try {
             mbs.unregisterMBean(instance.getObjectName());
         } catch (MBeanRegistrationException | InstanceNotFoundException e) {
-            throw new UnsupportedOperationException(
-                    "Cannot unbind " + instance, e);
+            throw new UnsupportedOperationException("Cannot unbind " + instance, e);
         }
     }
 }

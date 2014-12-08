@@ -46,7 +46,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(init = LocalConfRepositoryInit.class, cleanup=Granularity.METHOD)
+@RepositoryConfig(init = LocalConfRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.localconf" })
 public class TestSetOperations extends AbstractSimpleConfigurationTest {
 
@@ -54,8 +54,7 @@ public class TestSetOperations extends AbstractSimpleConfigurationTest {
     AutomationService service;
 
     @Test
-    public void shouldSetContextVariableFromSimpleConfiguration()
-            throws Exception {
+    public void shouldSetContextVariableFromSimpleConfiguration() throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("key1", "value1");
@@ -65,11 +64,9 @@ public class TestSetOperations extends AbstractSimpleConfigurationTest {
         OperationContext ctx = new OperationContext(session);
         assertNotNull(ctx);
 
-        OperationChain chain = new OperationChain(
-                "testSimpleConfigurationChain");
+        OperationChain chain = new OperationChain("testSimpleConfigurationChain");
         chain.add(FetchDocument.ID).set("value", PARENT_WORKSPACE_REF);
-        chain.add(SetSimpleConfParamVar.ID).set("name",
-                "simpleConfigurationParameter").set("parameterName", "key2");
+        chain.add(SetSimpleConfParamVar.ID).set("name", "simpleConfigurationParameter").set("parameterName", "key2");
 
         service.run(ctx, chain);
 
@@ -88,11 +85,9 @@ public class TestSetOperations extends AbstractSimpleConfigurationTest {
         OperationContext ctx = new OperationContext(session);
         assertNotNull(ctx);
 
-        OperationChain chain = new OperationChain(
-                "testSimpleConfigurationChain");
+        OperationChain chain = new OperationChain("testSimpleConfigurationChain");
         chain.add(FetchDocument.ID).set("value", PARENT_WORKSPACE_REF);
-        chain.add(SetSimpleConfParamVar.ID).set("name",
-                "simpleConfigurationParameter").set("parameterName", "key1").set(
+        chain.add(SetSimpleConfParamVar.ID).set("name", "simpleConfigurationParameter").set("parameterName", "key1").set(
                 "defaultValue", "default");
 
         service.run(ctx, chain);
@@ -112,11 +107,9 @@ public class TestSetOperations extends AbstractSimpleConfigurationTest {
         OperationContext ctx = new OperationContext(session);
         assertNotNull(ctx);
 
-        OperationChain chain = new OperationChain(
-                "testSimpleConfigurationChain");
+        OperationChain chain = new OperationChain("testSimpleConfigurationChain");
         chain.add(FetchDocument.ID).set("value", PARENT_WORKSPACE_REF);
-        chain.add(SetSimpleConfParamVar.ID).set("name",
-                "simpleConfigurationParameter").set("parameterName", "key2").set(
+        chain.add(SetSimpleConfParamVar.ID).set("name", "simpleConfigurationParameter").set("parameterName", "key2").set(
                 "defaultValue", "default");
 
         service.run(ctx, chain);

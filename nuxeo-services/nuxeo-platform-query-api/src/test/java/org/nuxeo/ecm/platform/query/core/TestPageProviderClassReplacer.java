@@ -54,39 +54,29 @@ public class TestPageProviderClassReplacer extends SQLRepositoryTestCase {
     @Override
     protected void deployRepositoryContrib() throws Exception {
         super.deployRepositoryContrib();
-        deployContrib("org.nuxeo.ecm.platform.query.api",
-                "OSGI-INF/pageprovider-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.query.api.test",
-                "test-pageprovider-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.query.api.test",
-                "test-pageprovider-classreplacer-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.query.api.test",
-                "test-schemas-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-classreplacer-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-schemas-contrib.xml");
     }
 
     @Test
     public void testReplacer() throws Exception {
-        PageProviderService pps = Framework
-                .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppd = pps
-                .getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN");
-        PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN",
-                ppd, null, null, 1L, 0L, null);
+        PageProviderDefinition ppd = pps.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN");
+        PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN", ppd, null, null, 1L, 0L, null);
         assertNotNull(pp);
-        assertTrue("wrong class " + pp,
-                pp instanceof CoreQueryAndFetchPageProvider);
+        assertTrue("wrong class " + pp, pp instanceof CoreQueryAndFetchPageProvider);
 
         pp = pps.getPageProvider("foo", ppd, null, null, 1L, 0L, null);
         assertNotNull(pp);
-        assertTrue("wrong class " + pp,
-                pp instanceof CoreQueryAndFetchPageProvider);
+        assertTrue("wrong class " + pp, pp instanceof CoreQueryAndFetchPageProvider);
 
         pp = pps.getPageProvider("bar", ppd, null, null, 1L, 0L, null);
         assertNotNull(pp);
-        assertTrue("wrong class " + pp,
-                pp instanceof CoreQueryDocumentPageProvider);
+        assertTrue("wrong class " + pp, pp instanceof CoreQueryDocumentPageProvider);
     }
 
 }

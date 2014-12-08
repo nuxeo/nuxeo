@@ -26,8 +26,8 @@ import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.themes.ThemeManager;
 
 /**
- * Event listener that triggers {@link ThemeStylingService} methods to impact
- * the standard {@link ThemeService} registries
+ * Event listener that triggers {@link ThemeStylingService} methods to impact the standard {@link ThemeService}
+ * registries
  *
  * @since 5.5
  */

@@ -24,12 +24,10 @@ import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebDocumentException extends WebException {
 
     private static final long serialVersionUID = 1L;
-
 
     public WebDocumentException(String message) {
         super(message);

@@ -23,8 +23,7 @@ import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 
-public abstract class AbstractFragment extends AbstractElement implements
-        Fragment {
+public abstract class AbstractFragment extends AbstractElement implements Fragment {
 
     public abstract Model getModel() throws ModelException;
 
@@ -39,8 +38,7 @@ public abstract class AbstractFragment extends AbstractElement implements
     }
 
     public boolean isVisibleInPerspective(PerspectiveType perspective) {
-        return Manager.getPerspectiveManager().isVisibleInPerspective(this,
-                perspective);
+        return Manager.getPerspectiveManager().isVisibleInPerspective(this, perspective);
     }
 
     public void setVisibleInPerspective(PerspectiveType perspective) {

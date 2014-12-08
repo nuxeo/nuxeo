@@ -36,7 +36,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * @author Alexandre Russel
- *
  */
 public abstract class AbstractDocumentGWTTest extends GWTTestCase {
     public void gwtSetUp() {
@@ -57,8 +56,7 @@ public abstract class AbstractDocumentGWTTest extends GWTTestCase {
     }
 
     public Annotation getDefaultAnnotation() {
-        AnnotationDefinition def = WebConfiguration.DEFAULT_WEB_CONFIGURATION.getAnnotationDefinitions().get(
-                0);
+        AnnotationDefinition def = WebConfiguration.DEFAULT_WEB_CONFIGURATION.getAnnotationDefinitions().get(0);
         Annotation annotation = new Annotation();
         annotation.setType(def.getUri());
         return annotation;
@@ -86,9 +84,8 @@ public abstract class AbstractDocumentGWTTest extends GWTTestCase {
         int counter = 0;
         for (String pointer : xpointers) {
             Annotation annotation = getDefaultAnnotation();
-            annotation.setXpointer(XPointerFactory.getXPointer(
-                    "http://localhost:8080/nuxeo/nxdoc/default/f6c3a8c3-427f-40fc-a0a0-e7630c41fdce/#xpointer(string-range("
-                            + pointer + "))"));
+            annotation.setXpointer(XPointerFactory.getXPointer("http://localhost:8080/nuxeo/nxdoc/default/f6c3a8c3-427f-40fc-a0a0-e7630c41fdce/#xpointer(string-range("
+                    + pointer + "))"));
             annotation.setId(counter++);
             annotation.setType("Comment");
             annotations.add(annotation);
@@ -97,8 +94,8 @@ public abstract class AbstractDocumentGWTTest extends GWTTestCase {
     }
 
     public static native String getNodeName(Element elem) /*-{
-                      return (elem.nodeName || "").toLowerCase();
-                   }-*/;
+                                                          return (elem.nodeName || "").toLowerCase();
+                                                          }-*/;
 
     public static String INNER_HTML = "<a name=\"1\"></a>"
             + "<div style=\"position: relative; width: 595px; height: 842px;\">"

@@ -33,21 +33,17 @@ public class DocumentTreeReader extends DocumentModelReader {
 
     protected int pathSegmentsToRemove = 0;
 
-    public DocumentTreeReader(CoreSession session, DocumentModel root,
-            boolean excludeRoot) throws ClientException {
+    public DocumentTreeReader(CoreSession session, DocumentModel root, boolean excludeRoot) throws ClientException {
         super(session);
         iterator = new DocumentTreeIterator(session, root, excludeRoot);
-        pathSegmentsToRemove = root.getPath().segmentCount()
-                - (excludeRoot ? 0 : 1);
+        pathSegmentsToRemove = root.getPath().segmentCount() - (excludeRoot ? 0 : 1);
     }
 
-    public DocumentTreeReader(CoreSession session, DocumentRef root)
-            throws ClientException {
+    public DocumentTreeReader(CoreSession session, DocumentRef root) throws ClientException {
         this(session, session.getDocument(root));
     }
 
-    public DocumentTreeReader(CoreSession session, DocumentModel root)
-            throws ClientException {
+    public DocumentTreeReader(CoreSession session, DocumentModel root) throws ClientException {
         this(session, root, false);
     }
 
@@ -64,9 +60,8 @@ public class DocumentTreeReader extends DocumentModelReader {
             DocumentModel docModel = iterator.next();
             if (pathSegmentsToRemove > 0) {
                 // remove unwanted leading segments
-                return new ExportedDocumentImpl(docModel,
-                        docModel.getPath().removeFirstSegments(
-                                pathSegmentsToRemove), inlineBlobs);
+                return new ExportedDocumentImpl(docModel, docModel.getPath().removeFirstSegments(pathSegmentsToRemove),
+                        inlineBlobs);
             } else {
                 return new ExportedDocumentImpl(docModel, inlineBlobs);
             }

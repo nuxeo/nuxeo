@@ -56,8 +56,7 @@ public class DirectorySelectItem extends SelectItem {
         }
     }
 
-    public DirectorySelectItem(Object value, String label, long ordering,
-            boolean disabled, boolean escape) {
+    public DirectorySelectItem(Object value, String label, long ordering, boolean disabled, boolean escape) {
         this(value, label, ordering);
         setDisabled(disabled);
         setEscape(escape);
@@ -108,8 +107,7 @@ public class DirectorySelectItem extends SelectItem {
      */
     @Deprecated
     public String getSortLabel() {
-        return StringUtils.isBlank(localizedLabel) ? displayedLabel
-                : localizedLabel;
+        return StringUtils.isBlank(localizedLabel) ? displayedLabel : localizedLabel;
     }
 
 }

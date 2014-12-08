@@ -55,8 +55,8 @@ public class ErrorHandler {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(error=" + error + ", message="
-                + message + ", page=" + page + ", code=" + code + ")";
+        return getClass().getSimpleName() + "(error=" + error + ", message=" + message + ", page=" + page + ", code="
+                + code + ")";
     }
 
 }

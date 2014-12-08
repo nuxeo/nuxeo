@@ -30,7 +30,9 @@ import java.util.Map;
 public class AnnotatedMethod {
 
     protected final AnnotatedClass<?> aclass;
+
     protected final Method method;
+
     protected final Map<Class<? extends Annotation>, Annotation> annotations;
 
     AnnotatedMethod(AnnotatedClass<?> aclass, Method method) {

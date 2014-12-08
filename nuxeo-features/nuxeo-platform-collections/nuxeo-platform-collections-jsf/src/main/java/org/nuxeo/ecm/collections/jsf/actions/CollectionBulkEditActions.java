@@ -52,25 +52,20 @@ public class CollectionBulkEditActions implements Serializable {
 
     @SuppressWarnings("unchecked")
     @Observer({ SELECTION_EDITED, DOCUMENTS_IMPORTED })
-    public void addCollectionsOnEvent(List<DocumentModel> documents,
-            DocumentModel doc) throws ClientException {
-        List<String> collectionIds = (List<String>) doc.getContextData(
-                org.nuxeo.common.collections.ScopeType.REQUEST,
+    public void addCollectionsOnEvent(List<DocumentModel> documents, DocumentModel doc) throws ClientException {
+        List<String> collectionIds = (List<String>) doc.getContextData(org.nuxeo.common.collections.ScopeType.REQUEST,
                 "bulk_collections");
         if (collectionIds != null && !collectionIds.isEmpty()) {
             CollectionManager collectionManager = Framework.getService(CollectionManager.class);
             for (String collectionId : collectionIds) {
                 if (collectionId.startsWith(MAGIC_PREFIX_ID)) {
-                    String title = collectionId.replaceAll("^"
-                            + MAGIC_PREFIX_ID, "");
-                    collectionManager.addToNewCollection(title, "", documents,
-                            documentManager);
+                    String title = collectionId.replaceAll("^" + MAGIC_PREFIX_ID, "");
+                    collectionManager.addToNewCollection(title, "", documents, documentManager);
                 } else {
                     IdRef idRef = new IdRef(collectionId);
                     if (documentManager.exists(idRef)) {
                         DocumentModel collection = documentManager.getDocument(idRef);
-                        collectionManager.addToCollection(collection,
-                                documents, documentManager);
+                        collectionManager.addToCollection(collection, documents, documentManager);
                     }
                 }
 

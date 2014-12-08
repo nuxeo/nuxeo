@@ -36,9 +36,8 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import com.sun.faces.facelets.tag.ui.DecorateHandler;
 
 /**
- * Dev tag handler for layouts, retrieving the template on the layout
- * definition (or its type definition) using the template defined in mode
- * {@link BuiltinModes#DEV}.
+ * Dev tag handler for layouts, retrieving the template on the layout definition (or its type definition) using the
+ * template defined in mode {@link BuiltinModes#DEV}.
  * <p>
  * When no template is defined, this handler is skipped.
  *
@@ -57,16 +56,14 @@ public class LayoutDevTagHandler extends TagHandler {
     }
 
     @Override
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
+            ELException {
         Layout layoutInstance = (Layout) layout.getObject(ctx, Layout.class);
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        TagAttribute templateAttr = helper.createAttribute("template",
-                layoutInstance.getDevTemplate());
+        TagAttribute templateAttr = helper.createAttribute("template", layoutInstance.getDevTemplate());
         TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(templateAttr);
         String widgetTagConfigId = layoutInstance.getTagConfigId();
-        TagConfig config = TagConfigFactory.createTagConfig(this.config,
-                widgetTagConfigId, attributes, nextHandler);
+        TagConfig config = TagConfigFactory.createTagConfig(this.config, widgetTagConfigId, attributes, nextHandler);
         DecorateHandler includeHandler = new DecorateHandler(config);
         includeHandler.apply(ctx, parent);
     }

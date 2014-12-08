@@ -36,7 +36,6 @@ import org.codehaus.jackson.JsonNode;
 
 /**
  * @author bstefanescu
- *
  */
 @Provider
 @Produces("application/json")
@@ -46,22 +45,18 @@ public class JsonTreeWriter implements MessageBodyWriter<JsonNode> {
     JsonFactory factory;
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return JsonNode.class.isAssignableFrom(type);
     }
 
     @Override
-    public long getSize(JsonNode t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public long getSize(JsonNode t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
     @Override
-    public void writeTo(JsonNode t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
+    public void writeTo(JsonNode t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
             WebApplicationException {
         JsonGenerator jg = factory.createJsonGenerator(entityStream, JsonEncoding.UTF8);
         jg.writeTree(t);

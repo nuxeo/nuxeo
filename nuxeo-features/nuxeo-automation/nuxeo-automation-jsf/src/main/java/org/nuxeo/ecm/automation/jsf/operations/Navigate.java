@@ -39,11 +39,9 @@ public class Navigate {
         String outcome = null;
 
         if (view == null) {
-            outcome = OperationHelper.getNavigationContext().navigateToDocument(
-                    doc);
+            outcome = OperationHelper.getNavigationContext().navigateToDocument(doc);
         } else {
-            outcome = OperationHelper.getNavigationContext().navigateToDocument(
-                    doc, view);
+            outcome = OperationHelper.getNavigationContext().navigateToDocument(doc, view);
         }
 
         ctx.put(SeamOperation.OUTCOME, outcome);

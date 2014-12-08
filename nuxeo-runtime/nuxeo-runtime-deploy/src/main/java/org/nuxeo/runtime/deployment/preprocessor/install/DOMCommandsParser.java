@@ -43,7 +43,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class DOMCommandsParser {
 
@@ -94,18 +94,17 @@ public final class DOMCommandsParser {
     }
 
     public static CopyCommand parseCopy(Element element) {
-      String from = element.getAttribute("from");
-      String to = element.getAttribute("to");
-      PathFilter filter = readPathFilter(element);
-      return new CopyCommand(new Path(from), new Path(to), filter);
+        String from = element.getAttribute("from");
+        String to = element.getAttribute("to");
+        PathFilter filter = readPathFilter(element);
+        return new CopyCommand(new Path(from), new Path(to), filter);
     }
 
- 
     public static MoveCommand parseMove(Element element) {
-      String from = element.getAttribute("from");
-      String to = element.getAttribute("to");
-      PathFilter filter = readPathFilter(element);
-      return new MoveCommand(new Path(from), new Path(to), filter);
+        String from = element.getAttribute("from");
+        String to = element.getAttribute("to");
+        PathFilter filter = readPathFilter(element);
+        return new MoveCommand(new Path(from), new Path(to), filter);
     }
 
     public static AppendCommand parseAppend(Element element) {
@@ -128,11 +127,11 @@ public final class DOMCommandsParser {
         String from = element.getAttribute("from");
         String to = element.getAttribute("to");
         String prefix = element.getAttribute("prefix");
-        if (prefix!=null && prefix.trim().length()==0) {
-            prefix=null;
+        if (prefix != null && prefix.trim().length() == 0) {
+            prefix = null;
         }
         PathFilter filter = readPathFilter(element);
-        return new UnzipCommand(new Path(from), new Path(to), filter,prefix);
+        return new UnzipCommand(new Path(from), new Path(to), filter, prefix);
     }
 
     public static ZipCommand parseZip(Element element) {
@@ -162,7 +161,7 @@ public final class DOMCommandsParser {
         }
         return new MkfileCommand(new Path(path), null);
     }
-    
+
     public static PathFilterSet readPathFilter(Element element) {
         PathFilterSet filters = new PathFilterSet();
         Node node = element.getFirstChild();
@@ -172,12 +171,12 @@ public final class DOMCommandsParser {
                 if (nodeName.equals("include")) {
                     String value = node.getTextContent();
                     if (value != null) {
-                       filters.add(new IncludeFilter(new Path(value.trim())));
+                        filters.add(new IncludeFilter(new Path(value.trim())));
                     }
                 } else if (nodeName.equals("exclude")) {
                     String value = node.getTextContent();
                     if (value != null) {
-                       filters.add(new ExcludeFilter(new Path(value.trim())));
+                        filters.add(new ExcludeFilter(new Path(value.trim())));
                     }
                 }
             }

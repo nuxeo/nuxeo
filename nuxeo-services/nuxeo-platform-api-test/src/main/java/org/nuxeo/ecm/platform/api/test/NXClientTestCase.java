@@ -53,8 +53,7 @@ public abstract class NXClientTestCase {
     }
 
     /**
-     * Subclasses may override this method to create a repository at a specific
-     * location.
+     * Subclasses may override this method to create a repository at a specific location.
      */
     protected File getHomeDir() {
         return null;

@@ -26,15 +26,14 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfigs;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
- * JUnit4 ParentRunner that knows how to run a test class on multiple backend
- * types.
+ * JUnit4 ParentRunner that knows how to run a test class on multiple backend types.
  * <p>
  * To use it :
  *
  * <pre>
  * &#064;RunWith(MultiNuxeoCoreRunner.class)
  * &#064;SuiteClasses(SimpleSession.class)
- * &#064;Repositories( { RepoType.H2, RepoType.JCR, RepoType.POSTGRES })
+ * &#064;Repositories({ RepoType.H2, RepoType.JCR, RepoType.POSTGRES })
  * public class NuxeoSuiteTest {
  * }
  * </pre>
@@ -48,20 +47,17 @@ public class MultiNuxeoCoreRunner extends ParentRunner<FeaturesRunner> {
 
     private RepositorySettings[] configs;
 
-    public MultiNuxeoCoreRunner(Class<?> testClass, RunnerBuilder builder)
-            throws InitializationError {
-        this(builder, testClass, getSuiteClasses(testClass),
-                getRepositorySettings(testClass));
+    public MultiNuxeoCoreRunner(Class<?> testClass, RunnerBuilder builder) throws InitializationError {
+        this(builder, testClass, getSuiteClasses(testClass), getRepositorySettings(testClass));
     }
 
-    public MultiNuxeoCoreRunner(RunnerBuilder builder, Class<?> testClass,
-            Class<?>[] classes, RepositorySettings[] repoTypes)
-            throws InitializationError {
+    public MultiNuxeoCoreRunner(RunnerBuilder builder, Class<?> testClass, Class<?>[] classes,
+            RepositorySettings[] repoTypes) throws InitializationError {
         this(null, builder.runners(null, classes), repoTypes);
     }
 
-    protected MultiNuxeoCoreRunner(Class<?> klass, List<Runner> runners,
-            RepositorySettings[] configs) throws InitializationError {
+    protected MultiNuxeoCoreRunner(Class<?> klass, List<Runner> runners, RepositorySettings[] configs)
+            throws InitializationError {
         super(klass);
         for (Runner runner : runners) {
             this.runners.add((FeaturesRunner) runner);
@@ -71,7 +67,7 @@ public class MultiNuxeoCoreRunner extends ParentRunner<FeaturesRunner> {
 
     @Override
     protected String getName() {
-        return "Nuxeo Core Suite: "+getClass();
+        return "Nuxeo Core Suite: " + getClass();
     }
 
     protected static RepositorySettings[] getRepositorySettings(Class<?> testClass) {
@@ -81,19 +77,17 @@ public class MultiNuxeoCoreRunner extends ParentRunner<FeaturesRunner> {
         } else {
             RepositoryConfig[] annos = annotation.value();
             RepositorySettings[] result = new RepositorySettings[annos.length];
-            for (int i=0; i<annos.length; i++) {
+            for (int i = 0; i < annos.length; i++) {
                 result[i] = new RepositorySettings(annos[i]);
             }
             return result;
         }
     }
 
-    protected static Class<?>[] getSuiteClasses(Class<?> klass)
-            throws InitializationError {
+    protected static Class<?>[] getSuiteClasses(Class<?> klass) throws InitializationError {
         SuiteClasses annotation = klass.getAnnotation(SuiteClasses.class);
         if (annotation == null) {
-            throw new InitializationError(String.format(
-                    "class '%s' must have a SuiteClasses annotation",
+            throw new InitializationError(String.format("class '%s' must have a SuiteClasses annotation",
                     klass.getName()));
         }
         return annotation.value();
@@ -116,7 +110,7 @@ public class MultiNuxeoCoreRunner extends ParentRunner<FeaturesRunner> {
             if (cf != null) {
                 cf.setRepositorySettings(config);
             }
-//TODO            child.resetInjector();
+            // TODO child.resetInjector();
             child.run(notifier);
         }
     }

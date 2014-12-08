@@ -23,8 +23,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
  *
  * @since 5.5
  */
-public abstract class AbstractWidgetDefinitionConverter implements
-        WidgetDefinitionConverter {
+public abstract class AbstractWidgetDefinitionConverter implements WidgetDefinitionConverter {
 
     protected WidgetDefinition getClonedWidget(WidgetDefinition widget) {
         return widget.clone();

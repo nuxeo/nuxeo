@@ -35,15 +35,13 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 
 /**
- * Thumbnail listener handling creation and update document event to store doc
- * thumbnail preview (only for DocType File)
+ * Thumbnail listener handling creation and update document event to store doc thumbnail preview (only for DocType File)
  *
  * @since 5.7
  */
 public class UpdateThumbnailListener implements PostCommitEventListener {
 
-    protected void processDoc(CoreSession session, DocumentModel doc)
-            throws ClientException {
+    protected void processDoc(CoreSession session, DocumentModel doc) throws ClientException {
         ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
         if (thumbnailAdapter == null) {
             return;
@@ -53,25 +51,18 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             if (!doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
                 doc.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
             }
-            doc.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME,
-                    (Serializable) thumbnailBlob);
+            doc.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, (Serializable) thumbnailBlob);
         } else {
             if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
-                doc.setPropertyValue(
-                        ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, null);
+                doc.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, null);
                 doc.removeFacet(ThumbnailConstants.THUMBNAIL_FACET);
             }
         }
         if (doc.isDirty()) {
-            doc.putContextData(VersioningService.VERSIONING_OPTION,
-                    VersioningOption.NONE);
-            doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
-                    Boolean.TRUE);
-            doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER,
-                    Boolean.TRUE);
-            doc.putContextData(
-                    NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
-                    Boolean.TRUE);
+            doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
+            doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+            doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, Boolean.TRUE);
+            doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);
             doc.putContextData("disableAuditLogger", Boolean.TRUE);
             if (doc.isVersion()) {
                 doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
@@ -87,8 +78,7 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
         }
         Set<String> processedDocs = new HashSet<String>();
         for (Event event : events) {
-            if (!ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name().equals(
-                    event.getName())) {
+            if (!ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name().equals(event.getName())) {
                 continue;
             }
             DocumentEventContext context = (DocumentEventContext) event.getContext();

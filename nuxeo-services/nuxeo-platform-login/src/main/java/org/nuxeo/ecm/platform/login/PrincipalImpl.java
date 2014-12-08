@@ -38,12 +38,10 @@ public class PrincipalImpl implements Principal {
     }
 
     /**
-     * Returns true if the object passed matches the principal represented in
-     * this implementation.
+     * Returns true if the object passed matches the principal represented in this implementation.
      *
      * @param another the Principal to compare with.
-     * @return true if the Principal passed is the same as that encapsulated in
-     *         this object, false otherwise
+     * @return true if the Principal passed is the same as that encapsulated in this object, false otherwise
      */
     @Override
     public boolean equals(Object another) {

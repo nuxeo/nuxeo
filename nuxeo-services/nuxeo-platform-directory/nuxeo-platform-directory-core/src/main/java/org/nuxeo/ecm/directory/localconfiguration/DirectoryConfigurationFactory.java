@@ -22,8 +22,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
- * Factory creating the {@code ContentViewConfigurationAdapter} adapter if the
- * document has the {@code ContentViewLocalConfiguration} facet.
+ * Factory creating the {@code ContentViewConfigurationAdapter} adapter if the document has the
+ * {@code ContentViewLocalConfiguration} facet.
  *
  * @see DirectoryConfigurationAdapter
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamernad</a>

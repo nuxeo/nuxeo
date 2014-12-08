@@ -67,12 +67,9 @@ public class TestDocumentTemplate {
         engine = new FreemarkerEngine();
         engine.setResourceLocator(new MyResourceLocator());
         WikiTransformer tr = new WikiTransformer();
+        tr.getSerializer().addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
         tr.getSerializer().addFilter(
-                new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*",
-                        "<link>$0</link>"));
-        tr.getSerializer().addFilter(
-                new PatternFilter("NXP-[0-9]+",
-                        "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+                new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
         tr.getSerializer().registerMacro(new FreemarkerMacro());
         engine.setSharedVariable("wiki", tr);
 

@@ -27,8 +27,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Functions related to simple fulltext parsing. They don't try to be exhaustive
- * but they work for simple cases.
+ * Functions related to simple fulltext parsing. They don't try to be exhaustive but they work for simple cases.
  */
 public class FullTextUtils {
 
@@ -38,11 +37,10 @@ public class FullTextUtils {
 
     public static final String STOP_WORDS = "a an are and as at be by for from how "
             + "i in is it of on or that the this to was what when where who will with "
-            + "car donc est il ils je la le les mais ni nous or ou pour tu un une vous "
-            + "www com net org";
+            + "car donc est il ils je la le les mais ni nous or ou pour tu un une vous " + "www com net org";
 
-    public static final Set<String> stopWords = new HashSet<String>(
-            Arrays.asList(StringUtils.split(STOP_WORDS, ' ', false)));
+    public static final Set<String> stopWords = new HashSet<String>(Arrays.asList(StringUtils.split(STOP_WORDS, ' ',
+            false)));
 
     public static final String UNACCENTED = "aaaaaaaceeeeiiii\u00f0nooooo\u00f7ouuuuy\u00fey";
 
@@ -61,8 +59,7 @@ public class FullTextUtils {
      * @param removeDiacritics if the diacritics must be removed
      * @return an ordered set of resulting words
      */
-    public static Set<String> parseFullText(String string,
-            boolean removeDiacritics) {
+    public static Set<String> parseFullText(String string, boolean removeDiacritics) {
         if (string == null) {
             return Collections.emptySet();
         }
@@ -81,8 +78,7 @@ public class FullTextUtils {
      *
      * @param string the word
      * @param removeDiacritics if the diacritics must be removed
-     * @return the simplified word, or {@code null} if it was removed as a stop
-     *         word or a short word
+     * @return the simplified word, or {@code null} if it was removed as a stop word or a short word
      */
     public static String parseWord(String string, boolean removeDiacritics) {
         int len = string.length();

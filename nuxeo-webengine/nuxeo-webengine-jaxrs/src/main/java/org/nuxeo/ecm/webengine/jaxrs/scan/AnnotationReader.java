@@ -22,10 +22,8 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AnnotationReader implements ClassVisitor {
 
@@ -57,8 +55,7 @@ public class AnnotationReader implements ClassVisitor {
     }
 
     @Override
-    public void visit(int version, int access, String name, String signature,
-            String superName, String[] interfaces) {
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         cname = name;
     }
 
@@ -79,8 +76,7 @@ public class AnnotationReader implements ClassVisitor {
     }
 
     @Override
-    public FieldVisitor visitField(int arg0, String arg1, String arg2,
-            String arg3, Object arg4) {
+    public FieldVisitor visitField(int arg0, String arg1, String arg2, String arg3, Object arg4) {
         return null;
     }
 
@@ -89,8 +85,7 @@ public class AnnotationReader implements ClassVisitor {
     }
 
     @Override
-    public MethodVisitor visitMethod(int arg0, String arg1, String arg2,
-            String arg3, String[] arg4) {
+    public MethodVisitor visitMethod(int arg0, String arg1, String arg2, String arg3, String[] arg4) {
         return null;
     }
 

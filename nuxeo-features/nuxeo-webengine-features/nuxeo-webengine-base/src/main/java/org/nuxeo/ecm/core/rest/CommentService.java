@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.core.rest;
 
-
 import java.util.Date;
 
 import javax.ejb.TransactionAttribute;
@@ -55,9 +54,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
- * @author rux allow extending the service for the possible customizations. Some
- * atomic actions are provided with default implementation but allowed for
- * overwriting.
+ * @author rux allow extending the service for the possible customizations. Some atomic actions are provided with
+ *         default implementation but allowed for overwriting.
  */
 @WebAdapter(name = "comments", type = "CommentService", targetType = "Document", targetFacets = { "Commentable" })
 public class CommentService extends DefaultAdapter {
@@ -73,8 +71,7 @@ public class CommentService extends DefaultAdapter {
         try {
 
             DocumentModel comment = session.createDocumentModel("Comment");
-            comment.setPropertyValue("comment:author",
-                    session.getPrincipal().getName());
+            comment.setPropertyValue("comment:author", session.getPrincipal().getName());
             comment.setPropertyValue("comment:text", cText);
             comment.setPropertyValue("comment:creationDate", new Date());
             comment = createCommentDocument(session, pageDoc, comment);
@@ -153,16 +150,15 @@ public class CommentService extends DefaultAdapter {
     }
 
     /**
-     * Can be overwritten to allow creation of localized comment. Defaults to
-     * create comment in comments root.
+     * Can be overwritten to allow creation of localized comment. Defaults to create comment in comments root.
      *
      * @param session the core session
      * @param target commented document
      * @param comment comment itself
      * @return the comment created
      */
-    protected DocumentModel createCommentDocument(CoreSession session,
-            DocumentModel target, DocumentModel comment) throws ClientException {
+    protected DocumentModel createCommentDocument(CoreSession session, DocumentModel target, DocumentModel comment)
+            throws ClientException {
         return getCommentManager().createComment(target, comment);
     }
 
@@ -173,8 +169,8 @@ public class CommentService extends DefaultAdapter {
      * @param target commented document
      * @param comment comment itself
      */
-    protected void publishComment(CoreSession session, DocumentModel target,
-            DocumentModel comment) throws ClientException {
+    protected void publishComment(CoreSession session, DocumentModel target, DocumentModel comment)
+            throws ClientException {
         getCommentsModerationService().publishComment(session, comment);
     }
 
@@ -184,8 +180,7 @@ public class CommentService extends DefaultAdapter {
      * @param target commented document
      * @param comment comment itself
      */
-    protected void deleteComment(DocumentModel target, DocumentModel comment)
-            throws ClientException {
+    protected void deleteComment(DocumentModel target, DocumentModel comment) throws ClientException {
         getCommentManager().deleteComment(target, comment);
     }
 
@@ -195,12 +190,11 @@ public class CommentService extends DefaultAdapter {
      * @param target commented document
      * @param comment comment itself
      */
-    protected void rejectComment(CoreSession session, DocumentModel target,
-            DocumentModel comment) throws ClientException {
+    protected void rejectComment(CoreSession session, DocumentModel target, DocumentModel comment)
+            throws ClientException {
         getCommentsModerationService().rejectComment(session, target, comment.getId());
         getCommentManager().deleteComment(target, comment);
     }
-
 
     /**
      * Can be overwritten to allow workflow. Defaults to approve right away.
@@ -208,8 +202,8 @@ public class CommentService extends DefaultAdapter {
      * @param target commented document
      * @param comment comment itself
      */
-    protected void approveComent(CoreSession session, DocumentModel target,
-            DocumentModel comment) throws ClientException {
+    protected void approveComent(CoreSession session, DocumentModel target, DocumentModel comment)
+            throws ClientException {
         getCommentsModerationService().approveComent(session, target, comment.getId());
     }
 

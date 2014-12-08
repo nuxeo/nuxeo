@@ -60,8 +60,7 @@ import org.nuxeo.theme.views.ViewType;
 
 public class ThemeService extends DefaultComponent {
 
-    public static final ComponentName ID = new ComponentName(
-            "org.nuxeo.theme.services.ThemeService");
+    public static final ComponentName ID = new ComponentName("org.nuxeo.theme.services.ThemeService");
 
     private static final Log log = LogFactory.getLog(ThemeService.class);
 
@@ -127,9 +126,8 @@ public class ThemeService extends DefaultComponent {
         String xp = extension.getExtensionPoint();
         if (xp.equals("registries")) {
             registerRegistryExtension(extension);
-        } else if (xp.equals("elements") || xp.equals("fragments")
-                || xp.equals("formats") || xp.equals("format-filters")
-                || xp.equals("standalone-filters") || xp.equals("negotiations")
+        } else if (xp.equals("elements") || xp.equals("fragments") || xp.equals("formats")
+                || xp.equals("format-filters") || xp.equals("standalone-filters") || xp.equals("negotiations")
                 || xp.equals("shortcuts") || xp.equals("vocabularies")) {
             registerTypeExtension(extension);
         } else if (xp.equals("applications")) {
@@ -164,14 +162,11 @@ public class ThemeService extends DefaultComponent {
         String xp = extension.getExtensionPoint();
         if (xp.equals("registries")) {
             unregisterRegistryExtension(extension);
-        } else if (xp.equals("elements") || xp.equals("fragments")
-                || xp.equals("formats") || xp.equals("format-filters")
-                || xp.equals("standalone-filters") || xp.equals("engines")
-                || xp.equals("template-engines") || xp.equals("negotiations")
-                || xp.equals("perspectives") || xp.equals("applications")
-                || xp.equals("shortcuts") || xp.equals("vocabularies")
-                || (xp.equals("presets")) || xp.equals("views")
-                || xp.equals("themes") || xp.equals("themesets")) {
+        } else if (xp.equals("elements") || xp.equals("fragments") || xp.equals("formats")
+                || xp.equals("format-filters") || xp.equals("standalone-filters") || xp.equals("engines")
+                || xp.equals("template-engines") || xp.equals("negotiations") || xp.equals("perspectives")
+                || xp.equals("applications") || xp.equals("shortcuts") || xp.equals("vocabularies")
+                || (xp.equals("presets")) || xp.equals("views") || xp.equals("themes") || xp.equals("themesets")) {
             unregisterTypeExtension(extension);
         } else if (xp.equals("resources")) {
             unregisterResourceExtension(extension);
@@ -192,11 +187,10 @@ public class ThemeService extends DefaultComponent {
             RegistryType registryType = (RegistryType) contrib;
             Registrable registry = null;
             try {
-                registry = (Registrable) context.loadClass(
-                        registryType.getClassName()).newInstance();
+                registry = (Registrable) context.loadClass(registryType.getClassName()).newInstance();
             } catch (ReflectiveOperationException e) {
-                log.warn("Could not create registry: " + registryType.getName()
-                        + "(" + registryType.getClassName() + ")");
+                log.warn("Could not create registry: " + registryType.getName() + "(" + registryType.getClassName()
+                        + ")");
             }
             if (registry != null) {
                 addRegistry(registryType.getName(), registry);
@@ -236,8 +230,8 @@ public class ThemeService extends DefaultComponent {
         for (Object contrib : contribs) {
             ApplicationType application = (ApplicationType) contrib;
 
-            ApplicationType oldApplication = (ApplicationType) typeRegistry.lookup(
-                    TypeFamily.APPLICATION, application.getTypeName());
+            ApplicationType oldApplication = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION,
+                    application.getTypeName());
 
             if (oldApplication == null) {
                 String templateEngine = application.getTemplateEngine();
@@ -390,8 +384,7 @@ public class ThemeService extends DefaultComponent {
             ThemeSet themeSet = (ThemeSet) contrib;
             String name = themeSet.getName();
 
-            ThemeSet oldThemeSet = (ThemeSet) typeRegistry.lookup(
-                    TypeFamily.THEMESET, name);
+            ThemeSet oldThemeSet = (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
 
             if (oldThemeSet == null) {
                 typeRegistry.register(themeSet);
@@ -433,8 +426,7 @@ public class ThemeService extends DefaultComponent {
                 final boolean preload = true;
                 ThemeParser.registerTheme(themeDescriptor, preload);
             } catch (ThemeIOException e) {
-                log.error("Could not register theme: " + src + " "
-                        + e.getMessage());
+                log.error("Could not register theme: " + src + " " + e.getMessage());
                 continue;
             }
             typeRegistry.register(themeDescriptor);
@@ -455,8 +447,7 @@ public class ThemeService extends DefaultComponent {
         }
     }
 
-    private void registerPalette(PaletteType palette,
-            RuntimeContext extensionContext) {
+    private void registerPalette(PaletteType palette, RuntimeContext extensionContext) {
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
         String paletteName = palette.getName();
         String src = palette.getSrc();
@@ -475,8 +466,7 @@ public class ThemeService extends DefaultComponent {
             typeRegistry.register(palette);
             Map<String, String> entries = PaletteParser.parse(url);
             for (Map.Entry<String, String> entry : entries.entrySet()) {
-                PresetType preset = new PresetType(entry.getKey(),
-                        entry.getValue(), paletteName, category, "", "");
+                PresetType preset = new PresetType(entry.getKey(), entry.getValue(), paletteName, category, "", "");
                 typeRegistry.register(preset);
             }
         }
@@ -505,14 +495,12 @@ public class ThemeService extends DefaultComponent {
                 }
 
                 if (viewType.isMerge()) {
-                    final ViewType oldViewType = (ViewType) typeRegistry.lookup(
-                            TypeFamily.VIEW, viewTypeName);
+                    final ViewType oldViewType = (ViewType) typeRegistry.lookup(TypeFamily.VIEW, viewTypeName);
                     if (oldViewType != null) {
                         // merge resource properties
                         List<String> newResources = viewType.getResources();
                         if (!newResources.isEmpty()) {
-                            log.debug("Added resources " + newResources
-                                    + " to THEME view: " + viewTypeName);
+                            log.debug("Added resources " + newResources + " to THEME view: " + viewTypeName);
                             for (String resource : newResources) {
                                 oldViewType.addResource(resource);
                             }
@@ -542,18 +530,14 @@ public class ThemeService extends DefaultComponent {
         for (Object contrib : contribs) {
             ModelType modelType = (ModelType) contrib;
             final String modelTypeName = modelType.getTypeName();
-            final ModelType oldModelType = (ModelType) typeRegistry.lookup(
-                    TypeFamily.MODEL, modelTypeName);
+            final ModelType oldModelType = (ModelType) typeRegistry.lookup(TypeFamily.MODEL, modelTypeName);
             if (oldModelType != null) {
                 if (oldModelType.getClassName().equals(modelType.getClassName())) {
-                    log.debug("Model type '" + modelTypeName + "' ("
-                            + oldModelType.getClassName()
+                    log.debug("Model type '" + modelTypeName + "' (" + oldModelType.getClassName()
                             + ") has already been registered.");
                 } else {
-                    log.warn("Failed to reregister model type '"
-                            + modelTypeName + "' ("
-                            + oldModelType.getClassName() + "). The new class "
-                            + modelType.getClassName() + " will be ignored.");
+                    log.warn("Failed to reregister model type '" + modelTypeName + "' (" + oldModelType.getClassName()
+                            + "). The new class " + modelType.getClassName() + " will be ignored.");
                 }
                 continue;
             }
@@ -593,15 +577,13 @@ public class ThemeService extends DefaultComponent {
                     srcFileUrl = extensionContext.getResource(srcFilePath);
                 }
                 if (srcFileUrl == null) {
-                    log.error("Could not import bank resources: " + srcFilePath
-                            + " (resource not found)");
+                    log.error("Could not import bank resources: " + srcFilePath + " (resource not found)");
                     continue;
                 }
                 try {
                     BankManager.importBankData(bankName, collection, srcFileUrl);
                 } catch (IOException e) {
-                    log.error("Could not import bank resources: " + srcFilePath
-                            + " (" + e.getMessage() + ")");
+                    log.error("Could not import bank resources: " + srcFilePath + " (" + e.getMessage() + ")");
                 }
             }
         }

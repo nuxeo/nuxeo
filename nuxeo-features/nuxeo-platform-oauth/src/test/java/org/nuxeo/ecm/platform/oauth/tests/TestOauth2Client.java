@@ -39,8 +39,7 @@ public class TestOauth2Client {
         assertEquals(0, registry.listClients().size());
 
         String clientId = "myId";
-        OAuth2Client client = new OAuth2Client("My App", clientId,
-                "mySecretSecret");
+        OAuth2Client client = new OAuth2Client("My App", clientId, "mySecretSecret");
         assertTrue(registry.registerClient(client));
         // Ensure that a same client registering is forbids
         assertFalse(registry.registerClient(client));

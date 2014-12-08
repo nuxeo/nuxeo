@@ -17,18 +17,14 @@ import java.io.IOException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.RequestInterceptor;
 
 /**
- * The connection to the automation service is done the first time you create a
- * session. To create a session you need to pass the authentication information.
- * If null is passed as the user name an anonymous session will be created. Note
- * that anonymous sessions are not always accepted by a Nuxeo Server (it depends
- * on the server configuration).
+ * The connection to the automation service is done the first time you create a session. To create a session you need to
+ * pass the authentication information. If null is passed as the user name an anonymous session will be created. Note
+ * that anonymous sessions are not always accepted by a Nuxeo Server (it depends on the server configuration).
  * <p>
- * When you attempt to create a new session using the same authentication info
- * as an already created session the session will be reused (TODO this is
- * optional for implementors?)
+ * When you attempt to create a new session using the same authentication info as an already created session the session
+ * will be reused (TODO this is optional for implementors?)
  * <p>
- * Note for implementors: the implementation should provide a constructor that
- * initialize the base URL
+ * Note for implementors: the implementation should provide a constructor that initialize the base URL
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -51,8 +47,8 @@ public interface AutomationClient {
     Session getSession() throws IOException;
 
     /**
-     * Create a new session using the given login callback to gather login info.
-     * The given callback will be notified after the session is created.
+     * Create a new session using the given login callback to gather login info. The given callback will be notified
+     * after the session is created.
      */
     Session getSession(LoginCallback loginCb) throws IOException;
 
@@ -69,15 +65,11 @@ public interface AutomationClient {
     Session getSession(String token) throws IOException;
 
     /**
-     * Creates a new session using the given token callback by following these
-     * steps:
+     * Creates a new session using the given token callback by following these steps:
      * <ul>
-     * <li>Look for a token saved locally using
-     * {@link TokenCallback#getLocalToken()}</li>
-     * <li>If it doesn't exist, use
-     * {@link TokenCallback#getRemoteToken(java.util.Map))} to acquire a token
-     * remotely using the information gathered by
-     * {@link TokenCallback#getTokenParams()}, and save the token locally using
+     * <li>Look for a token saved locally using {@link TokenCallback#getLocalToken()}</li>
+     * <li>If it doesn't exist, use {@link TokenCallback#getRemoteToken(java.util.Map))} to acquire a token remotely
+     * using the information gathered by {@link TokenCallback#getTokenParams()}, and save the token locally using
      * {@link TokenCallback#saveToken(String)}</li>
      * <li>Get a session with the token using {@link #getSession(String)}</li>
      * </ul>
@@ -87,18 +79,16 @@ public interface AutomationClient {
     Session getSession(TokenCallback cb) throws IOException;
 
     /**
-     * Adapts the given object to the given type. Return the adapter instance if
-     * any, otherwise null.
+     * Adapts the given object to the given type. Return the adapter instance if any, otherwise null.
      * <p>
-     * Optional operation. Framework that doesn't supports reflection like GWT
-     * must throw {@link UnsupportedOperationException}
+     * Optional operation. Framework that doesn't supports reflection like GWT must throw
+     * {@link UnsupportedOperationException}
      */
     <T> T getAdapter(Session session, Class<T> adapterType);
 
     /**
-     * Register an adapter for a given type. Registration is not thread safe.
-     * You should register adapters at initialization time. An adapter type can
-     * be bound to a single adaptable type.
+     * Register an adapter for a given type. Registration is not thread safe. You should register adapters at
+     * initialization time. An adapter type can be bound to a single adaptable type.
      *
      * @param typeToAdapt
      * @param adapterType
@@ -108,14 +98,14 @@ public interface AutomationClient {
 
     /**
      * Marshaller registration for pojo bean
+     *
      * @since 5.7.2
      * @param clazz the pojo bean to add to Marshalling
      */
     void registerPojoMarshaller(Class clazz);
 
     /**
-     * Cleanup any resources held by this client. After a shutdown the client is
-     * no more usable.
+     * Cleanup any resources held by this client. After a shutdown the client is no more usable.
      */
     void shutdown();
 

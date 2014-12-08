@@ -49,10 +49,15 @@ public class TransformMessageAction implements MessageAction {
     private static final Log log = LogFactory.getLog(TransformMessageAction.class);
 
     protected final Map<String, Map<String, Object>> schemas = new HashMap<String, Map<String, Object>>();
+
     protected final Map<String, Object> mailSchema = new HashMap<String, Object>();
+
     protected final Map<String, Object> dcSchema = new HashMap<String, Object>();
+
     protected final Map<String, Object> filesSchema = new HashMap<String, Object>();
+
     protected final List<Map<String, Object>> files = new ArrayList<Map<String, Object>>();
+
     protected StringBuilder text = new StringBuilder();
 
     private final HashMap<String, List<Part>> messageBodyParts = new HashMap<String, List<Part>>();
@@ -100,8 +105,7 @@ public class TransformMessageAction implements MessageAction {
         return true;
     }
 
-    private void processMimeMessage(MimeMessage message)
-            throws MessagingException, IOException {
+    private void processMimeMessage(MimeMessage message) throws MessagingException, IOException {
         Object object = message.getContent();
         if (object instanceof String) {
             addToTextMessage(message.getContent().toString(), true);
@@ -191,16 +195,11 @@ public class TransformMessageAction implements MessageAction {
     }
 
     /**
-     * "javax.mail.internet.MimeBodyPart" is decoding the
-     * file name (with special characters) if it has the
-     * "mail.mime.decodefilename" sysstem property set
-     * but the "com.sun.mail.imap.IMAPBodyPart" subclass
-     * of MimeBodyPart is overriding getFileName() and never
-     * deal with encoded file names.
-     * the filename is decoded with the utility function:
-     * MimeUtility.decodeText(filename);
-     * so we force here a filename decode.
-     * MimeUtility.decodeText is doing nothing if the text is not encoded
+     * "javax.mail.internet.MimeBodyPart" is decoding the file name (with special characters) if it has the
+     * "mail.mime.decodefilename" sysstem property set but the "com.sun.mail.imap.IMAPBodyPart" subclass of MimeBodyPart
+     * is overriding getFileName() and never deal with encoded file names. the filename is decoded with the utility
+     * function: MimeUtility.decodeText(filename); so we force here a filename decode. MimeUtility.decodeText is doing
+     * nothing if the text is not encoded
      */
     private static String getFileName(Part mailPart) throws MessagingException {
         String sysPropertyVal = System.getProperty("mail.mime.decodefilename");
@@ -239,9 +238,9 @@ public class TransformMessageAction implements MessageAction {
 
     private void addToTextMessage(String message, boolean isPlainText) {
         log.debug("* adding text to message body: " + message);
-//        if(isPlainText){
-//            message = "<pre>" + message + "</pre>";
-//        }
+        // if(isPlainText){
+        // message = "<pre>" + message + "</pre>";
+        // }
         text.append(message);
     }
 

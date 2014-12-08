@@ -38,7 +38,6 @@ import org.nuxeo.runtime.api.Framework;
  * Store information about registration and possible updates
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class ConnectUpdateStatusInfo {
 
@@ -101,8 +100,7 @@ public class ConnectUpdateStatusInfo {
 
         StringBuffer sb = new StringBuffer();
 
-        sb.append(Framework.getProperty("org.nuxeo.connect.client.feedUrl",
-                ConnectUrlConfig.getBaseUrl()));
+        sb.append(Framework.getProperty("org.nuxeo.connect.client.feedUrl", ConnectUrlConfig.getBaseUrl()));
         sb.append("connect-gateway/jsonp/");
 
         if (registred) {
@@ -154,16 +152,14 @@ public class ConnectUpdateStatusInfo {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         String targetPlatform = PlatformVersionHelper.getPlatformFilter();
 
-        List<DownloadablePackage> pkgs = pm.listUpdatePackages(
-                PackageType.HOT_FIX, targetPlatform);
+        List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX, targetPlatform);
 
         List<DownloadablePackage> localHotFixes = pm.listLocalPackages(PackageType.HOT_FIX);
 
         List<DownloadablePackage> applicablePkgs = new ArrayList<>();
 
         for (DownloadablePackage pkg : pkgs) {
-            if (TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg,
-                    targetPlatform)) {
+            if (TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg, targetPlatform)) {
                 boolean isInstalled = false;
                 for (DownloadablePackage localPkg : localHotFixes) {
                     if (localPkg.getId().equals(pkg.getId())) {

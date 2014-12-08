@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BooleanProperty extends ScalarProperty {
 
@@ -33,15 +32,13 @@ public class BooleanProperty extends ScalarProperty {
         super(parent, field, flags);
     }
 
-
     @Override
     public boolean isNormalized(Object value) {
         return value == null || value.getClass() == Boolean.class;
     }
 
     @Override
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
             return (Serializable) value;
         }
@@ -60,8 +57,7 @@ public class BooleanProperty extends ScalarProperty {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType)
-            throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
         if (value == null || Boolean.class == toType) {
             return (T) value;
         }

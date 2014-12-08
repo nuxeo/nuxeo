@@ -30,13 +30,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.tag.TagService;
 
 /**
- * @since 7.1
- * Tag a document with one or several 'tags'.
+ * @since 7.1 Tag a document with one or several 'tags'.
  */
-@Operation(id = TagDocument.ID, category = Constants.CAT_SERVICES,
-        label = "Tag Document", description = "Tag document with one or " +
-        "several 'tags'.",
-        since = "7.1", addToStudio = true)
+@Operation(id = TagDocument.ID, category = Constants.CAT_SERVICES, label = "Tag Document", description = "Tag document with one or "
+        + "several 'tags'.", since = "7.1", addToStudio = true)
 public class TagDocument {
 
     public static final String ID = "Services.TagDocument";
@@ -47,16 +44,14 @@ public class TagDocument {
     @Context
     protected CoreSession session;
 
-    @Param(name = "tags", required = true, description = "Labels or tags " +
-            "separated by comma.")
+    @Param(name = "tags", required = true, description = "Labels or tags " + "separated by comma.")
     protected StringList tags;
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel document) throws ClientException {
         if (tags != null) {
             for (String tag : tags) {
-                tagService.tag(session, document.getId(), tag,
-                        session.getPrincipal().getName());
+                tagService.tag(session, document.getId(), tag, session.getPrincipal().getName());
             }
         }
         return document;

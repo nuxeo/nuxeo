@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.convert.service;
 public class ConvertOption {
 
     protected final String mimeType;
+
     protected final String converter;
 
     public ConvertOption(String converter, String mimeType) {

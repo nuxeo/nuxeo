@@ -31,13 +31,11 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 /**
  * JAX-RS servlet based on jersey servlet to provide hot reloading.
  * <p>
- * Use it as the webengine servlet in web.xml if you want hot reload, otherwise
- * use {@link ServletContainer}.
+ * Use it as the webengine servlet in web.xml if you want hot reload, otherwise use {@link ServletContainer}.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ReloadingJerseyServlet extends ServletContainer implements
-        Reloadable {
+public class ReloadingJerseyServlet extends ServletContainer implements Reloadable {
 
     private static final long serialVersionUID = 1L;
 
@@ -56,8 +54,7 @@ public class ReloadingJerseyServlet extends ServletContainer implements
     }
 
     @Override
-    public void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (engine == null) {
             engine = Framework.getLocalService(WebEngine.class);
         }

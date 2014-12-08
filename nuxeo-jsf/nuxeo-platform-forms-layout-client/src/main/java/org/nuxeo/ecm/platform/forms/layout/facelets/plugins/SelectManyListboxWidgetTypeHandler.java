@@ -27,17 +27,14 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 /**
  * @since 6.0
  */
-public class SelectManyListboxWidgetTypeHandler extends
-        AbstractSelectWidgetTypeHandler {
+public class SelectManyListboxWidgetTypeHandler extends AbstractSelectWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
-        return getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                HtmlSelectManyListbox.COMPONENT_TYPE);
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
+        return getFaceletHandler(ctx, tagConfig, widget, subHandlers, HtmlSelectManyListbox.COMPONENT_TYPE);
     }
 
 }

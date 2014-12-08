@@ -15,14 +15,14 @@
 package org.nuxeo.ecm.core.query.sql.model;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Function implements Operand {
 
     private static final long serialVersionUID = -6107133982072616209L;
 
     public final String name;
+
     public final OperandList args;
 
     public Function(String name) {

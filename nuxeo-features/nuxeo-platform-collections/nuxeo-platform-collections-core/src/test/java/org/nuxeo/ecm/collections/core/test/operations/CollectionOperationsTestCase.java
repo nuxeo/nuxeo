@@ -38,14 +38,11 @@ import com.google.inject.Inject;
  * @since 5.9.4
  */
 @RunWith(FeaturesRunner.class)
-@Features({TransactionalFeature.class, PlatformFeature.class})
-@Deploy({"org.nuxeo.ecm.platform.collections.core",
-    "org.nuxeo.ecm.automation.core",
-    "org.nuxeo.ecm.automation.features",
-    "org.nuxeo.ecm.platform.query.api",
-    "org.nuxeo.ecm.platform.userworkspace.core",
-    "org.nuxeo.ecm.platform.userworkspace.types",
-    "org.nuxeo.ecm.platform.web.common"})
+@Features({ TransactionalFeature.class, PlatformFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.types",
+        "org.nuxeo.ecm.platform.web.common" })
 public class CollectionOperationsTestCase {
 
     protected static final String TEST_FILE_NAME = "testFile";
@@ -67,16 +64,14 @@ public class CollectionOperationsTestCase {
 
     OperationChain chain;
 
-    public static List<DocumentModel> createTestFiles(CoreSession session, final int nbFile)
-            throws ClientException {
-        DocumentModel testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+    public static List<DocumentModel> createTestFiles(CoreSession session, final int nbFile) throws ClientException {
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         List<DocumentModel> result = new ArrayList<DocumentModel>();
         for (int i = 1; i <= nbFile; i++) {
-            DocumentModel testFile = session.createDocumentModel(
-                    testWorkspace.getPath().toString(), TEST_FILE_NAME + i,
-                    "File");
+            DocumentModel testFile = session.createDocumentModel(testWorkspace.getPath().toString(),
+                    TEST_FILE_NAME + i, "File");
             testFile = session.createDocument(testFile);
             result.add(testFile);
         }

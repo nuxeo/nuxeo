@@ -23,7 +23,6 @@ import java.io.Serializable;
 
 /**
  * @author Max Stepanov
- *
  */
 public abstract class DOMMutationEvent implements Serializable {
 

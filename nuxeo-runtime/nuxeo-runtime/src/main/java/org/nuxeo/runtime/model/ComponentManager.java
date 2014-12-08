@@ -46,11 +46,10 @@ public interface ComponentManager {
     /**
      * Handles the registration of the given registration info.
      * <p>
-     * This is called by the main registry when all dependencies of this
-     * registration info were solved and the object can be registered.
+     * This is called by the main registry when all dependencies of this registration info were solved and the object
+     * can be registered.
      * <p>
-     * If true is returned, the object will be added to the main registry under
-     * the name given in RegistrationInfo.
+     * If true is returned, the object will be added to the main registry under the name given in RegistrationInfo.
      *
      * @param ri the registration info
      */
@@ -134,11 +133,9 @@ public interface ComponentManager {
     void shutdown();
 
     /**
-     * Gets the service of type serviceClass if such a service was declared by a
-     * resolved runtime component.
+     * Gets the service of type serviceClass if such a service was declared by a resolved runtime component.
      * <p>
-     * If the component is not yet activated it will be prior to return the
-     * service.
+     * If the component is not yet activated it will be prior to return the service.
      *
      * @param <T> the service type
      * @param serviceClass the service class
@@ -147,8 +144,7 @@ public interface ComponentManager {
     <T> T getService(Class<T> serviceClass);
 
     /**
-     * Get the list of all registered service names
-     * An empty array is returned if no registered services are found.
+     * Get the list of all registered service names An empty array is returned if no registered services are found.
      *
      * @return an array of registered service.
      */

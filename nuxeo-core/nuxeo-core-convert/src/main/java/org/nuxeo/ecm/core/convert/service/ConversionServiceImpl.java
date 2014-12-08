@@ -40,16 +40,13 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime Component that also provides the POJO implementation of the
- * {@link ConversionService}.
+ * Runtime Component that also provides the POJO implementation of the {@link ConversionService}.
  *
  * @author tiry
  */
-public class ConversionServiceImpl extends DefaultComponent implements
-        ConversionService {
+public class ConversionServiceImpl extends DefaultComponent implements ConversionService {
 
     protected static final Log log = LogFactory.getLog(ConversionServiceImpl.class);
-
 
     public static final String CONVERTER_EP = "converter";
 
@@ -86,8 +83,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
      * Component implementation.
      */
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (CONVERTER_EP.equals(extensionPoint)) {
             ConverterDescriptor desc = (ConverterDescriptor) contribution;
@@ -96,14 +92,12 @@ public class ConversionServiceImpl extends DefaultComponent implements
             GlobalConfigDescriptor desc = (GlobalConfigDescriptor) contribution;
             config.update(desc);
         } else {
-            log.error("Unable to handle unknown extensionPoint "
-                    + extensionPoint);
+            log.error("Unable to handle unknown extensionPoint " + extensionPoint);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
     /* Component API */
@@ -116,8 +110,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
         return desc.getConverterInstance();
     }
 
-    public static ConverterDescriptor getConverterDescriptor(
-            String converterName) {
+    public static ConverterDescriptor getConverterDescriptor(String converterName) {
         return self.converterDescriptors.get(converterName);
     }
 
@@ -167,8 +160,8 @@ public class ConversionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public BlobHolder convert(String converterName, BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(String converterName, BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException {
 
         // exist if not registered
         ConverterCheckResult check = isConverterAvailable(converterName);
@@ -179,12 +172,10 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
         ConverterDescriptor desc = converterDescriptors.get(converterName);
         if (desc == null) {
-            throw new ConversionException("Converter " + converterName
-                    + " can not be found");
+            throw new ConversionException("Converter " + converterName + " can not be found");
         }
 
-        String cacheKey = CacheKeyGenerator.computeKey(converterName,
-                blobHolder, parameters);
+        String cacheKey = CacheKeyGenerator.computeKey(converterName, blobHolder, parameters);
 
         BlobHolder cachedResult = ConversionCacheHolder.getFromCache(cacheKey);
 
@@ -203,39 +194,32 @@ public class ConversionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public BlobHolder convertToMimeType(String destinationMimeType,
-            BlobHolder blobHolder, Map<String, Serializable> parameters)
-            throws ConversionException {
+    public BlobHolder convertToMimeType(String destinationMimeType, BlobHolder blobHolder,
+            Map<String, Serializable> parameters) throws ConversionException {
 
         String srcMt;
         try {
             srcMt = blobHolder.getBlob().getMimeType();
         } catch (ClientException e) {
-            throw new ConversionException(
-                    "error while trying to determine converter name", e);
+            throw new ConversionException("error while trying to determine converter name", e);
         }
-        String converterName = translationHelper.getConverterName(srcMt,
-                destinationMimeType);
+        String converterName = translationHelper.getConverterName(srcMt, destinationMimeType);
         if (converterName == null) {
-            throw new ConversionException("Cannot find converter from type "
-                    + srcMt + " to type " + destinationMimeType);
+            throw new ConversionException("Cannot find converter from type " + srcMt + " to type "
+                    + destinationMimeType);
         }
 
         return convert(converterName, blobHolder, parameters);
     }
 
     @Override
-    public List<String> getConverterNames(String sourceMimeType,
-            String destinationMimeType) {
-        return translationHelper.getConverterNames(sourceMimeType,
-                destinationMimeType);
+    public List<String> getConverterNames(String sourceMimeType, String destinationMimeType) {
+        return translationHelper.getConverterNames(sourceMimeType, destinationMimeType);
     }
 
     @Override
-    public String getConverterName(String sourceMimeType,
-            String destinationMimeType) {
-        List<String> converterNames = getConverterNames(sourceMimeType,
-                destinationMimeType);
+    public String getConverterName(String sourceMimeType, String destinationMimeType) {
+        List<String> converterNames = getConverterNames(sourceMimeType, destinationMimeType);
         if (!converterNames.isEmpty()) {
             return converterNames.get(converterNames.size() - 1);
         }
@@ -243,16 +227,14 @@ public class ConversionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public ConverterCheckResult isConverterAvailable(String converterName)
-            throws ConversionException {
+    public ConverterCheckResult isConverterAvailable(String converterName) throws ConversionException {
         return isConverterAvailable(converterName, false);
     }
 
     protected final Map<String, ConverterCheckResult> checkResultCache = new HashMap<>();
 
     @Override
-    public ConverterCheckResult isConverterAvailable(String converterName,
-            boolean refresh) throws ConversionException {
+    public ConverterCheckResult isConverterAvailable(String converterName, boolean refresh) throws ConversionException {
 
         if (!refresh) {
             if (checkResultCache.containsKey(converterName)) {
@@ -294,10 +276,8 @@ public class ConversionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean isSourceMimeTypeSupported(String converterName,
-            String sourceMimeType) {
-        return getConverterDescriptor(converterName).getSourceMimeTypes().contains(
-                sourceMimeType);
+    public boolean isSourceMimeTypeSupported(String converterName, String sourceMimeType) {
+        return getConverterDescriptor(converterName).getSourceMimeTypes().contains(sourceMimeType);
     }
 
     @Override

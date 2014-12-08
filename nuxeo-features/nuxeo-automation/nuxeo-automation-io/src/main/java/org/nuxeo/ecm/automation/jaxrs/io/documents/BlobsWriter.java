@@ -34,10 +34,9 @@ import javax.ws.rs.ext.Provider;
 public class BlobsWriter implements MessageBodyWriter<MultipartBlobs> {
 
     @Override
-    public void writeTo(MultipartBlobs blobs, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(MultipartBlobs blobs, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException {
         try {
             httpHeaders.putSingle("Content-Type", blobs.getContentType());
             blobs.writeTo(entityStream);
@@ -48,14 +47,12 @@ public class BlobsWriter implements MessageBodyWriter<MultipartBlobs> {
     }
 
     @Override
-    public long getSize(MultipartBlobs arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(MultipartBlobs arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return MultipartBlobs.class == arg0;
     }
 

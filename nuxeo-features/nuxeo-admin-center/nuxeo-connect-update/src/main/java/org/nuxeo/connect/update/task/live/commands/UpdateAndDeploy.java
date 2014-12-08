@@ -25,8 +25,7 @@ import org.nuxeo.connect.update.task.update.Update;
 import org.nuxeo.connect.update.task.update.UpdateManager;
 
 /**
- * Live version of the update command, that handle hot-reloading of the jar by
- * deploying it to the runtime.
+ * Live version of the update command, that handle hot-reloading of the jar by deploying it to the runtime.
  *
  * @since 5.6
  */
@@ -38,8 +37,7 @@ public class UpdateAndDeploy extends Update {
     }
 
     @Override
-    protected Command getDeployCommand(UpdateManager updateManager,
-            Command rollbackCommand) {
+    protected Command getDeployCommand(UpdateManager updateManager, Command rollbackCommand) {
         // file is the file to be deployed, so it's not in its final place.
         // But deploy should use the final place => extract info from the
         // rollback command...

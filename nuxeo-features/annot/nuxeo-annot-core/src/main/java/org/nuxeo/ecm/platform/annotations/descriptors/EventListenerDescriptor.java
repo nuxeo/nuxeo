@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.annotations.service.EventListener;
 
 /**
  * @author Alexandre Russel
- *
  */
 @XObject("listener")
 public class EventListenerDescriptor {

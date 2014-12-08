@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.annotations.gwt.client.model;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface AnnotationChangeNotifier {
     void addChangeListener(AnnotationChangeListener listener);

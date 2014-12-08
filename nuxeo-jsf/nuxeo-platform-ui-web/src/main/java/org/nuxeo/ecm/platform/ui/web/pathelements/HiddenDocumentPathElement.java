@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 /**
  * Represents a document path element, with no visible link.
  * <p>
- * Useful when representing documents in the breadcrumbs that are marked as
- * {@link FacetNames#HIDDEN_IN_NAVIGATION}.
+ * Useful when representing documents in the breadcrumbs that are marked as {@link FacetNames#HIDDEN_IN_NAVIGATION}.
  *
  * @author Anahide Tchertchian
  * @since 5.4

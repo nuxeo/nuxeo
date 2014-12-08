@@ -57,7 +57,6 @@ public class MimetypeDescriptor {
     @XNode("extensions")
     protected Element extensions;
 
-
     public boolean isBinary() {
         return binary;
     }
@@ -119,9 +118,8 @@ public class MimetypeDescriptor {
     }
 
     public MimetypeEntry getMimetype() {
-        return new MimetypeEntryImpl(normalized,
-                getMimetypes(), getExtensions(), iconPath, binary,
-                onlineEditable, oleSupported);
+        return new MimetypeEntryImpl(normalized, getMimetypes(), getExtensions(), iconPath, binary, onlineEditable,
+                oleSupported);
     }
 
     public String getNormalized() {

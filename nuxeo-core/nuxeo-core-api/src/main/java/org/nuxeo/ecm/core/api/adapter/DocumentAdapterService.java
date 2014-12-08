@@ -26,12 +26,12 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DocumentAdapterService extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName(
-            ComponentName.DEFAULT_TYPE, "org.nuxeo.ecm.core.api.DocumentAdapterService");
+    public static final ComponentName NAME = new ComponentName(ComponentName.DEFAULT_TYPE,
+            "org.nuxeo.ecm.core.api.DocumentAdapterService");
 
     private static final Log log = LogFactory.getLog(DocumentAdapterService.class);
 
@@ -76,8 +76,7 @@ public class DocumentAdapterService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("adapters")) {
             DocumentAdapterDescriptor dae = (DocumentAdapterDescriptor) contribution;
             registerAdapterFactory(dae);
@@ -85,8 +84,7 @@ public class DocumentAdapterService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("adapters")) {
             DocumentAdapterDescriptor dae = (DocumentAdapterDescriptor) contribution;
             unregisterAdapterFactory(dae.getInterface());

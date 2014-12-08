@@ -38,8 +38,7 @@ public class FileEventsTrackingFeature extends SimpleFeature {
     protected Set<File> created = new HashSet<File>();
 
     @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         File temp = Environment.getDefault().getTemp();
         temp.mkdirs();
         tempPath = temp.toPath();
@@ -49,8 +48,7 @@ public class FileEventsTrackingFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         listener.uninstall();
         try {
             Assert.assertThat(tracked, CoreMatchers.is(created)); // replace

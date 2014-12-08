@@ -26,8 +26,7 @@ import java.util.Arrays;
 import javax.transaction.xa.Xid;
 
 /**
- * A Serializable {@link Xid} independent of the transaction manager
- * implementation.
+ * A Serializable {@link Xid} independent of the transaction manager implementation.
  */
 public class XidImpl implements Xid, Serializable {
 
@@ -96,8 +95,7 @@ public class XidImpl implements Xid, Serializable {
         if (other == this) {
             return true;
         }
-        return fid == other.fid && Arrays.equals(gtrid, other.gtrid)
-                && Arrays.equals(bqual, other.bqual);
+        return fid == other.fid && Arrays.equals(gtrid, other.gtrid) && Arrays.equals(bqual, other.bqual);
     }
 
 }

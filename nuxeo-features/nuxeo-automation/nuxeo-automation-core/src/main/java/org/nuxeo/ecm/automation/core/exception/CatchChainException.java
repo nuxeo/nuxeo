@@ -36,8 +36,7 @@ public class CatchChainException {
         this.filterId = "";
     }
 
-    public CatchChainException(String chainId, Integer priority, Boolean rollBack,
-            String filterId) {
+    public CatchChainException(String chainId, Integer priority, Boolean rollBack, String filterId) {
         this.chainId = chainId;
         this.priority = priority;
         this.rollBack = rollBack;

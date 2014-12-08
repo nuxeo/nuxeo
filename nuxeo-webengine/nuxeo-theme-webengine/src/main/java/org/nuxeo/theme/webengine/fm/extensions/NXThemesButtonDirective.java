@@ -34,17 +34,15 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- *
  */
 public class NXThemesButtonDirective implements TemplateDirectiveModel {
 
     @SuppressWarnings("unchecked")
-    public void execute(Environment env, Map params, TemplateModel[] loopVars,
-            TemplateDirectiveBody body) throws TemplateException, IOException {
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+            throws TemplateException, IOException {
 
         if (loopVars.length != 0) {
-            throw new TemplateModelException(
-                    "This directive doesn't allow loop variables.");
+            throw new TemplateModelException("This directive doesn't allow loop variables.");
         }
         if (body != null) {
             throw new TemplateModelException("Didn't expect a body");

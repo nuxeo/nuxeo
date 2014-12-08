@@ -36,8 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Class for the operation getting the elements present in the Favorites
- * collection.
+ * Class for the operation getting the elements present in the Favorites collection.
  *
  * @since 6.0
  */
@@ -60,23 +59,18 @@ public class GetDocumentsFromFavoritesOperation {
     protected AutomationService service;
 
     @OperationMethod
-    public DocumentModelList run(DocumentModel context)
-            throws OperationException {
+    public DocumentModelList run(DocumentModel context) throws OperationException {
 
-        DocumentModel favorites = favoritesManager.getFavorites(
-                context, session);
+        DocumentModel favorites = favoritesManager.getFavorites(context, session);
 
         Map<String, Object> vars = ctx.getVars();
         vars.put("searchTerm", favorites.getId());
-        vars.put("providerName",
-                CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER);
+        vars.put("providerName", CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER);
 
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
-                vars);
+        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
 
         OperationChain chain = new OperationChain("operation");
-        OperationParameters oparams = new OperationParameters(
-                DocumentPageProviderOperation.ID, vars);
+        OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, vars);
         chain.add(oparams);
         return (PaginableDocumentModelListImpl) service.run(subctx, chain);
     }

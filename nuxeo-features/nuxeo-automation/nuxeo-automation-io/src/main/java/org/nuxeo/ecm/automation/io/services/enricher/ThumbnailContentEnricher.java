@@ -42,8 +42,7 @@ public class ThumbnailContentEnricher extends AbstractContentEnricher {
     public static final String DOWNLOAD_THUMBNAIL = "downloadThumbnail";
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec)
-            throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
         DocumentModel doc = ec.getDocumentModel();
         ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
         jg.writeStartObject();
@@ -51,10 +50,8 @@ public class ThumbnailContentEnricher extends AbstractContentEnricher {
             try {
                 Blob thumbnail = thumbnailAdapter.getThumbnail(doc.getCoreSession());
                 if (thumbnail != null) {
-                    String url = DocumentModelFunctions.fileUrl(
-                            Framework.getProperty("nuxeo.url"),
-                            DOWNLOAD_THUMBNAIL, doc, THUMB_THUMBNAIL,
-                            thumbnail.getFilename());
+                    String url = DocumentModelFunctions.fileUrl(Framework.getProperty("nuxeo.url"), DOWNLOAD_THUMBNAIL,
+                            doc, THUMB_THUMBNAIL, thumbnail.getFilename());
                     jg.writeStringField(THUMBNAIL_URL_LABEL, url);
                 } else {
                     writeEmptyThumbnail(jg);

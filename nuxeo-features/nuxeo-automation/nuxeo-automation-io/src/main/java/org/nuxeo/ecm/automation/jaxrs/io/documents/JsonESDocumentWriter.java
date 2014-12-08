@@ -34,7 +34,6 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * JSon writer that outputs a format ready to eat by elasticsearch.
  *
- *
  * @since 5.9.3
  */
 @Provider
@@ -44,15 +43,12 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
     public static final String MIME_TYPE = "application/json+esentity";
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return super.isWriteable(type, genericType, annotations, mediaType)
-                && MIME_TYPE.equals(mediaType.toString());
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return super.isWriteable(type, genericType, annotations, mediaType) && MIME_TYPE.equals(mediaType.toString());
     }
 
-    public static void writeDoc(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters,
-            HttpHeaders headers) throws IOException {
+    public static void writeDoc(JsonGenerator jg, DocumentModel doc, String[] schemas,
+            Map<String, String> contextParameters, HttpHeaders headers) throws IOException {
 
         jg.writeStartObject();
         jg.writeStringField("ecm:repository", doc.getRepositoryName());
@@ -65,8 +61,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         if (parentRef != null) {
             jg.writeStringField("ecm:parentId", parentRef.toString());
         }
-        jg.writeStringField("ecm:currentLifeCycleState",
-                doc.getCurrentLifeCycleState());
+        jg.writeStringField("ecm:currentLifeCycleState", doc.getCurrentLifeCycleState());
         jg.writeStringField("ecm:versionLabel", doc.getVersionLabel());
         jg.writeBooleanField("ecm:isCheckedIn", !doc.isCheckedOut());
         jg.writeBooleanField("ecm:isProxy", doc.isProxy());
@@ -79,8 +74,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         TagService tagService = Framework.getService(TagService.class);
         if (tagService != null) {
             jg.writeArrayFieldStart("ecm:tag");
-            for (Tag tag : tagService.getDocumentTags(doc.getCoreSession(),
-                    doc.getId(), null, true)) {
+            for (Tag tag : tagService.getDocumentTags(doc.getCoreSession(), doc.getId(), null, true)) {
                 jg.writeString(tag.getLabel());
             }
             jg.writeEndArray();
@@ -91,8 +85,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             jg.writeNumberField("ecm:pos", pos);
         }
         // Add a positive ACL only
-        SecurityService securityService = Framework
-                .getService(SecurityService.class);
+        SecurityService securityService = Framework.getService(SecurityService.class);
         List<String> browsePermissions = new ArrayList<String>(
                 Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
         ACP acp = doc.getACP();
@@ -102,8 +95,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         jg.writeArrayFieldStart("ecm:acl");
         outerloop: for (ACL acl : acp.getACLs()) {
             for (ACE ace : acl.getACEs()) {
-                if (ace.isGranted()
-                        && browsePermissions.contains(ace.getPermission())) {
+                if (ace.isGranted() && browsePermissions.contains(ace.getPermission())) {
                     jg.writeString(ace.getUsername());
                 }
                 if (ace.isDenied()) {
@@ -132,8 +124,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             writeProperties(jg, doc, schema, null);
         }
         if (contextParameters != null && !contextParameters.isEmpty()) {
-            for (Map.Entry<String, String> parameter : contextParameters
-                    .entrySet()) {
+            for (Map.Entry<String, String> parameter : contextParameters.entrySet()) {
                 jg.writeStringField(parameter.getKey(), parameter.getValue());
             }
         }
@@ -142,16 +133,13 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
     }
 
     @Override
-    public void writeDocument(OutputStream out, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters)
-            throws IOException {
-        writeDoc(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc,
-                schemas, contextParameters, headers);
+    public void writeDocument(OutputStream out, DocumentModel doc, String[] schemas,
+            Map<String, String> contextParameters) throws IOException {
+        writeDoc(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc, schemas, contextParameters, headers);
     }
 
-    public static void writeESDocument(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters)
-            throws IOException {
+    public static void writeESDocument(JsonGenerator jg, DocumentModel doc, String[] schemas,
+            Map<String, String> contextParameters) throws IOException {
         writeDoc(jg, doc, schemas, contextParameters, null);
     }
 

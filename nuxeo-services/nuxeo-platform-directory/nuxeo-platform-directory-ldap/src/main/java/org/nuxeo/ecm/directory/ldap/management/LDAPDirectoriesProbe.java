@@ -38,14 +38,14 @@ public class LDAPDirectoriesProbe implements Probe {
     protected LDAPDirectoryFactory factory;
 
     @Override
-    public ProbeStatus run(){
+    public ProbeStatus run() {
 
         factory = (LDAPDirectoryFactory) Framework.getRuntime().getComponent(LDAPDirectoryFactory.NAME);
         boolean success = true;
         Map<String, String> infos = new HashMap<String, String>();
-        for (Directory dir:factory.getDirectories()) {
+        for (Directory dir : factory.getDirectories()) {
             long startTime = Calendar.getInstance().getTimeInMillis();
-            String dirName=null;
+            String dirName = null;
             try {
                 Session dirSession = dir.getSession();
                 dirSession.close();
@@ -55,12 +55,12 @@ public class LDAPDirectoriesProbe implements Probe {
             }
             long endTime = Calendar.getInstance().getTimeInMillis();
             Properties props = ((LDAPDirectory) dir).getContextProperties();
-            String bindDN = (String)props.get(Context.SECURITY_PRINCIPAL);
+            String bindDN = (String) props.get(Context.SECURITY_PRINCIPAL);
 
             infos.put(dirName + "-bind", bindDN);
-            infos.put(dirName + "-time", new Long(endTime-startTime).toString());
+            infos.put(dirName + "-time", new Long(endTime - startTime).toString());
         }
-        if (infos.size()==0) {
+        if (infos.size() == 0) {
             infos.put("info", "No configured LDAP directory");
         }
         if (!success) {

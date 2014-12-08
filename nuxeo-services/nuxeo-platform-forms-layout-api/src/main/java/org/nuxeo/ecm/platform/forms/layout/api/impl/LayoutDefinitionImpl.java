@@ -68,8 +68,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         super();
     }
 
-    public LayoutDefinitionImpl(String name, String template,
-            WidgetDefinition widgetDefinition) {
+    public LayoutDefinitionImpl(String name, String template, WidgetDefinition widgetDefinition) {
         super();
         this.name = name;
         this.properties = null;
@@ -80,17 +79,14 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         this.widgets = new HashMap<String, WidgetDefinition>();
         if (widgetDefinition != null) {
             this.widgets.put(widgetDefinition.getName(), widgetDefinition);
-            this.rows = new LayoutRowDefinition[] { new LayoutRowDefinitionImpl(
-                    null, widgetDefinition.getName()) };
+            this.rows = new LayoutRowDefinition[] { new LayoutRowDefinitionImpl(null, widgetDefinition.getName()) };
         } else {
             this.rows = new LayoutRowDefinition[0];
         }
     }
 
-    public LayoutDefinitionImpl(String name,
-            Map<String, Map<String, Serializable>> properties,
-            Map<String, String> templates, List<LayoutRowDefinition> rows,
-            List<WidgetDefinition> widgetDefinitions) {
+    public LayoutDefinitionImpl(String name, Map<String, Map<String, Serializable>> properties,
+            Map<String, String> templates, List<LayoutRowDefinition> rows, List<WidgetDefinition> widgetDefinitions) {
         super();
         this.name = name;
         this.properties = properties;
@@ -108,10 +104,8 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         }
     }
 
-    public LayoutDefinitionImpl(String name,
-            Map<String, Map<String, Serializable>> properties,
-            Map<String, String> templates, LayoutRowDefinition[] rows,
-            Map<String, WidgetDefinition> widgets) {
+    public LayoutDefinitionImpl(String name, Map<String, Map<String, Serializable>> properties,
+            Map<String, String> templates, LayoutRowDefinition[] rows, Map<String, WidgetDefinition> widgets) {
         super();
         this.name = name;
         this.properties = properties;
@@ -237,8 +231,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return renderingInfos;
     }
 
-    public void setRenderingInfos(
-            Map<String, List<RenderingInfo>> renderingInfos) {
+    public void setRenderingInfos(Map<String, List<RenderingInfo>> renderingInfos) {
         this.renderingInfos = renderingInfos;
     }
 
@@ -335,8 +328,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
                 crenderingInfos.put(item.getKey(), clonedInfos);
             }
         }
-        LayoutDefinitionImpl clone = new LayoutDefinitionImpl(name, cprops,
-                ctemplates, crows, cwidgets);
+        LayoutDefinitionImpl clone = new LayoutDefinitionImpl(name, cprops, ctemplates, crows, cwidgets);
         clone.setRenderingInfos(crenderingInfos);
         clone.setType(type);
         clone.setTypeCategory(typeCategory);

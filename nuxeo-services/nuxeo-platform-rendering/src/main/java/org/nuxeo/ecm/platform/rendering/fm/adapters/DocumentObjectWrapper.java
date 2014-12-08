@@ -30,7 +30,6 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentObjectWrapper extends DefaultObjectWrapper {
 
@@ -61,8 +60,7 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
                     try {
                         value = ((ArrayProperty) obj).getValue();
                     } catch (PropertyException e) {
-                        throw new IllegalArgumentException(
-                                "Cannot get array from array property " + obj);
+                        throw new IllegalArgumentException("Cannot get array from array property " + obj);
                     }
                     if (value == null) {
                         return TemplateModel.NOTHING;

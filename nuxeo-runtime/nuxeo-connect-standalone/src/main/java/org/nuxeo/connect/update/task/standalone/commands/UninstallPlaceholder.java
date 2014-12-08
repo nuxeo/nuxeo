@@ -27,13 +27,10 @@ import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
- * Un-Deploy an OSGi bundle from the running platform. The bundle is specified
- * using the absolute bundle file path. The inverse of this command is the
- * Deploy command.
- *
+ * Un-Deploy an OSGi bundle from the running platform. The bundle is specified using the absolute bundle file path. The
+ * inverse of this command is the Deploy command.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class UninstallPlaceholder extends AbstractCommand {
 
@@ -51,16 +48,14 @@ public class UninstallPlaceholder extends AbstractCommand {
     }
 
     @Override
-    protected void doValidate(Task task, ValidationStatus status)
-            throws PackageException {
+    protected void doValidate(Task task, ValidationStatus status) throws PackageException {
         if (file == null) {
             status.addError("Invalid uninstall syntax: No file specified");
         }
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         // standalone mode: nothing to do
         return new InstallPlaceholder(file);
     }

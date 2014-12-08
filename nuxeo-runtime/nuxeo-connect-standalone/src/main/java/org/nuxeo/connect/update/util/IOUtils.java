@@ -34,8 +34,8 @@ public class IOUtils {
     }
 
     /**
-     * Backup the given file to the package backup directory. The backup file
-     * will be returned. The backup file will be named: MD5ofFilepath_filename.
+     * Backup the given file to the package backup directory. The backup file will be returned. The backup file will be
+     * named: MD5ofFilepath_filename.
      *
      * @return the name of the backup file.
      */
@@ -60,7 +60,7 @@ public class IOUtils {
     public static String createMd5(File file) throws IOException {
         MessageDigest digest = getMD5Digest();
         FileInputStream in = new FileInputStream(file);
-        try{
+        try {
             byte[] bytes = new byte[64 * 1024];
             int r = in.read(bytes);
             while (r > -1) {
@@ -71,7 +71,7 @@ public class IOUtils {
             }
             byte[] hash = digest.digest();
             return md5ToHex(hash);
-        }finally{
+        } finally {
             in.close();
         }
     }

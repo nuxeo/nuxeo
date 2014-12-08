@@ -12,8 +12,7 @@
 package org.nuxeo.ecm.core.api;
 
 /**
- * The versioning options that can be requested when saving a document, or when
- * doing a check in.
+ * The versioning options that can be requested when saving a document, or when doing a check in.
  */
 public enum VersioningOption {
     /**

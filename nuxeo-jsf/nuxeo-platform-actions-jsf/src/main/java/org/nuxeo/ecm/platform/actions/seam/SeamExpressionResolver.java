@@ -20,8 +20,7 @@ import org.jboss.seam.el.SeamELResolver;
 import org.nuxeo.ecm.platform.el.ExpressionResolver;
 
 /**
- * Seam expression resolver, adding the Seam EL resolver to the list of
- * standard resolvers.
+ * Seam expression resolver, adding the Seam EL resolver to the list of standard resolvers.
  *
  * @since 5.7.3
  */

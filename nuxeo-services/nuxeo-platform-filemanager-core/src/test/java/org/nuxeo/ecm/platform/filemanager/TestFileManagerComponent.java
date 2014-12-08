@@ -40,25 +40,20 @@ public class TestFileManagerComponent extends NXRuntimeTestCase {
         super.setUp();
 
         deployBundle(FileManagerUTConstants.MIMETYPE_BUNDLE);
-        deployContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE,
-                "OSGI-INF/nxfilemanager-service.xml");
+        deployContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE, "OSGI-INF/nxfilemanager-service.xml");
 
-        deployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE,
-                "nxfilemanager-test-contribs.xml");
+        deployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE, "nxfilemanager-test-contribs.xml");
 
-        filemanagerService = (FileManagerService) Framework.getRuntime().getComponent(
-                FileManagerService.NAME);
+        filemanagerService = (FileManagerService) Framework.getRuntime().getComponent(FileManagerService.NAME);
     }
 
     @After
     public void tearDown() throws Exception {
         filemanagerService = null;
 
-        undeployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE,
-                "nxfilemanager-test-contribs.xml");
+        undeployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE, "nxfilemanager-test-contribs.xml");
 
-        undeployContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE,
-                "OSGI-INF/nxfilemanager-service.xml");
+        undeployContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE, "OSGI-INF/nxfilemanager-service.xml");
 
         super.tearDown();
     }

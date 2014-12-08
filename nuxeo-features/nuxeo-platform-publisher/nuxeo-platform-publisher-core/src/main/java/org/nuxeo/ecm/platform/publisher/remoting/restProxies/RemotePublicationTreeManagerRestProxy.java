@@ -35,13 +35,12 @@ import org.nuxeo.ecm.platform.publisher.remoting.invoker.RemotePublicationInvoke
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 
 /**
- * HTTP facade for the {@link RemotePublicationTreeManager} service. This facade
- * uses a invoker to do the actual calls to the remote back-end.
+ * HTTP facade for the {@link RemotePublicationTreeManager} service. This facade uses a invoker to do the actual calls
+ * to the remote back-end.
  *
  * @author tiry
  */
-public class RemotePublicationTreeManagerRestProxy implements
-        RemotePublicationTreeManager {
+public class RemotePublicationTreeManagerRestProxy implements RemotePublicationTreeManager {
 
     private static final Log log = LogFactory.getLog(RemotePublicationTreeManagerRestProxy.class);
 
@@ -55,8 +54,8 @@ public class RemotePublicationTreeManagerRestProxy implements
 
     protected RemotePublicationInvoker invoker;
 
-    public RemotePublicationTreeManagerRestProxy(String baseURL,
-            String userName, String password, RemotePublisherMarshaler marshaler) {
+    public RemotePublicationTreeManagerRestProxy(String baseURL, String userName, String password,
+            RemotePublisherMarshaler marshaler) {
         this.baseURL = baseURL;
         this.userName = userName;
         this.password = password;
@@ -66,35 +65,29 @@ public class RemotePublicationTreeManagerRestProxy implements
         invoker.init(baseURL, userName, password, marshaler);
     }
 
-    public List<PublishedDocument> getChildrenDocuments(PublicationNode node)
-            throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments(PublicationNode node) throws ClientException {
 
         List<Object> params = new ArrayList<Object>();
         params.add(node);
-        return (List<PublishedDocument>) invoker.invoke("getChildrenDocuments",
-                params);
+        return (List<PublishedDocument>) invoker.invoke("getChildrenDocuments", params);
     }
 
-    public List<PublicationNode> getChildrenNodes(PublicationNode node)
-            throws ClientException {
+    public List<PublicationNode> getChildrenNodes(PublicationNode node) throws ClientException {
 
         List<Object> params = new ArrayList<Object>();
         params.add(node);
-        return (List<PublicationNode>) invoker.invoke("getChildrenNodes",
-                params);
+        return (List<PublicationNode>) invoker.invoke("getChildrenNodes", params);
     }
 
-    public List<PublishedDocument> getExistingPublishedDocument(String sid,
-            DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(String sid, DocumentLocation docLoc)
+            throws ClientException {
         List<Object> params = new ArrayList<Object>();
         params.add(sid);
         params.add(docLoc);
-        return (List<PublishedDocument>) invoker.invoke(
-                "getExistingPublishedDocument", params);
+        return (List<PublishedDocument>) invoker.invoke("getExistingPublishedDocument", params);
     }
 
-    public PublicationNode getNodeByPath(String sid, String path)
-            throws ClientException {
+    public PublicationNode getNodeByPath(String sid, String path) throws ClientException {
 
         List<Object> params = new ArrayList<Object>();
         params.add(sid);
@@ -114,17 +107,14 @@ public class RemotePublicationTreeManagerRestProxy implements
         }
     }
 
-    public List<PublishedDocument> getPublishedDocumentInNode(
-            PublicationNode node) throws ClientException {
+    public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) throws ClientException {
 
         List<Object> params = new ArrayList<Object>();
         params.add(node);
-        return (List<PublishedDocument>) invoker.invoke(
-                "getPublishedDocumentInNode", params);
+        return (List<PublishedDocument>) invoker.invoke("getPublishedDocumentInNode", params);
     }
 
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
 
         List<Object> params = new ArrayList<Object>();
         params.add(doc);
@@ -134,8 +124,7 @@ public class RemotePublicationTreeManagerRestProxy implements
 
     }
 
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
 
         List<Object> cparams = new ArrayList<Object>();
@@ -146,8 +135,7 @@ public class RemotePublicationTreeManagerRestProxy implements
         return (PublishedDocument) invoker.invoke("publish", cparams);
     }
 
-    public void unpublish(DocumentModel doc, PublicationNode targetNode)
-            throws ClientException {
+    public void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
 
         List<Object> params = new ArrayList<Object>();
         params.add(doc);
@@ -156,8 +144,7 @@ public class RemotePublicationTreeManagerRestProxy implements
         invoker.invoke("unpublish", params);
     }
 
-    public void unpublish(String sid, PublishedDocument publishedDocument)
-            throws ClientException {
+    public void unpublish(String sid, PublishedDocument publishedDocument) throws ClientException {
         List<Object> params = new ArrayList<Object>();
         params.add(sid);
         params.add(publishedDocument);
@@ -165,28 +152,27 @@ public class RemotePublicationTreeManagerRestProxy implements
         invoker.invoke("unpublish", params);
     }
 
-    public Map<String, String> initRemoteSession(String treeConfigName,
-            Map<String, String> params) throws ClientException {
+    public Map<String, String> initRemoteSession(String treeConfigName, Map<String, String> params)
+            throws ClientException {
 
         List<Object> cparams = new ArrayList<Object>();
         cparams.add(treeConfigName);
         cparams.add(params);
 
-        return (Map<String, String>) invoker.invoke("initRemoteSession",
-                cparams);
+        return (Map<String, String>) invoker.invoke("initRemoteSession", cparams);
     }
 
     public void setCurrentDocument(String sid, DocumentModel currentDocument) throws ClientException {
         // The current document is useless on a remote tree
     }
 
-    public void validatorPublishDocument(String sid,
-            PublishedDocument publishedDocument, String comment)
+    public void validatorPublishDocument(String sid, PublishedDocument publishedDocument, String comment)
             throws PublishingException {
         throw new UnsupportedOperationException();
     }
 
-    public void validatorRejectPublication(String sid, PublishedDocument publishedDocument, String comment) throws PublishingException {
+    public void validatorRejectPublication(String sid, PublishedDocument publishedDocument, String comment)
+            throws PublishingException {
         throw new UnsupportedOperationException();
     }
 

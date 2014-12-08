@@ -57,8 +57,8 @@ public class TestMimetype {
         boolean onlineEditable = false;
         boolean oleSupported = false;
 
-        mimetype = new MimetypeEntryImpl(normalizedMimetype, mimetypes,
-                extensions, iconPath, binary, onlineEditable, oleSupported);
+        mimetype = new MimetypeEntryImpl(normalizedMimetype, mimetypes, extensions, iconPath, binary, onlineEditable,
+                oleSupported);
     }
 
     @After

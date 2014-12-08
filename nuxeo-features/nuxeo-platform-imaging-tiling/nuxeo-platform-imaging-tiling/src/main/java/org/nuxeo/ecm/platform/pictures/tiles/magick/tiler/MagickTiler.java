@@ -34,12 +34,9 @@ import org.nuxeo.ecm.platform.pictures.tiles.helpers.StringMaker;
 import org.nuxeo.ecm.platform.pictures.tiles.tilers.PictureTiler;
 
 /**
- *
- * ImageMagic based Tiler Uses several ImageMagick command lines to extract a
- * tile form a picture file
+ * ImageMagic based Tiler Uses several ImageMagick command lines to extract a tile form a picture file
  *
  * @author tiry
- *
  */
 public class MagickTiler implements PictureTiler {
 
@@ -54,8 +51,8 @@ public class MagickTiler implements PictureTiler {
         return "MagicTiler";
     }
 
-    static int[] computeCropCoords(ImageInfo input, int maxTiles,
-            int tileWidth, int tileHeight, int xCenter, int yCenter) {
+    static int[] computeCropCoords(ImageInfo input, int maxTiles, int tileWidth, int tileHeight, int xCenter,
+            int yCenter) {
         int startX = 0;
         int startY = 0;
         int cropWidth = 0;
@@ -68,8 +65,7 @@ public class MagickTiler implements PictureTiler {
             if ((input.getWidth() % maxTiles) > 0) {
                 cropWidth += 1;
             }
-            Double exactCropHeight = (new Double(tileHeight)) / tileWidth
-                    * cropWidth;
+            Double exactCropHeight = (new Double(tileHeight)) / tileWidth * cropWidth;
             if (exactCropHeight - exactCropHeight.intValue() > 0) {
                 cropHeight = exactCropHeight.intValue() + 1;
             } else {
@@ -85,8 +81,7 @@ public class MagickTiler implements PictureTiler {
             if ((input.getHeight() % maxTiles) > 0) {
                 cropHeight += 1;
             }
-            Double exactCropWidth = (new Double(tileWidth)) / tileHeight
-                    * cropHeight;
+            Double exactCropWidth = (new Double(tileWidth)) / tileHeight * cropHeight;
             if (exactCropWidth - exactCropWidth.intValue() > 0) {
                 cropWidth = exactCropWidth.intValue() + 1;
             } else {
@@ -114,22 +109,18 @@ public class MagickTiler implements PictureTiler {
             tileHeight = (int) Math.round(cropHeight * heightRatio);
         }
 
-        int[] result = { startX, startY, cropWidth, cropHeight, ntx, nty,
-                tileWidth, tileHeight };
+        int[] result = { startX, startY, cropWidth, cropHeight, ntx, nty, tileWidth, tileHeight };
 
         return result;
     }
 
-    public PictureTiles getTilesFromFile(ImageInfo input, String outputDirPath,
-            int tileWidth, int tileHeight, int maxTiles, int xCenter,
-            int yCenter, long lastModificationTime, boolean fullGeneration)
+    public PictureTiles getTilesFromFile(ImageInfo input, String outputDirPath, int tileWidth, int tileHeight,
+            int maxTiles, int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration)
             throws ClientException {
 
-        int[] cropCoords = computeCropCoords(input, maxTiles, tileWidth,
-                tileHeight, xCenter, yCenter);
+        int[] cropCoords = computeCropCoords(input, maxTiles, tileWidth, tileHeight, xCenter, yCenter);
 
-        String fileName = StringMaker.getTileFileName(xCenter, yCenter,
-                lastModificationTime);
+        String fileName = StringMaker.getTileFileName(xCenter, yCenter, lastModificationTime);
         String outputFilePath = new Path(outputDirPath).append(fileName).toString();
 
         try {
@@ -138,20 +129,16 @@ public class MagickTiler implements PictureTiler {
                 mapComponents = CMYK_MAP_COMPONENTS;
             }
 
-            ImageCropperAndResizer.cropAndResize(input.getFilePath(),
-                    outputFilePath, cropCoords[2], cropCoords[3],
-                    cropCoords[0], cropCoords[1], cropCoords[6], cropCoords[7],
-                    mapComponents);
+            ImageCropperAndResizer.cropAndResize(input.getFilePath(), outputFilePath, cropCoords[2], cropCoords[3],
+                    cropCoords[0], cropCoords[1], cropCoords[6], cropCoords[7], mapComponents);
         } catch (CommandNotAvailable | CommandException e) {
             throw new ClientException(e);
         }
 
         Map<String, String> infoMap = new HashMap<String, String>();
         infoMap.put(PictureTilesImpl.TILE_OUTPUT_DIR_KEY, outputDirPath);
-        infoMap.put(PictureTilesImpl.X_TILES_KEY,
-                Integer.toString(cropCoords[4]));
-        infoMap.put(PictureTilesImpl.Y_TILES_KEY,
-                Integer.toString(cropCoords[5]));
+        infoMap.put(PictureTilesImpl.X_TILES_KEY, Integer.toString(cropCoords[4]));
+        infoMap.put(PictureTilesImpl.Y_TILES_KEY, Integer.toString(cropCoords[5]));
 
         return new PictureTilesImpl(infoMap);
     }

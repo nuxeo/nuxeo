@@ -37,27 +37,24 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 public interface WidgetTypeHandler extends Serializable {
 
     /**
-     * Returns the facelet handler that will be applied for given widget and
-     * template in this context.
+     * Returns the facelet handler that will be applied for given widget and template in this context.
      *
      * @param ctx the facelet context in which this handler will be applied.
      * @param tagConfig the tag configuration this facelet will be applied for.
-     * @param widget the widget giving properties the handler will take into
-     *            account.
+     * @param widget the widget giving properties the handler will take into account.
      * @param subHandlers facelet handlers for sub widgets.
      * @return a facelet handler.
      * @throws WidgetException
      */
-    FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig,
-            Widget widget, FaceletHandler[] subHandlers) throws WidgetException;
+    FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException;
 
     /**
      * Returns the facelet handler used for dev mode.
      *
      * @since 6.0
      */
-    FaceletHandler getDevFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget) throws WidgetException;
+    FaceletHandler getDevFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget) throws WidgetException;
 
     /**
      * Returns a property value given its name.

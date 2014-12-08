@@ -19,12 +19,9 @@ package org.nuxeo.ecm.webapp.localconfiguration.search;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
 
 /**
- * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
- *
- * Interface for search local configuration
- *
+ * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a> Interface for search local configuration
  */
-public interface SearchLocalConfiguration extends LocalConfiguration<SearchLocalConfiguration>{
+public interface SearchLocalConfiguration extends LocalConfiguration<SearchLocalConfiguration> {
 
     /**
      * @return name of the content view used in advanced search page

@@ -28,8 +28,7 @@ public class LogEntryGen {
         return infos;
     }
 
-    public static LogEntry doCreateEntry(String docId, String eventId,
-            String category) {
+    public static LogEntry doCreateEntry(String docId, String eventId, String category) {
         LogEntry createdEntry = new LogEntryImpl();
         createdEntry.setEventId(eventId);
         createdEntry.setCategory(category);
@@ -47,10 +46,9 @@ public class LogEntryGen {
         TransactionHelper.commitOrRollbackTransaction();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-        
+
         esa.getClient().admin().indices().prepareFlush(ESAuditBackend.IDX_NAME).execute().actionGet();
-        esa.getClient().admin().indices().prepareRefresh(
-                ESAuditBackend.IDX_NAME).execute().actionGet();
+        esa.getClient().admin().indices().prepareRefresh(ESAuditBackend.IDX_NAME).execute().actionGet();
         TransactionHelper.startTransaction();
 
     }
@@ -68,5 +66,5 @@ public class LogEntryGen {
         flushAndSync();
 
     }
-    
+
 }

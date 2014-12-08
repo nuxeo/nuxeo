@@ -30,15 +30,13 @@ import org.nuxeo.runtime.services.resource.ResourceService;
  * MVEL rendering using a simple cache of compiled template.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MvelRender implements Renderer {
 
-    protected Map<String,CompiledTemplate> cache = Collections.synchronizedMap(new Cache());
+    protected Map<String, CompiledTemplate> cache = Collections.synchronizedMap(new Cache());
 
     @Override
-    public String render(String uriOrContent, Map<String, Object> root)
-            throws OperationException, IOException {
+    public String render(String uriOrContent, Map<String, Object> root) throws OperationException, IOException {
         CompiledTemplate compiled = null;
         String content = null;
         if (uriOrContent.startsWith(Renderer.TEMPLATE_PREFIX)) {
@@ -47,7 +45,7 @@ public class MvelRender implements Renderer {
             if (compiled == null) {
                 URL url = Framework.getService(ResourceService.class).getResource(name);
                 if (url == null) {
-                    throw new OperationException("Rendering resource not found: "+name);
+                    throw new OperationException("Rendering resource not found: " + name);
                 }
                 InputStream in = url.openStream();
                 try {
@@ -63,9 +61,7 @@ public class MvelRender implements Renderer {
             compiled = TemplateCompiler.compileTemplate(content);
         }
 
-
-        Object obj = TemplateRuntime.execute(compiled,
-                root);
+        Object obj = TemplateRuntime.execute(compiled, root);
         return obj == null ? "" : obj.toString();
     }
 

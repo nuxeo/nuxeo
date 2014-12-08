@@ -29,19 +29,16 @@ import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
 
 /**
- *
- *
  * @since 5.8
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({RuntimeFeature.class, MockitoFeature.class})
+@Features({ RuntimeFeature.class, MockitoFeature.class })
 public class CanMockServicesTest {
 
     @RuntimeService
     @Mock
     AFakeService myService;
-
 
     @Before
     public void doBefore() {

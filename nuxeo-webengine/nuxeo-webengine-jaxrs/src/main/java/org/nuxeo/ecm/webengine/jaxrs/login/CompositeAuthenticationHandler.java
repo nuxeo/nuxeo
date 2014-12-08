@@ -22,18 +22,17 @@ import org.nuxeo.ecm.webengine.jaxrs.BundleNotFoundException;
 import org.nuxeo.ecm.webengine.jaxrs.Utils;
 
 /**
- * An authentication handlers that delegate the authentication to the first registered handler
- * that knows how to authenticate.
+ * An authentication handlers that delegate the authentication to the first registered handler that knows how to
+ * authenticate.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CompositeAuthenticationHandler implements AuthenticationHandler {
 
     protected AuthenticationHandler[] handlers;
 
-    public CompositeAuthenticationHandler(String classRefs)
-            throws ReflectiveOperationException, BundleNotFoundException {
+    public CompositeAuthenticationHandler(String classRefs) throws ReflectiveOperationException,
+            BundleNotFoundException {
         handlers = Utils.newInstances(AuthenticationHandler.class, classRefs);
     }
 
@@ -47,7 +46,8 @@ public class CompositeAuthenticationHandler implements AuthenticationHandler {
     }
 
     @Override
-    public LoginContext handleAuthentication(HttpServletRequest request, HttpServletResponse response) throws LoginException {
+    public LoginContext handleAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws LoginException {
         for (AuthenticationHandler handler : handlers) {
             LoginContext lc = handler.handleAuthentication(request, response);
             if (lc != null) {

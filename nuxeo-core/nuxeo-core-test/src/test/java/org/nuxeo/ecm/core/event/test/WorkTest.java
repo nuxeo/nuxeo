@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@ConditionalIgnoreRule.Ignore(condition=IgnoreNonPostgresql.class)
+@ConditionalIgnoreRule.Ignore(condition = IgnoreNonPostgresql.class)
 public class WorkTest extends TXSQLRepositoryTestCase {
 
     @Before
@@ -47,10 +47,8 @@ public class WorkTest extends TXSQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.event");
     }
 
-    public void doTestWorkConcurrencyException(boolean explicitSave)
-            throws Exception {
-        DocumentModel folder = session.createDocumentModel("/", "folder",
-                "Folder");
+    public void doTestWorkConcurrencyException(boolean explicitSave) throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -71,8 +69,7 @@ public class WorkTest extends TXSQLRepositoryTestCase {
         workManager.schedule(addChildWork);
 
         waitForAsyncCompletion();
-        Assert.assertEquals(Arrays.asList(Boolean.TRUE, Boolean.FALSE),
-                addChildWork.existList);
+        Assert.assertEquals(Arrays.asList(Boolean.TRUE, Boolean.FALSE), addChildWork.existList);
     }
 
     @Test
@@ -94,8 +91,7 @@ public class WorkTest extends TXSQLRepositoryTestCase {
 
         protected boolean explicitSave;
 
-        public void init(DocumentModel folder, CountDownLatch ready,
-                CountDownLatch proceed, boolean explicitSave) {
+        public void init(DocumentModel folder, CountDownLatch ready, CountDownLatch proceed, boolean explicitSave) {
             setDocument(folder.getRepositoryName(), folder.getId());
             this.ready = ready;
             this.proceed = proceed;
@@ -128,8 +124,7 @@ public class WorkTest extends TXSQLRepositoryTestCase {
     }
 
     /*
-     * The following 2 work instance are synced with a latch in order to add a
-     * child after the folder is deleted.
+     * The following 2 work instance are synced with a latch in order to add a child after the folder is deleted.
      */
 
     /**
@@ -184,8 +179,7 @@ public class WorkTest extends TXSQLRepositoryTestCase {
 
                 proceed();
 
-                DocumentModel doc = session.createDocumentModel("/folder",
-                        "doc", "File");
+                DocumentModel doc = session.createDocumentModel("/folder", "doc", "File");
                 doc = session.createDocument(doc);
                 if (explicitSave) {
                     session.save();

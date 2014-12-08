@@ -43,8 +43,7 @@ public interface LiveEditConstants {
     static final String BLOB_FIELD = "blobField";
 
     /**
-     * @deprecated use {@link #FILENAME_PROPERTY_NAME} and
-     *             {@link #BLOB_PROPERTY_NAME}
+     * @deprecated use {@link #FILENAME_PROPERTY_NAME} and {@link #BLOB_PROPERTY_NAME}
      */
     @Deprecated
     static final String SCHEMA = "schema";
@@ -92,133 +91,94 @@ public interface LiveEditConstants {
 
     static final String XML_LE_NAMESPACE = "http://www.nuxeo.org/liveEdit";
 
-    static final QName actionSelectorTag = DocumentFactory.getInstance().createQName(
-            "actionSelector");
+    static final QName actionSelectorTag = DocumentFactory.getInstance().createQName("actionSelector");
 
-    static final QName liveEditTag = DocumentFactory.getInstance().createQName(
-            "liveEdit");
+    static final QName liveEditTag = DocumentFactory.getInstance().createQName("liveEdit");
 
-    static final QName editIdTag = DocumentFactory.getInstance().createQName(
-            "editId");
+    static final QName editIdTag = DocumentFactory.getInstance().createQName("editId");
 
-    static final QName documentTag = DocumentFactory.getInstance().createQName(
-            "document");
+    static final QName documentTag = DocumentFactory.getInstance().createQName("document");
 
-    static final QName templateDocumentTag = DocumentFactory.getInstance().createQName(
-            "template");
+    static final QName templateDocumentTag = DocumentFactory.getInstance().createQName("template");
 
-    static final QName docRefTag = DocumentFactory.getInstance().createQName(
-            "docRef");
+    static final QName docRefTag = DocumentFactory.getInstance().createQName("docRef");
 
-    static final QName docTitleTag = DocumentFactory.getInstance().createQName(
-            "docTitle");
+    static final QName docTitleTag = DocumentFactory.getInstance().createQName("docTitle");
 
-    static final QName docPathTag = DocumentFactory.getInstance().createQName(
-            "docPath");
+    static final QName docPathTag = DocumentFactory.getInstance().createQName("docPath");
 
-    static final QName docRepositoryTag = DocumentFactory.getInstance().createQName(
-            "repository");
+    static final QName docRepositoryTag = DocumentFactory.getInstance().createQName("repository");
 
     /**
      * @deprecated use docBlobFieldNameTag instead
      */
     @Deprecated
-    static final QName docFieldNameTag = DocumentFactory.getInstance().createQName(
-            "fieldName");
+    static final QName docFieldNameTag = DocumentFactory.getInstance().createQName("fieldName");
 
     /**
      * @deprecated use docBlobFieldPathTag instead
      */
     @Deprecated
-    static final QName docfieldPathTag = DocumentFactory.getInstance().createQName(
-            "fieldPath");
+    static final QName docfieldPathTag = DocumentFactory.getInstance().createQName("fieldPath");
 
-    static final QName docBlobFieldNameTag = DocumentFactory.getInstance().createQName(
-            "blobFieldName");
+    static final QName docBlobFieldNameTag = DocumentFactory.getInstance().createQName("blobFieldName");
 
-    static final QName docBlobFieldPathTag = DocumentFactory.getInstance().createQName(
-            "blobFieldPath");
+    static final QName docBlobFieldPathTag = DocumentFactory.getInstance().createQName("blobFieldPath");
 
-    static final QName docFilenameFieldNameTag = DocumentFactory.getInstance().createQName(
-            "filenameFieldName");
+    static final QName docFilenameFieldNameTag = DocumentFactory.getInstance().createQName("filenameFieldName");
 
-    static final QName docFilenameFieldPathTag = DocumentFactory.getInstance().createQName(
-            "filenameFieldPath");
+    static final QName docFilenameFieldPathTag = DocumentFactory.getInstance().createQName("filenameFieldPath");
 
-    static final QName docSchemaNameTag = DocumentFactory.getInstance().createQName(
-            "schemaName");
+    static final QName docSchemaNameTag = DocumentFactory.getInstance().createQName("schemaName");
 
-    static final QName docfileNameTag = DocumentFactory.getInstance().createQName(
-            "fileName");
+    static final QName docfileNameTag = DocumentFactory.getInstance().createQName("fileName");
 
-    static final QName docTypeTag = DocumentFactory.getInstance().createQName(
-            "type");
+    static final QName docTypeTag = DocumentFactory.getInstance().createQName("type");
 
-    static final QName docMimetypeTag = DocumentFactory.getInstance().createQName(
-            "mimetype");
+    static final QName docMimetypeTag = DocumentFactory.getInstance().createQName("mimetype");
 
-    static final QName docFileExtensionTag = DocumentFactory.getInstance().createQName(
-            "fileExtension");
+    static final QName docFileExtensionTag = DocumentFactory.getInstance().createQName("fileExtension");
 
     static final QName docFileAuthorizedExtensionsTag = DocumentFactory.getInstance().createQName(
             "authorizedExtensions");
 
-    static final QName docFileAuthorizedExtensionTag = DocumentFactory.getInstance().createQName(
-            "extension");
+    static final QName docFileAuthorizedExtensionTag = DocumentFactory.getInstance().createQName("extension");
 
-    static final QName docIsVersionTag = DocumentFactory.getInstance().createQName(
-            "isVersion");
+    static final QName docIsVersionTag = DocumentFactory.getInstance().createQName("isVersion");
 
-    static final QName docIsLockedTag = DocumentFactory.getInstance().createQName(
-            "isLocked");
+    static final QName docIsLockedTag = DocumentFactory.getInstance().createQName("isLocked");
 
-    static final QName requestInfoTag = DocumentFactory.getInstance().createQName(
-            "requestInfo");
+    static final QName requestInfoTag = DocumentFactory.getInstance().createQName("requestInfo");
 
-    static final QName requestCookiesTag = DocumentFactory.getInstance().createQName(
-            "cookies");
+    static final QName requestCookiesTag = DocumentFactory.getInstance().createQName("cookies");
 
-    static final QName requestCookieTag = DocumentFactory.getInstance().createQName(
-            "cookie");
+    static final QName requestCookieTag = DocumentFactory.getInstance().createQName("cookie");
 
-    static final QName requestHeadersTag = DocumentFactory.getInstance().createQName(
-            "headers");
+    static final QName requestHeadersTag = DocumentFactory.getInstance().createQName("headers");
 
-    static final QName requestHeaderTag = DocumentFactory.getInstance().createQName(
-            "header");
+    static final QName requestHeaderTag = DocumentFactory.getInstance().createQName("header");
 
-    static final QName requestBaseURLTag = DocumentFactory.getInstance().createQName(
-            "baseURL");
+    static final QName requestBaseURLTag = DocumentFactory.getInstance().createQName("baseURL");
 
-    static final QName userInfoTag = DocumentFactory.getInstance().createQName(
-            "userInfo");
+    static final QName userInfoTag = DocumentFactory.getInstance().createQName("userInfo");
 
-    static final QName userNameTag = DocumentFactory.getInstance().createQName(
-            "userName");
+    static final QName userNameTag = DocumentFactory.getInstance().createQName("userName");
 
-    static final QName userPasswordTag = DocumentFactory.getInstance().createQName(
-            "userPassword");
+    static final QName userPasswordTag = DocumentFactory.getInstance().createQName("userPassword");
 
-    static final QName userTokenTag = DocumentFactory.getInstance().createQName(
-            "userToken");
+    static final QName userTokenTag = DocumentFactory.getInstance().createQName("userToken");
 
-    static final QName userLocaleTag = DocumentFactory.getInstance().createQName(
-            "userLocale");
+    static final QName userLocaleTag = DocumentFactory.getInstance().createQName("userLocale");
 
-    static final QName wsdlLocationsTag = DocumentFactory.getInstance().createQName(
-            "wsdlLocations");
+    static final QName wsdlLocationsTag = DocumentFactory.getInstance().createQName("wsdlLocations");
 
-    static final QName wsdlAccessWebServiceTag = DocumentFactory.getInstance().createQName(
-            "wsdlAccessWS");
+    static final QName wsdlAccessWebServiceTag = DocumentFactory.getInstance().createQName("wsdlAccessWS");
 
-    static final QName wsdlLEWebServiceTag = DocumentFactory.getInstance().createQName(
-            "wsdlLiveEditWS");
+    static final QName wsdlLEWebServiceTag = DocumentFactory.getInstance().createQName("wsdlLiveEditWS");
 
-    static final QName serverInfoTag = DocumentFactory.getInstance().createQName(
-            "serverInfo");
+    static final QName serverInfoTag = DocumentFactory.getInstance().createQName("serverInfo");
 
-    static final QName serverVersionTag = DocumentFactory.getInstance().createQName(
-            "serverVersion");
+    static final QName serverVersionTag = DocumentFactory.getInstance().createQName("serverVersion");
 
     static final String URL_ENCODE_CHARSET = "UTF-8";
 

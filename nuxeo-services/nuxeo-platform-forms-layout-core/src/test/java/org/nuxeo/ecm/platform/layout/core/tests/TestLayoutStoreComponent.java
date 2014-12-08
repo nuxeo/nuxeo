@@ -53,8 +53,7 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests",
-                "layouts-core-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests", "layouts-core-test-contrib.xml");
         service = Framework.getService(LayoutStore.class);
         assertNotNull(service);
     }
@@ -63,18 +62,15 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
     public void testLayoutRegistration() {
         assertNull(service.getLayoutDefinition("fooCategory", "dublincore"));
 
-        LayoutDefinition dublincore = service.getLayoutDefinition(
-                "testCategory", "dublincore");
+        LayoutDefinition dublincore = service.getLayoutDefinition("testCategory", "dublincore");
         assertNotNull(dublincore);
         assertEquals("dublincore", dublincore.getName());
 
         // test templates
-        assertEquals("default_template",
-                dublincore.getTemplate(BuiltinModes.ANY));
+        assertEquals("default_template", dublincore.getTemplate(BuiltinModes.ANY));
         assertEquals("view_template", dublincore.getTemplate(BuiltinModes.VIEW));
         assertEquals("edit_template", dublincore.getTemplate(BuiltinModes.EDIT));
-        assertEquals("create_template",
-                dublincore.getTemplate(BuiltinModes.CREATE));
+        assertEquals("create_template", dublincore.getTemplate(BuiltinModes.CREATE));
         assertEquals("default_template", dublincore.getTemplate("lalal"));
 
         // test rows
@@ -105,13 +101,11 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
         assertNull(fieldDefs[0].getSchemaName());
         assertEquals("dc:title", fieldDefs[0].getFieldName());
         // props
-        Map<String, Serializable> anyProps = title.getProperties(
-                BuiltinModes.ANY, BuiltinModes.ANY);
+        Map<String, Serializable> anyProps = title.getProperties(BuiltinModes.ANY, BuiltinModes.ANY);
         assertEquals(2, anyProps.size());
         assertEquals("styleClass", anyProps.get("styleClass"));
         assertEquals("#{!currentUser.administrator}", anyProps.get("required"));
-        Map<String, Serializable> editProps = title.getProperties(
-                BuiltinModes.EDIT, BuiltinModes.VIEW);
+        Map<String, Serializable> editProps = title.getProperties(BuiltinModes.EDIT, BuiltinModes.VIEW);
         assertEquals(3, editProps.size());
         assertEquals("styleClass", editProps.get("styleClass"));
         assertEquals("#{!currentUser.administrator}", editProps.get("required"));
@@ -140,8 +134,7 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
 
     @Test
     public void testComplexLayoutRegistration() {
-        LayoutDefinition filesLayout = service.getLayoutDefinition(
-                "testCategory", "files");
+        LayoutDefinition filesLayout = service.getLayoutDefinition("testCategory", "files");
         assertNotNull(filesLayout);
         assertEquals("files", filesLayout.getName());
 
@@ -180,28 +173,24 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
 
     @Test
     public void testLayoutPropertiesRegistration() {
-        LayoutDefinition layoutDef = service.getLayoutDefinition(
-                "testCategory", "layoutPropertiesTest");
+        LayoutDefinition layoutDef = service.getLayoutDefinition("testCategory", "layoutPropertiesTest");
         assertNotNull(layoutDef);
         assertEquals("layoutPropertiesTest", layoutDef.getName());
 
         assertNotNull(layoutDef.getProperties("any"));
-        assertEquals("layoutPropValue",
-                layoutDef.getProperties("any").get("layoutPropName"));
+        assertEquals("layoutPropValue", layoutDef.getProperties("any").get("layoutPropName"));
 
         LayoutRowDefinition[] layoutRows = layoutDef.getRows();
         assertNotNull(layoutRows);
         assertEquals(1, layoutRows.length);
         LayoutRowDefinition layoutRow = layoutRows[0];
         assertNotNull(layoutRow.getProperties("any"));
-        assertEquals("layoutRowPropValue",
-                layoutRow.getProperties("any").get("layoutRowPropName"));
+        assertEquals("layoutRowPropValue", layoutRow.getProperties("any").get("layoutRowPropName"));
     }
 
     @Test
     public void testLayoutColumnsRegistration() {
-        LayoutDefinition layoutDef = service.getLayoutDefinition(
-                "testCategory", "layoutColumnsTest");
+        LayoutDefinition layoutDef = service.getLayoutDefinition("testCategory", "layoutColumnsTest");
         assertNotNull(layoutDef);
         assertEquals("layoutColumnsTest", layoutDef.getName());
 
@@ -210,62 +199,52 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
         assertEquals(1, layoutColumns.length);
         LayoutRowDefinition layoutRow = layoutColumns[0];
         assertNotNull(layoutRow.getProperties("any"));
-        assertEquals("layoutColumnPropValue",
-                layoutRow.getProperties("any").get("layoutColumnPropName"));
+        assertEquals("layoutColumnPropValue", layoutRow.getProperties("any").get("layoutColumnPropName"));
     }
 
     @Test
     public void testLayoutTypeRegistration() {
-        LayoutTypeDefinition layoutTypeDef = service.getLayoutTypeDefinition(
-                "testCategory", "myLayoutType");
+        LayoutTypeDefinition layoutTypeDef = service.getLayoutTypeDefinition("testCategory", "myLayoutType");
         assertNotNull(layoutTypeDef);
         assertEquals("myLayoutType", layoutTypeDef.getName());
     }
 
     @Test
     public void testWidgetAliases() {
-        WidgetDefinition testWidget = service.getWidgetDefinition(
-                "testCategory", "globalTestWidgetWithAliases");
+        WidgetDefinition testWidget = service.getWidgetDefinition("testCategory", "globalTestWidgetWithAliases");
         assertNotNull(testWidget);
         assertEquals("globalTestWidgetWithAliases", testWidget.getName());
-        WidgetDefinition oldTestWidget = service.getWidgetDefinition(
-                "testCategory", "oldWidgetName");
+        WidgetDefinition oldTestWidget = service.getWidgetDefinition("testCategory", "oldWidgetName");
         assertNotNull(oldTestWidget);
         assertEquals("globalTestWidgetWithAliases", oldTestWidget.getName());
     }
 
     @Test
     public void testWidgetTypeAliases() {
-        WidgetType testWidgetType = service.getWidgetType("testCategory",
-                "test");
+        WidgetType testWidgetType = service.getWidgetType("testCategory", "test");
         assertNotNull(testWidgetType);
         assertEquals("test", testWidgetType.getName());
-        WidgetType oldTestWidgetType = service.getWidgetType("testCategory",
-                "testAlias");
+        WidgetType oldTestWidgetType = service.getWidgetType("testCategory", "testAlias");
         assertNotNull(oldTestWidgetType);
         assertEquals("test", oldTestWidgetType.getName());
     }
 
     @Test
     public void testLayoutAliases() {
-        LayoutDefinition testLayout = service.getLayoutDefinition(
-                "testCategory", "testLayout");
+        LayoutDefinition testLayout = service.getLayoutDefinition("testCategory", "testLayout");
         assertNotNull(testLayout);
         assertEquals("testLayout", testLayout.getName());
-        LayoutDefinition oldTestLayout = service.getLayoutDefinition(
-                "testCategory", "oldTestLayoutName");
+        LayoutDefinition oldTestLayout = service.getLayoutDefinition("testCategory", "oldTestLayoutName");
         assertNotNull(oldTestLayout);
         assertEquals("testLayout", oldTestLayout.getName());
     }
 
     @Test
     public void testLayoutTypeAliases() {
-        LayoutTypeDefinition testLayoutType = service.getLayoutTypeDefinition(
-                "testCategory", "myLayoutType");
+        LayoutTypeDefinition testLayoutType = service.getLayoutTypeDefinition("testCategory", "myLayoutType");
         assertNotNull(testLayoutType);
         assertEquals("myLayoutType", testLayoutType.getName());
-        LayoutTypeDefinition oldTestLayoutType = service.getLayoutTypeDefinition(
-                "testCategory", "myLayoutTypeAlias");
+        LayoutTypeDefinition oldTestLayoutType = service.getLayoutTypeDefinition("testCategory", "myLayoutTypeAlias");
         assertNotNull(oldTestLayoutType);
         assertEquals("myLayoutType", oldTestLayoutType.getName());
     }

@@ -19,8 +19,7 @@ package org.nuxeo.ecm.platform.query.core;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 
 /**
- * A mock bucket used to present preselected bucket that are no longer returned
- * by es post filtering.
+ * A mock bucket used to present preselected bucket that are no longer returned by es post filtering.
  *
  * @since 6.0
  */

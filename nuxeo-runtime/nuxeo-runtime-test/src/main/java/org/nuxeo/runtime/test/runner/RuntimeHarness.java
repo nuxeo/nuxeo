@@ -49,9 +49,8 @@ public interface RuntimeHarness {
     /**
      * Deploys a whole OSGI bundle.
      * <p>
-     * The lookup is first done on symbolic name, as set in
-     * <code>MANIFEST.MF</code> and then falls back to the bundle url (e.g.,
-     * <code>nuxeo-platform-search-api</code>) for backwards compatibility.
+     * The lookup is first done on symbolic name, as set in <code>MANIFEST.MF</code> and then falls back to the bundle
+     * url (e.g., <code>nuxeo-platform-search-api</code>) for backwards compatibility.
      *
      * @param bundle the symbolic name
      */
@@ -81,25 +80,21 @@ public interface RuntimeHarness {
     @Deprecated
     void undeploy(String contrib);
 
-    RuntimeContext deployTestContrib(String bundle, URL contrib)
-            throws Exception;
+    RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception;
 
     /**
      * Deploys an XML contribution from outside a bundle.
      * <p>
-     * This should be used by tests wiling to deploy test contribution as part
-     * of a real bundle.
+     * This should be used by tests wiling to deploy test contribution as part of a real bundle.
      * <p>
-     * The bundle owner is important since the contribution may depend on
-     * resources deployed in that bundle.
+     * The bundle owner is important since the contribution may depend on resources deployed in that bundle.
      * <p>
      * Note that the owner bundle MUST be an already deployed bundle.
      *
      * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
      */
-    RuntimeContext deployTestContrib(String bundle, String contrib)
-            throws Exception;
+    RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception;
 
     /**
      * Deploys a contribution from a given bundle.
@@ -108,8 +103,7 @@ public interface RuntimeHarness {
      * deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
      * </code>
      * <p>
-     * For compatibility reasons the name of the bundle may be a jar name, but
-     * this use is discouraged and deprecated.
+     * For compatibility reasons the name of the bundle may be a jar name, but this use is discouraged and deprecated.
      *
      * @param bundle the name of the bundle to peek the contrib in
      * @param contrib the path to contrib in the bundle.
@@ -119,8 +113,8 @@ public interface RuntimeHarness {
     /**
      * Deploys a contribution file by looking for it in the class loader.
      * <p>
-     * The first contribution file found by the class loader will be used. You
-     * have no guarantee in case of name collisions.
+     * The first contribution file found by the class loader will be used. You have no guarantee in case of name
+     * collisions.
      *
      * @deprecated use the less ambiguous {@link #deployContrib(String, String)}
      * @param contrib the relative path to the contribution file
@@ -145,7 +139,6 @@ public interface RuntimeHarness {
     void addWorkingDirectoryConfigurator(WorkingDirectoryConfigurator config);
 
     /**
-     *
      * Framework properties for variable injections
      *
      * @since 5.4.2
@@ -153,7 +146,6 @@ public interface RuntimeHarness {
     Properties getProperties();
 
     /**
-     *
      * Runtime context for deployment
      *
      * @since 5.4.2
@@ -161,7 +153,6 @@ public interface RuntimeHarness {
     RuntimeContext getContext();
 
     /**
-     *
      * OSGI bridge
      *
      * @since 5.4.2
@@ -179,11 +170,9 @@ public interface RuntimeHarness {
      */
     public void restart() throws Exception;
 
-
     /**
      * @throws URISyntaxException
      * @since 5.7
-     *
      */
     public List<String> getClassLoaderFiles() throws URISyntaxException;
 

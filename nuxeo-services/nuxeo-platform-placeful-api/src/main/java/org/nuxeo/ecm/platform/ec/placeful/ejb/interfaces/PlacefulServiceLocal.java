@@ -21,9 +21,7 @@ package org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces;
 import javax.ejb.Local;
 
 /**
- *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 @Local
 public interface PlacefulServiceLocal extends EJBPlacefulService {

@@ -34,11 +34,9 @@ import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.el.DocumentModelResolver;
 
 /**
- * Sample Seam action context, resolving components in Seam context (but not
- * relying on faces context to do so)
+ * Sample Seam action context, resolving components in Seam context (but not relying on faces context to do so)
  * <p>
- * Adds the {@link DocumentModelResolver} at the top of the list of default
- * Seam resolvers.
+ * Adds the {@link DocumentModelResolver} at the top of the list of default Seam resolvers.
  *
  * @since 5.7.3
  */
@@ -63,12 +61,10 @@ public class SeamActionContext extends ELActionContext {
     public static final ExpressionFactory EXPRESSION_FACTORY = new ExpressionFactoryImpl();
 
     public SeamActionContext() {
-        super(EL.createELContext(EL_RESOLVER, new FunctionMapperImpl()),
-                EXPRESSION_FACTORY);
+        super(EL.createELContext(EL_RESOLVER, new FunctionMapperImpl()), EXPRESSION_FACTORY);
     }
 
-    public SeamActionContext(ELContext originalContext,
-            ExpressionFactory expressionFactory) {
+    public SeamActionContext(ELContext originalContext, ExpressionFactory expressionFactory) {
         super(originalContext, expressionFactory);
     }
 

@@ -24,16 +24,15 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Implementation of the {@link DocumentHistoryReader} interface. This is
- * mainly a wrapper around the {@link DocumentHistoryPageProvider}
+ * Implementation of the {@link DocumentHistoryReader} interface. This is mainly a wrapper around the
+ * {@link DocumentHistoryPageProvider}
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class DocumentHistoryReaderImpl implements DocumentHistoryReader {
 
     @Override
-    public List<LogEntry> getDocumentHistory(DocumentModel doc, long pageIndex,
-            long pageSize) {
+    public List<LogEntry> getDocumentHistory(DocumentModel doc, long pageIndex, long pageSize) {
 
         PageProvider<LogEntry> pp = getPageProvider(doc, pageIndex, pageSize);
         return pp.getCurrentPage();
@@ -41,14 +40,11 @@ public class DocumentHistoryReaderImpl implements DocumentHistoryReader {
 
     @Override
     @SuppressWarnings("unchecked")
-    public PageProvider<LogEntry> getPageProvider(DocumentModel doc,
-            long pageIndex, long pageSize) {
+    public PageProvider<LogEntry> getPageProvider(DocumentModel doc, long pageIndex, long pageSize) {
 
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);
-        PageProvider<LogEntry> pp = (PageProvider<LogEntry>) pps.getPageProvider(
-                "DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(pageSize),
-                Long.valueOf(pageIndex), new HashMap<String, Serializable>(),
-                doc);
+        PageProvider<LogEntry> pp = (PageProvider<LogEntry>) pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
+                Long.valueOf(pageSize), Long.valueOf(pageIndex), new HashMap<String, Serializable>(), doc);
         return pp;
     }
 

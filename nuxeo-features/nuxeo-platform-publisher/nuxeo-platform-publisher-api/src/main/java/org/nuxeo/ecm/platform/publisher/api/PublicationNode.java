@@ -23,9 +23,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Interface for a Node inside the publication tree. The Node is abstract, the
- * implementation could be : a Core Folder, a FileSystem directory, a Folder on a
- * remote core ...
+ * Interface for a Node inside the publication tree. The Node is abstract, the implementation could be : a Core Folder,
+ * a FileSystem directory, a Folder on a remote core ...
  *
  * @author tiry
  */

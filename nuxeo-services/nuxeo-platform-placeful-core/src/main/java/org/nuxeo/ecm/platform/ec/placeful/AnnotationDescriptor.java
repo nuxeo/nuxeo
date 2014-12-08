@@ -25,9 +25,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 @XObject("annotation")
 public class AnnotationDescriptor {

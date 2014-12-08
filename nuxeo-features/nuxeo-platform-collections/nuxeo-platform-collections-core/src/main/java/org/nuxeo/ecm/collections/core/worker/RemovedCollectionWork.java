@@ -61,13 +61,10 @@ public class RemovedCollectionWork extends RemovedAbstractWork {
     }
 
     @Override
-    protected void updateDocument(final DocumentModel collectionMember)
-            throws ClientException {
-        log.trace(String.format("Worker %s, updating CollectionMember %s",
-                getId(), collectionMember.getTitle()));
+    protected void updateDocument(final DocumentModel collectionMember) throws ClientException {
+        log.trace(String.format("Worker %s, updating CollectionMember %s", getId(), collectionMember.getTitle()));
 
-        Framework.getLocalService(CollectionManager.class).doRemoveFromCollection(
-                collectionMember, docId, session);
+        Framework.getLocalService(CollectionManager.class).doRemoveFromCollection(collectionMember, docId, session);
     }
 
 }

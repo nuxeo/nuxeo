@@ -38,30 +38,26 @@ public class TemplateViewMessageBodyWriter implements MessageBodyWriter<Template
 
     private static final Log log = LogFactory.getLog(TemplateViewMessageBodyWriter.class);
 
-    //@ResourceContext private HttpServletRequest request;
+    // @ResourceContext private HttpServletRequest request;
 
     @Override
-    public void writeTo(TemplateView t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(TemplateView t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         try {
             t.render(entityStream);
         } catch (RenderingException | IOException e) {
             log.error("Failed to render view: " + t.getUrl(), e);
-            throw new IOException("Failed to render view: "+t.getUrl(), e);
+            throw new IOException("Failed to render view: " + t.getUrl(), e);
         }
     }
 
     @Override
-    public long getSize(TemplateView arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(TemplateView arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return TemplateView.class.isAssignableFrom(arg0);
     }
 

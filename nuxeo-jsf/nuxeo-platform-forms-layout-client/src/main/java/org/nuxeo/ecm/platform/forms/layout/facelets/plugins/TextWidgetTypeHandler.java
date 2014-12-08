@@ -55,47 +55,39 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final long serialVersionUID = 1495841177711755669L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
-                subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
             // Make text fields automatically switch to right-to-left if
             // not told otherwise
             if (widget.getProperty(FaceletHandlerHelper.DIR_PROPERTY) == null) {
-                TagAttribute dir = helper.createAttribute(
-                        FaceletHandlerHelper.DIR_PROPERTY,
+                TagAttribute dir = helper.createAttribute(FaceletHandlerHelper.DIR_PROPERTY,
                         FaceletHandlerHelper.DIR_AUTO);
-                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                        dir);
+                attributes = FaceletHandlerHelper.addTagAttribute(attributes, dir);
             }
-            ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+            ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlInputText.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(
-                    widgetTagConfigId, msgId, widgetId, null);
+            ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
-            TagAttributes attributes = getViewTagAttributes(ctx, helper,
-                    widgetId, widget, !BuiltinWidgetModes.isLikePlainMode(mode));
+            TagAttributes attributes = getViewTagAttributes(ctx, helper, widgetId, widget,
+                    !BuiltinWidgetModes.isLikePlainMode(mode));
             // default on text for other modes
-            ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+            ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributesImpl(new TagAttribute[0]), output,
-                        UIHtmlText.class.getName(), null);
+                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
+                        output, UIHtmlText.class.getName(), null);
             } else {
                 return output;
             }
@@ -103,23 +95,19 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
     }
 
     /**
-     * Return tag attributes after having replaced the usual value expression
-     * for the 'value' field by a specific expression to display the translated
-     * value if set as is in the widget properties.
+     * Return tag attributes after having replaced the usual value expression for the 'value' field by a specific
+     * expression to display the translated value if set as is in the widget properties.
      */
-    protected TagAttributes getViewTagAttributes(FaceletContext ctx,
-            FaceletHandlerHelper helper, String id, Widget widget, boolean addId) {
+    protected TagAttributes getViewTagAttributes(FaceletContext ctx, FaceletHandlerHelper helper, String id,
+            Widget widget, boolean addId) {
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 0) {
             FieldDefinition field = fields[0];
-            String bareExpression = ValueExpressionHelper.createBareExpressionString(
-                    widget.getValueName(), field);
+            String bareExpression = ValueExpressionHelper.createBareExpressionString(widget.getValueName(), field);
             String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
-            String localizedExpression = String.format("%s[%s]", bundleName,
-                    bareExpression);
-            String expression = String.format("#{%s ? %s : %s}",
-                    "widget.properties.localize", localizedExpression,
+            String localizedExpression = String.format("%s[%s]", bundleName, bareExpression);
+            String expression = String.format("#{%s ? %s : %s}", "widget.properties.localize", localizedExpression,
                     bareExpression);
             TagAttribute valueAttr = helper.createAttribute("value", expression);
             attrs.add(valueAttr);
@@ -133,8 +121,7 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
             // remove localize property
             widgetPropsClone.remove("localize");
         }
-        List<TagAttribute> propertyAttrs = helper.getTagAttributes(
-                widgetPropsClone, null, true, widget.getType(),
+        List<TagAttribute> propertyAttrs = helper.getTagAttributes(widgetPropsClone, null, true, widget.getType(),
                 widget.getTypeCategory(), widget.getMode());
         if (propertyAttrs != null) {
             attrs.addAll(propertyAttrs);
@@ -144,13 +131,11 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         if (!addId) {
             return widgetAttrs;
         } else {
-            TagAttributes res = FaceletHandlerHelper.addTagAttribute(
-                    widgetAttrs, helper.createAttribute("id", id));
+            TagAttributes res = FaceletHandlerHelper.addTagAttribute(widgetAttrs, helper.createAttribute("id", id));
             // Make text fields automatically switch to right-to-left if
             // not told otherwise
             if (widget.getProperty(FaceletHandlerHelper.DIR_PROPERTY) == null) {
-                TagAttribute dir = helper.createAttribute(
-                        FaceletHandlerHelper.DIR_PROPERTY,
+                TagAttribute dir = helper.createAttribute(FaceletHandlerHelper.DIR_PROPERTY,
                         FaceletHandlerHelper.DIR_AUTO);
                 res = FaceletHandlerHelper.addTagAttribute(res, dir);
             }

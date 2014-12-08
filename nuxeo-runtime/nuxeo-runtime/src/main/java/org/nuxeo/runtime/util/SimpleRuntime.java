@@ -30,7 +30,6 @@ import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
  * The Test Runtime has only one virtual bundle.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SimpleRuntime extends AbstractRuntimeService {
 
@@ -74,8 +73,7 @@ public class SimpleRuntime extends AbstractRuntimeService {
     private static synchronized String generateId() {
         long stamp = System.currentTimeMillis();
         counter++;
-        return Long.toHexString(stamp) + '-'
-                + System.identityHashCode(System.class) + '.' + counter;
+        return Long.toHexString(stamp) + '-' + System.identityHashCode(System.class) + '.' + counter;
     }
 
     @Override

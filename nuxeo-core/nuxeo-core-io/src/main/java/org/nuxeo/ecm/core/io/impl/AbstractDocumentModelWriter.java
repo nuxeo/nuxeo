@@ -60,8 +60,7 @@ import org.nuxeo.runtime.services.streaming.ByteArraySource;
  */
 // TODO: improve it ->
 // modify core session to add a batch create method and use it
-public abstract class AbstractDocumentModelWriter extends
-        AbstractDocumentWriter {
+public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter {
 
     private static final Log log = LogFactory.getLog(AbstractDocumentModelWriter.class);
 
@@ -76,18 +75,15 @@ public abstract class AbstractDocumentModelWriter extends
     private final Map<DocumentLocation, DocumentLocation> translationMap = new HashMap<DocumentLocation, DocumentLocation>();
 
     /**
-     *
      * @param session the session to the repository where to write
-     * @param parentPath where to write the tree. this document will be used as
-     *            the parent of all top level documents passed as input. Note
-     *            that you may have
+     * @param parentPath where to write the tree. this document will be used as the parent of all top level documents
+     *            passed as input. Note that you may have
      */
     protected AbstractDocumentModelWriter(CoreSession session, String parentPath) {
         this(session, parentPath, 10);
     }
 
-    protected AbstractDocumentModelWriter(CoreSession session,
-            String parentPath, int saveInterval) {
+    protected AbstractDocumentModelWriter(CoreSession session, String parentPath, int saveInterval) {
         if (session == null) {
             throw new IllegalArgumentException("null session");
         }
@@ -128,19 +124,15 @@ public abstract class AbstractDocumentModelWriter extends
      * @param xdoc the document containing
      * @param toPath the path of the doc to create
      */
-    protected DocumentModel createDocument(ExportedDocument xdoc, Path toPath)
-            throws ClientException {
+    protected DocumentModel createDocument(ExportedDocument xdoc, Path toPath) throws ClientException {
         Path parentPath = toPath.removeLastSegments(1);
         String name = toPath.lastSegment();
 
-        DocumentModel doc = new DocumentModelImpl(parentPath.toString(), name,
-                xdoc.getType());
+        DocumentModel doc = new DocumentModelImpl(parentPath.toString(), name, xdoc.getType());
 
         // set lifecycle state at creation
-        Element system = xdoc.getDocument().getRootElement().element(
-                ExportConstants.SYSTEM_TAG);
-        String lifeCycleState = system.element(
-                ExportConstants.LIFECYCLE_STATE_TAG).getText();
+        Element system = xdoc.getDocument().getRootElement().element(ExportConstants.SYSTEM_TAG);
+        String lifeCycleState = system.element(ExportConstants.LIFECYCLE_STATE_TAG).getText();
         doc.putContextData("initialLifecycleState", lifeCycleState);
 
         // loadFacets before schemas so that additional schemas are not skipped
@@ -150,8 +142,7 @@ public abstract class AbstractDocumentModelWriter extends
         loadSchemas(xdoc, doc, xdoc.getDocument());
 
         if (doc.hasSchema("uid")) {
-            doc.putContextData(ScopeType.REQUEST,
-                    VersioningService.SKIP_VERSIONING, true);
+            doc.putContextData(ScopeType.REQUEST, VersioningService.SKIP_VERSIONING, true);
         }
 
         doc = session.createDocument(doc);
@@ -168,8 +159,7 @@ public abstract class AbstractDocumentModelWriter extends
     /**
      * Updates an existing document.
      */
-    protected DocumentModel updateDocument(ExportedDocument xdoc,
-            DocumentModel doc) throws ClientException {
+    protected DocumentModel updateDocument(ExportedDocument xdoc, DocumentModel doc) throws ClientException {
         // load schemas data
         loadSchemas(xdoc, doc, xdoc.getDocument());
 
@@ -192,11 +182,9 @@ public abstract class AbstractDocumentModelWriter extends
     }
 
     @SuppressWarnings("unchecked")
-    protected boolean loadFacetsInfo(DocumentModel docModel, Document doc)
-            throws ClientException {
+    protected boolean loadFacetsInfo(DocumentModel docModel, Document doc) throws ClientException {
         boolean added = false;
-        Element system = doc.getRootElement().element(
-                ExportConstants.SYSTEM_TAG);
+        Element system = doc.getRootElement().element(ExportConstants.SYSTEM_TAG);
         if (system == null) {
             return false;
         }
@@ -215,10 +203,8 @@ public abstract class AbstractDocumentModelWriter extends
     }
 
     @SuppressWarnings("unchecked")
-    protected void loadSystemInfo(DocumentModel docModel, Document doc)
-            throws ClientException {
-        Element system = doc.getRootElement().element(
-                ExportConstants.SYSTEM_TAG);
+    protected void loadSystemInfo(DocumentModel docModel, Document doc) throws ClientException {
+        Element system = doc.getRootElement().element(ExportConstants.SYSTEM_TAG);
 
         Element accessControl = system.element(ExportConstants.ACCESS_CONTROL_TAG);
         if (accessControl == null) {
@@ -241,8 +227,7 @@ public abstract class AbstractDocumentModelWriter extends
                         String username = el.attributeValue(ExportConstants.PRINCIPAL_ATTR);
                         String permission = el.attributeValue(ExportConstants.PERMISSION_ATTR);
                         String grant = el.attributeValue(ExportConstants.GRANT_ATTR);
-                        ACE ace = new ACE(username, permission,
-                                Boolean.parseBoolean(grant));
+                        ACE ace = new ACE(username, permission, Boolean.parseBoolean(grant));
                         acl.add(ace);
                     }
                     acp.addACL(acl);
@@ -253,11 +238,9 @@ public abstract class AbstractDocumentModelWriter extends
     }
 
     @SuppressWarnings("unchecked")
-    protected void loadSchemas(ExportedDocument xdoc, DocumentModel docModel,
-            Document doc) throws ClientException {
+    protected void loadSchemas(ExportedDocument xdoc, DocumentModel docModel, Document doc) throws ClientException {
         SchemaManager schemaMgr = Framework.getLocalService(SchemaManager.class);
-        Iterator<Element> it = doc.getRootElement().elementIterator(
-                ExportConstants.SCHEMA_TAG);
+        Iterator<Element> it = doc.getRootElement().elementIterator(ExportConstants.SCHEMA_TAG);
         while (it.hasNext()) {
             Element element = it.next();
             String schemaName = element.attributeValue(ExportConstants.NAME_ATTR);
@@ -270,8 +253,8 @@ public abstract class AbstractDocumentModelWriter extends
     }
 
     @SuppressWarnings("unchecked")
-    protected static void loadSchema(ExportedDocument xdoc, Schema schema,
-            DocumentModel doc, Element schemaElement) throws ClientException {
+    protected static void loadSchema(ExportedDocument xdoc, Schema schema, DocumentModel doc, Element schemaElement)
+            throws ClientException {
         String schemaName = schemaElement.attributeValue(ExportConstants.NAME_ATTR);
         Map<String, Object> data = new HashMap<String, Object>();
         Iterator<Element> it = schemaElement.elementIterator();
@@ -280,9 +263,8 @@ public abstract class AbstractDocumentModelWriter extends
             String name = element.getName();
             Field field = schema.getField(name);
             if (field == null) {
-                throw new ClientException(
-                        "Invalid input document. No such property was found "
-                                + name + " in schema " + schemaName);
+                throw new ClientException("Invalid input document. No such property was found " + name + " in schema "
+                        + schemaName);
             }
             Object value = getElementData(xdoc, element, field.getType());
             data.put(name, value);
@@ -290,19 +272,18 @@ public abstract class AbstractDocumentModelWriter extends
         doc.setProperties(schemaName, data);
     }
 
-    protected static Class getFieldClass(Type fieldType ) {
+    protected static Class getFieldClass(Type fieldType) {
         Class klass = JavaTypes.getClass(fieldType);
         // for enumerated SimpleTypes we may need to lookup on the supertype
         // we do the recursion here and not in JavaTypes to avoid potential impacts
-        if (klass==null && fieldType.getSuperType()!=null) {
+        if (klass == null && fieldType.getSuperType() != null) {
             return getFieldClass(fieldType.getSuperType());
         }
         return klass;
     }
 
     @SuppressWarnings("unchecked")
-    private static Object getElementData(ExportedDocument xdoc,
-            Element element, Type type) {
+    private static Object getElementData(ExportedDocument xdoc, Element element, Type type) {
         if (type.isSimpleType()) {
             return type.decode(element.getText());
         } else if (type.isListType()) {
@@ -319,8 +300,7 @@ public abstract class AbstractDocumentModelWriter extends
                 if (klass.isPrimitive()) {
                     return PrimitiveArrays.toPrimitiveArray(list, klass);
                 } else {
-                    return list.toArray((Object[]) Array.newInstance(klass,
-                            list.size()));
+                    return list.toArray((Object[]) Array.newInstance(klass, list.size()));
                 }
             }
             return list;
@@ -331,8 +311,7 @@ public abstract class AbstractDocumentModelWriter extends
                 String encoding = element.elementText(ExportConstants.BLOB_ENCODING);
                 String content = element.elementTextTrim(ExportConstants.BLOB_DATA);
                 String filename = element.elementTextTrim(ExportConstants.BLOB_FILENAME);
-                if ((content == null || content.length() == 0)
-                        && (mimeType == null || mimeType.length() == 0)) {
+                if ((content == null || content.length() == 0) && (mimeType == null || mimeType.length() == 0)) {
                     return null; // remove blob
                 }
                 Blob blob = null;
@@ -354,8 +333,7 @@ public abstract class AbstractDocumentModelWriter extends
                 while (it.hasNext()) {
                     Element el = it.next();
                     String name = el.getName();
-                    Object value = getElementData(xdoc, el,
-                            ctype.getField(el.getName()).getType());
+                    Object value = getElementData(xdoc, el, ctype.getField(el.getName()).getType());
                     map.put(name, value);
                 }
                 return map;

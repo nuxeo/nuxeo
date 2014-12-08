@@ -44,8 +44,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper",
-        "org.nuxeo.connect.update", "org.nuxeo.runtime.reload" })
+@Deploy({ "org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper", "org.nuxeo.connect.update",
+        "org.nuxeo.runtime.reload" })
 public class TestReloadProperties extends AbstractCommandTest {
 
     @Inject
@@ -59,8 +59,7 @@ public class TestReloadProperties extends AbstractCommandTest {
     @Override
     protected void updatePackage(PackageBuilder builder) throws Exception {
         String content = "myprop=myvalue\n";
-        builder.addEntry("test.properties",
-                new ByteArrayInputStream(content.getBytes()));
+        builder.addEntry("test.properties", new ByteArrayInputStream(content.getBytes()));
     }
 
     @Override

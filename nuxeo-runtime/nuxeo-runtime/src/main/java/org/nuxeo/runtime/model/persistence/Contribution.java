@@ -17,7 +17,6 @@ import org.nuxeo.runtime.model.StreamRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Contribution extends StreamRef {
 
@@ -47,15 +46,13 @@ public interface Contribution extends StreamRef {
     void setDisabled(boolean isAutoStart);
 
     /**
-     * Gets the contribution XML content. The content should be in Nuxeo XML
-     * component format.
+     * Gets the contribution XML content. The content should be in Nuxeo XML component format.
      */
     @Override
     InputStream getStream();
 
     /**
-     * Gets the contribution XML content. The content should be in Nuxeo XML
-     * component format.
+     * Gets the contribution XML content. The content should be in Nuxeo XML component format.
      */
     String getContent();
 

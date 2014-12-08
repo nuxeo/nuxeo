@@ -28,8 +28,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.jsf.MetaValueHolderRule;
 import com.sun.faces.facelets.tag.jsf.html.HtmlComponentHandler;
 
 /**
- * Component tag handler that wires a value holder rule attributes to a
- * {@link MetaValueHolderRule} set.
+ * Component tag handler that wires a value holder rule attributes to a {@link MetaValueHolderRule} set.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

@@ -31,12 +31,10 @@ import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.io.services.enricher.ACLContentEnricher;
-import org.nuxeo.ecm.automation.io.services.enricher
-        .ContentEnricherServiceImpl;
+import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherServiceImpl;
 import org.nuxeo.ecm.automation.io.services.enricher.PreviewContentEnricher;
 import org.nuxeo.ecm.automation.io.services.enricher.ThumbnailContentEnricher;
-import org.nuxeo.ecm.automation.io.services.enricher
-        .UserPermissionsContentEnricher;
+import org.nuxeo.ecm.automation.io.services.enricher.UserPermissionsContentEnricher;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -68,8 +66,7 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a GET Request
-        ClientResponse response = getResponse(RequestType.GET,
-                "path" + note.getPathAsString());
+        ClientResponse response = getResponse(RequestType.GET, "path" + note.getPathAsString());
 
         // Then i get a document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -83,8 +80,7 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a GET Request
-        ClientResponse response = getResponse(RequestType.GET,
-                "id/" + note.getId());
+        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
 
         // The i get the document as Json
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -96,15 +92,13 @@ public class DocumentBrowsingTest extends BaseTest {
     public void iCanGetTheChildrenOfADoc() throws Exception {
         // Given a folder with one document
         DocumentModel folder = RestServerInit.getFolder(0, session);
-        DocumentModel child = session.createDocumentModel(
-                folder.getPathAsString(), "note", "Note");
+        DocumentModel child = session.createDocumentModel(folder.getPathAsString(), "note", "Note");
         child = session.createDocument(child);
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
         // When i call a GET on the children for that doc
-        ClientResponse response = getResponse(RequestType.GET,
-                "id/" + folder.getId() + "/@children");
+        ClientResponse response = getResponse(RequestType.GET, "id/" + folder.getId() + "/@children");
 
         // Then i get the only document of the folder
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -121,16 +115,13 @@ public class DocumentBrowsingTest extends BaseTest {
 
         // Given a document
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(RequestType.GET,
-                "id/" + note.getId());
+        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // When i do a PUT request on the document with modified data
-        JSONDocumentNode jsonDoc = new JSONDocumentNode(
-                response.getEntityInputStream());
+        JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
         jsonDoc.setPropertyValue("dc:title", "New title");
-        response = getResponse(RequestType.PUT, "id/" + note.getId(),
-                jsonDoc.asJson());
+        response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson());
 
         // Then the document is updated
         fetchInvalidations();
@@ -143,21 +134,17 @@ public class DocumentBrowsingTest extends BaseTest {
     public void iCanUpdateDocumentVersion() throws Exception {
         // Given a document
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(RequestType.GET,
-                "id/" + note.getId());
+        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Check the current version of the live document
         assertEquals("0.0", note.getVersionLabel());
 
         // When i do a PUT request on the document with modified version in the header
-        JSONDocumentNode jsonDoc = new JSONDocumentNode(
-                response.getEntityInputStream());
-        Map<String,String> headers = new HashMap<>();
-        headers.put(RestConstants.X_VERSIONING_OPTION,
-                VersioningOption.MAJOR.toString());
-        response = getResponse(RequestType.PUT, "id/" + note.getId(),
-                jsonDoc.asJson(), headers);
+        JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        Map<String, String> headers = new HashMap<>();
+        headers.put(RestConstants.X_VERSIONING_OPTION, VersioningOption.MAJOR.toString());
+        response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(), headers);
 
         // Check if the version of the document has been returned
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -170,10 +157,9 @@ public class DocumentBrowsingTest extends BaseTest {
 
     @Test
     public void itCanUpdateADocumentWithoutSpecifyingIdInJSONPayload() throws Exception {
-     // Given a document
+        // Given a document
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(RequestType.GET,
-                "path" + note.getPathAsString());
+        ClientResponse response = getResponse(RequestType.GET, "path" + note.getPathAsString());
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // When i do a PUT request on the document with modified data
@@ -187,13 +173,11 @@ public class DocumentBrowsingTest extends BaseTest {
 
     }
 
-
     @Test
     public void itCanSetPropertyToNull() throws Exception {
         DocumentModel note = RestServerInit.getNote(0, session);
         note.setPropertyValue("dc:format", "a value that will be set to null");
-        note.setPropertyValue("dc:language",
-                "a value that that must not be resetted");
+        note.setPropertyValue("dc:language", "a value that that must not be resetted");
         session.saveDocument(note);
 
         fetchInvalidations();
@@ -206,8 +190,7 @@ public class DocumentBrowsingTest extends BaseTest {
         fetchInvalidations();
         note = RestServerInit.getNote(0, session);
         assertEquals(null, note.getPropertyValue("dc:format"));
-        assertEquals("a value that that must not be resetted",
-                note.getPropertyValue("dc:language"));
+        assertEquals("a value that that must not be resetted", note.getPropertyValue("dc:language"));
 
     }
 
@@ -219,25 +202,21 @@ public class DocumentBrowsingTest extends BaseTest {
 
         String data = "{\"entity-type\": \"document\",\"type\": \"File\",\"name\":\"newName\",\"properties\": {\"dc:title\":\"My title\",\"dc:description\":\" \"}}";
 
-        ClientResponse response = getResponse(RequestType.POST,
-                "path" + folder.getPathAsString(), data);
+        ClientResponse response = getResponse(RequestType.POST, "path" + folder.getPathAsString(), data);
 
-        assertEquals(Response.Status.CREATED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         // Then the create document is returned
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals("My title", node.get("title").getValueAsText());
-        assertEquals(" ", node.get("properties").get("dc:description")
-                .getTextValue());
+        assertEquals(" ", node.get("properties").get("dc:description").getTextValue());
         String id = node.get("uid").getValueAsText();
         assertTrue(StringUtils.isNotBlank(id));
 
         // Then a document is created in the database
         fetchInvalidations();
         DocumentModel doc = session.getDocument(new IdRef(id));
-        assertEquals(folder.getPathAsString() + "/newName",
-                doc.getPathAsString());
+        assertEquals(folder.getPathAsString() + "/newName", doc.getPathAsString());
         assertEquals("My title", doc.getTitle());
         assertEquals("File", doc.getType());
 
@@ -250,10 +229,8 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel doc = RestServerInit.getNote(0, session);
 
         // When I do a DELETE request
-        ClientResponse response = getResponse(RequestType.DELETE,
-                "path" + doc.getPathAsString());
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(),
-                response.getStatus());
+        ClientResponse response = getResponse(RequestType.DELETE, "path" + doc.getPathAsString());
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
         fetchInvalidations();
         // Then the doc is deleted
@@ -267,22 +244,18 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a GET Request on the note repository
-        ClientResponse response = getResponse(
-                RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path"
-                        + note.getPathAsString());
+        ClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString());
 
         // Then i get a document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertEntityEqualsDoc(response.getEntityInputStream(), note);
 
         // When i do a GET Request on a non existent repository
-        response = getResponse(RequestType.GET, "repo/nonexistentrepo/path"
-                + note.getPathAsString());
+        response = getResponse(RequestType.GET, "repo/nonexistentrepo/path" + note.getPathAsString());
 
         // Then i receive a 404
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
 
     }
 
@@ -292,16 +265,13 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a GET Request on the note repository
-        ClientResponse response = getResponse(
-                RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path"
-                        + note.getPathAsString() + "/@acl");
+        ClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString() + "/@acl");
 
         // Then i get a the ACL
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(ACPWriter.ENTITY_TYPE,
-                node.get("entity-type").getValueAsText());
+        assertEquals(ACPWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
 
     }
 
@@ -309,67 +279,59 @@ public class DocumentBrowsingTest extends BaseTest {
     public void iCanGetTheACLsOnADocumentThroughContributor() throws Exception {
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
-        Map<String,String> headers = new HashMap<>();
-        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER,
-                ACLContentEnricher.ACLS_CONTENT_ID);
+        Map<String, String> headers = new HashMap<>();
+        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER, ACLContentEnricher.ACLS_CONTENT_ID);
 
         // When i do a GET Request on the note repository
-        ClientResponse response = getResponse(
-                RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path"
-                        + note.getPathAsString(),headers);
+        ClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
 
         // Then i get a the ACL
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("inherited", node.get(RestConstants
-                .CONTRIBUTOR_CTX_PARAMETERS).get("acls").get(0).get
-                ("name").getTextValue());
+        assertEquals("inherited",
+                node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("acls").get(0).get("name").getTextValue());
 
     }
 
     @Test
-    public void iCanGetTheThumbnailOfADocumentThroughContributor() throws
-            Exception {
-        //TODO NXP-14793: Improve testing by adding thumbnail conversion
+    public void iCanGetTheThumbnailOfADocumentThroughContributor() throws Exception {
+        // TODO NXP-14793: Improve testing by adding thumbnail conversion
         // Attach a blob
-        //Blob blob = new InputStreamBlob(DocumentBrowsingTest.class.getResource(
-        //"/test-data/png.png").openStream(), "image/png",
-        //null, "logo.png", null);
-        //DocumentModel file = RestServerInit.getFile(0, session);
-        //file.setPropertyValue("file:content", (Serializable) blob);
-        //file = session.saveDocument(file);
-        //session.save();
-        //ClientResponse response = getResponse(
-        //RequestType.GET,
-        //"repo/" + file.getRepositoryName() + "/path"
-        //+ file.getPathAsString(), headers);
-          // Then i get an entry for thumbnail
-        //assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        //JsonNode node = mapper.readTree(response.getEntityInputStream());
-        //assertEquals("specificUrl", node.get(RestConstants
-        //.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get
-        //("thumbnailUrl").getTextValue());
+        // Blob blob = new InputStreamBlob(DocumentBrowsingTest.class.getResource(
+        // "/test-data/png.png").openStream(), "image/png",
+        // null, "logo.png", null);
+        // DocumentModel file = RestServerInit.getFile(0, session);
+        // file.setPropertyValue("file:content", (Serializable) blob);
+        // file = session.saveDocument(file);
+        // session.save();
+        // ClientResponse response = getResponse(
+        // RequestType.GET,
+        // "repo/" + file.getRepositoryName() + "/path"
+        // + file.getPathAsString(), headers);
+        // Then i get an entry for thumbnail
+        // assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        // JsonNode node = mapper.readTree(response.getEntityInputStream());
+        // assertEquals("specificUrl", node.get(RestConstants
+        // .CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get
+        // ("thumbnailUrl").getTextValue());
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER,
-                ThumbnailContentEnricher.THUMBNAIL_CONTENT_ID);
+        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER, ThumbnailContentEnricher.THUMBNAIL_CONTENT_ID);
 
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a GET Request on the note without any image
         ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path"
-                        + note.getPathAsString(), headers);
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
 
         // Then i get no result for valid thumbnail url as expected but still
         // thumbnail entry from the contributor
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(null, node.get(RestConstants
-                .CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get
-                ("url").getTextValue());
+        assertEquals(null,
+                node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").getTextValue());
     }
 
     @Test
@@ -382,14 +344,12 @@ public class DocumentBrowsingTest extends BaseTest {
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path"
-                        + note.getPathAsString(), headers);
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
 
         // Then i get a list of permissions
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        JsonNode permissions = node.get(
-                RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("permissions");
+        JsonNode permissions = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("permissions");
         assertNotNull(permissions);
         assertTrue(permissions.isArray());
     }
@@ -399,46 +359,37 @@ public class DocumentBrowsingTest extends BaseTest {
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
         Map<String, String> headers = new HashMap<>();
-        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER,
-                PreviewContentEnricher.PREVIEW_CONTENT_ID);
+        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER, PreviewContentEnricher.PREVIEW_CONTENT_ID);
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path"
-                        + note.getPathAsString(), headers);
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
 
         // Then i get a preview url
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        JsonNode preview = node.get(
-                RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("preview");
+        JsonNode preview = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("preview");
         assertNotNull(preview);
-        StringUtils.endsWith(preview.get(PreviewContentEnricher
-                .PREVIEW_URL_LABEL).getTextValue(), "/default/");
+        StringUtils.endsWith(preview.get(PreviewContentEnricher.PREVIEW_URL_LABEL).getTextValue(), "/default/");
     }
 
     @Test
     public void itCanBrowseDocumentWithSpacesInPath() throws Exception {
         DocumentModel folder = RestServerInit.getFolder(0, session);
-        DocumentModel note = session.createDocumentModel(
-                folder.getPathAsString(), "doc with space", "Note");
+        DocumentModel note = session.createDocumentModel(folder.getPathAsString(), "doc with space", "Note");
         note = session.createDocument(note);
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
         // When i do a GET Request on the note repository
-        ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path"
-                        + note.getPathAsString().replace(" ", "%20"));
+        ClientResponse response = getResponse(RequestType.GET, "repo/" + note.getRepositoryName() + "/path"
+                + note.getPathAsString().replace(" ", "%20"));
 
         // Then i get a the ACL
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // When i do a GET Request on the note repository
-        response = getResponse(
-                RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path"
-                        + note.getPathAsString());
+        response = getResponse(RequestType.GET, "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString());
 
         // Then i get a the ACL
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -449,18 +400,14 @@ public class DocumentBrowsingTest extends BaseTest {
     public void itCanModifyArrayTypes() throws Exception {
         // Given a document
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(RequestType.GET,
-                "id/" + note.getId());
+        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // When i do a PUT request on the document with modified data
-        JSONDocumentNode jsonDoc = new JSONDocumentNode(
-                response.getEntityInputStream());
+        JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
         jsonDoc.setPropertyValue("dc:title", "New title");
-        jsonDoc.setPropertyArray("dc:contributors", "me", "you", "them",
-                "everybody");
-        response = getResponse(RequestType.PUT, "id/" + note.getId(),
-                jsonDoc.asJson());
+        jsonDoc.setPropertyArray("dc:contributors", "me", "you", "them", "everybody");
+        response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson());
 
         // Then the document is updated
         fetchInvalidations();

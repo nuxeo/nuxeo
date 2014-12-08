@@ -22,8 +22,7 @@ package org.nuxeo.runtime.deployment.preprocessor;
 import org.nuxeo.launcher.config.ConfigurationException;
 
 /**
- * Builder for server configuration and datasource files from templates and
- * properties.
+ * Builder for server configuration and datasource files from templates and properties.
  *
  * @author jcarsique
  * @deprecated Use {@link org.nuxeo.launcher.config.ConfigurationGenerator}
@@ -32,15 +31,13 @@ import org.nuxeo.launcher.config.ConfigurationException;
 public class ConfigurationGenerator {
 
     /**
-     * Delegate call to
-     * {@link #org.nuxeo.launcher.config.ConfigurationGenerator.main(String[])}
+     * Delegate call to {@link #org.nuxeo.launcher.config.ConfigurationGenerator.main(String[])}
      *
      * @param args
      * @throws ConfigurationException
      */
     public static void main(String[] args) throws ConfigurationException {
-        throw new RuntimeException(ConfigurationGenerator.class
-                + " is deprecated."
+        throw new RuntimeException(ConfigurationGenerator.class + " is deprecated."
                 + " Use org.nuxeo.launcher.config.ConfigurationGenerator "
                 + "(org.nuxeo.runtime:nuxeo-launcher-commons)");
     }

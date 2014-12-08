@@ -39,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Archetype {
 
@@ -87,8 +86,7 @@ public class Archetype {
         processArchetype(doc, System.getProperties());
     }
 
-    private static void expandVars(File file, Map<?, ?> vars)
-            throws IOException {
+    private static void expandVars(File file, Map<?, ?> vars) throws IOException {
         String content = readFile(file);
         content = expandVars(content, vars);
         writeFile(file, content);
@@ -97,8 +95,7 @@ public class Archetype {
     public static void unzip(File zip, File dir) throws IOException {
         ZipInputStream in = null;
         try {
-            in = new ZipInputStream(new BufferedInputStream(
-                    new FileInputStream(zip)));
+            in = new ZipInputStream(new BufferedInputStream(new FileInputStream(zip)));
             unzip(in, dir);
         } finally {
             if (in != null) {
@@ -241,24 +238,21 @@ public class Archetype {
         return new byte[preferredSize];
     }
 
-    public static Document load(File file) throws ParserConfigurationException,
-            SAXException, IOException {
+    public static Document load(File file) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(file);
     }
 
-    public static Document load(InputStream in)
-            throws ParserConfigurationException, SAXException, IOException {
+    public static Document load(InputStream in) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(in);
     }
 
-    public static void processVars(Element root, Map<Object, Object> vars)
-            throws IOException {
+    public static void processVars(Element root, Map<Object, Object> vars) throws IOException {
         Node node = root.getFirstChild();
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -276,8 +270,7 @@ public class Archetype {
                     } else {
                         def = val;
                     }
-                    if (!batchMode && val == null
-                            && "true".equals(el.getAttribute("prompt"))) {
+                    if (!batchMode && val == null && "true".equals(el.getAttribute("prompt"))) {
                         val = readVar(label, def);
                     }
                     if (val == null) {
@@ -290,8 +283,7 @@ public class Archetype {
         }
     }
 
-    public static void processResources(Element root, File dir,
-            Map<Object, Object> vars) throws IOException {
+    public static void processResources(Element root, File dir, Map<Object, Object> vars) throws IOException {
         Node node = root.getFirstChild();
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -299,13 +291,11 @@ public class Archetype {
                 if ("directory".equals(el.getNodeName())) {
                     String srcName = el.getAttribute("src");
                     if (srcName == null) {
-                        throw new IllegalArgumentException(
-                                "directory has no src attribute");
+                        throw new IllegalArgumentException("directory has no src attribute");
                     }
                     String targetName = el.getAttribute("target");
                     if (targetName == null) {
-                        throw new IllegalArgumentException(
-                                "directory has no target attribute");
+                        throw new IllegalArgumentException("directory has no target attribute");
                     }
                     srcName = expandVars(srcName, vars);
                     targetName = expandVars(targetName, vars);
@@ -316,13 +306,11 @@ public class Archetype {
                 } else if ("package".equals(el.getNodeName())) {
                     String srcName = el.getAttribute("src");
                     if (srcName == null) {
-                        throw new IllegalArgumentException(
-                                "package has no src attribute");
+                        throw new IllegalArgumentException("package has no src attribute");
                     }
                     String targetName = el.getAttribute("target");
                     if (targetName == null) {
-                        throw new IllegalArgumentException(
-                                "package has no target attribute");
+                        throw new IllegalArgumentException("package has no target attribute");
                     }
                     srcName = expandVars(srcName, vars);
                     targetName = expandVars(targetName, vars);
@@ -335,8 +323,7 @@ public class Archetype {
                 } else if ("template".equals(el.getNodeName())) {
                     String srcName = el.getAttribute("src");
                     if (srcName == null) {
-                        throw new IllegalArgumentException(
-                                "rename has no src attribute");
+                        throw new IllegalArgumentException("rename has no src attribute");
                     }
                     File src = new File(dir, srcName);
                     System.out.println("Processing " + src);
@@ -347,8 +334,7 @@ public class Archetype {
         }
     }
 
-    public static void processArchetype(Document doc, Map<Object, Object> vars)
-            throws IOException {
+    public static void processArchetype(Document doc, Map<Object, Object> vars) throws IOException {
         Element root = doc.getDocumentElement();
         Node node = root.getFirstChild();
         Element elVars = null;
@@ -405,8 +391,7 @@ public class Archetype {
     }
 
     public static File unzipArchetype(File zipFile) throws IOException {
-        File file = File.createTempFile("nuxeo_archetype_" + zipFile.getName(),
-                ".tmp");
+        File file = File.createTempFile("nuxeo_archetype_" + zipFile.getName(), ".tmp");
         Framework.trackFile(file, file);
         file.delete();
         file.mkdirs();

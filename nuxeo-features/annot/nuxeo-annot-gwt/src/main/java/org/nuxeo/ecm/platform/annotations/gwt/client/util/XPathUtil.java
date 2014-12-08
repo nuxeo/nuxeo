@@ -34,12 +34,10 @@ import com.google.gwt.dom.client.SpanElement;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class XPathUtil {
     public String getXPath(Node node) {
-        Log.debug("XPathUtil] node: " + node.getNodeName() + " parent node: "
-                + node.getParentNode().getNodeName());
+        Log.debug("XPathUtil] node: " + node.getNodeName() + " parent node: " + node.getParentNode().getNodeName());
         Document document = node.getOwnerDocument();
         Node current = node;
         StringBuilder xpath = new StringBuilder();
@@ -47,8 +45,7 @@ public class XPathUtil {
             int counter = 1;
             String name = current.getNodeName();
             while (current.getPreviousSibling() != null) {
-                if (current.getPreviousSibling().getNodeName().equalsIgnoreCase(
-                        name)
+                if (current.getPreviousSibling().getNodeName().equalsIgnoreCase(name)
                         && !isIgnored(current.getPreviousSibling())) {
                     counter++;
                 }
@@ -73,8 +70,8 @@ public class XPathUtil {
             start += processor.getText().length();
         }
         Log.debug("getSelectionXPointer; start: " + start);
-        return "#xpointer(string-range(" + getXPath(parentNode) + ",\"\","
-                + start + "," + getShortLength(range.getSelectedText()) + "))";
+        return "#xpointer(string-range(" + getXPath(parentNode) + ",\"\"," + start + ","
+                + getShortLength(range.getSelectedText()) + "))";
     }
 
     public int getShortLength(String selectedText) {
@@ -103,8 +100,7 @@ public class XPathUtil {
             }
             NodeList<Node> nodeList = result.getChildNodes();
             String name = path.substring(0, path.indexOf("["));
-            int index = Integer.parseInt(path.substring(path.indexOf("[") + 1,
-                    path.indexOf("]")));
+            int index = Integer.parseInt(path.substring(path.indexOf("[") + 1, path.indexOf("]")));
             int counter = 1;
             for (int x = 0; x < nodeList.getLength(); x++) {
                 Node node = nodeList.getItem(x);
@@ -140,8 +136,7 @@ public class XPathUtil {
             return name.contains(AnnotationConstant.IGNORED_ELEMENT);
         } else if (node.getNodeName().equalsIgnoreCase("div")) {
             DivElement divElement = DivElement.as(node).cast();
-            return divElement.getClassName().equals(
-                    AnnotationConstant.IGNORED_ELEMENT);
+            return divElement.getClassName().equals(AnnotationConstant.IGNORED_ELEMENT);
         }
         return false;
     }

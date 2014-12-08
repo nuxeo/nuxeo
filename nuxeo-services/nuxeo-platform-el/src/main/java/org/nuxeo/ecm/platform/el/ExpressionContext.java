@@ -38,8 +38,7 @@ public class ExpressionContext extends ELContext {
         }
 
         @Override
-        public ValueExpression setVariable(String variable,
-                ValueExpression expression) {
+        public ValueExpression setVariable(String variable, ValueExpression expression) {
             return map.put(variable, expression);
         }
     }

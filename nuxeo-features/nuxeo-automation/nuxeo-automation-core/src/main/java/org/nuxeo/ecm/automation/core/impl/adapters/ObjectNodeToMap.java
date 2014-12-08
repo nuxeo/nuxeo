@@ -19,8 +19,8 @@ import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 
 /**
- * Make it possible to directly JSON tree nodes parsed by the REST API (e.g.
- * parameters or input) directly to java datastructures.
+ * Make it possible to directly JSON tree nodes parsed by the REST API (e.g. parameters or input) directly to java
+ * datastructures.
  *
  * @author Olivier Grisel
  * @since 5.7
@@ -29,8 +29,7 @@ public class ObjectNodeToMap implements TypeAdapter {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
-            throws TypeAdaptException {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         return mapper.convertValue(objectToAdapt, Map.class);
     }
 

@@ -34,25 +34,21 @@ import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 
-public class DocumentRemovedCommentEventListener extends
-        AbstractCommentListener implements PostCommitEventListener {
+public class DocumentRemovedCommentEventListener extends AbstractCommentListener implements PostCommitEventListener {
 
     private static final Log log = LogFactory.getLog(DocumentRemovedCommentEventListener.class);
 
     @Override
-    protected void doProcess(CoreSession coreSession,
-            RelationManager relationManager, CommentServiceConfig config,
+    protected void doProcess(CoreSession coreSession, RelationManager relationManager, CommentServiceConfig config,
             DocumentModel docMessage) throws ClientException {
         log.debug("Processing relations cleanup on Document removal");
         onDocumentRemoved(coreSession, relationManager, config, docMessage);
     }
 
-    private static void onDocumentRemoved(CoreSession coreSession,
-            RelationManager relationManager, CommentServiceConfig config,
-            DocumentModel docMessage) throws ClientException {
+    private static void onDocumentRemoved(CoreSession coreSession, RelationManager relationManager,
+            CommentServiceConfig config, DocumentModel docMessage) throws ClientException {
 
-        Resource documentRes = relationManager.getResource(
-                config.documentNamespace, docMessage, null);
+        Resource documentRes = relationManager.getResource(config.documentNamespace, docMessage, null);
         if (documentRes == null) {
             log.error("Could not adapt document model to relation resource ; "
                     + "check the service relation adapters configuration");
@@ -65,8 +61,8 @@ public class DocumentRemovedCommentEventListener extends
         for (Statement stmt : statementList) {
             QNameResource resource = (QNameResource) stmt.getSubject();
             String commentId = resource.getLocalName();
-            DocumentModel docModel = (DocumentModel) relationManager.getResourceRepresentation(
-                    config.commentNamespace, resource, null);
+            DocumentModel docModel = (DocumentModel) relationManager.getResourceRepresentation(config.commentNamespace,
+                    resource, null);
 
             if (docModel != null) {
                 try {

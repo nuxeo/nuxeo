@@ -27,13 +27,11 @@ public final class Handler extends URLStreamHandler {
     }
 
     /**
-     * Theme URL do not reference any networked resource. This method is called
-     * by URL.equals and URL.hashCode so that we need override it to avoid DNS
-     * lookup for the theme host.
+     * Theme URL do not reference any networked resource. This method is called by URL.equals and URL.hashCode so that
+     * we need override it to avoid DNS lookup for the theme host.
      * 
      * @param u a URL object
-     * @return null for url with nxtheme protocol,
-     *         URLStreamHandler.getHostAddress(u) otherwise
+     * @return null for url with nxtheme protocol, URLStreamHandler.getHostAddress(u) otherwise
      */
     @Override
     protected synchronized InetAddress getHostAddress(URL u) {

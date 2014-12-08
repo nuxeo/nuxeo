@@ -40,7 +40,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationServiceFacade {
 
@@ -60,8 +59,7 @@ public class AnnotationServiceFacade {
         return service;
     }
 
-    public void query(String uri, OutputStream outputStream, NuxeoPrincipal name)
-            throws AnnotationException {
+    public void query(String uri, OutputStream outputStream, NuxeoPrincipal name) throws AnnotationException {
         List<Annotation> annotations;
         try {
             annotations = getService().queryAnnotations(new URI(uri), null, name);
@@ -88,42 +86,37 @@ public class AnnotationServiceFacade {
         graph.write(outputStream, null, null);
     }
 
-    public void getAnnotation(String annId, NuxeoPrincipal name,
-            OutputStream os, String baseUrl) throws AnnotationException {
+    public void getAnnotation(String annId, NuxeoPrincipal name, OutputStream os, String baseUrl)
+            throws AnnotationException {
         Annotation annotation = getService().getAnnotation(annId, name, baseUrl);
         manager.writeAnnotation(os, annotation);
     }
 
-    public void updateAnnotation(InputStream is, NuxeoPrincipal name,
-            OutputStream outputStream, String baseUrl)
+    public void updateAnnotation(InputStream is, NuxeoPrincipal name, OutputStream outputStream, String baseUrl)
             throws AnnotationException {
         Annotation annotation = manager.getAnnotation(is);
         annotation = getService().updateAnnotation(annotation, name, baseUrl);
         manager.writeAnnotation(outputStream, annotation);
     }
 
-    public String getAnnotationBody(String id, NuxeoPrincipal name,
-            String baseUrl) throws AnnotationException {
+    public String getAnnotationBody(String id, NuxeoPrincipal name, String baseUrl) throws AnnotationException {
         Annotation annotation = getService().getAnnotation(id, name, baseUrl);
         return annotation.getBodyAsText();
     }
 
-    public void createAnnotation(InputStream inputStream, NuxeoPrincipal name,
-            OutputStream outputStream, String baseUrl)
+    public void createAnnotation(InputStream inputStream, NuxeoPrincipal name, OutputStream outputStream, String baseUrl)
             throws AnnotationException {
         Annotation annotation = manager.getAnnotation(inputStream);
         annotation = getService().addAnnotation(annotation, name, baseUrl);
         manager.writeAnnotation(outputStream, annotation);
     }
 
-    public void delete(String annId, NuxeoPrincipal name, String baseUrl)
-            throws AnnotationException {
+    public void delete(String annId, NuxeoPrincipal name, String baseUrl) throws AnnotationException {
         Annotation annotation = getService().getAnnotation(annId, name, baseUrl);
         getService().deleteAnnotation(annotation, name);
     }
 
-    public void deleteFor(String uri, String annId, NuxeoPrincipal name, String baseUrl)
-            throws AnnotationException {
+    public void deleteFor(String uri, String annId, NuxeoPrincipal name, String baseUrl) throws AnnotationException {
         try {
             Annotation annotation = getService().getAnnotation(annId, name, baseUrl);
             getService().deleteAnnotationFor(new URI(uri), annotation, name);

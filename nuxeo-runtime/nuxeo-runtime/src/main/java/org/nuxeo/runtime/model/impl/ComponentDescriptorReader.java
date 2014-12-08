@@ -24,8 +24,7 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ComponentDescriptorReader {
 
@@ -41,7 +40,7 @@ public class ComponentDescriptorReader {
 
             @Override
             public String serialize(Context context, Object value) {
-                if ( value != null ) {
+                if (value != null) {
                     return value.toString();
                 }
                 return null;
@@ -55,7 +54,7 @@ public class ComponentDescriptorReader {
 
             @Override
             public String serialize(Context context, Object value) {
-                if ( value != null ) {
+                if (value != null) {
                     return value.toString();
                 }
                 return null;
@@ -64,8 +63,7 @@ public class ComponentDescriptorReader {
         xmap.register(RegistrationInfoImpl.class);
     }
 
-    public RegistrationInfoImpl read(RuntimeContext ctx, InputStream in)
-            throws IOException {
+    public RegistrationInfoImpl read(RuntimeContext ctx, InputStream in) throws IOException {
         Object[] result = xmap.loadAll(new XMapContext(ctx), in);
         if (result.length > 0) {
             return (RegistrationInfoImpl) result[0];

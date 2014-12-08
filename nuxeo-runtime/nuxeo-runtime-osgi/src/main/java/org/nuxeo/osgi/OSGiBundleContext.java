@@ -40,8 +40,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OSGiBundleContext implements BundleContext {
 
@@ -71,20 +70,17 @@ public class OSGiBundleContext implements BundleContext {
     }
 
     @Override
-    public void addServiceListener(ServiceListener listener, String filter)
-            throws InvalidSyntaxException {
+    public void addServiceListener(ServiceListener listener, String filter) throws InvalidSyntaxException {
         bundle.osgi.addServiceListener(listener, filter);
     }
 
     @Override
     public Filter createFilter(String filter) throws InvalidSyntaxException {
-        throw new UnsupportedOperationException(
-                "BundleContext.createFilter() was not yet implemented");
+        throw new UnsupportedOperationException("BundleContext.createFilter() was not yet implemented");
     }
 
     @Override
-    public ServiceReference[] getAllServiceReferences(String clazz,
-            String filter) throws InvalidSyntaxException {
+    public ServiceReference[] getAllServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -116,7 +112,7 @@ public class OSGiBundleContext implements BundleContext {
 
     @Override
     public Object getService(ServiceReference reference) {
-        return ((ServiceReferenceImpl)reference).getService();
+        return ((ServiceReferenceImpl) reference).getService();
     }
 
     @Override
@@ -126,10 +122,9 @@ public class OSGiBundleContext implements BundleContext {
     }
 
     @Override
-    public ServiceReference[] getServiceReferences(String clazz, String filter)
-            throws InvalidSyntaxException {
+    public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
         ServiceRegistration reg = bundle.osgi.services.get(clazz);
-        return reg != null ? new ServiceReference[] {reg.getReference()} : null;
+        return reg != null ? new ServiceReference[] { reg.getReference() } : null;
     }
 
     @Override
@@ -143,21 +138,19 @@ public class OSGiBundleContext implements BundleContext {
             }
             return b;
         } catch (IOException e) {
-            throw new BundleException("Failed to install bundle at "+location, e);
+            throw new BundleException("Failed to install bundle at " + location, e);
         }
     }
 
     @Override
-    public Bundle installBundle(String location, InputStream input)
-            throws BundleException {
+    public Bundle installBundle(String location, InputStream input) throws BundleException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @SuppressWarnings("rawtypes")
     @Override
-    public ServiceRegistration registerService(String[] clazzes,
-            Object service, Dictionary properties) {
+    public ServiceRegistration registerService(String[] clazzes, Object service, Dictionary properties) {
         ServiceRegistrationImpl reg = new ServiceRegistrationImpl(bundle.osgi, bundle, clazzes, service);
         if (properties != null) {
             reg.setProperties(properties);
@@ -171,9 +164,8 @@ public class OSGiBundleContext implements BundleContext {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public ServiceRegistration registerService(String clazz, Object service,
-            Dictionary properties) {
-        return registerService(new String[] {clazz}, service, properties);
+    public ServiceRegistration registerService(String clazz, Object service, Dictionary properties) {
+        return registerService(new String[] { clazz }, service, properties);
     }
 
     @Override

@@ -36,11 +36,11 @@ import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
 
 /**
- * Facelet resource representation that calls a {@link DocumentPipe} using the
- * facelet's output stream for the document writer's output.
+ * Facelet resource representation that calls a {@link DocumentPipe} using the facelet's output stream for the document
+ * writer's output.
  * <p>
- * This abstract method must be subclassed to implement {@link #makePipe},
- * {@link #makeDocumentReader} and {@link #makeDocumentWriter}.
+ * This abstract method must be subclassed to implement {@link #makePipe}, {@link #makeDocumentReader} and
+ * {@link #makeDocumentWriter}.
  *
  * @author Florent Guillaume
  */
@@ -58,8 +58,7 @@ public abstract class ExportRepresentation extends OutputRepresentation {
         this(mediaType, root, false);
     }
 
-    protected ExportRepresentation(MediaType mediaType, DocumentModel root,
-            boolean unrestricted) {
+    protected ExportRepresentation(MediaType mediaType, DocumentModel root, boolean unrestricted) {
         super(mediaType);
         repositoryName = root.getRepositoryName();
         rootId = root.getId();
@@ -67,8 +66,7 @@ public abstract class ExportRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Create a {@link DocumentPipe} adequate for the number of documents needed
-     * by the export.
+     * Create a {@link DocumentPipe} adequate for the number of documents needed by the export.
      *
      * @return the document pipe.
      */
@@ -81,8 +79,8 @@ public abstract class ExportRepresentation extends OutputRepresentation {
      * @param root the root of the export
      * @return the document reader
      */
-    protected abstract DocumentReader makeDocumentReader(
-            CoreSession documentManager, DocumentModel root) throws ClientException;
+    protected abstract DocumentReader makeDocumentReader(CoreSession documentManager, DocumentModel root)
+            throws ClientException;
 
     /**
      * Create a {@link DocumentWriter} for the export.
@@ -90,8 +88,7 @@ public abstract class ExportRepresentation extends OutputRepresentation {
      * @param outputStream the stream to use
      * @return the document writer
      */
-    protected abstract DocumentWriter makeDocumentWriter(
-            OutputStream outputStream) throws IOException;
+    protected abstract DocumentWriter makeDocumentWriter(OutputStream outputStream) throws IOException;
 
     @Override
     public void write(OutputStream outputStream) throws IOException {

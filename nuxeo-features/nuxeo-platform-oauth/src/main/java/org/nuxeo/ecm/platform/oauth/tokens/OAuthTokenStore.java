@@ -24,14 +24,11 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Service interface for managing {@link OAuthToken} used both :
- *  - in the OAuth the Filter (Server side Tokens) : where Nuxeo is the provider
- *  - in Shindig (Client side Tokens) ; where Nuxeo is the consumer
- *
- * This service provides a center access point for all Token related actions.
+ * Service interface for managing {@link OAuthToken} used both : - in the OAuth the Filter (Server side Tokens) : where
+ * Nuxeo is the provider - in Shindig (Client side Tokens) ; where Nuxeo is the consumer This service provides a center
+ * access point for all Token related actions.
  *
  * @author tiry
- *
  */
 public interface OAuthTokenStore {
 
@@ -45,11 +42,10 @@ public interface OAuthTokenStore {
     /**
      * Generates a verification code and attache it to the REQUEST Token.
      */
-    OAuthToken addVerifierToRequestToken(String token,Long duration);
+    OAuthToken addVerifierToRequestToken(String token, Long duration);
 
     /**
-     * Retrieves a REQUEST Token given a Token string (extracted from the
-     * Request).
+     * Retrieves a REQUEST Token given a Token string (extracted from the Request).
      */
     OAuthToken getRequestToken(String token);
 
@@ -61,8 +57,8 @@ public interface OAuthTokenStore {
     // Access token
 
     /**
-     * Exchanges the REQUEST Token witha Real ACCESS Token (persistent)
-     * Token/TocketSecret Strings are regerated during the exchange.
+     * Exchanges the REQUEST Token witha Real ACCESS Token (persistent) Token/TocketSecret Strings are regerated during
+     * the exchange.
      */
     OAuthToken createAccessTokenFromRequestToken(OAuthToken requestToken);
 
@@ -91,7 +87,8 @@ public interface OAuthTokenStore {
     /**
      * Stores a Access token generated fro Shindig client.
      */
-    void storeClientAccessToken(String consumerKey, String callBack, String token, String tokenSecret, String appId, String owner);
+    void storeClientAccessToken(String consumerKey, String callBack, String token, String tokenSecret, String appId,
+            String owner);
 
     /**
      * Get a Access token for the Shindig Client.

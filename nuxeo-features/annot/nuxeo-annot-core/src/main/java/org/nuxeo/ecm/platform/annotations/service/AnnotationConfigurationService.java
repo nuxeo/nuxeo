@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.annotations.descriptors.PermissionMapperDescriptor
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface AnnotationConfigurationService {
 

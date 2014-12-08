@@ -27,15 +27,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * Simple class to provide a complex filter that handles right side part and
- * operator to use while querying org.nuxeo.ecm.directory.sql.SQLDirectory
- * 
- * 
- * Warning, when using a complex filter fulltext is ignored on the field.
+ * Simple class to provide a complex filter that handles right side part and operator to use while querying
+ * org.nuxeo.ecm.directory.sql.SQLDirectory Warning, when using a complex filter fulltext is ignored on the field.
  * 
  * @since 5.7
- * @see org.nuxeo.ecm.directory.sql.SQLSession#query(java.util.Map,
- *      java.util.Set, java.util.Map, boolean, int, int)
+ * @see org.nuxeo.ecm.directory.sql.SQLSession#query(java.util.Map, java.util.Set, java.util.Map, boolean, int, int)
  */
 public abstract class SQLComplexFilter implements Serializable {
 
@@ -47,19 +43,16 @@ public abstract class SQLComplexFilter implements Serializable {
         this.operator = operator;
     }
 
-    public int setFieldValue(PreparedStatement ps, int index, Column column)
-            throws DirectoryException {
+    public int setFieldValue(PreparedStatement ps, int index, Column column) throws DirectoryException {
         try {
             return doSetFieldValue(ps, index, column);
         } catch (SQLException e) {
-            throw new DirectoryException(
-                    "SQLComplexFilter setFieldValue failed", e);
+            throw new DirectoryException("SQLComplexFilter setFieldValue failed", e);
         }
 
     }
 
-    public abstract int doSetFieldValue(PreparedStatement ps, int index,
-            Column column) throws SQLException;
+    public abstract int doSetFieldValue(PreparedStatement ps, int index, Column column) throws SQLException;
 
     public String getRightSide() {
         return "?";

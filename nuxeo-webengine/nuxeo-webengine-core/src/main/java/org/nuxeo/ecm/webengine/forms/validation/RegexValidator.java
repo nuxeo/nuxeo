@@ -18,14 +18,13 @@ package org.nuxeo.ecm.webengine.forms.validation;
 
 import java.util.regex.Pattern;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RegexValidator implements FieldValidator {
 
     protected String regex;
+
     protected Pattern pattern;
 
     public RegexValidator(String regex) {

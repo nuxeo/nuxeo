@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentTreeBuilder extends JQueryTreeBuilder<DocumentModel> {
 
@@ -60,9 +59,8 @@ public class DocumentTreeBuilder extends JQueryTreeBuilder<DocumentModel> {
 
     @Override
     protected JSONObject toJson(DocumentModel obj) {
-        JSONObject json  = new JSONObject();
-        json.element("text", obj.getName())
-            .element("id", obj.getPathAsString());
+        JSONObject json = new JSONObject();
+        json.element("text", obj.getName()).element("id", obj.getPathAsString());
         return json;
     }
 

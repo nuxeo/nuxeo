@@ -26,8 +26,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("layoutConverter")
-public class LayoutConverterDescriptor implements Serializable,
-        Comparable<LayoutConverterDescriptor> {
+public class LayoutConverterDescriptor implements Serializable, Comparable<LayoutConverterDescriptor> {
 
     private static final long serialVersionUID = 1L;
 

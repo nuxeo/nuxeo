@@ -42,15 +42,16 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
 /**
- * A {@link BundleFile} that is backed by a filesystem directory, for use in
- * test settings from Eclipse or maven.
+ * A {@link BundleFile} that is backed by a filesystem directory, for use in test settings from Eclipse or maven.
  */
 public class DirectoryBundleFile implements BundleFile {
 
     public static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
 
     protected final File file;
+
     protected final List<File> files;
+
     protected final Manifest mf;
 
     public DirectoryBundleFile(File file) throws IOException {
@@ -63,7 +64,7 @@ public class DirectoryBundleFile implements BundleFile {
         this.mf = mf == null ? findManifest() : mf;
     }
 
-    protected List<File> findFiles(File file)  {
+    protected List<File> findFiles(File file) {
         List<File> files = new ArrayList<File>(2);
         files.add(file);
         if (file.getPath().endsWith("/bin")) {
@@ -92,8 +93,7 @@ public class DirectoryBundleFile implements BundleFile {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Enumeration<URL> findEntries(String name, String pattern,
-            boolean recurse) {
+    public Enumeration<URL> findEntries(String name, String pattern, boolean recurse) {
         EntryFilter efilter = EntryFilter.newFilter(pattern);
         if (files.size() == 1) {
             return createEnumeration(new File(file, name), efilter, recurse);
@@ -124,8 +124,7 @@ public class DirectoryBundleFile implements BundleFile {
 
     @Override
     public Enumeration<String> getEntryPaths(String path) {
-        throw new UnsupportedOperationException(
-        "The operation BundleFile.geEntryPaths() is not yet implemented");
+        throw new UnsupportedOperationException("The operation BundleFile.geEntryPaths() is not yet implemented");
     }
 
     @Override
@@ -160,16 +159,12 @@ public class DirectoryBundleFile implements BundleFile {
                 }
             }
         }
-        String paths = StringUtils.join(
-                files.toArray(new Object[files.size()]), ", ");
-        throw new IOException(
-                String.format("Could not find a file '%s' in paths: %s",
-                        MANIFEST_PATH, paths));
+        String paths = StringUtils.join(files.toArray(new Object[files.size()]), ", ");
+        throw new IOException(String.format("Could not find a file '%s' in paths: %s", MANIFEST_PATH, paths));
     }
 
     @Override
-    public Collection<BundleFile> getNestedBundles(File tmpDir)
-            throws IOException {
+    public Collection<BundleFile> getNestedBundles(File tmpDir) throws IOException {
         Attributes attrs = mf.getMainAttributes();
         String cp = attrs.getValue(Constants.BUNDLE_CLASSPATH);
         if (cp == null) {
@@ -192,8 +187,7 @@ public class DirectoryBundleFile implements BundleFile {
     }
 
     @Override
-    public Collection<BundleFile> findNestedBundles(File tmpDir)
-            throws IOException {
+    public Collection<BundleFile> findNestedBundles(File tmpDir) throws IOException {
         List<BundleFile> nested = new ArrayList<BundleFile>();
         File[] files = FileUtils.findFiles(file, "*.jar", true);
         for (File jar : files) {
@@ -209,8 +203,7 @@ public class DirectoryBundleFile implements BundleFile {
     @Override
     public String getSymbolicName() {
         String value = mf.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
-        return value == null ? null
-                : BundleManifestReader.removePropertiesFromHeaderValue(value);
+        return value == null ? null : BundleManifestReader.removePropertiesFromHeaderValue(value);
     }
 
     @Override
@@ -238,7 +231,8 @@ public class DirectoryBundleFile implements BundleFile {
     }
 
     public static void main(String[] args) throws Exception {
-        DirectoryBundleFile bf = new DirectoryBundleFile(new File("/Users/bstefanescu/work/org.eclipse.ecr/plugins/org.eclipse.ecr.application/bin"));
+        DirectoryBundleFile bf = new DirectoryBundleFile(new File(
+                "/Users/bstefanescu/work/org.eclipse.ecr/plugins/org.eclipse.ecr.application/bin"));
         Enumeration<URL> urls = bf.findEntries("META-INF", "*.txt", false);
         while (urls.hasMoreElements()) {
             System.out.println(urls.nextElement());

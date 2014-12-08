@@ -41,11 +41,9 @@ public class TestUserAdapter extends UserManagerTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/directory-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
 
-        userService = (UserService) Framework.getRuntime().getComponent(
-                UserService.NAME);
+        userService = (UserService) Framework.getRuntime().getComponent(UserService.NAME);
 
         userManager = userService.getUserManager();
     }

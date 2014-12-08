@@ -50,8 +50,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * Test class on security based on LDAP embedded server. Only read based test
- * can be perform because the embedded server does not allow to write
+ * Test class on security based on LDAP embedded server. Only read based test can be perform because the embedded server
+ * does not allow to write
  */
 /* Ignored due to NXP-15777, this feature causes failure in the next test */
 @Ignore

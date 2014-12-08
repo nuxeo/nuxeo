@@ -23,8 +23,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 
 /**
- * Registry for theme style resources, handling merge of registered
- * {@link SimpleStyle} elements.
+ * Registry for theme style resources, handling merge of registered {@link SimpleStyle} elements.
  *
  * @since 5.5
  */
@@ -38,8 +37,7 @@ public class StyleRegistry extends ContributionFragmentRegistry<SimpleStyle> {
     }
 
     @Override
-    public void contributionUpdated(String id, SimpleStyle contrib,
-            SimpleStyle newOrigContrib) {
+    public void contributionUpdated(String id, SimpleStyle contrib, SimpleStyle newOrigContrib) {
         themePageStyles.put(id, contrib);
     }
 

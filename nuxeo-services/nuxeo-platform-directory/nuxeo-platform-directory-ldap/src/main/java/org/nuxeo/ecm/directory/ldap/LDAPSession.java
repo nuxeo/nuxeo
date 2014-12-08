@@ -117,8 +117,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     public LDAPSession(LDAPDirectory directory, DirContext dirContext) {
         this.directory = directory;
-        this.dirContext = LdapRetryHandler.wrap(dirContext,
-                directory.getServer().getRetries());
+        this.dirContext = LdapRetryHandler.wrap(dirContext, directory.getServer().getRetries());
         DirectoryFieldMapper fieldMapper = directory.getFieldMapper();
         idAttribute = fieldMapper.getBackendField(directory.getConfig().getIdField());
         idCase = directory.getConfig().getIdCase();
@@ -147,8 +146,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @Override
     @SuppressWarnings("unchecked")
-    public DocumentModel createEntry(Map<String, Object> fieldMap)
-            throws ClientException {
+    public DocumentModel createEntry(Map<String, Object> fieldMap) throws ClientException {
         if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
             return null;
         }
@@ -157,8 +155,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
         List<String> referenceFieldList = new LinkedList<String>();
         try {
-            String dn = String.format("%s=%s,%s", rdnAttribute,
-                    fieldMap.get(rdnField),
+            String dn = String.format("%s=%s,%s", rdnAttribute, fieldMap.get(rdnField),
                     directory.getConfig().getCreationBaseDn());
             Attributes attrs = new BasicAttributes();
             Attribute attr;
@@ -180,33 +177,27 @@ public class LDAPSession extends BaseSession implements EntrySource {
             }
 
             for (String fieldId : fieldMap.keySet()) {
-                String backendFieldId = directory.getFieldMapper().getBackendField(
-                        fieldId);
+                String backendFieldId = directory.getFieldMapper().getBackendField(fieldId);
                 if (backendFieldId.equals(getPasswordField())) {
                     attr = new BasicAttribute(backendFieldId);
                     String password = (String) fieldMap.get(fieldId);
-                    password = PasswordHelper.hashPassword(password,
-                            passwordHashAlgorithm);
+                    password = PasswordHelper.hashPassword(password, passwordHashAlgorithm);
                     attr.add(password);
                     attrs.put(attr);
                 } else if (directory.isReference(fieldId)) {
                     Reference reference = directory.getReference(fieldId);
                     if (reference instanceof LDAPReference) {
-                        attr = new BasicAttribute(
-                                ((LDAPReference) reference).getStaticAttributeId());
+                        attr = new BasicAttribute(((LDAPReference) reference).getStaticAttributeId());
                         attr.add(directory.getConfig().getEmptyRefMarker());
                         attrs.put(attr);
                     }
                     referenceFieldList.add(fieldId);
                 } else if (LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY.equals(backendFieldId)) {
                     // ignore special DN field
-                    log.warn(String.format(
-                            "field %s is mapped to read only DN field: ignored",
-                            fieldId));
+                    log.warn(String.format("field %s is mapped to read only DN field: ignored", fieldId));
                 } else {
                     Object value = fieldMap.get(fieldId);
-                    if ((value != null) && !value.equals("")
-                            && !Collections.emptyList().equals(value)) {
+                    if ((value != null) && !value.equals("") && !Collections.emptyList().equals(value)) {
                         attrs.put(getAttributeValue(fieldId, value));
                     }
                 }
@@ -214,20 +205,17 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
             if (log.isDebugEnabled()) {
                 String idField = directory.getConfig().getIdField();
-                log.debug(String.format(
-                        "LDAPSession.createEntry(%s=%s): LDAP bind dn='%s' attrs='%s' [%s]",
-                        idField, fieldMap.get(idField), dn, attrs, this));
+                log.debug(String.format("LDAPSession.createEntry(%s=%s): LDAP bind dn='%s' attrs='%s' [%s]", idField,
+                        fieldMap.get(idField), dn, attrs, this));
             }
             dirContext.bind(dn, null, attrs);
 
             for (String referenceFieldName : referenceFieldList) {
                 Reference reference = directory.getReference(referenceFieldName);
                 List<String> targetIds = (List<String>) fieldMap.get(referenceFieldName);
-                reference.addLinks((String) fieldMap.get(getIdField()),
-                        targetIds);
+                reference.addLinks((String) fieldMap.get(getIdField()), targetIds);
             }
-            String dnFieldName = directory.getFieldMapper().getDirectoryField(
-                    LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY);
+            String dnFieldName = directory.getFieldMapper().getDirectoryField(LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY);
             if (directory.getSchemaFieldMap().containsKey(dnFieldName)) {
                 // add the DN special attribute to the fieldmap of the new
                 // entry
@@ -247,8 +235,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModel getEntry(String id, boolean fetchReferences)
-            throws DirectoryException {
+    public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
         if (isCurrentUserAllowed(SecurityConstants.READ)) {
             return directory.getCache().getEntry(id, this, fetchReferences);
         }
@@ -256,8 +243,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModel getEntryFromSource(String id, boolean fetchReferences)
-            throws DirectoryException {
+    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
         try {
             SearchResult result = getLdapEntry(id);
             if (result == null) {
@@ -265,8 +251,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
             }
             return ldapResultToDocumentModel(result, id, fetchReferences);
         } catch (NamingException e) {
-            throw new DirectoryException("getEntry failed: " + e.getMessage(),
-                    e);
+            throw new DirectoryException("getEntry failed: " + e.getMessage(), e);
         }
     }
 
@@ -276,46 +261,36 @@ public class LDAPSession extends BaseSession implements EntrySource {
             // TODO: check directory cache first
             return getLdapEntry(id) != null;
         } catch (NamingException e) {
-            throw new DirectoryException("hasEntry failed: " + e.getMessage(),
-                    e);
+            throw new DirectoryException("hasEntry failed: " + e.getMessage(), e);
         }
     }
 
-    protected SearchResult getLdapEntry(String id) throws NamingException,
-            DirectoryException {
+    protected SearchResult getLdapEntry(String id) throws NamingException, DirectoryException {
         return getLdapEntry(id, false);
     }
 
-    protected SearchResult getLdapEntry(String id, boolean fetchAllAttributes)
-            throws NamingException {
+    protected SearchResult getLdapEntry(String id, boolean fetchAllAttributes) throws NamingException {
         if (StringUtils.isEmpty(id)) {
-            log.warn("The application should not "
-                    + "query for entries with an empty id "
-                    + "=> return no results");
+            log.warn("The application should not " + "query for entries with an empty id " + "=> return no results");
             return null;
         }
         String filterExpr;
         if (directory.getBaseFilter().startsWith("(")) {
-            filterExpr = String.format("(&(%s={0})%s)", idAttribute,
-                    directory.getBaseFilter());
+            filterExpr = String.format("(&(%s={0})%s)", idAttribute, directory.getBaseFilter());
         } else {
-            filterExpr = String.format("(&(%s={0})(%s))", idAttribute,
-                    directory.getBaseFilter());
+            filterExpr = String.format("(&(%s={0})(%s))", idAttribute, directory.getBaseFilter());
         }
         String[] filterArgs = { id };
         SearchControls scts = directory.getSearchControls(fetchAllAttributes);
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
-                            + " args='%s' scope='%s' [%s]", id,
-                    fetchAllAttributes, searchBaseDn, filterExpr, id,
+            log.debug(String.format("LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
+                    + " args='%s' scope='%s' [%s]", id, fetchAllAttributes, searchBaseDn, filterExpr, id,
                     scts.getSearchScope(), this));
         }
         NamingEnumeration<SearchResult> results;
         try {
-            results = dirContext.search(searchBaseDn, filterExpr, filterArgs,
-                    scts);
+            results = dirContext.search(searchBaseDn, filterExpr, filterArgs, scts);
         } catch (NameNotFoundException nnfe) {
             // sometimes ActiveDirectory have some query fail with: LDAP:
             // error code 32 - 0000208D: NameErr: DSID-031522C9, problem
@@ -323,9 +298,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
             // To keep the application usable return no results instead of
             // crashing but log the error so that the AD admin
             // can fix the issue.
-            log.error(
-                    "Unexpected response from server while performing query: "
-                            + nnfe.getMessage(), nnfe);
+            log.error("Unexpected response from server while performing query: " + nnfe.getMessage(), nnfe);
             return null;
         }
 
@@ -339,20 +312,17 @@ public class LDAPSession extends BaseSession implements EntrySource {
             if (results.hasMore()) {
                 result = results.next();
                 String dn2 = result.getNameInNamespace();
-                String msg = String.format(
-                        "Unable to fetch entry for '%s': found more than one match,"
-                                + " for instance: '%s' and '%s'", id, dn, dn2);
+                String msg = String.format("Unable to fetch entry for '%s': found more than one match,"
+                        + " for instance: '%s' and '%s'", id, dn, dn2);
                 log.error(msg);
                 // ignore entries that are ambiguous while giving enough info
                 // in the logs to let the LDAP admin be able to fix the issue
                 return null;
             }
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
-                                + " args='%s' scope='%s' => found: %s [%s]",
-                        id, fetchAllAttributes, searchBaseDn, filterExpr, id,
-                        scts.getSearchScope(), dn, this));
+                log.debug(String.format("LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
+                        + " args='%s' scope='%s' => found: %s [%s]", id, fetchAllAttributes, searchBaseDn, filterExpr,
+                        id, scts.getSearchScope(), dn, this));
             }
         } catch (UnsupportedOperationException e) {
             // ignore unsupported operation thrown by the Apache DS server in
@@ -366,13 +336,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
         try {
             SearchControls scts = directory.getSearchControls();
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "LDAPSession.getEntries(): LDAP search base='%s' filter='%s' "
-                                + " args=* scope=%s [%s]", searchBaseDn,
-                        directory.getBaseFilter(), scts.getSearchScope(), this));
+                log.debug(String.format("LDAPSession.getEntries(): LDAP search base='%s' filter='%s' "
+                        + " args=* scope=%s [%s]", searchBaseDn, directory.getBaseFilter(), scts.getSearchScope(), this));
             }
-            NamingEnumeration<SearchResult> results = dirContext.search(
-                    searchBaseDn, directory.getBaseFilter(), scts);
+            NamingEnumeration<SearchResult> results = dirContext.search(searchBaseDn, directory.getBaseFilter(), scts);
             // skip reference fetching
             return ldapResultsToDocumentModels(results, false);
         } catch (SizeLimitExceededException e) {
@@ -412,28 +379,23 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 Attributes attrs = new BasicAttributes();
                 SearchResult ldapEntry = getLdapEntry(docModel.getId());
                 if (ldapEntry == null) {
-                    throw new DirectoryException(docModel.getId()
-                            + " not found");
+                    throw new DirectoryException(docModel.getId() + " not found");
                 }
                 Attributes oldattrs = ldapEntry.getAttributes();
                 String dn = ldapEntry.getNameInNamespace();
                 Attributes attrsToDel = new BasicAttributes();
                 for (String f : updateList) {
                     Object value = docModel.getProperty(schemaName, f);
-                    String backendField = directory.getFieldMapper().getBackendField(
-                            f);
+                    String backendField = directory.getFieldMapper().getBackendField(f);
                     if (LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY.equals(backendField)) {
                         // skip special LDAP DN field that is readonly
-                        log.warn(String.format(
-                                "field %s is mapped to read only DN field: ignored",
-                                f));
+                        log.warn(String.format("field %s is mapped to read only DN field: ignored", f));
                         continue;
                     }
                     if (value == null || value.equals("")) {
                         Attribute objectClasses = oldattrs.get("objectClass");
                         Attribute attr;
-                        if (getMandatoryAttributes(objectClasses).contains(
-                                backendField)) {
+                        if (getMandatoryAttributes(objectClasses).contains(backendField)) {
                             attr = new BasicAttribute(backendField);
                             // XXX: this might fail if the mandatory attribute
                             // is typed integer for instance
@@ -447,8 +409,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     } else if (f.equals(getPasswordField())) {
                         // The password has been updated, it has to be encrypted
                         Attribute attr = new BasicAttribute(backendField);
-                        attr.add(PasswordHelper.hashPassword((String) value,
-                                passwordHashAlgorithm));
+                        attr.add(PasswordHelper.hashPassword((String) value, passwordHashAlgorithm));
                         attrs.put(attr);
                     } else {
                         attrs.put(getAttributeValue(f, value));
@@ -456,29 +417,22 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
-                                    + "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]",
-                            docModel, dn, attrsToDel, this));
+                    log.debug(String.format("LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
+                            + "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]", docModel, dn, attrsToDel, this));
                 }
-                dirContext.modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE,
-                        attrsToDel);
+                dirContext.modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE, attrsToDel);
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
-                                    + "mod_op='REPLACE_ATTRIBUTE' attr='%s' [%s]",
-                            docModel, dn, attrs, this));
+                    log.debug(String.format("LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
+                            + "mod_op='REPLACE_ATTRIBUTE' attr='%s' [%s]", docModel, dn, attrs, this));
                 }
-                dirContext.modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE,
-                        attrs);
+                dirContext.modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE, attrs);
             }
 
             // update reference fields
             for (String referenceFieldName : referenceFieldList) {
                 Reference reference = directory.getReference(referenceFieldName);
-                List<String> targetIds = (List<String>) docModel.getProperty(
-                        schemaName, referenceFieldName);
+                List<String> targetIds = (List<String>) docModel.getProperty(schemaName, referenceFieldName);
                 reference.setTargetIdsForSource(docModel.getId(), targetIds);
             }
         } catch (NamingException e) {
@@ -487,8 +441,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         directory.invalidateCaches();
     }
 
-    protected void handleException(Exception e, String message)
-            throws ClientException {
+    protected void handleException(Exception e, String message) throws ClientException {
         LdapExceptionProcessor processor = directory.getConfig().getExceptionProcessor();
 
         RecoverableClientException userException = processor.extractRecoverableException(e);
@@ -522,9 +475,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
             SearchResult result = getLdapEntry(id);
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "LDAPSession.deleteEntry(%s): LDAP destroySubcontext dn='%s' [%s]",
-                        id, result.getNameInNamespace(), this));
+                log.debug(String.format("LDAPSession.deleteEntry(%s): LDAP destroySubcontext dn='%s' [%s]", id,
+                        result.getNameInNamespace(), this));
             }
             dirContext.destroySubcontext(result.getNameInNamespace());
         } catch (NamingException e) {
@@ -534,14 +486,12 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public void deleteEntry(String id, Map<String, String> map)
-            throws ClientException {
+    public void deleteEntry(String id, Map<String, String> map) throws ClientException {
         log.warn("Calling deleteEntry extended on LDAP directory");
         deleteEntry(id);
     }
 
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext, boolean fetchReferences,
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, boolean fetchReferences,
             Map<String, String> orderBy) throws DirectoryException {
         try {
             // building the query using filterExpr / filterArgs to
@@ -557,13 +507,11 @@ public class LDAPSession extends BaseSession implements EntrySource {
             int index = 0;
             for (String fieldName : filter.keySet()) {
                 if (directory.isReference(fieldName)) {
-                    log.warn(fieldName
-                            + " is a reference and will be ignored as a query criterion");
+                    log.warn(fieldName + " is a reference and will be ignored as a query criterion");
                     continue;
                 }
 
-                String backendFieldName = directory.getFieldMapper().getBackendField(
-                        fieldName);
+                String backendFieldName = directory.getFieldMapper().getBackendField(fieldName);
                 Object fieldValue = filter.get(fieldName);
 
                 StringBuilder currentFilter = new StringBuilder();
@@ -606,22 +554,17 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 }
                 index++;
             }
-            String filterExpr = "(&" + directory.getBaseFilter()
-                    + StringUtils.join(filters) + ')';
+            String filterExpr = "(&" + directory.getBaseFilter() + StringUtils.join(filters) + ')';
             SearchControls scts = directory.getSearchControls();
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "LDAPSession.query(...): LDAP search base='%s' filter='%s' args='%s' scope='%s' [%s]",
-                        searchBaseDn, filterExpr,
-                        StringUtils.join(filterArgs, ","),
-                        scts.getSearchScope(), this));
+                        searchBaseDn, filterExpr, StringUtils.join(filterArgs, ","), scts.getSearchScope(), this));
             }
             try {
-                NamingEnumeration<SearchResult> results = dirContext.search(
-                        searchBaseDn, filterExpr, filterArgs, scts);
-                DocumentModelList entries = ldapResultsToDocumentModels(
-                        results, fetchReferences);
+                NamingEnumeration<SearchResult> results = dirContext.search(searchBaseDn, filterExpr, filterArgs, scts);
+                DocumentModelList entries = ldapResultsToDocumentModels(results, fetchReferences);
 
                 if (orderBy != null && !orderBy.isEmpty()) {
                     directory.orderEntries(entries, orderBy);
@@ -634,9 +577,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 // To keep the application usable return no results instead of
                 // crashing but log the error so that the AD admin
                 // can fix the issue.
-                log.error(
-                        "Unexpected response from server while performing query: "
-                                + nnfe.getMessage(), nnfe);
+                log.error("Unexpected response from server while performing query: " + nnfe.getMessage(), nnfe);
                 return new DocumentModelListImpl();
             }
         } catch (LimitExceededException e) {
@@ -647,29 +588,25 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter)
-            throws DirectoryException {
+    public DocumentModelList query(Map<String, Serializable> filter) throws DirectoryException {
         // by default, do not fetch references of result entries
         return query(filter, emptySet, new HashMap<String, String>());
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy)
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
         return query(filter, fulltext, false, orderBy);
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy,
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException {
         return query(filter, fulltext, fetchReferences, orderBy);
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext) throws DirectoryException {
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws DirectoryException {
         // by default, do not fetch references of result entries
         return query(filter, fulltext, new HashMap<String, String>());
     }
@@ -686,20 +623,18 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter,
-            String columnName) throws DirectoryException {
+    public List<String> getProjection(Map<String, Serializable> filter, String columnName) throws DirectoryException {
         return getProjection(filter, emptySet, columnName);
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter,
-            Set<String> fulltext, String columnName) throws DirectoryException {
+    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
+            throws DirectoryException {
         // XXX: this suboptimal code should be either optimized for LDAP or
         // moved to an abstract class
         List<String> result = new ArrayList<String>();
         DocumentModelList docList = query(filter, fulltext);
-        String columnNameinDocModel = directory.getFieldMapper().getDirectoryField(
-                columnName);
+        String columnNameinDocModel = directory.getFieldMapper().getDirectoryField(columnName);
         for (DocumentModel docModel : docList) {
             Object obj;
             try {
@@ -718,12 +653,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
         return result;
     }
 
-    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap)
-            throws DirectoryException {
+    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) throws DirectoryException {
         String id = String.valueOf(fieldMap.get(getIdField()));
         try {
-            DocumentModel docModel = BaseSession.createEntryModel(sid,
-                    schemaName, id, fieldMap, isReadOnly());
+            DocumentModel docModel = BaseSession.createEntryModel(sid, schemaName, id, fieldMap, isReadOnly());
             EntryAdaptor adaptor = directory.getConfig().getEntryAdaptor();
             if (adaptor != null) {
                 docModel = adaptor.adapt(directory, docModel);
@@ -736,8 +669,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @SuppressWarnings("unchecked")
-    protected Object getFieldValue(Attribute attribute, String fieldName,
-            String entryId, boolean fetchReferences) throws DirectoryException {
+    protected Object getFieldValue(Attribute attribute, String fieldName, String entryId, boolean fetchReferences)
+            throws DirectoryException {
 
         Field field = schemaFieldMap.get(fieldName);
         Type type = field.getType();
@@ -750,8 +683,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         try {
             value = attribute.get();
         } catch (NamingException e) {
-            throw new DirectoryException("Could not fetch value for "
-                    + attribute, e);
+            throw new DirectoryException("Could not fetch value for " + attribute, e);
         }
         if (value == null) {
             return defaultValue;
@@ -783,8 +715,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
             } catch (NamingException e) {
                 log.error(String.format(
                         "field %s of type %s has non list value found on server: '%s' (ignoring and using default value instead)",
-                        fieldName, typeName, values != null ? values.toString()
-                                : trimmedValue));
+                        fieldName, typeName, values != null ? values.toString() : trimmedValue));
                 return defaultValue;
             } finally {
                 if (values != null) {
@@ -800,8 +731,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 return defaultValue;
             }
             try {
-                SimpleDateFormat dateFormat = new SimpleDateFormat(
-                        "yyyyMMddHHmmss'Z'");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss'Z'");
                 dateFormat.setTimeZone(new SimpleTimeZone(0, "Z"));
                 Date date = dateFormat.parse(trimmedValue);
                 Calendar cal = Calendar.getInstance();
@@ -816,21 +746,17 @@ public class LDAPSession extends BaseSession implements EntrySource {
         } else if ("content".equals(typeName)) {
             return new ByteArrayBlob((byte[]) value);
         } else {
-            throw new DirectoryException(
-                    "Field type not supported in directories: " + typeName);
+            throw new DirectoryException("Field type not supported in directories: " + typeName);
         }
     }
 
     @SuppressWarnings("unchecked")
-    protected Attribute getAttributeValue(String fieldName, Object value)
-            throws DirectoryException {
-        Attribute attribute = new BasicAttribute(
-                directory.getFieldMapper().getBackendField(fieldName));
+    protected Attribute getAttributeValue(String fieldName, Object value) throws DirectoryException {
+        Attribute attribute = new BasicAttribute(directory.getFieldMapper().getBackendField(fieldName));
         Field field = schemaFieldMap.get(fieldName);
         if (field == null) {
-            String message = String.format(
-                    "Invalid field name '%s' for directory '%s' with schema '%s'",
-                    fieldName, directory.getName(), directory.getSchema());
+            String message = String.format("Invalid field name '%s' for directory '%s' with schema '%s'", fieldName,
+                    directory.getName(), directory.getSchema());
             throw new DirectoryException(message);
         }
         Type type = field.getType();
@@ -847,9 +773,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
             } else if (value instanceof Collection) {
                 valueItems = (Collection<String>) value;
             } else {
-                throw new DirectoryException(String.format(
-                        "field %s with value %s does not match type %s",
-                        fieldName, value.toString(), type.getName()));
+                throw new DirectoryException(String.format("field %s with value %s does not match type %s", fieldName,
+                        value.toString(), type.getName()));
             }
             for (String item : valueItems) {
                 attribute.add(item);
@@ -857,8 +782,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         } else if ("date".equals(typeName)) {
             Calendar cal = (Calendar) value;
             Date date = cal.getTime();
-            SimpleDateFormat dateFormat = new SimpleDateFormat(
-                    "yyyyMMddHHmmss'Z'");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss'Z'");
             dateFormat.setTimeZone(new SimpleTimeZone(0, "Z"));
             attribute.add(dateFormat.format(date));
         } else if ("content".equals(typeName)) {
@@ -868,16 +792,14 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 throw new DirectoryException("Failed to get ByteArray value", e);
             }
         } else {
-            throw new DirectoryException(
-                    "Field type not supported in directories: " + typeName);
+            throw new DirectoryException("Field type not supported in directories: " + typeName);
         }
 
         return attribute;
     }
 
-    protected DocumentModelList ldapResultsToDocumentModels(
-            NamingEnumeration<SearchResult> results, boolean fetchReferences)
-            throws DirectoryException, NamingException {
+    protected DocumentModelList ldapResultsToDocumentModels(NamingEnumeration<SearchResult> results,
+            boolean fetchReferences) throws DirectoryException, NamingException {
         DocumentModelListImpl list = new DocumentModelListImpl();
         if (!isCurrentUserAllowed(SecurityConstants.READ)) {
             return list;
@@ -885,8 +807,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         try {
             while (results.hasMore()) {
                 SearchResult result = results.next();
-                DocumentModel entry = ldapResultToDocumentModel(result, null,
-                        fetchReferences);
+                DocumentModel entry = ldapResultToDocumentModel(result, null, fetchReferences);
                 if (entry != null) {
                     list.add(entry);
                 }
@@ -899,8 +820,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 throw e;
             }
             // mark the collect results as a truncated result list
-            log.debug("SizeLimitExceededException caught,"
-                    + " return truncated results. Original message: "
+            log.debug("SizeLimitExceededException caught," + " return truncated results. Original message: "
                     + e.getMessage() + " explanation: " + e.getExplanation());
             list.setTotalSize(-2);
         } finally {
@@ -910,9 +830,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
         return list;
     }
 
-    protected DocumentModel ldapResultToDocumentModel(SearchResult result,
-            String entryId, boolean fetchReferences) throws DirectoryException,
-            NamingException {
+    protected DocumentModel ldapResultToDocumentModel(SearchResult result, String entryId, boolean fetchReferences)
+            throws DirectoryException, NamingException {
         Attributes attributes = result.getAttributes();
         String passwordFieldId = getPasswordField();
         Map<String, Object> fieldMap = new HashMap<String, Object>();
@@ -963,8 +882,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 }
             } else {
                 // manage directly stored fields
-                String attributeId = directory.getFieldMapper().getBackendField(
-                        fieldName);
+                String attributeId = directory.getFieldMapper().getBackendField(fieldName);
                 if (attributeId.equals(LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY)) {
                     // this is the special DN readonly attribute
                     try {
@@ -980,24 +898,17 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         // do not try to fetch the password attribute
                         continue;
                     } else {
-                        fieldMap.put(
-                                fieldName,
-                                getFieldValue(attribute, fieldName, entryId,
-                                        fetchReferences));
+                        fieldMap.put(fieldName, getFieldValue(attribute, fieldName, entryId, fetchReferences));
                     }
                 }
             }
         }
         // check if the idAttribute was returned from the search. If not
         // set it anyway, maybe changing its case if it's a String instance
-        String fieldId = directory.getFieldMapper().getDirectoryField(
-                idAttribute);
+        String fieldId = directory.getFieldMapper().getDirectoryField(idAttribute);
         Object obj = fieldMap.get(fieldId);
         if (obj == null) {
-            fieldMap.put(
-                    fieldId,
-                    changeEntryIdCase(entryId,
-                            directory.getConfig().missingIdFieldCase));
+            fieldMap.put(fieldId, changeEntryIdCase(entryId, directory.getConfig().missingIdFieldCase));
         } else if (obj instanceof String) {
             fieldMap.put(fieldId, changeEntryIdCase((String) obj, idCase));
         }
@@ -1015,8 +926,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public boolean authenticate(String username, String password)
-            throws DirectoryException {
+    public boolean authenticate(String username, String password) throws DirectoryException {
 
         if (password == null || "".equals(password.trim())) {
             // never use anonymous bind as a way to authenticate a user in
@@ -1029,8 +939,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         try {
             entry = getLdapEntry(username);
         } catch (NamingException e) {
-            throw new DirectoryException("failed to fetch the ldap entry for "
-                    + username, e);
+            throw new DirectoryException("failed to fetch the ldap entry for " + username, e);
         }
         if (entry == null) {
             // no such user => authentication failed
@@ -1063,9 +972,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     authenticationDirContext.close();
                 }
             } catch (NamingException e) {
-                log.error(
-                        "Error closing authentication context when biding dn "
-                                + dn, e);
+                log.error("Error closing authentication context when biding dn " + dn, e);
                 return false;
             }
         }
@@ -1097,8 +1004,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @SuppressWarnings("unchecked")
-    protected List<String> getMandatoryAttributes(
-            Attribute objectClassesAttribute) throws DirectoryException {
+    protected List<String> getMandatoryAttributes(Attribute objectClassesAttribute) throws DirectoryException {
         try {
             List<String> mandatoryAttributes = new ArrayList<String>();
 
@@ -1126,8 +1032,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
             }
             objectClasses.remove("top");
             for (String creationClass : objectClasses) {
-                Attributes attributes = schema.getAttributes("ClassDefinition/"
-                        + creationClass);
+                Attributes attributes = schema.getAttributes("ClassDefinition/" + creationClass);
                 Attribute attribute = attributes.get("MUST");
                 if (attribute != null) {
                     NamingEnumeration<String> values = (NamingEnumeration<String>) attribute.getAll();
@@ -1154,13 +1059,11 @@ public class LDAPSession extends BaseSession implements EntrySource {
     @Override
     // useful for the log function
     public String toString() {
-        return String.format("LDAPSession '%s' for directory %s", sid,
-                directory.getName());
+        return String.format("LDAPSession '%s' for directory %s", sid, directory.getName());
     }
 
     @Override
-    public DocumentModel createEntry(DocumentModel entry)
-            throws ClientException {
+    public DocumentModel createEntry(DocumentModel entry) throws ClientException {
         Map<String, Object> fieldMap = entry.getProperties(directory.getSchema());
         Map<String, Object> simpleNameFieldMap = new HashMap<String, Object>();
         for (Map.Entry<String, Object> fieldEntry : fieldMap.entrySet()) {

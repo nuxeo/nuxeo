@@ -22,7 +22,6 @@ import javax.management.ObjectName;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
 public interface ResourcePublisher {
 
@@ -31,9 +30,8 @@ public interface ResourcePublisher {
     Set<ObjectName> getResourcesName();
 
     ObjectName lookupName(String name);
-    
-     void registerResource(String shortName, String qualifiedName,
-            Class<?> managementClass, Object instance);
-     
-     void unregisterResource(String shortName, String qualifiedName);
+
+    void registerResource(String shortName, String qualifiedName, Class<?> managementClass, Object instance);
+
+    void unregisterResource(String shortName, String qualifiedName);
 }

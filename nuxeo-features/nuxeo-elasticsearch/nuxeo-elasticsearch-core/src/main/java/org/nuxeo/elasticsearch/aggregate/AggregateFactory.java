@@ -35,8 +35,7 @@ final public class AggregateFactory {
     private AggregateFactory() {
     }
 
-    public static AggregateEsBase<? extends Bucket> create(AggregateDefinition def,
-            DocumentModel searchDocumentModel) {
+    public static AggregateEsBase<? extends Bucket> create(AggregateDefinition def, DocumentModel searchDocumentModel) {
         switch (def.getType()) {
         case AGG_TYPE_TERMS:
             return new TermAggregate(def, searchDocumentModel);
@@ -51,8 +50,7 @@ final public class AggregateFactory {
         case AGG_TYPE_DATE_RANGE:
             return new DateRangeAggregate(def, searchDocumentModel);
         default:
-            throw new IllegalArgumentException("Unknown aggregate type: "
-                    + def.getType());
+            throw new IllegalArgumentException("Unknown aggregate type: " + def.getType());
         }
 
     }

@@ -14,11 +14,9 @@ package org.nuxeo.ecm.webengine.jaxrs.servlet.config;
 import java.net.URL;
 
 /**
- * Abstraction for resource lookup.
- * Resources can be installed in bundles on in a directory on the file system.
+ * Abstraction for resource lookup. Resources can be installed in bundles on in a directory on the file system.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ResourceResolver {
 

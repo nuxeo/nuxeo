@@ -34,15 +34,13 @@ public class PushToClipboard {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) {
-        OperationHelper.getDocumentListManager().addToWorkingList(
-                DocumentsListsManager.CLIPBOARD, doc);
+        OperationHelper.getDocumentListManager().addToWorkingList(DocumentsListsManager.CLIPBOARD, doc);
         return doc;
     }
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) {
-        OperationHelper.getDocumentListManager().addToWorkingList(
-                DocumentsListsManager.CLIPBOARD, docs);
+        OperationHelper.getDocumentListManager().addToWorkingList(DocumentsListsManager.CLIPBOARD, docs);
         return docs;
     }
 

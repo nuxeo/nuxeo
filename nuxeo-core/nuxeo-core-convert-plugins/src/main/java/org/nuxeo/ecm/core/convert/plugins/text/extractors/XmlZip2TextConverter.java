@@ -42,8 +42,7 @@ import org.xml.sax.XMLReader;
  */
 public abstract class XmlZip2TextConverter implements Converter {
 
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         SAXParserFactory parserFactory = SAXParserFactory.newInstance();
         parserFactory.setValidating(false);
@@ -52,32 +51,26 @@ public abstract class XmlZip2TextConverter implements Converter {
             SAXParser parser = parserFactory.newSAXParser();
             XMLReader reader = parser.getXMLReader();
             reader.setFeature("http://xml.org/sax/features/validation", false);
-            reader.setFeature(
-                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
-                    false);
+            reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
             StringBuilder sb = new StringBuilder();
-            UnclosableZipInputStream zis = new UnclosableZipInputStream(
-                    blobHolder.getBlob().getStream());
-            //ZipInputStream zis = new ZipInputStream(
-            //        blobHolder.getBlob().getStream());
+            UnclosableZipInputStream zis = new UnclosableZipInputStream(blobHolder.getBlob().getStream());
+            // ZipInputStream zis = new ZipInputStream(
+            // blobHolder.getBlob().getStream());
             try {
                 readXmlZipContent(zis, reader, sb);
             } finally {
                 zis.doClose();
             }
             return new SimpleCachableBlobHolder(new StringBlob(sb.toString()));
-        } catch (ClientException | IOException | ParserConfigurationException
-                | SAXException e) {
-            throw new ConversionException(
-                    "Error during OpenXml2Text conversion", e);
+        } catch (ClientException | IOException | ParserConfigurationException | SAXException e) {
+            throw new ConversionException("Error during OpenXml2Text conversion", e);
         }
     }
 
     public void init(ConverterDescriptor descriptor) {
     }
 
-    protected abstract void readXmlZipContent(ZipInputStream zis,
-            XMLReader reader, StringBuilder sb) throws IOException,
-            SAXException;
+    protected abstract void readXmlZipContent(ZipInputStream zis, XMLReader reader, StringBuilder sb)
+            throws IOException, SAXException;
 }

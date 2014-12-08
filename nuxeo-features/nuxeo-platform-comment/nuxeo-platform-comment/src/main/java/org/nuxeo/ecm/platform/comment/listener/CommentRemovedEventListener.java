@@ -34,14 +34,12 @@ import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 
-public class CommentRemovedEventListener extends AbstractCommentListener
-        implements EventListener {
+public class CommentRemovedEventListener extends AbstractCommentListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(CommentRemovedEventListener.class);
 
     @Override
-    protected void doProcess(CoreSession coreSession,
-            RelationManager relationManager, CommentServiceConfig config,
+    protected void doProcess(CoreSession coreSession, RelationManager relationManager, CommentServiceConfig config,
             DocumentModel docMessage) throws ClientException {
         log.debug("Processing relations cleanup on Comment removal");
         String typeName = docMessage.getType();
@@ -50,19 +48,16 @@ public class CommentRemovedEventListener extends AbstractCommentListener
         }
     }
 
-    private static void onCommentRemoved(RelationManager relationManager,
-            CommentServiceConfig config, DocumentModel docModel)
-            throws ClientException {
-        Resource commentRes = relationManager.getResource(
-                config.commentNamespace, docModel, null);
+    private static void onCommentRemoved(RelationManager relationManager, CommentServiceConfig config,
+            DocumentModel docModel) throws ClientException {
+        Resource commentRes = relationManager.getResource(config.commentNamespace, docModel, null);
         if (commentRes == null) {
             log.warn("Could not adapt document model to relation resource; "
                     + "check the service relation adapters configuration");
             return;
         }
         Graph graph = relationManager.getGraphByName(config.graphName);
-        List<Statement> statementList = graph.getStatements(commentRes, null,
-                null);
+        List<Statement> statementList = graph.getStatements(commentRes, null, null);
         graph.remove(statementList);
     }
 

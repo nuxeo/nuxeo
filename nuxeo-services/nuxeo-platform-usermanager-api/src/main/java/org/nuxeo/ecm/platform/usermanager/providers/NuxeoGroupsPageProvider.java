@@ -33,8 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.8
  */
-public class NuxeoGroupsPageProvider extends
-        AbstractGroupsPageProvider<NuxeoGroup> {
+public class NuxeoGroupsPageProvider extends AbstractGroupsPageProvider<NuxeoGroup> {
 
     private static final Log log = LogFactory.getLog(NuxeoGroupsPageProvider.class);
 
@@ -45,8 +44,8 @@ public class NuxeoGroupsPageProvider extends
         UserManager userManager = Framework.getLocalService(UserManager.class);
         for (DocumentModel group : groups) {
             try {
-                NuxeoGroup nuxeoGroup = userManager.getGroup(group.getProperty(
-                        userManager.getGroupIdField()).getValue(String.class));
+                NuxeoGroup nuxeoGroup = userManager.getGroup(group.getProperty(userManager.getGroupIdField()).getValue(
+                        String.class));
                 nuxeoGroups.add(nuxeoGroup);
             } catch (ClientException e) {
                 log.error(e, e);

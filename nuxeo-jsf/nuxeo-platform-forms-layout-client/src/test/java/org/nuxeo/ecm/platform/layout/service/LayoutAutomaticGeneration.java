@@ -39,27 +39,23 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 
 /**
- * Helper to generate a layout xml output automatically from a schema
- * definition.
+ * Helper to generate a layout xml output automatically from a schema definition.
  *
  * @author Anahide Tchertchian
  */
 public class LayoutAutomaticGeneration {
 
-    public static Document generateLayoutOutput(SchemaManager sm,
-            String schemaName, boolean generateLabels) {
+    public static Document generateLayoutOutput(SchemaManager sm, String schemaName, boolean generateLabels) {
         String layoutName = String.format("%s", schemaName);
 
         Document document = DocumentFactory.getInstance().createDocument();
         document.setName(layoutName);
 
         Element component = document.addElement("component");
-        component.addAttribute("name", String.format(
-                "myproject.%s.generatedContrib", layoutName));
+        component.addAttribute("name", String.format("myproject.%s.generatedContrib", layoutName));
 
         Element extension = component.addElement("extension");
-        extension.addAttribute("target",
-                "org.nuxeo.ecm.platform.forms.layout.WebLayoutManager");
+        extension.addAttribute("target", "org.nuxeo.ecm.platform.forms.layout.WebLayoutManager");
         extension.addAttribute("point", "layouts");
 
         Element layout = extension.addElement("layout");
@@ -73,8 +69,7 @@ public class LayoutAutomaticGeneration {
         fields.addAll(schema.getFields());
         Collections.sort(fields, new Comparator<Field>() {
             public int compare(Field f1, Field f2) {
-                return f1.getName().getLocalName().compareTo(
-                        f2.getName().getLocalName());
+                return f1.getName().getLocalName().compareTo(f2.getName().getLocalName());
             }
         });
 
@@ -95,8 +90,7 @@ public class LayoutAutomaticGeneration {
                 if (fieldType == StringType.INSTANCE) {
                     widgetType = "text";
                     needsInputStyleClass = true;
-                } else if (fieldType == LongType.INSTANCE
-                        || fieldType == IntegerType.INSTANCE
+                } else if (fieldType == LongType.INSTANCE || fieldType == IntegerType.INSTANCE
                         || fieldType == DoubleType.INSTANCE) {
                     widgetType = "int";
                     needsInputStyleClass = true;
@@ -117,8 +111,7 @@ public class LayoutAutomaticGeneration {
                     Element labels = widget.addElement("labels");
                     Element label = labels.addElement("label");
                     label.addAttribute("mode", BuiltinModes.ANY);
-                    label.setText(String.format("label.widget.%s.%s",
-                            layoutName, fieldName));
+                    label.setText(String.format("label.widget.%s.%s", layoutName, fieldName));
                 }
 
                 Element fieldsElement = widget.addElement("fields");

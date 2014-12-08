@@ -29,12 +29,13 @@ import org.osgi.framework.ServiceRegistration;
  * Dummy service registration impl.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ServiceRegistrationImpl implements ServiceRegistration {
 
     protected OSGiAdapter osgi;
+
     protected String[] classes;
+
     protected ServiceReferenceImpl ref;
 
     public ServiceRegistrationImpl(OSGiAdapter osgi, Bundle bundle, String[] classes, Object service) {

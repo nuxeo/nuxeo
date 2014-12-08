@@ -57,6 +57,7 @@ public class RFC822ToTextConverter implements Converter {
     private static final Log log = LogFactory.getLog(RFC822ToTextConverter.class);
 
     private static final String MESSAGE_RFC822_MIMETYPE = "message/rfc822";
+
     private static final String TXT_MT = "text/plain";
 
     protected ConverterDescriptor descriptor;
@@ -68,8 +69,7 @@ public class RFC822ToTextConverter implements Converter {
         File f = null;
         OutputStream fo = null;
         try {
-            MimeMessage msg = new MimeMessage((Session) null,
-                    blob.getStream());
+            MimeMessage msg = new MimeMessage((Session) null, blob.getStream());
             f = File.createTempFile("rfc822totext", ".txt");
             fo = new FileOutputStream(f);
             List<Part> parts = getAttachmentParts(msg);
@@ -146,8 +146,7 @@ public class RFC822ToTextConverter implements Converter {
         }
     }
 
-    protected static byte[] extractTextFromMessagePart(Part p)
-            throws ClientException, MessagingException, IOException {
+    protected static byte[] extractTextFromMessagePart(Part p) throws ClientException, MessagingException, IOException {
         ContentType contentType = new ContentType(p.getContentType());
         String baseType = contentType.getBaseType();
         if (TXT_MT.equals(baseType)) {
@@ -164,14 +163,12 @@ public class RFC822ToTextConverter implements Converter {
         if (converterName == null) {
             return null;
         } else {
-            BlobHolder result = cs.convert(converterName,
-                    new SimpleBlobHolder(new FileBlob(p.getInputStream())), null);
+            BlobHolder result = cs.convert(converterName, new SimpleBlobHolder(new FileBlob(p.getInputStream())), null);
             return result.getBlob().getByteArray();
         }
     }
 
-    protected static List<Part> getAttachmentParts(Part p)
-            throws MessagingException, IOException {
+    protected static List<Part> getAttachmentParts(Part p) throws MessagingException, IOException {
         List<Part> res = new ArrayList<Part>();
         if (p.isMimeType(MESSAGE_RFC822_MIMETYPE)) {
             res.addAll(getAttachmentParts((Part) p.getContent()));
@@ -207,8 +204,7 @@ public class RFC822ToTextConverter implements Converter {
     }
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         Blob inputBlob;
 

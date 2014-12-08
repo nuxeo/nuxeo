@@ -24,9 +24,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Value expression that only stores a reference the
- * {@link AliasVariableMapper} id so that the corresponding expression is found
- * in the context, and is evaluated against contextual values.
+ * Value expression that only stores a reference the {@link AliasVariableMapper} id so that the corresponding expression
+ * is found in the context, and is evaluated against contextual values.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -88,8 +87,8 @@ public class AliasValueExpression extends ValueExpression {
     }
 
     /**
-     * Looks up the {@link AliasVariableMapper} in the context, and if found,
-     * resolve the corresponding {@link ValueExpression}.
+     * Looks up the {@link AliasVariableMapper} in the context, and if found, resolve the corresponding
+     * {@link ValueExpression}.
      */
     public Object getValue(ELContext context) {
         ValueExpression ve = resolveExpression(context);
@@ -98,9 +97,7 @@ public class AliasValueExpression extends ValueExpression {
             res = ve.getValue(context);
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Resolved expression var='%s' for mapper with id '%s': %s",
-                    var, id, res));
+            log.debug(String.format("Resolved expression var='%s' for mapper with id '%s': %s", var, id, res));
         }
         return res;
     }
@@ -120,31 +117,27 @@ public class AliasValueExpression extends ValueExpression {
             ve.setValue(context, value);
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Resolved expression var='%s' for mapper with id '%s' and set value: %s",
-                    var, id, value));
+            log.debug(String.format("Resolved expression var='%s' for mapper with id '%s' and set value: %s", var, id,
+                    value));
         }
     }
 
     protected ValueExpression resolveExpression(ELContext context) {
         FacesContext facesContext = (FacesContext) context.getContext(FacesContext.class);
-        AliasVariableMapper vm = AliasVariableMapper.getVariableMapper(
-                facesContext, id);
+        AliasVariableMapper vm = AliasVariableMapper.getVariableMapper(facesContext, id);
 
         if (vm == null) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "No alias variable mapper with id '%s' "
-                                + "found in request for var '%s'", id, var));
+                log.debug(String.format("No alias variable mapper with id '%s' " + "found in request for var '%s'", id,
+                        var));
             }
             return null;
         }
 
         ValueExpression ve = vm.resolveVariable(var);
         if (ve == null) {
-            log.error(String.format(
-                    "Variable for var '%s' not found in alias variable mapper "
-                            + "with id '%s'", var, id));
+            log.error(String.format("Variable for var '%s' not found in alias variable mapper " + "with id '%s'", var,
+                    id));
             return null;
         }
 

@@ -34,8 +34,7 @@ public class AdvancedXMLZipConverterTest extends SimpleConverterTest {
     protected void checkTextConversion(String textContent) {
 
         try {
-            Blob blob = new FileBlob(
-                    FileUtils.getResourceFileFromContext("test-docs/advanced/XMLZip_paragraphs.txt"));
+            Blob blob = new FileBlob(FileUtils.getResourceFileFromContext("test-docs/advanced/XMLZip_paragraphs.txt"));
             blob.setEncoding("UTF-8");
 
             // Get blob string with Unix end of line characters

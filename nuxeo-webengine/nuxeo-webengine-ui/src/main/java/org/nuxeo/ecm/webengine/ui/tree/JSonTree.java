@@ -27,7 +27,6 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class JSonTree {
 
@@ -38,9 +37,10 @@ public abstract class JSonTree {
     }
 
     protected abstract Object getInput(WebContext ctx);
-    protected abstract ContentProvider  getProvider(WebContext ctx);
-    protected abstract JSonTreeSerializer getSerializer(WebContext ctx);
 
+    protected abstract ContentProvider getProvider(WebContext ctx);
+
+    protected abstract JSonTreeSerializer getSerializer(WebContext ctx);
 
     public String updateSelection(WebContext ctx) {
         return updateSelection(ctx, getProvider(ctx), getSerializer(ctx));
@@ -50,11 +50,9 @@ public abstract class JSonTree {
         return enter(ctx, path, getSerializer(ctx));
     }
 
-
     /**
-    root=ID   - enter node ID
-    toggle=ID - toggle expanded state for node ID
-    */
+     * root=ID - enter node ID toggle=ID - toggle expanded state for node ID
+     */
     public synchronized String updateSelection(WebContext ctx, ContentProvider provider, JSonTreeSerializer serializer) {
         try {
             tree.setContentProvider(provider);
@@ -70,7 +68,7 @@ public abstract class JSonTree {
                 }
             } else {
                 String result = null;
-                if ( "source".equals(selection)){
+                if ("source".equals(selection)) {
                     result = enter(ctx, tree.root.getPath().toString(), serializer);
                 } else {
                     result = enter(ctx, selection, serializer);
@@ -78,7 +76,7 @@ public abstract class JSonTree {
                 if (result != null) {
                     return result;
                 } else {
-                    ctx.getLog().warn("TreeItem: "+selection+" not found");
+                    ctx.getLog().warn("TreeItem: " + selection + " not found");
                 }
             }
         } finally {

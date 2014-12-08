@@ -35,8 +35,7 @@ import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import org.nuxeo.runtime.api.Framework;
 
-public abstract class AbstractBasePublishedDocumentFactory implements
-        PublishedDocumentFactory {
+public abstract class AbstractBasePublishedDocumentFactory implements PublishedDocumentFactory {
 
     public static final String ENABLE_SNAPSHOT = "enableSnapshot";
 
@@ -62,8 +61,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements
         }
     }
 
-    public void init(CoreSession coreSession, Map<String, String> parameters)
-            throws ClientException {
+    public void init(CoreSession coreSession, Map<String, String> parameters) throws ClientException {
         init(coreSession, null, parameters);
     }
 
@@ -88,8 +86,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements
         return getParameter(TARGET_PUBLISHED_DOCUMENT_STATE);
     }
 
-    public PublishedDocument publishDocument(DocumentModel doc,
-            PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode) throws ClientException {
         return publishDocument(doc, targetNode, null);
     }
 
@@ -100,8 +97,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements
         return false;
     }
 
-    public DocumentModel snapshotDocumentBeforePublish(DocumentModel doc)
-            throws ClientException {
+    public DocumentModel snapshotDocumentBeforePublish(DocumentModel doc) throws ClientException {
 
         if (isSnapshotingEnabled() && needToVersionDocument(doc)) {
             if (doc.isCheckedOut()) {
@@ -115,22 +111,18 @@ public abstract class AbstractBasePublishedDocumentFactory implements
         }
     }
 
-    public String[] getValidatorsFor(DocumentModel dm)
-            throws PublishingValidatorException {
+    public String[] getValidatorsFor(DocumentModel dm) throws PublishingValidatorException {
         return validatorsRule.computesValidatorsFor(dm);
     }
 
-    public ValidatorsRule getValidatorsRule()
-            throws PublishingValidatorException {
+    public ValidatorsRule getValidatorsRule() throws PublishingValidatorException {
         return validatorsRule;
     }
 
-    public void validatorPublishDocument(PublishedDocument publishedDocument,
-            String comment) throws ClientException {
+    public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) throws ClientException {
     }
 
-    public void validatorRejectPublication(PublishedDocument publishedDocument,
-            String comment) throws ClientException {
+    public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) throws ClientException {
     }
 
     public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
@@ -145,8 +137,8 @@ public abstract class AbstractBasePublishedDocumentFactory implements
      * -------- Event firing --------
      */
 
-    protected void notifyEvent(PublishingEvent event, DocumentModel doc,
-            CoreSession coreSession) throws PublishingException {
+    protected void notifyEvent(PublishingEvent event, DocumentModel doc, CoreSession coreSession)
+            throws PublishingException {
         try {
             notifyEvent(event.name(), null, null, null, doc, coreSession);
         } catch (ClientException e) {
@@ -154,10 +146,8 @@ public abstract class AbstractBasePublishedDocumentFactory implements
         }
     }
 
-    protected void notifyEvent(String eventId,
-            Map<String, Serializable> properties, String comment,
-            String category, DocumentModel dm, CoreSession coreSession)
-            throws ClientException {
+    protected void notifyEvent(String eventId, Map<String, Serializable> properties, String comment, String category,
+            DocumentModel dm, CoreSession coreSession) throws ClientException {
         // Default category
         if (category == null) {
             category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
@@ -165,15 +155,11 @@ public abstract class AbstractBasePublishedDocumentFactory implements
         if (properties == null) {
             properties = new HashMap<String, Serializable>();
         }
-        properties.put(CoreEventConstants.REPOSITORY_NAME,
-                dm.getRepositoryName());
-        properties.put(CoreEventConstants.SESSION_ID,
-                coreSession.getSessionId());
-        properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
-                dm.getCurrentLifeCycleState());
+        properties.put(CoreEventConstants.REPOSITORY_NAME, dm.getRepositoryName());
+        properties.put(CoreEventConstants.SESSION_ID, coreSession.getSessionId());
+        properties.put(CoreEventConstants.DOC_LIFE_CYCLE, dm.getCurrentLifeCycleState());
 
-        DocumentEventContext ctx = new DocumentEventContext(coreSession,
-                coreSession.getPrincipal(), dm);
+        DocumentEventContext ctx = new DocumentEventContext(coreSession, coreSession.getPrincipal(), dm);
         ctx.setProperties(properties);
         ctx.setComment(comment);
         ctx.setCategory(category);

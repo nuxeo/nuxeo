@@ -119,8 +119,7 @@ public class ConnectStatusActionBean implements Serializable {
     public List<SelectItem> getInstanceTypes() {
         List<SelectItem> types = new ArrayList<>();
         for (NuxeoClientInstanceType itype : NuxeoClientInstanceType.values()) {
-            SelectItem item = new SelectItem(itype.getValue(),
-                    "label.instancetype." + itype.getValue());
+            SelectItem item = new SelectItem(itype.getValue(), "label.instancetype." + itype.getValue());
             types.add(item);
         }
         return types;
@@ -195,12 +194,10 @@ public class ConnectStatusActionBean implements Serializable {
         try {
             getService().localRegisterInstance(CLID, "");
         } catch (InvalidCLID e) {
-            facesMessages.addToControl("offline_clid",
-                    StatusMessage.Severity.WARN,
+            facesMessages.addToControl("offline_clid", StatusMessage.Severity.WARN,
                     messages.get("label.connect.wrongCLID"));
         } catch (IOException e) {
-            facesMessages.addToControl("offline_clid",
-                    StatusMessage.Severity.ERROR,
+            facesMessages.addToControl("offline_clid", StatusMessage.Severity.ERROR,
                     messages.get("label.connect.registrationError"));
             log.error("Error while registering instance locally", e);
         }
@@ -230,8 +227,7 @@ public class ConnectStatusActionBean implements Serializable {
 
     public void uploadPackage() throws IOException {
         if (packageToUpload == null) {
-            facesMessages.add(StatusMessage.Severity.WARN,
-                    "label.connect.nofile");
+            facesMessages.add(StatusMessage.Severity.WARN, "label.connect.nofile");
             return;
         }
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
@@ -241,10 +237,8 @@ public class ConnectStatusActionBean implements Serializable {
             pus.addPackage(tmpFile);
         } catch (PackageException e) {
             log.warn(e, e);
-            facesMessages.add(
-                    StatusMessage.Severity.ERROR,
-                    messages.get("label.connect.wrong.package") + ":"
-                            + e.getMessage());
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    messages.get("label.connect.wrong.package") + ":" + e.getMessage());
             return;
         } finally {
             tmpFile.delete();

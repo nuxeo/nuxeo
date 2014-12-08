@@ -27,8 +27,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Register directory tree configurations to make them available to the
- * DirectoryTreeManagerBean to build DirectoryTreeNode instances.
+ * Register directory tree configurations to make them available to the DirectoryTreeManagerBean to build
+ * DirectoryTreeNode instances.
  *
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
@@ -53,28 +53,24 @@ public class DirectoryTreeService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         DirectoryTreeDescriptor descriptor = (DirectoryTreeDescriptor) contribution;
         registry.addContribution(descriptor);
         getActionService().getActionRegistry().addAction(descriptor.getAction());
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         DirectoryTreeDescriptor descriptor = (DirectoryTreeDescriptor) contribution;
         registry.removeContribution(descriptor);
-        getActionService().getActionRegistry().removeAction(
-                descriptor.getAction().getId());
+        getActionService().getActionRegistry().removeAction(descriptor.getAction().getId());
     }
 
     /**
      * @since 6.0
      */
     protected ActionService getActionService() {
-        return (ActionService) Framework.getRuntime().getComponent(
-                ActionService.ID);
+        return (ActionService) Framework.getRuntime().getComponent(ActionService.ID);
     }
 
     public List<String> getDirectoryTrees() {
@@ -82,8 +78,7 @@ public class DirectoryTreeService extends DefaultComponent {
     }
 
     /**
-     * Returns only the enabled Directory Trees marked as being also Navigation
-     * Trees.
+     * Returns only the enabled Directory Trees marked as being also Navigation Trees.
      *
      * @since 5.4
      */

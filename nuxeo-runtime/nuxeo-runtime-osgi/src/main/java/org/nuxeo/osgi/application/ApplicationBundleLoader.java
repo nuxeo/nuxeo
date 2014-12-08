@@ -38,14 +38,17 @@ import org.osgi.framework.BundleException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ApplicationBundleLoader {
 
     protected StandaloneBundleLoader bundleLoader;
+
     protected final StandaloneApplication app;
+
     protected boolean useCache = false;
+
     protected boolean extractNestedJARs = true;
+
     protected boolean scanForNestedJARs = true;
 
     public ApplicationBundleLoader(StandaloneApplication app) {
@@ -90,8 +93,7 @@ public class ApplicationBundleLoader {
         return new File(app.getDataDir(), "bundles.cache");
     }
 
-    public ClassLoader loadBundles(List<File> classPath) throws IOException,
-            BundleException {
+    public ClassLoader loadBundles(List<File> classPath) throws IOException, BundleException {
         // create the standalone loader
         bundleLoader = new StandaloneBundleLoader(app, app.getSharedClassLoader());
         Thread.currentThread().setContextClassLoader(bundleLoader.getSharedClassLoader().getLoader());
@@ -130,8 +132,7 @@ public class ApplicationBundleLoader {
         for (File file : classPath) {
             if (file.isFile()) { // a JAR file
                 String name = file.getName();
-                if (!name.endsWith(".jar") || name.endsWith(".rar")
-                        || name.endsWith(".zip") || name.endsWith(".sar")) {
+                if (!name.endsWith(".jar") || name.endsWith(".rar") || name.endsWith(".zip") || name.endsWith(".sar")) {
                     continue;
                 }
                 try {
@@ -140,7 +141,7 @@ public class ApplicationBundleLoader {
                     if (bf.getSymbolicName() != null) {
                         bundles.add(bf);
                     } else {
-                       jars.add(bf);
+                        jars.add(bf);
                     }
                 } catch (IOException e) { // may be not a JAR
                     continue;
@@ -160,8 +161,7 @@ public class ApplicationBundleLoader {
         }
     }
 
-    public static void writeCache(File file, List<BundleFile> bundles,
-            List<BundleFile> jars) throws IOException {
+    public static void writeCache(File file, List<BundleFile> bundles, List<BundleFile> jars) throws IOException {
         // write loaded bundles to the cache
         BufferedWriter writer = null;
         try {

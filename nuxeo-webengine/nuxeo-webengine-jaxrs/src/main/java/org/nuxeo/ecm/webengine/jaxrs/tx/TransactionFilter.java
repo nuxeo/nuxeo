@@ -26,7 +26,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * Filter using the {@link SimpleLoginModule} to authenticate a request.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TransactionFilter extends HttpFilter {
 
@@ -35,10 +34,10 @@ public class TransactionFilter extends HttpFilter {
     }
 
     @Override
-    public void run(HttpServletRequest request, HttpServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void run(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         boolean txStarted = false;
-        if (!TransactionHelper.isTransactionActive())  {
+        if (!TransactionHelper.isTransactionActive()) {
             if (TransactionHelper.startTransaction()) {
                 txStarted = true;
             }

@@ -286,15 +286,12 @@ public class ContentViewDescriptor {
      */
     public String getPageProviderName() {
         if (pageProviderName == null) {
-            if (referencePageProvider != null
-                    && referencePageProvider.isEnabled()) {
+            if (referencePageProvider != null && referencePageProvider.isEnabled()) {
                 pageProviderName = referencePageProvider.getName();
-            } else if (coreQueryPageProvider != null
-                    && coreQueryPageProvider.isEnabled()
+            } else if (coreQueryPageProvider != null && coreQueryPageProvider.isEnabled()
                     && coreQueryPageProvider.getName() != null) {
                 pageProviderName = coreQueryPageProvider.getName();
-            } else if (genericPageProvider != null
-                    && genericPageProvider.isEnabled()
+            } else if (genericPageProvider != null && genericPageProvider.isEnabled()
                     && genericPageProvider.getName() != null) {
                 pageProviderName = genericPageProvider.getName();
             } else {
@@ -309,15 +306,12 @@ public class ContentViewDescriptor {
      */
     public Map<String, String> getPageProviderProperties() {
         if (pageProviderProperties == null) {
-            if (referencePageProvider != null
-                    && referencePageProvider.isEnabled()) {
+            if (referencePageProvider != null && referencePageProvider.isEnabled()) {
                 pageProviderProperties = referencePageProvider.getProperties();
-            } else if (coreQueryPageProvider != null
-                    && coreQueryPageProvider.isEnabled()) {
+            } else if (coreQueryPageProvider != null && coreQueryPageProvider.isEnabled()) {
                 pageProviderProperties = coreQueryPageProvider.getProperties();
 
-            } else if (genericPageProvider != null
-                    && genericPageProvider.isEnabled()) {
+            } else if (genericPageProvider != null && genericPageProvider.isEnabled()) {
                 pageProviderProperties = genericPageProvider.getProperties();
             }
         }

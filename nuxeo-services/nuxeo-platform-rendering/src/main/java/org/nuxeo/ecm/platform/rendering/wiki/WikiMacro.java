@@ -22,18 +22,15 @@ import freemarker.template.TemplateException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface WikiMacro {
 
     String getName();
 
-    void eval(WikiParameters params, String content,
-            WikiSerializerHandler serializer) throws IOException,
+    void eval(WikiParameters params, String content, WikiSerializerHandler serializer) throws IOException,
             TemplateException;
 
-    void evalInline(WikiParameters params, String content,
-            WikiSerializerHandler serializer) throws IOException,
+    void evalInline(WikiParameters params, String content, WikiSerializerHandler serializer) throws IOException,
             TemplateException;
 
 }

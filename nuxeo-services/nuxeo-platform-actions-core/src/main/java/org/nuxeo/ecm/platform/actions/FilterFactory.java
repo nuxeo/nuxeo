@@ -24,8 +24,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("custom-filter")
 public class FilterFactory {

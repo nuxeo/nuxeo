@@ -26,7 +26,6 @@ import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PackageUpdateComponent extends DefaultComponent {
 

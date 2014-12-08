@@ -30,22 +30,22 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Ignore("this is making remote connections - it serves only for demonstrating webdriverfeature")
 @RunWith(FeaturesRunner.class)
 @Features(WebDriverFeature.class)
-@HomePage(type=MyHomePage.class, url="http://www.google.com")
-@Browser(type=BrowserFamily.HTML_UNIT)
+@HomePage(type = MyHomePage.class, url = "http://www.google.com")
+@Browser(type = BrowserFamily.HTML_UNIT)
 public class WebTest {
 
-    @Inject protected MyHomePage home;
+    @Inject
+    protected MyHomePage home;
 
     @Test
     public void testSearch() {
         SearchResultPage result = home.search("test");
         assertNotNull(result.getFirstResult());
-//        System.out.println(result.getFirstResult());
+        // System.out.println(result.getFirstResult());
     }
 
 }

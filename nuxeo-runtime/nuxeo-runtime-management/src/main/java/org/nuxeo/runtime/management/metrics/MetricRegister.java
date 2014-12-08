@@ -35,7 +35,7 @@ public class MetricRegister {
 
     protected final MBeanServer server = Framework.getLocalService(ServerLocator.class).lookupServer();
 
-    protected final HashMap<String,String> cnames = new HashMap<String,String>();
+    protected final HashMap<String, String> cnames = new HashMap<String, String>();
 
     protected String canonicalName(String name, String type) {
         return ObjectNameFactory.formatMetricQualifiedName(name, type);
@@ -58,7 +58,7 @@ public class MetricRegister {
             return;
         }
         String cname = cnames.remove(name);
-        if (cname!=null) {
+        if (cname != null) {
             srv.unregisterResource(name, cname);
         }
     }

@@ -42,8 +42,7 @@ import org.nuxeo.ecm.platform.el.ExpressionContext;
  *
  * <pre>
  * MockFacesContext facesContext = new MockFacesContext() {
- *     public Object evaluateExpressionGet(FacesContext context,
- *             String expression, Class expectedType) throws ELException {
+ *     public Object evaluateExpressionGet(FacesContext context, String expression, Class expectedType) throws ELException {
  *         if (&quot;#{myTestExpression}&quot;.equals(expression)) {
  *             return myTestResult;
  *         }
@@ -98,8 +97,7 @@ public class MockFacesContext extends FacesContext {
         ELContext ctx = new ExpressionContext();
         ExpressionFactory ef = getApplication().getExpressionFactory();
         for (Map.Entry<String, Object> var : variables.entrySet()) {
-            ctx.getVariableMapper().setVariable(var.getKey(),
-                    ef.createValueExpression(var.getValue(), Object.class));
+            ctx.getVariableMapper().setVariable(var.getKey(), ef.createValueExpression(var.getValue(), Object.class));
         }
         return ctx;
     }
@@ -110,15 +108,13 @@ public class MockFacesContext extends FacesContext {
         } else {
             ExpressionFactory ef = context.getApplication().getExpressionFactory();
             ELContext elCtx = getELContext();
-            return ef.createValueExpression(elCtx, expression, Object.class).getValue(
-                    elCtx);
+            return ef.createValueExpression(elCtx, expression, Object.class).getValue(elCtx);
         }
     }
 
     @Deprecated
     @SuppressWarnings("rawtypes")
-    public Object evaluateExpressionGet(FacesContext context,
-            String expression, Class expectedType) throws ELException {
+    public Object evaluateExpressionGet(FacesContext context, String expression, Class expectedType) throws ELException {
         return evaluateExpression(context, expression);
     }
 

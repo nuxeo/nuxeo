@@ -17,8 +17,7 @@ import java.util.Collection;
 import org.nuxeo.ecm.core.schema.Namespace;
 
 /**
- * A complex type is tree-like structure of named elements which can be of any
- * type.
+ * A complex type is tree-like structure of named elements which can be of any type.
  * <p>
  * Complex types can describe and validate java <code>Map objects</code>.
  */
@@ -27,17 +26,15 @@ public interface ComplexType extends Type {
     /**
      * Gets the namespace used by this complex type.
      *
-     * @return the namespace or {@link Namespace#DEFAULT_NS} if none was
-     *         specified
+     * @return the namespace or {@link Namespace#DEFAULT_NS} if none was specified
      */
     Namespace getNamespace();
 
     /**
      * Gets the field with the given name.
      * <p>
-     * If the name is non-prefixed the first matching field is returned if any
-     * is found. If the name is prefixed then the right field is returned if any
-     * is found.
+     * If the name is non-prefixed the first matching field is returned if any is found. If the name is prefixed then
+     * the right field is returned if any is found.
      *
      * @param name the field name
      * @return the field
@@ -55,10 +52,9 @@ public interface ComplexType extends Type {
     /**
      * Adds a field to this complex type.
      * <p>
-     * If the given name is not prefixed it will be prefixed with the type
-     * prefix. If one was specified otherwise the default prefix will be used
-     * (e.g. "" - no prefix). If the given name is prefixed it will be stored as
-     * is (using the specified prefix).
+     * If the given name is not prefixed it will be prefixed with the type prefix. If one was specified otherwise the
+     * default prefix will be used (e.g. "" - no prefix). If the given name is prefixed it will be stored as is (using
+     * the specified prefix).
      *
      * @param name the field name
      * @param type the field type
@@ -81,8 +77,8 @@ public interface ComplexType extends Type {
     /**
      * Tests whether this type has any field defined.
      * <p>
-     * If a complex type has no fields, it is considered as unstructured and it
-     * accepts any field with any type and name.
+     * If a complex type has no fields, it is considered as unstructured and it accepts any field with any type and
+     * name.
      *
      * @return true if the at least one field exists, false otherwise
      */

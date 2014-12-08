@@ -43,7 +43,6 @@ import org.w3c.dom.Node;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("permission")
 public class GuardDescriptor {
@@ -57,7 +56,6 @@ public class GuardDescriptor {
     protected String expression;
 
     protected Map<String, Guard> guards;
-
 
     public GuardDescriptor() {
         this(null);
@@ -103,9 +101,9 @@ public class GuardDescriptor {
                     if (aType == null) {
                         throw new IllegalArgumentException("type is required");
                     } else {
-                        //String value = node.getTextContent().trim();
-                        //guards.put(id, new ScriptGuard(value));
-                        //TODO: compound guard
+                        // String value = node.getTextContent().trim();
+                        // guards.put(id, new ScriptGuard(value));
+                        // TODO: compound guard
                     }
                     String type = aType.getNodeValue();
                     if ("permission".equals(type)) {
@@ -147,10 +145,10 @@ public class GuardDescriptor {
                         String value = node.getTextContent().trim();
                         try {
                             Class<?> factory = Class.forName(type);
-                            Guard guard = ((GuardFactory)factory.newInstance()).newGuard(value);
+                            Guard guard = ((GuardFactory) factory.newInstance()).newGuard(value);
                             guards.put(id, guard);
                         } catch (ReflectiveOperationException e) {
-                            log.error(e, e); //TODO should throw a DeployException
+                            log.error(e, e); // TODO should throw a DeployException
                         }
                     }
                 }
@@ -173,6 +171,5 @@ public class GuardDescriptor {
     public Permission getPermission() throws ParseException {
         return new DefaultPermission(id, getGuard());
     }
-
 
 }

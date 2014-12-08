@@ -26,7 +26,6 @@ import org.nuxeo.ecm.webengine.security.Guard;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ResourceType {
 

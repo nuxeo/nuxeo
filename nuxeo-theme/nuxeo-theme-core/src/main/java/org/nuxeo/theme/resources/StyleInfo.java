@@ -26,8 +26,7 @@ public class StyleInfo {
 
     private String preview;
 
-    public StyleInfo(String name, String bank, String collection,
-            String resource, String preview) {
+    public StyleInfo(String name, String bank, String collection, String resource, String preview) {
         this.name = name;
         this.bank = bank;
         this.collection = collection;

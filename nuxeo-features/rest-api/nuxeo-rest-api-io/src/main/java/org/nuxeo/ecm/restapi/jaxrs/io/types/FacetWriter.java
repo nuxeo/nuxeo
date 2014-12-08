@@ -33,14 +33,12 @@ import org.nuxeo.ecm.core.schema.types.CompositeType;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class FacetWriter extends AbstractTypeDefWriter implements
-        MessageBodyWriter<CompositeType> {
+public class FacetWriter extends AbstractTypeDefWriter implements MessageBodyWriter<CompositeType> {
 
     @Override
-    public void writeTo(CompositeType facet, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(CompositeType facet, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException {
         JsonGenerator jg = getGenerator(entityStream);
         jg.writeStartObject();
         writeFacet(jg, facet, true);
@@ -52,14 +50,12 @@ public class FacetWriter extends AbstractTypeDefWriter implements
     }
 
     @Override
-    public long getSize(CompositeType arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(CompositeType arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return CompositeType.class.isAssignableFrom(arg0) && !DocumentType.class.isAssignableFrom(arg0);
     }
 

@@ -41,18 +41,15 @@ public class EventStatsHolder {
         return collectAsyncHandlersExecTime;
     }
 
-    public static void setCollectAsyncHandlersExecTime(
-            boolean collectAsyncHandlersExecTime) {
+    public static void setCollectAsyncHandlersExecTime(boolean collectAsyncHandlersExecTime) {
         EventStatsHolder.collectAsyncHandlersExecTime = collectAsyncHandlersExecTime;
     }
-
 
     public static boolean isCollectSyncHandlersExecTime() {
         return collectSyncHandlersExecTime;
     }
 
-    public static void setCollectSyncHandlersExecTime(
-            boolean collectSyncHandlersExecTime) {
+    public static void setCollectSyncHandlersExecTime(boolean collectSyncHandlersExecTime) {
         EventStatsHolder.collectSyncHandlersExecTime = collectSyncHandlersExecTime;
     }
 
@@ -60,7 +57,7 @@ public class EventStatsHolder {
      * @since 5.6
      */
     public static void clearStats() {
-        synchronized(aSyncStats) {
+        synchronized (aSyncStats) {
             EventStatsHolder.aSyncStats.clear();
         }
     }
@@ -73,8 +70,7 @@ public class EventStatsHolder {
         synchronized (aSyncStats) {
             CallStat stat = aSyncStats.get(name);
             if (stat == null) {
-                String label = desc.asPostCommitListener().getClass()
-                        .getSimpleName();
+                String label = desc.asPostCommitListener().getClass().getSimpleName();
                 if (desc.getIsAsync()) {
                     label += "(async)";
                 } else {
@@ -95,8 +91,7 @@ public class EventStatsHolder {
         synchronized (syncStats) {
             CallStat stat = syncStats.get(name);
             if (stat == null) {
-                String label = desc.asEventListener().getClass()
-                        .getSimpleName();
+                String label = desc.asEventListener().getClass().getSimpleName();
                 stat = new CallStat(label);
                 syncStats.put(name, stat);
             }
@@ -111,7 +106,7 @@ public class EventStatsHolder {
     /**
      * @since 5.6
      */
-    public static Map<String,CallStat> getAsyncHandlersCallStats() {
+    public static Map<String, CallStat> getAsyncHandlersCallStats() {
         return Collections.unmodifiableMap(aSyncStats);
     }
 
@@ -122,7 +117,7 @@ public class EventStatsHolder {
     /**
      * @since 5.6
      */
-    public static Map<String,CallStat> getSyncHandlersCallStats() {
+    public static Map<String, CallStat> getSyncHandlersCallStats() {
         return Collections.unmodifiableMap(syncStats);
     }
 

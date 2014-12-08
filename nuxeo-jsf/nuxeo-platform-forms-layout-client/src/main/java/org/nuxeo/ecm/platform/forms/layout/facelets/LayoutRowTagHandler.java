@@ -43,11 +43,9 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 /**
  * Layout row recursion tag handler.
  * <p>
- * Iterate over the layout rows and apply next handlers as many times as
- * needed.
+ * Iterate over the layout rows and apply next handlers as many times as needed.
  * <p>
- * Only works when used inside a tag using the {@link LayoutTagHandler}
- * template client.
+ * Only works when used inside a tag using the {@link LayoutTagHandler} template client.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -65,23 +63,20 @@ public class LayoutRowTagHandler extends TagHandler {
     /**
      * For each row in layout, exposes row variables and applies next handler.
      * <p>
-     * Needs layout to be exposed in context, so works in conjunction with
-     * {@link LayoutTagHandler}.
+     * Needs layout to be exposed in context, so works in conjunction with {@link LayoutTagHandler}.
      * <p>
-     * Row variables exposed: {@link RenderVariables.rowVariables#layoutRow}
-     * and {@link RenderVariables.rowVariables#layoutRowIndex}, as well as
+     * Row variables exposed: {@link RenderVariables.rowVariables#layoutRow} and
+     * {@link RenderVariables.rowVariables#layoutRowIndex}, as well as
      * {@link RenderVariables.columnVariables#layoutColumn} and
-     * {@link RenderVariables.columnVariables#layoutColumnIndex}, that act are
-     * aliases.
+     * {@link RenderVariables.columnVariables#layoutColumnIndex}, that act are aliases.
      */
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
         // resolve rows from layout in context
         Layout layout = null;
         String layoutVariableName = RenderVariables.layoutVariables.layout.name();
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        TagAttribute layoutAttribute = helper.createAttribute(
-                layoutVariableName, String.format("#{%s}", layoutVariableName));
+        TagAttribute layoutAttribute = helper.createAttribute(layoutVariableName,
+                String.format("#{%s}", layoutVariableName));
         if (layoutAttribute != null) {
             layout = (Layout) layoutAttribute.getObject(ctx, Layout.class);
         }
@@ -99,18 +94,13 @@ public class LayoutRowTagHandler extends TagHandler {
         for (LayoutRow row : rows) {
             // expose row variables
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
-            ValueExpression rowVe = ctx.getExpressionFactory().createValueExpression(
-                    row, LayoutRow.class);
+            ValueExpression rowVe = ctx.getExpressionFactory().createValueExpression(row, LayoutRow.class);
             variables.put(RenderVariables.rowVariables.layoutRow.name(), rowVe);
-            variables.put(RenderVariables.columnVariables.layoutColumn.name(),
-                    rowVe);
-            ValueExpression rowIndexVe = ctx.getExpressionFactory().createValueExpression(
-                    Integer.valueOf(rowCounter), Integer.class);
-            variables.put(RenderVariables.rowVariables.layoutRowIndex.name(),
-                    rowIndexVe);
-            variables.put(
-                    RenderVariables.columnVariables.layoutColumnIndex.name(),
-                    rowIndexVe);
+            variables.put(RenderVariables.columnVariables.layoutColumn.name(), rowVe);
+            ValueExpression rowIndexVe = ctx.getExpressionFactory().createValueExpression(Integer.valueOf(rowCounter),
+                    Integer.class);
+            variables.put(RenderVariables.rowVariables.layoutRowIndex.name(), rowIndexVe);
+            variables.put(RenderVariables.columnVariables.layoutColumnIndex.name(), rowIndexVe);
 
             List<String> blockedPatterns = new ArrayList<String>();
             blockedPatterns.add(RenderVariables.rowVariables.layoutRow.name());
@@ -118,8 +108,7 @@ public class LayoutRowTagHandler extends TagHandler {
             blockedPatterns.add(RenderVariables.columnVariables.layoutColumn.name());
             blockedPatterns.add(RenderVariables.columnVariables.layoutColumnIndex.name());
 
-            FaceletHandler handler = helper.getAliasTagHandler(
-                    row.getTagConfigId(), variables, blockedPatterns,
+            FaceletHandler handler = helper.getAliasTagHandler(row.getTagConfigId(), variables, blockedPatterns,
                     nextHandler);
             handler.apply(ctx, parent);
             rowCounter++;

@@ -27,14 +27,15 @@ import org.nuxeo.common.collections.ListenerList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileChangeNotifier {
 
     private static final Log log = LogFactory.getLog(FileChangeNotifier.class);
 
     private final ListenerList listeners = new ListenerList();
+
     private final Timer timer = new Timer("FileChangeNotifier");
+
     private final Map<String, FileEntry> files = new Hashtable<String, FileEntry>();
 
     public void start(int startAfter, int interval) {
@@ -89,8 +90,7 @@ public class FileChangeNotifier {
         public void run() {
             // make a copy to avoid concurrent modifs if a listener is
             // unwatching a file
-            FileEntry[] entries = files.values().toArray(
-                    new FileEntry[files.size()]);
+            FileEntry[] entries = files.values().toArray(new FileEntry[files.size()]);
             for (FileEntry entry : entries) {
                 long lastModified = entry.file.lastModified();
                 if (entry.lastModified < lastModified) {
@@ -103,7 +103,9 @@ public class FileChangeNotifier {
 
     public class FileEntry {
         public final String id;
+
         public final File file;
+
         public long lastModified;
 
         FileEntry(String id, File file) throws IOException {

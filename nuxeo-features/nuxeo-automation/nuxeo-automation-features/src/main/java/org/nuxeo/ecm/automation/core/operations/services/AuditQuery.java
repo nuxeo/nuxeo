@@ -99,9 +99,7 @@ public class AuditQuery {
                 for (Map.Entry<String, Object> entry : ctx.entrySet()) {
                     String key = entry.getKey();
                     if (key.startsWith("audit.query.")) {
-                        setQueryParam(q,
-                                key.substring("audit.query.".length()),
-                                entry.getValue());
+                        setQueryParam(q, key.substring("audit.query.".length()), entry.getValue());
                     }
                 }
                 return q.getResultList();

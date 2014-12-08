@@ -31,8 +31,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
- * This activator must be used as an activator by bundles that wants to deploy
- * GWT resources in a nuxeo server.
+ * This activator must be used as an activator by bundles that wants to deploy GWT resources in a nuxeo server.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -42,11 +41,9 @@ public class GwtBundleActivator implements BundleActivator {
 
     public static final String GWT_DEV_MODE_PROP = "nuxeo.gwt_dev_mode";
 
-    public static final File GWT_ROOT = new File(
-            Environment.getDefault().getWeb(), "root.war/gwt");
+    public static final File GWT_ROOT = new File(Environment.getDefault().getWeb(), "root.war/gwt");
 
-    public static final boolean GWT_DEV_MODE = "true".equals(System.getProperty(
-            GWT_DEV_MODE_PROP, "false"));
+    public static final boolean GWT_DEV_MODE = "true".equals(System.getProperty(GWT_DEV_MODE_PROP, "false"));
 
     protected BundleContext context;
 
@@ -60,19 +57,18 @@ public class GwtBundleActivator implements BundleActivator {
 
             @Override
             public void handleEvent(RuntimeServiceEvent event) {
-               if (event.id != RuntimeServiceEvent.RUNTIME_STARTED) {
-                   return;
-               }
-               Framework.removeListener(this);
-               try {
-                   installGwtApp(GwtBundleActivator.this.context.getBundle());
-               } catch (IOException cause) {
-                   log.error("Cannot install gwt app", cause);
-               }
+                if (event.id != RuntimeServiceEvent.RUNTIME_STARTED) {
+                    return;
+                }
+                Framework.removeListener(this);
+                try {
+                    installGwtApp(GwtBundleActivator.this.context.getBundle());
+                } catch (IOException cause) {
+                    log.error("Cannot install gwt app", cause);
+                }
             }
         });
     }
-
 
     @Override
     public void stop(BundleContext context) {
@@ -96,7 +92,5 @@ public class GwtBundleActivator implements BundleActivator {
             markerFile.createNewFile();
         }
     }
-
-
 
 }

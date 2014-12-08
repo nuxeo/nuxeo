@@ -31,7 +31,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestRemotableBlob extends NXRuntimeTestCase {
 
@@ -42,8 +41,7 @@ public class TestRemotableBlob extends NXRuntimeTestCase {
         out.write("the content".getBytes("UTF-8"));
         out.close();
         Binary binary = new Binary(file, "abc");
-        return new StorageBlob(binary, "test.txt", "text/plain", "UTF-8",
-                "abc", file.length());
+        return new StorageBlob(binary, "test.txt", "text/plain", "UTF-8", "abc", file.length());
     }
 
     @Test

@@ -22,6 +22,7 @@ import java.io.Serializable;
 public interface Field extends Serializable {
 
     int NILLABLE = 1;
+
     int CONSTANT = 2;
 
     /**
@@ -43,9 +44,8 @@ public interface Field extends Serializable {
      * <p>
      * The declaring type may differ from the complex type owning this field.
      * <p>
-     * For example, in the case of a derived complex type,
-     * the field is owned by both the derived type and the base type,
-     * but it's declared only by the base type.
+     * For example, in the case of a derived complex type, the field is owned by both the derived type and the base
+     * type, but it's declared only by the base type.
      *
      * @return the complex that declared this field
      */

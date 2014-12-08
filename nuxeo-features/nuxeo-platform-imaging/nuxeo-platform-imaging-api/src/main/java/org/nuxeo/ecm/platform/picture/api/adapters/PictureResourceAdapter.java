@@ -36,68 +36,52 @@ public interface PictureResourceAdapter {
 
     /**
      * @deprecated since 5.7. Use
-     *             {@link #fillPictureViews(org.nuxeo.ecm.core.api.Blob, String, String, java.util.ArrayList)}
-     *             instead.
+     *             {@link #fillPictureViews(org.nuxeo.ecm.core.api.Blob, String, String, java.util.ArrayList)} instead.
      */
     @Deprecated
     boolean createPicture(Blob fileContent, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions)
-            throws IOException, ClientException;
+            ArrayList<Map<String, Object>> pictureConversions) throws IOException, ClientException;
 
     /**
-     * Fill this Picture views using the given {@code pictureConversions} and
-     * {@code blob} to compute the picture views.
+     * Fill this Picture views using the given {@code pictureConversions} and {@code blob} to compute the picture views.
      * <p>
-     * The {@code blob} is converted to fit the defined
-     * {@code pictureConversions}.
+     * The {@code blob} is converted to fit the defined {@code pictureConversions}.
      *
      * @since 5.7
      */
-    boolean fillPictureViews(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions)
+    boolean fillPictureViews(Blob blob, String filename, String title, ArrayList<Map<String, Object>> pictureConversions)
             throws IOException, ClientException;
 
     /**
      * This method just delegate the job to
-     * {@link PictureResourceAdapter#fillPictureViews(Blob, String, String, ArrayList)}
-     * by passing null instead of statics picture templates.
-     *
+     * {@link PictureResourceAdapter#fillPictureViews(Blob, String, String, ArrayList)} by passing null instead of
+     * statics picture templates. <br/>
      * <br/>
-     * <br/>
-     *
-     * This will fill the picture views by using the registered picture
-     * templates.
+     * This will fill the picture views by using the registered picture templates.
      *
      * @see {@link PictureResourceAdapter#fillPictureViews(Blob, String, String, ArrayList)}
-     *
      * @since 6.9.6
      */
-    boolean fillPictureViews(Blob blob, String filename, String title)
-            throws IOException, ClientException;
+    boolean fillPictureViews(Blob blob, String filename, String title) throws IOException, ClientException;
 
     /**
-     * Pre-fill this Picture views using the given {@code pictureConversions}
-     * and {@code blob}.
+     * Pre-fill this Picture views using the given {@code pictureConversions} and {@code blob}.
      * <p>
-     * The {@code blob} is not converted and just stored as the Blob of the
-     * picture views.
+     * The {@code blob} is not converted and just stored as the Blob of the picture views.
      *
      * @since 5.7
      */
-    void preFillPictureViews(Blob blob,
-            List<Map<String, Object>> pictureConversions, ImageInfo imageInfo)
+    void preFillPictureViews(Blob blob, List<Map<String, Object>> pictureConversions, ImageInfo imageInfo)
             throws IOException, ClientException;
 
     void doRotate(int angle) throws ClientException;
 
     void doCrop(String coords) throws ClientException;
 
-    Blob getPictureFromTitle(String title) throws PropertyException,
-            ClientException;
+    Blob getPictureFromTitle(String title) throws PropertyException, ClientException;
 
     /**
-     * Returns the XPath of the given view name, or {@code null} if the view is
-     * not found on the Picture.
+     * Returns the XPath of the given view name, or {@code null} if the view is not found on the Picture.
      *
      * @param viewName the view name
      */

@@ -49,10 +49,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.query.api",
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.collections.core",
+        "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.web.common" })
 public class CollectionRightsTest {
 
@@ -72,10 +70,9 @@ public class CollectionRightsTest {
     }
 
     @Test
-    public void testDocumentNotAlteredAfterAddedToCollection()
-            throws ClientException {
-        DocumentModel testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+    public void testDocumentNotAlteredAfterAddedToCollection() throws ClientException {
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
 
         ACE ace = new ACE("Everyone", "Read", true);
@@ -87,8 +84,7 @@ public class CollectionRightsTest {
         testWorkspace.setACP(acp, true);
         testWorkspace = session.saveDocument(testWorkspace);
 
-        DocumentModel testFile = session.createDocumentModel(
-                testWorkspace.getPath().toString(), "File1", "File");
+        DocumentModel testFile = session.createDocumentModel(testWorkspace.getPath().toString(), "File1", "File");
 
         testFile = session.createDocument(testFile);
 
@@ -96,13 +92,11 @@ public class CollectionRightsTest {
 
         DocumentRef docRef = testFile.getRef();
 
-        userSession = CoreInstance.openCoreSession(
-                DatabaseHelper.DATABASE.repositoryName, "user1");
+        userSession = CoreInstance.openCoreSession(DatabaseHelper.DATABASE.repositoryName, "user1");
 
         testFile = userSession.getDocument(docRef);
 
-        collectionManager.addToNewCollection("Collection1", "blablabla",
-                testFile, userSession);
+        collectionManager.addToNewCollection("Collection1", "blablabla", testFile, userSession);
 
         testFile = userSession.getDocument(docRef);
 

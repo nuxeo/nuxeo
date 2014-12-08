@@ -27,16 +27,15 @@ public abstract class AbstractCache implements Cache {
     protected final String name;
 
     protected final int ttl;
-    
+
     protected AbstractCache(CacheDescriptor desc) {
-       name = desc.name;
-       ttl = desc.ttl;
+        name = desc.name;
+        ttl = desc.ttl;
     }
 
     @Override
     public String getName() {
         return name;
     }
-
 
 }

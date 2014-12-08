@@ -22,14 +22,14 @@ import org.nuxeo.ecm.core.storage.StorageException;
 /**
  * A rich value corresponding to one row or a collection of rows in a table.
  * <p>
- * In addition to the basic {@link Row}, this holds the old values (to check
- * dirty state), the state and a reference to the session.
+ * In addition to the basic {@link Row}, this holds the old values (to check dirty state), the state and a reference to
+ * the session.
  * <p>
  * This class has two kinds of state-changing methods:
  * <ul>
  * <li>the "set" ones, which only change the state,</li>
- * <li>the "mark" ones, which change the state and do the corresponding changes
- * in the pristine/modified maps of the context.</li>
+ * <li>the "mark" ones, which change the state and do the corresponding changes in the pristine/modified maps of the
+ * context.</li>
  * <li></li>
  * </ul>
  *
@@ -50,60 +50,51 @@ public abstract class Fragment implements Serializable {
         DETACHED, // first is default
 
         /**
-         * The fragment has been read and found to be absent in the database. It
-         * contains default data (usually {@code null}). It lives in the
-         * context's pristine map. Upon modification, the state will change to
+         * The fragment has been read and found to be absent in the database. It contains default data (usually
+         * {@code null}). It lives in the context's pristine map. Upon modification, the state will change to
          * {@link #CREATED}.
          */
         ABSENT,
 
         /**
-         * The fragment exists in the database but hasn't been changed yet. It
-         * lives in the context's pristine map. Upon modification, the state
-         * will change to {@link #MODIFIED}.
+         * The fragment exists in the database but hasn't been changed yet. It lives in the context's pristine map. Upon
+         * modification, the state will change to {@link #MODIFIED}.
          */
         PRISTINE,
 
         /**
-         * The fragment does not exist in the database and will be inserted upon
-         * save. It lives in the context's modified map. Upon save it will be
-         * inserted in the database and the state will change to
-         * {@link #PRISTINE}.
+         * The fragment does not exist in the database and will be inserted upon save. It lives in the context's
+         * modified map. Upon save it will be inserted in the database and the state will change to {@link #PRISTINE}.
          */
         CREATED,
 
         /**
-         * The fragment has been modified. It lives in the context's modified
-         * map. Upon save the database will be updated and the state will change
-         * to {@link #PRISTINE}.
+         * The fragment has been modified. It lives in the context's modified map. Upon save the database will be
+         * updated and the state will change to {@link #PRISTINE}.
          */
         MODIFIED,
 
         /**
-         * The fragment has been deleted. It lives in the context's modified
-         * map. Upon save it will be deleted from the database and the state
-         * will change to {@link #DETACHED}.
+         * The fragment has been deleted. It lives in the context's modified map. Upon save it will be deleted from the
+         * database and the state will change to {@link #DETACHED}.
          */
         DELETED,
 
         /**
-         * The fragment has been deleted as a consequence of another fragment
-         * being deleted (cascade). It lives in the context's modified map. Upon
-         * save it will be implicitly deleted from the database by the deletion
-         * of a {@link #DELETED} fragment, and the state will change to
-         * {@link #DETACHED}.
+         * The fragment has been deleted as a consequence of another fragment being deleted (cascade). It lives in the
+         * context's modified map. Upon save it will be implicitly deleted from the database by the deletion of a
+         * {@link #DELETED} fragment, and the state will change to {@link #DETACHED}.
          */
         DELETED_DEPENDENT,
 
         /**
-         * The fragment has been invalidated by a modification or creation. Any
-         * access must refetch it. It lives in the context's pristine map.
+         * The fragment has been invalidated by a modification or creation. Any access must refetch it. It lives in the
+         * context's pristine map.
          */
         INVALIDATED_MODIFIED,
 
         /**
-         * The fragment has been invalidated by a deletion. It lives in the
-         * context's pristine map.
+         * The fragment has been invalidated by a deletion. It lives in the context's pristine map.
          */
         INVALIDATED_DELETED
     }
@@ -114,8 +105,7 @@ public abstract class Fragment implements Serializable {
     protected Row row;
 
     /**
-     * The row old values, from the time of construction / refetch. The size of
-     * the the array is following {@link #row.values.length}.
+     * The row old values, from the time of construction / refetch. The size of the the array is following {@link #row.values.length}.
      */
     protected Serializable[] oldvalues;
 
@@ -128,8 +118,7 @@ public abstract class Fragment implements Serializable {
      *
      * @param row the row
      * @param state the initial state for the fragment
-     * @param context the persistence context to which the fragment is tied, or
-     *            {@code null}
+     * @param context the persistence context to which the fragment is tied, or {@code null}
      */
     protected Fragment(Row row, State state, PersistenceContext context) {
         this.row = row;
@@ -168,8 +157,7 @@ public abstract class Fragment implements Serializable {
     }
 
     /**
-     * Sets the id. This only used at most once to change a temporary id to the
-     * persistent one.
+     * Sets the id. This only used at most once to change a temporary id to the persistent one.
      *
      * @param id the new persistent id
      */
@@ -204,8 +192,8 @@ public abstract class Fragment implements Serializable {
     }
 
     /**
-     * Refetches this fragment from the database. Needed when an invalidation
-     * has been received and the fragment is accessed again.
+     * Refetches this fragment from the database. Needed when an invalidation has been received and the fragment is
+     * accessed again.
      *
      * @return the new state, {@link State#PRISTINE} or {@link State#ABSENT}
      * @throws StorageException
@@ -221,8 +209,8 @@ public abstract class Fragment implements Serializable {
     protected abstract State refetchDeleted() throws StorageException;
 
     /**
-     * Checks that access to the fragment is possible. Called internally before
-     * a get, so that invalidated fragments can be refetched.
+     * Checks that access to the fragment is possible. Called internally before a get, so that invalidated fragments can
+     * be refetched.
      *
      * @throws StorageException
      */
@@ -267,8 +255,7 @@ public abstract class Fragment implements Serializable {
         case DELETED_DEPENDENT:
             break;
         case INVALIDATED_DELETED:
-            throw new ConcurrentModificationException(
-                    "Modifying a concurrently deleted value");
+            throw new ConcurrentModificationException("Modifying a concurrently deleted value");
         }
     }
 
@@ -302,8 +289,8 @@ public abstract class Fragment implements Serializable {
     }
 
     /**
-     * Detaches the fragment from its persistence context. The caller makes sure
-     * that the fragment is removed from the context map.
+     * Detaches the fragment from its persistence context. The caller makes sure that the fragment is removed from the
+     * context map.
      */
     protected void setDetached() {
         state = State.DETACHED;
@@ -311,8 +298,7 @@ public abstract class Fragment implements Serializable {
     }
 
     /**
-     * Sets the (created/modified) fragment in the pristine state. Called after
-     * a save.
+     * Sets the (created/modified) fragment in the pristine state. Called after a save.
      */
     protected void setPristine() {
         switch (state) {
@@ -333,11 +319,9 @@ public abstract class Fragment implements Serializable {
     }
 
     /**
-     * Sets the fragment in the "invalidated from a modification" state. This is
-     * called:
+     * Sets the fragment in the "invalidated from a modification" state. This is called:
      * <ul>
-     * <li>when a database operation does non-tracked changes, which means that
-     * on access a refetch will be needed,
+     * <li>when a database operation does non-tracked changes, which means that on access a refetch will be needed,
      * <li>during post-commit invalidation.
      * </ul>
      */
@@ -360,8 +344,7 @@ public abstract class Fragment implements Serializable {
     }
 
     /**
-     * Sets the fragment in the "invalidated from a deletion" state. This is
-     * called:
+     * Sets the fragment in the "invalidated from a deletion" state. This is called:
      * <ul>
      * <li>when a database operation does a delete,
      * <li>during post-commit invalidation.
@@ -408,11 +391,9 @@ class FragmentsMap extends HashMap<String, Fragment> {
 }
 
 /**
- * Utility class grouping a main {@link Fragment} with a related hierarchy
- * {@link Fragment} and additional fragments.
+ * Utility class grouping a main {@link Fragment} with a related hierarchy {@link Fragment} and additional fragments.
  * <p>
- * If the main and hierarchy tables are not separate, then the hierarchy
- * fragment is unused.
+ * If the main and hierarchy tables are not separate, then the hierarchy fragment is unused.
  * <p>
  * This is all the data needed to describe a {@link Node}.
  */

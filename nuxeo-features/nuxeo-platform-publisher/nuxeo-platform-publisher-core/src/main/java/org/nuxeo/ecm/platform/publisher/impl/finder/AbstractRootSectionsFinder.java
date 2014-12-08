@@ -28,8 +28,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
 import org.nuxeo.runtime.api.Framework;
 
-public abstract class AbstractRootSectionsFinder extends
-        UnrestrictedSessionRunner implements RootSectionFinder {
+public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunner implements RootSectionFinder {
 
     public static final String SCHEMA_PUBLISHING = "publishing";
 
@@ -51,13 +50,11 @@ public abstract class AbstractRootSectionsFinder extends
 
     protected static final Log log = LogFactory.getLog(AbstractRootSectionsFinder.class);
 
-    protected abstract void computeUserSectionRoots(DocumentModel currentDoc)
-            throws ClientException;
+    protected abstract void computeUserSectionRoots(DocumentModel currentDoc) throws ClientException;
 
     protected abstract String buildQuery(String path);
 
-    protected abstract void computeUnrestrictedRoots(CoreSession session)
-            throws ClientException;
+    protected abstract void computeUnrestrictedRoots(CoreSession session) throws ClientException;
 
     public AbstractRootSectionsFinder(CoreSession userSession) {
         super(userSession);
@@ -70,27 +67,22 @@ public abstract class AbstractRootSectionsFinder extends
     }
 
     @Override
-    public DocumentModelList getAccessibleSectionRoots(DocumentModel currentDoc)
-            throws ClientException {
-        if ((currentDocument == null)
-                || (!currentDocument.getRef().equals(currentDoc.getRef()))) {
+    public DocumentModelList getAccessibleSectionRoots(DocumentModel currentDoc) throws ClientException {
+        if ((currentDocument == null) || (!currentDocument.getRef().equals(currentDoc.getRef()))) {
             computeUserSectionRoots(currentDoc);
         }
         return accessibleSectionRoots;
     }
 
     @Override
-    public DocumentModelList getSectionRootsForWorkspace(
-            DocumentModel currentDoc, boolean addDefaultSectionRoots)
+    public DocumentModelList getSectionRootsForWorkspace(DocumentModel currentDoc, boolean addDefaultSectionRoots)
             throws ClientException {
-        if ((currentDocument == null)
-                || (!currentDocument.getRef().equals(currentDoc.getRef()))) {
+        if ((currentDocument == null) || (!currentDocument.getRef().equals(currentDoc.getRef()))) {
             computeUserSectionRoots(currentDoc);
         }
 
         if (unrestrictedDefaultSectionRoot.isEmpty() && addDefaultSectionRoots) {
-            if (unrestrictedDefaultSectionRoot == null
-                    || unrestrictedDefaultSectionRoot.isEmpty()) {
+            if (unrestrictedDefaultSectionRoot == null || unrestrictedDefaultSectionRoot.isEmpty()) {
                 DocumentModelList defaultSectionRoots = getDefaultSectionRoots(session);
                 unrestrictedDefaultSectionRoot = new ArrayList<String>();
                 for (DocumentModel root : defaultSectionRoots) {
@@ -99,26 +91,23 @@ public abstract class AbstractRootSectionsFinder extends
             }
         }
 
-        return getFiltredSectionRoots(
-                unrestrictedSectionRootFromWorkspaceConfig, true);
+        return getFiltredSectionRoots(unrestrictedSectionRootFromWorkspaceConfig, true);
     }
 
     @Override
-    public DocumentModelList getSectionRootsForWorkspace(
-            DocumentModel currentDoc) throws ClientException {
+    public DocumentModelList getSectionRootsForWorkspace(DocumentModel currentDoc) throws ClientException {
         return getSectionRootsForWorkspace(currentDoc, false);
     }
 
     @Override
-    public DocumentModelList getDefaultSectionRoots(boolean onlyHeads,
-            boolean addDefaultSectionRoots) throws ClientException {
+    public DocumentModelList getDefaultSectionRoots(boolean onlyHeads, boolean addDefaultSectionRoots)
+            throws ClientException {
         if (unrestrictedDefaultSectionRoot == null) {
             computeUserSectionRoots(null);
         }
 
         if (unrestrictedDefaultSectionRoot.isEmpty() && addDefaultSectionRoots) {
-            if (unrestrictedDefaultSectionRoot == null
-                    || unrestrictedDefaultSectionRoot.isEmpty()) {
+            if (unrestrictedDefaultSectionRoot == null || unrestrictedDefaultSectionRoot.isEmpty()) {
                 DocumentModelList defaultSectionRoots = getDefaultSectionRoots(session);
                 unrestrictedDefaultSectionRoot = new ArrayList<String>();
                 for (DocumentModel root : defaultSectionRoots) {
@@ -131,13 +120,12 @@ public abstract class AbstractRootSectionsFinder extends
     }
 
     @Override
-    public DocumentModelList getDefaultSectionRoots(boolean onlyHeads)
-            throws ClientException {
+    public DocumentModelList getDefaultSectionRoots(boolean onlyHeads) throws ClientException {
         return getDefaultSectionRoots(onlyHeads, false);
     }
 
-    protected DocumentModelList getFiltredSectionRoots(List<String> rootPaths,
-            boolean onlyHeads) throws ClientException {
+    protected DocumentModelList getFiltredSectionRoots(List<String> rootPaths, boolean onlyHeads)
+            throws ClientException {
         List<DocumentRef> filtredDocRef = new ArrayList<DocumentRef>();
         List<DocumentRef> trashedDocRef = new ArrayList<DocumentRef>();
 
@@ -163,11 +151,9 @@ public abstract class AbstractRootSectionsFinder extends
 
     protected DocumentModelList filterDocuments(DocumentModelList docs) {
         DocumentModelList filteredDocuments = new DocumentModelListImpl();
-        FacetFilter facetFilter = new FacetFilter(
-                Arrays.asList(FacetNames.FOLDERISH),
+        FacetFilter facetFilter = new FacetFilter(Arrays.asList(FacetNames.FOLDERISH),
                 Arrays.asList(FacetNames.HIDDEN_IN_NAVIGATION));
-        LifeCycleFilter lfFilter = new LifeCycleFilter(
-                LifeCycleConstants.DELETED_STATE, false);
+        LifeCycleFilter lfFilter = new LifeCycleFilter(LifeCycleConstants.DELETED_STATE, false);
         Filter filter = new CompoundFilter(facetFilter, lfFilter);
         for (DocumentModel doc : docs) {
             if (filter.accept(doc)) {
@@ -177,24 +163,20 @@ public abstract class AbstractRootSectionsFinder extends
         return filteredDocuments;
     }
 
-    protected DocumentModelList getDefaultSectionRoots(CoreSession session)
-            throws ClientException {
+    protected DocumentModelList getDefaultSectionRoots(CoreSession session) throws ClientException {
         // XXX replace by a query !!!
         DocumentModelList sectionRoots = new DocumentModelListImpl();
-        DocumentModelList domains = session.getChildren(
-                session.getRootDocument().getRef(), "Domain");
+        DocumentModelList domains = session.getChildren(session.getRootDocument().getRef(), "Domain");
         for (DocumentModel domain : domains) {
             for (String sectionRootNameType : getSectionRootTypes()) {
-                DocumentModelList children = session.getChildren(
-                        domain.getRef(), sectionRootNameType);
+                DocumentModelList children = session.getChildren(domain.getRef(), sectionRootNameType);
                 sectionRoots.addAll(children);
             }
         }
         return sectionRoots;
     }
 
-    protected DocumentModelList getSectionRootsFromWorkspaceConfig(
-            DocumentModel workspace, CoreSession session)
+    protected DocumentModelList getSectionRootsFromWorkspaceConfig(DocumentModel workspace, CoreSession session)
             throws ClientException {
 
         DocumentModelList selectedSections = new DocumentModelListImpl();
@@ -211,12 +193,10 @@ public abstract class AbstractRootSectionsFinder extends
             if (sectionIdsList != null) {
                 for (String currentSectionId : sectionIdsList) {
                     try {
-                        DocumentModel sectionToAdd = session.getDocument(new IdRef(
-                                currentSectionId));
+                        DocumentModel sectionToAdd = session.getDocument(new IdRef(currentSectionId));
                         selectedSections.add(sectionToAdd);
                     } catch (ClientException e) {
-                        log.warn("Section with ID=" + currentSectionId
-                                + " not found for document with ID="
+                        log.warn("Section with ID=" + currentSectionId + " not found for document with ID="
                                 + workspace.getId());
                     }
                 }

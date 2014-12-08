@@ -25,8 +25,7 @@ import org.nuxeo.ecm.automation.jsf.OperationHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Saves a document (equivalent to clicking on the 'save' button on a document
- * edition form).
+ * Saves a document (equivalent to clicking on the 'save' button on a document edition form).
  *
  * @since 5.4.2
  */
@@ -44,8 +43,7 @@ public class SaveDocumentInUI {
 
     @OperationMethod
     public DocumentModel run() {
-        ctx.put(SeamOperation.OUTCOME,
-                OperationHelper.getDocumentActions().updateCurrentDocument());
+        ctx.put(SeamOperation.OUTCOME, OperationHelper.getDocumentActions().updateCurrentDocument());
         return OperationHelper.getNavigationContext().getCurrentDocument();
     }
 

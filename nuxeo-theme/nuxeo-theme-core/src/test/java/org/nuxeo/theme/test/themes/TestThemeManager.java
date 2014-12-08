@@ -54,15 +54,12 @@ public class TestThemeManager extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
     }
 
-    private Style createNamedStyle(String name, String themeName)
-            throws ThemeException {
+    private Style createNamedStyle(String name, String themeName) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         Style s = (Style) FormatFactory.create("style");
         s.setName(name);
@@ -162,22 +159,18 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
     @Test
     public void testGetThemeNameByUrl() throws MalformedURLException {
-        URL themeUrl = new URL(
-                "nxtheme://theme/engine/mode/templateEngine/theme/page/perspective");
+        URL themeUrl = new URL("nxtheme://theme/engine/mode/templateEngine/theme/page/perspective");
         assertEquals("theme", ThemeManager.getThemeNameByUrl(themeUrl));
     }
 
     @Test
     public void testGetUrlDescription() throws MalformedURLException {
-        URL themeUrl = new URL(
-                "nxtheme://theme/engine/mode/templateEngine/theme/page/perspective");
+        URL themeUrl = new URL("nxtheme://theme/engine/mode/templateEngine/theme/page/perspective");
         assertEquals(
                 "[THEME theme, PAGE page, ENGINE engine, TEMPLATE templateEngine, PERSPECTIVE perspective, MODE mode]",
                 ThemeManager.getUrlDescription(themeUrl));
-        URL elementUrl = new URL(
-                "nxtheme://element/engine/mode/templateEngine/12345678");
-        assertEquals(
-                "[ELEMENT 12345678, ENGINE engine, TEMPLATE templateEngine, MODE mode]",
+        URL elementUrl = new URL("nxtheme://element/engine/mode/templateEngine/12345678");
+        assertEquals("[ELEMENT 12345678, ENGINE engine, TEMPLATE templateEngine, MODE mode]",
                 ThemeManager.getUrlDescription(elementUrl));
     }
 
@@ -236,8 +229,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertSame(duplicate.getElementType(), element.getElementType());
 
         // compare formats
-        assertSame(widget,
-                ElementFormatter.getFormatsFor(duplicate).iterator().next());
+        assertSame(widget, ElementFormatter.getFormatsFor(duplicate).iterator().next());
     }
 
     @Test
@@ -262,24 +254,18 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertSame(duplicate.getElementType(), fragment.getElementType());
 
         // Compare fields
-        assertEquals("value of field 1",
-                ((DummyFragment) duplicate).getField1());
-        assertEquals("value of field 2",
-                ((DummyFragment) duplicate).getField2());
+        assertEquals("value of field 1", ((DummyFragment) duplicate).getField1());
+        assertEquals("value of field 2", ((DummyFragment) duplicate).getField2());
 
         // Compare formats
-        Format duplicatedFormat1 = ElementFormatter.getFormatFor(duplicate,
-                "widget");
-        assertSame(ElementFormatter.getFormatFor(fragment, "widget"),
-                duplicatedFormat1);
+        Format duplicatedFormat1 = ElementFormatter.getFormatFor(duplicate, "widget");
+        assertSame(ElementFormatter.getFormatFor(fragment, "widget"), duplicatedFormat1);
         assertEquals("description", duplicatedFormat1.getDescription());
 
         // Duplicate element, physically duplicate its formats
         Element duplicate2 = themeManager.duplicateElement(fragment, true);
-        Format duplicatedFormat2 = ElementFormatter.getFormatFor(duplicate2,
-                "widget");
-        assertNotSame(ElementFormatter.getFormatFor(fragment, "widget"),
-                duplicatedFormat2);
+        Format duplicatedFormat2 = ElementFormatter.getFormatFor(duplicate2, "widget");
+        assertNotSame(ElementFormatter.getFormatFor(fragment, "widget"), duplicatedFormat2);
         assertEquals("description", duplicatedFormat2.getDescription());
     }
 
@@ -326,10 +312,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
         style.setPropertiesFor("vertical menu", "h1", properties2);
 
         Style duplicate = (Style) themeManager.duplicateFormat(style);
-        Properties duplicateProperties1 = duplicate.getPropertiesFor(
-                "vertical menu", "");
-        Properties duplicateProperties2 = duplicate.getPropertiesFor(
-                "vertical menu", "h1");
+        Properties duplicateProperties1 = duplicate.getPropertiesFor("vertical menu", "");
+        Properties duplicateProperties2 = duplicate.getPropertiesFor("vertical menu", "h1");
 
         assertEquals(properties1, duplicateProperties1);
         assertEquals(properties2, duplicateProperties2);
@@ -420,8 +404,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testRemoveOrphanedFormatsOnTestTheme() throws ThemeIOException,
-            ThemeException {
+    public void testRemoveOrphanedFormatsOnTestTheme() throws ThemeIOException, ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
         ThemeDescriptor themeDef = new ThemeDescriptor();
@@ -435,8 +418,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testDestroyTestTheme() throws ThemeIOException, ThemeException,
-            NodeException {
+    public void testDestroyTestTheme() throws ThemeIOException, ThemeException, NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
         ThemeDescriptor themeDef = new ThemeDescriptor();
@@ -480,34 +462,25 @@ public class TestThemeManager extends NXRuntimeTestCase {
         themeManager.makeFormatInherit(ancestor2, ancestor3);
         assertTrue(ThemeManager.listAncestorFormatsOf(style).contains(ancestor3));
 
-        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor1).contains(
-                style));
-        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(
-                ancestor1));
-        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor3).contains(
-                ancestor2));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor1).contains(style));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(ancestor1));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor3).contains(ancestor2));
 
         // replace ancestor
         themeManager.makeFormatInherit(style, ancestor2);
         assertEquals(ancestor2, ThemeManager.getAncestorFormatOf(style));
         assertTrue(ThemeManager.listAncestorFormatsOf(style).contains(ancestor2));
-        assertFalse(ThemeManager.listAncestorFormatsOf(style).contains(
-                ancestor1));
+        assertFalse(ThemeManager.listAncestorFormatsOf(style).contains(ancestor1));
 
-        assertFalse(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor1).contains(
-                style));
-        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(
-                style));
-        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(
-                ancestor1));
-        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor3).contains(
-                ancestor2));
+        assertFalse(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor1).contains(style));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(style));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(ancestor1));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor3).contains(ancestor2));
 
         // remove old inheritance relation
         ThemeManager.removeInheritanceTowards(style);
         assertNull(ThemeManager.getAncestorFormatOf(style));
-        assertFalse(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(
-                style));
+        assertFalse(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(style));
 
         // test common inheritance
         Style ancestor = (Style) FormatFactory.create("style");
@@ -520,10 +493,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
         themeManager.makeFormatInherit(style2, ancestor);
         assertTrue(ThemeManager.listAncestorFormatsOf(style1).contains(ancestor));
         assertTrue(ThemeManager.listAncestorFormatsOf(style2).contains(ancestor));
-        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor).contains(
-                style1));
-        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor).contains(
-                style2));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor).contains(style1));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor).contains(style2));
 
         // test deleting a format that is inherited
         themeManager.deleteFormat(ancestor);
@@ -570,8 +541,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         theme.addChild(page).addChild(section);
         themeManager.registerTheme(theme);
 
-        PerspectiveType perspective = new PerspectiveType("default",
-                "default perspective");
+        PerspectiveType perspective = new PerspectiveType("default", "default perspective");
 
         PerspectiveManager.setVisibleInPerspective(theme, perspective);
         PerspectiveManager.setVisibleInPerspective(page, perspective);
@@ -622,8 +592,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testDeletePage() throws ThemeIOException, NodeException,
-            ThemeException {
+    public void testDeletePage() throws ThemeIOException, NodeException, ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
@@ -640,8 +609,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testMakeElementUseNamedStyle() throws ThemeException,
-            NodeException {
+    public void testMakeElementUseNamedStyle() throws ThemeException, NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
         final String currentThemeName = "theme";
@@ -669,12 +637,10 @@ public class TestThemeManager extends NXRuntimeTestCase {
         themeManager.registerFormat(pageStyle);
         ElementFormatter.setFormat(page, pageStyle);
 
-        themeManager.makeElementUseNamedStyle(page, styleName1,
-                currentThemeName);
+        themeManager.makeElementUseNamedStyle(page, styleName1, currentThemeName);
         assertSame(namedStyle1, ThemeManager.getAncestorFormatOf(pageStyle));
 
-        themeManager.makeElementUseNamedStyle(page, styleName2,
-                currentThemeName);
+        themeManager.makeElementUseNamedStyle(page, styleName2, currentThemeName);
         assertSame(namedStyle2, ThemeManager.getAncestorFormatOf(pageStyle));
     }
 
@@ -714,30 +680,22 @@ public class TestThemeManager extends NXRuntimeTestCase {
         themeManager.setNamedObject(currentThemeName, "style", namedStyle3);
 
         boolean allowMany = true;
-        ThemeManager.setStyleInheritance(styleName2, ancestorName,
-                currentThemeName, allowMany);
-        assertTrue(ThemeManager.listAncestorFormatsOf(namedStyle2).contains(
-                ancestorStyle));
+        ThemeManager.setStyleInheritance(styleName2, ancestorName, currentThemeName, allowMany);
+        assertTrue(ThemeManager.listAncestorFormatsOf(namedStyle2).contains(ancestorStyle));
 
-        ThemeManager.setStyleInheritance(styleName3, ancestorName,
-                currentThemeName, allowMany);
-        assertTrue(ThemeManager.listAncestorFormatsOf(namedStyle3).contains(
-                ancestorStyle));
+        ThemeManager.setStyleInheritance(styleName3, ancestorName, currentThemeName, allowMany);
+        assertTrue(ThemeManager.listAncestorFormatsOf(namedStyle3).contains(ancestorStyle));
         // previous inheritance still here
-        assertTrue(ThemeManager.listAncestorFormatsOf(namedStyle2).contains(
-                ancestorStyle));
+        assertTrue(ThemeManager.listAncestorFormatsOf(namedStyle2).contains(ancestorStyle));
 
         allowMany = false;
-        ThemeManager.setStyleInheritance(styleName3, ancestorName,
-                currentThemeName, allowMany);
+        ThemeManager.setStyleInheritance(styleName3, ancestorName, currentThemeName, allowMany);
         // previous inheritance gone
-        assertFalse(ThemeManager.listAncestorFormatsOf(namedStyle2).contains(
-                ancestorStyle));
+        assertFalse(ThemeManager.listAncestorFormatsOf(namedStyle2).contains(ancestorStyle));
     }
 
     @Test
-    public void testRemoveInheritanceFrom() throws NodeException,
-            ThemeException {
+    public void testRemoveInheritanceFrom() throws NodeException, ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
         Style ancestor = (Style) FormatFactory.create("style");
@@ -763,8 +721,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testRemoveInheritanceTowards() throws NodeException,
-            ThemeException {
+    public void testRemoveInheritanceTowards() throws NodeException, ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
 
         Style descendant = (Style) FormatFactory.create("style");

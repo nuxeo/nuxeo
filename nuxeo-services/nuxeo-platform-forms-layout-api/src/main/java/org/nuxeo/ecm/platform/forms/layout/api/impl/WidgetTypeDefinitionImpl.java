@@ -42,8 +42,7 @@ public class WidgetTypeDefinitionImpl implements WidgetTypeDefinition {
         super();
     }
 
-    public WidgetTypeDefinitionImpl(String name, String handlerClassName,
-            Map<String, String> properties,
+    public WidgetTypeDefinitionImpl(String name, String handlerClassName, Map<String, String> properties,
             WidgetTypeConfiguration configuration) {
         super();
         this.name = name;

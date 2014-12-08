@@ -52,14 +52,13 @@ public class TransactionHelper {
      * @return the User Transaction
      * @throws NamingException if not found
      */
-    public static UserTransaction lookupUserTransaction()
-            throws NamingException {
+    public static UserTransaction lookupUserTransaction() throws NamingException {
         UserTransaction ut = NuxeoContainer.getUserTransaction();
         if (ut == null) {
             throw new NamingException("tx manager not installed");
         }
         return ut;
-     }
+    }
 
     /**
      * Returns the UserTransaction JNDI binding name.
@@ -76,8 +75,7 @@ public class TransactionHelper {
      * @return the TransactionManager
      * @throws NamingException if not found
      */
-    public static TransactionManager lookupTransactionManager()
-            throws NamingException {
+    public static TransactionManager lookupTransactionManager() throws NamingException {
         TransactionManager tm = NuxeoContainer.getTransactionManager();
         if (tm == null) {
             throw new NamingException("tx manager not installed");
@@ -85,15 +83,13 @@ public class TransactionHelper {
         return tm;
     }
 
-
     /**
      * Looks up the TransactionSynchronizationRegistry in JNDI.
      *
      * @return the TransactionSynchronizationRegistry
      * @throws NamingException if not found
      */
-    public static TransactionSynchronizationRegistry lookupSynchronizationRegistry()
-            throws NamingException {
+    public static TransactionSynchronizationRegistry lookupSynchronizationRegistry() throws NamingException {
         TransactionSynchronizationRegistry synch = NuxeoContainer.getTransactionSynchronizationRegistry();
         if (synch == null) {
             throw new NamingException("tx manager not installed");
@@ -142,19 +138,17 @@ public class TransactionHelper {
     public static boolean isTransactionActiveOrMarkedRollback() {
         try {
             int status = lookupUserTransaction().getStatus();
-            return status == Status.STATUS_ACTIVE
-                    || status == Status.STATUS_MARKED_ROLLBACK;
+            return status == Status.STATUS_ACTIVE || status == Status.STATUS_MARKED_ROLLBACK;
         } catch (NamingException | SystemException e) {
             return false;
         }
     }
 
     /**
-     * Checks if the current User Transaction has already timed out, i.e.,
-     * whether a commit would immediately abort with a timeout exception.
+     * Checks if the current User Transaction has already timed out, i.e., whether a commit would immediately abort with
+     * a timeout exception.
      *
-     * @return {@code true} if there is a current transaction that has timed
-     *         out, {@code false} otherwise
+     * @return {@code true} if there is a current transaction that has timed out, {@code false} otherwise
      * @since 7.1
      */
     public static boolean isTransactionTimedOut() {
@@ -185,8 +179,7 @@ public class TransactionHelper {
     /**
      * Starts a new User Transaction.
      *
-     * @return {@code true} if the transaction was successfully started,
-     *         {@code false} otherwise
+     * @return {@code true} if the transaction was successfully started, {@code false} otherwise
      */
     public static boolean startTransaction() {
         UserTransaction ut = NuxeoContainer.getUserTransaction();
@@ -246,8 +239,7 @@ public class TransactionHelper {
     }
 
     /**
-     * Commit the current transaction if active and resume the principal
-     * transaction
+     * Commit the current transaction if active and resume the principal transaction
      *
      * @param tx
      */
@@ -263,9 +255,8 @@ public class TransactionHelper {
             if (tx != null) {
                 tm.resume(tx);
             }
-        } catch (SystemException | RollbackException | HeuristicMixedException
-                | HeuristicRollbackException | InvalidTransactionException
-                | IllegalStateException | SecurityException e) {
+        } catch (SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException
+                | InvalidTransactionException | IllegalStateException | SecurityException e) {
             throw new TransactionRuntimeException("Cannot resume tx", e);
         }
     }
@@ -274,9 +265,7 @@ public class TransactionHelper {
      * Starts a new User Transaction with the specified timeout.
      *
      * @param timeout the timeout in seconds, <= 0 for the default
-     * @return {@code true} if the transaction was successfully started,
-     *         {@code false} otherwise
-     *
+     * @return {@code true} if the transaction was successfully started, {@code false} otherwise
      * @since 5.6
      */
     public static boolean startTransaction(int timeout) {
@@ -287,7 +276,6 @@ public class TransactionHelper {
         if (tm == null) {
             return false;
         }
-
 
         try {
             tm.setTransactionTimeout(timeout);
@@ -307,8 +295,7 @@ public class TransactionHelper {
     }
 
     /**
-     * Commits or rolls back the User Transaction depending on the transaction
-     * status.
+     * Commits or rolls back the User Transaction depending on the transaction status.
      */
     public static void commitOrRollbackTransaction() {
         UserTransaction ut = NuxeoContainer.getUserTransaction();
@@ -329,13 +316,11 @@ public class TransactionHelper {
                 ut.rollback();
             } else {
                 if (log.isDebugEnabled()) {
-                    log.debug("Cannot commit transaction with unknown status: "
-                            + status);
+                    log.debug("Cannot commit transaction with unknown status: " + status);
                 }
             }
-        } catch (SystemException | RollbackException | HeuristicMixedException
-                | HeuristicRollbackException | IllegalStateException
-                | SecurityException e) {
+        } catch (SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException
+                | IllegalStateException | SecurityException e) {
             String msg = "Unable to commit/rollback  " + ut;
             if (e instanceof RollbackException
                     && "Unable to commit: transaction marked for rollback".equals(e.getMessage())) {
@@ -352,8 +337,7 @@ public class TransactionHelper {
     private static ThreadLocal<List<Exception>> suppressedExceptions = new ThreadLocal<List<Exception>>();
 
     /**
-     * After this, some exceptions during transaction commit may be suppressed
-     * and remembered.
+     * After this, some exceptions during transaction commit may be suppressed and remembered.
      *
      * @since 5.9.4
      */
@@ -381,22 +365,19 @@ public class TransactionHelper {
     public static List<Exception> getSuppressedExceptions() {
         List<Exception> exceptions = suppressedExceptions.get();
         suppressedExceptions.remove();
-        return exceptions == null ? Collections.<Exception> emptyList()
-                : exceptions;
+        return exceptions == null ? Collections.<Exception> emptyList() : exceptions;
     }
 
     /**
      * Sets the current User Transaction as rollback only.
      *
-     * @return {@code true} if the transaction was successfully marked rollback
-     *         only, {@code false} otherwise
+     * @return {@code true} if the transaction was successfully marked rollback only, {@code false} otherwise
      */
     public static boolean setTransactionRollbackOnly() {
         if (log.isDebugEnabled()) {
             log.debug("Setting transaction as rollback only");
             if (log.isTraceEnabled()) {
-                log.trace("Rollback stack trace", new Throwable(
-                        "Rollback stack trace"));
+                log.trace("Rollback stack trace", new Throwable("Rollback stack trace"));
             }
         }
         UserTransaction ut = NuxeoContainer.getUserTransaction();
@@ -415,8 +396,7 @@ public class TransactionHelper {
     /**
      * Sets the current User Transaction as rollback only if it has timed out.
      *
-     * @return {@code true} if the transaction was successfully marked rollback
-     *         only, {@code false} otherwise
+     * @return {@code true} if the transaction was successfully marked rollback only, {@code false} otherwise
      * @since 7.1
      */
     public static boolean setTransactionRollbackOnlyIfTimedOut() {
@@ -431,13 +411,10 @@ public class TransactionHelper {
             return;
         }
         try {
-            NuxeoContainer.getTransactionManager().getTransaction()
-                .registerSynchronization(handler);
+            NuxeoContainer.getTransactionManager().getTransaction().registerSynchronization(handler);
         } catch (IllegalStateException | RollbackException | SystemException cause) {
-            throw new RuntimeException(
-                    "Cannot register synch handler in current tx", cause);
+            throw new RuntimeException("Cannot register synch handler in current tx", cause);
         }
     }
-
 
 }

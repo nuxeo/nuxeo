@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.directory;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class ChainSelectState {
 

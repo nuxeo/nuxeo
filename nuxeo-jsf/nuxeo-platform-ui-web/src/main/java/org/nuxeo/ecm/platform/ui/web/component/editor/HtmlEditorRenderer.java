@@ -51,8 +51,7 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
     private static Map<String, String> toolbarPluginsOptions;
 
     @Override
-    public void encodeBegin(FacesContext context, UIComponent component)
-            throws IOException {
+    public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
         if (!component.isRendered()) {
             return;
         }
@@ -69,11 +68,9 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         if (pluginsOptions == null) {
             final HtmlEditorPluginService pluginService = Framework.getLocalService(HtmlEditorPluginService.class);
             pluginsOptions = new HashMap<String, String>();
-            pluginsOptions.put("plugins",
-                    pluginService.getFormattedPluginsNames());
+            pluginsOptions.put("plugins", pluginService.getFormattedPluginsNames());
             toolbarPluginsOptions = new HashMap<String, String>();
-            toolbarPluginsOptions.put("toolbar",
-                    pluginService.getFormattedToolbarsButtonsNames());
+            toolbarPluginsOptions.put("toolbar", pluginService.getFormattedToolbarsButtonsNames());
         }
 
         String clientId = editorComp.getClientId(context);
@@ -84,8 +81,7 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         writer.writeAttribute("id", clientId, null);
         writer.writeAttribute("name", clientId, null);
         if (Boolean.TRUE.equals(editorComp.getDisableHtmlInit())) {
-            writer.writeAttribute("class", editorSelector + ",disableMCEInit",
-                    null);
+            writer.writeAttribute("class", editorSelector + ",disableMCEInit", null);
         } else {
             writer.writeAttribute("class", editorSelector, null);
         }
@@ -106,15 +102,12 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
             // so that tiny mce editors are initialized individually: no need
             // anymore to specify a class to know which one should or should
             // not be initialized
-            String scriptContent = String.format(
-                    "initTinyMCE(%s, %s, '%s', '%s', '%s', '%s');",
-                    editorComp.getWidth(), editorComp.getHeight(), clientId,
-                    pluginsOptions.get("plugins"), locale.getLanguage(),
+            String scriptContent = String.format("initTinyMCE(%s, %s, '%s', '%s', '%s', '%s');", editorComp.getWidth(),
+                    editorComp.getHeight(), clientId, pluginsOptions.get("plugins"), locale.getLanguage(),
                     toolbarPluginsOptions.get("toolbar"));
             writer.writeText(scriptContent, null);
             String ajaxScriptContent = String.format(
-                    "jsf.ajax.addOnEvent(function(data) {if (data.status == \"success\") {%s}});",
-                    scriptContent);
+                    "jsf.ajax.addOnEvent(function(data) {if (data.status == \"success\") {%s}});", scriptContent);
             writer.writeText(ajaxScriptContent, null);
             String scriptContent2 = String.format(
                     "jQuery(document.getElementById('%s')).closest('form').bind('ajaxsubmit', function() {tinyMCE.editors['%s'].save();});",
@@ -137,8 +130,7 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
     protected static String generateOptions(Map<String, String> options) {
         List<String> strOptions = new ArrayList<String>();
         for (Map.Entry<String, String> option : options.entrySet()) {
-            strOptions.add(String.format("%s : \"%s\"", option.getKey(),
-                    option.getValue()));
+            strOptions.add(String.format("%s : \"%s\"", option.getKey(), option.getValue()));
         }
         StringBuilder res = new StringBuilder();
         res.append('{');

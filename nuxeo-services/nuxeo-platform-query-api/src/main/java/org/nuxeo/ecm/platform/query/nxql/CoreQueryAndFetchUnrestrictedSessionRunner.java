@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
  *
  * @since 6.0
  */
-public class CoreQueryAndFetchUnrestrictedSessionRunner extends
-        UnrestrictedSessionRunner {
+public class CoreQueryAndFetchUnrestrictedSessionRunner extends UnrestrictedSessionRunner {
 
     protected final String query;
 
@@ -35,8 +34,7 @@ public class CoreQueryAndFetchUnrestrictedSessionRunner extends
 
     protected IterableQueryResult result;
 
-    public CoreQueryAndFetchUnrestrictedSessionRunner(CoreSession session,
-            String query, String language) {
+    public CoreQueryAndFetchUnrestrictedSessionRunner(CoreSession session, String query, String language) {
         super(session);
         this.query = query;
         this.language = language;

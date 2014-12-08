@@ -22,7 +22,6 @@ import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 
 /**
  * @author matic
- *
  */
 public class DocumentsMarshaller implements JsonMarshaller<Documents> {
 
@@ -41,8 +40,7 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
         throw new UnsupportedOperationException();
     }
 
-    protected void readDocumentEntries(JsonParser jp, Documents docs)
-            throws IOException {
+    protected void readDocumentEntries(JsonParser jp, Documents docs) throws IOException {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
             docs.add(DocumentMarshaller.readDocument(jp));
@@ -64,8 +62,7 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
         return docs;
     }
 
-    protected Documents readPaginableDocuments(JsonParser jp)
-            throws IOException {
+    protected Documents readPaginableDocuments(JsonParser jp) throws IOException {
         PaginableDocuments docs = new PaginableDocuments();
         JsonToken tok = jp.getCurrentToken();
         while (tok != null && tok != JsonToken.END_OBJECT) {
@@ -91,8 +88,7 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
         return docs;
     }

@@ -33,7 +33,6 @@ import org.apache.poi.hslf.HSLFSlideShow;
 import org.apache.poi.hslf.usermodel.SlideShow;
 import org.nuxeo.common.utils.FileUtils;
 
-
 public class PptMimetypeSniffer implements MagicDetector {
 
     private static final Log log = LogFactory.getLog(PptMimetypeSniffer.class);
@@ -47,8 +46,7 @@ public class PptMimetypeSniffer implements MagicDetector {
     }
 
     public String[] getHandledTypes() {
-        return new String[] {
-                "application/vnd.ms-powerpoint"};
+        return new String[] { "application/vnd.ms-powerpoint" };
     }
 
     public String getName() {
@@ -59,8 +57,8 @@ public class PptMimetypeSniffer implements MagicDetector {
         return "0.1";
     }
 
-    public String[] process(byte[] data, int offset, int length, long bitmask,
-            char comparator, String mimeType, Map params) {
+    public String[] process(byte[] data, int offset, int length, long bitmask, char comparator, String mimeType,
+            Map params) {
 
         String[] mimetypes = { "" };
         File file = null;
@@ -80,8 +78,8 @@ public class PptMimetypeSniffer implements MagicDetector {
         return mimetypes;
     }
 
-    public String[] process(File file, int offset, int length, long bitmask,
-            char comparator, String mimeType, Map params) {
+    public String[] process(File file, int offset, int length, long bitmask, char comparator, String mimeType,
+            Map params) {
 
         return guessPowerpoint(file);
     }

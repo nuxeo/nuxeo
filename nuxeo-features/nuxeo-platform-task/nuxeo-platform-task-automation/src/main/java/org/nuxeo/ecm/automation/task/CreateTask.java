@@ -109,8 +109,7 @@ public class CreateTask {
     public DocumentModel run(DocumentModel document) throws OperationException {
         Principal pal = coreSession.getPrincipal();
         if (!(pal instanceof NuxeoPrincipal)) {
-            throw new OperationException(
-                    "Principal is not an instance of NuxeoPrincipal");
+            throw new OperationException("Principal is not an instance of NuxeoPrincipal");
         }
 
         List<String> prefixedActorIds = new ArrayList<String>();
@@ -133,11 +132,8 @@ public class CreateTask {
                 throwError = true;
             }
             if (throwError) {
-                throw new OperationException(String.format(
-                        "Invalid key to retrieve a list, array or single "
-                                + "string of prefixed actor "
-                                + "ids '%s', value is not correct: %s",
-                        keyForActors, actors));
+                throw new OperationException(String.format("Invalid key to retrieve a list, array or single "
+                        + "string of prefixed actor " + "ids '%s', value is not correct: %s", keyForActors, actors));
             }
         }
 
@@ -153,18 +149,12 @@ public class CreateTask {
 
         // create the task, passing operation chains in task variables
         Map<String, String> taskVariables = new HashMap<String, String>();
-        taskVariables.put(
-                OperationTaskVariableName.createdFromCreateTaskOperation.name(),
-                "true");
+        taskVariables.put(OperationTaskVariableName.createdFromCreateTaskOperation.name(), "true");
         if (!StringUtils.isEmpty(acceptOperationChain)) {
-            taskVariables.put(
-                    OperationTaskVariableName.acceptOperationChain.name(),
-                    acceptOperationChain);
+            taskVariables.put(OperationTaskVariableName.acceptOperationChain.name(), acceptOperationChain);
         }
         if (!StringUtils.isEmpty(rejectOperationChain)) {
-            taskVariables.put(
-                    OperationTaskVariableName.rejectOperationChain.name(),
-                    rejectOperationChain);
+            taskVariables.put(OperationTaskVariableName.rejectOperationChain.name(), rejectOperationChain);
         }
 
         // disable notification service
@@ -173,9 +163,8 @@ public class CreateTask {
         if (TaskService == null) {
             throw new OperationException("Service jbpmTaskService not found");
         }
-        TaskService.createTask(coreSession, (NuxeoPrincipal) pal, document,
-                taskName, prefixedActorIds, createOneTaskPerActor, directive,
-                comment, dueDate, taskVariables, null);
+        TaskService.createTask(coreSession, (NuxeoPrincipal) pal, document, taskName, prefixedActorIds,
+                createOneTaskPerActor, directive, comment, dueDate, taskVariables, null);
 
         return document;
     }

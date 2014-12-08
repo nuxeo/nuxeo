@@ -29,13 +29,11 @@ import org.nuxeo.ecm.platform.notification.api.Notification;
  * <li>a name
  * <li>a channel - for now only email is supported
  * <li>a subject - as a fixed string or a template to customize subject notifications
- * <li>a template - so the notifications that the user will receive can be
- * customized
+ * <li>a template - so the notifications that the user will receive can be customized
  * </ul>
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
- *
  */
 public class NotificationImpl implements Notification {
 
@@ -74,7 +72,6 @@ public class NotificationImpl implements Notification {
     }
 
     /**
-     *
      * @since 5.6
      */
     public void setTemplateExpr(String templateExpr) {

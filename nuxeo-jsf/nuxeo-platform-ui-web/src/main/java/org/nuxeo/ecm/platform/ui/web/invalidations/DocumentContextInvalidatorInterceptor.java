@@ -31,8 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 
 /**
- * Interceptor used for automatic injection/invalidation tied to
- * currentDocumentModel
+ * Interceptor used for automatic injection/invalidation tied to currentDocumentModel
  *
  * @author tiry
  */
@@ -42,8 +41,7 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public Object aroundInvoke(InvocationContext invocationContext)
-            throws Exception { // stupid Seam API
+    public Object aroundInvoke(InvocationContext invocationContext) throws Exception { // stupid Seam API
         beforeInvocation(invocationContext);
         return invocationContext.proceed();
     }
@@ -72,8 +70,8 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
     }
 
     private DocumentModel getCurrentDocumentModel() {
-        NavigationContext navigationContext = (NavigationContext) Component.getInstance(
-                "navigationContext", ScopeType.CONVERSATION);
+        NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext",
+                ScopeType.CONVERSATION);
         return navigationContext.getCurrentDocument();
     }
 

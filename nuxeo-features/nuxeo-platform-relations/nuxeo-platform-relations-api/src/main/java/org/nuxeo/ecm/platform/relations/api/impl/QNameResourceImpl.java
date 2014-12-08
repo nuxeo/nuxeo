@@ -37,7 +37,6 @@ public class QNameResourceImpl extends ResourceImpl implements QNameResource {
 
     protected String localName;
 
-
     public QNameResourceImpl(String namespace, String localName) {
         super(namespace + localName);
         this.namespace = namespace;
@@ -56,8 +55,7 @@ public class QNameResourceImpl extends ResourceImpl implements QNameResource {
 
     @Override
     public String toString() {
-        return String.format("%s('{%s}%s')", getClass().getSimpleName(),
-                namespace, localName);
+        return String.format("%s('{%s}%s')", getClass().getSimpleName(), namespace, localName);
     }
 
     public String getNamespace() {

@@ -32,9 +32,8 @@ import org.nuxeo.connect.update.util.IOUtils;
 import org.nuxeo.connect.update.xml.XmlWriter;
 
 /**
- * The delete command. This command takes 2 arguments: the file path to delete
- * and an optional md5. If md5 is set then the command fails if the target file
- * has not the same md5.
+ * The delete command. This command takes 2 arguments: the file path to delete and an optional md5. If md5 is set then
+ * the command fails if the target file has not the same md5.
  * <p>
  * The inverse of the delete command is a copy command.
  *
@@ -78,8 +77,7 @@ public class Delete extends AbstractCommand {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         try {
             if (file.isFile()) {
                 if (md5 != null && !md5.equals(IOUtils.createMd5(file))) {
@@ -91,8 +89,7 @@ public class Delete extends AbstractCommand {
                     file.deleteOnExit();
                 } else {
                     if (!file.delete()) {
-                        throw new PackageException("Cannot delete "
-                                + file.getName());
+                        throw new PackageException("Cannot delete " + file.getName());
                     }
                 }
                 return new Copy(bak, file, md5, false, onExit);
@@ -100,9 +97,7 @@ public class Delete extends AbstractCommand {
                 return null;
             }
         } catch (IOException e) {
-            throw new PackageException(
-                    "Failed to create backup when deleting: " + file.getName(),
-                    e);
+            throw new PackageException("Failed to create backup when deleting: " + file.getName(), e);
         }
     }
 

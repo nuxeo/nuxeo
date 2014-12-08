@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class MockDocument implements Document {
 
@@ -100,8 +99,7 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public Collection<String> getAllowedStateTransitions()
-            throws LifeCycleException {
+    public Collection<String> getAllowedStateTransitions() throws LifeCycleException {
         return null;
     }
 
@@ -126,8 +124,7 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public <T extends Serializable> T getSystemProp(String name, Class<T> type)
-            throws DocumentException {
+    public <T extends Serializable> T getSystemProp(String name, Class<T> type) throws DocumentException {
         return null;
     }
 
@@ -155,13 +152,11 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public void setSystemProp(String name, Serializable value)
-            throws DocumentException {
+    public void setSystemProp(String name, Serializable value) throws DocumentException {
     }
 
     @Override
-    public Document checkIn(String label, String description)
-            throws DocumentException {
+    public Document checkIn(String label, String description) throws DocumentException {
         return null;
     }
 
@@ -214,8 +209,7 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public Document addChild(String name, String typeName)
-            throws DocumentException {
+    public Document addChild(String name, String typeName) throws DocumentException {
         return null;
     }
 
@@ -253,8 +247,7 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public void setPropertyValue(String name, Serializable value)
-            throws DocumentException {
+    public void setPropertyValue(String name, Serializable value) throws DocumentException {
     }
 
     @Override
@@ -280,8 +273,7 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public Map<String, Serializable> readPrefetch(ComplexType complexType,
-            Set<String> xpaths) {
+    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) {
         return new HashMap<String, Serializable>();
     }
 

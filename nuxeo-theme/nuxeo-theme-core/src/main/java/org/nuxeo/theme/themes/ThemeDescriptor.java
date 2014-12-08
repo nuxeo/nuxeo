@@ -201,8 +201,7 @@ public class ThemeDescriptor implements Type {
     }
 
     public boolean isCompatibleWith(final String templateEngine) {
-        if (templateEngines == null || templateEngines.isEmpty()
-                || templateEngines.contains(templateEngine)) {
+        if (templateEngines == null || templateEngines.isEmpty() || templateEngines.contains(templateEngine)) {
             return true;
         }
         return false;

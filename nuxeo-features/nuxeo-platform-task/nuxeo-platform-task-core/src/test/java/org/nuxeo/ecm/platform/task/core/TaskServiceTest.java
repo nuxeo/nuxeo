@@ -77,8 +77,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.platform.query.api");
-        deployContrib("org.nuxeo.ecm.platform.test",
-                "test-usermanagerimpl/directory-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.test", "test-usermanagerimpl/directory-config.xml");
 
         deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
         deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);
@@ -128,12 +127,10 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
                                                // truncation issues.
 
         // create one task for all actors
-        taskService.createTask(session, user3, document, "Test Task Name",
-                "test type", "test process id", actors, false, "test directive", "test comment",
-                calendar.getTime(), null, null);
+        taskService.createTask(session, user3, document, "Test Task Name", "test type", "test process id", actors,
+                false, "test directive", "test comment", calendar.getTime(), null, null);
 
-        List<Task> tasks = taskService.getTaskInstances(document,
-                (NuxeoPrincipal) null, session);
+        List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
 
@@ -160,16 +157,11 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         assertFalse(task.hasEnded());
 
         assertEquals(4, task.getVariables().size());
-        assertEquals(
-                document.getRepositoryName(),
+        assertEquals(document.getRepositoryName(),
                 task.getVariable(TaskService.VariableName.documentRepositoryName.name()));
-        assertEquals(document.getId(),
-                task.getVariable(TaskService.VariableName.documentId.name()));
-        assertEquals("test directive",
-                task.getVariable(TaskService.VariableName.directive.name()));
-        assertEquals(
-                "true",
-                task.getVariable(TaskService.VariableName.createdFromTaskService.name()));
+        assertEquals(document.getId(), task.getVariable(TaskService.VariableName.documentId.name()));
+        assertEquals("test directive", task.getVariable(TaskService.VariableName.directive.name()));
+        assertEquals("true", task.getVariable(TaskService.VariableName.createdFromTaskService.name()));
 
         assertEquals(user3.getName(), task.getInitiator());
         // test rights for each user
@@ -189,8 +181,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
             taskService.acceptTask(session, user4, task, "ok i'm in");
             fail("Should have raised an exception: user4 cannot end the task");
         } catch (ClientException e) {
-            assertEquals("User with id 'myuser4' cannot end this task",
-                    e.getMessage());
+            assertEquals("User with id 'myuser4' cannot end this task", e.getMessage());
         }
 
         // accept task
@@ -199,8 +190,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         session.save();
 
         // test task again
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                session);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         // ended tasks are filtered
         assertEquals(0, tasks.size());
@@ -228,18 +218,12 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         assertFalse(task.isCancelled());
         assertTrue(task.hasEnded());
         assertEquals(5, task.getVariables().size());
-        assertEquals(
-                document.getRepositoryName(),
+        assertEquals(document.getRepositoryName(),
                 task.getVariable(TaskService.VariableName.documentRepositoryName.name()));
-        assertEquals(document.getId(),
-                task.getVariable(TaskService.VariableName.documentId.name()));
-        assertEquals("test directive",
-                task.getVariable(TaskService.VariableName.directive.name()));
-        assertEquals(
-                "true",
-                task.getVariable(TaskService.VariableName.createdFromTaskService.name()));
-        assertEquals("true",
-                task.getVariable(TaskService.VariableName.validated.name()));
+        assertEquals(document.getId(), task.getVariable(TaskService.VariableName.documentId.name()));
+        assertEquals("test directive", task.getVariable(TaskService.VariableName.directive.name()));
+        assertEquals("true", task.getVariable(TaskService.VariableName.createdFromTaskService.name()));
+        assertEquals("true", task.getVariable(TaskService.VariableName.validated.name()));
     }
 
     @Test
@@ -257,12 +241,10 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
                                                // truncation issues.
 
         // create one task per actor
-        taskService.createTask(session, user3, document, "Test Task Name",
-                actors, true, "test directive", "test comment",
-                calendar.getTime(), null, null);
+        taskService.createTask(session, user3, document, "Test Task Name", actors, true, "test directive",
+                "test comment", calendar.getTime(), null, null);
 
-        List<Task> tasks = taskService.getTaskInstances(document,
-                (NuxeoPrincipal) null, session);
+        List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         assertEquals(2, tasks.size());
         // order is database-dependent
@@ -289,16 +271,11 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         assertFalse(task1.isCancelled());
         assertFalse(task1.hasEnded());
         assertEquals(4, task1.getVariables().size());
-        assertEquals(
-                document.getRepositoryName(),
+        assertEquals(document.getRepositoryName(),
                 task1.getVariable(TaskService.VariableName.documentRepositoryName.name()));
-        assertEquals(document.getId(),
-                task1.getVariable(TaskService.VariableName.documentId.name()));
-        assertEquals("test directive",
-                task1.getVariable(TaskService.VariableName.directive.name()));
-        assertEquals(
-                "true",
-                task1.getVariable(TaskService.VariableName.createdFromTaskService.name()));
+        assertEquals(document.getId(), task1.getVariable(TaskService.VariableName.documentId.name()));
+        assertEquals("test directive", task1.getVariable(TaskService.VariableName.directive.name()));
+        assertEquals("true", task1.getVariable(TaskService.VariableName.createdFromTaskService.name()));
         assertEquals(user3.getName(), task1.getInitiator());
 
         // test rights for each user
@@ -315,16 +292,14 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
             taskService.rejectTask(session, user2, task1, "i don't agree");
             fail("Should have raised an exception: user2 cannot end the task");
         } catch (ClientException e) {
-            assertEquals("User with id 'myuser2' cannot end this task",
-                    e.getMessage());
+            assertEquals("User with id 'myuser2' cannot end this task", e.getMessage());
         }
 
         // reject task as user1
         taskService.rejectTask(session, user1, task1, "i don't agree");
         session.save();
         // test task again
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                session);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         // ended tasks are filtered
         assertEquals(1, tasks.size());
@@ -351,18 +326,12 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         assertFalse(task1.isCancelled());
         assertTrue(task1.hasEnded());
         assertEquals(5, task1.getVariables().size());
-        assertEquals(
-                document.getRepositoryName(),
+        assertEquals(document.getRepositoryName(),
                 task1.getVariable(TaskService.VariableName.documentRepositoryName.name()));
-        assertEquals(document.getId(),
-                task1.getVariable(TaskService.VariableName.documentId.name()));
-        assertEquals("test directive",
-                task1.getVariable(TaskService.VariableName.directive.name()));
-        assertEquals(
-                "true",
-                task1.getVariable(TaskService.VariableName.createdFromTaskService.name()));
-        assertEquals("false",
-                task1.getVariable(TaskService.VariableName.validated.name()));
+        assertEquals(document.getId(), task1.getVariable(TaskService.VariableName.documentId.name()));
+        assertEquals("test directive", task1.getVariable(TaskService.VariableName.directive.name()));
+        assertEquals("true", task1.getVariable(TaskService.VariableName.createdFromTaskService.name()));
+        assertEquals("false", task1.getVariable(TaskService.VariableName.validated.name()));
         assertEquals(user3.getName(), task1.getInitiator());
 
         // check second task
@@ -385,16 +354,11 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         assertFalse(task2.isCancelled());
         assertFalse(task2.hasEnded());
         assertEquals(4, task2.getVariables().size());
-        assertEquals(
-                document.getRepositoryName(),
+        assertEquals(document.getRepositoryName(),
                 task2.getVariable(TaskService.VariableName.documentRepositoryName.name()));
-        assertEquals(document.getId(),
-                task2.getVariable(TaskService.VariableName.documentId.name()));
-        assertEquals("test directive",
-                task2.getVariable(TaskService.VariableName.directive.name()));
-        assertEquals(
-                "true",
-                task2.getVariable(TaskService.VariableName.createdFromTaskService.name()));
+        assertEquals(document.getId(), task2.getVariable(TaskService.VariableName.documentId.name()));
+        assertEquals("test directive", task2.getVariable(TaskService.VariableName.directive.name()));
+        assertEquals("true", task2.getVariable(TaskService.VariableName.createdFromTaskService.name()));
         assertEquals(user3.getName(), task2.getInitiator());
 
         // test rights for each user
@@ -413,15 +377,13 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
             taskService.acceptTask(session, user4, task2, "i don't agree");
             fail("Should have raised an exception: user4 cannot end the task");
         } catch (ClientException e) {
-            assertEquals("User with id 'myuser4' cannot end this task",
-                    e.getMessage());
+            assertEquals("User with id 'myuser4' cannot end this task", e.getMessage());
         }
 
         // accept task as user1
         taskService.acceptTask(session, user1, task2, "i don't agree");
         session.save();
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                session);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
     }
@@ -446,13 +408,11 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         actors.add(user1.getName());
 
         // create task
-        taskService.createTask(session, administrator, document,
-                "Task assigned to user1", actors, false, null, null, null,
-                null, null);
+        taskService.createTask(session, administrator, document, "Task assigned to user1", actors, false, null, null,
+                null, null, null);
 
         // get user1 tasks
-        List<Task> tasks = taskService.getTaskInstances(document, user1,
-                session);
+        List<Task> tasks = taskService.getTaskInstances(document, user1, session);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
 
@@ -473,9 +433,8 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         actors.add(user2.getName());
 
         // create task
-        taskService.createTask(session, administrator, document,
-                "Task assigned to user2", actors, false, null, null, null,
-                null, null);
+        taskService.createTask(session, administrator, document, "Task assigned to user2", actors, false, null, null,
+                null, null, null);
 
         // get user2 tasks
         tasks = taskService.getTaskInstances(document, user2, session);
@@ -490,8 +449,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         assertTrue(pooledActorIds.contains(user2.getName()));
 
         // get all tasks
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                session);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         assertEquals(2, tasks.size());
 
@@ -508,9 +466,8 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         actors.add(user4.getName());
 
         // create task
-        taskService.createTask(session, administrator, document,
-                "Task assigned to user3 and user4", actors, true, null, null,
-                null, null, null);
+        taskService.createTask(session, administrator, document, "Task assigned to user3 and user4", actors, true,
+                null, null, null, null, null);
 
         // get user3 tasks
         tasks = taskService.getTaskInstances(document, user3, session);
@@ -537,8 +494,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         assertTrue(pooledActorIds.contains(user4.getName()));
 
         // get all tasks
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                session);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         assertEquals(4, tasks.size());
 
@@ -554,9 +510,8 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         actors.add(SecurityConstants.MEMBERS);
 
         // create task
-        taskService.createTask(session, administrator, document,
-                "Task assigned to members", actors, false, null, null, null,
-                null, null);
+        taskService.createTask(session, administrator, document, "Task assigned to members", actors, false, null, null,
+                null, null, null);
 
         // get user1 tasks
         tasks = taskService.getTaskInstances(document, user1, session);
@@ -579,8 +534,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         assertEquals(1, tasks.size());
 
         // get all tasks
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                session);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         assertEquals(5, tasks.size());
 
@@ -589,9 +543,8 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
     /**
      * Check prefixed and unprefixed names in actors list.
      * <p>
-     * It should have no impact since the DocumentTaskProvider rebuilds a clean
-     * actors list with both prefixed and unprefixed names of the principal and
-     * all its groups.
+     * It should have no impact since the DocumentTaskProvider rebuilds a clean actors list with both prefixed and
+     * unprefixed names of the principal and all its groups.
      *
      * @throws Exception the exception
      */
@@ -611,12 +564,10 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
 
         // create task
         taskService.createTask(session, administrator, document,
-                "Task assigned to prefixed ans unprefixed users and groups",
-                actors, true, null, null, null, null, null);
+                "Task assigned to prefixed ans unprefixed users and groups", actors, true, null, null, null, null, null);
 
         // get user1 tasks: should have 2 since in members group
-        List<Task> tasks = taskService.getTaskInstances(document, user1,
-                session);
+        List<Task> tasks = taskService.getTaskInstances(document, user1, session);
         assertNotNull(tasks);
         assertEquals(2, tasks.size());
 
@@ -641,8 +592,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         assertEquals(1, tasks.size());
 
         // get all tasks: should have 4 (1 per actor)
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                session);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         assertEquals(4, tasks.size());
     }
@@ -656,13 +606,11 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         DocumentModel document = getDocument();
         assertNotNull(document);
 
-        taskService.createTask(session, administrator, document,
-                "Task assigned to user1", Arrays.asList(user1.getName()),
-                false, null, null, null, null, null);
+        taskService.createTask(session, administrator, document, "Task assigned to user1",
+                Arrays.asList(user1.getName()), false, null, null, null, null, null);
 
         // check as admin
-        List<Task> tasks = taskService.getTaskInstances(document, user1,
-                session);
+        List<Task> tasks = taskService.getTaskInstances(document, user1, session);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
         Task task = tasks.get(0);
@@ -671,8 +619,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         assertEquals(1, pooledActorIds.size());
         assertTrue(pooledActorIds.contains(user1.getName()));
 
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                session);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
 
@@ -688,8 +635,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
             assertEquals(1, pooledActorIds.size());
             assertTrue(pooledActorIds.contains(user1.getName()));
 
-            tasks = taskService.getTaskInstances(document,
-                    (NuxeoPrincipal) null, session1);
+            tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session1);
             assertNotNull(tasks);
             assertEquals(1, tasks.size());
         } finally {
@@ -708,8 +654,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
             assertEquals(1, pooledActorIds.size());
             assertTrue(pooledActorIds.contains(user1.getName()));
 
-            tasks = taskService.getTaskInstances(document,
-                    (NuxeoPrincipal) null, session2);
+            tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session2);
             assertNotNull(tasks);
             assertEquals(1, tasks.size());
         } finally {
@@ -726,8 +671,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
     }
 
     protected DocumentModel getDocument() throws Exception {
-        DocumentModel model = session.createDocumentModel(
-                session.getRootDocument().getPathAsString(), "1", "File");
+        DocumentModel model = session.createDocumentModel(session.getRootDocument().getPathAsString(), "1", "File");
         DocumentModel doc = session.createDocument(model);
         assertNotNull(doc);
 

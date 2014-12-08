@@ -22,12 +22,10 @@ import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
- * 
- * Demonstrates how to customize existing modules by 
- * contributing new views and links  {@link ExtendedDocumentsObject} for more precision 
+ * Demonstrates how to customize existing modules by contributing new views and links {@link ExtendedDocumentsObject}
+ * for more precision
  * 
  * @author matic
- *
  */
 @WebObject(type = "ExtendedSamples", administrator = Access.GRANT)
 @Path("/samples/extended")

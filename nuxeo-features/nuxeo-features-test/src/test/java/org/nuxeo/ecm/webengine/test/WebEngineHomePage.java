@@ -22,7 +22,6 @@ import org.openqa.selenium.WebElement;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebEngineHomePage extends WebPage {
 

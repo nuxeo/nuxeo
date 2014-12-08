@@ -32,42 +32,37 @@ import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 
 /**
  * @author matic
- *
  */
 public class DocumentSchemaLoader implements DocumentLoader {
 
     @Override
-    public void fillProperties(DocumentModel doc,
-            List<DocumentProperty> props, WSRemotingSession rs)
+    public void fillProperties(DocumentModel doc, List<DocumentProperty> props, WSRemotingSession rs)
             throws ClientException {
         String[] schemas = doc.getSchemas();
         for (String schema : schemas) {
             DataModel dm = doc.getDataModel(schema);
             Map<String, Object> map = dm.getMap();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
-                collectNoBlobProperty("", entry.getKey(), entry.getValue(),
-                        props);
+                collectNoBlobProperty("", entry.getKey(), entry.getValue(), props);
             }
         }
     }
 
-    protected void collectNoBlobProperty(String prefix, String name,
-            Object value, List<DocumentProperty> props) throws ClientException {
+    protected void collectNoBlobProperty(String prefix, String name, Object value, List<DocumentProperty> props)
+            throws ClientException {
         if (value instanceof Map) {
             @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) value;
             prefix = prefix + name + '/';
             for (Map.Entry<String, Object> entry : map.entrySet()) {
-                collectNoBlobProperty(prefix, entry.getKey(), entry.getValue(),
-                        props);
+                collectNoBlobProperty(prefix, entry.getKey(), entry.getValue(), props);
             }
         } else if (value instanceof List) {
             prefix = prefix + name + '/';
             @SuppressWarnings("unchecked")
             List<Object> list = (List<Object>) value;
             for (int i = 0, len = list.size(); i < len; i++) {
-                collectNoBlobProperty(prefix, String.valueOf(i), list.get(i),
-                        props);
+                collectNoBlobProperty(prefix, String.valueOf(i), list.get(i), props);
             }
         } else if (!(value instanceof Blob)) {
             if (value == null) {
@@ -78,9 +73,9 @@ public class DocumentSchemaLoader implements DocumentLoader {
         }
     }
 
-   @SuppressWarnings("unchecked")
-    protected void collectProperty(String prefix, String name, Object value,
-            List<DocumentProperty> props) throws ClientException {
+    @SuppressWarnings("unchecked")
+    protected void collectProperty(String prefix, String name, Object value, List<DocumentProperty> props)
+            throws ClientException {
         final String STRINGS_LIST_SEP = ";";
         if (value instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) value;
@@ -103,8 +98,7 @@ public class DocumentSchemaLoader implements DocumentLoader {
                         byte[] bytes = ((Blob) value).getByteArray();
                         strValue = Base64.encodeBase64String(bytes);
                     } catch (IOException e) {
-                        throw new ClientException(
-                                "Failed to get blob property value", e);
+                        throw new ClientException("Failed to get blob property value", e);
                     }
                 } else if (value instanceof Calendar) {
                     strValue = ((Calendar) value).getTime().toString();
@@ -132,6 +126,5 @@ public class DocumentSchemaLoader implements DocumentLoader {
             props.add(new DocumentProperty(prefix + name, strValue));
         }
     }
-
 
 }

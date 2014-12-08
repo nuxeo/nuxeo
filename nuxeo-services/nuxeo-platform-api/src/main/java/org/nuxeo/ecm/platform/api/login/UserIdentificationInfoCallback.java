@@ -23,7 +23,6 @@ import java.io.Serializable;
 
 import javax.security.auth.callback.Callback;
 
-
 public class UserIdentificationInfoCallback implements Callback, Serializable {
 
     private static final long serialVersionUID = 5489765439867654390L;

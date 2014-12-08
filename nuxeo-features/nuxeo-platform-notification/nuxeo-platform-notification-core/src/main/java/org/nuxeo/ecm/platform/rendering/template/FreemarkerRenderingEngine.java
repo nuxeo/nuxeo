@@ -40,11 +40,9 @@ public abstract class FreemarkerRenderingEngine implements RenderingEngine {
     protected Configuration cfg;
 
     /**
-     * TODO : It works like this but this default implementation should return
-     * just a <code>new Configuration()</code> There should be a class that
-     * extends this class and overrides this but that brokes it right now.
-     *
-     * TODO: write a clear TODO
+     * TODO : It works like this but this default implementation should return just a <code>new Configuration()</code>
+     * There should be a class that extends this class and overrides this but that brokes it right now. TODO: write a
+     * clear TODO
      */
     public Configuration createConfiguration() {
         Configuration config = new Configuration();
@@ -54,17 +52,15 @@ public abstract class FreemarkerRenderingEngine implements RenderingEngine {
         return config;
     }
 
-    protected abstract FreemarkerRenderingJob createJob(RenderingContext ctx) ;
+    protected abstract FreemarkerRenderingJob createJob(RenderingContext ctx);
 
-    public RenderingResult process(RenderingContext ctx)
-            throws RenderingException {
+    public RenderingResult process(RenderingContext ctx) throws RenderingException {
         try {
             if (cfg == null) {
                 cfg = createConfiguration();
             }
             FreemarkerRenderingJob job = createJob(ctx);
-            cfg.getTemplate(job.getTemplate(), cfg.getDefaultEncoding()).process(
-                    ctx, job.getWriter());
+            cfg.getTemplate(job.getTemplate(), cfg.getDefaultEncoding()).process(ctx, job.getWriter());
             return job.getResult();
         } catch (IOException | TemplateException e) {
             throw new RenderingException("Freemarker processing failed", e);

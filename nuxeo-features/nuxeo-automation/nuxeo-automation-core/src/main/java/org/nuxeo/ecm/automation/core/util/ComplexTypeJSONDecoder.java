@@ -33,8 +33,7 @@ import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
- * Helper to handle Complex types decoding from a JSON encoded String entries of
- * a property file
+ * Helper to handle Complex types decoding from a JSON encoded String entries of a property file
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.5
@@ -53,8 +52,7 @@ public class ComplexTypeJSONDecoder {
         blobDecoders.add(blobDecoder);
     }
 
-    public static List<Object> decodeList(ListType lt, String json) throws IOException
-            {
+    public static List<Object> decodeList(ListType lt, String json) throws IOException {
         ArrayNode jsonArray = (ArrayNode) mapper.readTree(json);
         return decodeList(lt, jsonArray);
     }
@@ -65,11 +63,9 @@ public class ComplexTypeJSONDecoder {
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonNode node = jsonArray.get(i);
             if (node.isArray()) {
-                result.add(decodeList((ListType) currentObjectType,
-                        (ArrayNode) node));
+                result.add(decodeList((ListType) currentObjectType, (ArrayNode) node));
             } else if (node.isObject()) {
-                result.add(decode((ComplexType) currentObjectType,
-                        (ObjectNode) node));
+                result.add(decode((ComplexType) currentObjectType, (ObjectNode) node));
             } else if (node.isTextual()) {
                 result.add(node.getTextValue());
             } else if (node.isNumber()) {
@@ -106,21 +102,14 @@ public class ComplexTypeJSONDecoder {
 
                 Field field = ct.getField(nodeEntry.getKey());
                 if (field.getType().isSimpleType()) {
-                    result.put(
-                            nodeEntry.getKey(),
+                    result.put(nodeEntry.getKey(),
                             ((SimpleType) field.getType()).decode(nodeEntry.getValue().getValueAsText()));
                 } else {
                     JsonNode subNode = nodeEntry.getValue();
                     if (subNode.isArray()) {
-                        result.put(
-                                nodeEntry.getKey(),
-                                decodeList(((ListType) field.getType()),
-                                        (ArrayNode) subNode));
+                        result.put(nodeEntry.getKey(), decodeList(((ListType) field.getType()), (ArrayNode) subNode));
                     } else {
-                        result.put(
-                                nodeEntry.getKey(),
-                                decode(((ComplexType) field.getType()),
-                                        (ObjectNode) subNode));
+                        result.put(nodeEntry.getKey(), decode(((ComplexType) field.getType()), (ObjectNode) subNode));
                     }
                 }
             }

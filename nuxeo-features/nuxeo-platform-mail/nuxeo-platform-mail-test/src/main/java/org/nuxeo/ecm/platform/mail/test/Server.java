@@ -33,16 +33,14 @@ public class Server {
 
     public static void start() {
         URL mailConfUrl = Server.class.getResource(MAIL_CONF);
-        String confDirectory = mailConfUrl.getPath().substring(0,
-                mailConfUrl.getPath().lastIndexOf(File.separatorChar));
-        Mail.main(new String[]{confDirectory});
+        String confDirectory = mailConfUrl.getPath().substring(0, mailConfUrl.getPath().lastIndexOf(File.separatorChar));
+        Mail.main(new String[] { confDirectory });
     }
 
     public static void shutdown() {
         try {
             Mail.shutdown();
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             // TODO: handle exception
         }
     }

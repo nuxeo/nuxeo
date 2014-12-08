@@ -35,12 +35,12 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
-@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit",
-        "org.nuxeo.elasticsearch.seqgen", "org.nuxeo.elasticsearch.audit" })
+@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit", "org.nuxeo.elasticsearch.seqgen",
+        "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml"})
+        "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
 public class TestESHistoryProvider {
 
     protected static final Calendar testDate = Calendar.getInstance();
@@ -52,9 +52,9 @@ public class TestESHistoryProvider {
     protected List<DocumentModel> versions;
 
     protected Date t1;
-    
+
     protected Date t2;
-    
+
     protected boolean verbose = false;
 
     protected void dump(Object ob) {
@@ -67,20 +67,17 @@ public class TestESHistoryProvider {
         }
     }
 
-    protected @Inject
-    CoreSession session;
-
+    protected @Inject CoreSession session;
 
     protected void waitForAsyncCompletion() {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
-    
+
     protected void createTestEntries() throws Exception {
 
         AuditReader reader = Framework.getLocalService(AuditReader.class);
 
-        DocumentModel section = session.createDocumentModel("/", "section",
-                "Folder");
+        DocumentModel section = session.createDocumentModel("/", "section", "Folder");
         section = session.createDocument(section);
 
         doc = session.createDocumentModel("/", "doc", "File");
@@ -94,9 +91,9 @@ public class TestESHistoryProvider {
         Thread.sleep(500);
 
         t1 = new Date();
-        
+
         Thread.sleep(600);
-        
+
         // do some updates
         for (int i = 0; i < 5; i++) {
             doc.setPropertyValue("dc:description", "Update " + i);
@@ -111,11 +108,10 @@ public class TestESHistoryProvider {
         Thread.sleep(600);
 
         t2 = new Date();
-        
+
         Thread.sleep(500);
         // create a version
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MINOR);
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         doc = session.saveDocument(doc);
         session.save();
         waitForAsyncCompletion();
@@ -153,25 +149,22 @@ public class TestESHistoryProvider {
         }
 
         Thread.sleep(500);
-        
+
         waitForAsyncCompletion();
-        
+
         versions = session.getVersions(doc.getRef());
         assertEquals(2, versions.size());
         if (verbose) {
             for (DocumentModel version : versions) {
                 System.out.println("version: " + version.getId());
-                System.out.println("version series: "
-                        + version.getVersionSeriesId());
-                System.out.println("version label: "
-                        + version.getVersionLabel());
-                System.out.println("version date: "
-                        + ((Calendar) version.getPropertyValue("dc:modified")).getTime());
+                System.out.println("version series: " + version.getVersionSeriesId());
+                System.out.println("version label: " + version.getVersionLabel());
+                System.out.println("version date: " + ((Calendar) version.getPropertyValue("dc:modified")).getTime());
             }
         }
-        
-        LogEntryGen.flushAndSync();  
-        
+
+        LogEntryGen.flushAndSync();
+
         // bonus entry !
         LogEntry createdEntry = new LogEntryImpl();
         createdEntry.setEventId("bonusEvent");
@@ -184,23 +177,21 @@ public class TestESHistoryProvider {
         List<LogEntry> entries = new ArrayList<>();
         entries.add(createdEntry);
         Framework.getLocalService(AuditLogger.class).addLogEntries(entries);
-                
-        LogEntryGen.flushAndSync();        
+
+        LogEntryGen.flushAndSync();
         List<LogEntry> logs = reader.getLogEntriesFor(doc.getId());
         if (verbose) {
             dump(logs);
         }
-        
+
         if (verbose) {
-            String matchAll = "{\n" + 
-                    "            \"match_all\" : { }\n" + 
-                    "        }";
+            String matchAll = "{\n" + "            \"match_all\" : { }\n" + "        }";
             logs = (List<LogEntry>) reader.nativeQuery(matchAll, 0, 30);
             System.out.println("Total entries = " + logs.size());
             dump(logs);
         }
     }
-    
+
     @Test
     public void testDocumentHistoryPageProvider() throws Exception {
 
@@ -210,27 +201,25 @@ public class TestESHistoryProvider {
         assertNotNull(pps);
         PageProvider<?> pp;
         List<LogEntry> entries;
-        
+
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("DOCUMENT_HISTORY_PROVIDER");
         assertNotNull(ppdef);
-        long startIdx=0;
+        long startIdx = 0;
         long endIdx;
-        
+
         List<SortInfo> si = Arrays.asList(new SortInfo("id", true));
-        
+
         DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
         searchDoc = session.createDocument(searchDoc);
 
-        for (String ppName : new String[]{"DOCUMENT_HISTORY_PROVIDER_OLD", "DOCUMENT_HISTORY_PROVIDER"}) {
-            
+        for (String ppName : new String[] { "DOCUMENT_HISTORY_PROVIDER_OLD", "DOCUMENT_HISTORY_PROVIDER" }) {
+
             if (ppName.endsWith("OLD")) {
-                pp = pps.getPageProvider(ppName,
-                        si, Long.valueOf(20), Long.valueOf(0),
+                pp = pps.getPageProvider(ppName, si, Long.valueOf(20), Long.valueOf(0),
                         new HashMap<String, Serializable>(), doc.getId());
             } else {
-                pp = pps.getPageProvider(ppName,
-                        si, Long.valueOf(20), Long.valueOf(0),
+                pp = pps.getPageProvider(ppName, si, Long.valueOf(20), Long.valueOf(0),
                         new HashMap<String, Serializable>(), doc);
             }
 
@@ -251,48 +240,48 @@ public class TestESHistoryProvider {
             // create, 15+1 update , 2 checkin, 1 bonus
             assertEquals(20, entries.size());
             startIdx = entries.get(0).getId();
-            //endIdx = entries.get(17).getId();
-                        
-            // filter on eventId            
-            searchDoc.setPropertyValue("basicauditsearch:eventIds", new String[]{"documentModified"});
+            // endIdx = entries.get(17).getId();
+
+            // filter on eventId
+            searchDoc.setPropertyValue("basicauditsearch:eventIds", new String[] { "documentModified" });
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
-            pp.setSearchDocumentModel(searchDoc);            
+            pp.setSearchDocumentModel(searchDoc);
             entries = (List<LogEntry>) pp.getCurrentPage();
             assertEquals(16, entries.size());
-                        
-            // filter on category            
+
+            // filter on category
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
-            searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[]{"eventDocumentCategory"});
-            pp.setSearchDocumentModel(searchDoc);            
+            searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[] { "eventDocumentCategory" });
+            pp.setSearchDocumentModel(searchDoc);
             entries = (List<LogEntry>) pp.getCurrentPage();
             assertEquals(19, entries.size());
 
-            // filter on category            
+            // filter on category
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
-            searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[]{"eventDocumentCategory", "bonusCategory"});
-            pp.setSearchDocumentModel(searchDoc);            
+            searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[] { "eventDocumentCategory",
+                    "bonusCategory" });
+            pp.setSearchDocumentModel(searchDoc);
             entries = (List<LogEntry>) pp.getCurrentPage();
             assertEquals(20, entries.size());
-            
+
             // filter on Date !
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
             searchDoc.setPropertyValue("basicauditsearch:startDate", t1);
             searchDoc.setPropertyValue("basicauditsearch:endDate", t2);
-            pp.setSearchDocumentModel(searchDoc);            
+            pp.setSearchDocumentModel(searchDoc);
             entries = (List<LogEntry>) pp.getCurrentPage();
-            assertEquals(5, entries.size());            
+            assertEquals(5, entries.size());
         }
-        
+
         searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
         searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
         searchDoc.setPropertyValue("basicauditsearch:startDate", null);
         searchDoc.setPropertyValue("basicauditsearch:endDate", null);
-        
+
         // Get Proxy history
-        
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si,
-                Long.valueOf(30), Long.valueOf(0),
+
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(30), Long.valueOf(0),
                 new HashMap<String, Serializable>(), proxy);
         pp.setSearchDocumentModel(searchDoc);
 
@@ -307,30 +296,25 @@ public class TestESHistoryProvider {
         assertEquals(proxyEntriesCount, entries.size());
 
         assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
-        assertEquals(
-                Long.valueOf(startIdx + proxyEntriesCount + 1).longValue(),
+        assertEquals(Long.valueOf(startIdx + proxyEntriesCount + 1).longValue(),
                 entries.get(proxyEntriesCount - 1).getId());
 
         // Get version 1 history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si,
-                Long.valueOf(20), Long.valueOf(0),
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(20), Long.valueOf(0),
                 new HashMap<String, Serializable>(), versions.get(0));
         pp.setSearchDocumentModel(searchDoc);
         entries = (List<LogEntry>) pp.getCurrentPage();
 
         if (verbose) {
-            System.out.println("Version " + versions.get(0).getVersionLabel()
-                    + " doc history");
+            System.out.println("Version " + versions.get(0).getVersionLabel() + " doc history");
             dump(entries);
         }
 
         // creation + 5 updates + update + checkin + created
         int version1EntriesCount = 1 + 5 + 1 + 1 + 1;
         if (version1EntriesCount == entries.size()) {
-            assertEquals(Long.valueOf(startIdx).longValue(),
-                    entries.get(0).getId());
-            assertEquals(
-                    Long.valueOf(startIdx + version1EntriesCount - 1).longValue(),
+            assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
+            assertEquals(Long.valueOf(startIdx + version1EntriesCount - 1).longValue(),
                     entries.get(version1EntriesCount - 1).getId());
         } else {
             // because update even may be 1ms behind checkin/created !
@@ -338,16 +322,14 @@ public class TestESHistoryProvider {
         }
 
         // get version 2 history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si,
-                Long.valueOf(20), Long.valueOf(0),
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(20), Long.valueOf(0),
                 new HashMap<String, Serializable>(), versions.get(1));
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
 
         if (verbose) {
-            System.out.println("Version " + versions.get(1).getVersionLabel()
-                    + " doc history");
+            System.out.println("Version " + versions.get(1).getVersionLabel() + " doc history");
             dump(entries);
         }
 

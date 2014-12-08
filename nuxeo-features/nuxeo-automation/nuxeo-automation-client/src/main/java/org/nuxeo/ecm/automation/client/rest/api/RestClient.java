@@ -36,16 +36,16 @@ public class RestClient {
 
     protected static final String SITE_AUTOMATION_PATH_PATTERN = "(\\/api\\/v1)?(\\/site)?\\/automation";
 
-    private static final Pattern SITE_AUTOMATION_PATH_PATTERN_COMPILED = Pattern.compile(
-            SITE_AUTOMATION_PATH_PATTERN, Pattern.CASE_INSENSITIVE);
+    private static final Pattern SITE_AUTOMATION_PATH_PATTERN_COMPILED = Pattern.compile(SITE_AUTOMATION_PATH_PATTERN,
+            Pattern.CASE_INSENSITIVE);
 
     protected static final String API_PATH = "/api/v1";
 
     WebResource service;
 
     public RestClient(HttpAutomationClient httpAutomationClient) {
-        ApacheHttpClient4Handler handler = new ApacheHttpClient4Handler(
-                httpAutomationClient.http(), new BasicCookieStore(), false);
+        ApacheHttpClient4Handler handler = new ApacheHttpClient4Handler(httpAutomationClient.http(),
+                new BasicCookieStore(), false);
         ApacheHttpClient4 client = new ApacheHttpClient4(handler);
 
         if (httpAutomationClient.getRequestInterceptor() != null) {

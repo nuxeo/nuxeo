@@ -35,8 +35,7 @@ public class DocumentTranslationMapImpl implements DocumentTranslationMap {
         this.newServerName = newServerName;
     }
 
-    public DocumentTranslationMapImpl(String oldServerName,
-            String newServerName, Map<DocumentRef, DocumentRef> map) {
+    public DocumentTranslationMapImpl(String oldServerName, String newServerName, Map<DocumentRef, DocumentRef> map) {
         this.oldServerName = oldServerName;
         this.newServerName = newServerName;
         this.map = map;
@@ -87,8 +86,7 @@ public class DocumentTranslationMapImpl implements DocumentTranslationMap {
         DocumentTranslationMap ref = maps.get(0);
         String oldRepo = ref.getOldServerName();
         String newRepo = ref.getNewServerName();
-        DocumentTranslationMap finalMap = new DocumentTranslationMapImpl(
-                oldRepo, newRepo);
+        DocumentTranslationMap finalMap = new DocumentTranslationMapImpl(oldRepo, newRepo);
         for (DocumentTranslationMap item : maps) {
             finalMap.putAll(item.getDocRefMap());
         }

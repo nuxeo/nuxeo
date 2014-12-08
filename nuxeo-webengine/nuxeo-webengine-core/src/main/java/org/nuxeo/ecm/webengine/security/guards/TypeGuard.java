@@ -27,7 +27,6 @@ import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("type")
 public class TypeGuard implements Guard {

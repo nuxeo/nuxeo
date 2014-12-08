@@ -39,26 +39,18 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestQueryParser {
 
-    static final String[] GOOD_QUERIES = {
-            "SELECT name, title, description FROM folder WHERE state = 2 AND created > \"20060523\""
-    };
+    static final String[] GOOD_QUERIES = { "SELECT name, title, description FROM folder WHERE state = 2 AND created > \"20060523\"" };
 
     static final String[] BAD_QUERIES = {
-            "SELECT name WHERE title, description FROM folder WHERE state = 2 AND created > \"20060523\"",
-            "name, ",
-            "SELECT FROM WHERE",
-            "SELECT name WHERE state=2",
-            "PLEASE GET ME SOME DOCUMENTS"
-    };
+            "SELECT name WHERE title, description FROM folder WHERE state = 2 AND created > \"20060523\"", "name, ",
+            "SELECT FROM WHERE", "SELECT name WHERE state=2", "PLEASE GET ME SOME DOCUMENTS" };
 
     /**
      * Checks that literals are correctly parsed.
-     *
      */
     @Test
     public void testLiterals() {
@@ -134,8 +126,7 @@ public class TestQueryParser {
     @Test
     public void testComplexProperties() {
         SQLQuery query = SQLQueryParser.parse("SELECT dc:foo/bar/baz FROM Document"
-                + " WHERE dc:foo/3/ho = dc:bar/*/bobby"
-                + " OR dc:foo/bar[5]/gee = dc:foo/*6/hop");
+                + " WHERE dc:foo/3/ho = dc:bar/*/bobby" + " OR dc:foo/bar[5]/gee = dc:foo/*6/hop");
         SelectClause select = query.getSelectClause();
         String v = select.getVariable(0).name;
         assertEquals("dc:foo/bar/baz", v);
@@ -148,10 +139,8 @@ public class TestQueryParser {
         assertEquals("dc:foo/*6/hop", ((Reference) p2.rvalue).name);
 
         // check parsing of complex properties in other contexts
-        SQLQueryParser.parse("SELECT x FROM Document"
-                + " WHERE dc:foo/bar LIKE 'foo' OR dc:foo/bar IS NULL"
-                + " OR dc:foo/bar BETWEEN 1 AND 1000"
-                + " ORDER BY dc:foo/bar");
+        SQLQueryParser.parse("SELECT x FROM Document" + " WHERE dc:foo/bar LIKE 'foo' OR dc:foo/bar IS NULL"
+                + " OR dc:foo/bar BETWEEN 1 AND 1000" + " ORDER BY dc:foo/bar");
     }
 
     @Test
@@ -212,7 +201,7 @@ public class TestQueryParser {
 
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p - 2 = 3");
         op = ((Expression) query.getWhereClause().predicate.lvalue).operator;
-        assertEquals(Operator.SUB , op);
+        assertEquals(Operator.SUB, op);
 
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p * 2 = 3");
         op = ((Expression) query.getWhereClause().predicate.lvalue).operator;
@@ -252,7 +241,8 @@ public class TestQueryParser {
         assertEquals(Operator.IN, e.operator);
 
         LiteralList list = new LiteralList();
-        list.add(new IntegerLiteral(12)); list.add(new IntegerLiteral(13));
+        list.add(new IntegerLiteral(12));
+        list.add(new IntegerLiteral(13));
         assertEquals(list, e.rvalue);
         assertEquals("p", ((Reference) e.lvalue).name);
 
@@ -264,7 +254,8 @@ public class TestQueryParser {
         assertEquals(Operator.NOTIN, e.operator);
 
         list = new LiteralList();
-        list.add(new IntegerLiteral(12)); list.add(new IntegerLiteral(13));
+        list.add(new IntegerLiteral(12));
+        list.add(new IntegerLiteral(13));
         assertEquals(list, e.rvalue);
         assertEquals("p", ((Reference) e.lvalue).name);
     }
@@ -279,7 +270,8 @@ public class TestQueryParser {
         assertEquals(Operator.BETWEEN, e.operator);
 
         LiteralList list = new LiteralList();
-        list.add(new IntegerLiteral(10)); list.add(new IntegerLiteral(20));
+        list.add(new IntegerLiteral(10));
+        list.add(new IntegerLiteral(20));
         assertEquals(list, e.rvalue);
         assertEquals("p", ((Reference) e.lvalue).name);
 
@@ -291,7 +283,8 @@ public class TestQueryParser {
         assertEquals(Operator.NOTBETWEEN, e.operator);
 
         list = new LiteralList();
-        list.add(new IntegerLiteral(10)); list.add(new IntegerLiteral(20));
+        list.add(new IntegerLiteral(10));
+        list.add(new IntegerLiteral(20));
         assertEquals(list, e.rvalue);
         assertEquals("p", ((Reference) e.lvalue).name);
     }
@@ -451,18 +444,19 @@ public class TestQueryParser {
 
     /**
      * Author the generated AST.
+     *
      * <pre>
      *              OR
      *    p1>0                  AND
      *              p2<=10.2            =
      *                          p1-p2        5
      * </pre>
+     *
      * TODO: add tests for DateLiteral, other operators, paranthesys etc
      */
     @Test
     public void testAST() {
-        SQLQuery query = SQLQueryParser.parse(
-                "SELECT p1, p2 FROM table WHERE p1 > 0 OR p2 <= 10.2 AND p1 - p2 = 5");
+        SQLQuery query = SQLQueryParser.parse("SELECT p1, p2 FROM table WHERE p1 > 0 OR p2 <= 10.2 AND p1 - p2 = 5");
 
         SelectList select = query.getSelectClause().elements;
         assertEquals(2, select.size());
@@ -495,8 +489,8 @@ public class TestQueryParser {
     }
 
     /**
-     * Tests the manual query creation and parser by comparing the two queries
-     * (the manual one ith the parsed one).
+     * Tests the manual query creation and parser by comparing the two queries (the manual one ith the parsed one).
+     *
      * <pre>
      *              OR
      *    title="test"         AND
@@ -506,8 +500,7 @@ public class TestQueryParser {
      */
     @Test
     public void testWhereClause() {
-        SQLQuery query = SQLQueryParser.parse(
-                "SELECT p1, p2 FROM t WHERE title = \"test\" OR p2 >= 10.2 AND p1 + p2 < 5");
+        SQLQuery query = SQLQueryParser.parse("SELECT p1, p2 FROM t WHERE title = \"test\" OR p2 >= 10.2 AND p1 + p2 < 5");
 
         Expression expr1 = new Expression(new Reference("p1"), Operator.SUM, new Reference("p2"));
         expr1 = new Expression(expr1, Operator.LT, new IntegerLiteral(5));
@@ -520,8 +513,7 @@ public class TestQueryParser {
         Predicate pred = new Predicate(expr2, Operator.OR, expr1);
 
         // create the query by hand
-        SQLQuery myquery = new SQLQuery(new SelectClause(), new FromClause(),
-                new WhereClause(pred));
+        SQLQuery myquery = new SQLQuery(new SelectClause(), new FromClause(), new WhereClause(pred));
         myquery.getSelectClause().add(new Reference("p1"));
         myquery.getSelectClause().add(new Reference("p2"));
         myquery.getFromClause().add("t");
@@ -531,6 +523,7 @@ public class TestQueryParser {
 
     /**
      * Same query as before but with parenthesis on first OR condition.
+     *
      * <pre>
      *                          AND
      *               OR                     <
@@ -540,8 +533,7 @@ public class TestQueryParser {
      */
     @Test
     public void testWhereClauseWithParenthesis() {
-        SQLQuery query = SQLQueryParser.parse(
-                "SELECT p1, p2 FROM t WHERE (title = \"test\" OR p2 >= 10.2) AND p1 + p2 < 5");
+        SQLQuery query = SQLQueryParser.parse("SELECT p1, p2 FROM t WHERE (title = \"test\" OR p2 >= 10.2) AND p1 + p2 < 5");
 
         // create the query by hand
         Predicate expr1 = new Predicate(new Reference("title"), Operator.EQ, new StringLiteral("test"));
@@ -553,8 +545,7 @@ public class TestQueryParser {
 
         Predicate pred = new Predicate(expr1, Operator.AND, expr2);
 
-        SQLQuery myquery = new SQLQuery(new SelectClause(), new FromClause(),
-                new WhereClause(pred));
+        SQLQuery myquery = new SQLQuery(new SelectClause(), new FromClause(), new WhereClause(pred));
 
         myquery.getSelectClause().add(new Reference("p1"));
         myquery.getSelectClause().add(new Reference("p2"));
@@ -630,7 +621,7 @@ public class TestQueryParser {
     }
 
     @Test
-    public void testFromTypeClause(){
+    public void testFromTypeClause() {
         SQLQuery query = SQLQueryParser.parse("SELECT p, q, r FROM TYPE t1");
         assertEquals(FromClause.DOCTYPE, query.getFromClause().getType());
         assertEquals("t1", query.getFromClause().elements.get(0));
@@ -645,7 +636,7 @@ public class TestQueryParser {
     }
 
     @Test
-    public void testFromLocationClause(){
+    public void testFromLocationClause() {
         SQLQuery query = SQLQueryParser.parse("SELECT p, q, r FROM LOCATION l1");
         assertEquals(FromClause.LOCATION, query.getFromClause().getType());
         assertEquals("l1", query.getFromClause().elements.get(0));
@@ -659,13 +650,13 @@ public class TestQueryParser {
     @Test
     public void testGroupByClause() {
         // TODO
-        //Query query = QueryParser.parse("SELECT p, q, r FROM t GROUP BY p, q");
+        // Query query = QueryParser.parse("SELECT p, q, r FROM t GROUP BY p, q");
     }
 
     @Test
     public void testHavingClause() {
         // TODO
-        //Query query = QueryParser.parse("SELECT p, q, r FROM t HAVING p = 1");
+        // Query query = QueryParser.parse("SELECT p, q, r FROM t HAVING p = 1");
     }
 
     @Test

@@ -19,7 +19,6 @@ import java.io.Writer;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TocText implements WikiText {
 
@@ -34,13 +33,12 @@ public class TocText implements WikiText {
         }
     }
 
-    public void writeTo(WikiSerializerHandler handler, Writer writer)
-            throws IOException {
+    public void writeTo(WikiSerializerHandler handler, Writer writer) throws IOException {
         printToc(handler, writer);
     }
 
     public void printToc(WikiSerializerHandler serializer, Writer writer) throws IOException {
-        printTocHeader(serializer,  writer, title);
+        printTocHeader(serializer, writer, title);
         Toc.Entry h = serializer.toc.head.firstChild;
         if (h != null) {
             prinEntry(serializer, writer, h);
@@ -51,9 +49,9 @@ public class TocText implements WikiText {
     private void prinEntry(WikiSerializerHandler serializer, Writer writer, Toc.Entry entry) throws IOException {
         printHeading(serializer, writer, entry);
         if (entry.firstChild != null) {
-            writer.write("<ol>"+WikiWriter.LINE_SEP);
+            writer.write("<ol>" + WikiWriter.LINE_SEP);
             prinEntry(serializer, writer, entry.firstChild);
-            writer.write("</ol>"+WikiWriter.LINE_SEP);
+            writer.write("</ol>" + WikiWriter.LINE_SEP);
         }
         if (entry.next != null) {
             prinEntry(serializer, writer, entry.next);
@@ -64,7 +62,7 @@ public class TocText implements WikiText {
         writer.write("<table class=\"toc\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">");
         writer.write(WikiWriter.LINE_SEP);
         writer.write("<tr><td>");
-        writer.write("<div class=\"tocTitle\">"+title+"</div>");
+        writer.write("<div class=\"tocTitle\">" + title + "</div>");
         writer.write("</td></tr>");
         writer.write(WikiWriter.LINE_SEP);
         writer.write("<tr><td>");
@@ -83,7 +81,7 @@ public class TocText implements WikiText {
     }
 
     protected void printHeading(WikiSerializerHandler serializer, Writer writer, Toc.Entry entry) throws IOException {
-        writer.write("<li><a href=\"#heading_"+entry.id+"\">"+entry.title+"</a></li>"+WikiWriter.LINE_SEP);
+        writer.write("<li><a href=\"#heading_" + entry.id + "\">" + entry.title + "</a></li>" + WikiWriter.LINE_SEP);
     }
 
 }

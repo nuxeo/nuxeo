@@ -13,21 +13,29 @@ package org.nuxeo.ecm.webengine.jaxrs.servlet.mapping;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class SegmentMatcher {
 
     public static final SegmentMatcher ANY = new SegmentMatcher() {
-        public boolean matches(String segment) { return true; }
-        public String toString() { return "**"; }
+        public boolean matches(String segment) {
+            return true;
+        }
+
+        public String toString() {
+            return "**";
+        }
     };
 
     public static final SegmentMatcher ANY_SEGMENT = new SegmentMatcher() {
-        public boolean matches(String segment) { return true; }
-        public String toString() { return "*"; }
+        public boolean matches(String segment) {
+            return true;
+        }
+
+        public String toString() {
+            return "*";
+        }
     };
 
     public abstract boolean matches(String segment);
-
 
 }

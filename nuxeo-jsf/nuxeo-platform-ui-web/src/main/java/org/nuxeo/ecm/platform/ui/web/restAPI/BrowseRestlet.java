@@ -36,8 +36,7 @@ import org.restlet.data.Response;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
-public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements
-        Serializable {
+public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements Serializable {
 
     private static final long serialVersionUID = -4518256101431979971L;
 
@@ -131,8 +130,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements
                     el.setAttribute("type", child.getType());
                     el.setAttribute("id", child.getId());
                     el.setAttribute("name", child.getName());
-                    el.setAttribute("url", getRelURL(repo, child.getRef()
-                            .toString()));
+                    el.setAttribute("url", getRelURL(repo, child.getRef().toString()));
                     current.appendChild(el);
                 }
             }

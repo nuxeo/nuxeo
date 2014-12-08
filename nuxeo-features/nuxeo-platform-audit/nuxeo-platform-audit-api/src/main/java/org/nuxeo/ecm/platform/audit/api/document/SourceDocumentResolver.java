@@ -43,8 +43,7 @@ public class SourceDocumentResolver extends UnrestrictedSessionRunner {
             version = document;
         }
         if (version != null) {
-            if (version.getSourceId() != null
-                    && session.exists(new IdRef(version.getSourceId()))) {
+            if (version.getSourceId() != null && session.exists(new IdRef(version.getSourceId()))) {
                 sourceDocument = session.getSourceDocument(version.getRef());
             }
         }

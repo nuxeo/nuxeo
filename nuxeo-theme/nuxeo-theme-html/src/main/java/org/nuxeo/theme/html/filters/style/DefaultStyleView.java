@@ -37,15 +37,13 @@ public class DefaultStyleView extends AbstractView {
         // add inherited styles first
         final List<Format> ancestors = ThemeManager.listAncestorFormatsOf(style);
         for (Format ancestor : ancestors) {
-            sb.insert(0, String.format("%s ",
-                    CSSUtils.computeCssClassName((Style) ancestor)));
+            sb.insert(0, String.format("%s ", CSSUtils.computeCssClassName((Style) ancestor)));
         }
         sb.append(CSSUtils.computeCssClassName(style));
 
         // get the widget view name
         final Element element = info.getElement();
-        final Widget widget = (Widget) ElementFormatter.getFormatFor(element,
-                "widget");
+        final Widget widget = (Widget) ElementFormatter.getFormatFor(element, "widget");
         if (widget != null) {
             final String className = CSSUtils.toUpperCamelCase(widget.getName());
             sb.append(className);

@@ -46,16 +46,16 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
-@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.datasource","org.nuxeo.ecm.core.persistence","org.nuxeo.ecm.platform.audit",
-        "org.nuxeo.elasticsearch.seqgen" })
+@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.persistence",
+        "org.nuxeo.ecm.platform.audit", "org.nuxeo.elasticsearch.seqgen" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.audit:nxaudit-ds.xml","org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
+@LocalDeploy({ "org.nuxeo.elasticsearch.audit:nxaudit-ds.xml",
+        "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
 public class TestAuditMigration {
 
-    protected @Inject
-    CoreSession session;
+    protected @Inject CoreSession session;
 
     @Inject
     protected ElasticSearchAdmin esa;
@@ -73,7 +73,7 @@ public class TestAuditMigration {
         AuditBackend backend = audit.getBackend();
         Assert.assertNotNull(backend);
         Assert.assertTrue(backend instanceof DefaultAuditBackend);
-        
+
         // generate some entries
         List<LogEntry> entries = new ArrayList<>();
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
@@ -83,40 +83,36 @@ public class TestAuditMigration {
             entries.add(LogEntryGen.doCreateEntry("mydoc", "evt" + i, "cat" + i % 2));
         }
         logger.addLogEntries(entries);
-        
+
         TransactionHelper.commitOrRollbackTransaction();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         TransactionHelper.startTransaction();
-        
-        List<Long> res = (List<Long>) backend.nativeQuery("select count(*) from LogEntry", 1,20);        
-        final long nbEntriesToMigrate = res.get(0).longValue();        
-        Assert.assertEquals(1000, nbEntriesToMigrate);        
-        
+
+        List<Long> res = (List<Long>) backend.nativeQuery("select count(*) from LogEntry", 1, 20);
+        final long nbEntriesToMigrate = res.get(0).longValue();
+        Assert.assertEquals(1000, nbEntriesToMigrate);
+
         harness.deployBundle("org.nuxeo.elasticsearch.audit");
         backend = audit.getBackend();
         Assert.assertNotNull(backend);
         Assert.assertTrue(backend instanceof ESAuditBackend);
-        
+
         ESAuditBackend esBackend = (ESAuditBackend) backend;
-        
+
         esBackend.migrate(100);
-        
+
         Framework.getLocalService(WorkManager.class).awaitCompletion(1, TimeUnit.MINUTES);
-        
+
         LogEntryGen.flushAndSync();
-        
-        String singleQuery = "            {\n"
-                + "                \"bool\" : {\n"
-                + "                  \"must\" : {\n"
-                + "                    \"match\" : {\n"
-                + "                      \"docUUID\" : {\n"
+
+        String singleQuery = "            {\n" + "                \"bool\" : {\n" + "                  \"must\" : {\n"
+                + "                    \"match\" : {\n" + "                      \"docUUID\" : {\n"
                 + "                        \"query\" : \"mydoc\",\n"
-                + "                        \"type\" : \"boolean\"\n"
-                + "                      }\n" + "                    }\n"
-                + "                  }\n" + "                }\n"
+                + "                        \"type\" : \"boolean\"\n" + "                      }\n"
+                + "                    }\n" + "                  }\n" + "                }\n"
                 + "              }          \n" + "";
-        List<LogEntry> migratedEntries = (List<LogEntry>) backend.nativeQuery(singleQuery, 0,1001);        
-        Assert.assertEquals(1000, migratedEntries.size());                       
+        List<LogEntry> migratedEntries = (List<LogEntry>) backend.nativeQuery(singleQuery, 0, 1001);
+        Assert.assertEquals(1000, migratedEntries.size());
     }
 
 }

@@ -76,7 +76,6 @@ import freemarker.template.TemplateException;
  * </pre>
  *
  * Currently only supports one email in to address
- *
  */
 public class EmailHelper {
 
@@ -91,7 +90,6 @@ public class EmailHelper {
     public EmailHelper() {
     }
 
-
     /**
      * Static Method: sendmail(Map mail).
      *
@@ -100,14 +98,13 @@ public class EmailHelper {
     public void sendmail(Map<String, Object> mail) throws MessagingException {
         try {
             sendmail0(mail);
-        } catch (LoginException | IOException | TemplateException
-                | RenderingException e) {
+        } catch (LoginException | IOException | TemplateException | RenderingException e) {
             throw new MessagingException(e.getMessage(), e);
         }
     }
 
-    protected void sendmail0(Map<String, Object> mail) throws MessagingException,
-            IOException, TemplateException, LoginException, RenderingException {
+    protected void sendmail0(Map<String, Object> mail) throws MessagingException, IOException, TemplateException,
+            LoginException, RenderingException {
 
         Session session = getSession();
         if (javaMailNotAvailable || session == null) {
@@ -123,8 +120,7 @@ public class EmailHelper {
             log.error("Invalid email recipient: " + to);
             return;
         }
-        msg.setRecipients(Message.RecipientType.TO,
-                InternetAddress.parse((String) to, false));
+        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse((String) to, false));
 
         RenderingService rs = Framework.getService(RenderingService.class);
 
@@ -137,8 +133,7 @@ public class EmailHelper {
         String customSubjectTemplate = (String) mail.get(NotificationConstants.SUBJECT_TEMPLATE_KEY);
         if (customSubjectTemplate == null) {
             String subjTemplate = (String) mail.get(NotificationConstants.SUBJECT_KEY);
-            Template templ = new Template("name",
-                    new StringReader(subjTemplate), stringCfg);
+            Template templ = new Template("name", new StringReader(subjTemplate), stringCfg);
 
             Writer out = new StringWriter();
             templ.process(mail, out);
@@ -146,8 +141,7 @@ public class EmailHelper {
 
             msg.setSubject(out.toString(), "UTF-8");
         } else {
-            rs.registerEngine(new NotificationsRenderingEngine(
-                    customSubjectTemplate));
+            rs.registerEngine(new NotificationsRenderingEngine(customSubjectTemplate));
 
             LoginContext lc = Framework.login();
 
@@ -157,8 +151,7 @@ public class EmailHelper {
             for (RenderingResult result : results) {
                 subjectMail = (String) result.getOutcome();
             }
-            subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
-                    + subjectMail;
+            subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() + subjectMail;
             msg.setSubject(subjectMail, "UTF-8");
 
             lc.logout();
@@ -166,8 +159,7 @@ public class EmailHelper {
 
         msg.setSentDate(new Date());
 
-        rs.registerEngine(new NotificationsRenderingEngine(
-                (String) mail.get(NotificationConstants.TEMPLATE_KEY)));
+        rs.registerEngine(new NotificationsRenderingEngine((String) mail.get(NotificationConstants.TEMPLATE_KEY)));
 
         LoginContext lc = Framework.login();
 
@@ -210,16 +202,14 @@ public class EmailHelper {
         return session;
     }
 
-
     /**
-     * Instantiate a new session that authenticate given the protocol's properties. Initialize also
-     * the default transport protocol handler according to the properties.
+     * Instantiate a new session that authenticate given the protocol's properties. Initialize also the default
+     * transport protocol handler according to the properties.
      *
      * @since 5.6
      */
     public static Session newSession(Properties props) {
-        Authenticator authenticator = new EmailAuthenticator(
-                props);
+        Authenticator authenticator = new EmailAuthenticator(props);
         Session session = Session.getDefaultInstance(props, authenticator);
         String protocol = props.getProperty("mail.transport.protocol");
         if (protocol != null && protocol.length() > 0) {
@@ -228,30 +218,25 @@ public class EmailHelper {
         return session;
     }
 
-    protected Map<String, Object> initMvelBindings(
-            Map<String, Serializable> infos) {
+    protected Map<String, Object> initMvelBindings(Map<String, Serializable> infos) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("NotificationContext", infos);
         return map;
     }
 
     /***
-     * Evaluates a MVEL expression within some context infos accessible on the
-     * "NotificationContext" object.
-     * Returns null if the result is not evaluated to a String
+     * Evaluates a MVEL expression within some context infos accessible on the "NotificationContext" object. Returns
+     * null if the result is not evaluated to a String
      *
      * @param expr
      * @param ctx
      * @return
      * @since 5.6
-     *
      */
-    public String evaluateMvelExpresssion(String expr,
-            Map<String, Serializable> ctx) throws ClientException {
+    public String evaluateMvelExpresssion(String expr, Map<String, Serializable> ctx) throws ClientException {
         // check to see if there is a dynamic MVEL expr
         Serializable compiledExpr = MVEL.compileExpression(expr);
-        Object result = MVEL.executeExpression(compiledExpr,
-                initMvelBindings(ctx));
+        Object result = MVEL.executeExpression(compiledExpr, initMvelBindings(ctx));
         if (result instanceof String) {
             return (String) result;
         }

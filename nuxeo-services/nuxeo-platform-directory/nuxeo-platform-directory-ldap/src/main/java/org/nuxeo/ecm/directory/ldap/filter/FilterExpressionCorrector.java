@@ -21,11 +21,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class is used to apply corrections to a filter expression. It is
- * mainly used for filters that come from an Active Directory.
+ * This class is used to apply corrections to a filter expression. It is mainly used for filters that come from an
+ * Active Directory.
  * <p>
- * You can apply the corrections you want, in the desired order. The available
- * jobs are listed in the enum FilterJobs.
+ * You can apply the corrections you want, in the desired order. The available jobs are listed in the enum FilterJobs.
  * <p>
  * Example: <code>FilterExpressionCorrector.correctFilter(filterValue,
                             FilterJobs.JOB1, FilterJobs.JOB2);</code>
@@ -97,8 +96,7 @@ public class FilterExpressionCorrector {
      * @param filterExpression The filter expression to correct
      * @param jobs List of the jobs you want to apply.
      */
-    public static String correctFilter(final String filterExpression,
-            final FilterJobs... jobs) {
+    public static String correctFilter(final String filterExpression, final FilterJobs... jobs) {
 
         String result = filterExpression;
 

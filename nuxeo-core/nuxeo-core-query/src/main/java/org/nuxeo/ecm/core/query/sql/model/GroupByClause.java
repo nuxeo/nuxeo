@@ -17,8 +17,7 @@ package org.nuxeo.ecm.core.query.sql.model;
 import java.util.List;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class GroupByClause extends Clause {
 

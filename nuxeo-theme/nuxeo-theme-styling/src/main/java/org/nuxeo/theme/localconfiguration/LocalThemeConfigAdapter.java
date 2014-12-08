@@ -26,9 +26,7 @@ import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
-public class LocalThemeConfigAdapter extends
-        AbstractLocalConfiguration<LocalThemeConfig> implements
-        LocalThemeConfig {
+public class LocalThemeConfigAdapter extends AbstractLocalConfiguration<LocalThemeConfig> implements LocalThemeConfig {
 
     protected DocumentRef documentRef;
 

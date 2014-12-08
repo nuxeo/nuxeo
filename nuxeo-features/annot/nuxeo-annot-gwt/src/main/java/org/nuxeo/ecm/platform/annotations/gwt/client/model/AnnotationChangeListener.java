@@ -21,9 +21,11 @@ package org.nuxeo.ecm.platform.annotations.gwt.client.model;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface AnnotationChangeListener {
     void onChange(AnnotationModel model, ChangeEvent event);
-    enum ChangeEvent {annotation, annotationList};
+
+    enum ChangeEvent {
+        annotation, annotationList
+    };
 }

@@ -36,11 +36,9 @@ public class MessageInfoLogger {
     }
 
     public void printMessages() {
-        DateFormat dateFormat = DateFormat.getDateTimeInstance(
-                DateFormat.SHORT, DateFormat.SHORT);
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         for (MessageInfo message : messages) {
-            System.out.println("[" + dateFormat.format(message.time) + "] "
-                    + message.level + " " + message.message);
+            System.out.println("[" + dateFormat.format(message.time) + "] " + message.level + " " + message.message);
         }
     }
 

@@ -14,8 +14,7 @@ package org.nuxeo.ecm.core.api.model;
 /**
  * Value holding a base value and a delta.
  * <p>
- * This is used when the actual intent of the value is to be an incremental
- * update to an existing value.
+ * This is used when the actual intent of the value is to be an incremental update to an existing value.
  *
  * @since 6.0
  */

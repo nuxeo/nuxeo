@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.test.NoopRepositoryInit;
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.TYPE })
+@Target({ ElementType.TYPE })
 public @interface RepositoryConfig {
 
     String singleDatasource() default "";

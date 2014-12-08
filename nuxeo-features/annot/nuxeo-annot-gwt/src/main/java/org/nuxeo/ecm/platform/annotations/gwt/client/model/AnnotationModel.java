@@ -31,7 +31,6 @@ import com.google.gwt.core.client.GWT;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationModel implements AnnotationChangeNotifier {
 

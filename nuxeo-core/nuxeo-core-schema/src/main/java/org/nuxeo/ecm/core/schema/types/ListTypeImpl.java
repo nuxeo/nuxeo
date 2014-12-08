@@ -29,7 +29,7 @@ public class ListTypeImpl extends AbstractType implements ListType {
 
     protected final Field field;
 
-    //TODO: should be removed. use field.defaultvalue instead
+    // TODO: should be removed. use field.defaultvalue instead
     protected String defaultValue;
 
     protected int minOccurs;
@@ -38,8 +38,8 @@ public class ListTypeImpl extends AbstractType implements ListType {
 
     protected boolean isArray = false;
 
-    public ListTypeImpl(String schema, String name, Type type,
-            String fieldName, String defaultValue, int minOccurs, int maxOccurs) {
+    public ListTypeImpl(String schema, String name, Type type, String fieldName, String defaultValue, int minOccurs,
+            int maxOccurs) {
         super(null, schema, name);
         if (fieldName == null) {
             isArray = true;
@@ -169,8 +169,7 @@ public class ListTypeImpl extends AbstractType implements ListType {
             }
             return object;
         }
-        throw new TypeException("Incompatible object: " + object.getClass()
-                + " for type " + getName());
+        throw new TypeException("Incompatible object: " + object.getClass() + " for type " + getName());
     }
 
     @Override

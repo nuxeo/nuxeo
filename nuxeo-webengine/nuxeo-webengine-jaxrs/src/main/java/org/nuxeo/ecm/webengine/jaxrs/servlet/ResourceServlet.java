@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
  * A simple servlet which is serving resources provided by the servlet context
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ResourceServlet extends HttpServlet {
 
@@ -43,8 +42,7 @@ public class ResourceServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/") || pathInfo.length() == 0) {
             pathInfo = index;
@@ -59,7 +57,7 @@ public class ResourceServlet extends HttpServlet {
             }
             try {
                 OutputStream out = resp.getOutputStream();
-                byte[] bytes = new byte[1024*64];
+                byte[] bytes = new byte[1024 * 64];
                 int r = in.read(bytes);
                 while (r > -1) {
                     if (r > 0) {

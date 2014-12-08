@@ -21,7 +21,7 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 
 public class SampleSSOPortal {
 
-        public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         try {
             HttpAutomationClient client = new HttpAutomationClient("http://localhost:8080/nuxeo/site/automation");
             client.setRequestInterceptor(new PortalSSOAuthInterceptor("nuxeo5secretkey", "Administrator"));
@@ -38,6 +38,5 @@ public class SampleSSOPortal {
             System.out.println(e.getRemoteStackTrace());
         }
     }
-
 
 }

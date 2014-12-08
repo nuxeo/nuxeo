@@ -82,8 +82,7 @@ import com.hp.hpl.jena.shared.Lock;
 /**
  * Jena plugin for NXRelations.
  * <p>
- * Graph implementation using the <a href="http://jena.sourceforge.net/"
- * target="_blank">Jena</a> framework.
+ * Graph implementation using the <a href="http://jena.sourceforge.net/" target="_blank">Jena</a> framework.
  */
 public class JenaGraph implements Graph {
 
@@ -103,22 +102,22 @@ public class JenaGraph implements Graph {
     private String backend = "memory";
 
     /**
-     * Database-related options, see
-     * http://jena.sourceforge.net/DB/options.html.
+     * Database-related options, see http://jena.sourceforge.net/DB/options.html.
      */
     private String datasource;
+
     private String databaseType;
+
     private boolean databaseDoCompressUri;
+
     private boolean databaseTransactionEnabled;
 
     private Map<String, String> namespaces = new HashMap<String, String>();
 
     /**
-     * Class holding graph and connection so that we can close the connection
-     * after having used the graph.
+     * Class holding graph and connection so that we can close the connection after having used the graph.
      * <p>
-     * It can hold the jena connection or the base connection (built from a
-     * datasource).
+     * It can hold the jena connection or the base connection (built from a datasource).
      */
     protected static final class GraphConnection {
 
@@ -174,11 +173,10 @@ public class JenaGraph implements Graph {
     /**
      * Gets the Jena graph using options.
      * <p>
-     * The Jena "Convenient" reification style is used when opening models: it
-     * allows to ignore reification quadlets when calling the statements list.
+     * The Jena "Convenient" reification style is used when opening models: it allows to ignore reification quadlets
+     * when calling the statements list.
      *
-     * @param forceReload boolean stating if the jena graph has to be reloaded
-     *            using options
+     * @param forceReload boolean stating if the jena graph has to be reloaded using options
      * @return the Jena graph (model)
      */
     protected synchronized GraphConnection openGraph(boolean forceReload) {
@@ -191,8 +189,7 @@ public class JenaGraph implements Graph {
             return new GraphConnection((Connection) null, memoryGraph);
         } else if (backend.equals("sql")) {
             if (datasource == null) {
-                throw new IllegalArgumentException(
-                        "Missing datasource for sql graph : " + name);
+                throw new IllegalArgumentException("Missing datasource for sql graph : " + name);
             }
             // create a database connection
             Connection baseConnection;
@@ -205,29 +202,21 @@ public class JenaGraph implements Graph {
                     baseConnection = ds.getConnection();
                 }
             } catch (NamingException e) {
-                throw new IllegalArgumentException(String.format(
-                        "Datasource %s not found", datasource), e);
+                throw new IllegalArgumentException(String.format("Datasource %s not found", datasource), e);
             } catch (SQLException e) {
-                throw new IllegalArgumentException(String.format(
-                        "SQLException while opening %s", datasource), e);
+                throw new IllegalArgumentException(String.format("SQLException while opening %s", datasource), e);
             }
             /*
-             * We have to wrap the connection to disallow any commit() or
-             * setAutoCommit() on it. Jena calls these methods without regard to
-             * the fact that the connection may be managed by an external
-             * transaction.
+             * We have to wrap the connection to disallow any commit() or setAutoCommit() on it. Jena calls these
+             * methods without regard to the fact that the connection may be managed by an external transaction.
              */
-            Connection wrappedConnection = (Connection) Proxy.newProxyInstance(
-                    Connection.class.getClassLoader(),
-                    new Class[] { Connection.class },
-                    new ConnectionFixInvocationHandler(baseConnection));
-            DBConnection connection = new DBConnection(wrappedConnection,
-                    databaseType);
+            Connection wrappedConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(),
+                    new Class[] { Connection.class }, new ConnectionFixInvocationHandler(baseConnection));
+            DBConnection connection = new DBConnection(wrappedConnection, databaseType);
             // check if named model already exists
             Model graph;
             if (connection.containsModel(name)) {
-                ModelMaker m = ModelFactory.createModelRDBMaker(connection,
-                        ModelFactory.Convenient);
+                ModelMaker m = ModelFactory.createModelRDBMaker(connection, ModelFactory.Convenient);
                 graph = m.openModel(name);
             } else {
                 // create it
@@ -236,20 +225,14 @@ public class JenaGraph implements Graph {
                     // other models already exist => do not set parameters
                     // on driver.
                     if (databaseDoCompressUri != connection.getDriver().getDoCompressURI()) {
-                        log.warn(String.format(
-                                "Cannot set databaseDoCompressUri attribute to %s "
-                                        + "for model %s, other models already "
-                                        + "exist with value %s",
-                                databaseDoCompressUri, name,
-                                connection.getDriver().getDoCompressURI()));
+                        log.warn(String.format("Cannot set databaseDoCompressUri attribute to %s "
+                                + "for model %s, other models already " + "exist with value %s", databaseDoCompressUri,
+                                name, connection.getDriver().getDoCompressURI()));
                     }
                     if (databaseTransactionEnabled != connection.getDriver().getIsTransactionDb()) {
-                        log.warn(String.format(
-                                "Cannot set databaseTransactionEnabled attribute to %s "
-                                        + "for model %s, other models already "
-                                        + "exist with value %s",
-                                databaseTransactionEnabled, name,
-                                connection.getDriver().getIsTransactionDb()));
+                        log.warn(String.format("Cannot set databaseTransactionEnabled attribute to %s "
+                                + "for model %s, other models already " + "exist with value %s",
+                                databaseTransactionEnabled, name, connection.getDriver().getIsTransactionDb()));
                     }
                 } else {
                     if (databaseDoCompressUri) {
@@ -259,8 +242,7 @@ public class JenaGraph implements Graph {
                         connection.getDriver().setIsTransactionDb(true);
                     }
                 }
-                ModelMaker m = ModelFactory.createModelRDBMaker(connection,
-                        ModelFactory.Convenient);
+                ModelMaker m = ModelFactory.createModelRDBMaker(connection, ModelFactory.Convenient);
                 graph = m.createModel(name);
             }
             graph.setNsPrefixes(namespaces);
@@ -271,8 +253,7 @@ public class JenaGraph implements Graph {
             }
             return new GraphConnection(connection, graph);
         } else {
-            throw new IllegalArgumentException("Unknown backend type "
-                    + backend);
+            throw new IllegalArgumentException("Unknown backend type " + backend);
         }
     }
 
@@ -294,24 +275,20 @@ public class JenaGraph implements Graph {
             if (id == null) {
                 jenaNodeInst = com.hp.hpl.jena.graph.Node.createAnon();
             } else {
-                jenaNodeInst = com.hp.hpl.jena.graph.Node.createAnon(new AnonId(
-                        id));
+                jenaNodeInst = com.hp.hpl.jena.graph.Node.createAnon(new AnonId(id));
             }
         } else if (nuxNode.isLiteral()) {
             Literal lit = (Literal) nuxNode;
             String value = lit.getValue();
             if (value == null) {
-                throw new IllegalArgumentException(String.format(
-                        "Invalid literal node %s", nuxNode));
+                throw new IllegalArgumentException(String.format("Invalid literal node %s", nuxNode));
             }
             String language = lit.getLanguage();
             String type = lit.getType();
             if (language != null) {
-                jenaNodeInst = com.hp.hpl.jena.graph.Node.createLiteral(value,
-                        language, false);
+                jenaNodeInst = com.hp.hpl.jena.graph.Node.createLiteral(value, language, false);
             } else if (type != null) {
-                jenaNodeInst = com.hp.hpl.jena.graph.Node.createLiteral(value,
-                        null, new BaseDatatype(type));
+                jenaNodeInst = com.hp.hpl.jena.graph.Node.createLiteral(value, null, new BaseDatatype(type));
             } else {
                 jenaNodeInst = com.hp.hpl.jena.graph.Node.createLiteral(value);
             }
@@ -321,8 +298,7 @@ public class JenaGraph implements Graph {
             jenaNodeInst = com.hp.hpl.jena.graph.Node.createURI(uri);
 
         } else {
-            throw new IllegalArgumentException(String.format(
-                    "Invalid NXRelations node %s", nuxNode));
+            throw new IllegalArgumentException(String.format("Invalid NXRelations node %s", nuxNode));
         }
         return jenaNodeInst;
     }
@@ -371,8 +347,7 @@ public class JenaGraph implements Graph {
                 nuxNode = NodeFactory.createResource(uri);
             }
         } else {
-            throw new IllegalArgumentException(
-                    "Cannot translate non concrete Jena node into NXRelations node");
+            throw new IllegalArgumentException("Cannot translate non concrete Jena node into NXRelations node");
         }
         return nuxNode;
     }
@@ -384,8 +359,7 @@ public class JenaGraph implements Graph {
      * @param nuxStatement NXRelations statement
      * @return jena statement selector
      */
-    private static SimpleSelector getJenaSelector(Model graph,
-            Statement nuxStatement) {
+    private static SimpleSelector getJenaSelector(Model graph, Statement nuxStatement) {
         com.hp.hpl.jena.rdf.model.Resource subjResource = null;
         com.hp.hpl.jena.graph.Node subject = getJenaNode(nuxStatement.getSubject());
         if (subject != null && subject.isURI()) {
@@ -407,15 +381,13 @@ public class JenaGraph implements Graph {
     /**
      * Gets NXRelations statement corresponding to the Jena statement.
      * <p>
-     * Reified statements may be retrieved from the Jena graph and set as
-     * properties on NXRelations statements.
+     * Reified statements may be retrieved from the Jena graph and set as properties on NXRelations statements.
      *
      * @param graph the jena graph
      * @param jenaStatement jena statement
      * @return NXRelations statement
      */
-    private Statement getNXRelationsStatement(Model graph,
-            com.hp.hpl.jena.rdf.model.Statement jenaStatement) {
+    private Statement getNXRelationsStatement(Model graph, com.hp.hpl.jena.rdf.model.Statement jenaStatement) {
         Node subject = getNXRelationsNode(jenaStatement.getSubject().asNode());
         Node predicate = getNXRelationsNode(jenaStatement.getPredicate().asNode());
         Node object = getNXRelationsNode(jenaStatement.getObject().asNode());
@@ -474,8 +446,7 @@ public class JenaGraph implements Graph {
                 if (value.equals("memory") || value.equals("sql")) {
                     backend = value;
                 } else {
-                    throw new IllegalArgumentException(String.format(
-                            "Unknown backend %s for Jena graph", value));
+                    throw new IllegalArgumentException(String.format("Unknown backend %s for Jena graph", value));
                 }
             } else if (key.equals("datasource")) {
                 datasource = value;
@@ -488,8 +459,7 @@ public class JenaGraph implements Graph {
                     databaseDoCompressUri = false;
                 } else {
                     String format = "Illegal value %s for databaseDoCompressUri, must be true or false";
-                    throw new IllegalArgumentException(String.format(format,
-                            value));
+                    throw new IllegalArgumentException(String.format(format, value));
                 }
             } else if (key.equals("databaseTransactionEnabled")) {
                 if (value.equals("true")) {
@@ -498,8 +468,7 @@ public class JenaGraph implements Graph {
                     databaseTransactionEnabled = false;
                 } else {
                     String format = "Illegal value %s for databaseTransactionEnabled, must be true or false";
-                    throw new IllegalArgumentException(String.format(format,
-                            value));
+                    throw new IllegalArgumentException(String.format(format, value));
                 }
             }
         }
@@ -543,14 +512,12 @@ public class JenaGraph implements Graph {
                     List<com.hp.hpl.jena.rdf.model.Statement> stmts = new ArrayList<com.hp.hpl.jena.rdf.model.Statement>();
                     stmts.add(jenaStmt);
                     // create reified statement if it does not exist
-                    com.hp.hpl.jena.graph.Node reifiedStmt = graph.getAnyReifiedStatement(
-                            jenaStmt).asNode();
+                    com.hp.hpl.jena.graph.Node reifiedStmt = graph.getAnyReifiedStatement(jenaStmt).asNode();
                     for (Map.Entry<Resource, Node[]> property : properties.entrySet()) {
                         com.hp.hpl.jena.graph.Node prop = getJenaNode(property.getKey());
                         for (Node node : property.getValue()) {
                             com.hp.hpl.jena.graph.Node value = getJenaNode(node);
-                            Triple propTriple = Triple.create(reifiedStmt,
-                                    prop, value);
+                            Triple propTriple = Triple.create(reifiedStmt, prop, value);
                             stmts.add(graph.asStatement(propTriple));
                         }
                     }
@@ -628,8 +595,7 @@ public class JenaGraph implements Graph {
     }
 
     @Override
-    public List<Statement> getStatements(Node subject, Node predicate,
-            Node object) {
+    public List<Statement> getStatements(Node subject, Node predicate, Node object) {
         return getStatements(new StatementImpl(subject, predicate, object));
     }
 
@@ -662,10 +628,8 @@ public class JenaGraph implements Graph {
             graphConnection = openGraph();
             graph = graphConnection.getGraph();
             graph.enterCriticalSection(Lock.READ);
-            SimpleSelector selector = getJenaSelector(graph, new StatementImpl(
-                    null, predicate, object));
-            ResIterator it = graph.listSubjectsWithProperty(
-                    selector.getPredicate(), selector.getObject());
+            SimpleSelector selector = getJenaSelector(graph, new StatementImpl(null, predicate, object));
+            ResIterator it = graph.listSubjectsWithProperty(selector.getPredicate(), selector.getObject());
             List<Node> res = new ArrayList<Node>();
             while (it.hasNext()) {
                 res.add(getNXRelationsNode(it.nextResource().asNode()));
@@ -689,11 +653,9 @@ public class JenaGraph implements Graph {
             graphConnection = openGraph();
             graph = graphConnection.getGraph();
             graph.enterCriticalSection(Lock.READ);
-            SimpleSelector selector = getJenaSelector(graph, new StatementImpl(
-                    subject, null, object));
+            SimpleSelector selector = getJenaSelector(graph, new StatementImpl(subject, null, object));
             StmtIterator it = graph.listStatements(selector);
-            List<Statement> statements = getNXRelationsStatements(graph,
-                    it.toList());
+            List<Statement> statements = getNXRelationsStatements(graph, it.toList());
             List<Node> res = new ArrayList<Node>();
             for (Statement stmt : statements) {
                 Node predicate = stmt.getPredicate();
@@ -721,10 +683,8 @@ public class JenaGraph implements Graph {
             graphConnection = openGraph();
             graph = graphConnection.getGraph();
             graph.enterCriticalSection(Lock.READ);
-            SimpleSelector selector = getJenaSelector(graph, new StatementImpl(
-                    subject, predicate, null));
-            NodeIterator it = graph.listObjectsOfProperty(
-                    selector.getSubject(), selector.getPredicate());
+            SimpleSelector selector = getJenaSelector(graph, new StatementImpl(subject, predicate, null));
+            NodeIterator it = graph.listObjectsOfProperty(selector.getSubject(), selector.getPredicate());
             List<Node> res = new ArrayList<Node>();
             while (it.hasNext()) {
                 res.add(getNXRelationsNode(it.nextNode().asNode()));
@@ -752,8 +712,7 @@ public class JenaGraph implements Graph {
             graph = graphConnection.getGraph();
             graph.enterCriticalSection(Lock.READ);
             SimpleSelector selector = getJenaSelector(graph, statement);
-            return graph.contains(selector.getSubject(),
-                    selector.getPredicate(), selector.getObject());
+            return graph.contains(selector.getSubject(), selector.getPredicate(), selector.getObject());
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -791,8 +750,8 @@ public class JenaGraph implements Graph {
     /**
      * Returns the number of statements in the graph.
      * <p>
-     * XXX AT: this size may not be equal to the number of statements retrieved
-     * via getStatements() because it counts each statement property.
+     * XXX AT: this size may not be equal to the number of statements retrieved via getStatements() because it counts
+     * each statement property.
      *
      * @return integer number of statements in the graph
      */
@@ -856,14 +815,12 @@ public class JenaGraph implements Graph {
             log.debug(String.format("Running query %s", queryString));
             // XXX AT: ignore language for now
             if (language != null && !language.equals("sparql")) {
-                log.warn(String.format(
-                        "Unknown language %s for query, using SPARQL", language));
+                log.warn(String.format("Unknown language %s for query, using SPARQL", language));
             }
             Query query = QueryFactory.create(queryString);
             query.setBaseURI(baseURI);
             qe = QueryExecutionFactory.create(query, graph);
-            res = new QueryResultImpl(0, new ArrayList<String>(),
-                    new ArrayList<Map<String, Node>>());
+            res = new QueryResultImpl(0, new ArrayList<String>(), new ArrayList<Map<String, Node>>());
             ResultSet jenaResults = qe.execSelect();
             Integer count = 0;
             List<String> variableNames = jenaResults.getResultVars();
@@ -978,15 +935,14 @@ public class JenaGraph implements Graph {
 }
 
 /**
- * This invocation handler is designed to wrap a normal connection but avoid all
- * calls to
+ * This invocation handler is designed to wrap a normal connection but avoid all calls to
  * <ul>
  * <li>{@link Connection#commit}</li>
  * <li>{@link Connection#setAutoCommit}</li>
  * </ul>
  * <p>
- * We have to do this because Jena calls these methods without regard to the
- * fact that the connection may be managed by an external transaction.
+ * We have to do this because Jena calls these methods without regard to the fact that the connection may be managed by
+ * an external transaction.
  *
  * @author Florent Guillaume
  */
@@ -1000,8 +956,7 @@ class ConnectionFixInvocationHandler implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args)
-            throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         final String name = method.getName();
         if (name.equals("commit")) {
             return null;

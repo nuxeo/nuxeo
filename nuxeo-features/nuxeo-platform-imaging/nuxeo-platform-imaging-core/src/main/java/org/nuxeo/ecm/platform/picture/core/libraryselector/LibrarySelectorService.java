@@ -27,8 +27,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class LibrarySelectorService extends DefaultComponent implements
-        LibrarySelector {
+public class LibrarySelectorService extends DefaultComponent implements LibrarySelector {
 
     public static final String LIBRARY_SELECTOR = "LibrarySelector";
 
@@ -45,8 +44,7 @@ public class LibrarySelectorService extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (extensionPoint.equals(LIBRARY_SELECTOR)) {
             LibrarySelectorServiceDescriptor libraryDescriptor = (LibrarySelectorServiceDescriptor) contribution;
@@ -56,8 +54,7 @@ public class LibrarySelectorService extends DefaultComponent implements
         }
     }
 
-    public void registerLibrarySelector(
-            LibrarySelectorServiceDescriptor libraryDescriptor) {
+    public void registerLibrarySelector(LibrarySelectorServiceDescriptor libraryDescriptor) {
         registerImageUtils(libraryDescriptor.getImageUtils());
         registerMetadataUtils(libraryDescriptor.getMetadataUtils());
     }
@@ -67,18 +64,15 @@ public class LibrarySelectorService extends DefaultComponent implements
             return;
         }
         imageUtils = imageUtilsDescriptor.getNewInstance();
-        log.debug("Using " + imageUtils.getClass().getName()
-                + " for ImageUtils.");
+        log.debug("Using " + imageUtils.getClass().getName() + " for ImageUtils.");
     }
 
-    protected void registerMetadataUtils(
-            MetadataUtilsDescriptor metadataUtilsDescriptor) {
+    protected void registerMetadataUtils(MetadataUtilsDescriptor metadataUtilsDescriptor) {
         if (metadataUtilsDescriptor == null) {
             return;
         }
         metadataUtils = metadataUtilsDescriptor.getNewInstance();
-        log.debug("Using " + metadataUtils.getClass().getName()
-                + " for MetadataUtils.");
+        log.debug("Using " + metadataUtils.getClass().getName() + " for MetadataUtils.");
     }
 
     @Override

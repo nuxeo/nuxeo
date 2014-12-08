@@ -54,8 +54,7 @@ public interface Aggregate<B extends Bucket> {
     List<AggregateRangeDateDefinition> getDateRanges();
 
     /**
-     * The selection filter that is going to be applied to the main query as a
-     * post filter.
+     * The selection filter that is going to be applied to the main query as a post filter.
      */
     List<String> getSelection();
 
@@ -75,8 +74,8 @@ public interface Aggregate<B extends Bucket> {
     void resetSelection();
 
     /**
-     * The regular list of buckets plus buckets with doc count at 0 for selected
-     * buckets which are not returned from es post filtering.
+     * The regular list of buckets plus buckets with doc count at 0 for selected buckets which are not returned from es
+     * post filtering.
      */
     List<Bucket> getExtendedBuckets();
 }

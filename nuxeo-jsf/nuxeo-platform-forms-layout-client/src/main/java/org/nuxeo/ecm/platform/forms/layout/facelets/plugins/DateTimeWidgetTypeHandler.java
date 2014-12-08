@@ -57,9 +57,8 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final long serialVersionUID = 1495841177711755669L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
@@ -72,23 +71,15 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else {
             attributes = helper.getTagAttributes(widgetId, widget);
         }
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
-                subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ValidatorConfig validatorConfig = TagConfigFactory.createValidatorConfig(
-                    tagConfig,
-                    widget.getTagConfigId(),
-                    new TagAttributesImpl(new TagAttribute[0]),
-                    new LeafFaceletHandler(),
+            ValidatorConfig validatorConfig = TagConfigFactory.createValidatorConfig(tagConfig,
+                    widget.getTagConfigId(), new TagAttributesImpl(new TagAttribute[0]), new LeafFaceletHandler(),
                     org.nuxeo.ecm.platform.ui.web.component.date.DateTimeValidator.VALIDATOR_ID);
-            ValidatorHandler validateHandler = new ValidatorHandler(
-                    validatorConfig);
-            FaceletHandler nextHandler = new CompositeFaceletHandler(
-                    new FaceletHandler[] { validateHandler, leaf });
-            ComponentConfig config = TagConfigFactory.createComponentConfig(
-                    tagConfig, widget.getTagConfigId(), attributes,
-                    nextHandler, UICalendar.COMPONENT_TYPE,
-                    "org.richfaces.CalendarRenderer");
+            ValidatorHandler validateHandler = new ValidatorHandler(validatorConfig);
+            FaceletHandler nextHandler = new CompositeFaceletHandler(new FaceletHandler[] { validateHandler, leaf });
+            ComponentConfig config = TagConfigFactory.createComponentConfig(tagConfig, widget.getTagConfigId(),
+                    attributes, nextHandler, UICalendar.COMPONENT_TYPE, "org.richfaces.CalendarRenderer");
             ComponentHandler input = new InputDateTimeTagHandler(config);
             String styleClass = "inputDate";
             if (widget.getProperty("styleClass") != null) {
@@ -96,32 +87,24 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
             }
             // always add a surrounding span tag with associated style class,
             // see NXP-14963
-            input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId,
-                    FaceletHandlerHelper.getTagAttributes(helper.createAttribute(
-                            "styleClass", styleClass)), input,
+            input = helper.getHtmlComponentHandler(widgetTagConfigId,
+                    FaceletHandlerHelper.getTagAttributes(helper.createAttribute("styleClass", styleClass)), input,
                     HtmlPanelGroup.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(
-                    widgetTagConfigId, msgId, widgetId, null);
+            ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
-            ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
-                    tagConfig, widget.getTagConfigId(), attributes,
-                    new LeafFaceletHandler(),
-                    javax.faces.convert.DateTimeConverter.CONVERTER_ID);
+            ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(tagConfig, widget.getTagConfigId(),
+                    attributes, new LeafFaceletHandler(), javax.faces.convert.DateTimeConverter.CONVERTER_ID);
             ConverterHandler convert = new ConvertDateTimeHandler(convertConfig);
-            FaceletHandler nextHandler = new CompositeFaceletHandler(
-                    new FaceletHandler[] { convert, leaf });
-            ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, nextHandler,
+            FaceletHandler nextHandler = new CompositeFaceletHandler(new FaceletHandler[] { convert, leaf });
+            ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, nextHandler,
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributesImpl(new TagAttribute[0]), output,
-                        UIHtmlText.class.getName(), null);
+                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
+                        output, UIHtmlText.class.getName(), null);
             } else {
                 return output;
             }

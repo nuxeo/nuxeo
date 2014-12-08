@@ -43,8 +43,8 @@ import org.nuxeo.runtime.api.Framework;
 import com.sun.faces.util.Util;
 
 /**
- * Navigation handler that keeps outcome information available so that it can
- * be used for a document view when redirecting to this context.
+ * Navigation handler that keeps outcome information available so that it can be used for a document view when
+ * redirecting to this context.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -62,13 +62,11 @@ public class FancyNavigationHandler extends ConfigurableNavigationHandler {
     }
 
     @Override
-    public void handleNavigation(FacesContext context, String fromAction,
-            String outcome) {
+    public void handleNavigation(FacesContext context, String fromAction, String outcome) {
         ExternalContext eContext = context.getExternalContext();
         HttpServletRequest httpRequest = (HttpServletRequest) eContext.getRequest();
         // put outcome in request params
-        httpRequest.setAttribute(URLPolicyService.POST_OUTCOME_REQUEST_KEY,
-                outcome);
+        httpRequest.setAttribute(URLPolicyService.POST_OUTCOME_REQUEST_KEY, outcome);
         URLPolicyService pservice = Framework.getService(URLPolicyService.class);
         pservice.appendParametersToRequest(context);
         // get old root to check if it's changed
@@ -76,8 +74,8 @@ public class FancyNavigationHandler extends ConfigurableNavigationHandler {
         parent.handleNavigation(context, fromAction, outcome);
         UIViewRoot newRoot = context.getViewRoot();
         boolean rootChanged = !oldRoot.equals(newRoot);
-        if (outcome != null && !context.getResponseComplete() && !rootChanged
-                && pservice != null && Framework.isDevModeSet()) {
+        if (outcome != null && !context.getResponseComplete() && !rootChanged && pservice != null
+                && Framework.isDevModeSet()) {
             // navigation was not done => maybe a hot reload issue: perform
             // navigation again using local code because it uses
             // information from the StaticNavigationHandler that is
@@ -113,8 +111,8 @@ public class FancyNavigationHandler extends ConfigurableNavigationHandler {
         }
     }
 
-    protected void handleHotReloadNavigation(URLPolicyService pservice,
-            FacesContext context, String fromAction, String outcome) {
+    protected void handleHotReloadNavigation(URLPolicyService pservice, FacesContext context, String fromAction,
+            String outcome) {
         String viewId = pservice.getViewIdFromOutcome(outcome, null);
         ExternalContext extContext = context.getExternalContext();
         if (viewId != null) {
@@ -131,11 +129,9 @@ public class FancyNavigationHandler extends ConfigurableNavigationHandler {
     }
 
     @Override
-    public NavigationCase getNavigationCase(FacesContext context,
-            String fromAction, String outcome) {
+    public NavigationCase getNavigationCase(FacesContext context, String fromAction, String outcome) {
         if (parent instanceof ConfigurableNavigationHandler) {
-            return ((ConfigurableNavigationHandler) parent).getNavigationCase(
-                    context, fromAction, outcome);
+            return ((ConfigurableNavigationHandler) parent).getNavigationCase(context, fromAction, outcome);
         }
         return null;
     }

@@ -46,17 +46,15 @@ import com.sun.faces.facelets.tag.jstl.core.ForEachHandler;
 /**
  * Repeat handler, similar to the standard ForEach handler.
  * <p>
- * This component encapsulates a c:forEach tag inside a nxu:set tag, to be able
- * to control when the sub-components should be re-created in the case of an
- * ajax re-render.
+ * This component encapsulates a c:forEach tag inside a nxu:set tag, to be able to control when the sub-components
+ * should be re-created in the case of an ajax re-render.
  *
  * @author Anahide Tchertchian
  */
 public class RepeatTagHandler extends TagHandler {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected static final DataModel EMPTY_MODEL = new ListDataModel(
-            Collections.emptyList());
+    protected static final DataModel EMPTY_MODEL = new ListDataModel(Collections.emptyList());
 
     /**
      * @since 5.7
@@ -171,15 +169,14 @@ public class RepeatTagHandler extends TagHandler {
     }
 
     /**
-     * Encapsulate the call to a c:forEach tag in an SetTagHandler exposing the
-     * value and making sure the tagConfigId changes when the value changes
-     * (see NXP-11434).
+     * Encapsulate the call to a c:forEach tag in an SetTagHandler exposing the value and making sure the tagConfigId
+     * changes when the value changes (see NXP-11434).
      * <p>
-     * See also NXP-15050: since 6.0, anchor handler in component tree to
-     * ensure proper ajax refresh when iteration value changes.
+     * See also NXP-15050: since 6.0, anchor handler in component tree to ensure proper ajax refresh when iteration
+     * value changes.
      */
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
+            ELException {
         String anchor = String.valueOf(true);
         FaceletHandler nextHandler = this.nextHandler;
         TagAttribute varStatusAttr = varStatus;
@@ -188,45 +185,33 @@ public class RepeatTagHandler extends TagHandler {
             // value from the varStatus attribute.
             String indexValue = index.getValue(ctx);
             if (!StringUtils.isBlank(indexValue)) {
-                String varStatusValue = varStatus != null ? varStatus.getValue(ctx)
-                        : null;
+                String varStatusValue = varStatus != null ? varStatus.getValue(ctx) : null;
                 if (StringUtils.isBlank(varStatusValue)) {
                     // need to create and set it as an attribute for the index
                     // to be exposed
                     varStatusAttr = createAttribute(this.config, "varStatus",
-                            getVarName(String.format("%s_%s", indexValue,
-                                    "varStatus")));
+                            getVarName(String.format("%s_%s", indexValue, "varStatus")));
                 } else {
-                    varStatusAttr = createAttribute(this.config, "varStatus",
-                            varStatusValue);
+                    varStatusAttr = createAttribute(this.config, "varStatus", varStatusValue);
                 }
-                ComponentConfig indexVarConfig = TagConfigFactory.createAliasTagConfig(
-                        this.config, this.tagId, indexValue,
-                        String.format("#{%s.index}", varStatusAttr.getValue()),
-                        "false", anchor, this.nextHandler);
+                ComponentConfig indexVarConfig = TagConfigFactory.createAliasTagConfig(this.config, this.tagId,
+                        indexValue, String.format("#{%s.index}", varStatusAttr.getValue()), "false", anchor,
+                        this.nextHandler);
                 nextHandler = new SetTagHandler(indexVarConfig);
             }
         }
 
         List<TagAttribute> forEachAttrs = new ArrayList<TagAttribute>();
-        forEachAttrs.add(createAttribute(this.config, "items",
-                String.format("#{%s}", getVarName("items"))));
-        forEachAttrs.addAll(copyAttributes(this.config, var, begin, end, step,
-                varStatusAttr, tranzient));
-        TagConfig forEachConfig = TagConfigFactory.createTagConfig(
-                this.config,
-                this.tagId,
-                new TagAttributesImpl(
-                        forEachAttrs.toArray(new TagAttribute[] {})),
-                nextHandler);
+        forEachAttrs.add(createAttribute(this.config, "items", String.format("#{%s}", getVarName("items"))));
+        forEachAttrs.addAll(copyAttributes(this.config, var, begin, end, step, varStatusAttr, tranzient));
+        TagConfig forEachConfig = TagConfigFactory.createTagConfig(this.config, this.tagId, new TagAttributesImpl(
+                forEachAttrs.toArray(new TagAttribute[] {})), nextHandler);
         ForEachHandler forEachHandler = new ForEachHandler(forEachConfig);
 
         String setTagConfigId = getTagConfigId(ctx);
         TagAttribute itemsAttr = getItemsAttribute();
-        ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(
-                this.config, setTagConfigId, getVarName("items"),
-                itemsAttr != null ? itemsAttr.getValue() : null, "false",
-                anchor, forEachHandler);
+        ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(this.config, setTagConfigId,
+                getVarName("items"), itemsAttr != null ? itemsAttr.getValue() : null, "false", anchor, forEachHandler);
         FaceletHandler handler = new SetTagHandler(aliasConfig);
 
         // apply
@@ -237,21 +222,16 @@ public class RepeatTagHandler extends TagHandler {
         return String.format("%s%s", ITERATION_VAR_PREFIX, id);
     }
 
-    protected TagAttribute createAttribute(TagConfig tagConfig, String name,
-            String value) {
-        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", name,
-                name, value);
+    protected TagAttribute createAttribute(TagConfig tagConfig, String name, String value) {
+        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", name, name, value);
     }
 
-    protected TagAttribute copyAttribute(TagConfig tagConfig,
-            TagAttribute attribute) {
-        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "",
-                attribute.getLocalName(), attribute.getLocalName(),
-                attribute.getValue());
+    protected TagAttribute copyAttribute(TagConfig tagConfig, TagAttribute attribute) {
+        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", attribute.getLocalName(),
+                attribute.getLocalName(), attribute.getValue());
     }
 
-    protected List<TagAttribute> copyAttributes(TagConfig tagConfig,
-            TagAttribute... attributes) {
+    protected List<TagAttribute> copyAttributes(TagConfig tagConfig, TagAttribute... attributes) {
         List<TagAttribute> res = new ArrayList<TagAttribute>();
         if (attributes != null) {
             for (TagAttribute attr : attributes) {

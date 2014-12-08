@@ -35,16 +35,14 @@ import org.nuxeo.connect.update.task.update.JarUtils.Match;
 /**
  * Manage jar versions update.
  * <p>
- * To manipulate the jar version registry you need to create a new instance of
- * this class.
+ * To manipulate the jar version registry you need to create a new instance of this class.
  * <p>
- * If you want to modify the registry then you may want to synchronize the
- * entire update process. This is how is done in the Task run method.
+ * If you want to modify the registry then you may want to synchronize the entire update process. This is how is done in
+ * the Task run method.
  * <p>
  * Only reading the registry is thread safe.
  * <p>
- * TODO backup md5 are not really used since we rely on versions - we can remove
- * md5
+ * TODO backup md5 are not really used since we rely on versions - we can remove md5
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -97,8 +95,7 @@ public class UpdateManager {
         } catch (PackageException e) {
             throw e;
         } catch (IOException e) {
-            throw new PackageException(
-                    "IOException while trying to load the registry", e);
+            throw new PackageException("IOException while trying to load the registry", e);
         }
     }
 
@@ -106,8 +103,7 @@ public class UpdateManager {
         try {
             RegistrySerializer.store(registry, file);
         } catch (IOException e) {
-            throw new PackageException(
-                    "IOException while trying to write the registry", e);
+            throw new PackageException("IOException while trying to write the registry", e);
         }
     }
 
@@ -154,8 +150,8 @@ public class UpdateManager {
     }
 
     /**
-     * Look if an update is required, taking into account the given
-     * UpdateOptions, the currently installed JAR and the other available JARs.
+     * Look if an update is required, taking into account the given UpdateOptions, the currently installed JAR and the
+     * other available JARs.
      *
      * @since 5.7
      * @param key
@@ -164,8 +160,7 @@ public class UpdateManager {
      * @return null if no update required, else the right UpdateOptions
      * @throws PackageException
      */
-    protected UpdateOptions shouldUpdate(String key, UpdateOptions opt,
-            Match<File> currentJar) throws PackageException {
+    protected UpdateOptions shouldUpdate(String key, UpdateOptions opt, Match<File> currentJar) throws PackageException {
         log.debug("Look for updating " + opt.file.getName());
         if (opt.upgradeOnly && currentJar == null) {
             log.debug("=> don't update (upgradeOnly)");
@@ -183,8 +178,8 @@ public class UpdateManager {
         if (packageVersion.equals(greatestVersion)) {
             optToUpdate = opt;
         } else { // we'll use the greatest available JAR instead
-            optToUpdate = UpdateOptions.newInstance(opt.pkgId, new File(
-                    backupRoot, greatestVersion.path), opt.targetDir);
+            optToUpdate = UpdateOptions.newInstance(opt.pkgId, new File(backupRoot, greatestVersion.path),
+                    opt.targetDir);
         }
         FileVersion greatestFileVersion = greatestVersion.getFileVersion();
         if (currentJar == null) {
@@ -194,8 +189,7 @@ public class UpdateManager {
 
         // !opt.allowDowngrade && currentJar != null ...
         FileVersion currentVersion = new FileVersion(currentJar.version);
-        log.debug("=> comparing " + greatestFileVersion + " with "
-                + currentVersion);
+        log.debug("=> comparing " + greatestFileVersion + " with " + currentVersion);
         if (greatestFileVersion.greaterThan(currentVersion)) {
             log.debug("=> update (greater)");
             return optToUpdate;
@@ -204,8 +198,7 @@ public class UpdateManager {
                 FileInputStream is1 = null;
                 FileInputStream is2 = null;
                 try {
-                    is1 = new FileInputStream(new File(backupRoot,
-                            greatestVersion.path));
+                    is1 = new FileInputStream(new File(backupRoot, greatestVersion.path));
                     is2 = new FileInputStream(currentJar.object);
                     if (IOUtils.contentEquals(is1, is2)) {
                         log.debug("=> don't update (already installed)");
@@ -231,12 +224,10 @@ public class UpdateManager {
     }
 
     /**
-     * Ugly method to know what file is going to be deleted before it is, so
-     * that it can be undeployed for hotreload.
+     * Ugly method to know what file is going to be deleted before it is, so that it can be undeployed for hotreload.
      * <p>
-     * FIXME: will only handle simple cases for now (ignores version, etc...),
-     * e.g only tested with the main Studio jars. Should use version from
-     * RollbackOptions
+     * FIXME: will only handle simple cases for now (ignores version, etc...), e.g only tested with the main Studio
+     * jars. Should use version from RollbackOptions
      *
      * @since 5.6
      */
@@ -254,9 +245,8 @@ public class UpdateManager {
     /**
      * Perform a rollback.
      * <p>
-     * TODO the deleteOnExit is inherited from the current rollback command ...
-     * may be it should be read from the version that is rollbacked.
-     * (deleteOnExit should be an attribute of the entry not of the version)
+     * TODO the deleteOnExit is inherited from the current rollback command ... may be it should be read from the
+     * version that is rollbacked. (deleteOnExit should be an attribute of the entry not of the version)
      *
      * @param opt
      * @throws PackageException
@@ -320,8 +310,7 @@ public class UpdateManager {
 
     }
 
-    protected void rollbackBaseVersion(Entry entry, RollbackOptions opt)
-            throws PackageException {
+    protected void rollbackBaseVersion(Entry entry, RollbackOptions opt) throws PackageException {
         Version base = entry.getBaseVersion();
         if (base != null) {
             rollbackVersion(entry, base, opt);
@@ -339,12 +328,10 @@ public class UpdateManager {
         }
     }
 
-    protected void rollbackVersion(Entry entry, Version version,
-            RollbackOptions opt) throws PackageException {
+    protected void rollbackVersion(Entry entry, Version version, RollbackOptions opt) throws PackageException {
         File versionFile = getBackup(version.getPath());
         if (!versionFile.isFile()) {
-            log.error("Could not rollback version " + version.getPath()
-                    + " since the backup file was not found");
+            log.error("Could not rollback version " + version.getPath() + " since the backup file was not found");
             return;
         }
         Match<File> m = findInstalledJar(entry.getKey());
@@ -361,8 +348,7 @@ public class UpdateManager {
             path = someFile.getCanonicalPath();
             serverPath = serverRoot.getCanonicalPath();
         } catch (IOException e) {
-            log.error("Failed to get a canonical path. "
-                    + "Fall back to absolute paths...", e);
+            log.error("Failed to get a canonical path. " + "Fall back to absolute paths...", e);
             path = someFile.getAbsolutePath();
             serverPath = serverRoot.getAbsolutePath();
         }
@@ -376,8 +362,7 @@ public class UpdateManager {
     }
 
     /**
-     * Create a new entry in the registry given the entry key. A base version
-     * will be automatically created if needed.
+     * Create a new entry in the registry given the entry key. A base version will be automatically created if needed.
      */
     public Entry createEntry(String key) throws PackageException {
         Entry entry = new Entry(key);
@@ -394,19 +379,15 @@ public class UpdateManager {
     }
 
     /**
-     * Backup the given file in the registry storage.
-     * Backup is not a backup performed on removed files: it is rather like a
-     * uniformed storage of all libraries potentially installed by packages
-     * (whereas each package can have its own directory structure).
-     *
-     * So SNAPSHOT will always be overwritten. Backup of original SNAPSHOT can
-     * be found in the backup directory of the stored package.
+     * Backup the given file in the registry storage. Backup is not a backup performed on removed files: it is rather
+     * like a uniformed storage of all libraries potentially installed by packages (whereas each package can have its
+     * own directory structure). So SNAPSHOT will always be overwritten. Backup of original SNAPSHOT can be found in the
+     * backup directory of the stored package.
      *
      * @param fileToBackup
      * @param path
      */
-    protected void backupFile(File fileToBackup, String path)
-            throws PackageException {
+    protected void backupFile(File fileToBackup, String path) throws PackageException {
         try {
             File dst = new File(backupRoot, path);
             copy(fileToBackup, dst);
@@ -451,13 +432,11 @@ public class UpdateManager {
                 FileUtils.copy(src, dst);
             }
         } catch (IOException e) {
-            throw new PackageException("Failed to copy file: " + src + " to "
-                    + dst, e);
+            throw new PackageException("Failed to copy file: " + src + " to " + dst, e);
         }
     }
 
-    protected void deleteOldFile(File targetFile, File oldFile,
-            boolean deleteOnExit) {
+    protected void deleteOldFile(File targetFile, File oldFile, boolean deleteOnExit) {
         if (oldFile == null || !oldFile.exists()) {
             return;
         }
@@ -485,8 +464,7 @@ public class UpdateManager {
      *
      * @throws PackageException
      */
-    public void doUpdate(File oldFile, UpdateOptions opt)
-            throws PackageException {
+    public void doUpdate(File oldFile, UpdateOptions opt) throws PackageException {
         deleteOldFile(opt.targetFile, oldFile, opt.deleteOnExit);
         copy(opt.file, opt.targetFile);
         log.trace("Updated " + opt.targetFile);

@@ -74,22 +74,16 @@ public class AuditAdapter extends PaginableAdapter<LogEntry> {
         CoreSession session = ctx.getCoreSession();
 
         DocumentModel searchDocument = session.createDocumentModel("BasicAuditSearch");
-        searchDocument.setPropertyValue("bas:eventIds",
-                request.getParameterValues(EVENT_ID_PARAMETER_NAME));
-        searchDocument.setPropertyValue("bas:eventCategories",
-                request.getParameterValues(CATEGORY_PARAMETER_NAME));
-        searchDocument.setPropertyValue("bas:principalNames",
-                request.getParameterValues(PRINCIPAL_NAME_PARAMETER_NAME));
-        searchDocument.setPropertyValue("bas:startDate",
-                getCalendarParameter(request, START_EVENT_DATE_PARAMETER_NAME));
-        searchDocument.setPropertyValue("bas:endDate",
-                getCalendarParameter(request, END_EVENT_DATE_PARAMETER_NAME));
+        searchDocument.setPropertyValue("bas:eventIds", request.getParameterValues(EVENT_ID_PARAMETER_NAME));
+        searchDocument.setPropertyValue("bas:eventCategories", request.getParameterValues(CATEGORY_PARAMETER_NAME));
+        searchDocument.setPropertyValue("bas:principalNames", request.getParameterValues(PRINCIPAL_NAME_PARAMETER_NAME));
+        searchDocument.setPropertyValue("bas:startDate", getCalendarParameter(request, START_EVENT_DATE_PARAMETER_NAME));
+        searchDocument.setPropertyValue("bas:endDate", getCalendarParameter(request, END_EVENT_DATE_PARAMETER_NAME));
 
         return searchDocument;
     }
 
-    protected Calendar getCalendarParameter(HttpServletRequest request,
-            String paramName) {
+    protected Calendar getCalendarParameter(HttpServletRequest request, String paramName) {
         String param = request.getParameter(paramName);
         if (param != null) {
             DateTime date = ISODateTimeFormat.date().parseDateTime(param);

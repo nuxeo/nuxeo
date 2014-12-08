@@ -35,10 +35,8 @@ import org.nuxeo.osgi.application.MutableClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class DevFrameworkBootstrap extends FrameworkBootstrap implements
-        DevBundlesManager {
+public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBundlesManager {
 
     protected final Log log = LogFactory.getLog(DevFrameworkBootstrap.class);
 
@@ -56,8 +54,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
 
     protected final File webclasses;
 
-    public DevFrameworkBootstrap(MutableClassLoader cl, File home)
-            throws IOException {
+    public DevFrameworkBootstrap(MutableClassLoader cl, File home) throws IOException {
         super(cl, home);
         devBundlesFile = new File(home, "dev.bundles");
         seamdev = new File(home, "nuxeo.war/WEB-INF/dev");
@@ -75,8 +72,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         writeComponentIndex();
         postloadDevBundles(); // start dev bundles if any
         String installReloadTimerOption = (String) env.get(INSTALL_RELOAD_TIMER);
-        if (installReloadTimerOption != null
-                && Boolean.parseBoolean(installReloadTimerOption) == Boolean.TRUE) {
+        if (installReloadTimerOption != null && Boolean.parseBoolean(installReloadTimerOption) == Boolean.TRUE) {
             toggleTimer();
         }
     }
@@ -118,16 +114,14 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
     }
 
     /**
-     * Load the development bundles and libs if any in the classpath before
-     * starting the framework.
+     * Load the development bundles and libs if any in the classpath before starting the framework.
      */
     protected void preloadDevBundles() throws IOException {
         if (!devBundlesFile.isFile()) {
             return;
         }
         lastModified = devBundlesFile.lastModified();
-        devBundles = DevBundle.parseDevBundleLines(new FileInputStream(
-                devBundlesFile));
+        devBundles = DevBundle.parseDevBundleLines(new FileInputStream(devBundlesFile));
         if (devBundles.length == 0) {
             devBundles = null;
             return;
@@ -149,8 +143,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         }
         lastModified = tm;
         try {
-            reloadDevBundles(DevBundle.parseDevBundleLines(new FileInputStream(
-                    devBundlesFile)));
+            reloadDevBundles(DevBundle.parseDevBundleLines(new FileInputStream(devBundlesFile)));
         } catch (ReflectiveOperationException | IOException e) {
             log.error("Failed to deploy dev bundles", e);
         }
@@ -168,8 +161,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         return devBundles;
     }
 
-    protected synchronized void reloadDevBundles(DevBundle[] bundles)
-            throws ReflectiveOperationException {
+    protected synchronized void reloadDevBundles(DevBundle[] bundles) throws ReflectiveOperationException {
 
         if (devBundles != null) { // clear last context
             try {
@@ -242,8 +234,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         // return;
         // }
         try {
-            Method m = getClassLoader().loadClass(
-                    "org.nuxeo.runtime.model.impl.ComponentRegistrySerializer").getMethod(
+            Method m = getClassLoader().loadClass("org.nuxeo.runtime.model.impl.ComponentRegistrySerializer").getMethod(
                     "writeIndex", File.class);
             m.invoke(null, file);
         } catch (ReflectiveOperationException t) {
@@ -261,8 +252,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         }
     }
 
-    public void installResourceBundleFragments(List<File> files)
-            throws IOException {
+    public void installResourceBundleFragments(List<File> files) throws IOException {
         Map<String, List<File>> fragments = new HashMap<String, List<File>>();
 
         for (File file : files) {
@@ -273,8 +263,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
             fragments.get(name).add(file);
         }
         for (String name : fragments.keySet()) {
-            IOUtils.appendResourceBundleFragments(name, fragments.get(name),
-                    webclasses);
+            IOUtils.appendResourceBundleFragments(name, fragments.get(name), webclasses);
         }
     }
 

@@ -71,8 +71,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("pictureBookManager")
 @Scope(CONVERSATION)
 @Deprecated
-public class PictureBookManagerBean extends InputController implements
-        PictureBookManager, Serializable {
+public class PictureBookManagerBean extends InputController implements PictureBookManager, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -238,15 +237,13 @@ public class PictureBookManagerBean extends InputController implements
     protected String formatFileName(String filename, String count) {
         StringBuilder sb = new StringBuilder();
         CharSequence name = filename.subSequence(0, filename.lastIndexOf(""));
-        CharSequence extension = filename.subSequence(filename.lastIndexOf(""),
-                filename.length());
+        CharSequence extension = filename.subSequence(filename.lastIndexOf(""), filename.length());
         sb.append(name).append(count).append(extension);
         return sb.toString();
     }
 
-    protected void addBlobHolderToZip(String path, ZipOutputStream out,
-            byte[] data, PictureBlobHolder bh) throws IOException,
-            ClientException {
+    protected void addBlobHolderToZip(String path, ZipOutputStream out, byte[] data, PictureBlobHolder bh)
+            throws IOException, ClientException {
         List<Blob> blobs;
         if (selectedViews != null) {
             blobs = bh.getBlobs(selectedViews);
@@ -261,14 +258,10 @@ public class PictureBookManagerBean extends InputController implements
                 while (true) {
                     try {
                         if (tryCount == 0) {
-                            ZipUtils._zip(path + fileName, content.getStream(),
-                                    out);
+                            ZipUtils._zip(path + fileName, content.getStream(), out);
                         } else {
-                            ZipUtils._zip(
-                                    path
-                                            + formatFileName(fileName, "("
-                                                    + tryCount + ")"),
-                                    content.getStream(), out);
+                            ZipUtils._zip(path + formatFileName(fileName, "(" + tryCount + ")"), content.getStream(),
+                                    out);
                         }
                         break;
                     } catch (ZipException e) {
@@ -279,8 +272,8 @@ public class PictureBookManagerBean extends InputController implements
         }
     }
 
-    protected void addFolderToZip(String path, ZipOutputStream out,
-            DocumentModel doc, byte[] data) throws ClientException, IOException {
+    protected void addFolderToZip(String path, ZipOutputStream out, DocumentModel doc, byte[] data)
+            throws ClientException, IOException {
 
         String title = (String) doc.getProperty("dublincore", "title");
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
@@ -295,20 +288,17 @@ public class PictureBookManagerBean extends InputController implements
             if (docChild.isFolder() && !isEmptyFolder(docChild)) {
                 addFolderToZip(path + title + "/", out, docChild, data);
             } else if (bh != null) {
-                addBlobHolderToZip(path + title + "/", out, data,
-                        (PictureBlobHolder) bh);
+                addBlobHolderToZip(path + title + "/", out, data, (PictureBlobHolder) bh);
             }
         }
     }
 
-    protected String createZip(List<DocumentModel> documents)
-            throws IOException, ClientException {
+    protected String createZip(List<DocumentModel> documents) throws IOException, ClientException {
 
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
 
-        BufferedOutputStream buff = new BufferedOutputStream(
-                response.getOutputStream());
+        BufferedOutputStream buff = new BufferedOutputStream(response.getOutputStream());
         ZipOutputStream out = new ZipOutputStream(buff);
         out.setMethod(ZipOutputStream.DEFLATED);
         out.setLevel(9);
@@ -340,8 +330,7 @@ public class PictureBookManagerBean extends InputController implements
             setFacesMessage("label.clipboard.emptyDocuments");
             return null;
         }
-        response.setHeader("Content-Disposition", "attachment; filename=\""
-                + "clipboard.zip" + "\";");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + "clipboard.zip" + "\";");
         response.setContentType("application/gzip");
         response.flushBuffer();
         context.responseComplete();
@@ -350,8 +339,7 @@ public class PictureBookManagerBean extends InputController implements
 
     protected void initSelectItems() throws ClientException {
         DocumentModel doc = getCurrentDocument();
-        List<Map<String, Object>> views = (List) doc.getProperty("picturebook",
-                "picturetemplates");
+        List<Map<String, Object>> views = (List) doc.getProperty("picturebook", "picturetemplates");
         selectItems = new ArrayList<SelectItem>(views.size());
         String label;
         SelectItem selectItem;

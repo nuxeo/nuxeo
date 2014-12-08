@@ -95,8 +95,7 @@ public class SortInfo implements Serializable {
     /**
      * Returns a map for given sort info, or null if sort info is null.
      * <p>
-     * The map keys are {@link #SORT_COLUMN_NAME} and
-     * {@link #SORT_ASCENDING_NAME}.
+     * The map keys are {@link #SORT_COLUMN_NAME} and {@link #SORT_ASCENDING_NAME}.
      *
      * @since 5.4.0
      */
@@ -106,15 +105,13 @@ public class SortInfo implements Serializable {
         }
         Map<String, Serializable> res = new HashMap<String, Serializable>();
         res.put(SORT_COLUMN_NAME, sortInfo.getSortColumn());
-        res.put(SORT_ASCENDING_NAME,
-                Boolean.valueOf(sortInfo.getSortAscending()));
+        res.put(SORT_ASCENDING_NAME, Boolean.valueOf(sortInfo.getSortAscending()));
         return res;
     }
 
     /**
-     * Returns a sort info for given map, or null if map is null or does not
-     * contain both keys {@link #SORT_COLUMN_NAME} and
-     * {@link #SORT_ASCENDING_NAME}.
+     * Returns a sort info for given map, or null if map is null or does not contain both keys {@link #SORT_COLUMN_NAME}
+     * and {@link #SORT_ASCENDING_NAME}.
      *
      * @since 5.4.0
      */
@@ -122,10 +119,8 @@ public class SortInfo implements Serializable {
         if (map == null) {
             return null;
         }
-        if (map.containsKey(SORT_COLUMN_NAME)
-                && map.containsKey(SORT_ASCENDING_NAME)) {
-            return new SortInfo(
-                    (String) map.get("sortColumn"),
+        if (map.containsKey(SORT_COLUMN_NAME) && map.containsKey(SORT_ASCENDING_NAME)) {
+            return new SortInfo((String) map.get("sortColumn"),
                     Boolean.parseBoolean(String.valueOf(map.get("sortAscending"))));
         } else {
             log.error("Cannot resolve sort info from map: " + map);
@@ -135,8 +130,7 @@ public class SortInfo implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("SortInfo [sortColumn=%s, sortAscending=%s]",
-                sortColumn, Boolean.valueOf(sortAscending));
+        return String.format("SortInfo [sortColumn=%s, sortAscending=%s]", sortColumn, Boolean.valueOf(sortAscending));
     }
 
 }

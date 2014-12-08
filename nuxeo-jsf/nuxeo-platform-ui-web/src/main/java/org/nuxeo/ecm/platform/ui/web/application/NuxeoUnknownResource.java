@@ -32,11 +32,10 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Resource representing a facelet that is not found in this application.
  * <p>
- * This is used to avoid crashing triggering an exception when a facelet
- * resource is missing.
+ * This is used to avoid crashing triggering an exception when a facelet resource is missing.
  * <p>
- * Instead, a message referencing the missing resource is displayed in red and
- * in bold where the facelet would have been included.
+ * Instead, a message referencing the missing resource is displayed in red and in bold where the facelet would have been
+ * included.
  *
  * @since 6.0
  */
@@ -55,16 +54,14 @@ public class NuxeoUnknownResource extends ViewResource {
     public NuxeoUnknownResource(String path) {
         super();
         this.path = path;
-        this.errorMessage = String.format("ERROR: facelet not found at '%s'",
-                path);
+        this.errorMessage = String.format("ERROR: facelet not found at '%s'", path);
     }
 
     @Override
     public URL getURL() {
         try {
             String urlPath = String.format("%s%s", MARKER, path);
-            return new URL("", "", -1, urlPath,
-                    new NuxeoNotFoundResourceHandler());
+            return new URL("", "", -1, urlPath, new NuxeoNotFoundResourceHandler());
         } catch (MalformedURLException e) {
             return null;
         }
@@ -94,9 +91,8 @@ public class NuxeoUnknownResource extends ViewResource {
 
             @Override
             public InputStream getInputStream() throws IOException {
-                String msg = String.format(
-                        "<span><span style=\"color:red;font-weight:bold;\">%s"
-                                + "</span><br /></span>", errorMessage);
+                String msg = String.format("<span><span style=\"color:red;font-weight:bold;\">%s"
+                        + "</span><br /></span>", errorMessage);
                 return new ByteArrayInputStream(msg.getBytes());
             }
         }

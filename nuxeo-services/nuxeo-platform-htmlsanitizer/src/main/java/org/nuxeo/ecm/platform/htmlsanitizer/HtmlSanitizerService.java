@@ -20,8 +20,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Service that sanitizes some HTML fields to remove potential cross-site
- * scripting attacks in them.
+ * Service that sanitizes some HTML fields to remove potential cross-site scripting attacks in them.
  */
 public interface HtmlSanitizerService {
 

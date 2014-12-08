@@ -37,9 +37,8 @@ import com.google.inject.Scopes;
  * @since 5.7
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io",
-        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
-        "org.nuxeo.ecm.platform.query.api" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.server",
+        "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api" })
 @Features({ TransactionalFeature.class, WebEngineFeature.class })
 public class EmbeddedAutomationServerFeature extends SimpleFeature {
 
@@ -62,16 +61,15 @@ public class EmbeddedAutomationServerFeature extends SimpleFeature {
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         super.configure(runner, binder);
-        binder.bind(HttpAutomationClient.class).toProvider(
-                new Provider<HttpAutomationClient>() {
-                    @Override
-                    public HttpAutomationClient get() {
-                        if (client == null) {
-                            client = getHttpAutomationClient();
-                        }
-                        return client;
-                    }
-                }).in(Scopes.SINGLETON);
+        binder.bind(HttpAutomationClient.class).toProvider(new Provider<HttpAutomationClient>() {
+            @Override
+            public HttpAutomationClient get() {
+                if (client == null) {
+                    client = getHttpAutomationClient();
+                }
+                return client;
+            }
+        }).in(Scopes.SINGLETON);
         binder.bind(Session.class).toProvider(new Provider<Session>() {
             @Override
             public Session get() {
@@ -80,8 +78,7 @@ public class EmbeddedAutomationServerFeature extends SimpleFeature {
                 }
                 if (session == null) {
                     try {
-                        session = client.getSession("Administrator",
-                                "Administrator");
+                        session = client.getSession("Administrator", "Administrator");
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -92,8 +89,8 @@ public class EmbeddedAutomationServerFeature extends SimpleFeature {
     }
 
     protected HttpAutomationClient getHttpAutomationClient() {
-        HttpAutomationClient client = new HttpAutomationClient(
-                "http://localhost:18080/automation", HTTP_CONNECTION_TIMEOUT);
+        HttpAutomationClient client = new HttpAutomationClient("http://localhost:18080/automation",
+                HTTP_CONNECTION_TIMEOUT);
         // Deactivate global operation registry cache to allow tests using this
         // feature in a test suite to deploy different set of operations
         client.setSharedRegistryExpirationDelay(0);

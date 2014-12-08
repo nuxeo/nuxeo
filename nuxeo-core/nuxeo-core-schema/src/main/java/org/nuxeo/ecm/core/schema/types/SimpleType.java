@@ -15,8 +15,7 @@ package org.nuxeo.ecm.core.schema.types;
 /**
  * Simple Type.
  * <p>
- * May be primitive or not (in which case it has additional constraints over a
- * primitive type).
+ * May be primitive or not (in which case it has additional constraints over a primitive type).
  */
 public interface SimpleType extends Type {
 

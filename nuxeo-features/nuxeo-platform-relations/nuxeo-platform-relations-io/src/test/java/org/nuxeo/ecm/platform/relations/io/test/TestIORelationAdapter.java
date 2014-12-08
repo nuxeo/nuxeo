@@ -77,24 +77,22 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
 
     private static final String predicateNamespace = "http://purl.org/dc/terms/";
 
-    private static final QNameResource isBasedOn = new QNameResourceImpl(
-            predicateNamespace, "IsBasedOn");
+    private static final QNameResource isBasedOn = new QNameResourceImpl(predicateNamespace, "IsBasedOn");
 
-    private static final QNameResource references = new QNameResourceImpl(
-            predicateNamespace, "References");
+    private static final QNameResource references = new QNameResourceImpl(predicateNamespace, "References");
 
     private static final String doc1Ref = "DOC200600013_02.01";
 
     private static final String doc1RefCopy = "DOC200600013_02.01_copy";
 
-    private static final QNameResource doc1Resource = new QNameResourceImpl(
-            documentNamespace, "test/DOC200600013_02.01");
+    private static final QNameResource doc1Resource = new QNameResourceImpl(documentNamespace,
+            "test/DOC200600013_02.01");
 
-    private static final QNameResource doc2Resource = new QNameResourceImpl(
-            documentNamespace, "test/DOC200600015_01.00");
+    private static final QNameResource doc2Resource = new QNameResourceImpl(documentNamespace,
+            "test/DOC200600015_01.00");
 
-    private static final QNameResource doc1ResourceCopy = new QNameResourceImpl(
-            documentNamespace, "test/DOC200600013_02.01_copy");
+    private static final QNameResource doc1ResourceCopy = new QNameResourceImpl(documentNamespace,
+            "test/DOC200600013_02.01_copy");
 
     private static final Resource simpleResource = new ResourceImpl(
             "http://www.wikipedia.com/Enterprise_Content_Management");
@@ -112,12 +110,9 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
         openSession();
 
         // specific files
-        deployContrib("org.nuxeo.ecm.relations.io.tests",
-                "io-test-framework.xml");
-        deployContrib("org.nuxeo.ecm.relations.io.tests",
-                "io-relations-test-contrib.xml");
-        deployContrib("org.nuxeo.ecm.relations.io.tests",
-                "jena-test-bundle.xml");
+        deployContrib("org.nuxeo.ecm.relations.io.tests", "io-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.relations.io.tests", "io-relations-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.relations.io.tests", "jena-test-bundle.xml");
         ioService = Framework.getService(IOManager.class);
         assertNotNull(ioService);
         assertNotNull(ioService);
@@ -136,12 +131,10 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
         String id2 = doc1RefCopy;
         String name = "file1";
         String parentPath = "/";
-        DocumentModel doc1 = new DocumentModelImpl((String) null, type, id1,
-                new Path(name), null, null, new PathRef(parentPath), null,
-                null, null, session.getRepositoryName());
-        DocumentModel doc2 = new DocumentModelImpl((String) null, type, id2,
-                new Path(name), null, null, new PathRef(parentPath), null,
-                null, null, session.getRepositoryName());
+        DocumentModel doc1 = new DocumentModelImpl((String) null, type, id1, new Path(name), null, null, new PathRef(
+                parentPath), null, null, null, session.getRepositoryName());
+        DocumentModel doc2 = new DocumentModelImpl((String) null, type, id2, new Path(name), null, null, new PathRef(
+                parentPath), null, null, null, session.getRepositoryName());
         session.importDocuments(Arrays.asList(doc1, doc2));
         session.save();
     }
@@ -158,8 +151,7 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
     }
 
     private static InputStream getTestFile(String filePath) {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                filePath);
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
     }
 
     private static JenaGraph getMemoryGraph() {
@@ -211,10 +203,8 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
-                doc1Ref) });
-        IORelationResources ioRes = (IORelationResources) adapter.extractResources(
-                repoName, sources);
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(doc1Ref) });
+        IORelationResources ioRes = (IORelationResources) adapter.extractResources(repoName, sources);
         List<Statement> expected = Arrays.asList(new Statement[] {
                 new StatementImpl(doc2Resource, isBasedOn, doc1Resource),
                 new StatementImpl(doc1Resource, references, simpleResource) });
@@ -230,12 +220,10 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("ignore-external");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
-                doc1Ref) });
-        IORelationResources ioRes = (IORelationResources) adapter.extractResources(
-                repoName, sources);
-        List<Statement> expected = Arrays.asList(new Statement[] { new StatementImpl(
-                doc1Resource, references, simpleResource) });
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(doc1Ref) });
+        IORelationResources ioRes = (IORelationResources) adapter.extractResources(repoName, sources);
+        List<Statement> expected = Arrays.asList(new Statement[] { new StatementImpl(doc1Resource, references,
+                simpleResource) });
         Collections.sort(expected);
         assertEquals(1, ioRes.getStatements().size());
         List<Statement> actual = ioRes.getStatements();
@@ -248,10 +236,8 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
-                doc1Ref) });
-        IORelationResources ioRes = (IORelationResources) adapter.extractResources(
-                repoName, sources);
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(doc1Ref) });
+        IORelationResources ioRes = (IORelationResources) adapter.extractResources(repoName, sources);
         // File tmp = File.createTempFile("test", ".xml");
         // OutputStream out = new FileOutputStream(tmp);
         // adapter.getResourcesAsXML(out, ioRes);
@@ -285,15 +271,12 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
-                doc1Ref) });
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(doc1Ref) });
         IOResources resources = adapter.extractResources(repoName, sources);
         Map<DocumentRef, DocumentRef> docRefMap = new HashMap<DocumentRef, DocumentRef>();
         docRefMap.put(new IdRef(doc1Ref), new IdRef(doc1RefCopy));
-        DocumentTranslationMap map = new DocumentTranslationMapImpl(repoName,
-                repoName, docRefMap);
-        IORelationResources ioRes = (IORelationResources) adapter.translateResources(
-                repoName, resources, map);
+        DocumentTranslationMap map = new DocumentTranslationMapImpl(repoName, repoName, docRefMap);
+        IORelationResources ioRes = (IORelationResources) adapter.translateResources(repoName, resources, map);
         List<Statement> expected = Arrays.asList(new Statement[] {
                 new StatementImpl(doc2Resource, isBasedOn, doc1ResourceCopy),
                 new StatementImpl(doc1ResourceCopy, references, simpleResource) });
@@ -309,15 +292,12 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
-                doc1Ref) });
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(doc1Ref) });
         IOResources resources = adapter.extractResources(repoName, sources);
         Map<DocumentRef, DocumentRef> docRefMap = new HashMap<DocumentRef, DocumentRef>();
         docRefMap.put(new IdRef(doc1Ref), new IdRef(doc1Ref));
-        DocumentTranslationMap map = new DocumentTranslationMapImpl(repoName,
-                repoName, docRefMap);
-        IORelationResources ioRes = (IORelationResources) adapter.translateResources(
-                repoName, resources, map);
+        DocumentTranslationMap map = new DocumentTranslationMapImpl(repoName, repoName, docRefMap);
+        IORelationResources ioRes = (IORelationResources) adapter.translateResources(repoName, resources, map);
         List<Statement> expected = Arrays.asList(new Statement[] {
                 new StatementImpl(doc2Resource, isBasedOn, doc1Resource),
                 new StatementImpl(doc1Resource, references, simpleResource) });
@@ -333,15 +313,12 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
         feedGraph("data/initial_statements.xml", graph);
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
-        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(
-                doc1Ref) });
+        List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(doc1Ref) });
         IOResources resources = adapter.extractResources(repoName, sources);
         Map<DocumentRef, DocumentRef> docRefMap = new HashMap<DocumentRef, DocumentRef>();
         docRefMap.put(new IdRef(doc1Ref), new IdRef(doc1RefCopy));
-        DocumentTranslationMap map = new DocumentTranslationMapImpl(repoName,
-                repoName, docRefMap);
-        IORelationResources ioRes = (IORelationResources) adapter.translateResources(
-                repoName, resources, map);
+        DocumentTranslationMap map = new DocumentTranslationMapImpl(repoName, repoName, docRefMap);
+        IORelationResources ioRes = (IORelationResources) adapter.translateResources(repoName, resources, map);
         adapter.storeResources(ioRes);
         compareGraph("data/copied_statements.xml", graph);
     }

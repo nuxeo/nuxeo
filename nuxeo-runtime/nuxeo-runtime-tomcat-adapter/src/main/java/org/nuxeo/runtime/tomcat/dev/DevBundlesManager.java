@@ -19,20 +19,22 @@ package org.nuxeo.runtime.tomcat.dev;
 
 import javax.management.MXBean;
 
-
-
 /**
  * Expose dev bundles reloading feature to management interface
  * 
  * @since 5.5
- * 
  */
 @MXBean(true)
 public interface DevBundlesManager {
     void loadDevBundles();
+
     String getDevBundlesLocation();
+
     void resetDevBundles(String location);
+
     DevBundle[] getDevBundles();
+
     void toggleTimer();
+
     boolean isTimerRunning();
 }

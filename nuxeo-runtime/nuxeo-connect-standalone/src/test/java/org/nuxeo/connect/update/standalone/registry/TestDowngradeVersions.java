@@ -20,7 +20,6 @@ import org.junit.Test;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestDowngradeVersions extends SharedFilesTest {
 

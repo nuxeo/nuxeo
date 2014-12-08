@@ -21,8 +21,7 @@ import java.net.URL;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class URLBlob extends DefaultStreamBlob {
 
@@ -30,17 +29,16 @@ public class URLBlob extends DefaultStreamBlob {
 
     protected final URL url;
 
-
     public URLBlob(URL url) {
-        this (url, null, null);
+        this(url, null, null);
     }
 
     public URLBlob(URL url, String ctype) {
-        this (url, ctype, null);
+        this(url, ctype, null);
     }
 
     public URLBlob(URL url, String ctype, String encoding) {
-        this (url, ctype, encoding, null, null);
+        this(url, ctype, encoding, null, null);
     }
 
     public URLBlob(URL url, String ctype, String encoding, String filename, String digest) {

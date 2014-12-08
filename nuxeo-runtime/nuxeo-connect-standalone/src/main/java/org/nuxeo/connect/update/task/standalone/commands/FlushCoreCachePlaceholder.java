@@ -26,8 +26,7 @@ import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
- * Flush any cache held by the core. This should be used when document types are
- * installed or removed.
+ * Flush any cache held by the core. This should be used when document types are installed or removed.
  * <p>
  * The inverse of this command is itself.
  *
@@ -42,14 +41,12 @@ public class FlushCoreCachePlaceholder extends PostInstallCommand {
     }
 
     @Override
-    protected void doValidate(Task task, ValidationStatus status)
-            throws PackageException {
+    protected void doValidate(Task task, ValidationStatus status) throws PackageException {
         // nothing to do
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         // standalone mode: nothing to do
         return new FlushCoreCachePlaceholder();
     }

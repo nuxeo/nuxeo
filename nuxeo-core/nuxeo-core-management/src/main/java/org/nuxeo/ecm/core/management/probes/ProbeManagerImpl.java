@@ -99,8 +99,7 @@ public class ProbeManagerImpl implements ProbeManager {
     public ProbeInfo getProbeInfo(Class<? extends Probe> probeClass) {
         ProbeInfo info = infosByTypes.get(probeClass);
         if (info == null) {
-            throw new IllegalArgumentException("no probe registered for "
-                    + probeClass);
+            throw new IllegalArgumentException("no probe registered for " + probeClass);
         }
         return info;
     }
@@ -138,8 +137,7 @@ public class ProbeManagerImpl implements ProbeManager {
         try {
             probe = probeClass.newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new ManagementRuntimeException(
-                    "Cannot create management probe for " + descriptor);
+            throw new ManagementRuntimeException("Cannot create management probe for " + descriptor);
         }
 
         ProbeInfoImpl info = new ProbeInfoImpl(descriptor);
@@ -195,8 +193,7 @@ public class ProbeManagerImpl implements ProbeManager {
                 probeInfoImpl.lastFailureStatus = ProbeStatus.newError(e);
                 // then swallow exception
             } finally {
-                probeInfoImpl.lastDuration = doGetDuration(
-                        probeInfoImpl.lastRunnedDate, new Date());
+                probeInfoImpl.lastDuration = doGetDuration(probeInfoImpl.lastRunnedDate, new Date());
                 currentThread.setContextClassLoader(lastLoader);
             }
 

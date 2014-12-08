@@ -39,8 +39,7 @@ public final class VocabularyManager implements Registrable {
     private final Map<String, Vocabulary> vocabularies = new HashMap<>();
 
     public List<VocabularyItem> getItems(String name) {
-        VocabularyType vocabularyType = (VocabularyType) Manager.getTypeRegistry().lookup(
-                TypeFamily.VOCABULARY, name);
+        VocabularyType vocabularyType = (VocabularyType) Manager.getTypeRegistry().lookup(TypeFamily.VOCABULARY, name);
         if (vocabularyType == null) {
             return null;
         }
@@ -48,13 +47,11 @@ public final class VocabularyManager implements Registrable {
         final String className = vocabularyType.getClassName();
 
         if (path == null && className == null) {
-            log.error("Must specify a class name or a path for vocabulary: "
-                    + name);
+            log.error("Must specify a class name or a path for vocabulary: " + name);
             return null;
         }
         if (path != null && className != null) {
-            log.error("Cannot specify both a class name and a path for vocabulary: "
-                    + name);
+            log.error("Cannot specify both a class name and a path for vocabulary: " + name);
             return null;
         }
 
@@ -73,14 +70,12 @@ public final class VocabularyManager implements Registrable {
                 return null;
             }
             final List<VocabularyItem> items = new ArrayList<>();
-            try (InputStream is = getClass().getClassLoader().getResourceAsStream(
-                    path)) {
+            try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
                 if (is == null) {
                     log.error("Vocabulary file not found: " + path);
                     return null;
                 }
-                try (CSVParser reader = new CSVParser(new InputStreamReader(is,
-                        Charsets.UTF_8), CSVFormat.DEFAULT)) {
+                try (CSVParser reader = new CSVParser(new InputStreamReader(is, Charsets.UTF_8), CSVFormat.DEFAULT)) {
                     for (CSVRecord record : reader) {
                         final String value = record.get(0);
                         String label = value;

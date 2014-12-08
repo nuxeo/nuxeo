@@ -33,8 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 public class ReloadProperties extends ReloadPropertiesPlaceholder {
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         try {
             Framework.getRuntime().reloadProperties();
         } catch (IOException e) {

@@ -33,8 +33,7 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 /**
  * Security policy service implementation.
  * <p>
- * Iterates over ordered policies. First policy to give a known access (grant
- * or deny) applies.
+ * Iterates over ordered policies. First policy to give a known access (grant or deny) applies.
  *
  * @author Anahide Tchertchian
  */
@@ -70,10 +69,8 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
                         policies.add((SecurityPolicy) policy);
                         policyNames.add(descriptor.getName());
                     } else {
-                        log.error(String.format(
-                                "Invalid contribution to security policy service %s:"
-                                        + " must implement SecurityPolicy interface",
-                                descriptor.getName()));
+                        log.error(String.format("Invalid contribution to security policy service %s:"
+                                + " must implement SecurityPolicy interface", descriptor.getName()));
                     }
                 } catch (ReflectiveOperationException e) {
                     log.error(e, e);
@@ -116,17 +113,14 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
     }
 
     @Override
-    public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers(
-            String repositoryName) {
+    public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers(String repositoryName) {
         List<SQLQuery.Transformer> transformers = new LinkedList<SQLQuery.Transformer>();
         for (SecurityPolicy policy : getPolicies()) {
             if (policy.isExpressibleInQuery(repositoryName)) {
                 transformers.add(policy.getQueryTransformer(repositoryName));
             } else {
-                log.warn(String.format(
-                        "Security policy '%s' for repository '%s'"
-                                + " cannot be expressed in SQL query.",
-                        policy.getClass().getName(), repositoryName));
+                log.warn(String.format("Security policy '%s' for repository '%s'"
+                        + " cannot be expressed in SQL query.", policy.getClass().getName(), repositoryName));
             }
         }
         return transformers;
@@ -152,14 +146,12 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
     }
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp,
-            Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
         List<SecurityPolicy> policies = getPolicies();
         for (SecurityPolicy policy : policies) {
-            Access policyAccess = policy.checkPermission(doc, mergedAcp,
-                    principal, permission, resolvedPermissions,
+            Access policyAccess = policy.checkPermission(doc, mergedAcp, principal, permission, resolvedPermissions,
                     additionalPrincipals);
             if (policyAccess != null && !Access.UNKNOWN.equals(policyAccess)) {
                 access = policyAccess;

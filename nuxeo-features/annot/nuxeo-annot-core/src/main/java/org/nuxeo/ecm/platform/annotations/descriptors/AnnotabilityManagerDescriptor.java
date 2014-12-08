@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.annotations.service.AnnotabilityManager;
 
 /**
  * @author Alexandre Russel
- *
  */
 @XObject("annotabilityManager")
 public class AnnotabilityManagerDescriptor {

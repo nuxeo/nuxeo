@@ -17,12 +17,10 @@ import java.util.Date;
 import org.apache.commons.lang.StringEscapeUtils;
 
 /**
- * The functions exposed by the core library.
- * You may want to extend this class to expose more functions under
- * the "Fn" context variable for scripting expressions.
+ * The functions exposed by the core library. You may want to extend this class to expose more functions under the "Fn"
+ * context variable for scripting expressions.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CoreFunctions {
 

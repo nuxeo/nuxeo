@@ -84,8 +84,7 @@ public class IterableOperationsTest {
         Framework.getService(EventService.class).waitForAsyncCompletion();
     }
 
-    protected DocumentModel createFolder(String name, String title)
-            throws Exception {
+    protected DocumentModel createFolder(String name, String title) throws Exception {
         DocumentModel doc = session.createDocumentModel("/src", name, "Folder");
         doc.setPropertyValue("dc:title", title);
         doc = session.createDocument(doc);
@@ -93,10 +92,8 @@ public class IterableOperationsTest {
         return session.getDocument(doc.getRef());
     }
 
-    protected DocumentModel createFile(DocumentModel parent, String name,
-            String title) throws Exception {
-        DocumentModel doc = session.createDocumentModel(
-                parent.getPathAsString(), name, "File");
+    protected DocumentModel createFile(DocumentModel parent, String name, String title) throws Exception {
+        DocumentModel doc = session.createDocumentModel(parent.getPathAsString(), name, "File");
         doc.setPropertyValue("dc:title", title);
         doc = session.createDocument(doc);
         session.save();
@@ -117,8 +114,7 @@ public class IterableOperationsTest {
         ctx.setInput(docs);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value", "mydesc");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "mydesc");
 
         DocumentModelList out = (DocumentModelList) service.run(ctx, chain);
         assertEquals(2, out.size());
@@ -140,8 +136,7 @@ public class IterableOperationsTest {
         ctx.setInput(docs);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value", "mydesc");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "mydesc");
 
         DocumentModelList out = (DocumentModelList) service.run(ctx, chain);
         assertEquals(2, out.size());
@@ -173,15 +168,12 @@ public class IterableOperationsTest {
         DocumentModelList out = (DocumentModelList) service.run(ctx, chain);
 
         assertEquals(2, out.size());
-        assertEquals(SecurityConstants.ADMINISTRATOR,
-                out.get(0).getLockInfo().getOwner());
-        assertEquals(SecurityConstants.ADMINISTRATOR,
-                out.get(1).getLockInfo().getOwner());
+        assertEquals(SecurityConstants.ADMINISTRATOR, out.get(0).getLockInfo().getOwner());
+        assertEquals(SecurityConstants.ADMINISTRATOR, out.get(1).getLockInfo().getOwner());
     }
 
     /**
-     * test that input context variable is pointing to the current iterated
-     * object and not to the list object.
+     * test that input context variable is pointing to the current iterated object and not to the list object.
      *
      * @throws Exception
      */
@@ -199,19 +191,15 @@ public class IterableOperationsTest {
         ctx.setInput(docs);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value",
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value",
                 Scripting.newExpression("Document.getParent()['dc:title']"));
 
         DocumentModelList out = (DocumentModelList) service.run(ctx, chain);
 
         assertEquals(2, out.size());
-        assertEquals("Parent Folder",
-                out.get(0).getPropertyValue("dc:description"));
-        assertEquals("Parent Folder",
-                out.get(0).getPropertyValue("dc:description"));
+        assertEquals("Parent Folder", out.get(0).getPropertyValue("dc:description"));
+        assertEquals("Parent Folder", out.get(0).getPropertyValue("dc:description"));
     }
-
 
     @Test
     public void testChain5() throws Exception {
@@ -232,8 +220,7 @@ public class IterableOperationsTest {
 
         assertEquals(2, out.size());
         // only the last blob is set since it overwrite the previous blob
-        assertEquals("the content 2",
-                ((Blob)f.getPropertyValue("file:content")).getString());
+        assertEquals("the content 2", ((Blob) f.getPropertyValue("file:content")).getString());
 
         // same but use the xpath for the files schemas to append both blobs.
         chain = new OperationChain("testChain");
@@ -242,10 +229,10 @@ public class IterableOperationsTest {
 
         assertEquals(2, out.size());
         // both blobs are set in files:files
-        Object o  = f.getPropertyValue("files:files/file[0]/file");
+        Object o = f.getPropertyValue("files:files/file[0]/file");
         assertNotNull(o);
-        Blob r1 = (Blob)f.getPropertyValue("files:files/file[0]/file");
-        Blob r2 = (Blob)f.getPropertyValue("files:files/file[1]/file");
+        Blob r1 = (Blob) f.getPropertyValue("files:files/file[0]/file");
+        Blob r2 = (Blob) f.getPropertyValue("files:files/file[1]/file");
         assertEquals("the content 1", r1.getString());
         assertEquals("the content 2", r2.getString());
     }

@@ -39,8 +39,7 @@ public class TestModels {
 
     public void Menu() throws ModelException {
         Menu menu = new Menu();
-        MenuItem menuitem = new MenuItem("title sub-menu",
-                "description sub-menu", "url sub-menu", false, "icon.png");
+        MenuItem menuitem = new MenuItem("title sub-menu", "description sub-menu", "url sub-menu", false, "icon.png");
         menu.addItem(menuitem);
         assertSame(menuitem, menu.getItems().iterator().next());
     }

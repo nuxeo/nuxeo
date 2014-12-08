@@ -19,16 +19,15 @@
 package org.nuxeo.ecm.platform.uidgen;
 
 /**
- * UID Sequencer interface defines a method to retrieve next ids based on a
- * given key.
+ * UID Sequencer interface defines a method to retrieve next ids based on a given key.
  *
  * @author <a href="mailto:dm@nuxeo.com>Dragos Mihalache</a>
  */
 public interface UIDSequencer {
 
     /**
-     * For the given key returns the incremented UID which is also stored in the
-     * same sequence entry. This is a "one time use" function for a document.
+     * For the given key returns the incremented UID which is also stored in the same sequence entry. This is a
+     * "one time use" function for a document.
      *
      * @param key
      * @return

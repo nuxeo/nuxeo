@@ -31,12 +31,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class DirectoryTree extends JSonTree {
 
     protected Directory dir;
-
 
     protected DirectoryTree() {
     }

@@ -50,9 +50,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory.types.contrib",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io",
+@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io",
         "org.nuxeo.ecm.automation.features" })
 @LocalDeploy("org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml")
 public class DirectoryEntriesTest {
@@ -86,29 +85,22 @@ public class DirectoryEntriesTest {
 
     @Test
     public void testGlobalDirectoryEntries() throws Exception {
-        StringBlob result = getDirectoryEntries(session.getDocument(new PathRef(
-                "/default-domain/workspaces/test")));
-        JSONAssert.assertEquals(continentContentJson, result.getString(),
-                JSONCompareMode.NON_EXTENSIBLE);
+        StringBlob result = getDirectoryEntries(session.getDocument(new PathRef("/default-domain/workspaces/test")));
+        JSONAssert.assertEquals(continentContentJson, result.getString(), JSONCompareMode.NON_EXTENSIBLE);
     }
 
     @Test
     public void testLocalDirectoryEntries() throws Exception {
-        DocumentModel doc = session.getDocument(new PathRef(
-                "/default-domain/workspaces/test"));
-        doc.setPropertyValue(
-                DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FIELD,
-                "local");
+        DocumentModel doc = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+        doc.setPropertyValue(DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FIELD, "local");
         doc = session.saveDocument(doc);
         session.save();
 
         StringBlob result = getDirectoryEntries(doc);
-        JSONAssert.assertEquals(continentLocalContentJson, result.getString(),
-                JSONCompareMode.NON_EXTENSIBLE);
+        JSONAssert.assertEquals(continentLocalContentJson, result.getString(), JSONCompareMode.NON_EXTENSIBLE);
     }
 
-    protected StringBlob getDirectoryEntries(DocumentModel doc)
-            throws Exception {
+    protected StringBlob getDirectoryEntries(DocumentModel doc) throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
 
@@ -116,8 +108,7 @@ public class DirectoryEntriesTest {
         chain.add(FetchContextDocument.ID);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("directoryName", "continent");
-        OperationParameters oparams = new OperationParameters(
-                GetDirectoryEntries.ID, params);
+        OperationParameters oparams = new OperationParameters(GetDirectoryEntries.ID, params);
         chain.add(oparams);
 
         return (StringBlob) service.run(ctx, chain);

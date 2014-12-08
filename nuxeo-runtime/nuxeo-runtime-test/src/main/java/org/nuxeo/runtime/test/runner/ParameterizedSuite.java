@@ -42,8 +42,7 @@ import org.junit.runners.model.RunnerBuilder;
 import org.junit.runners.model.TestClass;
 
 /**
- * JUnit4 ParentRunner that knows how to run a test class on multiple backend
- * types.
+ * JUnit4 ParentRunner that knows how to run a test class on multiple backend types.
  * <p>
  * To use it :
  *
@@ -57,16 +56,14 @@ import org.junit.runners.model.TestClass;
  * }
  * </pre>
  *
- * &#064;ParameterizedFeature is optional. If used, the corresponding class must
- * implement a method annotated with &#064;ParameterizedMethod
- *
+ * &#064;ParameterizedFeature is optional. If used, the corresponding class must implement a method annotated with
+ * &#064;ParameterizedMethod
  */
 public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
 
     /**
-     * The <code>ParameterizedFeature</code> annotation specifies the class to
-     * be parameterized. That class must extend {@link SimpleFeature} or
-     * implement {@link RunnerFeature}.
+     * The <code>ParameterizedFeature</code> annotation specifies the class to be parameterized. That class must extend
+     * {@link SimpleFeature} or implement {@link RunnerFeature}.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
@@ -85,28 +82,23 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
 
     @SuppressWarnings("unchecked")
     private List<Object[]> getParametersList(TestClass klass) throws Throwable {
-        return (List<Object[]>) getParametersMethod(klass).invokeExplosively(
-                null);
+        return (List<Object[]>) getParametersMethod(klass).invokeExplosively(null);
     }
 
     @SuppressWarnings("unchecked")
-    private Class<? extends RunnerFeature> getParameterizedClass(Class<?> klass)
-            throws Throwable {
+    private Class<? extends RunnerFeature> getParameterizedClass(Class<?> klass) throws Throwable {
         ParameterizedFeature annotation = klass.getAnnotation(ParameterizedFeature.class);
-        return (Class<? extends RunnerFeature>) (annotation != null ? annotation.value()
-                : null);
+        return (Class<? extends RunnerFeature>) (annotation != null ? annotation.value() : null);
     }
 
-    private FrameworkMethod getParametersMethod(TestClass testClass)
-            throws Exception {
+    private FrameworkMethod getParametersMethod(TestClass testClass) throws Exception {
         List<FrameworkMethod> methods = testClass.getAnnotatedMethods(Parameters.class);
         for (FrameworkMethod each : methods) {
             int modifiers = each.getMethod().getModifiers();
             if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers))
                 return each;
         }
-        throw new Exception("Missing public static Parameters method on class "
-                + testClass.getName());
+        throw new Exception("Missing public static Parameters method on class " + testClass.getName());
     }
 
     private final List<FeaturesRunner> runners = new ArrayList<FeaturesRunner>();
@@ -117,13 +109,11 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
 
     private Class<? extends RunnerFeature> parameterizedClass;
 
-    public ParameterizedSuite(Class<?> testClass, RunnerBuilder builder)
-            throws InitializationError {
+    public ParameterizedSuite(Class<?> testClass, RunnerBuilder builder) throws InitializationError {
         this(builder, testClass, getSuiteClasses(testClass));
     }
 
-    public ParameterizedSuite(RunnerBuilder builder, Class<?> testClass,
-            Class<?>[] classes) throws InitializationError {
+    public ParameterizedSuite(RunnerBuilder builder, Class<?> testClass, Class<?>[] classes) throws InitializationError {
         super(testClass);
         try {
             this.parametersList = getParametersList(getTestClass());
@@ -156,12 +146,10 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
         }
     }
 
-    protected static Class<?>[] getSuiteClasses(Class<?> klass)
-            throws InitializationError {
+    protected static Class<?>[] getSuiteClasses(Class<?> klass) throws InitializationError {
         SuiteClasses annotation = klass.getAnnotation(SuiteClasses.class);
         if (annotation == null) {
-            throw new InitializationError(String.format(
-                    "class '%s' must have a SuiteClasses annotation",
+            throw new InitializationError(String.format("class '%s' must have a SuiteClasses annotation",
                     klass.getName()));
         }
         return annotation.value();
@@ -170,11 +158,8 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
     @Override
     protected Description describeChild(FeaturesRunner child) {
         Description description = child.getDescription();
-        return Description.createTestDescription(
-                description.getTestClass(),
-                description.getDisplayName() + " "
-                        + Arrays.toString(runnersParams.get(child)),
-                (Annotation[]) description.getAnnotations().toArray());
+        return Description.createTestDescription(description.getTestClass(), description.getDisplayName() + " "
+                + Arrays.toString(runnersParams.get(child)), (Annotation[]) description.getAnnotations().toArray());
     }
 
     @Override
@@ -185,9 +170,7 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
     @Override
     protected void runChild(FeaturesRunner child, RunNotifier notifier) {
         // for (Object[] params : parametersList) {
-        System.out.println(String.format(
-                "\r\n============= RUNNING %s =================",
-                describeChild(child)));
+        System.out.println(String.format("\r\n============= RUNNING %s =================", describeChild(child)));
         // try {
         // if (parameterizedClass != null) {
         // RunnerFeature feature = child.getFeature(parameterizedClass);

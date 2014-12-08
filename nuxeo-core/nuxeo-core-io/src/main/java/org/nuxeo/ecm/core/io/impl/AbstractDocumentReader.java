@@ -23,10 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractDocumentReader implements DocumentReader {
 
@@ -41,19 +39,17 @@ public abstract class AbstractDocumentReader implements DocumentReader {
         List<ExportedDocument> docs = new ArrayList<ExportedDocument>(count);
         for (int i = 0; i < count; i++) {
             ExportedDocument doc = read();
-            if (doc  == null) {
+            if (doc == null) {
                 break;
             }
 
-            /*NXP-1688 Rux: no ID, it should be a OS folder and not an exported one*/
+            /* NXP-1688 Rux: no ID, it should be a OS folder and not an exported one */
             if (doc.getId() != null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Adding document to be transformed (path): "
-                            + doc.getPath());
+                    log.debug("Adding document to be transformed (path): " + doc.getPath());
                 }
                 docs.add(doc);
-            }
-            else {
+            } else {
                 log.warn("no ID for document, won't add " + doc);
             }
         }

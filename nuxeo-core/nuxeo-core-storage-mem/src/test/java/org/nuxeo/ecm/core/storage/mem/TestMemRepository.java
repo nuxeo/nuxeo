@@ -84,8 +84,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
     @Override
     protected void initRepository() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.mem.tests",
-                "OSGI-INF/test-repo-types.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.mem.tests", "OSGI-INF/test-repo-types.xml");
         super.initRepository();
     }
 
@@ -98,8 +97,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         child.setProperty("dublincore", "title", "The title");
         // use local tz
-        Calendar cal = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
-                56);
+        Calendar cal = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34, 56);
         child.setProperty("dublincore", "modified", cal);
         session.saveDocument(child);
         session.save();
@@ -112,11 +110,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         String title = (String) child.getProperty("dublincore", "title");
         assertEquals("The title", title);
-        String description = (String) child.getProperty("dublincore",
-                "description");
+        String description = (String) child.getProperty("dublincore", "description");
         assertNull(description);
-        Calendar modified = (Calendar) child.getProperty("dublincore",
-                "modified");
+        Calendar modified = (Calendar) child.getProperty("dublincore", "modified");
         assertEquals(cal, modified);
     }
 
@@ -130,13 +126,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // simple list as array
         child.setProperty("dublincore", "subjects", new String[] { "a", "b" });
         // simple list as List
-        child.setProperty("dublincore", "contributors", new ArrayList<String>(
-                Arrays.asList("c", "d")));
+        child.setProperty("dublincore", "contributors", new ArrayList<String>(Arrays.asList("c", "d")));
         // simple list as non-serializable array
         child.setProperty("testList", "strings", new Object[] { "e", "f" });
         // complex list as List
-        child.setProperty("testList", "participants", new ArrayList<String>(
-                Arrays.asList("c", "d")));
+        child.setProperty("testList", "participants", new ArrayList<String>(Arrays.asList("c", "d")));
         session.saveDocument(child);
         session.save();
         closeSession();
@@ -148,19 +142,16 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         Object subjects = child.getProperty("dublincore", "subjects");
         assertTrue(subjects instanceof String[]);
-        assertEquals(Arrays.asList("a", "b"),
-                Arrays.asList((String[]) subjects));
+        assertEquals(Arrays.asList("a", "b"), Arrays.asList((String[]) subjects));
         Object contributors = child.getProperty("dublincore", "contributors");
         assertTrue(contributors instanceof String[]);
-        assertEquals(Arrays.asList("c", "d"),
-                Arrays.asList((String[]) contributors));
+        assertEquals(Arrays.asList("c", "d"), Arrays.asList((String[]) contributors));
         Object strings = child.getProperty("testList", "strings");
         assertTrue(strings instanceof String[]);
         assertEquals(Arrays.asList("e", "f"), Arrays.asList((String[]) strings));
         Object participants = child.getProperty("testList", "participants");
         assertTrue(participants instanceof String[]);
-        assertEquals(Arrays.asList("c", "d"),
-                Arrays.asList((String[]) participants));
+        assertEquals(Arrays.asList("c", "d"), Arrays.asList((String[]) participants));
     }
 
     @Test
@@ -183,8 +174,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
 
-        DocumentModel doc = new DocumentModelImpl("/", "complex-doc",
-                "ComplexDoc");
+        DocumentModel doc = new DocumentModelImpl("/", "complex-doc", "ComplexDoc");
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
         session.save();
@@ -203,19 +193,15 @@ public class TestMemRepository extends MemRepositoryTestCase {
         session.save();
 
         doc = session.getDocument(docRef);
-        assertEquals(attachedFile,
-                doc.getProperty("cmpf:attachedFile").getValue());
-        assertEquals(attachedFile.get("vignettes"),
-                doc.getProperty("cmpf:attachedFile/vignettes").getValue());
+        assertEquals(attachedFile, doc.getProperty("cmpf:attachedFile").getValue());
+        assertEquals(attachedFile.get("vignettes"), doc.getProperty("cmpf:attachedFile/vignettes").getValue());
 
         // test setting and reading a list of maps without a complex type in the
         // maps
         Map<String, Object> vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        vignette.put(
-                "content",
-                StreamingBlob.createFromString("textblob content", "text/plain"));
+        vignette.put("content", StreamingBlob.createFromString("textblob content", "text/plain"));
         vignette.put("label", "vignettelabel");
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -223,22 +209,14 @@ public class TestMemRepository extends MemRepositoryTestCase {
         session.save();
 
         doc = session.getDocument(docRef);
-        assertEquals(
-                "text/plain",
-                doc.getProperty(
-                        "cmpf:attachedFile/vignettes/vignette[0]/content/mime-type").getValue());
-        assertEquals(
-                Long.valueOf(0),
-                doc.getProperty(
-                        "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
-        assertEquals(
-                "vignettelabel",
-                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/label").getValue());
+        assertEquals("text/plain",
+                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/content/mime-type").getValue());
+        assertEquals(Long.valueOf(0), doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
+        assertEquals("vignettelabel", doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/label").getValue());
 
         // test setting and reading a list of maps with a blob inside the map
         byte[] binaryContent = "01AB".getBytes();
-        Blob blob = StreamingBlob.createFromByteArray(binaryContent,
-                "application/octet-stream");
+        Blob blob = StreamingBlob.createFromByteArray(binaryContent, "application/octet-stream");
         blob.setFilename("file.bin");
         vignette.put("content", blob);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -246,19 +224,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
         session.save();
 
         doc = session.getDocument(docRef);
-        assertEquals(
-                Long.valueOf(0),
-                doc.getProperty(
-                        "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
-        assertEquals(
-                "vignettelabel",
-                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/label").getValue());
+        assertEquals(Long.valueOf(0), doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
+        assertEquals("vignettelabel", doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/label").getValue());
 
         // this doesn't work due to core restrictions (BlobProperty):
         // assertEquals(blob.getFilename(), doc.getProperty(
         // "cmpf:attachedFile/vignettes/vignette[0]/content/name").getValue());
-        Blob b = (Blob) doc.getProperty(
-                "cmpf:attachedFile/vignettes/vignette[0]/content").getValue();
+        Blob b = (Blob) doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/content").getValue();
         assertEquals("file.bin", b.getFilename());
     }
 
@@ -285,8 +257,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
     protected void createComplexDocs(int iMin, int iMax) throws ClientException {
         for (int i = iMin; i < iMax; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "doc" + i,
-                    "ComplexDoc");
+            DocumentModel doc = session.createDocumentModel("/", "doc" + i, "ComplexDoc");
 
             Map<String, Object> attachedFile = new HashMap<String, Object>();
             List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
@@ -297,13 +268,10 @@ public class TestMemRepository extends MemRepositoryTestCase {
                 Map<String, Object> vignette = new HashMap<String, Object>();
                 vignette.put("width", Long.valueOf(j));
                 vignette.put("height", Long.valueOf(j));
-                vignette.put("content",
-                        StreamingBlob.createFromString(String.format(
-                                "document %d, vignette %d", i, j)));
+                vignette.put("content", StreamingBlob.createFromString(String.format("document %d, vignette %d", i, j)));
                 vignettes.add(vignette);
             }
-            doc.setPropertyValue("cmpf:attachedFile",
-                    (Serializable) attachedFile);
+            doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
             doc = session.createDocument(doc);
 
             session.save();
@@ -312,22 +280,16 @@ public class TestMemRepository extends MemRepositoryTestCase {
         }
     }
 
-    protected void checkComplexDocs(int iMin, int iMax) throws ClientException,
-            IOException {
+    protected void checkComplexDocs(int iMin, int iMax) throws ClientException, IOException {
         for (int i = iMin; i < iMax; i++) {
             DocumentModel doc = session.getDocument(new PathRef("/doc" + i));
 
             for (int j = 0; j < 3; j++) {
-                String propertyPath = String.format(
-                        "cmpf:attachedFile/vignettes/%d/", j);
-                assertEquals(Long.valueOf(j),
-                        doc.getProperty(propertyPath + "height").getValue());
-                assertEquals(Long.valueOf(j),
-                        doc.getProperty(propertyPath + "width").getValue());
-                assertEquals(
-                        String.format("document %d, vignette %d", i, j),
-                        doc.getProperty(propertyPath + "content").getValue(
-                                Blob.class).getString());
+                String propertyPath = String.format("cmpf:attachedFile/vignettes/%d/", j);
+                assertEquals(Long.valueOf(j), doc.getProperty(propertyPath + "height").getValue());
+                assertEquals(Long.valueOf(j), doc.getProperty(propertyPath + "width").getValue());
+                assertEquals(String.format("document %d, vignette %d", i, j),
+                        doc.getProperty(propertyPath + "content").getValue(Blob.class).getString());
             }
 
             closeSession();
@@ -342,14 +304,12 @@ public class TestMemRepository extends MemRepositoryTestCase {
         session.save();
 
         doc.setProperty("dublincore", "title", "title1");
-        doc.setProperty("testList", "participants", new ArrayList<String>(
-                Arrays.asList("a", "b")));
+        doc.setProperty("testList", "participants", new ArrayList<String>(Arrays.asList("a", "b")));
         session.saveDocument(doc);
         session.save();
 
         doc.setProperty("dublincore", "title", "title2");
-        doc.setProperty("testList", "participants", new ArrayList<String>(
-                Arrays.asList("c", "d")));
+        doc.setProperty("testList", "participants", new ArrayList<String>(Arrays.asList("c", "d")));
         session.saveDocument(doc);
         session.save();
 
@@ -361,8 +321,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String title = (String) doc.getProperty("dublincore", "title");
         assertEquals("title2", title);
         Object participants = doc.getProperty("testList", "participants");
-        assertEquals(Arrays.asList("c", "d"),
-                Arrays.asList((String[]) participants));
+        assertEquals(Arrays.asList("c", "d"), Arrays.asList((String[]) participants));
     }
 
     @Test
@@ -378,13 +337,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
         doc = session.createDocument(doc);
         session.save();
 
-        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(
-                222L);
+        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(222L);
         session.saveDocument(doc);
         session.save();
 
-        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(
-                333L);
+        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(333L);
         session.saveDocument(doc);
         session.save();
 
@@ -392,9 +349,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         closeSession();
         openSession();
         doc = session.getDocument(new PathRef("/doc"));
-        assertEquals(
-                333L,
-                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").getValue());
+        assertEquals(333L, doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").getValue());
     }
 
     //
@@ -411,8 +366,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         return String.valueOf(random.nextLong());
     }
 
-    protected DocumentModel createChildDocument(DocumentModel childFolder)
-            throws ClientException {
+    protected DocumentModel createChildDocument(DocumentModel childFolder) throws ClientException {
         DocumentModel ret = session.createDocument(childFolder);
         assertNotNull(ret);
         assertNotNull(ret.getName());
@@ -422,12 +376,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         return ret;
     }
 
-    protected List<DocumentModel> createChildDocuments(
-            List<DocumentModel> childFolders) throws ClientException {
+    protected List<DocumentModel> createChildDocuments(List<DocumentModel> childFolders) throws ClientException {
         List<DocumentModel> rets = new ArrayList<DocumentModel>();
-        Collections.addAll(
-                rets,
-                session.createDocument(childFolders.toArray(new DocumentModel[0])));
+        Collections.addAll(rets, session.createDocument(childFolders.toArray(new DocumentModel[0])));
 
         assertNotNull(rets);
         assertEquals(childFolders.size(), rets.size());
@@ -454,8 +405,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
     @SuppressWarnings({ "SimplifiableJUnitAssertion" })
     @Test
-    public void testDocumentReferenceEqualitySameInstance()
-            throws ClientException {
+    public void testDocumentReferenceEqualitySameInstance() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         assertTrue(root.getRef().equals(root.getRef()));
@@ -465,8 +415,8 @@ public class TestMemRepository extends MemRepositoryTestCase {
     public void testCancel() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), "folder#" + generateUnique(), "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), "folder#" + generateUnique(),
+                "Folder");
         childFolder = createChildDocument(childFolder);
 
         session.cancel();
@@ -475,13 +425,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testCreateDomainDocumentRefDocumentModel()
-            throws ClientException {
+    public void testCreateDomainDocumentRefDocumentModel() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "domain#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Domain");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Domain");
         childFolder = createChildDocument(childFolder);
 
         assertEquals("Domain", childFolder.getType());
@@ -489,13 +437,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testCreateFolderDocumentRefDocumentModel()
-            throws ClientException {
+    public void testCreateFolderDocumentRefDocumentModel() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         childFolder = createChildDocument(childFolder);
 
         assertEquals("Folder", childFolder.getType());
@@ -507,8 +453,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name, "File");
 
         childFile = createChildDocument(childFile);
 
@@ -517,16 +462,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testCreateFolderDocumentRefDocumentModelArray()
-            throws ClientException {
+    public void testCreateFolderDocumentRefDocumentModelArray() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "folder#" + generateUnique();
-        DocumentModel childFolder2 = new DocumentModelImpl(
-                root.getPathAsString(), name2, "Folder");
+        DocumentModel childFolder2 = new DocumentModelImpl(root.getPathAsString(), name2, "Folder");
 
         List<DocumentModel> childFolders = new ArrayList<DocumentModel>();
         childFolders.add(childFolder);
@@ -539,16 +481,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testCreateFileDocumentRefDocumentModelArray()
-            throws ClientException {
+    public void testCreateFileDocumentRefDocumentModelArray() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name, "File");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile2 = new DocumentModelImpl(
-                root.getPathAsString(), name2, "File");
+        DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childFiles = new ArrayList<DocumentModel>();
         childFiles.add(childFile);
@@ -572,11 +511,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -631,11 +568,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -647,8 +582,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
         // get file childs
-        List<DocumentModel> retrievedChilds = session.getChildren(
-                root.getRef(), "File");
+        List<DocumentModel> retrievedChilds = session.getChildren(root.getRef(), "File");
 
         assertNotNull(retrievedChilds);
         assertEquals(1, retrievedChilds.size());
@@ -668,11 +602,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -684,8 +616,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
         // get file childs
-        DocumentModelIterator retrievedChilds = session.getChildrenIterator(
-                root.getRef(), "File", null, null);
+        DocumentModelIterator retrievedChilds = session.getChildrenIterator(root.getRef(), "File", null, null);
 
         assertNotNull(retrievedChilds);
 
@@ -715,8 +646,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         }
         session.save();
 
-        DocumentModelIterator it = session.getChildrenIterator(
-                new PathRef("/"), "File", null, null);
+        DocumentModelIterator it = session.getChildrenIterator(new PathRef("/"), "File", null, null);
         for (DocumentModel doc : it) {
             String name = doc.getName();
             if (!names.remove(name)) {
@@ -738,11 +668,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
             DocumentModel doc = session.createDocumentModel("/", name, "File");
             doc = session.createDocument(doc);
             // create spurious docs in the middle
-            DocumentModel doc2 = session.createDocumentModel("/", "foo" + i,
-                    "File");
+            DocumentModel doc2 = session.createDocumentModel("/", "foo" + i, "File");
             doc2 = session.createDocument(doc2);
-            DocumentModel doc3 = session.createDocumentModel("/",
-                    "docNote" + i, "Note");
+            DocumentModel doc3 = session.createDocumentModel("/", "docNote" + i, "Note");
             doc3 = session.createDocument(doc3);
         }
         session.save();
@@ -755,8 +683,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
                 return docModel.getName().startsWith("doc");
             }
         };
-        DocumentModelIterator it = session.getChildrenIterator(
-                new PathRef("/"), "File", null, filter );
+        DocumentModelIterator it = session.getChildrenIterator(new PathRef("/"), "File", null, filter);
         for (DocumentModel doc : it) {
             String name = doc.getName();
             if (!names.remove(name)) {
@@ -767,16 +694,15 @@ public class TestMemRepository extends MemRepositoryTestCase {
             fail("Remaining names " + names);
         }
     }
+
     @Test
     public void testGetFolderChildrenDocumentRefString() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -788,8 +714,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
         // get folder childs
-        List<DocumentModel> retrievedChilds = session.getChildren(
-                root.getRef(), "Folder");
+        List<DocumentModel> retrievedChilds = session.getChildren(root.getRef(), "Folder");
 
         assertNotNull(retrievedChilds);
         assertEquals(1, retrievedChilds.size());
@@ -809,11 +734,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -825,8 +748,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
         // get folder childs
-        DocumentModelIterator retrievedChilds = session.getChildrenIterator(
-                root.getRef(), "Folder", null, null);
+        DocumentModelIterator retrievedChilds = session.getChildrenIterator(root.getRef(), "Folder", null, null);
 
         assertNotNull(retrievedChilds);
 
@@ -849,11 +771,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "folder#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "Folder");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "Folder");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -865,19 +785,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
         /*
-         * Filter filter = new NameFilter(name2); // get folder children
-         * List<DocumentModel> retrievedChilds =
-         * session.getChildren(root.getRef(), null, null, filter, null);
-         *
-         * assertNotNull(retrievedChilds); assertEquals(1,
-         * retrievedChilds.size());
-         *
-         * assertNotNull(retrievedChilds.get(0));
-         * assertNotNull(retrievedChilds.get(0).getId());
-         * assertNotNull(retrievedChilds.get(0).getName());
-         * assertNotNull(retrievedChilds.get(0).getPathAsString());
-         * assertNotNull(retrievedChilds.get(0).getRef());
-         *
+         * Filter filter = new NameFilter(name2); // get folder children List<DocumentModel> retrievedChilds =
+         * session.getChildren(root.getRef(), null, null, filter, null); assertNotNull(retrievedChilds); assertEquals(1,
+         * retrievedChilds.size()); assertNotNull(retrievedChilds.get(0));
+         * assertNotNull(retrievedChilds.get(0).getId()); assertNotNull(retrievedChilds.get(0).getName());
+         * assertNotNull(retrievedChilds.get(0).getPathAsString()); assertNotNull(retrievedChilds.get(0).getRef());
          * assertEquals(name2, retrievedChilds.get(0).getName());
          */
     }
@@ -892,8 +804,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
-                name, "FolderWithSearch");
+        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), name, "FolderWithSearch");
 
         folder = createChildDocument(folder);
 
@@ -901,8 +812,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         for (int i = 0; i < 5; i++) {
             name = "File_" + i;
-            DocumentModel childFile = new DocumentModelImpl(
-                    folder.getPathAsString(), name, "File");
+            DocumentModel childFile = new DocumentModelImpl(folder.getPathAsString(), name, "File");
             childDocs.add(childFile);
         }
 
@@ -921,11 +831,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -955,8 +863,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         session.save();
@@ -986,8 +893,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertTrue(schemas.contains("dublincore"));
 
         assertEquals("f1", returnedDocument.getProperty("dublincore", "title"));
-        assertEquals("desc 1",
-                returnedDocument.getProperty("dublincore", "description"));
+        assertEquals("desc 1", returnedDocument.getProperty("dublincore", "description"));
         assertNull(returnedDocument.getProperty("file", "filename"));
 
         returnedDocument = session.getDocument(childFile.getRef());
@@ -1007,10 +913,8 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertTrue(schemas.contains("dublincore"));
 
         assertEquals("f1", returnedDocument.getProperty("dublincore", "title"));
-        assertEquals("desc 1",
-                returnedDocument.getProperty("dublincore", "description"));
-        assertEquals("second name",
-                returnedDocument.getProperty("file", "filename"));
+        assertEquals("desc 1", returnedDocument.getProperty("dublincore", "description"));
+        assertEquals("second name", returnedDocument.getProperty("file", "filename"));
     }
 
     @Test
@@ -1018,11 +922,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -1052,7 +954,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     @Ignore
     public void testGetFilesDocumentRefFilterSorter() {
-    // not used at the moment
+        // not used at the moment
     }
 
     @Test
@@ -1060,11 +962,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -1095,12 +995,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
     public void testGetFoldersDocumentRefFilterSorter() throws ClientException {
         DocumentModel root = session.getRootDocument();
         // init children
-        DocumentModel childFolder1 = new DocumentModelImpl(
-                root.getPathAsString(), "folder1#" + generateUnique(), "Folder");
-        DocumentModel childFolder2 = new DocumentModelImpl(
-                root.getPathAsString(), "folder2#" + generateUnique(), "Folder");
-        DocumentModel childFolder3 = new DocumentModelImpl(
-                root.getPathAsString(), "folder3#" + generateUnique(),
+        DocumentModel childFolder1 = new DocumentModelImpl(root.getPathAsString(), "folder1#" + generateUnique(),
+                "Folder");
+        DocumentModel childFolder2 = new DocumentModelImpl(root.getPathAsString(), "folder2#" + generateUnique(),
+                "Folder");
+        DocumentModel childFolder3 = new DocumentModelImpl(root.getPathAsString(), "folder3#" + generateUnique(),
                 "OrderedFolder");
 
         // persist
@@ -1111,8 +1010,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         createChildDocuments(childDocs);
 
         // test no filter, no sorter
-        List<DocumentModel> folders = session.getFolders(root.getRef(), null,
-                null);
+        List<DocumentModel> folders = session.getFolders(root.getRef(), null, null);
         assertNotNull(folders);
         assertEquals(childDocs.size(), folders.size());
 
@@ -1121,8 +1019,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         folders = session.getFolders(root.getRef(), filter, null);
         assertNotNull(folders);
         assertEquals(1, folders.size());
-        assertEquals(childDocs.get(childDocs.indexOf(childFolder3)).getName(),
-                folders.get(0).getName());
+        assertEquals(childDocs.get(childDocs.indexOf(childFolder3)).getName(), folders.get(0).getName());
     }
 
     @Test
@@ -1130,11 +1027,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -1145,8 +1040,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(name, returnedChildDocs.get(0).getName());
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
-        DocumentModel shouldBeRoot = session.getParentDocument(returnedChildDocs.get(
-                0).getRef());
+        DocumentModel shouldBeRoot = session.getParentDocument(returnedChildDocs.get(0).getRef());
 
         assertEquals(root.getPathAsString(), shouldBeRoot.getPathAsString());
     }
@@ -1157,11 +1051,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         DocumentModel folder1 = new DocumentModelImpl("/", "folder1", "Folder");
         folder1 = session.createDocument(folder1);
-        DocumentModel folder2 = new DocumentModelImpl("/folder1", "folder2",
-                "Folder");
+        DocumentModel folder2 = new DocumentModelImpl("/folder1", "folder2", "Folder");
         folder2 = session.createDocument(folder2);
-        DocumentModel file1 = new DocumentModelImpl("/folder1/folder2",
-                "file1", "File");
+        DocumentModel file1 = new DocumentModelImpl("/folder1/folder2", "file1", "File");
         file1 = session.createDocument(file1);
         session.save();
         docs = session.getParentDocuments(file1.getRef());
@@ -1179,8 +1071,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         closeSession();
         session = openSessionAs(new UserPrincipal("adm", null, false, true));
-        DocumentModel rel = session.createDocumentModel(null, "myrel",
-                "Relation");
+        DocumentModel rel = session.createDocumentModel(null, "myrel", "Relation");
         rel = session.createDocument(rel);
         session.save();
         docs = session.getParentDocuments(rel.getRef());
@@ -1201,11 +1092,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -1227,11 +1116,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -1251,17 +1138,14 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
 
         String fname1 = "file1#" + generateUnique();
-        DocumentModel childFile1 = new DocumentModelImpl(
-                root.getPathAsString(), fname1, "File");
+        DocumentModel childFile1 = new DocumentModelImpl(root.getPathAsString(), fname1, "File");
         childFile1.setProperty("dublincore", "title", "abc");
 
         String fname2 = "file2#" + generateUnique();
-        DocumentModel childFile2 = new DocumentModelImpl(
-                root.getPathAsString(), fname2, "HiddenFile");
+        DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), fname2, "HiddenFile");
         childFile2.setProperty("dublincore", "title", "def");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
@@ -1342,8 +1226,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String fname1 = "file1#" + generateUnique();
-        DocumentModel childFile1 = new DocumentModelImpl(
-                root.getPathAsString(), fname1, "File");
+        DocumentModel childFile1 = new DocumentModelImpl(root.getPathAsString(), fname1, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFile1);
@@ -1355,8 +1238,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         childFile1.setProperty("file", "filename", "f1");
 
         // add a blob
-        StringBlob sb = new StringBlob(
-                "<html><head/><body>La la la!</body></html>");
+        StringBlob sb = new StringBlob("<html><head/><body>La la la!</body></html>");
         byte[] bytes = sb.getByteArray();
         Blob blob = new ByteArrayBlob(bytes, "text/html");
         childFile1.setProperty("file", "content", blob);
@@ -1392,11 +1274,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -1407,8 +1287,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(name, returnedChildDocs.get(0).getName());
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
-        DocumentRef[] refs = { returnedChildDocs.get(0).getRef(),
-                returnedChildDocs.get(1).getRef() };
+        DocumentRef[] refs = { returnedChildDocs.get(0).getRef(), returnedChildDocs.get(1).getRef() };
         session.removeDocuments(refs);
 
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
@@ -1417,34 +1296,28 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     /*
-     * case where some documents are actually children of other ones from the
-     * list
+     * case where some documents are actually children of other ones from the list
      */
     @Test
     public void testRemoveDocumentsWithDeps() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         // careless removing this one after the folder would fail
         String name2 = "file#" + generateUnique();
-        DocumentModel folderChildFile = new DocumentModelImpl(
-                childFolder.getPathAsString(), name2, "File");
+        DocumentModel folderChildFile = new DocumentModelImpl(childFolder.getPathAsString(), name2, "File");
         // one more File object, whose path is greater than the folder's
         String name3 = "file#" + generateUnique();
-        DocumentModel folderChildFile2 = new DocumentModelImpl(
-                childFolder.getPathAsString(), name3, "File");
+        DocumentModel folderChildFile2 = new DocumentModelImpl(childFolder.getPathAsString(), name3, "File");
         // one more File object at the root,
         // whose path is greater than the folder's
         String name4 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name4, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name4, "File");
         // one more File object at the root, whose path is greater than the
         // folder's and with name conflict resolved by core directly, see
         // NXP-3240
-        DocumentModel childFile2 = new DocumentModelImpl(
-                root.getPathAsString(), name4, "File");
+        DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), name4, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -1464,11 +1337,8 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertNotSame(name4, name5);
         assertTrue(name5.startsWith(name4));
 
-        DocumentRef[] refs = { returnedChildDocs.get(0).getRef(),
-                returnedChildDocs.get(1).getRef(),
-                returnedChildDocs.get(2).getRef(),
-                returnedChildDocs.get(3).getRef(),
-                returnedChildDocs.get(4).getRef() };
+        DocumentRef[] refs = { returnedChildDocs.get(0).getRef(), returnedChildDocs.get(1).getRef(),
+                returnedChildDocs.get(2).getRef(), returnedChildDocs.get(3).getRef(), returnedChildDocs.get(4).getRef() };
         session.removeDocuments(refs);
 
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
@@ -1479,34 +1349,28 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     /*
-     * Same as testRemoveDocumentWithDeps with a different given ordering of
-     * documents to delete
+     * Same as testRemoveDocumentWithDeps with a different given ordering of documents to delete
      */
     @Test
     public void testRemoveDocumentsWithDeps2() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         // careless removing this one after the folder would fail
         String name2 = "file#" + generateUnique();
-        DocumentModel folderChildFile = new DocumentModelImpl(
-                childFolder.getPathAsString(), name2, "File");
+        DocumentModel folderChildFile = new DocumentModelImpl(childFolder.getPathAsString(), name2, "File");
         // one more File object, whose path is greater than the folder's
         String name3 = "file#" + generateUnique();
-        DocumentModel folderChildFile2 = new DocumentModelImpl(
-                childFolder.getPathAsString(), name3, "File");
+        DocumentModel folderChildFile2 = new DocumentModelImpl(childFolder.getPathAsString(), name3, "File");
         // one more File object at the root,
         // whose path is greater than the folder's
         String name4 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name4, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name4, "File");
         // one more File object at the root, whose path is greater than the
         // folder's and with name conflict resolved by core directly, see
         // NXP-3240
-        DocumentModel childFile2 = new DocumentModelImpl(
-                root.getPathAsString(), name4, "File");
+        DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), name4, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -1527,11 +1391,8 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertTrue(name5.startsWith(name4));
 
         // here's the different ordering
-        DocumentRef[] refs = { returnedChildDocs.get(1).getRef(),
-                returnedChildDocs.get(0).getRef(),
-                returnedChildDocs.get(4).getRef(),
-                returnedChildDocs.get(3).getRef(),
-                returnedChildDocs.get(2).getRef() };
+        DocumentRef[] refs = { returnedChildDocs.get(1).getRef(), returnedChildDocs.get(0).getRef(),
+                returnedChildDocs.get(4).getRef(), returnedChildDocs.get(3).getRef(), returnedChildDocs.get(2).getRef() };
         session.removeDocuments(refs);
 
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
@@ -1597,13 +1458,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         childFolder = createChildDocument(childFolder);
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         session.save();
@@ -1619,8 +1478,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         String name = "folder#" + generateUnique();
 
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         childFolder = createChildDocument(childFolder);
 
         childFolder.setProperty("dublincore", "title", "f1");
@@ -1632,8 +1490,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertTrue(session.exists(childFolder.getRef()));
 
         assertEquals("f1", childFolder.getProperty("dublincore", "title"));
-        assertEquals("desc 1",
-                childFolder.getProperty("dublincore", "description"));
+        assertEquals("desc 1", childFolder.getProperty("dublincore", "description"));
     }
 
     @Test
@@ -1642,8 +1499,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         String name = "file#" + generateUnique();
 
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name, "File");
         childFile.setProperty("dublincore", "title", "f1");
         childFile.setProperty("dublincore", "description", "desc 1");
         childFile.setProperty("file", "filename", "filename1");
@@ -1659,8 +1515,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel retrievedFile = session.getDocument(childFile.getRef());
 
         assertEquals("f1", retrievedFile.getProperty("dublincore", "title"));
-        assertEquals("desc 1",
-                retrievedFile.getProperty("dublincore", "description"));
+        assertEquals("desc 1", retrievedFile.getProperty("dublincore", "description"));
         assertEquals("filename1", retrievedFile.getProperty("file", "filename"));
     }
 
@@ -1669,13 +1524,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         childFolder = createChildDocument(childFolder);
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         DocumentModel[] docs = { childFolder, childFile };
@@ -1692,8 +1545,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         session.save();
@@ -1725,16 +1577,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testDocumentReferenceEqualityDifferentInstances()
-            throws ClientException {
+    public void testDocumentReferenceEqualityDifferentInstances() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -1769,16 +1618,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testDocumentReferenceNonEqualityDifferentInstances()
-            throws ClientException {
+    public void testDocumentReferenceNonEqualityDifferentInstances() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -1799,8 +1645,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(name, retrievedChild.getName());
 
         assertFalse(retrievedChild.getRef().equals(root.getRef()));
-        assertFalse(retrievedChild.getRef().equals(
-                retrievedChild.getParentRef()));
+        assertFalse(retrievedChild.getRef().equals(retrievedChild.getParentRef()));
     }
 
     @Test
@@ -1808,8 +1653,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel child1 = new DocumentModelImpl("/", "file1", "File");
         DocumentModel child2 = new DocumentModelImpl("/", "fold1", "Folder");
         DocumentModel child3 = new DocumentModelImpl("/", "ws1", "Workspace");
-        List<DocumentModel> returnedChildFiles = createChildDocuments(Arrays.asList(
-                child1, child2, child3));
+        List<DocumentModel> returnedChildFiles = createChildDocuments(Arrays.asList(child1, child2, child3));
         assertFalse(returnedChildFiles.get(0).isFolder());
         assertTrue(returnedChildFiles.get(1).isFolder());
         assertTrue(returnedChildFiles.get(2).isFolder());
@@ -1825,10 +1669,8 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // facet not yet present
         assertFalse(doc.hasFacet("Aged"));
         assertFalse(doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION));
-        Set<String> baseFacets = new HashSet<String>(Arrays.asList(
-                FacetNames.DOWNLOADABLE, FacetNames.VERSIONABLE,
-                FacetNames.PUBLISHABLE, FacetNames.COMMENTABLE,
-                FacetNames.HAS_RELATED_TEXT));
+        Set<String> baseFacets = new HashSet<String>(Arrays.asList(FacetNames.DOWNLOADABLE, FacetNames.VERSIONABLE,
+                FacetNames.PUBLISHABLE, FacetNames.COMMENTABLE, FacetNames.HAS_RELATED_TEXT));
         assertEquals(baseFacets, doc.getFacets());
         try {
             doc.setPropertyValue("age:age", "123");
@@ -2030,8 +1872,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         session.save();
 
         // copy the doc
-        DocumentModel copy = session.copy(doc.getRef(),
-                session.getRootDocument().getRef(), "bar");
+        DocumentModel copy = session.copy(doc.getRef(), session.getRootDocument().getRef(), "bar");
         assertTrue(copy.hasFacet("Aged"));
         assertEquals("123", copy.getPropertyValue("age:age"));
     }
@@ -2123,14 +1964,12 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testLifeCycleAPI() throws ClientException {
         DocumentModel root = session.getRootDocument();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file#" + generateUnique(), "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file#" + generateUnique(), "File");
         childFile = createChildDocument(childFile);
 
         assertEquals("default", session.getLifeCyclePolicy(childFile.getRef()));
 
-        assertEquals("project",
-                session.getCurrentLifeCycleState(childFile.getRef()));
+        assertEquals("project", session.getCurrentLifeCycleState(childFile.getRef()));
 
         Collection<String> allowedStateTransitions = session.getAllowedStateTransitions(childFile.getRef());
         assertEquals(3, allowedStateTransitions.size());
@@ -2139,52 +1978,42 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertTrue(allowedStateTransitions.contains("delete"));
 
         assertTrue(session.followTransition(childFile.getRef(), "approve"));
-        assertEquals("approved",
-                session.getCurrentLifeCycleState(childFile.getRef()));
+        assertEquals("approved", session.getCurrentLifeCycleState(childFile.getRef()));
         allowedStateTransitions = session.getAllowedStateTransitions(childFile.getRef());
         assertEquals(2, allowedStateTransitions.size());
         assertTrue(allowedStateTransitions.contains("delete"));
         assertTrue(allowedStateTransitions.contains("backToProject"));
 
         session.reinitLifeCycleState(childFile.getRef());
-        assertEquals("project",
-                session.getCurrentLifeCycleState(childFile.getRef()));
+        assertEquals("project", session.getCurrentLifeCycleState(childFile.getRef()));
     }
 
     @Test
     public void testLifeCycleVersioning() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file#" + generateUnique(), "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file#" + generateUnique(), "File");
         childFile = createChildDocument(childFile);
 
         assertEquals("default", session.getLifeCyclePolicy(childFile.getRef()));
-        assertEquals("project",
-                session.getCurrentLifeCycleState(childFile.getRef()));
-        assertTrue("Document should be checkout after creation",
-                childFile.isCheckedOut());
+        assertEquals("project", session.getCurrentLifeCycleState(childFile.getRef()));
+        assertTrue("Document should be checkout after creation", childFile.isCheckedOut());
 
-        session.checkIn(childFile.getRef(), VersioningOption.MAJOR,
-                "Increment major version");
+        session.checkIn(childFile.getRef(), VersioningOption.MAJOR, "Increment major version");
         childFile = session.getDocument(childFile.getRef());
         assertEquals("1.0", childFile.getVersionLabel());
-        assertFalse("Document should be checkin after version ",
-                childFile.isCheckedOut());
+        assertFalse("Document should be checkin after version ", childFile.isCheckedOut());
 
-        boolean success = session.followTransition(childFile.getRef(),
-                "approve");
+        boolean success = session.followTransition(childFile.getRef(), "approve");
         assertTrue(success);
         childFile = session.getDocument(childFile.getRef());
         assertEquals("1.0+", childFile.getVersionLabel());
-        assertTrue("Document should be checkout after following a transition",
-                childFile.isCheckedOut());
+        assertTrue("Document should be checkout after following a transition", childFile.isCheckedOut());
     }
 
     @Test
     public void testDataModelLifeCycleAPI() throws ClientException {
         DocumentModel root = session.getRootDocument();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file#" + generateUnique(), "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file#" + generateUnique(), "File");
         childFile = createChildDocument(childFile);
 
         assertEquals("default", childFile.getLifeCyclePolicy());
@@ -2207,14 +2036,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testCopy() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
-                "folder1", "Folder");
+        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(), "folder1", "Folder");
 
-        DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(),
-                "folder2", "Folder");
+        DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(), "folder2", "Folder");
 
-        DocumentModel file = new DocumentModelImpl(folder1.getPathAsString(),
-                "file", "File");
+        DocumentModel file = new DocumentModelImpl(folder1.getPathAsString(), "file", "File");
 
         folder1 = createChildDocument(folder1);
         folder2 = createChildDocument(folder2);
@@ -2226,8 +2052,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertFalse(session.exists(new PathRef("/folder2/file")));
 
         // copy using orig name
-        DocumentModel copy1 = session.copy(file.getRef(), folder2.getRef(),
-                null);
+        DocumentModel copy1 = session.copy(file.getRef(), folder2.getRef(), null);
 
         assertTrue(session.exists(new PathRef("/folder1/file")));
         assertTrue(session.exists(new PathRef("/folder2/file")));
@@ -2235,8 +2060,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertTrue(session.getChildren(folder2.getRef()).contains(copy1));
 
         // copy using another name
-        DocumentModel copy2 = session.copy(file.getRef(), folder2.getRef(),
-                "fileCopy");
+        DocumentModel copy2 = session.copy(file.getRef(), folder2.getRef(), "fileCopy");
 
         assertTrue(session.exists(new PathRef("/folder1/file")));
         assertTrue(session.exists(new PathRef("/folder2/file")));
@@ -2244,8 +2068,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertTrue(session.getChildren(folder2.getRef()).contains(copy2));
 
         // copy again to same space
-        DocumentModel copy3 = session.copy(file.getRef(), folder2.getRef(),
-                null);
+        DocumentModel copy3 = session.copy(file.getRef(), folder2.getRef(), null);
 
         assertTrue(session.exists(new PathRef("/folder1/file")));
         assertTrue(session.exists(new PathRef("/folder2/file")));
@@ -2258,8 +2081,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
             // for SQLSession.findFreeName
             Thread.sleep(1000);
         }
-        DocumentModel copy4 = session.copy(file.getRef(), folder2.getRef(),
-                null);
+        DocumentModel copy4 = session.copy(file.getRef(), folder2.getRef(), null);
 
         assertTrue(session.exists(new PathRef("/folder1/file")));
         assertTrue(session.exists(new PathRef("/folder2/file")));
@@ -2268,8 +2090,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertNotSame(copy3.getName(), copy4.getName());
 
         // copy inplace
-        DocumentModel copy5 = session.copy(file.getRef(), folder1.getRef(),
-                null);
+        DocumentModel copy5 = session.copy(file.getRef(), folder1.getRef(), null);
 
         assertTrue(session.exists(new PathRef("/folder1/file")));
         assertTrue(session.exists(new PathRef("/folder2/file")));
@@ -2283,14 +2104,10 @@ public class TestMemRepository extends MemRepositoryTestCase {
     public void testCopyProxyAsDocument() throws Exception {
         // create a folder tree
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
-                "folder1", "Folder");
-        DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(),
-                "folder2", "Folder");
-        DocumentModel folder3 = new DocumentModelImpl(root.getPathAsString(),
-                "folder3", "Folder");
-        DocumentModel file = new DocumentModelImpl(folder1.getPathAsString(),
-                "copyProxyAsDocument_test", "File");
+        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(), "folder1", "Folder");
+        DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(), "folder2", "Folder");
+        DocumentModel folder3 = new DocumentModelImpl(root.getPathAsString(), "folder3", "Folder");
+        DocumentModel file = new DocumentModelImpl(folder1.getPathAsString(), "copyProxyAsDocument_test", "File");
         folder1 = createChildDocument(folder1);
         folder2 = createChildDocument(folder2);
         folder3 = createChildDocument(folder3);
@@ -2306,20 +2123,16 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertTrue(proxy.isProxy());
 
         // copy proxy into folder3
-        DocumentModel copy1 = session.copyProxyAsDocument(proxy.getRef(),
-                folder3.getRef(), null);
+        DocumentModel copy1 = session.copyProxyAsDocument(proxy.getRef(), folder3.getRef(), null);
         assertFalse(copy1.isProxy());
         assertEquals(proxy.getName(), copy1.getName());
-        assertEquals(proxy.getProperty("dublincore", "title"),
-                copy1.getProperty("dublincore", "title"));
+        assertEquals(proxy.getProperty("dublincore", "title"), copy1.getProperty("dublincore", "title"));
 
         // copy proxy using another name
-        DocumentModel copy2 = session.copyProxyAsDocument(proxy.getRef(),
-                folder3.getRef(), "foo");
+        DocumentModel copy2 = session.copyProxyAsDocument(proxy.getRef(), folder3.getRef(), "foo");
         assertFalse(copy2.isProxy());
         assertEquals("foo", copy2.getName());
-        assertEquals(file.getProperty("dublincore", "title"),
-                copy2.getProperty("dublincore", "title"));
+        assertEquals(file.getProperty("dublincore", "title"), copy2.getProperty("dublincore", "title"));
 
         session.cancel();
     }
@@ -2342,8 +2155,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // version the note
         note.setProperty("dublincore", "title", "blah");
         ScopedMap context = note.getContextData();
-        context.putScopedValue(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        context.putScopedValue(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         session.saveDocument(note);
         session.save();
 
@@ -2380,8 +2192,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // version the note
         note.setProperty("dublincore", "title", "blah");
         ScopedMap context = note.getContextData();
-        context.putScopedValue(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        context.putScopedValue(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         session.saveDocument(note);
         session.save();
 
@@ -2403,14 +2214,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testMove() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
-                "folder1", "Folder");
+        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(), "folder1", "Folder");
 
-        DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(),
-                "folder2", "Folder");
+        DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(), "folder2", "Folder");
 
-        DocumentModel file = new DocumentModelImpl(folder1.getPathAsString(),
-                "file", "File");
+        DocumentModel file = new DocumentModelImpl(folder1.getPathAsString(), "file", "File");
 
         folder1 = createChildDocument(folder1);
         folder2 = createChildDocument(folder2);
@@ -2431,12 +2239,10 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         assertTrue(session.exists(new PathRef("/folder1/fileMove")));
 
-        DocumentModel file2 = new DocumentModelImpl(folder2.getPathAsString(),
-                "file2", "File");
+        DocumentModel file2 = new DocumentModelImpl(folder2.getPathAsString(), "file2", "File");
         file2 = createChildDocument(file2);
         assertTrue(session.exists(new PathRef("/folder2/file2")));
-        DocumentModel newFile2 = session.move(file.getRef(), folder2.getRef(),
-                "file2"); // collision
+        DocumentModel newFile2 = session.move(file.getRef(), folder2.getRef(), "file2"); // collision
         String newName = newFile2.getName();
         assertFalse("file2".equals(newName));
         assertTrue(session.exists(new PathRef("/folder2/file2")));
@@ -2454,8 +2260,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         String[] str = { "a", "b", "c" };
@@ -2494,8 +2299,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         session.save();
@@ -2529,20 +2333,17 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testRetrieveSamePropertyInAncestors() throws ClientException {
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
-                "folder1", "Folder");
+        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(), "folder1", "Folder");
         folder1 = createChildDocument(folder1);
         folder1.setProperty("dublincore", "title", "folder #1");
         assertEquals("folder #1", folder1.getProperty("dublincore", "title"));
 
-        DocumentModel folder2 = new DocumentModelImpl(
-                folder1.getPathAsString(), "folder2", "Folder");
+        DocumentModel folder2 = new DocumentModelImpl(folder1.getPathAsString(), "folder2", "Folder");
         folder2 = createChildDocument(folder2);
         folder2.setProperty("dublincore", "title", "folder #2");
         assertEquals("folder #2", folder2.getProperty("dublincore", "title"));
 
-        DocumentModel file = new DocumentModelImpl(folder2.getPathAsString(),
-                "file", "File");
+        DocumentModel file = new DocumentModelImpl(folder2.getPathAsString(), "file", "File");
         file = createChildDocument(file);
         file.setProperty("dublincore", "title", "file ##");
         assertEquals("file ##", file.getProperty("dublincore", "title"));
@@ -2564,15 +2365,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(folder1.getRef(), ancestorRefs[1]);
         assertEquals(root.getRef(), ancestorRefs[2]);
 
-        final Object[] fieldValues = session.getDataModelsField(ancestorRefs,
-                "dublincore", "title");
+        final Object[] fieldValues = session.getDataModelsField(ancestorRefs, "dublincore", "title");
         assertNotNull(fieldValues);
         assertEquals(3, fieldValues.length);
         assertEquals("folder #2", fieldValues[0]);
         assertEquals("folder #1", fieldValues[1]);
 
-        final Object[] fieldValuesBis = session.getDataModelsFieldUp(
-                file.getRef(), "dublincore", "title");
+        final Object[] fieldValuesBis = session.getDataModelsFieldUp(file.getRef(), "dublincore", "title");
         assertNotNull(fieldValuesBis);
         assertEquals(4, fieldValuesBis.length);
         assertEquals("file ##", fieldValuesBis[0]);
@@ -2585,21 +2384,16 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Ignore
     public void testDocumentAdapter() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel file = new DocumentModelImpl(root.getPathAsString(),
-                "file", "File");
+        DocumentModel file = new DocumentModelImpl(root.getPathAsString(), "file", "File");
 
         file = createChildDocument(file);
 
         /*
-         * AnnotatedDocument adoc = file.getAdapter(AnnotatedDocument.class);
-         * assertNotNull(adoc); adoc.putAnnotation("key1", "val1");
-         * adoc.putAnnotation("key2", "val2"); assertEquals("val1",
-         * adoc.getAnnotation("key1")); assertEquals("val2",
-         * adoc.getAnnotation("key2"));
-         *
-         * adoc = file.getAdapter(AnnotatedDocument.class); assertEquals("val1",
-         * adoc.getAnnotation("key1")); assertEquals("val2",
-         * adoc.getAnnotation("key2"));
+         * AnnotatedDocument adoc = file.getAdapter(AnnotatedDocument.class); assertNotNull(adoc);
+         * adoc.putAnnotation("key1", "val1"); adoc.putAnnotation("key2", "val2"); assertEquals("val1",
+         * adoc.getAnnotation("key1")); assertEquals("val2", adoc.getAnnotation("key2")); adoc =
+         * file.getAdapter(AnnotatedDocument.class); assertEquals("val1", adoc.getAnnotation("key1"));
+         * assertEquals("val2", adoc.getAnnotation("key2"));
          */
     }
 
@@ -2608,8 +2402,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         // Same identifier here since no version yet.
@@ -2632,8 +2425,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
         assertNotNull(childFile.getRepositoryName());
         assertEquals("test", childFile.getRepositoryName());
@@ -2647,8 +2439,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         // Section A
         String name = "section" + generateUnique();
-        DocumentModel sectionA = new DocumentModelImpl(root.getPathAsString(),
-                name, "Section");
+        DocumentModel sectionA = new DocumentModelImpl(root.getPathAsString(), name, "Section");
         sectionA = createChildDocument(sectionA);
 
         assertEquals("Section", sectionA.getType());
@@ -2656,8 +2447,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         // Section B
         name = "section" + generateUnique();
-        DocumentModel sectionB = new DocumentModelImpl(root.getPathAsString(),
-                name, "Section");
+        DocumentModel sectionB = new DocumentModelImpl(root.getPathAsString(), name, "Section");
         sectionB = createChildDocument(sectionB);
 
         assertEquals("Section", sectionB.getType());
@@ -2665,8 +2455,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         // File
         name = "file" + generateUnique();
-        DocumentModel file = new DocumentModelImpl(root.getPathAsString(),
-                name, "File");
+        DocumentModel file = new DocumentModelImpl(root.getPathAsString(), name, "File");
         file = createChildDocument(file);
 
         assertEquals("File", file.getType());
@@ -2680,8 +2469,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // session.publishDocument(file, sectionB);
 
         // Retrieving proxies
-        DocumentModelList proxies = session.getProxies(file.getRef(),
-                sectionA.getRef());
+        DocumentModelList proxies = session.getProxies(file.getRef(), sectionA.getRef());
 
         assertFalse(proxies.isEmpty());
         assertEquals(1, proxies.size());
@@ -2702,8 +2490,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         }
 
         // same as previously with path info
-        docModel = session.createDocumentModel("/path/to/parent", "some-id",
-                "File");
+        docModel = session.createDocumentModel("/path/to/parent", "some-id", "File");
         assertEquals("File", docModel.getType());
         assertEquals("/path/to/parent/some-id", docModel.getPathAsString());
 
@@ -2719,8 +2506,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testCopyContent() throws ClientException {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "original", "File");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "original", "File");
         doc.setProperty("dublincore", "title", "t");
         doc.setProperty("dublincore", "description", "d");
         doc.setProperty("dublincore", "subjects", new String[] { "a", "b" });
@@ -2737,17 +2523,14 @@ public class TestMemRepository extends MemRepositoryTestCase {
         doc = session.createDocument(doc);
         session.save();
 
-        DocumentModel copy = new DocumentModelImpl(root.getPathAsString(),
-                "copy", "File");
+        DocumentModel copy = new DocumentModelImpl(root.getPathAsString(), "copy", "File");
         copy.copyContent(doc);
         copy = session.createDocument(copy);
         session.save();
 
         assertEquals("t", copy.getProperty("dublincore", "title"));
         assertEquals("d", copy.getProperty("dublincore", "description"));
-        assertEquals(Arrays.asList("a", "b"),
-                Arrays.asList((String[]) copy.getProperty("dublincore",
-                        "subjects")));
+        assertEquals(Arrays.asList("a", "b"), Arrays.asList((String[]) copy.getProperty("dublincore", "subjects")));
         assertEquals("f", copy.getProperty("file", "filename"));
         Object fileso = copy.getProperty("files", "files");
         assertNotNull(fileso);
@@ -2775,8 +2558,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testPropertyModel() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "theDoc", "MyDocType");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "theDoc", "MyDocType");
 
         doc = session.createDocument(doc);
 
@@ -2819,16 +2601,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testOrdering() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel parent = new DocumentModelImpl(root.getPathAsString(),
-                "theParent", "OrderedFolder");
+        DocumentModel parent = new DocumentModelImpl(root.getPathAsString(), "theParent", "OrderedFolder");
 
         parent = session.createDocument(parent);
 
-        DocumentModel doc1 = new DocumentModelImpl(parent.getPathAsString(),
-                "the1", "File");
+        DocumentModel doc1 = new DocumentModelImpl(parent.getPathAsString(), "the1", "File");
         doc1 = session.createDocument(doc1);
-        DocumentModel doc2 = new DocumentModelImpl(parent.getPathAsString(),
-                "the2", "File");
+        DocumentModel doc2 = new DocumentModelImpl(parent.getPathAsString(), "the2", "File");
         doc2 = session.createDocument(doc2);
         session.save(); // XXX
 
@@ -2861,11 +2640,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(Long.valueOf(1), children.get(1).getPos());
 
         // check in a non-ordered folder
-        DocumentModel parent2 = session.createDocumentModel("/", "folder",
-                "Folder");
+        DocumentModel parent2 = session.createDocumentModel("/", "folder", "Folder");
         parent2 = session.createDocument(parent2);
-        DocumentModel doc3 = session.createDocumentModel("/folder", "doc3",
-                "MyDocType");
+        DocumentModel doc3 = session.createDocumentModel("/folder", "doc3", "MyDocType");
         doc3 = session.createDocument(doc3);
         session.save();
         doc3 = session.getDocument(doc3.getRef());
@@ -2894,13 +2671,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testPropertyXPath() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel parent = new DocumentModelImpl(root.getPathAsString(),
-                "theParent", "OrderedFolder");
+        DocumentModel parent = new DocumentModelImpl(root.getPathAsString(), "theParent", "OrderedFolder");
 
         parent = session.createDocument(parent);
 
-        DocumentModel doc = new DocumentModelImpl(parent.getPathAsString(),
-                "theDoc", "File");
+        DocumentModel doc = new DocumentModelImpl(parent.getPathAsString(), "theDoc", "File");
 
         doc.setProperty("dublincore", "title", "my title");
         assertEquals("my title", doc.getPropertyValue("dc:title"));
@@ -2914,8 +2689,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testComplexList() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "mydoc", "MyDocType");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "mydoc", "MyDocType");
 
         doc = session.createDocument(doc);
 
@@ -2925,53 +2699,29 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         ListDiff diff = new ListDiff();
         /*
-         * diff.add(new Attachment("at1", "value1").asMap()); diff.add(new
-         * Attachment("at2", "value2").asMap()); doc.setProperty("testList",
-         * "attachments", diff); doc = session.saveDocument(doc);
-         *
-         * list = (List) doc.getProperty("testList", "attachments");
-         * assertNotNull(list); assertEquals(2, list.size());
-         *
-         * Blob blob; blob = (Blob) ((Map) list.get(0)).get("content");
-         * assertEquals("value1", blob.getString()); blob = (Blob) ((Map)
-         * list.get(1)).get("content"); assertEquals("value2",
-         * blob.getString());
-         *
-         * diff = new ListDiff(); diff.remove(0); diff.insert(0, new
-         * Attachment("at1.bis", "value1.bis").asMap());
-         * doc.setProperty("testList", "attachments", diff); doc =
-         * session.saveDocument(doc);
-         *
-         * list = (List) doc.getProperty("testList", "attachments");
-         * assertNotNull(list); assertEquals(2, list.size());
-         *
-         * blob = (Blob) ((Map) list.get(0)).get("content");
-         * assertEquals("value1.bis", blob.getString()); blob = (Blob) ((Map)
-         * list.get(1)).get("content"); assertEquals("value2",
-         * blob.getString());
-         *
-         * diff = new ListDiff(); diff.move(0, 1); doc.setProperty("testList",
-         * "attachments", diff); doc = session.saveDocument(doc);
-         *
-         * list = (List) doc.getProperty("testList", "attachments");
-         * assertNotNull(list); assertEquals(2, list.size()); blob = (Blob)
-         * ((Map) list.get(0)).get("content"); assertEquals("value2",
-         * blob.getString()); blob = (Blob) ((Map) list.get(1)).get("content");
-         * assertEquals("value1.bis", blob.getString());
-         *
-         * diff = new ListDiff(); diff.removeAll(); doc.setProperty("testList",
-         * "attachments", diff); doc = session.saveDocument(doc);
-         *
-         * list = (List) doc.getProperty("testList", "attachments");
-         * assertNotNull(list); assertEquals(0, list.size());
+         * diff.add(new Attachment("at1", "value1").asMap()); diff.add(new Attachment("at2", "value2").asMap());
+         * doc.setProperty("testList", "attachments", diff); doc = session.saveDocument(doc); list = (List)
+         * doc.getProperty("testList", "attachments"); assertNotNull(list); assertEquals(2, list.size()); Blob blob;
+         * blob = (Blob) ((Map) list.get(0)).get("content"); assertEquals("value1", blob.getString()); blob = (Blob)
+         * ((Map) list.get(1)).get("content"); assertEquals("value2", blob.getString()); diff = new ListDiff();
+         * diff.remove(0); diff.insert(0, new Attachment("at1.bis", "value1.bis").asMap()); doc.setProperty("testList",
+         * "attachments", diff); doc = session.saveDocument(doc); list = (List) doc.getProperty("testList",
+         * "attachments"); assertNotNull(list); assertEquals(2, list.size()); blob = (Blob) ((Map)
+         * list.get(0)).get("content"); assertEquals("value1.bis", blob.getString()); blob = (Blob) ((Map)
+         * list.get(1)).get("content"); assertEquals("value2", blob.getString()); diff = new ListDiff(); diff.move(0,
+         * 1); doc.setProperty("testList", "attachments", diff); doc = session.saveDocument(doc); list = (List)
+         * doc.getProperty("testList", "attachments"); assertNotNull(list); assertEquals(2, list.size()); blob = (Blob)
+         * ((Map) list.get(0)).get("content"); assertEquals("value2", blob.getString()); blob = (Blob) ((Map)
+         * list.get(1)).get("content"); assertEquals("value1.bis", blob.getString()); diff = new ListDiff();
+         * diff.removeAll(); doc.setProperty("testList", "attachments", diff); doc = session.saveDocument(doc); list =
+         * (List) doc.getProperty("testList", "attachments"); assertNotNull(list); assertEquals(0, list.size());
          */
     }
 
     @Test
     public void testDataModel() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "mydoc", "Book");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "mydoc", "Book");
 
         doc = session.createDocument(doc);
 
@@ -2998,8 +2748,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         // list test
 
-        doc = new DocumentModelImpl(root.getPathAsString(), "mydoc2",
-                "MyDocType");
+        doc = new DocumentModelImpl(root.getPathAsString(), "mydoc2", "MyDocType");
 
         doc = session.createDocument(doc);
 
@@ -3009,34 +2758,25 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         ListDiff diff = new ListDiff();
         /*
-         * diff.add(new Attachment("at1", "value1").asMap()); diff.add(new
-         * Attachment("at2", "value2").asMap()); doc.setProperty("testList",
-         * "attachments", diff); doc = session.saveDocument(doc);
-         *
-         * dm = doc.getDataModel("testList");
-         *
-         * dm.setValue("attachments/item[0]/name", "at1-modif");
-         * assertEquals("at1-modif", dm.getValue("attachments/item[0]/name"));
-         * dm.setValue("attachments/item[0]/name", "at1-modif2");
-         * assertEquals("at1-modif2", dm.getValue("attachments/item[0]/name"));
-         * dm.setValue("attachments/item[1]/name", "at2-modif");
-         * assertEquals("at2-modif", dm.getValue("attachments/item[1]/name"));
-         * dm.setValue("attachments/item[1]/name", "at2-modif2");
-         * assertEquals("at2-modif2", dm.getValue("attachments/item[1]/name"));
+         * diff.add(new Attachment("at1", "value1").asMap()); diff.add(new Attachment("at2", "value2").asMap());
+         * doc.setProperty("testList", "attachments", diff); doc = session.saveDocument(doc); dm =
+         * doc.getDataModel("testList"); dm.setValue("attachments/item[0]/name", "at1-modif"); assertEquals("at1-modif",
+         * dm.getValue("attachments/item[0]/name")); dm.setValue("attachments/item[0]/name", "at1-modif2");
+         * assertEquals("at1-modif2", dm.getValue("attachments/item[0]/name")); dm.setValue("attachments/item[1]/name",
+         * "at2-modif"); assertEquals("at2-modif", dm.getValue("attachments/item[1]/name"));
+         * dm.setValue("attachments/item[1]/name", "at2-modif2"); assertEquals("at2-modif2",
+         * dm.getValue("attachments/item[1]/name"));
          */
     }
 
     @Test
     public void testGetChildrenRefs() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "mydoc", "Book");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "mydoc", "Book");
         doc = session.createDocument(doc);
-        DocumentModel doc2 = new DocumentModelImpl(root.getPathAsString(),
-                "mydoc2", "MyDocType");
+        DocumentModel doc2 = new DocumentModelImpl(root.getPathAsString(), "mydoc2", "MyDocType");
         doc2 = session.createDocument(doc2);
-        List<DocumentRef> childrenRefs = session.getChildrenRefs(root.getRef(),
-                null);
+        List<DocumentRef> childrenRefs = session.getChildrenRefs(root.getRef(), null);
         assertEquals(2, childrenRefs.size());
         Set<String> expected = new HashSet<String>();
         expected.add(doc.getId());
@@ -3050,11 +2790,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testProxyChildren() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc1 = new DocumentModelImpl(root.getPathAsString(),
-                "doc1", "Book");
+        DocumentModel doc1 = new DocumentModelImpl(root.getPathAsString(), "doc1", "Book");
         doc1 = session.createDocument(doc1);
-        DocumentModel doc2 = new DocumentModelImpl(root.getPathAsString(),
-                "doc2", "Book");
+        DocumentModel doc2 = new DocumentModelImpl(root.getPathAsString(), "doc2", "Book");
         doc2 = session.createDocument(doc2);
 
         // create proxy pointing to doc1
@@ -3076,8 +2814,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         children = session.getChildren(proxy1.getRef());
         assertEquals(1, children.size());
         assertEquals(proxy2, children.get(0));
-        assertEquals(proxy2,
-                session.getChild(proxy1.getRef(), proxy2.getName()));
+        assertEquals(proxy2, session.getChild(proxy1.getRef(), proxy2.getName()));
         assertTrue(session.hasChildren(proxy1.getRef()));
     }
 
@@ -3090,8 +2827,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testBlob2() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "mydoc", "File");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "mydoc", "File");
 
         doc = session.createDocument(doc);
         byte[] bytes = createBytes(1024 * 1024, (byte) 24);
@@ -3113,8 +2849,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testProxy() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "proxy_test", "File");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "proxy_test", "File");
 
         doc = session.createDocument(doc);
         doc.setProperty("dublincore", "title", "the title");
@@ -3128,8 +2863,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         doc = session.saveDocument(doc);
 
         assertEquals("the title", proxy.getProperty("dublincore", "title"));
-        assertEquals("the title modified",
-                doc.getProperty("dublincore", "title"));
+        assertEquals("the title modified", doc.getProperty("dublincore", "title"));
 
         // make another proxy
         session.publishDocument(doc, root);
@@ -3149,8 +2883,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(1, list.size());
 
         // create folder to hold proxies
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
-                "folder", "Folder");
+        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder", "Folder");
         folder = session.createDocument(folder);
         session.save();
         folder = session.getDocument(folder.getRef());
@@ -3207,8 +2940,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testProxyLive() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "proxy_test", "File");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "proxy_test", "File");
 
         doc = session.createDocument(doc);
         doc.setProperty("dublincore", "title", "the title");
@@ -3234,8 +2966,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertTrue(proxy.isProxy());
         assertFalse(proxy.isVersion());
         assertFalse(proxy.isImmutable());
-        assertEquals("the title modified",
-                proxy.getProperty("dublincore", "title"));
+        assertEquals("the title modified", proxy.getProperty("dublincore", "title"));
 
         // modify proxy
         proxy.setProperty("dublincore", "title", "the title again");
@@ -3298,13 +3029,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
             actual.put(uuid.toString(), info); // toString() for sequence ids
         }
         res.close();
-        assertEquals(Collections.singletonMap(proxy.getId(), "proxyinfo"),
-                actual);
+        assertEquals(Collections.singletonMap(proxy.getId(), "proxyinfo"), actual);
 
         // test that the copy has the extra schema values
         session.copy(folder.getRef(), root.getRef(), "folderCopy");
-        DocumentModel proxyCopy = session.getDocument(new PathRef(
-                "/folderCopy/file"));
+        DocumentModel proxyCopy = session.getDocument(new PathRef("/folderCopy/file"));
         assertTrue(proxyCopy.isProxy());
         assertEquals("proxyinfo", proxyCopy.getPropertyValue("info:info"));
     }
@@ -3312,16 +3041,14 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testUpdatePublishedDocument() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "proxy_test", "File");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "proxy_test", "File");
 
         doc = session.createDocument(doc);
         doc.setProperty("dublincore", "title", "the title");
         doc = session.saveDocument(doc);
 
         // create folder to hold proxies
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
-                "folder", "Folder");
+        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder", "Folder");
         folder = session.createDocument(folder);
         session.save();
         folder = session.getDocument(folder.getRef());
@@ -3368,8 +3095,8 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String typeName = "File";
         DocumentRef parentRef = null;
         String name = "foobar";
-        DocumentModel ver = new DocumentModelImpl((String) null, typeName, vid,
-                new Path(name), null, null, parentRef, null, null, null, null);
+        DocumentModel ver = new DocumentModelImpl((String) null, typeName, vid, new Path(name), null, null, parentRef,
+                null, null, null, null);
         Calendar vcr = new GregorianCalendar(2009, Calendar.JANUARY, 1, 2, 3, 4);
         ver.putContextData(CoreSession.IMPORT_VERSION_VERSIONABLE_ID, id);
         ver.putContextData(CoreSession.IMPORT_VERSION_CREATED, vcr);
@@ -3377,15 +3104,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
         ver.putContextData(CoreSession.IMPORT_VERSION_DESCRIPTION, "v descr");
         ver.putContextData(CoreSession.IMPORT_IS_VERSION, Boolean.TRUE);
         ver.putContextData(CoreSession.IMPORT_VERSION_IS_LATEST, Boolean.TRUE);
-        ver.putContextData(CoreSession.IMPORT_VERSION_IS_LATEST_MAJOR,
-                Boolean.FALSE);
+        ver.putContextData(CoreSession.IMPORT_VERSION_IS_LATEST_MAJOR, Boolean.FALSE);
         ver.putContextData(CoreSession.IMPORT_VERSION_MAJOR, Long.valueOf(3));
         ver.putContextData(CoreSession.IMPORT_VERSION_MINOR, Long.valueOf(14));
         ver.putContextData(CoreSession.IMPORT_LIFECYCLE_POLICY, "v lcp");
         ver.putContextData(CoreSession.IMPORT_LIFECYCLE_STATE, "v lcst");
         ver.setProperty("dublincore", "title", "Ver title");
-        Calendar mod = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
-                56);
+        Calendar mod = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34, 56);
         ver.setProperty("dublincore", "modified", mod);
         session.importDocuments(Collections.singletonList(ver));
         session.save();
@@ -3393,8 +3118,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         openSession();
         ver = session.getDocument(new IdRef(vid));
         // assertEquals(name, doc.getName()); // no path -> no name...
-        assertEquals("Ver title",
-                (String) ver.getProperty("dublincore", "title"));
+        assertEquals("Ver title", (String) ver.getProperty("dublincore", "title"));
         assertEquals(mod, ver.getProperty("dublincore", "modified"));
         assertEquals("v lcp", ver.getLifeCyclePolicy());
         assertEquals("v lcst", ver.getCurrentLifeCycleState());
@@ -3415,9 +3139,8 @@ public class TestMemRepository extends MemRepositoryTestCase {
         typeName = CoreSession.IMPORT_PROXY_TYPE;
         parentRef = new IdRef(folderId);
         name = "myproxy";
-        DocumentModel proxy = new DocumentModelImpl((String) null, typeName,
-                pid, new Path(name), null, null, parentRef, null, null, null,
-                null);
+        DocumentModel proxy = new DocumentModelImpl((String) null, typeName, pid, new Path(name), null, null,
+                parentRef, null, null, null, null);
         proxy.putContextData(CoreSession.IMPORT_PROXY_TARGET_ID, vid);
         proxy.putContextData(CoreSession.IMPORT_PROXY_VERSIONABLE_ID, id);
         session.importDocuments(Collections.singletonList(proxy));
@@ -3426,8 +3149,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         openSession();
         proxy = session.getDocument(new IdRef(pid));
         assertEquals(name, proxy.getName());
-        assertEquals("Ver title",
-                (String) proxy.getProperty("dublincore", "title"));
+        assertEquals("Ver title", (String) proxy.getProperty("dublincore", "title"));
         assertEquals(mod, proxy.getProperty("dublincore", "modified"));
         assertEquals("v lcp", proxy.getLifeCyclePolicy());
         assertEquals("v lcst", proxy.getCurrentLifeCycleState());
@@ -3438,12 +3160,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
         typeName = "File";
         parentRef = new IdRef(folderId);
         name = "mydoc";
-        DocumentModel doc = new DocumentModelImpl((String) null, typeName, id,
-                new Path(name), null, null, parentRef, null, null, null, null);
+        DocumentModel doc = new DocumentModelImpl((String) null, typeName, id, new Path(name), null, null, parentRef,
+                null, null, null, null);
         doc.putContextData(CoreSession.IMPORT_LIFECYCLE_POLICY, "lcp");
         doc.putContextData(CoreSession.IMPORT_LIFECYCLE_STATE, "lcst");
-        Calendar lockCreated = new GregorianCalendar(2011, Calendar.JANUARY, 1,
-                5, 5, 5);
+        Calendar lockCreated = new GregorianCalendar(2011, Calendar.JANUARY, 1, 5, 5, 5);
         doc.putContextData(CoreSession.IMPORT_LOCK_OWNER, "bob");
         doc.putContextData(CoreSession.IMPORT_LOCK_CREATED, lockCreated);
         doc.putContextData(CoreSession.IMPORT_CHECKED_IN, Boolean.TRUE);
@@ -3457,8 +3178,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         openSession();
         doc = session.getDocument(new IdRef(id));
         assertEquals(name, doc.getName());
-        assertEquals("Live title",
-                (String) doc.getProperty("dublincore", "title"));
+        assertEquals("Live title", (String) doc.getProperty("dublincore", "title"));
         assertEquals(folderId, doc.getParentRef().toString());
         assertEquals("lcp", doc.getLifeCyclePolicy());
         assertEquals("lcst", doc.getCurrentLifeCycleState());
@@ -3472,21 +3192,17 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     /**
-     * Check that lifecycle and dc:issued can be updated on a version. (Fields
-     * defined in SQLDocumentLive#VERSION_WRITABLE_PROPS).
+     * Check that lifecycle and dc:issued can be updated on a version. (Fields defined in
+     * SQLDocumentLive#VERSION_WRITABLE_PROPS).
      */
     @Test
     public void testVersionUpdatableFields() throws Exception {
-        Calendar cal1 = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
-                56);
-        Calendar cal2 = new GregorianCalendar(2010, Calendar.JANUARY, 1, 0, 0,
-                0);
-        Calendar cal3 = new GregorianCalendar(2010, Calendar.APRIL, 11, 11, 11,
-                11);
+        Calendar cal1 = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34, 56);
+        Calendar cal2 = new GregorianCalendar(2010, Calendar.JANUARY, 1, 0, 0, 0);
+        Calendar cal3 = new GregorianCalendar(2010, Calendar.APRIL, 11, 11, 11, 11);
 
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "doc", "File");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "doc", "File");
 
         doc = session.createDocument(doc);
         doc.setProperty("dublincore", "title", "t1");
@@ -3524,15 +3240,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
     @Test
     public void testPlacelessDocument() throws Exception {
-        DocumentModel doc = new DocumentModelImpl((String) null, "mydoc",
-                "MyDocType");
+        DocumentModel doc = new DocumentModelImpl((String) null, "mydoc", "MyDocType");
         doc.setProperty("dublincore", "title", "The title");
         doc = session.createDocument(doc);
         assertNull(doc.getParentRef()); // placeless
         session.save();
 
-        DocumentModel doc2 = session.createDocumentModel(null, "other",
-                "MyDocType");
+        DocumentModel doc2 = session.createDocumentModel(null, "other", "MyDocType");
         doc2.setProperty("dublincore", "title", "Other");
         doc2 = session.createDocument(doc2);
         assertNull(doc2.getParentRef()); // placeless
@@ -3544,8 +3258,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         doc = session.getDocument(new IdRef(doc.getId()));
         assertNull(doc.getParentRef());
 
-        assertEquals("The title",
-                (String) doc.getProperty("dublincore", "title"));
+        assertEquals("The title", (String) doc.getProperty("dublincore", "title"));
         assertNull(doc.getProperty("dublincore", "description"));
 
         doc2 = session.getDocument(new IdRef(doc2.getId()));
@@ -3558,8 +3271,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
     @Test
     public void testRelation() throws Exception {
-        DocumentModel rel = session.createDocumentModel(null, "myrel",
-                "Relation");
+        DocumentModel rel = session.createDocumentModel(null, "myrel", "Relation");
         rel.setProperty("relation", "source", "1234");
         rel.setProperty("dublincore", "title", "My Rel");
         rel = session.createDocument(rel);
@@ -3606,15 +3318,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
             session.getDocument(docRef);
             fail("shouldn't be able to get doc with obsolete type");
         } catch (ClientException e) {
-            assertTrue(e.getMessage(),
-                    e.getMessage().contains("Failed to get document"));
+            assertTrue(e.getMessage(), e.getMessage().contains("Failed to get document"));
         }
         try {
             session.getChild(rootRef, "doc");
             fail("shouldn't be able to get doc with obsolete type");
         } catch (ClientException e) {
-            assertTrue(e.getMessage(),
-                    e.getMessage().contains("Failed to get child doc"));
+            assertTrue(e.getMessage(), e.getMessage().contains("Failed to get child doc"));
         }
     }
 

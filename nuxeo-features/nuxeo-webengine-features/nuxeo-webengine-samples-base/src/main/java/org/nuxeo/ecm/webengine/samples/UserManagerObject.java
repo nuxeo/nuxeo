@@ -10,18 +10,18 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
- * UserManager object.
- * You can see the @WebObject annotation that defines a WebObject of type "UserManager"
+ * UserManager object. You can see the @WebObject annotation that defines a WebObject of type "UserManager"
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebObject(type="UserManager")
+@WebObject(type = "UserManager")
 @Produces("text/html;charset=UTF-8")
 public class UserManagerObject extends DefaultObject {
 
     /**
-     * Get the index view. The view file name is computed as follows: index[-media_type_id].ftl
-     * First the skin/views/UserManager is searched for that file then the current directory.
-     * (The type of a module is the same as its name)
+     * Get the index view. The view file name is computed as follows: index[-media_type_id].ftl First the
+     * skin/views/UserManager is searched for that file then the current directory. (The type of a module is the same as
+     * its name)
      */
     @GET
     public Object doGet() {
@@ -52,4 +52,3 @@ public class UserManagerObject extends DefaultObject {
     }
 
 }
-

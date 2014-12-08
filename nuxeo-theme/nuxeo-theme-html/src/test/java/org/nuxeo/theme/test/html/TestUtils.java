@@ -26,10 +26,8 @@ public class TestUtils extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
     @Test
@@ -65,7 +63,6 @@ public class TestUtils extends NXRuntimeTestCase {
         assertEquals("image/jpeg", Utils.getImageMimeType("JPEG"));
         assertEquals("image/jpeg", Utils.getImageMimeType("JPG"));
 
-        assertEquals("application/octet-stream",
-                Utils.getImageMimeType("unknown"));
+        assertEquals("application/octet-stream", Utils.getImageMimeType("unknown"));
     }
 }

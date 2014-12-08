@@ -39,10 +39,8 @@ public class AbstractListener extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
-    protected DocumentModel createFileDocument(boolean setMimeType)
-            throws ClientException {
-        DocumentModel fileDoc = session.createDocumentModel("/",
-                "testFile", "File");
+    protected DocumentModel createFileDocument(boolean setMimeType) throws ClientException {
+        DocumentModel fileDoc = session.createDocumentModel("/", "testFile", "File");
         fileDoc.setProperty("dublincore", "title", "TestFile");
 
         Blob blob = new StringBlob("SOMEDUMMYDATA");

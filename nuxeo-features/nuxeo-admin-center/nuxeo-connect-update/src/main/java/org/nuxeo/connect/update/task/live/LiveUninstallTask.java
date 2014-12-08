@@ -25,7 +25,6 @@ import org.nuxeo.connect.update.task.standalone.UninstallTask;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LiveUninstallTask extends UninstallTask {
 

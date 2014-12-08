@@ -31,12 +31,10 @@ public final class RelationStorage implements Registrable {
 
     private static final String[][] WILDCARDS_MONADIC = { { "" } };
 
-    private static final String[][] WILDCARDS_DYADIC = { { "", "" },
-            { "*", "" }, { "", "*" } };
+    private static final String[][] WILDCARDS_DYADIC = { { "", "" }, { "*", "" }, { "", "*" } };
 
-    private static final String[][] WILDCARDS_TRIADIC = { { "", "", "" },
-            { "*", "", "" }, { "", "*", "" }, { "", "", "*" },
-            { "*", "*", "" }, { "", "*", "*" }, { "*", "", "*" } };
+    private static final String[][] WILDCARDS_TRIADIC = { { "", "", "" }, { "*", "", "" }, { "", "*", "" },
+            { "", "", "*" }, { "*", "*", "" }, { "", "*", "*" }, { "*", "", "*" } };
 
     public synchronized void add(Relation relation) {
         Long key = findFreeKey();
@@ -77,16 +75,14 @@ public final class RelationStorage implements Registrable {
         return search(predicate, relates);
     }
 
-    public Collection<Relation> search(Predicate predicate, Relate first,
-            Relate second) {
+    public Collection<Relation> search(Predicate predicate, Relate first, Relate second) {
         List<Relate> relates = new ArrayList<Relate>();
         relates.add(first);
         relates.add(second);
         return search(predicate, relates);
     }
 
-    public Collection<Relation> search(Predicate predicate, Relate first,
-            Relate second, Relate third) {
+    public Collection<Relation> search(Predicate predicate, Relate first, Relate second, Relate third) {
         List<Relate> relates = new ArrayList<Relate>();
         relates.add(first);
         relates.add(second);

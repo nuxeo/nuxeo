@@ -27,20 +27,17 @@ import java.util.Collections;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Defaults<A extends Annotation> implements InvocationHandler {
 
     @SuppressWarnings("unchecked")
     public static <A extends Annotation> A of(Class<A> annotation) {
-        return (A) Proxy.newProxyInstance(annotation.getClassLoader(),
-                new Class[] { annotation }, new Defaults<A>());
+        return (A) Proxy.newProxyInstance(annotation.getClassLoader(), new Class[] { annotation }, new Defaults<A>());
     }
 
     @SuppressWarnings("unchecked")
     public static <A extends Annotation> A of(Class<A> type, Iterable<A> annotations) {
-        return (A) Proxy.newProxyInstance(type.getClassLoader(),
-                new Class[] { type }, new Defaults<A>(annotations));
+        return (A) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { type }, new Defaults<A>(annotations));
     }
 
     @SafeVarargs
@@ -56,13 +53,12 @@ public class Defaults<A extends Annotation> implements InvocationHandler {
         this.annotations = annotations;
     }
 
-    protected final Iterable<A > annotations;
+    protected final Iterable<A> annotations;
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args)
-            throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         final Object defaultValue = method.getDefaultValue();
-        for (Annotation each:annotations) {
+        for (Annotation each : annotations) {
             if (each == null) {
                 continue;
             }

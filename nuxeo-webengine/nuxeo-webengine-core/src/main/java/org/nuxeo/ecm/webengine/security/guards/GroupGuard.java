@@ -29,7 +29,6 @@ import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("group")
 public class GroupGuard implements Guard {
@@ -47,7 +46,7 @@ public class GroupGuard implements Guard {
     public boolean check(Adaptable context) {
         Principal p = context.getAdapter(Principal.class);
         if (p instanceof NuxeoPrincipal) {
-            return ((NuxeoPrincipal)p).getGroups().contains(group);
+            return ((NuxeoPrincipal) p).getGroups().contains(group);
         }
         return false;
     }

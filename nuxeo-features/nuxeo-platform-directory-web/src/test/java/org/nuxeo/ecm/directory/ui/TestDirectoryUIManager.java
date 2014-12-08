@@ -44,14 +44,12 @@ import com.google.inject.Inject;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({
-        // deploy directory service + sql factory
-        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.directory.types.contrib",
+// deploy directory service + sql factory
+        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory.types.contrib",
         // deploy directory ui service
         "org.nuxeo.ecm.actions", "org.nuxeo.ecm.directory.web" })
 // deploy test dirs + ui config

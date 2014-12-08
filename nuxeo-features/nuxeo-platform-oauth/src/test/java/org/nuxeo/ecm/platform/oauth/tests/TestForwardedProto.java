@@ -25,21 +25,20 @@ import org.junit.Test;
 import org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuthFilter;
 
 /**
- *
- *
  * @since 5.9.5
  */
 public class TestForwardedProto {
-
 
     /**
      *
      */
     private static final String HTTP = "http";
+
     /**
      *
      */
     private static final String HTTPS = "https";
+
     /**
      *
      */
@@ -47,19 +46,16 @@ public class TestForwardedProto {
 
     @Test
     public void itCanReplaceRequestSchemeByTheOneInXFPHeader() throws Exception {
-        HttpServletRequest req = mockRequestWithForwardedHeader(TEST_SITE_URL,HTTPS);
+        HttpServletRequest req = mockRequestWithForwardedHeader(TEST_SITE_URL, HTTPS);
         assertEquals("https://mysite.org/bla", NuxeoOAuthFilter.getRequestURL(req));
 
-
-        req = mockRequestWithForwardedHeader("https://mysite.org/bla",HTTPS);
+        req = mockRequestWithForwardedHeader("https://mysite.org/bla", HTTPS);
         assertEquals("https://mysite.org/bla", NuxeoOAuthFilter.getRequestURL(req));
 
-
-        req = mockRequestWithForwardedHeader(TEST_SITE_URL,null);
+        req = mockRequestWithForwardedHeader(TEST_SITE_URL, null);
         assertEquals(TEST_SITE_URL, NuxeoOAuthFilter.getRequestURL(req));
 
-
-        req = mockRequestWithForwardedHeader(TEST_SITE_URL,HTTP);
+        req = mockRequestWithForwardedHeader(TEST_SITE_URL, HTTP);
         assertEquals(TEST_SITE_URL, NuxeoOAuthFilter.getRequestURL(req));
 
     }
@@ -67,7 +63,7 @@ public class TestForwardedProto {
     private HttpServletRequest mockRequestWithForwardedHeader(String url, String xfp) {
         HttpServletRequest req = mock(HttpServletRequest.class);
         when(req.getRequestURL()).thenReturn(new StringBuffer(url));
-        if(xfp != null) {
+        if (xfp != null) {
             when(req.getHeader("X-Forwarded-Proto")).thenReturn(xfp);
         } else {
             when(req.getHeader("X-Forwarded-Proto")).thenReturn(null);

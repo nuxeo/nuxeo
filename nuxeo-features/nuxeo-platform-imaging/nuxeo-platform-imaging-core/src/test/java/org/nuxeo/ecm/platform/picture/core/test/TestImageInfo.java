@@ -49,13 +49,11 @@ import com.google.inject.Inject;
 
 /**
  * @author btatar
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.picture.api",
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.core" })
 public class TestImageInfo {
 
@@ -81,19 +79,16 @@ public class TestImageInfo {
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("title", "Original");
         map.put("content",
-                StreamingBlob.createFromURL(this.getClass().getClassLoader().getResource(
-                        "images/exif_sample.jpg")));
+                StreamingBlob.createFromURL(this.getClass().getClassLoader().getResource("images/exif_sample.jpg")));
         views.add(map);
         return views;
     }
 
     @Test
     public void testGetImageInfo() throws ClientException {
-        DocumentModel picturebook = new DocumentModelImpl(
-                root.getPathAsString(), "picturebook", "PictureBook");
+        DocumentModel picturebook = new DocumentModelImpl(root.getPathAsString(), "picturebook", "PictureBook");
         session.createDocument(picturebook);
-        DocumentModel picture = new DocumentModelImpl(
-                picturebook.getPathAsString(), "pic1", "Picture");
+        DocumentModel picture = new DocumentModelImpl(picturebook.getPathAsString(), "pic1", "Picture");
         picture.setPropertyValue("picture:views", (Serializable) createViews());
         session.createDocument(picture);
         session.save();

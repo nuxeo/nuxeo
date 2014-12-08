@@ -21,9 +21,9 @@ package org.nuxeo.ecm.platform.audit.ws;
 
 public class BatchInfo {
 
-    private int pageSize=1000;
+    private int pageSize = 1000;
 
-    private int nextPage=1;
+    private int nextPage = 1;
 
     private final String initialDateRange;
 

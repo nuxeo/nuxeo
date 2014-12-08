@@ -65,8 +65,7 @@ public class OperationActionBean implements Serializable {
     protected void showError(OperationContext ctx, String chain, Throwable cause) {
         String msg = (String) ctx.get(AddErrorMessage.ID);
         if (msg == null) {
-            msg = "An error occured while executing the chain '" + chain
-                    + "': " + cause.getMessage();
+            msg = "An error occured while executing the chain '" + chain + "': " + cause.getMessage();
         }
         facesMessages.add(StatusMessage.Severity.ERROR, msg);
     }
@@ -88,8 +87,7 @@ public class OperationActionBean implements Serializable {
                 os.run(ctx, (String) chain);
                 showSuccess(ctx, (String) chain);
             } catch (InvalidChainException e) {
-                facesMessages.add(StatusMessage.Severity.ERROR,
-                        "Unknown chain: " + chain);
+                facesMessages.add(StatusMessage.Severity.ERROR, "Unknown chain: " + chain);
                 return null;
             } catch (OperationException e) {
                 log.error("Failed to execute action: ", e);

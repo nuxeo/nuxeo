@@ -30,10 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.actions.ActionFilter;
 import org.nuxeo.ecm.platform.actions.DefaultActionFilter;
 
-
 /**
- *
- *
  * @since 5.7.3
  */
 @XObject("enricher")
@@ -46,7 +43,6 @@ public class ContentEnricherDescriptor {
 
     @XNodeList(value = "category", type = ArrayList.class, componentType = String.class)
     List<String> categories;
-
 
     @XNode("@class")
     public Class<? extends ContentEnricher> klass;
@@ -62,22 +58,16 @@ public class ContentEnricherDescriptor {
 
     /**
      * @return
-     *
      */
     public ContentEnricher getContentEnricher() {
         try {
             ContentEnricher enricher = klass.newInstance();
             enricher.setParameters(parameters);
             return enricher;
-        } catch (InstantiationException
-            | IllegalAccessException
-            | IllegalArgumentException e) {
-            log.error(String.format("Failed to create %s content enricher: %s",
-                    name, e.getMessage()));
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+            log.error(String.format("Failed to create %s content enricher: %s", name, e.getMessage()));
             return null;
         }
     }
-
-
 
 }

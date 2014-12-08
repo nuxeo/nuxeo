@@ -58,18 +58,14 @@ public class LayoutResource {
         if (!baseURL.endsWith("/")) {
             baseURL += "/";
         }
-        return new TemplateView(this, name).arg("baseURL", baseURL).arg(
-                "layoutNames", registeredLayoutNames);
+        return new TemplateView(this, name).arg("baseURL", baseURL).arg("layoutNames", registeredLayoutNames);
     }
 
     @GET
-    public Object doGet(@QueryParam("layoutName")
-    String layoutName, @Context
-    UriInfo uriInfo) {
+    public Object doGet(@QueryParam("layoutName") String layoutName, @Context UriInfo uriInfo) {
         TemplateView tpl = getTemplate("layouts.ftl", uriInfo);
         if (layoutName != null) {
-            LayoutDefinition layoutDef = service.getLayoutDefinition(category,
-                    layoutName);
+            LayoutDefinition layoutDef = service.getLayoutDefinition(category, layoutName);
             tpl.arg("layoutDefinition", layoutDef);
         }
         return tpl;
@@ -77,10 +73,8 @@ public class LayoutResource {
 
     @GET
     @Path("json")
-    public String getAsJson(@QueryParam("layoutName")
-    String layoutName, @QueryParam("lang")
-    String lang, @QueryParam("convertCat")
-    String conversionCategory) {
+    public String getAsJson(@QueryParam("layoutName") String layoutName, @QueryParam("lang") String lang,
+            @QueryParam("convertCat") String conversionCategory) {
         if (layoutName != null) {
             if (StringUtils.isBlank(lang)) {
                 lang = DEFAULT_LANGUAGE;
@@ -88,11 +82,9 @@ public class LayoutResource {
             if (StringUtils.isBlank(conversionCategory)) {
                 conversionCategory = DEFAULT_CONVERSION_CATEGORY;
             }
-            LayoutDefinition layoutDef = service.getLayoutDefinition(category,
-                    layoutName);
+            LayoutDefinition layoutDef = service.getLayoutDefinition(category, layoutName);
             if (layoutDef != null) {
-                LayoutConversionContext ctx = new LayoutConversionContext(lang,
-                        null);
+                LayoutConversionContext ctx = new LayoutConversionContext(lang, null);
                 List<LayoutDefinitionConverter> layoutConverters = service.getLayoutConverters(conversionCategory);
                 // pass layout converters now
                 for (LayoutDefinitionConverter conv : layoutConverters) {
@@ -100,8 +92,7 @@ public class LayoutResource {
                 }
                 if (layoutDef != null) {
                     List<WidgetDefinitionConverter> widgetConverters = service.getWidgetConverters(conversionCategory);
-                    JSONObject json = JSONLayoutExporter.exportToJson(category,
-                            layoutDef, ctx, widgetConverters);
+                    JSONObject json = JSONLayoutExporter.exportToJson(category, layoutDef, ctx, widgetConverters);
                     return json.toString(2);
                 }
             }
@@ -111,11 +102,8 @@ public class LayoutResource {
 
     @GET
     @Path("docType/{docType}")
-    public String getLayoutsForTypeAsJson(@PathParam("docType")
-    String docType, @QueryParam("mode")
-    String mode, @QueryParam("lang")
-    String lang, @QueryParam("convertCat")
-    String conversionCategory) {
+    public String getLayoutsForTypeAsJson(@PathParam("docType") String docType, @QueryParam("mode") String mode,
+            @QueryParam("lang") String lang, @QueryParam("convertCat") String conversionCategory) {
 
         if (StringUtils.isBlank(mode)) {
             mode = DEFAULT_DOCUMENT_LAYOUT_MODE;
@@ -131,10 +119,8 @@ public class LayoutResource {
 
         JSONArray jsonLayouts = new JSONArray();
         for (String layoutName : layoutNames) {
-            LayoutDefinition layoutDef = service.getLayoutDefinition(category,
-                    layoutName);
-            LayoutConversionContext ctx = new LayoutConversionContext(lang,
-                    null);
+            LayoutDefinition layoutDef = service.getLayoutDefinition(category, layoutName);
+            LayoutConversionContext ctx = new LayoutConversionContext(lang, null);
             List<LayoutDefinitionConverter> layoutConverters = service.getLayoutConverters(conversionCategory);
             // pass layout converters now
             for (LayoutDefinitionConverter conv : layoutConverters) {
@@ -142,8 +128,7 @@ public class LayoutResource {
             }
             if (layoutDef != null) {
                 List<WidgetDefinitionConverter> widgetConverters = service.getWidgetConverters(conversionCategory);
-                JSONObject jsonLayout = JSONLayoutExporter.exportToJson(
-                        category, layoutDef, ctx, widgetConverters);
+                JSONObject jsonLayout = JSONLayoutExporter.exportToJson(category, layoutDef, ctx, widgetConverters);
                 jsonLayouts.add(jsonLayout);
             }
         }

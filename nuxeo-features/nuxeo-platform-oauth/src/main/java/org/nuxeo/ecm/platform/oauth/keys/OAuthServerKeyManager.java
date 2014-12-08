@@ -23,11 +23,10 @@ import org.nuxeo.ecm.platform.oauth.consumers.NuxeoOAuthConsumer;
  * Service to manage the key and shared secret used by Nuxeo server :
  * <ul>
  * <li>private/public key pair used by Nuxeo to use Signed request with RSA
- *
- * <li> shared key between Nuxeo and Shindig to manage Signed Fetch
+ * <li>shared key between Nuxeo and Shindig to manage Signed Fetch
  * </ul>
- * @author tiry
  *
+ * @author tiry
  */
 public interface OAuthServerKeyManager {
 
@@ -37,8 +36,7 @@ public interface OAuthServerKeyManager {
     String getPublicKeyCertificate();
 
     /**
-     * Returns the Public Key certificate used by Nuxeo server to do RSA Signing.
-     * (Removes OpenSSL decorators).
+     * Returns the Public Key certificate used by Nuxeo server to do RSA Signing. (Removes OpenSSL decorators).
      */
     String getBarePublicCertificate();
 
@@ -48,8 +46,7 @@ public interface OAuthServerKeyManager {
     String getPrivateKey();
 
     /**
-     * Returns the Private Key used by Nuxeo server to do RSA Signing.
-     * (Removes OpenSSL decorators).
+     * Returns the Private Key used by Nuxeo server to do RSA Signing. (Removes OpenSSL decorators).
      */
     String getBarePrivateKey();
 

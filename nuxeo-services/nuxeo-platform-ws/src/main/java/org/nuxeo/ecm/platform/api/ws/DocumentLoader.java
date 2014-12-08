@@ -24,9 +24,8 @@ import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 
 /**
  * @author matic
- *
  */
 public interface DocumentLoader {
-    
+
     void fillProperties(DocumentModel doc, List<DocumentProperty> props, WSRemotingSession rs) throws ClientException;
 }

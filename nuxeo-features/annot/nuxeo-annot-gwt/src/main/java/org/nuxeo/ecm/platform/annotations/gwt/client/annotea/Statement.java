@@ -24,7 +24,6 @@ import com.google.gwt.xml.client.Node;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class Statement {
 
@@ -38,8 +37,7 @@ public class Statement {
 
     public Statement(Node node) {
         predicate = getFQName(node);
-        if (node.getAttributes() != null
-                && node.getAttributes().getLength() != 0) {
+        if (node.getAttributes() != null && node.getAttributes().getLength() != 0) {
             NamedNodeMap map = node.getAttributes();
             for (int x = 0; x < map.getLength(); x++) {
                 String attr = getFQName(map.item(x));
@@ -50,8 +48,7 @@ public class Statement {
             }
         }
         if (!isResource) {
-            if (node.getChildNodes() != null
-                    && node.getChildNodes().getLength() != 0) {
+            if (node.getChildNodes() != null && node.getChildNodes().getLength() != 0) {
                 object = node.getChildNodes().item(0).getNodeValue().trim();
             } else {
                 object = "";

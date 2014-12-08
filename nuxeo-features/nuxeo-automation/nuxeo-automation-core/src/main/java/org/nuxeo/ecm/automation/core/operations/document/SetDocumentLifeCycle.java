@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = SetDocumentLifeCycle.ID, category = Constants.CAT_DOCUMENT, label = "Follow Life Cycle Transition", description = "Follow the given transition on the input document life cycle state")
@@ -36,13 +35,13 @@ public class SetDocumentLifeCycle {
     @Param(name = "value")
     protected String value;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
         session.followTransition(doc.getRef(), value);
         return session.getDocument(doc.getRef());
     }
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef doc) {
         session.followTransition(doc, value);
         return session.getDocument(doc);

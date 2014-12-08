@@ -65,8 +65,7 @@ public class TestDetector {
 
         // by byte[]
         byte[] data = FileUtils.readBytes(xlsFile);
-        String[] returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd',
-                "dummy", new HashMap());
+        String[] returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy", new HashMap());
         assertTrue(returnedByteMimetype.length > 0);
     }
 
@@ -74,7 +73,7 @@ public class TestDetector {
     public void testSnifferXLSWrongFile() {
         XlsMimetypeSniffer sniffer = new XlsMimetypeSniffer();
 
-        //a wrong file is not detected as excel file
+        // a wrong file is not detected as excel file
         File otherFile = getFileFromTestResource("test-data/hello.doc");
         String[] mimetype = sniffer.guessExcel(otherFile);
         assertEquals(0, mimetype.length);
@@ -113,11 +112,10 @@ public class TestDetector {
         MsoXmlMimetypeSniffer sniffer = new MsoXmlMimetypeSniffer();
 
         // by byte[]
-        String [] returnedByteMimetype = {};
+        String[] returnedByteMimetype = {};
         File xmlFile = getFileFromTestResource("test-data/TestWord2003AsXML.xml.txt");
         byte[] data = FileUtils.readBytes(xmlFile);
-        returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy",
-                new HashMap());
+        returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy", new HashMap());
         assertEquals("application/msword", returnedByteMimetype[0]);
     }
 
@@ -148,12 +146,9 @@ public class TestDetector {
 
         // verify that the first returned is the one supported by Nx5
         String[] supportedMimetype = sniffer.getHandledTypes();
-        assertEquals("application/vnd.oasis.opendocument.text",
-                supportedMimetype[2]);
-        assertEquals("application/vnd.oasis.opendocument.spreadsheet",
-                supportedMimetype[0]);
-        assertEquals("application/vnd.oasis.opendocument.presentation",
-                supportedMimetype[4]);
+        assertEquals("application/vnd.oasis.opendocument.text", supportedMimetype[2]);
+        assertEquals("application/vnd.oasis.opendocument.spreadsheet", supportedMimetype[0]);
+        assertEquals("application/vnd.oasis.opendocument.presentation", supportedMimetype[4]);
         // OOo 1.x
         assertEquals("application/vnd.sun.xml.writer", supportedMimetype[16]);
         assertEquals("application/vnd.sun.xml.calc", supportedMimetype[19]);
@@ -167,20 +162,17 @@ public class TestDetector {
         File file = getFileFromTestResource("test-data/hello.odt");
         String[] returnedMimetype = sniffer.guessOOo(file);
         assertTrue(returnedMimetype.length > 0);
-        assertEquals("application/vnd.oasis.opendocument.text",
-                returnedMimetype[0]);
+        assertEquals("application/vnd.oasis.opendocument.text", returnedMimetype[0]);
 
         file = getFileFromTestResource("test-data/hello.ods");
         returnedMimetype = sniffer.guessOOo(file);
         assertTrue(returnedMimetype.length > 0);
-        assertEquals("application/vnd.oasis.opendocument.spreadsheet",
-                returnedMimetype[0]);
+        assertEquals("application/vnd.oasis.opendocument.spreadsheet", returnedMimetype[0]);
 
         file = getFileFromTestResource("test-data/hello.odp");
         returnedMimetype = sniffer.guessOOo(file);
         assertTrue(returnedMimetype.length > 0);
-        assertEquals("application/vnd.oasis.opendocument.presentation",
-                returnedMimetype[0]);
+        assertEquals("application/vnd.oasis.opendocument.presentation", returnedMimetype[0]);
 
         // OOo1.x
         file = getFileFromTestResource("test-data/hello.sxw");
@@ -213,10 +205,9 @@ public class TestDetector {
         String dummyString = "dummy";
         char dummyChar = dummyString.charAt(0);
 
-        String[] returnedByteMimetype = sniffer.process(data, dummyInt,
-                dummyInt, dummyLong, dummyChar, dummyString, dummyMap);
-        assertEquals("application/vnd.oasis.opendocument.text",
-                returnedByteMimetype[0]);
+        String[] returnedByteMimetype = sniffer.process(data, dummyInt, dummyInt, dummyLong, dummyChar, dummyString,
+                dummyMap);
+        assertEquals("application/vnd.oasis.opendocument.text", returnedByteMimetype[0]);
     }
 
     /* Test Powerpoint binary file */
@@ -257,9 +248,8 @@ public class TestDetector {
         String dummyString = "dummy";
         char dummyChar = dummyString.charAt(0);
 
-        String[] returnedByteMimetype = sniffer.process(data, dummyInt,
-                dummyInt,
-                dummyLong, dummyChar, dummyString, dummyMap);
+        String[] returnedByteMimetype = sniffer.process(data, dummyInt, dummyInt, dummyLong, dummyChar, dummyString,
+                dummyMap);
         assertTrue(returnedByteMimetype.length > 0);
     }
 

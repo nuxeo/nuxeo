@@ -34,9 +34,8 @@ import com.sun.faces.util.MessageFactory;
 /**
  * Input file size validator.
  * <p>
- * Validates an {@link InputFileInfo} blob value in case it's been uploaded.
- * Value is set using the "maxSize" attribute and setting it to (for instance)
- * "10Ko", "10Mo" or "10Go".
+ * Validates an {@link InputFileInfo} blob value in case it's been uploaded. Value is set using the "maxSize" attribute
+ * and setting it to (for instance) "10Ko", "10Mo" or "10Go".
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -53,18 +52,15 @@ public class InputFileSizeValidator implements Validator, StateHolder {
     private boolean transientValue = false;
 
     /**
-     * The message identifier of the
-     * {@link javax.faces.application.FacesMessage} to be created if the maximum
-     * size check fails. The message format string for this message may
-     * optionally include the following placeholders:
+     * The message identifier of the {@link javax.faces.application.FacesMessage} to be created if the maximum size
+     * check fails. The message format string for this message may optionally include the following placeholders:
      * <ul>
      * <li><code>{0}</code> replaced by the configured maximum length.</li>
      * </ul>
      */
     public static final String MAXIMUM_MESSAGE_ID = "error.inputFile.maxSize";
 
-    public void validate(FacesContext context, UIComponent component,
-            Object value) throws ValidatorException {
+    public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         if (!maximumSet) {
             return;
         }
@@ -75,8 +71,7 @@ public class InputFileSizeValidator implements Validator, StateHolder {
             if (value instanceof InputFileInfo) {
                 InputFileInfo info = (InputFileInfo) value;
                 InputFileChoice choice = info.getConvertedChoice();
-                if (InputFileChoice.tempKeep != choice
-                        && InputFileChoice.upload != choice) {
+                if (InputFileChoice.tempKeep != choice && InputFileChoice.upload != choice) {
                     return;
                 }
                 Blob blob = info.getConvertedBlob();
@@ -87,8 +82,7 @@ public class InputFileSizeValidator implements Validator, StateHolder {
                     maxString = maxSize;
                 }
                 if (finalMaxSize != 0L && blob.getLength() > finalMaxSize) {
-                    throw new ValidatorException(MessageFactory.getMessage(
-                            context, MAXIMUM_MESSAGE_ID, maxString));
+                    throw new ValidatorException(MessageFactory.getMessage(context, MAXIMUM_MESSAGE_ID, maxString));
                 }
             }
         }

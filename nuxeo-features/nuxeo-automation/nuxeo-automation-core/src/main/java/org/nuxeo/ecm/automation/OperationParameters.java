@@ -25,11 +25,9 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 
 /**
- * An object holding the runtime parameters that should be used by an operation
- * when run.
+ * An object holding the runtime parameters that should be used by an operation when run.
  * <p>
- * Parameters are injected at runtime into the operation using {@link Param}
- * annotation.
+ * Parameters are injected at runtime into the operation using {@link Param} annotation.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -73,8 +71,7 @@ public class OperationParameters implements Serializable {
                 if (((String) valueRef).contains("@{")) {
                     params.put(key, Scripting.newTemplate(((String) valueRef)));
                 } else {
-                    params.put(key,
-                            Scripting.newExpression(((String) valueRef)));
+                    params.put(key, Scripting.newExpression(((String) valueRef)));
                 }
                 return this;
             }

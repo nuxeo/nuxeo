@@ -55,11 +55,10 @@ public class PictureViewListener implements PostCommitFilteringEventListener {
         DocumentModel doc = docCtx.getSourceDocument();
 
         // launch work doing the actual views generation
-        PictureViewsGenerationWork work = new PictureViewsGenerationWork(
-                doc.getRepositoryName(), doc.getId(), "file:content");
+        PictureViewsGenerationWork work = new PictureViewsGenerationWork(doc.getRepositoryName(), doc.getId(),
+                "file:content");
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
-                true);
+        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
     }
 
     @Override

@@ -29,10 +29,8 @@ public class RootResource {
         int nbWidgetTypes = service.getWidgetTypeDefinitions("jsf").size();
         int nbLayoutTypes = service.getLayoutTypeDefinitions("jsf").size();
         int nbLayouts = service.getLayoutDefinitionNames("jsf").size();
-        return getTemplate("index.ftl", uriInfo).arg("nbWidgetTypes",
-                Integer.valueOf(nbWidgetTypes)).arg("nbLayouts",
-                Integer.valueOf(nbLayouts)).arg("nbLayoutTypes",
-                Integer.valueOf(nbLayoutTypes));
+        return getTemplate("index.ftl", uriInfo).arg("nbWidgetTypes", Integer.valueOf(nbWidgetTypes)).arg("nbLayouts",
+                Integer.valueOf(nbLayouts)).arg("nbLayoutTypes", Integer.valueOf(nbLayoutTypes));
     }
 
     @Path("layouts")
@@ -42,8 +40,7 @@ public class RootResource {
     }
 
     @Path("widget-types")
-    public Object getWidgetTypes(
-            @QueryParam("widgetTypeCategory") String widgetTypeCategory) {
+    public Object getWidgetTypes(@QueryParam("widgetTypeCategory") String widgetTypeCategory) {
         if (StringUtils.isBlank(widgetTypeCategory)) {
             widgetTypeCategory = "jsf";
         }
@@ -51,8 +48,7 @@ public class RootResource {
     }
 
     @Path("layout-types")
-    public Object getLayoutTypes(
-            @QueryParam("layoutTypeCategory") String layoutTypeCategory) {
+    public Object getLayoutTypes(@QueryParam("layoutTypeCategory") String layoutTypeCategory) {
         if (StringUtils.isBlank(layoutTypeCategory)) {
             layoutTypeCategory = "jsf";
         }

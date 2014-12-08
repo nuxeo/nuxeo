@@ -21,8 +21,7 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 
 /**
- * Helper class with static methods to remove/add variables to the request
- * during a component rendering.
+ * Helper class with static methods to remove/add variables to the request during a component rendering.
  *
  * @since 5.5
  */
@@ -61,15 +60,13 @@ public class VariableManager {
 
     public static final void putVariableToRequestParam(String var, Object object) {
         if (var != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
-                    var, object);
+            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(var, object);
         }
     }
 
     public static final void removeVariableFromRequestParam(String var) {
         if (var != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(
-                    var);
+            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(var);
         }
     }
 

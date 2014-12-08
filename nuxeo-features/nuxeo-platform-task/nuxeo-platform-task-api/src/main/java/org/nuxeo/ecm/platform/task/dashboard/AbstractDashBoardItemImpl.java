@@ -92,8 +92,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
     }
 
     protected boolean isCreatedFromCreateTaskOperation() throws ClientException {
-        return Boolean.parseBoolean(getTask().getVariable(
-                "createdFromCreateTaskOperation"));
+        return Boolean.parseBoolean(getTask().getVariable("createdFromCreateTaskOperation"));
     }
 
     protected boolean needi18n() {
@@ -101,8 +100,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
             if (isCreatedFromCreateTaskOperation()) {
                 return false;
             }
-            return Boolean.parseBoolean(getTask().getVariable(
-                    Task.TaskVariableName.needi18n.name()));
+            return Boolean.parseBoolean(getTask().getVariable(Task.TaskVariableName.needi18n.name()));
         } catch (ClientException e) {
             log.error("Error while testing Task variables", e);
             return false;
@@ -122,15 +120,11 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
         String comment = getComment();
         obj.put("comment", comment != null ? comment : "");
         Date dueDate = getDueDate();
-        obj.put("dueDate",
-                dueDate != null ? DateParser.formatW3CDateTime(dueDate) : "");
+        obj.put("dueDate", dueDate != null ? DateParser.formatW3CDateTime(dueDate) : "");
         obj.put("documentTitle", getDocument().getTitle());
-        obj.put("documentLink",
-                getDocumentLink(false));
+        obj.put("documentLink", getDocumentLink(false));
         Date startDate = getStartDate();
-        obj.put("startDate",
-                startDate != null ? DateParser.formatW3CDateTime(startDate)
-                        : "");
+        obj.put("startDate", startDate != null ? DateParser.formatW3CDateTime(startDate) : "");
         boolean expired = false;
         if (dueDate != null) {
             expired = dueDate.before(new Date());
@@ -140,8 +134,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
 
     }
 
-    public String getDocumentLink(boolean includeWorkflowTab)
-            throws ClientException {
+    public String getDocumentLink(boolean includeWorkflowTab) throws ClientException {
         DocumentModel doc = getDocument();
         DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
         if (documentViewCodecManager != null) {
@@ -150,10 +143,8 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
             if (includeWorkflowTab) {
                 parameters.put("tabId", "TAB_CONTENT_JBPM");
             }
-            DocumentView docView = new DocumentViewImpl(
-                    new DocumentLocationImpl(doc), viewId, parameters);
-            return documentViewCodecManager.getUrlFromDocumentView("docpath",
-                    docView, false, null);
+            DocumentView docView = new DocumentViewImpl(new DocumentLocationImpl(doc), viewId, parameters);
+            return documentViewCodecManager.getUrlFromDocumentView("docpath", docView, false, null);
         } else {
             return "";
         }

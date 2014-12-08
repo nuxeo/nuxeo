@@ -110,8 +110,7 @@ public class DefaultFormat implements Format {
         Properties sourceProperties = source.getProperties();
         for (Object key : sourceProperties.keySet()) {
             String propertyName = (String) key;
-            setProperty(propertyName,
-                    sourceProperties.getProperty(propertyName));
+            setProperty(propertyName, sourceProperties.getProperty(propertyName));
         }
     }
 

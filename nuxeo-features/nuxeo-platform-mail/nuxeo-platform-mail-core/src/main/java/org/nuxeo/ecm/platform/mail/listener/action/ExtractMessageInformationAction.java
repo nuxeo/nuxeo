@@ -59,9 +59,8 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Puts on the pipe execution context the values retrieved from the new messages
- * found in the INBOX. These values are used later when new MailMessage
- * documents are created based on them.
+ * Puts on the pipe execution context the values retrieved from the new messages found in the INBOX. These values are
+ * used later when new MailMessage documents are created based on them.
  *
  * @author Catalin Baican
  */
@@ -86,8 +85,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
         try {
             Message originalMessage = context.getMessage();
             if (log.isDebugEnabled()) {
-                log.debug("Transforming message, original subject: "
-                        + originalMessage.getSubject());
+                log.debug("Transforming message, original subject: " + originalMessage.getSubject());
             }
 
             // fully load the message before trying to parse to
@@ -97,8 +95,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             if (originalMessage instanceof MimeMessage && copyMessage) {
                 message = new MimeMessage((MimeMessage) originalMessage);
                 if (log.isDebugEnabled()) {
-                    log.debug("Transforming message after full load: "
-                            + message.getSubject());
+                    log.debug("Transforming message after full load: " + message.getSubject());
                 }
             } else {
                 // stuck with the original one
@@ -152,8 +149,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                         if (addr instanceof InternetAddress) {
                             InternetAddress iAddr = (InternetAddress) addr;
                             if (iAddr.getPersonal() != null) {
-                                recipients.add(iAddr.getPersonal() + " <"
-                                        + iAddr.getAddress() + ">");
+                                recipients.add(iAddr.getPersonal() + " <" + iAddr.getAddress() + ">");
                             } else {
                                 recipients.add(iAddr.getAddress());
                             }
@@ -165,8 +161,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                 context.put(RECIPIENTS_KEY, recipients);
             } catch (AddressException ae) {
                 // try to parse recipient from header instead
-                Collection<String> recipients = getHeaderValues(message,
-                        Message.RecipientType.TO.toString());
+                Collection<String> recipients = getHeaderValues(message, Message.RecipientType.TO.toString());
                 context.put(RECIPIENTS_KEY, recipients);
             }
 
@@ -179,8 +174,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                     for (Address addr : toCC) {
                         if (addr instanceof InternetAddress) {
                             InternetAddress iAddr = (InternetAddress) addr;
-                            ccRecipients.add(iAddr.getPersonal() + " "
-                                    + iAddr.getAddress());
+                            ccRecipients.add(iAddr.getPersonal() + " " + iAddr.getAddress());
                         } else {
                             ccRecipients.add(addr.toString());
                         }
@@ -190,24 +184,20 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
 
             } catch (AddressException ae) {
                 // try to parse ccRecipient from header instead
-                Collection<String> ccRecipients = getHeaderValues(message,
-                        Message.RecipientType.CC.toString());
+                Collection<String> ccRecipients = getHeaderValues(message, Message.RecipientType.CC.toString());
                 context.put(CC_RECIPIENTS_KEY, ccRecipients);
             }
             String[] messageIdHeader = message.getHeader("Message-ID");
             if (messageIdHeader != null) {
-                context.put(MailCoreConstants.MESSAGE_ID_KEY,
-                        messageIdHeader[0]);
+                context.put(MailCoreConstants.MESSAGE_ID_KEY, messageIdHeader[0]);
             }
 
-            MimetypeRegistry mimeService = (MimetypeRegistry) context.getInitialContext().get(
-                    MIMETYPE_SERVICE_KEY);
+            MimetypeRegistry mimeService = (MimetypeRegistry) context.getInitialContext().get(MIMETYPE_SERVICE_KEY);
 
             List<Blob> blobs = new ArrayList<Blob>();
             context.put(ATTACHMENTS_KEY, blobs);
 
-
-            //String[] cte = message.getHeader("Content-Transfer-Encoding");
+            // String[] cte = message.getHeader("Content-Transfer-Encoding");
 
             // process content
             getAttachmentParts(message, subject, mimeService, context);
@@ -221,8 +211,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
         return false;
     }
 
-    protected static String getFilename(Part p, String defaultFileName)
-            throws MessagingException {
+    protected static String getFilename(Part p, String defaultFileName) throws MessagingException {
         String originalFilename = p.getFileName();
         if (originalFilename == null || originalFilename.trim().length() == 0) {
             String filename = defaultFileName;
@@ -242,9 +231,8 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
         }
     }
 
-    protected void getAttachmentParts(Part part, String defaultFilename,
-            MimetypeRegistry mimeService, ExecutionContext context)
-            throws MessagingException, IOException {
+    protected void getAttachmentParts(Part part, String defaultFilename, MimetypeRegistry mimeService,
+            ExecutionContext context) throws MessagingException, IOException {
         String filename = getFilename(part, defaultFilename);
         List<FileBlob> blobs = (List<FileBlob>) context.get(ATTACHMENTS_KEY);
 
@@ -263,10 +251,9 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                     String mime = DEFAULT_BINARY_MIMETYPE;
                     try {
                         if (mimeService != null) {
-                            ContentType contentType = new ContentType(
-                                    part.getContentType());
-                            mime = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                                    filename, fileBlob, contentType.getBaseType());
+                            ContentType contentType = new ContentType(part.getContentType());
+                            mime = mimeService.getMimetypeFromFilenameAndBlobWithDefault(filename, fileBlob,
+                                    contentType.getBaseType());
                         }
                     } catch (MessagingException | MimetypeDetectionException e) {
                         log.error(e);
@@ -285,13 +272,11 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
 
                 int count = mp.getCount();
                 for (int i = 0; i < count; i++) {
-                    getAttachmentParts(mp.getBodyPart(i), defaultFilename,
-                            mimeService, context);
+                    getAttachmentParts(mp.getBodyPart(i), defaultFilename, mimeService, context);
                 }
             } else if (part.isMimeType(MESSAGE_RFC822_MIMETYPE)) {
                 // This is a Nested Message
-                getAttachmentParts((Part) part.getContent(), defaultFilename,
-                        mimeService, context);
+                getAttachmentParts((Part) part.getContent(), defaultFilename, mimeService, context);
             }
         }
 
@@ -300,15 +285,14 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
     /**
      * Return the primary text content of the message.
      */
-    private String getText(Part p) throws
-                MessagingException, IOException {
+    private String getText(Part p) throws MessagingException, IOException {
         if (p.isMimeType("text/*")) {
             return decodeMailBody(p);
         }
 
         if (p.isMimeType("multipart/alternative")) {
             // prefer html text over plain text
-            Multipart mp = (Multipart)p.getContent();
+            Multipart mp = (Multipart) p.getContent();
             String text = null;
             for (int i = 0; i < mp.getCount(); i++) {
                 Part bp = mp.getBodyPart(i);
@@ -328,7 +312,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             }
             return text;
         } else if (p.isMimeType("multipart/*")) {
-            Multipart mp = (Multipart)p.getContent();
+            Multipart mp = (Multipart) p.getContent();
             for (int i = 0; i < mp.getCount(); i++) {
                 String s = getText(mp.getBodyPart(i));
                 if (s != null) {
@@ -341,27 +325,25 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
     }
 
     /**
-     * Interprets the body accordingly to the charset used. It relies on the
-     * content type being ****;charset={charset};******
+     * Interprets the body accordingly to the charset used. It relies on the content type being
+     * ****;charset={charset};******
      *
      * @return the decoded String
      */
-    protected static String decodeMailBody(Part part)
-            throws MessagingException, IOException {
+    protected static String decodeMailBody(Part part) throws MessagingException, IOException {
 
-        String encoding =null;
+        String encoding = null;
 
         // try to get encoding from header rather than from Stream !
         // unfortunately, this does not seem to be reliable ...
         /*
-        String[] cteHeader = part.getHeader("Content-Transfer-Encoding");
-        if (cteHeader!=null && cteHeader.length>0) {
-            encoding =  cteHeader[0].toLowerCase();
-        }*/
+         * String[] cteHeader = part.getHeader("Content-Transfer-Encoding"); if (cteHeader!=null && cteHeader.length>0)
+         * { encoding = cteHeader[0].toLowerCase(); }
+         */
 
         // fall back to default sniffing
         // that will actually read the stream from server
-        if (encoding==null)  {
+        if (encoding == null) {
             encoding = MimeUtility.getEncoding(part.getDataHandler());
         }
 
@@ -414,8 +396,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
         return ret;
     }
 
-    public Collection<String> getHeaderValues(Message message, String headerName)
-            throws MessagingException {
+    public Collection<String> getHeaderValues(Message message, String headerName) throws MessagingException {
         Collection<String> valuesList = new ArrayList<String>();
         String[] values = message.getHeader(headerName);
         if (values != null) {

@@ -69,10 +69,8 @@ public class DocumentPreviewCodec extends AbstractDocumentViewCodec {
             final String property = m.group(3);
             params.put(PROPERTY_PATH_KEY, property);
 
-            final DocumentLocation docLoc = new DocumentLocationImpl(server,
-                    docRef);
-            final DocumentView docView = new DocumentViewImpl(docLoc, null,
-                    params);
+            final DocumentLocation docLoc = new DocumentLocationImpl(server, docRef);
+            final DocumentView docView = new DocumentViewImpl(docLoc, null, params);
 
             return docView;
         }
@@ -84,8 +82,8 @@ public class DocumentPreviewCodec extends AbstractDocumentViewCodec {
         DocumentLocation docLoc = docView.getDocumentLocation();
         String property = docView.getParameter(PROPERTY_PATH_KEY);
 
-        //NXP-11215 Avoid NPE with not persisted documentModel
-        if(docLoc.getDocRef() == null) {
+        // NXP-11215 Avoid NPE with not persisted documentModel
+        if (docLoc.getDocRef() == null) {
             return null;
         }
 
@@ -98,8 +96,7 @@ public class DocumentPreviewCodec extends AbstractDocumentViewCodec {
             String uri = StringUtils.join(items, "/");
             uri += '/';
 
-            Map<String, String> requestParams = new HashMap<String, String>(
-                    docView.getParameters());
+            Map<String, String> requestParams = new HashMap<String, String>(docView.getParameters());
             requestParams.remove(PROPERTY_PATH_KEY);
             return URIUtils.addParametersToURIQuery(uri, requestParams);
         }

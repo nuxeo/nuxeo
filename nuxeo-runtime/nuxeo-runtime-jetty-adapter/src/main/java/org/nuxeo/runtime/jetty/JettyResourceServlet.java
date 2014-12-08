@@ -42,8 +42,7 @@ public class JettyResourceServlet extends HttpServlet {
     protected static final int BUFFER_SIZE = 1024 * 10;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String context = req.getContextPath();
         String resourceVPath = req.getRequestURI().substring(context.length());
@@ -73,8 +72,7 @@ public class JettyResourceServlet extends HttpServlet {
         return true;
     }
 
-    protected void sendFile(File resource, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void sendFile(File resource, HttpServletResponse resp) throws ServletException, IOException {
         InputStream in = null;
         try {
             OutputStream out = resp.getOutputStream();

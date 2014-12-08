@@ -31,10 +31,8 @@ public class TestNegotiationConfiguration extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "negotiation-config.xml");
     }
 
@@ -42,8 +40,8 @@ public class TestNegotiationConfiguration extends NXRuntimeTestCase {
     public void testRegisterNegotiation() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // negotiation
-        NegotiationType negotiation1 = (NegotiationType) typeRegistry.lookup(
-                TypeFamily.NEGOTIATION, "strategy1/test negotiation");
+        NegotiationType negotiation1 = (NegotiationType) typeRegistry.lookup(TypeFamily.NEGOTIATION,
+                "strategy1/test negotiation");
         assertNotNull(negotiation1);
         assertEquals("strategy1", negotiation1.getStrategy());
 

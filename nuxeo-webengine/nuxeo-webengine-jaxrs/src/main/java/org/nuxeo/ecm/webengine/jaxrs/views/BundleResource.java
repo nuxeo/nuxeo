@@ -27,7 +27,6 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BundleResource {
 
@@ -62,12 +61,12 @@ public class BundleResource {
     public final View getView(String path) {
         String basePath = context.getUriInfo().getBaseUri().toString();
         if (basePath.endsWith("/")) {
-            basePath = basePath.substring(0, basePath.length() -1);
+            basePath = basePath.substring(0, basePath.length() - 1);
         }
         // we need to prefix with bundle name to avoid template cache collisions (in freemarker for ex.)
-        //path=getBundle().getSymbolicName() + ":/" + path;
-        return context.getRenderingEngine().getView(path, this)
-        .arg("baseUrl", basePath).arg(VIEW_ROOT, context.getViewRoot());
+        // path=getBundle().getSymbolicName() + ":/" + path;
+        return context.getRenderingEngine().getView(path, this).arg("baseUrl", basePath).arg(VIEW_ROOT,
+                context.getViewRoot());
     }
 
     public final HttpServletRequest getRequest() {
@@ -110,10 +109,9 @@ public class BundleResource {
     }
 
     /**
-     * This method is only for contributed sub-resources. It will be ignored for root resources.
+     * This method is only for contributed sub-resources. It will be ignored for root resources. Extension resources may
+     * override this method to dynamically accept or reject to be installed as a sub-resource of the target resource
      *
-     * Extension resources may override this method to dynamically accept or reject
-     * to be installed as a sub-resource of the target resource
      * @param target
      * @return
      */

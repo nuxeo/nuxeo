@@ -66,23 +66,18 @@ public class GetRelations {
         return getDocuments(res, predicate);
     }
 
-    protected QNameResource getDocumentResource(DocumentModel document)
-            throws ClientException {
-        return (QNameResource) relations.getResource(
-                RelationConstants.DOCUMENT_NAMESPACE, document, null);
+    protected QNameResource getDocumentResource(DocumentModel document) throws ClientException {
+        return (QNameResource) relations.getResource(RelationConstants.DOCUMENT_NAMESPACE, document, null);
     }
 
     protected Resource getPredicate() {
-        return predicate != null && predicate.length() > 0 ? new ResourceImpl(
-                predicate) : null;
+        return predicate != null && predicate.length() > 0 ? new ResourceImpl(predicate) : null;
     }
 
-    protected DocumentModelList getDocuments(QNameResource res,
-            Resource predicate) throws ClientException {
+    protected DocumentModelList getDocuments(QNameResource res, Resource predicate) throws ClientException {
         if (outgoing) {
             List<Statement> statements = getOutgoingStatements(res, predicate);
-            DocumentModelList docs = new DocumentModelListImpl(
-                    statements.size());
+            DocumentModelList docs = new DocumentModelListImpl(statements.size());
             for (Statement st : statements) {
                 DocumentModel dm = getDocumentModel(st.getObject());
                 if (dm != null) {
@@ -92,8 +87,7 @@ public class GetRelations {
             return docs;
         } else {
             List<Statement> statements = getIncomingStatements(res, predicate);
-            DocumentModelList docs = new DocumentModelListImpl(
-                    statements.size());
+            DocumentModelList docs = new DocumentModelListImpl(statements.size());
             for (Statement st : statements) {
                 DocumentModel dm = getDocumentModel(st.getSubject());
                 if (dm != null) {
@@ -104,16 +98,12 @@ public class GetRelations {
         }
     }
 
-    protected List<Statement> getIncomingStatements(QNameResource res,
-            Resource predicate) throws ClientException {
-        return relations.getGraphByName(getGraphName()).getStatements(null,
-                predicate, res);
+    protected List<Statement> getIncomingStatements(QNameResource res, Resource predicate) throws ClientException {
+        return relations.getGraphByName(getGraphName()).getStatements(null, predicate, res);
     }
 
-    protected List<Statement> getOutgoingStatements(QNameResource res,
-            Resource predicate) throws ClientException {
-        return relations.getGraphByName(getGraphName()).getStatements(res,
-                predicate, null);
+    protected List<Statement> getOutgoingStatements(QNameResource res, Resource predicate) throws ClientException {
+        return relations.getGraphByName(getGraphName()).getStatements(res, predicate, null);
     }
 
     protected DocumentModel getDocumentModel(Node node) throws ClientException {
@@ -121,8 +111,7 @@ public class GetRelations {
             QNameResource resource = (QNameResource) node;
             Map<String, Object> context = Collections.<String, Object> singletonMap(
                     ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
-            Object o = relations.getResourceRepresentation(
-                    resource.getNamespace(), resource, context);
+            Object o = relations.getResourceRepresentation(resource.getNamespace(), resource, context);
             if (o instanceof DocumentModel) {
                 return (DocumentModel) o;
             }

@@ -27,13 +27,11 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
 /**
  * Registry for nav trees.
  * <p>
- * Moved from module nuxeo-platform-virtual-navigation-web, originally added in
- * 5.6.
+ * Moved from module nuxeo-platform-virtual-navigation-web, originally added in 5.6.
  *
  * @since 6.0
  */
-public class NavTreeRegistry extends
-        SimpleContributionRegistry<NavTreeDescriptor> {
+public class NavTreeRegistry extends SimpleContributionRegistry<NavTreeDescriptor> {
 
     @Override
     public String getContributionId(NavTreeDescriptor contrib) {
@@ -41,8 +39,7 @@ public class NavTreeRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, NavTreeDescriptor contrib,
-            NavTreeDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, NavTreeDescriptor contrib, NavTreeDescriptor newOrigContrib) {
         if (currentContribs.containsKey(id)) {
             currentContribs.remove(id);
         }
@@ -53,8 +50,7 @@ public class NavTreeRegistry extends
 
     // API
 
-    public List<NavTreeDescriptor> getTreeDescriptors(
-            DirectoryTreeService directoryTreeService) {
+    public List<NavTreeDescriptor> getTreeDescriptors(DirectoryTreeService directoryTreeService) {
         List<NavTreeDescriptor> allTrees = new ArrayList<NavTreeDescriptor>();
         allTrees.addAll(currentContribs.values());
         List<NavTreeDescriptor> directoryTrees = getDirectoryTrees(directoryTreeService);
@@ -65,8 +61,7 @@ public class NavTreeRegistry extends
         return allTrees;
     }
 
-    protected List<NavTreeDescriptor> getDirectoryTrees(
-            DirectoryTreeService directoryTreeService) {
+    protected List<NavTreeDescriptor> getDirectoryTrees(DirectoryTreeService directoryTreeService) {
         if (directoryTreeService == null) {
             return null;
         }

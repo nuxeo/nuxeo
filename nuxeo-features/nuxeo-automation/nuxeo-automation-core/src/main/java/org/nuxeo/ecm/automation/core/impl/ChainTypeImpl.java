@@ -105,19 +105,16 @@ public class ChainTypeImpl implements OperationType {
 
     public ChainTypeImpl(AutomationService service, OperationChain chain) {
         this.service = service;
-        this.operations = chain.getOperations().toArray(
-                new OperationParameters[chain.getOperations().size()]);
+        this.operations = chain.getOperations().toArray(new OperationParameters[chain.getOperations().size()]);
         this.id = chain.getId();
         this.aliases = chain.getAliases();
         this.chainParameters = chain.getChainParameters();
         this.chain = chain;
     }
 
-    public ChainTypeImpl(AutomationService service, OperationChain chain,
-            OperationChainContribution contribution) {
+    public ChainTypeImpl(AutomationService service, OperationChain chain, OperationChainContribution contribution) {
         this.service = service;
-        this.operations = chain.getOperations().toArray(
-                new OperationParameters[chain.getOperations().size()]);
+        this.operations = chain.getOperations().toArray(new OperationParameters[chain.getOperations().size()]);
         this.id = chain.getId();
         this.aliases = chain.getAliases();
         this.chainParameters = chain.getChainParameters();
@@ -134,12 +131,11 @@ public class ChainTypeImpl implements OperationType {
     }
 
     @Override
-    public Object newInstance(OperationContext ctx, Map<String, Object> args)
-            throws OperationNotFoundException, InvalidChainException {
+    public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationNotFoundException,
+            InvalidChainException {
         Object input = ctx.getInput();
         Class<?> inputType = input == null ? Void.TYPE : input.getClass();
-        CompiledChainImpl op = CompiledChainImpl.buildChain(service, inputType,
-                operations);
+        CompiledChainImpl op = CompiledChainImpl.buildChain(service, inputType, operations);
         op.context = ctx;
         return op;
     }
@@ -155,7 +151,7 @@ public class ChainTypeImpl implements OperationType {
     }
 
     @Override
-    public String[] getAliases(){
+    public String[] getAliases() {
         return aliases;
     }
 
@@ -200,15 +196,13 @@ public class ChainTypeImpl implements OperationType {
      * @param operations operations listing that chain contains.
      * @return the chain signature.
      */
-    protected ArrayList<String> getSignature(
-            OperationChainContribution.Operation[] operations)
+    protected ArrayList<String> getSignature(OperationChainContribution.Operation[] operations)
             throws OperationException {
         ArrayList<String> result = new ArrayList<String>();
         Collection<String> collectedSigs = new HashSet<String>();
         OperationType operationType = service.getOperation(operations[0].getId());
         for (InvokableMethod method : operationType.getMethods()) {
-            String inputChain = getParamDocumentationType(
-                    method.getInputType(), method.isIterable());
+            String inputChain = getParamDocumentationType(method.getInputType(), method.isIterable());
             outputChain = method.getInputType();
             String outputChain = getParamDocumentationType(getChainOutput(operations));
             String sigKey = inputChain + ":" + outputChain;
@@ -224,9 +218,7 @@ public class ChainTypeImpl implements OperationType {
     /**
      * @since 5.7.2
      */
-    protected Class<?> getChainOutput(
-            OperationChainContribution.Operation[] operations)
-            throws OperationException {
+    protected Class<?> getChainOutput(OperationChainContribution.Operation[] operations) throws OperationException {
         for (OperationChainContribution.Operation operation : operations) {
             OperationType operationType = service.getOperation(operation.getId());
             if (operationType instanceof OperationTypeImpl) {
@@ -241,8 +233,7 @@ public class ChainTypeImpl implements OperationType {
     /**
      * @since 5.7.2
      */
-    public Class<?> getOperationOutput(Class<?> input,
-            OperationType operationType) {
+    public Class<?> getOperationOutput(Class<?> input, OperationType operationType) {
         InvokableMethod[] methods = operationType.getMethodsMatchingInput(input);
         if (methods == null || methods.length == 0) {
             return input;
@@ -258,8 +249,7 @@ public class ChainTypeImpl implements OperationType {
     }
 
     /**
-     * @since 5.7.2 Define the top priority method to take into account for
-     *        chain operations signature.
+     * @since 5.7.2 Define the top priority method to take into account for chain operations signature.
      */
     protected InvokableMethod getTopMethod(InvokableMethod[] methods) {
         InvokableMethod topMethod = methods[0];
@@ -283,11 +273,9 @@ public class ChainTypeImpl implements OperationType {
 
     protected InvokableMethod runMethod() {
         try {
-            return new InvokableMethod(this,
-                    CompiledChainImpl.class.getMethod("run"));
+            return new InvokableMethod(this, CompiledChainImpl.class.getMethod("run"));
         } catch (NoSuchMethodException | SecurityException e) {
-            throw new UnsupportedOperationException(
-                    "Cannot use reflection for run method", e);
+            throw new UnsupportedOperationException("Cannot use reflection for run method", e);
         }
     }
 
@@ -303,11 +291,9 @@ public class ChainTypeImpl implements OperationType {
      */
     protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
         String t;
-        if (DocumentModel.class.isAssignableFrom(type)
-                || DocumentRef.class.isAssignableFrom(type)) {
+        if (DocumentModel.class.isAssignableFrom(type) || DocumentRef.class.isAssignableFrom(type)) {
             t = isIterable ? Constants.T_DOCUMENTS : Constants.T_DOCUMENT;
-        } else if (DocumentModelList.class.isAssignableFrom(type)
-                || DocumentRefList.class.isAssignableFrom(type)) {
+        } else if (DocumentModelList.class.isAssignableFrom(type) || DocumentRefList.class.isAssignableFrom(type)) {
             t = Constants.T_DOCUMENTS;
         } else if (BlobList.class.isAssignableFrom(type)) {
             t = Constants.T_BLOBS;

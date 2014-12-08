@@ -20,7 +20,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Life cycle types mapping descriptor.
  *
  * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl
- *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @XObject(value = "type")

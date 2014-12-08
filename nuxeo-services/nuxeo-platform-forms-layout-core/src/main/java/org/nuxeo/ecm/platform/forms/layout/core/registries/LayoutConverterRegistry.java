@@ -25,8 +25,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
 /**
  * @since 5.5
  */
-public class LayoutConverterRegistry extends
-        SimpleContributionRegistry<LayoutConverterDescriptor> {
+public class LayoutConverterRegistry extends SimpleContributionRegistry<LayoutConverterDescriptor> {
 
     protected final String category;
 

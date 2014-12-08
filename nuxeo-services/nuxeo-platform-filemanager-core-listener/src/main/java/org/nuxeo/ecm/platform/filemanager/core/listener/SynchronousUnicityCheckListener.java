@@ -40,32 +40,32 @@ public class SynchronousUnicityCheckListener extends AbstractUnicityChecker impl
     private static final Log log = LogFactory.getLog(SynchronousUnicityCheckListener.class);
 
     public void handleEvent(Event event) throws ClientException {
-         if (!isUnicityCheckEnabled()) {
-             return;
-         }
+        if (!isUnicityCheckEnabled()) {
+            return;
+        }
 
-         List<String> uuids = new ArrayList<String>();
-         if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
-                 || DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
-             EventContext ctx = event.getContext();
-             if (ctx instanceof DocumentEventContext) {
-                 DocumentEventContext docCtx = (DocumentEventContext) ctx;
+        List<String> uuids = new ArrayList<String>();
+        if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
+                || DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
+            EventContext ctx = event.getContext();
+            if (ctx instanceof DocumentEventContext) {
+                DocumentEventContext docCtx = (DocumentEventContext) ctx;
 
-                 DocumentModel doc2Check = docCtx.getSourceDocument();
-                 if (doc2Check.isProxy()) {
-                     // NOP
-                 }
-                 if (!uuids.contains(doc2Check.getId())) {
-                     uuids.add(doc2Check.getId());
-                     doUnicityCheck(doc2Check, docCtx.getCoreSession(), event);
-                 }
-             }
-         }
+                DocumentModel doc2Check = docCtx.getSourceDocument();
+                if (doc2Check.isProxy()) {
+                    // NOP
+                }
+                if (!uuids.contains(doc2Check.getId())) {
+                    uuids.add(doc2Check.getId());
+                    doUnicityCheck(doc2Check, docCtx.getCoreSession(), event);
+                }
+            }
+        }
     }
 
     @Override
-    protected void onDuplicatedDoc(CoreSession session, Principal principal,
-            DocumentModel newDoc, List<DocumentLocation> existingDocs, Event event) {
+    protected void onDuplicatedDoc(CoreSession session, Principal principal, DocumentModel newDoc,
+            List<DocumentLocation> existingDocs, Event event) {
         // simply send a message
         log.info("Duplicated file detected");
         raiseDuplicatedFileEvent(session, principal, newDoc, existingDocs);

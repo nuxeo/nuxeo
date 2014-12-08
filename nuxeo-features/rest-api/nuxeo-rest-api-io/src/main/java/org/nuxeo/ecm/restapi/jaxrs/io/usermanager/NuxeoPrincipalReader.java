@@ -64,22 +64,19 @@ public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
     JsonFactory factory;
 
     @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return NuxeoPrincipal.class.isAssignableFrom(type);
     }
 
     @Override
-    public NuxeoPrincipal readFrom(Class<NuxeoPrincipal> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public NuxeoPrincipal readFrom(Class<NuxeoPrincipal> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
 
         String content = IOUtils.toString(entityStream);
         if (content.isEmpty()) {
             throw new WebException("No content in request body", Response.Status.BAD_REQUEST.getStatusCode());
         }
-
 
         return readRequest(content, httpHeaders);
 
@@ -89,18 +86,14 @@ public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
      * @param content
      * @param httpHeaders
      * @return
-     *
      * @since 5.7.3
      */
-    private NuxeoPrincipal readRequest(String content,
-            MultivaluedMap<String, String> httpHeaders) {
+    private NuxeoPrincipal readRequest(String content, MultivaluedMap<String, String> httpHeaders) {
         try {
-            JsonParser jp = factory.createJsonParser(
-                    content);
+            JsonParser jp = factory.createJsonParser(content);
             return readJson(jp, httpHeaders);
         } catch (ClientException | IOException e) {
-            throw new WebApplicationException(e,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -112,11 +105,9 @@ public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
      * @throws IOException
      * @throws JsonParseException
      * @throws ClientException
-     *
      * @since 5.7.3
      */
-    static NuxeoPrincipal readJson(JsonParser jp,
-            MultivaluedMap<String, String> httpHeaders)
+    static NuxeoPrincipal readJson(JsonParser jp, MultivaluedMap<String, String> httpHeaders)
             throws JsonParseException, IOException, ClientException {
         JsonToken tok = jp.nextToken();
 
@@ -149,8 +140,7 @@ public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
             } else if ("entity-type".equals(key)) {
                 String entityType = jp.readValueAs(String.class);
                 if (!"user".equals(entityType)) {
-                    throw new WebApplicationException(
-                            Response.Status.BAD_REQUEST);
+                    throw new WebApplicationException(Response.Status.BAD_REQUEST);
                 }
             }
             tok = jp.nextToken();
@@ -163,9 +153,8 @@ public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
 
     }
 
-    protected static void readProperties(JsonParser jp, DocumentModel doc,
-            String schemaName) throws PropertyException, ClientException,
-            JsonParseException, IOException {
+    protected static void readProperties(JsonParser jp, DocumentModel doc, String schemaName) throws PropertyException,
+            ClientException, JsonParseException, IOException {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_OBJECT) {
 
@@ -182,8 +171,7 @@ public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
         }
     }
 
-    protected static List<Serializable> readArrayProperty(JsonParser jp)
-            throws JsonParseException, IOException {
+    protected static List<Serializable> readArrayProperty(JsonParser jp) throws JsonParseException, IOException {
         List<Serializable> list = new ArrayList<>();
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {

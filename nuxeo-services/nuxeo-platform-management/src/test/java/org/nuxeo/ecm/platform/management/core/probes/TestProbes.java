@@ -69,12 +69,12 @@ public class TestProbes extends SQLRepositoryTestCase {
 
     @Test
     public void testPopulateRepository() throws Exception {
-       ProbeInfo info = getProbeRunner().getProbeInfo("populateRepository");
-       assertNotNull(info);
-       info = getProbeRunner().runProbe(info);
-       assertFalse(info.isInError());
-       String result = info.getStatus().getAsString();
-       System.out.print("populateRepository Probe result : " + result);
+        ProbeInfo info = getProbeRunner().getProbeInfo("populateRepository");
+        assertNotNull(info);
+        info = getProbeRunner().runProbe(info);
+        assertFalse(info.isInError());
+        String result = info.getStatus().getAsString();
+        System.out.print("populateRepository Probe result : " + result);
     }
 
     @Test
@@ -86,8 +86,8 @@ public class TestProbes extends SQLRepositoryTestCase {
         System.out.print(info.getStatus().getAsString());
     }
 
-   ProbeManager getProbeRunner() throws Exception {
-       return Framework.getService(ProbeManager.class);
-   }
+    ProbeManager getProbeRunner() throws Exception {
+        return Framework.getService(ProbeManager.class);
+    }
 
 }

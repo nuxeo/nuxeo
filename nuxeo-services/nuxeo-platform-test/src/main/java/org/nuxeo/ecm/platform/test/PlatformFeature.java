@@ -25,30 +25,19 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Deploy({
-    "org.nuxeo.ecm.platform.api",
-    "org.nuxeo.ecm.platform.content.template",
-    "org.nuxeo.ecm.platform.dublincore",
-    "org.nuxeo.ecm.directory",
-    "org.nuxeo.ecm.directory.sql",
-    "org.nuxeo.ecm.directory.types.contrib",
-    "org.nuxeo.ecm.platform.usermanager.api",
-    "org.nuxeo.ecm.platform.usermanager",
-    "org.nuxeo.ecm.platform.query.api",
-    "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml"
-})
+@Deploy({ "org.nuxeo.ecm.platform.api", "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.platform.dublincore",
+        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory.types.contrib",
+        "org.nuxeo.ecm.platform.usermanager.api", "org.nuxeo.ecm.platform.usermanager",
+        "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml" })
 @Features(CoreFeature.class)
 public class PlatformFeature extends SimpleFeature {
 
     @Override
-    public void initialize(FeaturesRunner runner)
-            throws Exception {
-        //NuxeoRunner.bindDatasource("nxsqldirectory", createDataSource("jdbc:hsqldb:mem:directories"));
+    public void initialize(FeaturesRunner runner) throws Exception {
+        // NuxeoRunner.bindDatasource("nxsqldirectory", createDataSource("jdbc:hsqldb:mem:directories"));
     }
 
     public static DataSource createDataSource(String dbName) {
@@ -58,6 +47,5 @@ public class PlatformFeature extends SimpleFeature {
         datasource.setPassword("");
         return datasource;
     }
-
 
 }

@@ -21,7 +21,6 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class View {
 
@@ -34,7 +33,7 @@ public class View {
     protected Map<String, Object> args;
 
     public View(RenderingEngine renderingEngine, String name) {
-        this (renderingEngine, name, null);
+        this(renderingEngine, name, null);
     }
 
     public View(RenderingEngine renderingEngine, String name, Object object) {
@@ -73,7 +72,7 @@ public class View {
         return this;
     }
 
-    public View args(Map<String,Object> args) {
+    public View args(Map<String, Object> args) {
         this.args.putAll(args);
         return this;
     }
@@ -110,7 +109,7 @@ public class View {
 
     @Override
     public String toString() {
-        return object != null ? object.getClass().getName()+"#"+name : name;
+        return object != null ? object.getClass().getName() + "#" + name : name;
     }
 
 }

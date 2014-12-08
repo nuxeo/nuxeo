@@ -65,8 +65,7 @@ public abstract class AbstractCommentListener {
         }
     }
 
-    protected abstract void doProcess(CoreSession coreSession,
-            RelationManager relationManager, CommentServiceConfig config,
-            DocumentModel docMessage) throws ClientException;
+    protected abstract void doProcess(CoreSession coreSession, RelationManager relationManager,
+            CommentServiceConfig config, DocumentModel docMessage) throws ClientException;
 
 }

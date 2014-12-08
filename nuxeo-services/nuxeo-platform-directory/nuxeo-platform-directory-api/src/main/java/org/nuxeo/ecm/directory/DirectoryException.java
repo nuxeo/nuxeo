@@ -21,8 +21,7 @@ package org.nuxeo.ecm.directory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * An exception thrown when a communication error occurs during an operation
- * on an NXDirectory.
+ * An exception thrown when a communication error occurs during an operation on an NXDirectory.
  *
  * @author glefter@nuxeo.com
  */
@@ -52,8 +51,7 @@ public class DirectoryException extends ClientException {
         DirectoryException clientException;
 
         if (null == exception) {
-            clientException = new DirectoryException(
-                    "Root exception was null. Pls check your code.");
+            clientException = new DirectoryException("Root exception was null. Pls check your code.");
         } else {
             if (exception instanceof DirectoryException) {
                 clientException = (DirectoryException) exception;
@@ -64,13 +62,11 @@ public class DirectoryException extends ClientException {
                             exception);
                 } else {
                     if (exception instanceof RuntimeException) {
-                        clientException = new DirectoryException(
-                                "Runtime exception was raised. Wrapping now...",
+                        clientException = new DirectoryException("Runtime exception was raised. Wrapping now...",
                                 exception);
                     } else {
                         clientException = new DirectoryException(
-                                "Unwrapped application exception was raised. Wrapping now...",
-                                exception);
+                                "Unwrapped application exception was raised. Wrapping now...", exception);
                     }
                 }
             }

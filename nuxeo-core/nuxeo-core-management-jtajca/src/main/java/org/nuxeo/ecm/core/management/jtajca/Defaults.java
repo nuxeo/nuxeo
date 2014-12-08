@@ -18,8 +18,7 @@ public class Defaults {
     }
 
     public String name(Class<?> clazz, String name) {
-        return clazz.getPackage().getName() + ":type=" + clazz.getSimpleName()
-                + ",name=" + name;
+        return clazz.getPackage().getName() + ":type=" + clazz.getSimpleName() + ",name=" + name;
     }
 
     public ObjectName objectName(Class<?> clazz, String name) {

@@ -37,14 +37,17 @@ import org.osgi.framework.BundleException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ClassPath implements ClassPathScanner.Callback {
 
     protected final List<BundleFile> bundles;
+
     protected final List<BundleFile> jars;
+
     protected final List<BundleFile> nestedJars;
+
     protected final SharedClassLoader loader;
+
     protected final File nestedJARsDir;
 
     public ClassPath(SharedClassLoader loader, File nestedJARsDir) {

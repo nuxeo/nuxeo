@@ -74,8 +74,7 @@ public class LayoutTypeDescriptor {
     }
 
     public LayoutTypeDefinition getLayoutTypeDefinition() {
-        LayoutTypeDefinitionImpl res = new LayoutTypeDefinitionImpl(name,
-                templates, getConfiguration());
+        LayoutTypeDefinitionImpl res = new LayoutTypeDefinitionImpl(name, templates, getConfiguration());
         res.setAliases(getAliases());
         return res;
     }

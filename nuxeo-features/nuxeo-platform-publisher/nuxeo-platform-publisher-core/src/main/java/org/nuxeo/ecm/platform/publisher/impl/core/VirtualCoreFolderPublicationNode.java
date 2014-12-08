@@ -41,8 +41,7 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
 
     protected static String ACCESSIBLE_CHILDREN_QUERY = "SELECT * FROM Document"
             + " WHERE ecm:primaryType = 'Section' AND ecm:path STARTSWITH %s"
-            + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 "
-            + " AND ecm:currentLifeCycleState != 'deleted' ";
+            + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 " + " AND ecm:currentLifeCycleState != 'deleted' ";
 
     protected String coreSessionId;
 
@@ -54,9 +53,8 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
 
     protected String sid;
 
-    public VirtualCoreFolderPublicationNode(String coreSessionId,
-            String documentPath, String treeConfigName, String sid,
-            PublishedDocumentFactory factory) {
+    public VirtualCoreFolderPublicationNode(String coreSessionId, String documentPath, String treeConfigName,
+            String sid, PublishedDocumentFactory factory) {
         this.coreSessionId = coreSessionId;
         this.path = documentPath;
         this.treeConfigName = treeConfigName;
@@ -80,8 +78,7 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
         List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
         CoreSession session = getCoreSession();
         if (session != null) {
-            String query = String.format(ACCESSIBLE_CHILDREN_QUERY,
-                    NXQL.escapeString(path));
+            String query = String.format(ACCESSIBLE_CHILDREN_QUERY, NXQL.escapeString(path));
             List<DocumentModel> docs = session.query(query);
             for (DocumentModel doc : docs) {
                 Path path = doc.getPath().removeLastSegments(1);
@@ -92,8 +89,7 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
                     }
                 }
                 if (!foundParent) {
-                    childrenNodes.add(new CoreFolderPublicationNode(doc,
-                            treeConfigName, sid, this, factory));
+                    childrenNodes.add(new CoreFolderPublicationNode(doc, treeConfigName, sid, this, factory));
                 }
             }
         }
@@ -104,8 +100,7 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
         return CoreInstance.getInstance().getSession(coreSessionId);
     }
 
-    public List<PublishedDocument> getChildrenDocuments()
-            throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
         return Collections.emptyList();
     }
 

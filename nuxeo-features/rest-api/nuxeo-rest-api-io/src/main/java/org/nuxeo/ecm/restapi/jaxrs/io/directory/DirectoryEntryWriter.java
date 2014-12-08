@@ -35,13 +35,10 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @Provider
-@Produces({ MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class DirectoryEntryWriter extends EntityWriter<DirectoryEntry> {
 
     /**
@@ -50,8 +47,7 @@ public class DirectoryEntryWriter extends EntityWriter<DirectoryEntry> {
     public static final String ENTITY_TYPE = "directoryEntry";
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg,
-            DirectoryEntry directoryEntry) throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg, DirectoryEntry directoryEntry) throws IOException, ClientException {
         String directoryName = directoryEntry.getDirectoryName();
 
         jg.writeStringField("directoryName", directoryName);
@@ -72,8 +68,7 @@ public class DirectoryEntryWriter extends EntityWriter<DirectoryEntry> {
             if (key.equals(directory.getPasswordField())) {
                 jg.writeString("");
             } else {
-                JsonDocumentWriter.writePropertyValue(jg,
-                        entry.getProperty(fieldName.getPrefixedName()), "");
+                JsonDocumentWriter.writePropertyValue(jg, entry.getProperty(fieldName.getPrefixedName()), "");
             }
 
         }

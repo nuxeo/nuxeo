@@ -25,39 +25,18 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * An abstract {@link BlockingQueue} suitable for a fixed-sized
- * {@link java.util.concurrent.ThreadPoolExecutor ThreadPoolExecutor}, that can
- * be implemented in terms of a few methods.
- *
- * {@link #offer} always succeeds.
+ * An abstract {@link BlockingQueue} suitable for a fixed-sized {@link java.util.concurrent.ThreadPoolExecutor
+ * ThreadPoolExecutor}, that can be implemented in terms of a few methods. {@link #offer} always succeeds.
  *
  * @since 5.8
  */
-public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable>
-        implements BlockingQueue<Runnable> {
+public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable> implements BlockingQueue<Runnable> {
 
     /*
-     * ThreadPoolExecutor uses a BlockingQueue but the Java 7 implementation
-     * only calls these methods on it:
-     *
-     * - isEmpty()
-     *
-     * - size()
-     *
-     * - poll(timeout, unit): not used, as core pool size = max size and no core
-     * thread timeout
-     *
-     * - take()
-     *
-     * - offer(e)
-     *
-     * - remove(e)
-     *
-     * - toArray(), toArray(a): for purge and shutdown
-     *
-     * - drainTo(c)
-     *
-     * - iterator() : hasNext(), next(), remove() (called by toArray)
+     * ThreadPoolExecutor uses a BlockingQueue but the Java 7 implementation only calls these methods on it: - isEmpty()
+     * - size() - poll(timeout, unit): not used, as core pool size = max size and no core thread timeout - take() -
+     * offer(e) - remove(e) - toArray(), toArray(a): for purge and shutdown - drainTo(c) - iterator() : hasNext(),
+     * next(), remove() (called by toArray)
      */
 
     protected final ReentrantLock activationLock = new ReentrantLock();
@@ -67,14 +46,11 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable>
     protected volatile boolean active = true;
 
     /**
-     * Sets the queue active or inactive.
+     * Sets the queue active or inactive. When deactivated, taking an element from the queue (take, poll, peek) behaves
+     * as if the queue was empty. Elements can still be added when the queue is deactivated. When reactivated, all
+     * elements are again available.
      *
-     * When deactivated, taking an element from the queue (take, poll, peek)
-     * behaves as if the queue was empty. Elements can still be added when the
-     * queue is deactivated. When reactivated, all elements are again available.
-     *
-     * @param active {@code true} to make the queue active, or {@code false} to
-     *            deactivate it
+     * @param active {@code true} to make the queue active, or {@code false} to deactivate it
      */
     public void setActive(boolean active) {
         this.active = active;
@@ -98,8 +74,7 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable>
     }
 
     @Override
-    public boolean offer(Runnable r, long timeout, TimeUnit unit)
-            throws InterruptedException {
+    public boolean offer(Runnable r, long timeout, TimeUnit unit) throws InterruptedException {
         // not needed for ThreadPoolExecutor
         put(r);
         return true;
@@ -115,7 +90,6 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable>
         // not needed for ThreadPoolExecutor
         throw new UnsupportedOperationException("not supported");
     }
-
 
     @Override
     public Runnable poll() {
@@ -218,14 +192,12 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable>
     public abstract int getQueueSize();
 
     /**
-     * Adds an element into this queue, waiting if necessary for space to become
-     * available.
+     * Adds an element into this queue, waiting if necessary for space to become available.
      */
     public abstract void putElement(Runnable r) throws InterruptedException;
 
     /**
-     * Retrieves and removes an element from the queue, or returns null if the
-     * queue is empty.
+     * Retrieves and removes an element from the queue, or returns null if the queue is empty.
      */
     public abstract Runnable pollElement();
 

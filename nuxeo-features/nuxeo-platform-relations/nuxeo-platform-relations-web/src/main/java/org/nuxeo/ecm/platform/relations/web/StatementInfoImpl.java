@@ -33,7 +33,6 @@ import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
  * Statement representation for easier display.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class StatementInfoImpl implements StatementInfo {
 
@@ -59,8 +58,7 @@ public class StatementInfoImpl implements StatementInfo {
         this.statement = statement;
     }
 
-    public StatementInfoImpl(Statement statement,
-            NodeInfo subjectRepresentation, NodeInfo predicateRepresentation,
+    public StatementInfoImpl(Statement statement, NodeInfo subjectRepresentation, NodeInfo predicateRepresentation,
             NodeInfo objectRepresentation) {
         this.statement = statement;
         this.subjectRepresentation = subjectRepresentation;

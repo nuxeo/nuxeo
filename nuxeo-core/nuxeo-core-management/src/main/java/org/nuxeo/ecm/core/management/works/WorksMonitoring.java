@@ -20,7 +20,6 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 5.8
  * @author Stephane Lacoin at Nuxeo (aka matic)
- *
  */
 public class WorksMonitoring implements WorksMonitoringMBean {
 

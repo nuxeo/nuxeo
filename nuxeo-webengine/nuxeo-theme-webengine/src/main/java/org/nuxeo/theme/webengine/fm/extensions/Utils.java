@@ -28,7 +28,6 @@ import freemarker.template.TemplateModel;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- *
  */
 public class Utils {
 
@@ -36,8 +35,7 @@ public class Utils {
     private Utils() {
     }
 
-    public static Map<String, String> getTemplateDirectiveParameters(
-            Map<String, TemplateModel> params) {
+    public static Map<String, String> getTemplateDirectiveParameters(Map<String, TemplateModel> params) {
         Map<String, String> attributes = new HashMap<String, String>();
         for (Map.Entry<String, TemplateModel> entry : params.entrySet()) {
             TemplateModel v = entry.getValue();

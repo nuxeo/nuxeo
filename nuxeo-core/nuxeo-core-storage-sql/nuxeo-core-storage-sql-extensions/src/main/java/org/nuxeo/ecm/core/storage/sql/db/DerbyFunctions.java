@@ -21,8 +21,7 @@ import java.sql.SQLException;
  */
 public class DerbyFunctions extends EmbeddedFunctions {
 
-    public static short isInTreeString(String id, String baseId)
-            throws SQLException {
+    public static short isInTreeString(String id, String baseId) throws SQLException {
         return isInTree(id, baseId) ? (short) 1 : (short) 0;
     }
 
@@ -30,16 +29,12 @@ public class DerbyFunctions extends EmbeddedFunctions {
         return isInTree(id, baseId) ? (short) 1 : (short) 0;
     }
 
-    public static short isAccessAllowedString(String id, String principals,
-            String permissions) throws SQLException {
-        return isAccessAllowed(id, split(principals), split(permissions)) ? (short) 1
-                : (short) 0;
+    public static short isAccessAllowedString(String id, String principals, String permissions) throws SQLException {
+        return isAccessAllowed(id, split(principals), split(permissions)) ? (short) 1 : (short) 0;
     }
 
-    public static short isAccessAllowedLong(Long id, String principals,
-            String permissions) throws SQLException {
-        return isAccessAllowed(id, split(principals), split(permissions)) ? (short) 1
-                : (short) 0;
+    public static short isAccessAllowedLong(Long id, String principals, String permissions) throws SQLException {
+        return isAccessAllowed(id, split(principals), split(permissions)) ? (short) 1 : (short) 0;
     }
 
     public static short matchesFullTextDerby(String fulltext, String query) {

@@ -44,14 +44,12 @@ public class ImageMagickTester extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor",
-                "OSGI-INF/commandline-imagemagic-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-imagemagic-test-contrib.xml");
     }
 
     @Test
     public void testIdentifyExec() throws Exception {
-        CommandLineExecutorService cles = Framework
-                .getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
         CommandAvailability ca = cles.getCommandAvailability("identify");

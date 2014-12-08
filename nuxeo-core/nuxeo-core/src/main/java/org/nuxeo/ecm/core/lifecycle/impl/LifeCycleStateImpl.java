@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleState;
  * Life cycle state implementation.
  *
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycleState
- *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class LifeCycleStateImpl implements LifeCycleState {
@@ -38,8 +37,8 @@ public class LifeCycleStateImpl implements LifeCycleState {
 
     private final boolean initial;
 
-    public LifeCycleStateImpl(String name, String description,
-            Collection<String> allowedStateTransitions, boolean initial) {
+    public LifeCycleStateImpl(String name, String description, Collection<String> allowedStateTransitions,
+            boolean initial) {
         this.name = name;
         this.description = description;
         this.allowedStateTransitions = Collections.unmodifiableCollection(allowedStateTransitions);

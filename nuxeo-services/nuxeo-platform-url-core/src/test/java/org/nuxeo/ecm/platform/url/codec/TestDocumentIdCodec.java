@@ -39,12 +39,10 @@ public class TestDocumentIdCodec {
     @Test
     public void testGetUrlFromDocumentView() {
         DocumentIdCodec codec = new DocumentIdCodec();
-        DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef(
-                "dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
+        DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
         Map<String, String> params = new HashMap<String, String>();
         params.put("tabId", "TAB_CONTENT");
-        DocumentView docView = new DocumentViewImpl(docLoc, "view_documents",
-                params);
+        DocumentView docView = new DocumentViewImpl(docLoc, "view_documents", params);
 
         String url = "nxdoc/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
@@ -58,8 +56,7 @@ public class TestDocumentIdCodec {
 
         DocumentLocation docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerName());
-        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
-                docLoc.getDocRef());
+        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"), docLoc.getDocRef());
         assertEquals("view_documents", docView.getViewId());
         assertNull(docView.getSubURI());
 
@@ -76,8 +73,7 @@ public class TestDocumentIdCodec {
 
         DocumentLocation docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerName());
-        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
-                docLoc.getDocRef());
+        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"), docLoc.getDocRef());
         assertNull(docView.getViewId());
         assertNull(docView.getSubURI());
 

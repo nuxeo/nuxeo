@@ -25,19 +25,16 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-public class TestAdvancedMSOfficeConversion extends
-        AdvancedMSOfficeConverterTest {
+public class TestAdvancedMSOfficeConversion extends AdvancedMSOfficeConverterTest {
 
     // Test msoffice2text
     @Test
     public void testWordConverter() throws Exception {
-        doTestTextConverter("application/msword", "msoffice2text",
-                "advanced/paragraphs.doc");
+        doTestTextConverter("application/msword", "msoffice2text", "advanced/paragraphs.doc");
     }
 
     @Test
     public void testPptConverter() throws Exception {
-        doTestTextConverter("application/vnd.ms-powerpoint", "msoffice2text",
-                "advanced/paragraphs.ppt");
+        doTestTextConverter("application/vnd.ms-powerpoint", "msoffice2text", "advanced/paragraphs.ppt");
     }
 }

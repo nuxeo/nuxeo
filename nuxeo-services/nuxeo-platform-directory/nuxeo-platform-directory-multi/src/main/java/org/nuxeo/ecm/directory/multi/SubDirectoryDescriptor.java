@@ -42,8 +42,7 @@ public class SubDirectoryDescriptor {
 
     @Override
     public String toString() {
-        return String.format("{subdirectory name=%s fields=%s", name,
-                Arrays.toString(fields));
+        return String.format("{subdirectory name=%s fields=%s", name, Arrays.toString(fields));
     }
 
     /**

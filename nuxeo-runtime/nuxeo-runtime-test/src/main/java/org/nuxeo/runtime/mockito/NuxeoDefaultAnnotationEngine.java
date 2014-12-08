@@ -31,9 +31,8 @@ import org.mockito.internal.configuration.FieldAnnotationProcessor;
 import org.mockito.internal.configuration.MockitoAnnotationsMockAnnotationProcessor;
 
 /**
- * Unfortunately, since there are some private methos in the Mockito
- * DefaultAnnotationEngine we have to copy/paste some original code to insert
- * our own logic.
+ * Unfortunately, since there are some private methos in the Mockito DefaultAnnotationEngine we have to copy/paste some
+ * original code to insert our own logic.
  *
  * @since 5.7.8
  */
@@ -42,21 +41,15 @@ public class NuxeoDefaultAnnotationEngine extends DefaultAnnotationEngine {
     private final Map<Class<? extends Annotation>, FieldAnnotationProcessor<?>> annotationProcessorMap = new HashMap<Class<? extends Annotation>, FieldAnnotationProcessor<?>>();
 
     public NuxeoDefaultAnnotationEngine() {
-        registerAnnotationProcessor(Mock.class,
-                new NuxeoServiceMockAnnotationProcessor());
-        registerAnnotationProcessor(MockitoAnnotations.Mock.class,
-                new MockitoAnnotationsMockAnnotationProcessor());
-        registerAnnotationProcessor(Captor.class,
-                new CaptorAnnotationProcessor());
+        registerAnnotationProcessor(Mock.class, new NuxeoServiceMockAnnotationProcessor());
+        registerAnnotationProcessor(MockitoAnnotations.Mock.class, new MockitoAnnotationsMockAnnotationProcessor());
+        registerAnnotationProcessor(Captor.class, new CaptorAnnotationProcessor());
 
     }
 
     /*
      * (non-Javadoc)
-     *
-     * @see
-     * org.mockito.AnnotationEngine#createMockFor(java.lang.annotation.Annotation
-     * , java.lang.reflect.Field)
+     * @see org.mockito.AnnotationEngine#createMockFor(java.lang.annotation.Annotation , java.lang.reflect.Field)
      */
     @Override
     @SuppressWarnings("deprecation")
@@ -64,8 +57,7 @@ public class NuxeoDefaultAnnotationEngine extends DefaultAnnotationEngine {
         return forAnnotation(annotation).process(annotation, field);
     }
 
-    private <A extends Annotation> FieldAnnotationProcessor<A> forAnnotation(
-            A annotation) {
+    private <A extends Annotation> FieldAnnotationProcessor<A> forAnnotation(A annotation) {
         if (annotationProcessorMap.containsKey(annotation.annotationType())) {
             return (FieldAnnotationProcessor<A>) annotationProcessorMap.get(annotation.annotationType());
         }
@@ -77,8 +69,7 @@ public class NuxeoDefaultAnnotationEngine extends DefaultAnnotationEngine {
         };
     }
 
-    private <A extends Annotation> void registerAnnotationProcessor(
-            Class<A> annotationClass,
+    private <A extends Annotation> void registerAnnotationProcessor(Class<A> annotationClass,
             FieldAnnotationProcessor<A> fieldAnnotationProcessor) {
         annotationProcessorMap.put(annotationClass, fieldAnnotationProcessor);
     }

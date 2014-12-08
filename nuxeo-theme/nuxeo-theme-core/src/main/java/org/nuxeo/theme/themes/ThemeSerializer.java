@@ -60,15 +60,12 @@ public class ThemeSerializer {
 
     private List<Element> elements;
 
-    public Document serialize(final String src)
-            throws ParserConfigurationException, DOMException, ThemeException,
+    public Document serialize(final String src) throws ParserConfigurationException, DOMException, ThemeException,
             ThemeIOException {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             dbf.setFeature("http://xml.org/sax/features/validation", false);
-            dbf.setFeature(
-                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
-                    false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         } catch (ParserConfigurationException e) {
             log.debug("Could not set DTD non-validation feature");
         }
@@ -145,13 +142,10 @@ public class ThemeSerializer {
 
         for (String formatTypeName : themeManager.getFormatTypeNames()) {
             // export named styles
-            for (Identifiable object : themeManager.getNamedObjects(themeName,
-                    formatTypeName)) {
+            for (Identifiable object : themeManager.getNamedObjects(themeName, formatTypeName)) {
                 Format format = (Format) object;
                 // skip unused remote styles
-                if (!format.isCustomized()
-                        && ThemeManager.listFormatsDirectlyInheritingFrom(
-                                format).isEmpty()) {
+                if (!format.isCustomized() && ThemeManager.listFormatsDirectlyInheritingFrom(format).isEmpty()) {
                     continue;
                 }
                 serializeFormat(format, formatNode);
@@ -176,13 +170,11 @@ public class ThemeSerializer {
         return doc;
     }
 
-    private void serializeProperties(final Element parent,
-            final org.w3c.dom.Element domParent) throws DOMException,
+    private void serializeProperties(final Element parent, final org.w3c.dom.Element domParent) throws DOMException,
             ThemeIOException {
         final org.w3c.dom.Element domProperties = doc.createElement("properties");
         domProperties.setAttribute("element", parent.computeXPath());
-        for (Map.Entry<Object, Object> entry : FieldIO.dumpFieldsToProperties(
-                parent).entrySet()) {
+        for (Map.Entry<Object, Object> entry : FieldIO.dumpFieldsToProperties(parent).entrySet()) {
             final org.w3c.dom.Element domProperty = doc.createElement((String) entry.getKey());
             final String value = (String) entry.getValue();
             domProperty.appendChild(doc.createTextNode(Utils.cleanUp(value)));
@@ -193,8 +185,7 @@ public class ThemeSerializer {
         }
     }
 
-    private void serializeLayout(final Element parent,
-            final org.w3c.dom.Element domParent) {
+    private void serializeLayout(final Element parent, final org.w3c.dom.Element domParent) {
         final String typeName = parent.getElementType().getTypeName();
         final org.w3c.dom.Element domElement = doc.createElement(typeName);
 
@@ -211,8 +202,7 @@ public class ThemeSerializer {
         }
 
         if (parent instanceof Fragment) {
-            domElement.setAttribute("type",
-                    ((Fragment) parent).getFragmentType().getTypeName());
+            domElement.setAttribute("type", ((Fragment) parent).getFragmentType().getTypeName());
 
             // perspectives
             final StringBuilder s = new StringBuilder();
@@ -231,8 +221,7 @@ public class ThemeSerializer {
 
         String description = parent.getDescription();
         if (description != null) {
-            domParent.appendChild(doc.createComment(String.format(" %s ",
-                    description)));
+            domParent.appendChild(doc.createComment(String.format(" %s ", description)));
         }
 
         domParent.appendChild(domElement);
@@ -241,15 +230,13 @@ public class ThemeSerializer {
         }
     }
 
-    private void serializeFormat(final Format format,
-            final org.w3c.dom.Element domParent) {
+    private void serializeFormat(final Format format, final org.w3c.dom.Element domParent) {
         final String typeName = format.getFormatType().getTypeName();
         final org.w3c.dom.Element domElement = doc.createElement(typeName);
 
         final String description = format.getDescription();
         if (description != null) {
-            domParent.appendChild(doc.createComment(String.format(" %s ",
-                    description)));
+            domParent.appendChild(doc.createComment(String.format(" %s ", description)));
         }
 
         StringBuilder s = new StringBuilder();
@@ -323,8 +310,7 @@ public class ThemeSerializer {
             if ((!style.isRemote() || style.isCustomized())) {
                 for (String viewName : style.getSelectorViewNames()) {
                     for (String path : style.getPathsForView(viewName)) {
-                        Properties styleProperties = style.getPropertiesFor(
-                                viewName, path);
+                        Properties styleProperties = style.getPropertiesFor(viewName, path);
                         if (styleProperties.isEmpty()) {
                             continue;
                         }
@@ -338,8 +324,7 @@ public class ThemeSerializer {
                         for (Map.Entry<Object, Object> entry : styleProperties.entrySet()) {
                             org.w3c.dom.Element domProperty = doc.createElement((String) entry.getKey());
                             String value = (String) entry.getValue();
-                            String presetName = PresetManager.extractPresetName(
-                                    null, value);
+                            String presetName = PresetManager.extractPresetName(null, value);
                             if (presetName != null) {
                                 domProperty.setAttribute("preset", presetName);
                             } else {
@@ -349,11 +334,9 @@ public class ThemeSerializer {
                         }
 
                         // Set selector description
-                        String selectorDescription = style.getSelectorDescription(
-                                path, viewName);
+                        String selectorDescription = style.getSelectorDescription(path, viewName);
                         if (selectorDescription != null) {
-                            domElement.appendChild(doc.createComment(String.format(
-                                    " %s ", selectorDescription)));
+                            domElement.appendChild(doc.createComment(String.format(" %s ", selectorDescription)));
                         }
 
                         domElement.appendChild(domSelector);
@@ -368,8 +351,7 @@ public class ThemeSerializer {
         return serializeToXml(src, 0);
     }
 
-    public String serializeToXml(final String src, final int indent)
-            throws ThemeIOException {
+    public String serializeToXml(final String src, final int indent) throws ThemeIOException {
         // serialize the theme into a document
         try {
             serialize(src);
@@ -382,8 +364,7 @@ public class ThemeSerializer {
             XMLSerializer serializer = new XMLSerializer(output, format);
             serializer.serialize(doc);
             return sw.toString();
-        } catch (IOException | DOMException | ParserConfigurationException
-                | ThemeException e) {
+        } catch (IOException | DOMException | ParserConfigurationException | ThemeException e) {
             throw new ThemeIOException(e);
         }
 

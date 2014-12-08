@@ -85,23 +85,19 @@ public class TestMimetypeRegistryService {
         boolean onlineEditable = true;
         boolean oleSupported = true;
 
-        return new MimetypeEntryImpl(normalizedMimetype, mimetypes, extensions,
-                iconPath, binary, onlineEditable, oleSupported);
+        return new MimetypeEntryImpl(normalizedMimetype, mimetypes, extensions, iconPath, binary, onlineEditable,
+                oleSupported);
     }
 
     @Test
     public void testMimetypeRegistration() {
         MimetypeEntry mimetype = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetype);
-        assertEquals(
-                mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()),
-                mimetype);
+        assertEquals(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()), mimetype);
 
         // Second registration
         mimetypeRegistry.registerMimetype(mimetype);
-        assertEquals(
-                mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()),
-                mimetype);
+        assertEquals(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()), mimetype);
 
         mimetypeRegistry.unregisterMimetype(mimetype.getNormalized());
         assertNull(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()));
@@ -112,9 +108,7 @@ public class TestMimetypeRegistryService {
         MimetypeEntry mimetype = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetype);
 
-        assertEquals(
-                mimetypeRegistry.getExtensionsFromMimetypeName(mimetype.getNormalized()),
-                mimetype.getExtensions());
+        assertEquals(mimetypeRegistry.getExtensionsFromMimetypeName(mimetype.getNormalized()), mimetype.getExtensions());
 
         mimetypeRegistry.unregisterMimetype(mimetype.getNormalized());
     }
@@ -138,8 +132,7 @@ public class TestMimetypeRegistryService {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
 
-        InputStream istream = new FileInputStream(
-                FileUtils.getResourceFileFromContext("test-data/hello.doc"));
+        InputStream istream = new FileInputStream(FileUtils.getResourceFileFromContext("test-data/hello.doc"));
 
         String mimetype = mimetypeRegistry.getMimetypeFromStream(istream);
         assertEquals("application/msword", mimetype);
@@ -153,8 +146,7 @@ public class TestMimetypeRegistryService {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
 
-        InputStream istream = new FileInputStream(
-                FileUtils.getResourceFileFromContext("test-data/hello.doc"));
+        InputStream istream = new FileInputStream(FileUtils.getResourceFileFromContext("test-data/hello.doc"));
 
         String mimetype = mimetypeRegistry.getMimetypeFromBlob(StreamingBlob.createFromStream(istream));
         assertEquals("application/msword", mimetype);
@@ -164,8 +156,7 @@ public class TestMimetypeRegistryService {
     }
 
     protected static Blob getBlob(String filename) throws FileNotFoundException {
-        InputStream istream = new FileInputStream(
-                FileUtils.getResourceFileFromContext(filename));
+        InputStream istream = new FileInputStream(FileUtils.getResourceFileFromContext(filename));
         return StreamingBlob.createFromStream(istream);
     }
 
@@ -183,11 +174,9 @@ public class TestMimetypeRegistryService {
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
 
-        MimetypeEntry docbook = new MimetypeEntryImpl(
-                "application/docbook+xml",
-                Arrays.asList("application/docbook+xml"),
-                Arrays.asList("xml", "doc.xml", "docb"),
-                "", false, false, false);
+        MimetypeEntry docbook = new MimetypeEntryImpl("application/docbook+xml",
+                Arrays.asList("application/docbook+xml"), Arrays.asList("xml", "doc.xml", "docb"), "", false, false,
+                false);
         mimetypeRegistry.registerMimetype(docbook);
 
         ExtensionDescriptor ed = new ExtensionDescriptor("xml");
@@ -196,40 +185,35 @@ public class TestMimetypeRegistryService {
         mimetypeRegistry.registerFileExtension(ed);
 
         // doc filename + empty file gives word mimetype
-        String mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
-                "hello.doc", StreamingBlob.createFromByteArray(new byte[0]),
-                "default/mimetype");
+        String mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("hello.doc",
+                StreamingBlob.createFromByteArray(new byte[0]), "default/mimetype");
         assertEquals("application/msword", mimetype);
         List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
         assertTrue(extensions.contains("doc"));
 
         // bad filename extension + word file gives word mimetype
-        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
-                "bad_file_name.ext", getWordBlob(), "default/mimetype");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("bad_file_name.ext", getWordBlob(),
+                "default/mimetype");
         assertEquals("application/msword", mimetype);
 
         // bad filename (without extension) + word file gives word mimetype
-        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
-                "bad_file_name", getWordBlob(), "default/mimetype");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("bad_file_name", getWordBlob(),
+                "default/mimetype");
         assertEquals("application/msword", mimetype);
 
         // bad name and empty file: fallback to default mimetype
-        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
-                "bad_file_name",
-                StreamingBlob.createFromByteArray(new byte[0]),
-                "default/mimetype");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("bad_file_name",
+                StreamingBlob.createFromByteArray(new byte[0]), "default/mimetype");
         assertEquals("default/mimetype", mimetype);
 
         // test ambiguous file extension with wordml sniffing
-        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
-                "sample-wordml.xml", getWordMLBlob(), "default/mimetype");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("sample-wordml.xml", getWordMLBlob(),
+                "default/mimetype");
         assertEquals("application/msword", mimetype);
 
         // test ambiguous file extension with empty file
-        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
-                "sample-wordml.xml",
-                StreamingBlob.createFromByteArray(new byte[0]),
-                "default/mimetype");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("sample-wordml.xml",
+                StreamingBlob.createFromByteArray(new byte[0]), "default/mimetype");
         assertEquals("default/mimetype", mimetype);
     }
 

@@ -73,8 +73,7 @@ public class LayoutTypeConfigurationDescriptor {
     boolean handlingLabels = false;
 
     /**
-     * List of supported controls (controls checked on subwidgets
-     * configuration).
+     * List of supported controls (controls checked on subwidgets configuration).
      */
     @XNodeList(value = "supportedControls/control", type = ArrayList.class, componentType = String.class)
     List<String> supportedControls;
@@ -158,9 +157,7 @@ public class LayoutTypeConfigurationDescriptor {
         properties = propsDesc.getProperties();
     }
 
-    protected List<LayoutDefinition> getLayouts(
-            Map<String, LayoutDescriptors> descs, String mode,
-            String additionalMode) {
+    protected List<LayoutDefinition> getLayouts(Map<String, LayoutDescriptors> descs, String mode, String additionalMode) {
         if (descs != null) {
             List<LayoutDefinition> res = new ArrayList<LayoutDefinition>();
             if (additionalMode != null) {
@@ -184,8 +181,7 @@ public class LayoutTypeConfigurationDescriptor {
         return null;
     }
 
-    protected Map<String, List<LayoutDefinition>> getLayouts(
-            Map<String, LayoutDescriptors> descs) {
+    protected Map<String, List<LayoutDefinition>> getLayouts(Map<String, LayoutDescriptors> descs) {
         if (descs != null) {
             Map<String, List<LayoutDefinition>> res = new HashMap<String, List<LayoutDefinition>>();
             for (Map.Entry<String, LayoutDescriptors> entry : descs.entrySet()) {
@@ -196,8 +192,7 @@ public class LayoutTypeConfigurationDescriptor {
         return null;
     }
 
-    public List<LayoutDefinition> getPropertyLayouts(String mode,
-            String additionalMode) {
+    public List<LayoutDefinition> getPropertyLayouts(String mode, String additionalMode) {
         return getLayouts(propertyLayouts, mode, additionalMode);
     }
 

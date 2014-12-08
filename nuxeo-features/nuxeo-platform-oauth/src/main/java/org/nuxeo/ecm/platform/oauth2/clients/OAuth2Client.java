@@ -20,14 +20,18 @@ public class OAuth2Client {
 
     @XNode("@name")
     protected String name;
+
     @XNode("@id")
     protected String id;
+
     @XNode("@secret")
     protected String secret;
+
     @XNode("@enabled")
     protected boolean enabled = true;
 
-    public OAuth2Client() { }
+    public OAuth2Client() {
+    }
 
     public OAuth2Client(String name, String id, String secret) {
         this.name = name;

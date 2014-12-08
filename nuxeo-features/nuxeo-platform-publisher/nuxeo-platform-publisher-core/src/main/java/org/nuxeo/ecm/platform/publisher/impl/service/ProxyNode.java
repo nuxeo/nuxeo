@@ -23,9 +23,8 @@ import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Remotable implementation of the {@link PublicationNode} interface. Because
- * some {@link PublicationNode} implementation may be bound to local resources
- * (network connexions, local filesystem ...) all {@link PublicationNode}
+ * Remotable implementation of the {@link PublicationNode} interface. Because some {@link PublicationNode}
+ * implementation may be bound to local resources (network connexions, local filesystem ...) all {@link PublicationNode}
  * returned by the service are wrapped into this RemotablePublicationNode.
  *
  * @author tiry
@@ -52,8 +51,7 @@ public class ProxyNode extends AbstractRemotableNode implements PublicationNode 
     }
 
     @Override
-    protected RemotePublicationTreeManager getPublisher()
-            throws ClientException {
+    protected RemotePublicationTreeManager getPublisher() throws ClientException {
         if (service == null) {
             service = Framework.getService(RemotePublicationTreeManager.class);
         }
@@ -99,15 +97,13 @@ public class ProxyNode extends AbstractRemotableNode implements PublicationNode 
     }
 
     @Override
-    protected PublicationNode switchToServerNode(PublicationNode node)
-            throws ClientException {
+    protected PublicationNode switchToServerNode(PublicationNode node) throws ClientException {
         // no wrap
         return node;
     }
 
     @Override
-    protected PublicationNode switchToClientNode(PublicationNode node)
-            throws ClientException {
+    protected PublicationNode switchToClientNode(PublicationNode node) throws ClientException {
         // no wrap
         return node;
     }

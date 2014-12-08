@@ -33,7 +33,6 @@ public class DocumentPathElement implements PathElement {
 
     protected final DocumentModel docModel;
 
-
     public DocumentPathElement(DocumentModel docModel) {
         this.docModel = docModel;
     }

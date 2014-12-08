@@ -42,10 +42,8 @@ public class PostContentCreationHandlersTest extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "test-content-template-handlers-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "test-content-template-handlers-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests", "test-content-template-handlers-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests", "test-content-template-handlers-contrib.xml");
         fireFrameworkStarted();
         openSession();
 

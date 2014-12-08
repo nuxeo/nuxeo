@@ -19,7 +19,6 @@ package org.nuxeo.ecm.webengine;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-
 /**
  * Empty impl for deprecated {@link ResourceRegistry}. This will be removed in future.
  *

@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.commandline.executor.service.executors.AbstractExe
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-
 /**
  * Test service and EPs.
  *
@@ -57,15 +56,13 @@ public class TestService extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor",
-                "OSGI-INF/commandline-aspell-test-contribs.xml");
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-aspell-test-contribs.xml");
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
         assertEquals(1, cmds.size());
         assertTrue(cmds.contains("aspell"));
 
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor",
-                "OSGI-INF/commandline-imagemagic-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-imagemagic-test-contrib.xml");
         cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
         assertEquals(2, cmds.size());
@@ -85,32 +82,19 @@ public class TestService extends NXRuntimeTestCase {
         assertNotNull(cles);
 
         /**
-         deployContrib("org.nuxeo.ecm.platform.commandline.executor","OSGI-INF/commandline-aspell-test-contribs.xml");
-         List<String> cmds = cles.getAvailableCommands();
-         assertNotNull(cmds);
-         assertEquals(1, cmds.size());
-         assertTrue(cmds.contains("aspell"));
-
-
-         deployContrib("org.nuxeo.ecm.platform.commandline.executor","OSGI-INF/commandline-imagemagic-test-contrib.xml");
-         cmds = cles.getAvailableCommands();
-         assertNotNull(cmds);
-         assertEquals(2, cmds.size());
-         assertTrue(cmds.contains("identify"));
-
-         deployContrib("org.nuxeo.ecm.platform.commandline.executor","OSGI-INF/commandline-dummy-test-contrib.xml");
-         cmds = cles.getAvailableCommands();
-         assertEquals(2, cmds.size());
-         assertFalse(cmds.contains("cmdThatDoNotExist"));
-
-         CommandAvailability ca =  cles.getCommandAvailability("cmdThatDoNotExist");
-         assertFalse(ca.isAvailable());
-         assertNotNull(ca.getErrorMessage());
-         System.out.println(ca.getErrorMessage());
-         assertNotNull(ca.getInstallMessage());
-         assertTrue(ca.getInstallMessage().contains("need to install this command that does not"));
-         System.out.println(ca.getInstallMessage());
-
+         * deployContrib("org.nuxeo.ecm.platform.commandline.executor","OSGI-INF/commandline-aspell-test-contribs.xml");
+         * List<String> cmds = cles.getAvailableCommands(); assertNotNull(cmds); assertEquals(1, cmds.size());
+         * assertTrue(cmds.contains("aspell")); deployContrib("org.nuxeo.ecm.platform.commandline.executor",
+         * "OSGI-INF/commandline-imagemagic-test-contrib.xml"); cmds = cles.getAvailableCommands(); assertNotNull(cmds);
+         * assertEquals(2, cmds.size()); assertTrue(cmds.contains("identify"));
+         * deployContrib("org.nuxeo.ecm.platform.commandline.executor","OSGI-INF/commandline-dummy-test-contrib.xml");
+         * cmds = cles.getAvailableCommands(); assertEquals(2, cmds.size());
+         * assertFalse(cmds.contains("cmdThatDoNotExist")); CommandAvailability ca =
+         * cles.getCommandAvailability("cmdThatDoNotExist"); assertFalse(ca.isAvailable());
+         * assertNotNull(ca.getErrorMessage()); System.out.println(ca.getErrorMessage());
+         * assertNotNull(ca.getInstallMessage());
+         * assertTrue(ca.getInstallMessage().contains("need to install this command that does not"));
+         * System.out.println(ca.getInstallMessage());
          **/
     }
 

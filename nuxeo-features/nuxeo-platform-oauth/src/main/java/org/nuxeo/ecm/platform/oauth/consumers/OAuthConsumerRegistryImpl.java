@@ -35,13 +35,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Implementation of the {@link OAuthConsumerRegistry} Service. It's basically
- * a simple Storage API on top of an SQL Directory.
+ * Implementation of the {@link OAuthConsumerRegistry} Service. It's basically a simple Storage API on top of an SQL
+ * Directory.
  *
  * @author tiry
  */
-public class OAuthConsumerRegistryImpl extends DefaultComponent implements
-        OAuthConsumerRegistry {
+public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuthConsumerRegistry {
 
     protected static final Log log = LogFactory.getLog(OAuthConsumerRegistryImpl.class);
 
@@ -53,8 +52,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
             NuxeoOAuthConsumer consumer = getEntry(consumerKey, keyType);
             return consumer;
         } catch (ClientException e) {
-            log.error("Unable to read consumer " + consumerKey
-                    + " from Directory backend", e);
+            log.error("Unable to read consumer " + consumerKey + " from Directory backend", e);
             return null;
         }
     }
@@ -64,8 +62,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
         return getConsumer(consumerKey, null);
     }
 
-    protected NuxeoOAuthConsumer getEntry(String consumerKey, String keyType)
-            throws ClientException {
+    protected NuxeoOAuthConsumer getEntry(String consumerKey, String keyType) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {
@@ -74,8 +71,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
             if (entry == null) {
                 return null;
             }
-            NuxeoOAuthConsumer consumer = NuxeoOAuthConsumer.createFromDirectoryEntry(
-                    entry, keyType);
+            NuxeoOAuthConsumer consumer = NuxeoOAuthConsumer.createFromDirectoryEntry(entry, keyType);
             return consumer;
         } finally {
             if (session != null) {
@@ -136,8 +132,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
                 session = ds.open(DIRECTORY_NAME);
                 DocumentModelList entries = session.getEntries();
                 for (DocumentModel entry : entries) {
-                    result.add(NuxeoOAuthConsumer.createFromDirectoryEntry(
-                            entry, null));
+                    result.add(NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null));
                 }
             } finally {
                 if (session != null) {

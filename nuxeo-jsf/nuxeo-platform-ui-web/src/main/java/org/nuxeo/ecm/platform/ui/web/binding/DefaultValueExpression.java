@@ -23,11 +23,10 @@ import javax.el.PropertyNotFoundException;
 import javax.el.ValueExpression;
 
 /**
- * Value expression holding a default value expression for resolve on get, when
- * original value expression defaults to null.
+ * Value expression holding a default value expression for resolve on get, when original value expression defaults to
+ * null.
  * <p>
- * Accepts a null original value expression in case default value should be
- * resolved even if no mapping should be done.
+ * Accepts a null original value expression in case default value should be resolved even if no mapping should be done.
  *
  * @since 5.7.3
  */
@@ -39,8 +38,7 @@ public class DefaultValueExpression extends ValueExpression {
 
     protected final ValueExpression defaultExpression;
 
-    public DefaultValueExpression(ValueExpression originalExpression,
-            ValueExpression defaultExpression) {
+    public DefaultValueExpression(ValueExpression originalExpression, ValueExpression defaultExpression) {
         super();
         this.originalExpression = originalExpression;
         this.defaultExpression = defaultExpression;
@@ -71,8 +69,7 @@ public class DefaultValueExpression extends ValueExpression {
         if (originalExpression != null) {
             value = originalExpression.getValue(arg0);
         }
-        if (value == null
-                || ((value instanceof Object[]) && ((Object[]) value).length == 0)
+        if (value == null || ((value instanceof Object[]) && ((Object[]) value).length == 0)
                 || ((value instanceof Collection) && ((Collection) value).size() == 0)) {
             value = defaultExpression.getValue(arg0);
         }
@@ -89,8 +86,7 @@ public class DefaultValueExpression extends ValueExpression {
     }
 
     @Override
-    public void setValue(ELContext arg0, Object arg1)
-            throws PropertyNotFoundException {
+    public void setValue(ELContext arg0, Object arg1) throws PropertyNotFoundException {
         if (originalExpression != null) {
             originalExpression.setValue(arg0, arg1);
         }

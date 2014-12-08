@@ -68,7 +68,6 @@ import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StandaloneUpdateService implements PackageUpdateService {
 
@@ -175,18 +174,14 @@ public class StandaloneUpdateService implements PackageUpdateService {
         addCommand(Delete.ID, Delete.class);
         addCommand(InstallPlaceholder.ID, InstallPlaceholder.class);
         addCommand(UninstallPlaceholder.ID, UninstallPlaceholder.class);
-        addCommand(FlushCoreCachePlaceholder.ID,
-                FlushCoreCachePlaceholder.class);
-        addCommand(FlushJaasCachePlaceholder.ID,
-                FlushJaasCachePlaceholder.class);
+        addCommand(FlushCoreCachePlaceholder.ID, FlushCoreCachePlaceholder.class);
+        addCommand(FlushJaasCachePlaceholder.ID, FlushJaasCachePlaceholder.class);
         addCommand(FlushPlaceholder.ID, FlushPlaceholder.class);
-        addCommand(ReloadPropertiesPlaceholder.ID,
-                ReloadPropertiesPlaceholder.class);
+        addCommand(ReloadPropertiesPlaceholder.ID, ReloadPropertiesPlaceholder.class);
         addCommand(DeployPlaceholder.ID, DeployPlaceholder.class);
         addCommand(UndeployPlaceholder.ID, UndeployPlaceholder.class);
         addCommand(DeployConfigPlaceholder.ID, DeployConfigPlaceholder.class);
-        addCommand(UndeployConfigPlaceholder.ID,
-                UndeployConfigPlaceholder.class);
+        addCommand(UndeployConfigPlaceholder.ID, UndeployConfigPlaceholder.class);
         addCommand(LoadJarPlaceholder.ID, LoadJarPlaceholder.class);
         addCommand(UnloadJarPlaceholder.ID, UnloadJarPlaceholder.class);
         addCommand(Config.ID, Config.class);
@@ -196,15 +191,13 @@ public class StandaloneUpdateService implements PackageUpdateService {
 
     @Deprecated
     @Override
-    public void setPackageState(LocalPackage pkg, int state)
-            throws PackageException {
+    public void setPackageState(LocalPackage pkg, int state) throws PackageException {
         persistence.updateState(pkg.getId(), state);
         pkg.setState(state);
     }
 
     @Override
-    public void setPackageState(LocalPackage pkg, PackageState state)
-            throws PackageException {
+    public void setPackageState(LocalPackage pkg, PackageState state) throws PackageException {
         persistence.updateState(pkg.getId(), state);
         pkg.setState(state);
     }
@@ -251,8 +244,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
     }
 
     @Override
-    public PackageDefinition loadPackageFromZip(File file)
-            throws PackageException {
+    public PackageDefinition loadPackageFromZip(File file) throws PackageException {
         ZipFile zip = null;
         try {
             zip = new ZipFile(file);
@@ -262,16 +254,13 @@ public class StandaloneUpdateService implements PackageUpdateService {
         } catch (PackageException e) {
             throw e;
         } catch (IOException e) {
-            throw new PackageException(
-                    "Failed to load package definition from zip file: " + file,
-                    e);
+            throw new PackageException("Failed to load package definition from zip file: " + file, e);
         } finally {
             if (zip != null) {
                 try {
                     zip.close();
                 } catch (IOException e) {
-                    throw new PackageException("Failed to close package zip: "
-                            + file, e);
+                    throw new PackageException("Failed to close package zip: " + file, e);
                 }
             }
         }
@@ -286,29 +275,24 @@ public class StandaloneUpdateService implements PackageUpdateService {
         } catch (PackageException e) {
             throw e;
         } catch (IOException e) {
-            throw new PackageException(
-                    "Failed to load XML package definition from file: " + file,
-                    e);
+            throw new PackageException("Failed to load XML package definition from file: " + file, e);
         } finally {
             try {
                 if (in != null) {
                     in.close();
                 }
             } catch (IOException e) {
-                throw new PackageException("Failed to close input stream for "
-                        + file, e);
+                throw new PackageException("Failed to close input stream for " + file, e);
             }
         }
     }
 
     @Override
-    public PackageDefinition loadPackage(InputStream in)
-            throws PackageException {
+    public PackageDefinition loadPackage(InputStream in) throws PackageException {
         try {
             return (PackageDefinition) xmap.load(in);
         } catch (IOException e) {
-            throw new PackageException(
-                    "Failed to parse XML package definition", e);
+            throw new PackageException("Failed to parse XML package definition", e);
         }
     }
 

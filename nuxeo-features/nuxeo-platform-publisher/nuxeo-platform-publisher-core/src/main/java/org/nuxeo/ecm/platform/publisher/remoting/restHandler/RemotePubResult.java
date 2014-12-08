@@ -30,8 +30,7 @@ public class RemotePubResult {
     }
 
     public String asXML() throws PublishingMarshalingException {
-        return new DefaultMarshaler(
-                WebEngine.getActiveContext().getCoreSession()).marshallResult(result);
+        return new DefaultMarshaler(WebEngine.getActiveContext().getCoreSession()).marshallResult(result);
     }
 
 }

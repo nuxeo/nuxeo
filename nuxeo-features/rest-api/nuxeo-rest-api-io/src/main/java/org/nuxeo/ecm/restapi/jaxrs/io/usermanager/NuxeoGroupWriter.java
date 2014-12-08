@@ -28,14 +28,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
 public class NuxeoGroupWriter extends EntityWriter<NuxeoGroup> {
-
 
     /**
      *
@@ -48,27 +45,25 @@ public class NuxeoGroupWriter extends EntityWriter<NuxeoGroup> {
      * @return
      * @throws IOException
      * @throws JsonGenerationException
-     *
      */
     @Override
-    public void writeEntityBody(JsonGenerator jg, NuxeoGroup group) throws ClientException, JsonGenerationException, IOException{
+    public void writeEntityBody(JsonGenerator jg, NuxeoGroup group) throws ClientException, JsonGenerationException,
+            IOException {
         jg.writeStringField("groupname", group.getName());
 
         jg.writeStringField("grouplabel", group.getLabel());
 
         jg.writeArrayFieldStart("memberUsers");
-        for(String user : group.getMemberUsers()) {
+        for (String user : group.getMemberUsers()) {
             jg.writeString(user);
         }
         jg.writeEndArray();
 
         jg.writeArrayFieldStart("memberGroups");
-        for(String user : group.getMemberGroups()) {
+        for (String user : group.getMemberGroups()) {
             jg.writeString(user);
         }
         jg.writeEndArray();
-
-
 
     }
 

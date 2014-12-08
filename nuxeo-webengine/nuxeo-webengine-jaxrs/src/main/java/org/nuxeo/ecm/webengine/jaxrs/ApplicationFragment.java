@@ -21,11 +21,10 @@ import javax.ws.rs.core.Application;
 import org.osgi.framework.Bundle;
 
 /**
- * A wrapper for a JAX-RS application fragment declared in manifest.
- * The fragment application will be added to the target host application.
+ * A wrapper for a JAX-RS application fragment declared in manifest. The fragment application will be added to the
+ * target host application.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ApplicationFragment extends Application {
 
@@ -33,7 +32,7 @@ public class ApplicationFragment extends Application {
 
     protected final Bundle bundle;
 
-    protected final Map<String,String> attrs;
+    protected final Map<String, String> attrs;
 
     protected String appClass;
 
@@ -47,16 +46,15 @@ public class ApplicationFragment extends Application {
         return attrs;
     }
 
-
     public ApplicationFragment(Bundle bundle, String appClass) {
-        this (bundle, appClass, (String)null);
+        this(bundle, appClass, (String) null);
     }
 
     public ApplicationFragment(Bundle bundle, String appClass, String host) {
-        this (bundle, appClass, createAttributes(host));
+        this(bundle, appClass, createAttributes(host));
     }
 
-    public ApplicationFragment(Bundle bundle, String appClass, Map<String,String> attrs) {
+    public ApplicationFragment(Bundle bundle, String appClass, Map<String, String> attrs) {
         this.bundle = bundle;
         this.appClass = appClass;
         this.attrs = attrs;
@@ -68,17 +66,15 @@ public class ApplicationFragment extends Application {
         try {
             Object obj = bundle.loadClass(appClass).newInstance();
             if (obj instanceof ApplicationFactory) {
-                app = ((ApplicationFactory)obj).getApplication(bundle, attrs);
+                app = ((ApplicationFactory) obj).getApplication(bundle, attrs);
             } else if (obj instanceof Application) {
-                app = (Application)obj;
+                app = (Application) obj;
             } else {
-                throw new IllegalArgumentException(
-                        "Expecting an Application or ApplicationFactory class: "
-                                + appClass);
+                throw new IllegalArgumentException("Expecting an Application or ApplicationFactory class: " + appClass);
             }
         } catch (ReflectiveOperationException | IOException e) {
-            String msg = "Cannot instantiate JAX-RS application " + appClass
-                    + " from bundle " + bundle.getSymbolicName();
+            String msg = "Cannot instantiate JAX-RS application " + appClass + " from bundle "
+                    + bundle.getSymbolicName();
             throw new RuntimeException(msg, e);
         }
     }

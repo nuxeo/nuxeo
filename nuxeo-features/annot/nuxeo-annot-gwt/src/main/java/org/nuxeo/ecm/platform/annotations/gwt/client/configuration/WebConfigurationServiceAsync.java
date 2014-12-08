@@ -23,7 +23,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public interface WebConfigurationServiceAsync {
 

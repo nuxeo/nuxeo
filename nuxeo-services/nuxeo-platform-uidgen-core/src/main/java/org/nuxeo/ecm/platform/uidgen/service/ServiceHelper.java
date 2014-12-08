@@ -31,7 +31,6 @@ public final class ServiceHelper {
      * Locates the core service using NXRuntime.
      */
     public static UIDGeneratorService getUIDGeneratorService() {
-        return (UIDGeneratorService) Framework.getRuntime().getComponent(
-                UIDGeneratorService.ID);
+        return (UIDGeneratorService) Framework.getRuntime().getComponent(UIDGeneratorService.ID);
     }
 }

@@ -21,7 +21,6 @@ import java.io.OutputStream;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface StreamSource {
 

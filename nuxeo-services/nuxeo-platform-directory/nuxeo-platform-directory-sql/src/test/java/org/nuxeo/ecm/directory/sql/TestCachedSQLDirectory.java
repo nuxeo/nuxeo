@@ -45,11 +45,9 @@ public class TestCachedSQLDirectory extends TestSQLDirectory {
         deployBundle("org.nuxeo.ecm.core.cache");
 
         if (RedisFeature.setup(this)) {
-                deployTestContrib("org.nuxeo.ecm.directory.sql.tests",
-                        REDIS_CACHE_CONFIG);
+            deployTestContrib("org.nuxeo.ecm.directory.sql.tests", REDIS_CACHE_CONFIG);
         } else {
-            deployTestContrib("org.nuxeo.ecm.directory.sql.tests",
-                    CACHE_CONTRIB);
+            deployTestContrib("org.nuxeo.ecm.directory.sql.tests", CACHE_CONTRIB);
         }
         fireFrameworkStarted();
         AbstractDirectory dir = getSQLDirectory();

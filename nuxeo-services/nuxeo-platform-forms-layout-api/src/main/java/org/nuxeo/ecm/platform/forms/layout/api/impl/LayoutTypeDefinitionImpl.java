@@ -42,8 +42,7 @@ public class LayoutTypeDefinitionImpl implements LayoutTypeDefinition {
         super();
     }
 
-    public LayoutTypeDefinitionImpl(String name, Map<String, String> templates,
-            LayoutTypeConfiguration configuration) {
+    public LayoutTypeDefinitionImpl(String name, Map<String, String> templates, LayoutTypeConfiguration configuration) {
         super();
         this.name = name;
         this.templates = templates;

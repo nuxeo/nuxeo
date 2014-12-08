@@ -16,18 +16,19 @@ package org.nuxeo.ecm.core.api.impl.blob;
 
 import java.io.Serializable;
 
-
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class DefaultStreamBlob extends StreamBlob implements Serializable {
 
     private static final long serialVersionUID = -5714134759770781321L;
 
     protected String digest;
+
     protected String filename;
+
     protected String encoding;
+
     protected String mimeType;
 
     @Override

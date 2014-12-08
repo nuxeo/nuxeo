@@ -76,7 +76,7 @@ public class DocumentModelListReaderTest {
 
     @After
     public void closeWebEngineSession() {
-        for (SessionRef ref:coreProvider.getSessions()) {
+        for (SessionRef ref : coreProvider.getSessions()) {
             ref.destroy();
         }
     }
@@ -104,17 +104,14 @@ public class DocumentModelListReaderTest {
 
         JsonParser jp = getParserFor(docsAsJson);
 
-        DocumentModelList docs = JSONDocumentModelListReader.readRequest(jp,
-                null, request);
+        DocumentModelList docs = JSONDocumentModelListReader.readRequest(jp, null, request);
         assertEquals(2, docs.size());
 
-        assertEquals(RestServerInit.getNote(1, session).getId(),
-                docs.get(0).getId());
+        assertEquals(RestServerInit.getNote(1, session).getId(), docs.get(0).getId());
 
     }
 
-    private JsonParser getParserFor(String docsAsJson) throws IOException,
-            JsonParseException {
+    private JsonParser getParserFor(String docsAsJson) throws IOException, JsonParseException {
         return factoryManager.getJsonFactory().createJsonParser(docsAsJson);
     }
 

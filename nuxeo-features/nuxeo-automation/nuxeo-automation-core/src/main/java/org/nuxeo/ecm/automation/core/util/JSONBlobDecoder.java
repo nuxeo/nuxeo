@@ -11,7 +11,6 @@
  *
  */
 
-
 package org.nuxeo.ecm.automation.core.util;
 
 import org.codehaus.jackson.node.ObjectNode;
@@ -22,7 +21,6 @@ import org.nuxeo.ecm.core.api.Blob;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.5
- *
  */
 public interface JSONBlobDecoder {
 

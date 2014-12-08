@@ -70,8 +70,7 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
         String converterName = cs.getConverterName("application/pdf", "text/html");
         assertEquals("pdf2html", converterName);
 
-        CommandLineExecutorService cles = Framework
-                .getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
         ConverterCheckResult check = cs.isConverterAvailable(converterName);

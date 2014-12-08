@@ -42,8 +42,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- *
- *
  * @since 5.8-HF01
  */
 
@@ -79,10 +77,8 @@ public class DocumentModelIOTest {
     }
 
     @SuppressWarnings("unchecked")
-    private void assertPropertiesAreUpdatedOnDoc(Properties props)
-            throws IOException, ClientException {
-        DocumentModel testDoc = session.createDocumentModel("/", "testDoc",
-                "ComplexDoc");
+    private void assertPropertiesAreUpdatedOnDoc(Properties props) throws IOException, ClientException {
+        DocumentModel testDoc = session.createDocumentModel("/", "testDoc", "ComplexDoc");
         DocumentHelper.setProperties(null, testDoc, props);
         List<Map<String, String>> prop = (List<Map<String, String>>) testDoc.getPropertyValue("myschema:list");
 

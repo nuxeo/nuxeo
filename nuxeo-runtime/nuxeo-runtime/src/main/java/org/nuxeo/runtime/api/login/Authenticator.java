@@ -13,23 +13,20 @@ package org.nuxeo.runtime.api.login;
 
 import java.security.Principal;
 
-
 /**
  * Authenticate the given username against the given password.
  * <p>
  * This service should be exposed by a user manager framework implementation.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Authenticator {
 
     /**
      * Get a principal object for the given username if the username / password pair is valid, otherwise returns null.
      * <p>
-     * This method is doing the authentication of the given username / password pair
-     * and returns the corresponding principal object if authentication succeeded
-     * otherwise returns null.
+     * This method is doing the authentication of the given username / password pair and returns the corresponding
+     * principal object if authentication succeeded otherwise returns null.
      *
      * @param name
      * @param password
@@ -38,8 +35,7 @@ public interface Authenticator {
     public Principal authenticate(String name, String password);
 
     /**
-     * Check the password for the given username.
-     * Returns true if the username / password pair match, false otherwise.
+     * Check the password for the given username. Returns true if the username / password pair match, false otherwise.
      *
      * @param name the username
      * @param password the password to check

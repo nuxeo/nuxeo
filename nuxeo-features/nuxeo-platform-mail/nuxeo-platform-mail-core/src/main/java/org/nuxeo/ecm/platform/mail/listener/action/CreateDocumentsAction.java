@@ -61,8 +61,8 @@ import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Creates a MailMessage document for every new email found in the INBOX. The
- * properties values are retrieved from the pipe execution context.
+ * Creates a MailMessage document for every new email found in the INBOX. The properties values are retrieved from the
+ * pipe execution context.
  *
  * @author Catalin Baican
  */
@@ -94,17 +94,14 @@ public class CreateDocumentsAction extends AbstractMailAction {
         String parentPath = (String) initialContext.get(PARENT_PATH_KEY);
 
         DocumentModel documentModel = session.createDocumentModel(MAIL_MESSAGE_TYPE);
-        documentModel.setPropertyValue("dc:title",
-                subject + System.currentTimeMillis());
+        documentModel.setPropertyValue("dc:title", subject + System.currentTimeMillis());
         documentModel.setPathInfo(parentPath, pss.generatePathSegment(documentModel));
         documentModel.setPropertyValue("dc:title", subject);
-        documentModel.setPropertyValue(MESSAGE_ID_PROPERTY_NAME,
-                messageId);
+        documentModel.setPropertyValue(MESSAGE_ID_PROPERTY_NAME, messageId);
         documentModel.setPropertyValue(SENDER_PROPERTY_NAME, sender);
         documentModel.setPropertyValue(SENDING_DATE_PROPERTY_NAME, sendingDate);
         documentModel.setPropertyValue(RECIPIENTS_PROPERTY_NAME, recipients);
-        documentModel.setPropertyValue(CC_RECIPIENTS_PROPERTY_NAME,
-                ccRecipients);
+        documentModel.setPropertyValue(CC_RECIPIENTS_PROPERTY_NAME, ccRecipients);
         if (attachments != null && !attachments.isEmpty()) {
             ArrayList<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
             for (FileBlob currentFileBlob : attachments) {
@@ -117,8 +114,7 @@ public class CreateDocumentsAction extends AbstractMailAction {
             }
             documentModel.setPropertyValue("files:files", files);
         }
-        documentModel.setPropertyValue(CC_RECIPIENTS_PROPERTY_NAME,
-                ccRecipients);
+        documentModel.setPropertyValue(CC_RECIPIENTS_PROPERTY_NAME, ccRecipients);
 
         documentModel.setPropertyValue(HTML_TEXT_PROPERTY_NAME, text);
         if (text != null && !text.isEmpty()) {
@@ -137,21 +133,18 @@ public class CreateDocumentsAction extends AbstractMailAction {
             documentModel.setPropertyValue(TEXT_PROPERTY_NAME, simpleText);
         }
 
-        UnrestrictedCreateDocument unrestrictedCreateDocument = new UnrestrictedCreateDocument(
-                documentModel, session);
+        UnrestrictedCreateDocument unrestrictedCreateDocument = new UnrestrictedCreateDocument(documentModel, session);
         unrestrictedCreateDocument.runUnrestricted();
 
         return true;
     }
 
     // Helper inner class to do the unrestricted creation of the documents
-    protected class UnrestrictedCreateDocument extends
-            UnrestrictedSessionRunner {
+    protected class UnrestrictedCreateDocument extends UnrestrictedSessionRunner {
 
         private DocumentModel document;
 
-        protected UnrestrictedCreateDocument(DocumentModel document,
-                CoreSession session) {
+        protected UnrestrictedCreateDocument(DocumentModel document, CoreSession session) {
             super(session);
             this.document = document;
         }

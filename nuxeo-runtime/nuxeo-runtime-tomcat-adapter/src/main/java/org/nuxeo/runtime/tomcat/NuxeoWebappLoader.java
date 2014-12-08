@@ -29,8 +29,7 @@ import org.apache.catalina.loader.WebappLoader;
 /**
  * Shared attribute is experimental. Do not use it yet.
  * <p>
- * (Its purpose is to be able to deploy multiple WARs using the same nuxeo instance
- * but it is not working yet).
+ * (Its purpose is to be able to deploy multiple WARs using the same nuxeo instance but it is not working yet).
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -39,7 +38,7 @@ public class NuxeoWebappLoader extends WebappLoader {
     protected File baseDir; // the baseDir from the Context (which is private..)
 
     protected void overwriteWar() {
-        //File baseDir = getBaseDir();
+        // File baseDir = getBaseDir();
         // remove all files
     }
 
@@ -48,7 +47,7 @@ public class NuxeoWebappLoader extends WebappLoader {
             Container container = getContainer();
             Method method = StandardContext.class.getDeclaredMethod("getBasePath");
             method.setAccessible(true);
-            String path = (String)method.invoke(container);
+            String path = (String) method.invoke(container);
             baseDir = new File(path);
         }
         return baseDir;

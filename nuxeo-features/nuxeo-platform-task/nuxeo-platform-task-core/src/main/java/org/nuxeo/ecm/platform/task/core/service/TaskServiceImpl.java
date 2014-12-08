@@ -63,8 +63,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     private static final long serialVersionUID = 1L;
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.platform.task.core.TaskService");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.platform.task.core.TaskService");
 
     public static final String DEFAULT_TASK_PROVIDER = "documentTaskProvider";
 
@@ -89,15 +88,13 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(TASK_PROVIDER_XP)) {
             if (contribution instanceof TaskProviderDescriptor) {
                 TaskProviderDescriptor taskProviderDescriptor = (TaskProviderDescriptor) contribution;
                 String providerId = taskProviderDescriptor.getId();
                 if (taskProviderDescriptor.isEnabled()) {
-                    tasksProviders.put(providerId,
-                            taskProviderDescriptor.getNewInstance());
+                    tasksProviders.put(providerId, taskProviderDescriptor.getNewInstance());
                 } else {
                     if (tasksProviders.get(providerId) != null) {
                         tasksProviders.remove(providerId);
@@ -113,8 +110,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(TASK_PROVIDER_XP)) {
             if (contribution instanceof TaskProviderDescriptor) {
                 TaskProviderDescriptor taskProviderDescriptor = (TaskProviderDescriptor) contribution;
@@ -127,80 +123,63 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public List<Task> createTask(CoreSession coreSession,
-            NuxeoPrincipal principal, DocumentModel document, String taskName,
-            List<String> actorIds, boolean createOneTaskPerActor,
-            String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath)
-            throws ClientException {
-        return createTask(coreSession, principal, document, taskName, null,
-                null, actorIds, createOneTaskPerActor, directive, comment,
-                dueDate, taskVariables, parentPath);
+    public List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document,
+            String taskName, List<String> actorIds, boolean createOneTaskPerActor, String directive, String comment,
+            Date dueDate, Map<String, String> taskVariables, String parentPath) throws ClientException {
+        return createTask(coreSession, principal, document, taskName, null, null, actorIds, createOneTaskPerActor,
+                directive, comment, dueDate, taskVariables, parentPath);
     }
 
     /**
      * @since 5.6
      */
     @Override
-    public List<Task> createTask(CoreSession coreSession,
-            NuxeoPrincipal principal, DocumentModel document,
-            String taskDocumentType, String taskName, String taskType,
-            String processId, List<String> actorIds,
-            boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath,
-            Map<String, Serializable> eventInfo) throws ClientException {
+    public List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document,
+            String taskDocumentType, String taskName, String taskType, String processId, List<String> actorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo)
+            throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         docs.add(document);
-        return createTask(coreSession, principal, docs, taskDocumentType,
-                taskName, taskType, processId, actorIds, createOneTaskPerActor,
-                directive, comment, dueDate, taskVariables, parentPath,
-                eventInfo);
+        return createTask(coreSession, principal, docs, taskDocumentType, taskName, taskType, processId, actorIds,
+                createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath, eventInfo);
     }
 
     /**
      * @since 5.6
      */
     @Override
-    public List<Task> createTask(CoreSession coreSession,
-            NuxeoPrincipal principal, DocumentModel document, String taskName,
-            String taskType, String processId, List<String> prefixedActorIds,
-            boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath)
+    public List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document,
+            String taskName, String taskType, String processId, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath) throws ClientException {
+        return createTask(coreSession, principal, document, TaskConstants.TASK_TYPE_NAME, taskName, taskType,
+                processId, prefixedActorIds, createOneTaskPerActor, directive, comment, dueDate, taskVariables,
+                parentPath, null);
+    }
+
+    @Override
+    public String acceptTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment)
             throws ClientException {
-        return createTask(coreSession, principal, document,
-                TaskConstants.TASK_TYPE_NAME, taskName, taskType, processId,
-                prefixedActorIds, createOneTaskPerActor, directive, comment,
-                dueDate, taskVariables, parentPath, null);
+        return endTask(coreSession, principal, task, comment, TaskEventNames.WORKFLOW_TASK_COMPLETED, true);
     }
 
     @Override
-    public String acceptTask(CoreSession coreSession, NuxeoPrincipal principal,
-            Task task, String comment) throws ClientException {
-        return endTask(coreSession, principal, task, comment,
-                TaskEventNames.WORKFLOW_TASK_COMPLETED, true);
-    }
-
-    @Override
-    public String rejectTask(CoreSession coreSession, NuxeoPrincipal principal,
-            Task task, String comment) throws ClientException {
-        return endTask(coreSession, principal, task, comment,
-                TaskEventNames.WORKFLOW_TASK_REJECTED, false);
+    public String rejectTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment)
+            throws ClientException {
+        return endTask(coreSession, principal, task, comment, TaskEventNames.WORKFLOW_TASK_REJECTED, false);
     }
 
     /**
-     * Use the task provider held by the {@link Task#TASK_PROVIDER_KEY} task
-     * variable to end the {@code task}. If null use the
-     * {@link #DEFAULT_TASK_PROVIDER}.
+     * Use the task provider held by the {@link Task#TASK_PROVIDER_KEY} task variable to end the {@code task}. If null
+     * use the {@link #DEFAULT_TASK_PROVIDER}.
      */
     @Override
-    public String endTask(CoreSession coreSession, NuxeoPrincipal principal,
-            Task task, String comment, String eventName, boolean isValidated)
-            throws ClientException {
+    public String endTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment,
+            String eventName, boolean isValidated) throws ClientException {
 
         if (!canEndTask(principal, task)) {
-            throw new ClientException(String.format(
-                    "User with id '%s' cannot end this task",
-                    principal.getName()));
+            throw new ClientException(String.format("User with id '%s' cannot end this task", principal.getName()));
         }
         String taskProviderId = task.getVariable(Task.TASK_PROVIDER_KEY);
         if (taskProviderId == null) {
@@ -213,23 +192,20 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                             "No task provider registered, cannot end task. Please contribute at least the default task provider: %s.",
                             DEFAULT_TASK_PROVIDER));
         }
-        return taskProvider.endTask(coreSession, principal, task, comment,
-                eventName, isValidated);
+        return taskProvider.endTask(coreSession, principal, task, comment, eventName, isValidated);
     }
 
     @Override
-    public boolean canEndTask(NuxeoPrincipal principal, Task task)
-            throws ClientException {
+    public boolean canEndTask(NuxeoPrincipal principal, Task task) throws ClientException {
         if (task != null && (!task.isCancelled() && !task.hasEnded())) {
-            return principal.isAdministrator()
-                    || principal.getName().equals(task.getInitiator())
+            return principal.isAdministrator() || principal.getName().equals(task.getInitiator())
                     || isTaskAssignedToUser(task, principal, true);
         }
         return false;
     }
 
-    protected boolean isTaskAssignedToUser(Task task, NuxeoPrincipal user,
-            boolean checkDelegatedActors) throws ClientException {
+    protected boolean isTaskAssignedToUser(Task task, NuxeoPrincipal user, boolean checkDelegatedActors)
+            throws ClientException {
         if (task != null && user != null) {
             // user actors
             List<String> actors = user.getAllGroups();
@@ -261,8 +237,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public Task getTask(CoreSession coreSession, String taskId)
-            throws ClientException {
+    public Task getTask(CoreSession coreSession, String taskId) throws ClientException {
         DocumentRef docRef = new IdRef(taskId);
         DocumentModel taskDoc = coreSession.getDocument(docRef);
         if (taskDoc != null) {
@@ -275,11 +250,9 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public void deleteTask(CoreSession coreSession, String taskId)
-            throws ClientException {
+    public void deleteTask(CoreSession coreSession, String taskId) throws ClientException {
         final DocumentRef docRef = new IdRef(taskId);
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
-                coreSession) {
+        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(coreSession) {
             @Override
             public void run() throws ClientException {
                 session.removeDocument(docRef);
@@ -289,14 +262,12 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public DocumentModel getTargetDocumentModel(Task task,
-            CoreSession coreSession) throws ClientException {
+    public DocumentModel getTargetDocumentModel(Task task, CoreSession coreSession) throws ClientException {
         return coreSession.getDocument(new IdRef(task.getTargetDocumentId()));
     }
 
     @Override
-    public List<Task> getCurrentTaskInstances(CoreSession coreSession)
-            throws ClientException {
+    public List<Task> getCurrentTaskInstances(CoreSession coreSession) throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
@@ -309,14 +280,12 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     /**
-     * Provide @param sortInfo to handle sort page-provider contributions
-     * (see {@link #getCurrentTaskInstances})
+     * Provide @param sortInfo to handle sort page-provider contributions (see {@link #getCurrentTaskInstances})
      *
      * @since 5.9.3
      */
     @Override
-    public List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos)
-            throws ClientException {
+    public List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos) throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
@@ -329,16 +298,14 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     /**
-     * Returns a list of task instances assigned to one of the actors in the
-     * list or to its pool.
+     * Returns a list of task instances assigned to one of the actors in the list or to its pool.
      *
      * @param actors a list used as actorId to retrieve the tasks.
      * @return
      * @throws ClientException
      */
     @Override
-    public List<Task> getCurrentTaskInstances(List<String> actors,
-            CoreSession coreSession) throws ClientException {
+    public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession) throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
@@ -351,14 +318,13 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     /**
-     * Provide @param sortInfo to handle sort page-provider contributions
-     * (see {@link #getCurrentTaskInstances})
+     * Provide @param sortInfo to handle sort page-provider contributions (see {@link #getCurrentTaskInstances})
      *
      * @since 5.9.3
      */
     @Override
-    public List<Task> getCurrentTaskInstances(List<String> actors,
-            CoreSession coreSession, List<SortInfo> sortInfos) throws ClientException {
+    public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession, List<SortInfo> sortInfos)
+            throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
@@ -371,8 +337,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user,
-            CoreSession coreSession) throws ClientException {
+    public List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSession)
+            throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
@@ -385,8 +351,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
-            CoreSession coreSession) throws ClientException {
+    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, CoreSession coreSession)
+            throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
@@ -399,8 +365,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId, CoreSession session)
-            throws ClientException {
+    public List<Task> getAllTaskInstances(String processId, CoreSession session) throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
@@ -413,13 +378,12 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId,
-            NuxeoPrincipal user, CoreSession session) throws ClientException {
+    public List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user, CoreSession session)
+            throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
-            newTasks = taskProvider.getAllTaskInstances(processId, user,
-                    session);
+            newTasks = taskProvider.getAllTaskInstances(processId, user, session);
             if (newTasks != null) {
                 tasks.addAll(newTasks);
             }
@@ -428,13 +392,12 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId,
-            List<String> actors, CoreSession session) throws ClientException {
+    public List<Task> getAllTaskInstances(String processId, List<String> actors, CoreSession session)
+            throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
-            newTasks = taskProvider.getAllTaskInstances(processId, actors,
-                    session);
+            newTasks = taskProvider.getAllTaskInstances(processId, actors, session);
             if (newTasks != null) {
                 tasks.addAll(newTasks);
             }
@@ -456,8 +419,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     @Override
     public String getTaskRootParentPath(CoreSession coreSession) {
-        GetTaskRootParentPathUnrestricted runner = new GetTaskRootParentPathUnrestricted(
-                coreSession);
+        GetTaskRootParentPathUnrestricted runner = new GetTaskRootParentPathUnrestricted(coreSession);
         try {
             runner.runUnrestricted();
         } catch (ClientException e) {
@@ -466,8 +428,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         return runner.getParentPath();
     }
 
-    public class GetTaskRootParentPathUnrestricted extends
-            UnrestrictedSessionRunner {
+    public class GetTaskRootParentPathUnrestricted extends UnrestrictedSessionRunner {
 
         protected DocumentModel taskRootDoc;
 
@@ -482,9 +443,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 taskRootDoc = session.getDocument(pathRef);
             } else {
                 Path path = new Path(parentPath);
-                taskRootDoc = session.createDocumentModel(
-                        path.removeLastSegments(1).toString(),
-                        path.lastSegment(), TaskConstants.TASK_ROOT_TYPE_NAME);
+                taskRootDoc = session.createDocumentModel(path.removeLastSegments(1).toString(), path.lastSegment(),
+                        TaskConstants.TASK_ROOT_TYPE_NAME);
                 taskRootDoc = session.createDocument(taskRootDoc);
                 ACP acp = taskRootDoc.getACP();
                 ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
@@ -504,13 +464,11 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId, String nodeId,
-            CoreSession session) throws ClientException {
+    public List<Task> getAllTaskInstances(String processId, String nodeId, CoreSession session) throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
-            newTasks = taskProvider.getAllTaskInstances(processId, nodeId,
-                    session);
+            newTasks = taskProvider.getAllTaskInstances(processId, nodeId, session);
             if (newTasks != null) {
                 tasks.addAll(newTasks);
             }
@@ -519,9 +477,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public void reassignTask(CoreSession session, final String taskId,
-            final List<String> newActors, final String comment)
-            throws ClientException {
+    public void reassignTask(CoreSession session, final String taskId, final List<String> newActors,
+            final String comment) throws ClientException {
 
         new UnrestrictedSessionRunner(session) {
 
@@ -551,8 +508,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 List<ACE> toRemove = new ArrayList<ACE>();
 
                 for (ACE ace : acl.getACEs()) {
-                    if (currentActors.contains(ace.getUsername())
-                            || taskInitator.equals(ace.getUsername())) {
+                    if (currentActors.contains(ace.getUsername()) || taskInitator.equals(ace.getUsername())) {
                         toRemove.add(ace);
                     }
                 }
@@ -584,10 +540,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     docs.add(session.getDocument(new IdRef(string)));
 
                 }
-                notifyEvent(session, task, docs,
-                        TaskEventNames.WORKFLOW_TASK_REASSIGNED,
-                        new HashMap<String, Serializable>(), comment,
-                        (NuxeoPrincipal) session.getPrincipal(), actorIds);
+                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_REASSIGNED,
+                        new HashMap<String, Serializable>(), comment, (NuxeoPrincipal) session.getPrincipal(), actorIds);
 
             }
         }.runUnrestricted();
@@ -595,9 +549,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public void delegateTask(CoreSession session, final String taskId,
-            final List<String> delegatedActors, final String comment)
-            throws ClientException {
+    public void delegateTask(CoreSession session, final String taskId, final List<String> delegatedActors,
+            final String comment) throws ClientException {
 
         new UnrestrictedSessionRunner(session) {
             @Override
@@ -622,8 +575,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     }
                 }
                 for (String actorId : actorIds) {
-                    ACE ace = new ACE(actorId, SecurityConstants.EVERYTHING,
-                            true);
+                    ACE ace = new ACE(actorId, SecurityConstants.EVERYTHING, true);
                     if (!acl.contains(ace)) {
                         acl.add(ace);
                     }
@@ -647,51 +599,39 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     docs.add(session.getDocument(new IdRef(string)));
 
                 }
-                notifyEvent(
-                        session,
-                        task,
-                        docs,
-                        TaskEventNames.WORKFLOW_TASK_DELEGATED,
+                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_DELEGATED,
                         new HashMap<String, Serializable>(),
-                        String.format("Task delegated by '%s' to '%s'",
-                                currentUser, StringUtils.join(actorIds, ","))
-                                + (!StringUtils.isEmpty(comment) ? " with the following comment: "
-                                        + comment
-                                        : ""),
+                        String.format("Task delegated by '%s' to '%s'", currentUser, StringUtils.join(actorIds, ","))
+                                + (!StringUtils.isEmpty(comment) ? " with the following comment: " + comment : ""),
                         (NuxeoPrincipal) session.getPrincipal(), actorIds);
             }
 
         }.runUnrestricted();
     }
 
-    protected void notifyEvent(CoreSession session, Task task,
-            List<DocumentModel> docs, String event,
-            Map<String, Serializable> eventInfo, String comment,
-            NuxeoPrincipal principal, List<String> actorIds)
+    protected void notifyEvent(CoreSession session, Task task, List<DocumentModel> docs, String event,
+            Map<String, Serializable> eventInfo, String comment, NuxeoPrincipal principal, List<String> actorIds)
             throws ClientException {
         Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
         ArrayList<String> notificationRecipients = new ArrayList<String>();
         notificationRecipients.addAll(actorIds);
-        eventProperties.put(
-                NotificationConstants.RECIPIENTS_KEY,
+        eventProperties.put(NotificationConstants.RECIPIENTS_KEY,
                 notificationRecipients.toArray(new String[notificationRecipients.size()]));
         if (eventInfo != null) {
             eventProperties.putAll(eventInfo);
         }
         for (DocumentModel doc : docs) {
-            TaskEventNotificationHelper.notifyEvent(session, doc, principal,
-                    task, event, eventProperties, comment, null);
+            TaskEventNotificationHelper.notifyEvent(session, doc, principal, task, event, eventProperties, comment,
+                    null);
         }
     }
 
     @Override
-    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
-            boolean includeDelegatedTasks, CoreSession session)
-            throws ClientException {
+    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, boolean includeDelegatedTasks,
+            CoreSession session) throws ClientException {
         List<Task> tasks = new ArrayList<Task>();
         for (TaskProvider taskProvider : tasksProviders.values()) {
-            tasks.addAll(taskProvider.getTaskInstances(dm, actors,
-                    includeDelegatedTasks, session));
+            tasks.addAll(taskProvider.getTaskInstances(dm, actors, includeDelegatedTasks, session));
         }
         return tasks;
     }
@@ -700,28 +640,24 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
      * @since 5.8
      */
     @Override
-    public List<Task> createTask(CoreSession coreSession,
-            NuxeoPrincipal principal, List<DocumentModel> documents,
-            String taskDocumentType, String taskName, String taskType,
-            String processId, List<String> actorIds,
-            boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath,
-            Map<String, Serializable> eventInfo) throws ClientException {
+    public List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
+            String taskDocumentType, String taskName, String taskType, String processId, List<String> actorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo)
+            throws ClientException {
         if (StringUtils.isBlank(parentPath)) {
             parentPath = getTaskRootParentPath(coreSession);
         }
-        CreateTaskUnrestricted runner = new CreateTaskUnrestricted(coreSession,
-                principal, documents, taskDocumentType, taskName, taskType,
-                processId, actorIds, createOneTaskPerActor, directive, comment,
-                dueDate, taskVariables, parentPath);
+        CreateTaskUnrestricted runner = new CreateTaskUnrestricted(coreSession, principal, documents, taskDocumentType,
+                taskName, taskType, processId, actorIds, createOneTaskPerActor, directive, comment, dueDate,
+                taskVariables, parentPath);
         runner.runUnrestricted();
 
         List<Task> tasks = runner.getTasks();
 
         for (Task task : tasks) {
             // notify
-            notifyEvent(coreSession, task, documents,
-                    TaskEventNames.WORKFLOW_TASK_ASSIGNED, eventInfo, comment,
+            notifyEvent(coreSession, task, documents, TaskEventNames.WORKFLOW_TASK_ASSIGNED, eventInfo, comment,
                     principal, task.getActors());
         }
         return tasks;

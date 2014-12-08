@@ -48,8 +48,7 @@ public class CreateBlob {
     @OperationMethod
     public Blob run() {
         String protocol = file.getProtocol();
-        if (!"http".equals(protocol) && !"https".equals(protocol)
-                && !"ftp".equals(protocol)) {
+        if (!"http".equals(protocol) && !"https".equals(protocol) && !"ftp".equals(protocol)) {
             // don't let file: through
             if (!skipProtocolCheck) {
                 return null;

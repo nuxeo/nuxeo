@@ -51,8 +51,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy( { "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.webapp.base" })
+@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.webapp.base" })
 public class TestBulkEditHelper {
 
     @Inject
@@ -79,30 +78,26 @@ public class TestBulkEditHelper {
     }
 
     protected List<DocumentModel> createTestDocuments() throws ClientException {
-        DocumentModel file = session.createDocumentModel("/", "testFile",
-                "File");
+        DocumentModel file = session.createDocumentModel("/", "testFile", "File");
         file.setPropertyValue("dc:title", "testTitle");
         file = session.createDocument(file);
         assertNotNull(file);
         file = session.saveDocument(file);
 
-        DocumentModel note = session.createDocumentModel("/", "testFile",
-                "Note");
+        DocumentModel note = session.createDocumentModel("/", "testFile", "Note");
         note.setPropertyValue("dc:title", "testNote");
         note = session.createDocument(note);
         assertNotNull(note);
         note = session.saveDocument(note);
         session.save();
 
-        return Arrays.asList(file,
-                note);
+        return Arrays.asList(file, note);
     }
 
     @Test
     public void testCommonLayouts() throws Exception {
         List<DocumentModel> docs = createTestDocuments();
-        List<String> commonLayouts = BulkEditHelper.getCommonLayouts(
-                typeManager, docs);
+        List<String> commonLayouts = BulkEditHelper.getCommonLayouts(typeManager, docs);
         assertFalse(commonLayouts.isEmpty());
         assertEquals(2, commonLayouts.size());
         assertTrue(commonLayouts.contains("heading"));

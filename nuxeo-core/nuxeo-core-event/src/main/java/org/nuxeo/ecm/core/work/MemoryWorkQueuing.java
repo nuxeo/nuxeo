@@ -57,7 +57,6 @@ public class MemoryWorkQueuing implements WorkQueuing {
     // queueId -> workId -> work
     protected final Map<String, Map<String, Work>> allCompleted = new HashMap<String, Map<String, Work>>();
 
-
     public MemoryWorkQueuing(WorkManagerImpl mgr, WorkQueueDescriptorRegistry workQueueDescriptors) {
         this.mgr = mgr;
         this.workQueueDescriptors = workQueueDescriptors;
@@ -115,8 +114,7 @@ public class MemoryWorkQueuing implements WorkQueuing {
         return completed;
     }
 
-    protected BlockingQueue<Runnable> newBlockingQueue(
-            WorkQueueDescriptor workQueueDescriptor) {
+    protected BlockingQueue<Runnable> newBlockingQueue(WorkQueueDescriptor workQueueDescriptor) {
         if (workQueueDescriptor.usePriority) {
             log.warn("Priority queues are now deprecated and function as regular queues");
         }
@@ -402,8 +400,7 @@ public class MemoryWorkQueuing implements WorkQueuing {
     }
 
     @Override
-    public synchronized void clearCompletedWork(String queueId,
-            long completionTime) {
+    public synchronized void clearCompletedWork(String queueId, long completionTime) {
         Map<String, Work> completed = getCompleted(queueId);
         if (completionTime <= 0) {
             completed.clear();

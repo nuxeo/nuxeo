@@ -25,22 +25,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Path {
 
     public static final String[] EMPTY_SEGMENTS = new String[0];
 
     final String path;
+
     String[] segments;
+
     String attribute;
 
     public Path(String path) {
         this.path = path;
         parse(path);
     }
-
 
     @Override
     public String toString() {
@@ -70,18 +70,18 @@ public class Path {
         boolean attr = false;
         for (char c : chars) {
             switch (c) {
-                case'/':
-                    seg.add(buf.toString());
-                    buf.setLength(0);
-                    break;
-                case'@':
-                    attr = true;
-                    seg.add(buf.toString());
-                    buf.setLength(0);
-                    break;
-                default:
-                    buf.append(c);
-                    break;
+            case '/':
+                seg.add(buf.toString());
+                buf.setLength(0);
+                break;
+            case '@':
+                attr = true;
+                seg.add(buf.toString());
+                buf.setLength(0);
+                break;
+            default:
+                buf.append(c);
+                break;
             }
         }
         if (buf.length() > 0) {

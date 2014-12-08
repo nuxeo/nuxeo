@@ -56,12 +56,10 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
 
     private static final long serialVersionUID = -3661302796286246086L;
 
-
     /**
      * Should be overridden if IOLogEntryBase is subclassed.
      *
-     * @return IOLogEntryBase instance that will know how to write and read log
-     *         entries
+     * @return IOLogEntryBase instance that will know how to write and read log entries
      */
     protected IOLogEntryBase getLogEntryHelper() {
         return new IOLogEntryBase();
@@ -77,8 +75,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
      * The adapter properties will filter which logs must be taken into account.
      */
     @Override
-    public IOResources extractResources(String repo,
-            Collection<DocumentRef> sources) {
+    public IOResources extractResources(String repo, Collection<DocumentRef> sources) {
         if (sources == null || sources.isEmpty()) {
             return null;
         }
@@ -180,8 +177,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
     }
 
     @Override
-    public IOResources translateResources(String repo, IOResources resources,
-            DocumentTranslationMap map) {
+    public IOResources translateResources(String repo, IOResources resources, DocumentTranslationMap map) {
         if (map == null) {
             return null;
         }
@@ -197,8 +193,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
             DocumentRef newRef = map.getDocRefMap().get(oldRef);
             if (newRef == null) {
                 if (log.isErrorEnabled()) {
-                    log.error("newRef does not exist in translation map for "
-                            + oldRef);
+                    log.error("newRef does not exist in translation map for " + oldRef);
                 }
                 continue;
             }

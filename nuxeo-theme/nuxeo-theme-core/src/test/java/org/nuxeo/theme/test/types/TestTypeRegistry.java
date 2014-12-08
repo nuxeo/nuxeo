@@ -33,13 +33,10 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
 
-        preset1 = new PresetType("preset1", "value", "group", "category", "",
-                "");
+        preset1 = new PresetType("preset1", "value", "group", "category", "", "");
         preset2 = new PresetType("preset2", "value", "", "category", "", "");
     }
 
@@ -58,13 +55,10 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
         assertTrue(typeRegistry.getTypes(TypeFamily.PRESET).contains(preset1));
         assertTrue(typeRegistry.getTypes(TypeFamily.PRESET).contains(preset2));
 
-        assertTrue(typeRegistry.getTypeNames(TypeFamily.PRESET).contains(
-                "preset1 (group)"));
-        assertTrue(typeRegistry.getTypeNames(TypeFamily.PRESET).contains(
-                "preset2"));
+        assertTrue(typeRegistry.getTypeNames(TypeFamily.PRESET).contains("preset1 (group)"));
+        assertTrue(typeRegistry.getTypeNames(TypeFamily.PRESET).contains("preset2"));
 
-        assertSame(preset1, typeRegistry.lookup(TypeFamily.PRESET,
-                "preset1 (group)"));
+        assertSame(preset1, typeRegistry.lookup(TypeFamily.PRESET, "preset1 (group)"));
         assertSame(preset2, typeRegistry.lookup(TypeFamily.PRESET, "preset2"));
 
         // unregister presets

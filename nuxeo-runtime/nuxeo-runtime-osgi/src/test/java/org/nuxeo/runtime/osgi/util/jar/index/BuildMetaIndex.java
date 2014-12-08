@@ -33,17 +33,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 
-
 /**
- * Constructs a meta-index of the specified jar files. The meta-index contains
- * prefixes of packages contained in these jars, indexed by the jar file name.
- * It is intended to be consumed by the JVM to allow the boot class loader to be
- * made lazier. For example, when class data sharing is enabled, the presence of
- * the meta-index allows the JVM to skip opening rt.jar if all of the dependent
- * classes of the application are in the shared archive. A similar mechanism
- * could be useful at the application level as well, for example to make the
- * extension class loader lazier.
- * 
+ * Constructs a meta-index of the specified jar files. The meta-index contains prefixes of packages contained in these
+ * jars, indexed by the jar file name. It is intended to be consumed by the JVM to allow the boot class loader to be
+ * made lazier. For example, when class data sharing is enabled, the presence of the meta-index allows the JVM to skip
+ * opening rt.jar if all of the dependent classes of the application are in the shared archive. A similar mechanism
+ * could be useful at the application level as well, for example to make the extension class loader lazier.
  * <p>
  * The contents of the meta-index file for jre/lib look something like this:
  * 
@@ -68,22 +63,18 @@ import java.util.Iterator;
  * javax/
  * ...
  * </PRE>
- * 
  * <p>
- * It is a current invariant of the code in the JVM which consumes the
- * meta-index that the meta-index indexes only jars in one directory. It is
- * acceptable for jars in that directory to not be mentioned in the meta-index.
- * The meta-index is designed more to be able to perform a quick rejection test
- * of the presence of a particular class in a particular jar file than to be a
- * precise index of the contents of the jar.
+ * It is a current invariant of the code in the JVM which consumes the meta-index that the meta-index indexes only jars
+ * in one directory. It is acceptable for jars in that directory to not be mentioned in the meta-index. The meta-index
+ * is designed more to be able to perform a quick rejection test of the presence of a particular class in a particular
+ * jar file than to be a precise index of the contents of the jar.
  */
 
 public class BuildMetaIndex {
     public static void main(String... args) throws IOException {
         /*
-         * The correct usage of this class is as following: java BuildMetaIndex
-         * -o <meta-index> <a list of jar files> So the argument length should
-         * be at least 3 and the first argument should be '-o'.
+         * The correct usage of this class is as following: java BuildMetaIndex -o <meta-index> <a list of jar files> So
+         * the argument length should be at least 3 and the first argument should be '-o'.
          */
         if (args.length < 3 || !args[0].equals("-o")) {
             printUsage();
@@ -92,7 +83,7 @@ public class BuildMetaIndex {
 
         PrintStream out = null;
         try {
-           out = new PrintStream(new FileOutputStream(args[1]));
+            out = new PrintStream(new FileOutputStream(args[1]));
         } catch (FileNotFoundException fnfe) {
             System.err.println("FileNotFoundException occurred");
             System.exit(2);
@@ -104,8 +95,7 @@ public class BuildMetaIndex {
         }
     }
 
-    public static void build(PrintStream out, String... args)
-            throws IOException {
+    public static void build(PrintStream out, String... args) throws IOException {
         out.println("% VERSION 2");
         out.println("% WARNING: this file is auto-generated; do not edit");
         out.println("% UNSUPPORTED: this file and its format may change and/or");
@@ -118,20 +108,15 @@ public class BuildMetaIndex {
                 continue;
             }
             /*
-             * meta-index file plays different role in JVM and JDK side. On the
-             * JVM side, meta-index file is used to speed up locating the class
-             * files only while on the JDK side, meta-index file is used to
-             * speed up the resources file and class file. To help the JVM and
-             * JDK code to better utilize the information in meta-index file, we
-             * mark the jar file differently. Here is the current rule we use
-             * (See JarFileKind.getMarkChar() method. ) For jar file containing
-             * only class file, we put '!' before the jar file name; for jar
-             * file containing only resources file, we put '@' before the jar
-             * file name; for jar file containing both resources and class file,
-             * we put '#' before the jar name. Notice the fact that every jar
-             * file contains at least the manifest file, so when we say
-             * "jar file containing only class file", we don't include that
-             * file.
+             * meta-index file plays different role in JVM and JDK side. On the JVM side, meta-index file is used to
+             * speed up locating the class files only while on the JDK side, meta-index file is used to speed up the
+             * resources file and class file. To help the JVM and JDK code to better utilize the information in
+             * meta-index file, we mark the jar file differently. Here is the current rule we use (See
+             * JarFileKind.getMarkChar() method. ) For jar file containing only class file, we put '!' before the jar
+             * file name; for jar file containing only resources file, we put '@' before the jar file name; for jar file
+             * containing both resources and class file, we put '#' before the jar name. Notice the fact that every jar
+             * file contains at least the manifest file, so when we say "jar file containing only class file", we don't
+             * include that file.
              */
 
             out.println(jmi.getJarFileKind().getMarkerChar() + " " + filename);

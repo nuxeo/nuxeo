@@ -27,8 +27,7 @@ public final class FormatFactory {
 
     public static Format create(final String typeName) throws ThemeException {
         Format format = null;
-        final FormatType formatType = (FormatType) Manager.getTypeRegistry().lookup(
-                TypeFamily.FORMAT, typeName);
+        final FormatType formatType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, typeName);
         if (formatType == null) {
             throw new ThemeException("Unknown format type: " + typeName);
         }

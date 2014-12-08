@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.pictures.tiles.gwt.client.util;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class Point {
 

@@ -43,7 +43,7 @@ public class CommentConverterImpl implements CommentConverter {
         DataModelMap dataModelMap = comment.getDataModels();
         Set<String> keys = dataModelMap.keySet();
 
-        for(String key : keys) {
+        for (String key : keys) {
             DataModel dataModel = dataModelMap.get(key);
             String schema = dataModel.getSchema();
             try {

@@ -37,8 +37,7 @@ public class StateHelper {
     }
 
     /**
-     * Checks if we have a base type compatible with {@link State} helper
-     * processing.
+     * Checks if we have a base type compatible with {@link State} helper processing.
      */
     public static boolean isScalar(Object value) {
         return value instanceof String //
@@ -71,9 +70,7 @@ public class StateHelper {
         } else if (a instanceof ListDiff && b instanceof ListDiff) {
             ListDiff lda = (ListDiff) a;
             ListDiff ldb = (ListDiff) b;
-            return lda.isArray == ldb.isArray
-                    && equalsStrict(lda.diff, ldb.diff)
-                    && equalsStrict(lda.rpush, ldb.rpush);
+            return lda.isArray == ldb.isArray && equalsStrict(lda.diff, ldb.diff) && equalsStrict(lda.rpush, ldb.rpush);
         } else if (isScalar(a) && isScalar(b)) {
             return a.equals(b);
         } else {
@@ -119,8 +116,7 @@ public class StateHelper {
     /**
      * Compares two {@link List}s.
      */
-    public static boolean equalsStrict(List<Serializable> a,
-            List<Serializable> b) {
+    public static boolean equalsStrict(List<Serializable> a, List<Serializable> b) {
         if (a == b) {
             return true;
         }
@@ -141,9 +137,8 @@ public class StateHelper {
     /**
      * Compares two values.
      * <p>
-     * A {@code null} value or an empty array or {@code List} is equivalent to
-     * an absent value. A {@code null} {@link State} is equivalent to an empty
-     * {@link State} (or a {@link State} containing only absent values).
+     * A {@code null} value or an empty array or {@code List} is equivalent to an absent value. A {@code null}
+     * {@link State} is equivalent to an empty {@link State} (or a {@link State} containing only absent values).
      */
     public static boolean equalsLoose(Object a, Object b) {
         if (a == b) {
@@ -167,9 +162,7 @@ public class StateHelper {
         } else if (a instanceof ListDiff && b instanceof ListDiff) {
             ListDiff lda = (ListDiff) a;
             ListDiff ldb = (ListDiff) b;
-            return lda.isArray == ldb.isArray
-                    && equalsLoose(lda.diff, ldb.diff)
-                    && equalsLoose(lda.rpush, ldb.rpush);
+            return lda.isArray == ldb.isArray && equalsLoose(lda.diff, ldb.diff) && equalsLoose(lda.rpush, ldb.rpush);
         } else if (isScalar(a) && isScalar(b)) {
             return a.equals(b);
         } else {
@@ -180,9 +173,8 @@ public class StateHelper {
     /**
      * Compares two {@link State}s.
      * <p>
-     * A {@code null} value or an empty array or {@code List} is equivalent to
-     * an absent value. A {@code null} {@link State} is equivalent to an empty
-     * {@link State} (or a {@link State} containing only absent values).
+     * A {@code null} value or an empty array or {@code List} is equivalent to an absent value. A {@code null}
+     * {@link State} is equivalent to an empty {@link State} (or a {@link State} containing only absent values).
      */
     public static boolean equalsLoose(State a, State b) {
         if (a == null) {
@@ -290,8 +282,7 @@ public class StateHelper {
         }
         // else scalar value -- check anyway (debug)
         else if (!isScalar(value)) {
-            throw new UnsupportedOperationException("Cannot deep copy: "
-                    + value.getClass().getName());
+            throw new UnsupportedOperationException("Cannot deep copy: " + value.getClass().getName());
         }
         return (Serializable) value;
     }
@@ -306,8 +297,7 @@ public class StateHelper {
     /**
      * Makes a deep copy of a {@link State} map, optionally thread-safe.
      *
-     * @param threadSafe if {@code true}, then thread-safe datastructures are
-     *            used
+     * @param threadSafe if {@code true}, then thread-safe datastructures are used
      */
     public static State deepCopy(State state, boolean threadSafe) {
         State copy = new State(state.size(), threadSafe);
@@ -327,13 +317,11 @@ public class StateHelper {
     /**
      * Makes a deep copy of a {@link List}, optionally thread-safe.
      *
-     * @param threadSafe if {@code true}, then thread-safe datastructures are
-     *            used
+     * @param threadSafe if {@code true}, then thread-safe datastructures are used
      */
-    public static List<Serializable> deepCopy(List<Serializable> list,
-            boolean threadSafe) {
-        List<Serializable> copy = threadSafe ? new CopyOnWriteArrayList<Serializable>()
-                : new ArrayList<Serializable>(list.size());
+    public static List<Serializable> deepCopy(List<Serializable> list, boolean threadSafe) {
+        List<Serializable> copy = threadSafe ? new CopyOnWriteArrayList<Serializable>() : new ArrayList<Serializable>(
+                list.size());
         for (Serializable v : list) {
             copy.add(deepCopy(v, threadSafe));
         }
@@ -343,8 +331,7 @@ public class StateHelper {
     /**
      * Does a diff of two values.
      *
-     * @return a {@link StateDiff}, a {@link ListDiff}, {@link #NOP}, or an
-     *         actual value (including {@code null})
+     * @return a {@link StateDiff}, a {@link ListDiff}, {@link #NOP}, or an actual value (including {@code null})
      */
     public static Serializable diff(Object a, Object b) {
         if (equalsLoose(a, b)) {
@@ -429,8 +416,8 @@ public class StateHelper {
     /**
      * Makes a diff copy of two {@link State} maps.
      * <p>
-     * The returned diff state contains only the key/values that changed.
-     * {@code null} values are equivalent to absent values.
+     * The returned diff state contains only the key/values that changed. {@code null} values are equivalent to absent
+     * values.
      * <p>
      * For values set to null or removed, the value is null.
      * <p>

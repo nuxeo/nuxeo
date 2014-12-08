@@ -29,8 +29,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Very simple component to manage Navigation tree registration.
  * <p>
- * Moved from module nuxeo-platform-virtual-navigation-web, originally added in
- * 5.6.
+ * Moved from module nuxeo-platform-virtual-navigation-web, originally added in 5.6.
  *
  * @author Thierry Delprat
  * @author Thierry Martins
@@ -53,13 +52,11 @@ public class NavTreeService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (NAVTREE_EP.equals(extensionPoint)) {
             NavTreeDescriptor contrib = (NavTreeDescriptor) contribution;
             registry.addContribution(contrib);
-            getActionService().getActionRegistry().addAction(
-                    contrib.getAction());
+            getActionService().getActionRegistry().addAction(contrib.getAction());
         }
     }
 
@@ -67,13 +64,11 @@ public class NavTreeService extends DefaultComponent {
      * @since 5.6
      */
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (NAVTREE_EP.equals(extensionPoint)) {
             NavTreeDescriptor contrib = (NavTreeDescriptor) contribution;
             registry.removeContribution(contrib);
-            getActionService().getActionRegistry().removeAction(
-                    contrib.getTreeId());
+            getActionService().getActionRegistry().removeAction(contrib.getTreeId());
         }
     }
 
@@ -82,21 +77,18 @@ public class NavTreeService extends DefaultComponent {
     }
 
     protected DirectoryTreeService getDirectoryTreeService() {
-        return (DirectoryTreeService) Framework.getRuntime().getComponent(
-                DirectoryTreeService.NAME);
+        return (DirectoryTreeService) Framework.getRuntime().getComponent(DirectoryTreeService.NAME);
     }
 
     /**
      * @since 6.0
      */
     protected ActionService getActionService() {
-        return (ActionService) Framework.getRuntime().getComponent(
-                ActionService.ID);
+        return (ActionService) Framework.getRuntime().getComponent(ActionService.ID);
     }
 
     /**
-     * Returns the last modified time of this service or of the
-     * {@link DirectoryTreeService}, whichever the greater
+     * Returns the last modified time of this service or of the {@link DirectoryTreeService}, whichever the greater
      *
      * @since 5.6
      */

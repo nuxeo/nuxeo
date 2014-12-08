@@ -28,6 +28,7 @@ public interface OperationRequest {
 
     /**
      * Get the ID of the operation to be invoked
+     *
      * @return
      */
     OperationDocumentation getOperation();

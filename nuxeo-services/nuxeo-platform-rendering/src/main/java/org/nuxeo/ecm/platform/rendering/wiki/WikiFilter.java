@@ -16,12 +16,12 @@ package org.nuxeo.ecm.platform.rendering.wiki;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface WikiFilter {
 
     /**
      * Filter the given content
+     *
      * @param content te input content to filter
      * @return null if input wasn't filtered
      */

@@ -31,8 +31,7 @@ public class NotAvailableConverter implements ExternalConverter {
     }
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         return null;
     }
 

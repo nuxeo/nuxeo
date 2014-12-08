@@ -24,35 +24,30 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Implementations of this interface manages the multi-tenant behavior for
- * UserManager. This class will be used to fetch the User Directory and the
- * Group characteristics
+ * Implementations of this interface manages the multi-tenant behavior for UserManager. This class will be used to fetch
+ * the User Directory and the Group characteristics
  * 
  * @author bjalon
  */
 public interface UserMultiTenantManagement {
 
     /**
-     * Transform filter and fulltext to fetch Groups for the given context and
-     * the query specified with the given filter and fulltext. Be careful the
-     * filter map and the fulltext set object will be modified so copy them
-     * before.
+     * Transform filter and fulltext to fetch Groups for the given context and the query specified with the given filter
+     * and fulltext. Be careful the filter map and the fulltext set object will be modified so copy them before.
      */
-    void queryTransformer(UserManager um, Map<String, Serializable> filter,
-            Set<String> fulltext, DocumentModel context) throws ClientException;
+    void queryTransformer(UserManager um, Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context)
+            throws ClientException;
 
     /**
-     * Transform the Group DocumentModel store it into the tenant described by
-     * the context
+     * Transform the Group DocumentModel store it into the tenant described by the context
      * 
      * @param um
      * @param group to modified
      * @param context that bring the tenant information
      * @throws ClientException
      */
-    DocumentModel groupTransformer(UserManager um, DocumentModel group,
-            DocumentModel context) throws ClientException;
-    
+    DocumentModel groupTransformer(UserManager um, DocumentModel group, DocumentModel context) throws ClientException;
+
     /**
      * Transform the GroupName to add to tenant characteristic.
      * 

@@ -55,18 +55,18 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(SESSION)
 @Install(precedence = Install.FRAMEWORK)
 @Startup
-public class UserWorkspaceManagerActionsBean implements
-        UserWorkspaceManagerActions {
+public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActions {
 
     public static final String DOCUMENT_VIEW = "view_documents";
+
     public static final String DOCUMENT_MANAGEMENT_ACTION = "documents";
 
     private static final long serialVersionUID = 1828552026739219850L;
 
     private static final Log log = LogFactory.getLog(UserWorkspaceManagerActions.class);
 
-    protected static final String DOCUMENT_MANAGEMENT_TAB = WebActions.MAIN_TABS_CATEGORY
-            + ":" + WebActions.DOCUMENTS_MAIN_TAB_ID;
+    protected static final String DOCUMENT_MANAGEMENT_TAB = WebActions.MAIN_TABS_CATEGORY + ":"
+            + WebActions.DOCUMENTS_MAIN_TAB_ID;
 
     protected boolean showingPersonalWorkspace;
 
@@ -113,8 +113,7 @@ public class UserWorkspaceManagerActionsBean implements
         return userWorkspaceService;
     }
 
-    public DocumentModel getCurrentUserPersonalWorkspace()
-            throws ClientException {
+    public DocumentModel getCurrentUserPersonalWorkspace() throws ClientException {
         if (!initialized) {
             initialize();
         }
@@ -125,12 +124,11 @@ public class UserWorkspaceManagerActionsBean implements
             // dealt with by setCurrentDocument, which will deal with
             // the lack of a documentManager
         }
-        return getUserWorkspaceService().getCurrentUserPersonalWorkspace(
-                documentManager, navigationContext.getCurrentDocument());
+        return getUserWorkspaceService().getCurrentUserPersonalWorkspace(documentManager,
+                navigationContext.getCurrentDocument());
     }
 
-    public String navigateToCurrentUserPersonalWorkspace()
-            throws ClientException {
+    public String navigateToCurrentUserPersonalWorkspace() throws ClientException {
         if (!initialized) {
             initialize();
         }
@@ -142,10 +140,9 @@ public class UserWorkspaceManagerActionsBean implements
         // Rux INA-221: separated links for going to workspaces
         DocumentModel currentUserPersonalWorkspace = getCurrentUserPersonalWorkspace();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (!isShowingPersonalWorkspace() && currentDocument != null
-                && currentDocument.getPath().segment(0) != null) {
-            lastAccessedDocument = mainTabsActions.getDocumentFor(
-                    DOCUMENT_MANAGEMENT_ACTION, navigationContext.getCurrentDocument());
+        if (!isShowingPersonalWorkspace() && currentDocument != null && currentDocument.getPath().segment(0) != null) {
+            lastAccessedDocument = mainTabsActions.getDocumentFor(DOCUMENT_MANAGEMENT_ACTION,
+                    navigationContext.getCurrentDocument());
         }
         navigationContext.setCurrentDocument(currentUserPersonalWorkspace);
         showingPersonalWorkspace = true;

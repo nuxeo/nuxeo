@@ -22,15 +22,13 @@ import org.nuxeo.theme.rendering.StandaloneFilter;
 
 public final class XmlNamespaces extends StandaloneFilter {
 
-    static final Pattern tagsPattern = Pattern.compile(
-            "(.*?)<([^/@!<>].*?)>(.*)", Pattern.DOTALL);
+    static final Pattern tagsPattern = Pattern.compile("(.*?)<([^/@!<>].*?)>(.*)", Pattern.DOTALL);
 
     static final String xmlnsAttrStr = "xmlns[^\"]+\"([^\"]+)\"";
 
     static final String spaceXmlnsAttrStr = " " + xmlnsAttrStr;
 
-    static final Pattern xmlnsAttrPattern = Pattern.compile(xmlnsAttrStr,
-            Pattern.DOTALL);
+    static final Pattern xmlnsAttrPattern = Pattern.compile(xmlnsAttrStr, Pattern.DOTALL);
 
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
@@ -59,8 +57,8 @@ public final class XmlNamespaces extends StandaloneFilter {
         }
 
         // write the final markup
-        final String f = String.format("%s<%s%s>%s", firstMatcher.group(1),
-                firstMatcher.group(2), s.toString(), firstMatcher.group(3));
+        final String f = String.format("%s<%s%s>%s", firstMatcher.group(1), firstMatcher.group(2), s.toString(),
+                firstMatcher.group(3));
 
         info.setMarkup(f);
         return info;

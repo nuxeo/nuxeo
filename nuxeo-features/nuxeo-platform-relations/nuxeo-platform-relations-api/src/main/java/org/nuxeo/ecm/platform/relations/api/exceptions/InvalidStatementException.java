@@ -22,8 +22,7 @@ package org.nuxeo.ecm.platform.relations.api.exceptions;
 /**
  * Invalid statement exception.
  * <p>
- * A valid statement cannot hold literals as subjects or predicates, neither
- * blank nodes as predicates.
+ * A valid statement cannot hold literals as subjects or predicates, neither blank nodes as predicates.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

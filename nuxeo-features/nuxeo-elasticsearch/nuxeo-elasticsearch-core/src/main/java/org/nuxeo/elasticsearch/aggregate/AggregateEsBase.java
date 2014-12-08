@@ -33,15 +33,13 @@ import org.nuxeo.ecm.platform.query.core.AggregateBase;
 /**
  * @since 6.0
  */
-public abstract class AggregateEsBase<B extends Bucket> extends
-        AggregateBase<B> {
+public abstract class AggregateEsBase<B extends Bucket> extends AggregateBase<B> {
 
     public final static char XPATH_SEP = '/';
 
     public final static char ES_MUTLI_LEVEL_SEP = '.';
 
-    public AggregateEsBase(AggregateDefinition definition,
-            DocumentModel searchDocument) {
+    public AggregateEsBase(AggregateDefinition definition, DocumentModel searchDocument) {
         super(definition, searchDocument);
     }
 
@@ -58,8 +56,7 @@ public abstract class AggregateEsBase<B extends Bucket> extends
     /**
      * Extract the buckets from the Elasticsearch response
      */
-    public abstract void parseEsBuckets(
-            Collection<? extends MultiBucketsAggregation.Bucket> buckets);
+    public abstract void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets);
 
     @Override
     public String getField() {
@@ -74,8 +71,7 @@ public abstract class AggregateEsBase<B extends Bucket> extends
     /**
      * Convert embedded Elasticsearch DateTime to joda DateTime
      */
-    protected DateTime getDateTime(
-            org.elasticsearch.common.joda.time.DateTime date) {
+    protected DateTime getDateTime(org.elasticsearch.common.joda.time.DateTime date) {
         if (date == null) {
             return null;
         }

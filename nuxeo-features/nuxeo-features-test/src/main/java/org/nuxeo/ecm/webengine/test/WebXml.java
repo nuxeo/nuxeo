@@ -24,10 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Can be used to specify a a path to a custom web.xml file.
- * </p>
- * The path will be resolved as an URL by using the class loader of the annotated class.
- * (i.e. using {@link ClassLoader#getResource(String)})
+ * Can be used to specify a a path to a custom web.xml file. </p> The path will be resolved as an URL by using the class
+ * loader of the annotated class. (i.e. using {@link ClassLoader#getResource(String)})
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

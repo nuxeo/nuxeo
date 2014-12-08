@@ -20,8 +20,7 @@ package org.nuxeo.connect.client.status;
 /**
  * PlaceHolder for Unregistered instances
  */
-public class UnresgistedSubscriptionStatusWrapper extends
-        SubscriptionStatusWrapper {
+public class UnresgistedSubscriptionStatusWrapper extends SubscriptionStatusWrapper {
 
     public UnresgistedSubscriptionStatusWrapper() {
         super("Instance is not registered");

@@ -74,12 +74,10 @@ public class TestPDFToImage extends NXRuntimeTestCase {
         String converterName = cs.getConverterName("application/pdf", "image/jpeg");
         assertEquals("pdf2image", converterName);
 
-        CommandLineExecutorService cles = Framework
-                .getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
-
-        ConverterCheckResult check =  cs.isConverterAvailable(converterName);
+        ConverterCheckResult check = cs.isConverterAvailable(converterName);
         assertNotNull(check);
         if (!check.isAvailable()) {
             log.warn("Skipping PDF2Image tests since commandLine is not installed");

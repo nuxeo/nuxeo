@@ -46,8 +46,7 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
     protected static final String SRV_RECORD = "SRV";
 
     /**
-     * Create a cache to hold the at most 100 recent DNS lookups for a period of
-     * 10 minutes.
+     * Create a cache to hold the at most 100 recent DNS lookups for a period of 10 minutes.
      */
     protected Map<String, List<DNSServiceEntry>> cache = new HashMap<String, List<DNSServiceEntry>>();
 
@@ -70,8 +69,7 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
          */
         int cacheExpiry = 10;
         try {
-            cacheExpiry = Integer.parseInt(Framework.getProperty(
-                    DNS_CACHE_EXPIRY, "10"));
+            cacheExpiry = Integer.parseInt(Framework.getProperty(DNS_CACHE_EXPIRY, "10"));
         } catch (NumberFormatException e) {
             log.warn("invalid value for property: " + DNS_CACHE_EXPIRY
                     + ", falling back to default value of 10 minutes");
@@ -79,8 +77,7 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
         maxDelay = 1000 * 60 * cacheExpiry;
 
         Properties env = new Properties();
-        env.put("java.naming.factory.initial",
-                "com.sun.jndi.dns.DnsContextFactory");
+        env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
         try {
             context = new InitialDirContext(env);
         } catch (NamingException e) {
@@ -89,21 +86,19 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
     }
 
     /**
-     * Returns the host name and port that a server providing the specified
-     * service can be reached at. A DNS lookup for a SRV record in the form
-     * "_service.example.com" is attempted.
+     * Returns the host name and port that a server providing the specified service can be reached at. A DNS lookup for
+     * a SRV record in the form "_service.example.com" is attempted.
      * <p>
-     * As an example, a lookup for "example.com" for the service _gc._tcp may
-     * return "dc01.example.com:3268".
+     * As an example, a lookup for "example.com" for the service _gc._tcp may return "dc01.example.com:3268".
      *
      * @param service the service.
      * @param domain the domain.
-     * @return a List of DNSServiceEntrys, which encompasses the hostname and
-     *         port that the server can be reached at for the specified domain.
+     * @return a List of DNSServiceEntrys, which encompasses the hostname and port that the server can be reached at for
+     *         the specified domain.
      * @throws NamingException if the DNS server is unreachable
      */
-    protected List<DNSServiceEntry> resolveDnsServiceRecord(
-            final String service, final String domain) throws NamingException {
+    protected List<DNSServiceEntry> resolveDnsServiceRecord(final String service, final String domain)
+            throws NamingException {
         List<DNSServiceEntry> addresses = new ArrayList<DNSServiceEntry>();
 
         if (context == null) {
@@ -124,8 +119,7 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
             }
         }
 
-        Attributes dnsLookup = context.getAttributes(service + "." + domain,
-                new String[] { SRV_RECORD });
+        Attributes dnsLookup = context.getAttributes(service + "." + domain, new String[] { SRV_RECORD });
 
         Attribute attribute = dnsLookup.get(SRV_RECORD);
         for (int i = 0; i < attribute.size(); i++) {
@@ -170,13 +164,12 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
         return addresses;
     }
 
-    public List<DNSServiceEntry> resolveLDAPDomainServers(final String domain)
-            throws NamingException {
+    public List<DNSServiceEntry> resolveLDAPDomainServers(final String domain) throws NamingException {
         return resolveDnsServiceRecord(LDAP_SERVICE_PREFIX, domain);
     }
 
-    public List<DNSServiceEntry> resolveLDAPDomainServers(final String domain,
-            final String prefix) throws NamingException {
+    public List<DNSServiceEntry> resolveLDAPDomainServers(final String domain, final String prefix)
+            throws NamingException {
         return resolveDnsServiceRecord(prefix, domain);
     }
 

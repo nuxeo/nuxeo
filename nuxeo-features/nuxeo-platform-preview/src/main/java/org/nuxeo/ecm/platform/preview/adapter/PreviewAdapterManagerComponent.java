@@ -31,13 +31,11 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime component that handles the extension points and the service interface
- * for Preview Adapter management.
+ * Runtime component that handles the extension points and the service interface for Preview Adapter management.
  *
  * @author tiry
  */
-public class PreviewAdapterManagerComponent extends DefaultComponent implements
-        PreviewAdapterManager {
+public class PreviewAdapterManagerComponent extends DefaultComponent implements PreviewAdapterManager {
 
     public static final String ADAPTER_FACTORY_EP = "AdapterFactory";
 
@@ -56,8 +54,7 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements
     // Component and EP management
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (ADAPTER_FACTORY_EP.equals(extensionPoint)) {
             AdapterFactoryDescriptor desc = (AdapterFactoryDescriptor) contribution;
@@ -87,8 +84,7 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
     // service interface impl
@@ -142,8 +138,8 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements
     }
 
     public MimeTypePreviewer getPreviewer(String mimeType) {
-        for(Map.Entry<String, MimeTypePreviewer> entry : previewerFactory.entrySet()) {
-            if(mimeType.matches(entry.getKey())) {
+        for (Map.Entry<String, MimeTypePreviewer> entry : previewerFactory.entrySet()) {
+            if (mimeType.matches(entry.getKey())) {
                 return entry.getValue();
             }
         }

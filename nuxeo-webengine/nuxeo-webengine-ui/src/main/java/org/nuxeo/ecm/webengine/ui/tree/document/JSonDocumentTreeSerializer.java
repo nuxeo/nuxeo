@@ -26,7 +26,6 @@ import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JSonDocumentTreeSerializer extends JSonTreeSerializer {
 
@@ -38,7 +37,7 @@ public class JSonDocumentTreeSerializer extends JSonTreeSerializer {
 
     @Override
     public String getUrl(TreeItem item) {
-        return ctx.getUrlPath((DocumentModel)item.getObject());
+        return ctx.getUrlPath((DocumentModel) item.getObject());
     }
 
 }

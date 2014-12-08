@@ -49,33 +49,27 @@ public interface IOResourceAdapter extends Serializable {
      * Extracts resources for given document locations.
      *
      * @param repo TODO
-     * @param sources locations of documents to consider. Has to include
-     *            documents children if needed.
-     *
+     * @param sources locations of documents to consider. Has to include documents children if needed.
      * @return a structure holding associated resources.
      */
     IOResources extractResources(String repo, Collection<DocumentRef> sources);
 
     /**
-     * Returns translated resources once copy has been done, passing a
-     * correspondence map.
+     * Returns translated resources once copy has been done, passing a correspondence map.
      *
      * @param repo target repository for resources.
      * @param resources resources previously extracted thanks to
      *            {@link IOResourceAdapter#extractResources(String, Collection)}
      * @param map correspondence map between old locations and new ones.
-     *
      * @return translated resources.
      */
-    IOResources translateResources(String repo, IOResources resources,
-            DocumentTranslationMap map);
+    IOResources translateResources(String repo, IOResources resources, DocumentTranslationMap map);
 
     /**
      * Persists resources.
      *
      * @param newResources resources previously extracted thanks to
-     *            {@link IOResourceAdapter#extractResources(String, Collection)}
-     *            or
+     *            {@link IOResourceAdapter#extractResources(String, Collection)} or
      *            {@link IOResourceAdapter#translateResources(String, IOResources, DocumentTranslationMap)}
      */
     void storeResources(IOResources newResources);
@@ -85,8 +79,7 @@ public interface IOResourceAdapter extends Serializable {
      *
      * @param out stream where export will be written.
      * @param newResources resources previously extracted thanks to
-     *            {@link IOResourceAdapter#extractResources(String, Collection)}
-     *            or
+     *            {@link IOResourceAdapter#extractResources(String, Collection)} or
      *            {@link IOResourceAdapter#translateResources(String, IOResources, DocumentTranslationMap)}
      */
     void getResourcesAsXML(OutputStream out, IOResources newResources);

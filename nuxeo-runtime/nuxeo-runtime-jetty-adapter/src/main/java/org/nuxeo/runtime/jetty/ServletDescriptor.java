@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("servlet")
 public class ServletDescriptor {
@@ -43,13 +42,12 @@ public class ServletDescriptor {
     @XNode("@path")
     protected String path;
 
-    @XNodeMap(value="init-params/param", key="@name", type=HashMap.class, componentType=String.class, trim=true, nullByDefault=true)
+    @XNodeMap(value = "init-params/param", key = "@name", type = HashMap.class, componentType = String.class, trim = true, nullByDefault = true)
     protected Map<String, String> initParams;
 
     // the description if any
     @XNode("description")
     protected String description;
-
 
     public ServletDescriptor() {
     }

@@ -24,7 +24,6 @@ import java.util.Collection;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Main {
 
@@ -40,7 +39,7 @@ public class Main {
         }
         NuxeoApp app = new NuxeoApp();
         app.start();
-        System.out.println("Deploying bundles: "+files);
+        System.out.println("Deploying bundles: " + files);
         if (files != null) {
             app.deployBundles(files);
         }
@@ -51,7 +50,7 @@ public class Main {
             if (tmp.length > 0) {
                 System.arraycopy(args, 1, tmp, 0, tmp.length);
             }
-            main.invoke(null, new Object[]{tmp});
+            main.invoke(null, new Object[] { tmp });
         }
         app.shutdown();
     }

@@ -19,19 +19,18 @@
 package org.nuxeo.elasticsearch.seqgen;
 
 /**
- * Interface for managing abstracted sequences 
+ * Interface for managing abstracted sequences
  * 
  * @author tiry
- *
  */
 public interface SequenceGenerator {
 
     /**
      * For the given sequence name, increment it and return the value
-     *  
+     *
      * @param sequenceName the name of the sequence
      * @return the new value of the sequence after increment
      */
     long getNextId(String sequenceName);
-    
+
 }

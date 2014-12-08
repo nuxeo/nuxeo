@@ -26,8 +26,7 @@ public class DateLiteral extends Literal {
 
     private static final long serialVersionUID = 279219479611055690L;
 
-    public static final DateTimeFormatter dateParser = ISODateTimeFormat.dateParser().withLocale(
-            Locale.getDefault());
+    public static final DateTimeFormatter dateParser = ISODateTimeFormat.dateParser().withLocale(Locale.getDefault());
 
     public static final DateTimeFormatter dateTimeParser = ISODateTimeFormat.dateOptionalTimeParser().withOffsetParsed();
 
@@ -67,12 +66,10 @@ public class DateLiteral extends Literal {
     public String toString() {
         if (onlyDate) {
             String s = dateFormatter.print(value);
-            return new StringBuffer(s.length() + 7).append("DATE '").append(s).append(
-                    "'").toString();
+            return new StringBuffer(s.length() + 7).append("DATE '").append(s).append("'").toString();
         } else {
             String s = dateTimeFormatter.print(value);
-            return new StringBuffer(s.length() + 12).append("TIMESTAMP '").append(
-                    s).append("'").toString();
+            return new StringBuffer(s.length() + 12).append("TIMESTAMP '").append(s).append("'").toString();
         }
     }
 

@@ -22,7 +22,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Descriptor for registration of an external blob adapter.
  *
  * @see ExternalBlobAdapter
- *
  * @author Anahide Tchertchian
  */
 @XObject("adapter")

@@ -41,8 +41,7 @@ public class TestOOoServiceManagerService extends Assert {
         tc.setUp();
         tc.deployBundle("org.nuxeo.ecm.platform.convert");
         tc.deployBundle("org.nuxeo.ecm.platform.convert.test");
-        tc.deployContrib("org.nuxeo.ecm.platform.convert.test",
-                "test-ooo-manager-contrib.xml");
+        tc.deployContrib("org.nuxeo.ecm.platform.convert.test", "test-ooo-manager-contrib.xml");
     }
 
     @After
@@ -75,8 +74,7 @@ public class TestOOoServiceManagerService extends Assert {
 
     @Test
     public void testSocketConnection() throws Exception {
-        Framework.getProperties().load(
-                new FileInputStream(tc.getResource("jodSocket.properties").getFile()));
+        Framework.getProperties().load(new FileInputStream(tc.getResource("jodSocket.properties").getFile()));
         ods = Framework.getLocalService(OOoManagerService.class);
         assertNotNull(ods);
 
@@ -87,8 +85,7 @@ public class TestOOoServiceManagerService extends Assert {
 
     @Test
     public void testPipeConnection() throws Exception {
-        Framework.getProperties().load(
-                new FileInputStream(tc.getResource("jodPipe.properties").getFile()));
+        Framework.getProperties().load(new FileInputStream(tc.getResource("jodPipe.properties").getFile()));
         ods = Framework.getLocalService(OOoManagerService.class);
         assertNotNull(ods);
 

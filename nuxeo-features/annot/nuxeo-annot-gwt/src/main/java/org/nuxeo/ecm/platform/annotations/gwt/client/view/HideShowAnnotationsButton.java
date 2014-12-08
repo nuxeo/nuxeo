@@ -30,15 +30,12 @@ import com.google.gwt.user.client.ui.ToggleButton;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class HideShowAnnotationsButton extends Composite {
 
-    public HideShowAnnotationsButton(
-            final AnnotationController annotationController) {
+    public HideShowAnnotationsButton(final AnnotationController annotationController) {
         final TranslationConstants translationConstants = GWT.create(TranslationConstants.class);
-        final ToggleButton button = new ToggleButton(
-                translationConstants.showAnnotations(),
+        final ToggleButton button = new ToggleButton(translationConstants.showAnnotations(),
                 translationConstants.hideAnnotations());
         button.setStyleName("annotation-hide-show-button");
         button.setDown(annotationController.isAnnotationsVisible());
@@ -56,15 +53,15 @@ public class HideShowAnnotationsButton extends Composite {
     }
 
     private native void showAnnotations() /*-{
-        if (typeof top['showAnnotations'] != "undefined") {
-            top['showAnnotations']();
-        }
-    }-*/;
+                                          if (typeof top['showAnnotations'] != "undefined") {
+                                          top['showAnnotations']();
+                                          }
+                                          }-*/;
 
     private native void hideAnnotations() /*-{
-        if (typeof top['hideAnnotations'] != "undefined") {
-            top['hideAnnotations']();
-        }
-    }-*/;
+                                          if (typeof top['hideAnnotations'] != "undefined") {
+                                          top['hideAnnotations']();
+                                          }
+                                          }-*/;
 
 }

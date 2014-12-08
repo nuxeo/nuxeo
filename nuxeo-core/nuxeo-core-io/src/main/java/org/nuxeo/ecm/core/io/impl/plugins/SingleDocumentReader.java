@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SingleDocumentReader extends DocumentModelReader {
 
@@ -40,8 +39,7 @@ public class SingleDocumentReader extends DocumentModelReader {
         doc = root;
     }
 
-    public SingleDocumentReader(CoreSession session, DocumentRef root)
-            throws ClientException {
+    public SingleDocumentReader(CoreSession session, DocumentRef root) throws ClientException {
         this(session, session.getDocument(root));
     }
 

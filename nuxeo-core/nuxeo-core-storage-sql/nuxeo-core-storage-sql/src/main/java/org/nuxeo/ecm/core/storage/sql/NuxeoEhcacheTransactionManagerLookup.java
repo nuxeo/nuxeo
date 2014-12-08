@@ -26,10 +26,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Help ehcache to find the Nuxeo transaction manager
- *
  */
-public class NuxeoEhcacheTransactionManagerLookup implements
-        TransactionManagerLookup {
+public class NuxeoEhcacheTransactionManagerLookup implements TransactionManagerLookup {
     private static final Log log = LogFactory.getLog(NuxeoEhcacheTransactionManagerLookup.class);
 
     @Override

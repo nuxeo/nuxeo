@@ -28,18 +28,15 @@ public class TestResourceExpansion extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.html.tests", "resource-expansion.xml");
     }
 
     @Test
     public void testResourceExpansion() {
         String RESOURCE_NAME = "resource-with-partial-urls.css";
-        ResourceType resource = (ResourceType) Manager.getTypeRegistry().lookup(
-                TypeFamily.RESOURCE, RESOURCE_NAME);
+        ResourceType resource = (ResourceType) Manager.getTypeRegistry().lookup(TypeFamily.RESOURCE, RESOURCE_NAME);
         assertEquals(RESOURCE_NAME, resource.getName());
         assertEquals("resource.css", resource.getPath());
         assertEquals("/nuxeo/css/", resource.getContextPath());

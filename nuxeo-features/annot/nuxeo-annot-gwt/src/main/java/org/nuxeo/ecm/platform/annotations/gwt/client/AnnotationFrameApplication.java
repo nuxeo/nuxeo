@@ -27,7 +27,6 @@ import com.google.gwt.user.client.Event;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class AnnotationFrameApplication {
 
@@ -60,8 +59,8 @@ public class AnnotationFrameApplication {
     }
 
     private static native void notifyFrameModuleInitialized() /*-{
-       top['frameModuleInitialized'] = true;
-    }-*/;
+                                                              top['frameModuleInitialized'] = true;
+                                                              }-*/;
 
     private static void configureController() {
         PreviewSettings previewSettings = PreviewSettings.getInstance();
@@ -73,18 +72,13 @@ public class AnnotationFrameApplication {
             controller.setPointerAdapter(previewSettings.getPointerAdapter());
             controller.setAnnotationDecoratorFunction(previewSettings.getAnnotationDecoratorFunction());
         }
-        Document.get().getBody().setScrollTop(
-                controller.getFrameScrollFromTop());
+        Document.get().getBody().setScrollTop(controller.getFrameScrollFromTop());
     }
 
     private static void setListeners() {
-        DOM.sinkEvents(
-                (com.google.gwt.user.client.Element) Document.get().cast(),
-                Event.ONMOUSEMOVE | Event.ONCLICK | Event.ONMOUSEDOWN
-                        | Event.ONMOUSEUP);
-        DOM.setEventListener(
-                (com.google.gwt.user.client.Element) Document.get().cast(),
-                annotatedEventListener);
+        DOM.sinkEvents((com.google.gwt.user.client.Element) Document.get().cast(), Event.ONMOUSEMOVE | Event.ONCLICK
+                | Event.ONMOUSEDOWN | Event.ONMOUSEUP);
+        DOM.setEventListener((com.google.gwt.user.client.Element) Document.get().cast(), annotatedEventListener);
     }
 
 }

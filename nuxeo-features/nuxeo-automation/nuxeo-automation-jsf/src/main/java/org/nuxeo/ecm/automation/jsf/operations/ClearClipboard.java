@@ -27,8 +27,7 @@ public class ClearClipboard {
 
     @OperationMethod
     public void run() {
-        OperationHelper.getDocumentListManager().resetWorkingList(
-                DocumentsListsManager.CLIPBOARD);
+        OperationHelper.getDocumentListManager().resetWorkingList(DocumentsListsManager.CLIPBOARD);
     }
 
 }

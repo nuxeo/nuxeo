@@ -49,8 +49,8 @@ public class IODocumentManagerImpl implements IODocumentManager {
     private static final long serialVersionUID = -3131999198524020179L;
 
     @Override
-    public DocumentTranslationMap importDocuments(InputStream in, String repo,
-            DocumentRef root) throws ImportDocumentException, ClientException {
+    public DocumentTranslationMap importDocuments(InputStream in, String repo, DocumentRef root)
+            throws ImportDocumentException, ClientException {
         DocumentReader reader = null;
         DocumentModelWriter writer = null;
         try (CoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {
@@ -73,7 +73,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
                 writer.close();
             }
         }
-     }
+    }
 
     @Override
     public DocumentTranslationMap importDocuments(InputStream in, DocumentWriter customDocWriter)
@@ -103,9 +103,8 @@ public class IODocumentManagerImpl implements IODocumentManager {
     }
 
     @Override
-    public DocumentTranslationMap exportDocuments(OutputStream out,
-            String repo, Collection<DocumentRef> sources, boolean recurse,
-            String format) throws ExportDocumentException, ClientException {
+    public DocumentTranslationMap exportDocuments(OutputStream out, String repo, Collection<DocumentRef> sources,
+            boolean recurse, String format) throws ExportDocumentException, ClientException {
         DocumentReader reader = null;
         DocumentWriter writer = null;
         try (CoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {
@@ -114,8 +113,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
             writer = new NuxeoArchiveWriter(out);
             pipe.setWriter(writer);
             if (!recurse) {
-                reader = DocumentsListReader.createDocumentsListReader(
-                        coreSession, sources);
+                reader = DocumentsListReader.createDocumentsListReader(coreSession, sources);
                 pipe.setReader(reader);
                 return pipe.run();
             } else {
@@ -144,8 +142,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
     }
 
     @Override
-    public DocumentTranslationMap exportDocuments(OutputStream out,
-            DocumentReader customDocReader, String format)
+    public DocumentTranslationMap exportDocuments(OutputStream out, DocumentReader customDocReader, String format)
             throws ExportDocumentException {
 
         DocumentWriter writer = null;
@@ -175,8 +172,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
     }
 
     @Override
-    public DocumentTranslationMap importDocuments(
-            DocumentReader customDocReader, DocumentWriter customDocWriter)
+    public DocumentTranslationMap importDocuments(DocumentReader customDocReader, DocumentWriter customDocWriter)
             throws ImportDocumentException {
 
         try {

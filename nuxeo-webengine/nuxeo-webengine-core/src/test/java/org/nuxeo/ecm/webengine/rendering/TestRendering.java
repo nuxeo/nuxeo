@@ -43,22 +43,23 @@ public class TestRendering extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.rendering");
         deployBundle("org.nuxeo.ecm.webengine.core");
 
-        //deployContrib("org.nuxeo.ecm.webengine.core.tests", "test-rendering-template-contrib.xml");
+        // deployContrib("org.nuxeo.ecm.webengine.core.tests", "test-rendering-template-contrib.xml");
     }
 
-    public void testX() {}
-//TODO migrate tests to JAX-RS
-//    public void testTemplateContribution() throws Exception {
-//        WebEngine2 web = Framework.getService(WebEngine2.class);
-//        WebApplication app = web.getApplication("test");
-//        if (app == null) {
-//            fail("Application test was not defined");
-//        }
-//        FreemarkerEngine rendering = (FreemarkerEngine) app.getRendering();
-//        TemplateMethodModelEx tm = (TemplateMethodModelEx) rendering.getConfiguration().getSharedVariable("ext1");
-//        assertEquals("My Value 1", tm.exec(null));
-//        SimpleScalar t = (SimpleScalar)rendering.getConfiguration().getSharedVariable("ext2");
-//        assertEquals("My Value 2", t.getAsString());
-//    }
+    public void testX() {
+    }
+    // TODO migrate tests to JAX-RS
+    // public void testTemplateContribution() throws Exception {
+    // WebEngine2 web = Framework.getService(WebEngine2.class);
+    // WebApplication app = web.getApplication("test");
+    // if (app == null) {
+    // fail("Application test was not defined");
+    // }
+    // FreemarkerEngine rendering = (FreemarkerEngine) app.getRendering();
+    // TemplateMethodModelEx tm = (TemplateMethodModelEx) rendering.getConfiguration().getSharedVariable("ext1");
+    // assertEquals("My Value 1", tm.exec(null));
+    // SimpleScalar t = (SimpleScalar)rendering.getConfiguration().getSharedVariable("ext2");
+    // assertEquals("My Value 2", t.getAsString());
+    // }
 
 }

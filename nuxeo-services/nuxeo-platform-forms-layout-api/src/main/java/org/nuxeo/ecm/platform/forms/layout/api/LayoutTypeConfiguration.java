@@ -26,14 +26,12 @@ import java.util.Map;
 public interface LayoutTypeConfiguration extends Serializable {
 
     /**
-     * Returns the version name since the widget type has been available (5.4,
-     * 5.4.2, etc...)
+     * Returns the version name since the widget type has been available (5.4, 5.4.2, etc...)
      */
     String getSinceVersion();
 
     /**
-     * Returns the version name since the widget type has been deprecated (5.4,
-     * 5.4.2, etc...)
+     * Returns the version name since the widget type has been deprecated (5.4, 5.4.2, etc...)
      */
     String getDeprecatedVersion();
 
@@ -42,8 +40,7 @@ public interface LayoutTypeConfiguration extends Serializable {
     String getDescription();
 
     /**
-     * Returns the identifier to be used for the demo, or null if no demo is
-     * available.
+     * Returns the identifier to be used for the demo, or null if no demo is available.
      */
     String getDemoId();
 
@@ -57,19 +54,17 @@ public interface LayoutTypeConfiguration extends Serializable {
     List<String> getSupportedModes();
 
     /**
-     * Returns true if widget knows how to display its label (some widget types
-     * might delegate this to their containing widget or layout, usually when
-     * defining form layouts).
+     * Returns true if widget knows how to display its label (some widget types might delegate this to their containing
+     * widget or layout, usually when defining form layouts).
      */
     boolean isHandlingLabels();
 
     /**
      * Returns true if widget will be containing forms.
      * <p>
-     * Since forms cannot contains any sub forms, layouts using this widget
-     * should not be surrounded by any form. Other widgets in the same layouts
-     * not containing forms may then need a surrounding form that could be
-     * added by the layout template.
+     * Since forms cannot contains any sub forms, layouts using this widget should not be surrounded by any form. Other
+     * widgets in the same layouts not containing forms may then need a surrounding form that could be added by the
+     * layout template.
      */
     boolean isContainingForm();
 
@@ -83,14 +78,12 @@ public interface LayoutTypeConfiguration extends Serializable {
     Map<String, Map<String, Serializable>> getDefaultPropertyValues();
 
     /**
-     * Returns the default values for the layout type properties, for given
-     * mode.
+     * Returns the default values for the layout type properties, for given mode.
      */
     Map<String, Serializable> getDefaultPropertyValues(String mode);
 
     /**
-     * Returns the list of supported controls, e.g. controls that are checked
-     * on sub-widgets definitions.
+     * Returns the list of supported controls, e.g. controls that are checked on sub-widgets definitions.
      */
     List<String> getSupportedControls();
 

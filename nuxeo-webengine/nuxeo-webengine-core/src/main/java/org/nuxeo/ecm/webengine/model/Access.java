@@ -18,14 +18,13 @@ package org.nuxeo.ecm.webengine.model;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public enum Access {
 
     GRANT, DENY, NULL;
 
     public boolean isGranted() {
-       return this == GRANT;
+        return this == GRANT;
     }
 
     public boolean isDenied() {

@@ -27,29 +27,21 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.DocumentL
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 
 /**
- *
  * {@link DocumentLocation} marshaler using simple XML representation.
  *
  * @author tiry
- *
  */
-public class DefaultDocumentLocationMarshaler extends
-        AbstractDefaultXMLMarshaler implements DocumentLocationMarshaler {
+public class DefaultDocumentLocationMarshaler extends AbstractDefaultXMLMarshaler implements DocumentLocationMarshaler {
 
     protected String sourceServer;
 
-    protected static QName rootTag = DocumentFactory.getInstance().createQName(
-            "documentLocation", publisherSerializerNSPrefix,
-            publisherSerializerNS);
+    protected static QName rootTag = DocumentFactory.getInstance().createQName("documentLocation",
+            publisherSerializerNSPrefix, publisherSerializerNS);
 
-    public String marshalDocumentLocation(DocumentLocation docLoc)
-            throws PublishingMarshalingException {
-        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(
-                rootTag);
-        rootElem.addNamespace(publisherSerializerNSPrefix,
-                publisherSerializerNS);
-        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(
-                rootElem);
+    public String marshalDocumentLocation(DocumentLocation docLoc) throws PublishingMarshalingException {
+        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(rootTag);
+        rootElem.addNamespace(publisherSerializerNSPrefix, publisherSerializerNS);
+        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(rootElem);
 
         rootElem.addAttribute("repository", docLoc.getServerName());
         rootElem.addAttribute("ref", docLoc.getDocRef().toString());
@@ -63,8 +55,7 @@ public class DefaultDocumentLocationMarshaler extends
         return cleanUpXml(data);
     }
 
-    public DocumentLocation unMarshalDocumentLocation(String data)
-            throws PublishingMarshalingException {
+    public DocumentLocation unMarshalDocumentLocation(String data) throws PublishingMarshalingException {
 
         DocumentLocation docLoc;
         try {
@@ -81,16 +72,13 @@ public class DefaultDocumentLocationMarshaler extends
             }
 
             if (rootElem.attributeValue("originalServer") != null) {
-                docLoc = new ExtendedDocumentLocation(
-                        rootElem.attributeValue("originalServer"), repoName,
-                        ref);
+                docLoc = new ExtendedDocumentLocation(rootElem.attributeValue("originalServer"), repoName, ref);
             } else {
                 docLoc = new DocumentLocationImpl(repoName, ref);
             }
 
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException(
-                    "Unable to unmarshal Piublication Node", e);
+            throw new PublishingMarshalingException("Unable to unmarshal Piublication Node", e);
         }
         return docLoc;
     }

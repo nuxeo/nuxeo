@@ -33,11 +33,11 @@ import org.nuxeo.osgi.JarBundleFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ClassPathScanner {
 
     protected boolean scanForNestedJARs = true;
+
     protected final Callback callback;
 
     /**
@@ -62,9 +62,8 @@ public class ClassPathScanner {
     /**
      * FIXME: this javadoc is not correct.
      * <p>
-     * Scans the given class path and put found OSGi bundles in bundles, regular
-     * JARs in jars and append any nested jar or bundle into the given class
-     * loader.
+     * Scans the given class path and put found OSGi bundles in bundles, regular JARs in jars and append any nested jar
+     * or bundle into the given class loader.
      *
      * @param classPath
      */
@@ -76,8 +75,8 @@ public class ClassPathScanner {
 
     public void scan(File file) {
         String path = file.getAbsolutePath();
-        if (!(path.endsWith(".jar") || path.endsWith(".rar") || path.endsWith(".sar")
-                || path.endsWith("_jar") || path.endsWith("_rar") || path.endsWith("_sar"))) {
+        if (!(path.endsWith(".jar") || path.endsWith(".rar") || path.endsWith(".sar") || path.endsWith("_jar")
+                || path.endsWith("_rar") || path.endsWith("_sar"))) {
             return;
         }
         if (blackList != null) {
@@ -132,11 +131,10 @@ public class ClassPathScanner {
     public interface Callback {
 
         /**
-         * A nested JAR was found on the class path. Usually a callback should
-         * handle this by adding the JAR to a class loader
+         * A nested JAR was found on the class path. Usually a callback should handle this by adding the JAR to a class
+         * loader
          * <p>
-         * The callback should return a directory to be used to extract nested
-         * JARs from this JAR.
+         * The callback should return a directory to be used to extract nested JARs from this JAR.
          * <p>
          * The callback may return null to skip nested JAR extraction
          *
@@ -145,33 +143,27 @@ public class ClassPathScanner {
         void handleNestedJar(BundleFile bf);
 
         /**
-         * A JAR was found on the class path. Usually a callback should handle
-         * this by adding the JAR to a class loader.
+         * A JAR was found on the class path. Usually a callback should handle this by adding the JAR to a class loader.
          * <p>
-         * The callback should return a directory to be used to extract nested
-         * JARs from this JAR.
+         * The callback should return a directory to be used to extract nested JARs from this JAR.
          * <p>
          * The callback may return null to skip nested JAR extraction.
          *
          * @param bf the JAR found
-         * @return the folder to be used to extract JARs or null to skip
-         *         extraction
+         * @return the folder to be used to extract JARs or null to skip extraction
          */
         File handleJar(BundleFile bf);
 
         /**
-         * A Bundle was found on the class path. Usually a callback should
-         * handle this by adding the Bundle to a class loader and installing it
-         * in an OSGi framework
+         * A Bundle was found on the class path. Usually a callback should handle this by adding the Bundle to a class
+         * loader and installing it in an OSGi framework
          * <p>
-         * The callback should return a directory to be used to extract nested
-         * JARs from this JAR.
+         * The callback should return a directory to be used to extract nested JARs from this JAR.
          * <p>
          * The callback may return null to skip nested JAR extraction.
          *
          * @param bf the JAR found
-         * @return the folder to be used to extract JARs or null to skip
-         *         extraction
+         * @return the folder to be used to extract JARs or null to skip extraction
          */
         File handleBundle(BundleFile bf);
 

@@ -47,7 +47,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Florent Guillaume
- *
  */
 public class TestMemoryDirectory extends NXRuntimeTestCase {
 
@@ -66,8 +65,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.directory.core.tests", "test-schema.xml");
 
-        Set<String> schemaSet = new HashSet<String>(Arrays.asList("i", "pw",
-                "a", "int", "b"));
+        Set<String> schemaSet = new HashSet<String>(Arrays.asList("i", "pw", "a", "int", "b"));
         memDir = new MemoryDirectory("mydir", SCHEMA_NAME, schemaSet, "i", "pw");
         dir = (MemoryDirectorySession) memDir.getSession();
         Map<String, Object> e1 = new HashMap<String, Object>();
@@ -83,8 +81,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
     @Test
     public void testSchemaIntrospection() throws Exception {
         MemoryDirectory md = new MemoryDirectory("adir", SCHEMA_NAME, "i", "pw");
-        assertEquals(new HashSet<String>(Arrays.asList("i", "pw", "a", "int",
-                "b", "x")), md.schemaSet);
+        assertEquals(new HashSet<String>(Arrays.asList("i", "pw", "a", "int", "b", "x")), md.schemaSet);
     }
 
     @Test
@@ -108,8 +105,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
     @Test
     public void testCreateFromModel() throws Exception {
-        DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME,
-                null, null);
+        DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME, null, null);
         entry.setProperty(SCHEMA_NAME, "i", "yo");
 
         assertNull(dir.getEntry("yo"));
@@ -168,13 +164,11 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         String id = "no-such-entry";
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("i", id);
-        DocumentModel entry = BaseSession.createEntryModel(null,
-                SCHEMA_NAME, id, map);
+        DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME, id, map);
         try {
             dir.updateEntry(entry);
         } catch (DirectoryException de) {
-            assertEquals("UpdateEntry failed: entry 'no-such-entry' not found",
-                    de.getMessage());
+            assertEquals("UpdateEntry failed: entry 'no-such-entry' not found", de.getMessage());
         }
     }
 

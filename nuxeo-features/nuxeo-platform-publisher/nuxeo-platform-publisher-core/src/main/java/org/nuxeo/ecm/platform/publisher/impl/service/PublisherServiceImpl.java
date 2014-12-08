@@ -57,13 +57,12 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * POJO implementation of the publisher service Implements both
- * {@link PublisherService} and {@link RemotePublicationTreeManager}.
+ * POJO implementation of the publisher service Implements both {@link PublisherService} and
+ * {@link RemotePublicationTreeManager}.
  *
  * @author tiry
  */
-public class PublisherServiceImpl extends DefaultComponent implements
-        PublisherService, RemotePublicationTreeManager {
+public class PublisherServiceImpl extends DefaultComponent implements PublisherService, RemotePublicationTreeManager {
 
     private final Log log = LogFactory.getLog(PublisherServiceImpl.class);
 
@@ -150,8 +149,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         log.debug("Registry contribution for EP " + extensionPoint);
 
@@ -186,23 +184,21 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof PublicationTreeDescriptor) {
-            treeDescriptors.remove(((PublicationTreeDescriptor)contribution).getName());
+            treeDescriptors.remove(((PublicationTreeDescriptor) contribution).getName());
         } else if (contribution instanceof PublicationTreeConfigDescriptor) {
-            String name = ((PublicationTreeConfigDescriptor)contribution).getName();
+            String name = ((PublicationTreeConfigDescriptor) contribution).getName();
             pendingDescriptors.remove(name);
             treeConfigDescriptors.remove(name);
         } else if (contribution instanceof ValidatorsRuleDescriptor) {
-            validatorsRuleDescriptors.remove(((ValidatorsRuleDescriptor)contribution).getName());
+            validatorsRuleDescriptors.remove(((ValidatorsRuleDescriptor) contribution).getName());
         } else if (contribution instanceof RootSectionFinderFactoryDescriptor) {
             rootSectionFinderFactory = null;
         }
     }
 
-    protected String computeTreeSessionId(String treeConfigName,
-            CoreSession coreSession) {
+    protected String computeTreeSessionId(String treeConfigName, CoreSession coreSession) {
         return computeTreeSessionId(treeConfigName, coreSession.getSessionId());
     }
 
@@ -221,25 +217,21 @@ public class PublisherServiceImpl extends DefaultComponent implements
     public Map<String, String> getAvailablePublicationTrees() {
         Map<String, String> trees = new HashMap<String, String>();
         for (PublicationTreeConfigDescriptor desc : treeConfigDescriptors.values()) {
-            String title = desc.getTitle() == null ? desc.getName()
-                    : desc.getTitle();
+            String title = desc.getTitle() == null ? desc.getName() : desc.getTitle();
             trees.put(desc.getName(), title);
         }
         return trees;
     }
 
     @Override
-    public PublicationTree getPublicationTree(String treeName,
-            CoreSession coreSession, Map<String, String> params)
+    public PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params)
             throws ClientException, PublicationTreeNotAvailable {
         return getPublicationTree(treeName, coreSession, params, null);
     }
 
     @Override
-    public PublicationTree getPublicationTree(String treeName,
-            CoreSession coreSession, Map<String, String> params,
-            DocumentModel currentDocument) throws ClientException,
-            PublicationTreeNotAvailable {
+    public PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params,
+            DocumentModel currentDocument) throws ClientException, PublicationTreeNotAvailable {
         PublicationTree tree = getOrBuildTree(treeName, coreSession, params);
         if (tree == null) {
             return null;
@@ -251,11 +243,9 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public Map<String, String> initRemoteSession(String treeConfigName,
-            Map<String, String> params) {
+    public Map<String, String> initRemoteSession(String treeConfigName, Map<String, String> params) {
         CoreSession coreSession = CoreInstance.openCoreSession(null);
-        PublicationTree tree = getPublicationTree(treeConfigName, coreSession,
-                params);
+        PublicationTree tree = getPublicationTree(treeConfigName, coreSession, params);
 
         remoteLiveTrees.put(tree.getSessionId(), coreSession.getSessionId());
 
@@ -281,8 +271,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         if (remoteLiveTrees.containsKey(sid)) {
             // close here session opened for remote trees
             String sessionId = remoteLiveTrees.get(sid);
-            CoreSession remoteSession = CoreInstance.getInstance().getSession(
-                    sessionId);
+            CoreSession remoteSession = CoreInstance.getInstance().getSession(sessionId);
             remoteSession.close();
             remoteLiveTrees.remove(sid);
         }
@@ -296,8 +285,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected PublicationTree getOrBuildTree(String treeConfigName,
-            CoreSession coreSession, Map<String, String> params)
+    protected PublicationTree getOrBuildTree(String treeConfigName, CoreSession coreSession, Map<String, String> params)
             throws PublicationTreeNotAvailable {
         String key = computeTreeSessionId(treeConfigName, coreSession);
         PublicationTree tree;
@@ -312,27 +300,24 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return tree;
     }
 
-    protected PublicationTree buildTree(String sid, String treeConfigName,
-            CoreSession coreSession, Map<String, String> params)
-            throws PublicationTreeNotAvailable {
+    protected PublicationTree buildTree(String sid, String treeConfigName, CoreSession coreSession,
+            Map<String, String> params) throws PublicationTreeNotAvailable {
         try {
             PublicationTreeConfigDescriptor config = getPublicationTreeConfigDescriptor(treeConfigName);
-            Map<String, String> allParameters = computeAllParameters(config,
-                    params);
+            Map<String, String> allParameters = computeAllParameters(config, params);
             PublicationTreeDescriptor treeDescriptor = getPublicationTreeDescriptor(config);
-            PublishedDocumentFactory publishedDocumentFactory = getPublishedDocumentFactory(
-                    config, treeDescriptor, coreSession, allParameters);
-            return getPublicationTree(treeDescriptor, sid, coreSession,
-                    allParameters, publishedDocumentFactory, config.getName(),
-                    config.getTitle());
+            PublishedDocumentFactory publishedDocumentFactory = getPublishedDocumentFactory(config, treeDescriptor,
+                    coreSession, allParameters);
+            return getPublicationTree(treeDescriptor, sid, coreSession, allParameters, publishedDocumentFactory,
+                    config.getName(), config.getTitle());
         } catch (PublisherException e) {
             log.error("Unable to build PublicationTree", e);
             return null;
         }
     }
 
-    protected Map<String, String> computeAllParameters(
-            PublicationTreeConfigDescriptor config, Map<String, String> params) {
+    protected Map<String, String> computeAllParameters(PublicationTreeConfigDescriptor config,
+            Map<String, String> params) {
         final Map<String, String> allParameters = config.getParameters();
         if (params != null) {
             allParameters.putAll(params);
@@ -340,20 +325,17 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return allParameters;
     }
 
-    protected PublishedDocumentFactory getPublishedDocumentFactory(
-            PublicationTreeConfigDescriptor config,
-            PublicationTreeDescriptor treeDescriptor, CoreSession coreSession,
-            Map<String, String> params) throws PublisherException {
-        PublishedDocumentFactoryDescriptor factoryDesc = getPublishedDocumentFactoryDescriptor(
-                config, treeDescriptor);
+    protected PublishedDocumentFactory getPublishedDocumentFactory(PublicationTreeConfigDescriptor config,
+            PublicationTreeDescriptor treeDescriptor, CoreSession coreSession, Map<String, String> params)
+            throws PublisherException {
+        PublishedDocumentFactoryDescriptor factoryDesc = getPublishedDocumentFactoryDescriptor(config, treeDescriptor);
         ValidatorsRule validatorsRule = getValidatorsRule(factoryDesc);
 
         PublishedDocumentFactory factory;
         try {
             factory = factoryDesc.getKlass().newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new PublisherException("Error while creating factory "
-                    + factoryDesc.getName(), e);
+            throw new PublisherException("Error while creating factory " + factoryDesc.getName(), e);
         }
 
         try {
@@ -364,31 +346,26 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return factory;
     }
 
-    protected ValidatorsRule getValidatorsRule(
-            PublishedDocumentFactoryDescriptor factoryDesc)
+    protected ValidatorsRule getValidatorsRule(PublishedDocumentFactoryDescriptor factoryDesc)
             throws PublisherException {
         String validatorsRuleName = factoryDesc.getValidatorsRuleName();
         ValidatorsRule validatorsRule = null;
         if (validatorsRuleName != null) {
             ValidatorsRuleDescriptor validatorsRuleDesc = validatorsRuleDescriptors.get(validatorsRuleName);
             if (validatorsRuleDesc == null) {
-                throw new PublisherException("Unable to find validatorsRule"
-                        + validatorsRuleName);
+                throw new PublisherException("Unable to find validatorsRule" + validatorsRuleName);
             }
             try {
                 validatorsRule = validatorsRuleDesc.getKlass().newInstance();
             } catch (ReflectiveOperationException e) {
-                throw new PublisherException(
-                        "Error while creating validatorsRule "
-                                + validatorsRuleName, e);
+                throw new PublisherException("Error while creating validatorsRule " + validatorsRuleName, e);
             }
         }
         return validatorsRule;
     }
 
     protected PublishedDocumentFactoryDescriptor getPublishedDocumentFactoryDescriptor(
-            PublicationTreeConfigDescriptor config,
-            PublicationTreeDescriptor treeDescriptor) throws PublisherException {
+            PublicationTreeConfigDescriptor config, PublicationTreeDescriptor treeDescriptor) throws PublisherException {
         String factoryName = config.getFactory();
         if (factoryName == null) {
             factoryName = treeDescriptor.getFactory();
@@ -401,41 +378,35 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return factoryDesc;
     }
 
-    protected PublicationTreeConfigDescriptor getPublicationTreeConfigDescriptor(
-            String treeConfigName) throws PublisherException {
+    protected PublicationTreeConfigDescriptor getPublicationTreeConfigDescriptor(String treeConfigName)
+            throws PublisherException {
         if (!treeConfigDescriptors.containsKey(treeConfigName)) {
             throw new PublisherException("Unknow treeConfig :" + treeConfigName);
         }
         return treeConfigDescriptors.get(treeConfigName);
     }
 
-    protected PublicationTreeDescriptor getPublicationTreeDescriptor(
-            PublicationTreeConfigDescriptor config) throws PublisherException {
+    protected PublicationTreeDescriptor getPublicationTreeDescriptor(PublicationTreeConfigDescriptor config)
+            throws PublisherException {
         String treeImplName = config.getTree();
         if (!treeDescriptors.containsKey(treeImplName)) {
-            throw new PublisherException("Unknow treeImplementation :"
-                    + treeImplName);
+            throw new PublisherException("Unknow treeImplementation :" + treeImplName);
         }
         return treeDescriptors.get(treeImplName);
     }
 
-    protected PublicationTree getPublicationTree(
-            PublicationTreeDescriptor treeDescriptor, String sid,
-            CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName,
-            String treeTitle) throws PublisherException,
-            PublicationTreeNotAvailable {
+    protected PublicationTree getPublicationTree(PublicationTreeDescriptor treeDescriptor, String sid,
+            CoreSession coreSession, Map<String, String> parameters, PublishedDocumentFactory factory,
+            String configName, String treeTitle) throws PublisherException, PublicationTreeNotAvailable {
         PublicationTree treeImpl;
         try {
             treeImpl = treeDescriptor.getKlass().newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new PublisherException(
-                    "Error while creating tree implementation", e);
+            throw new PublisherException("Error while creating tree implementation", e);
         }
 
         try {
-            treeImpl.initTree(sid, coreSession, parameters, factory,
-                    configName, treeTitle);
+            treeImpl.initTree(sid, coreSession, parameters, factory, configName, treeTitle);
         } catch (ClientException e) {
             throw new PublicationTreeNotAvailable("Error during tree init", e);
         }
@@ -443,64 +414,54 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
         return publish(doc, targetNode, null);
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
 
         PublicationTree tree = liveTrees.get(targetNode.getSessionId());
         if (tree != null) {
             return tree.publish(doc, targetNode, params);
         } else {
-            throw new ClientException(
-                    "Calling getChildrenNodes on a closed tree");
+            throw new ClientException("Calling getChildrenNodes on a closed tree");
         }
     }
 
     @Override
-    public void unpublish(DocumentModel doc, PublicationNode targetNode)
-            throws ClientException {
+    public void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
         PublicationTree tree = liveTrees.get(targetNode.getSessionId());
         if (tree != null) {
             tree.unpublish(doc, targetNode);
         } else {
-            throw new ClientException(
-                    "Calling getChildrenNodes on a closed tree");
+            throw new ClientException("Calling getChildrenNodes on a closed tree");
         }
     }
 
     @Override
-    public void unpublish(String sid, PublishedDocument publishedDocument)
-            throws ClientException {
+    public void unpublish(String sid, PublishedDocument publishedDocument) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             tree.unpublish(publishedDocument);
         } else {
-            throw new ClientException(
-                    "Calling getChildrenNodes on a closed tree");
+            throw new ClientException("Calling getChildrenNodes on a closed tree");
         }
     }
 
     @Override
-    public List<PublishedDocument> getChildrenDocuments(PublicationNode node)
-            throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments(PublicationNode node) throws ClientException {
 
         PublicationTree tree = liveTrees.get(node.getSessionId());
         if (tree != null) {
             return tree.getPublishedDocumentInNode(tree.getNodeByPath(node.getPath()));
         } else {
-            throw new ClientException(
-                    "Calling getChildrenDocuments on a closed tree");
+            throw new ClientException("Calling getChildrenDocuments on a closed tree");
         }
     }
 
-    protected List<PublicationNode> makeRemotable(List<PublicationNode> nodes,
-            String sid) throws ClientException {
+    protected List<PublicationNode> makeRemotable(List<PublicationNode> nodes, String sid) throws ClientException {
         List<PublicationNode> remoteNodes = new ArrayList<PublicationNode>();
 
         for (PublicationNode node : nodes) {
@@ -511,16 +472,13 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<PublicationNode> getChildrenNodes(PublicationNode node)
-            throws ClientException {
+    public List<PublicationNode> getChildrenNodes(PublicationNode node) throws ClientException {
         String sid = node.getSessionId();
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
-            return makeRemotable(
-                    tree.getNodeByPath(node.getPath()).getChildrenNodes(), sid);
+            return makeRemotable(tree.getNodeByPath(node.getPath()).getChildrenNodes(), sid);
         } else {
-            throw new ClientException(
-                    "Calling getChildrenNodes on a closed tree");
+            throw new ClientException("Calling getChildrenNodes on a closed tree");
         }
     }
 
@@ -547,8 +505,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public PublicationNode getNodeByPath(String sid, String path)
-            throws ClientException {
+    public PublicationNode getNodeByPath(String sid, String path) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             return new ProxyNode(tree.getNodeByPath(path), sid);
@@ -558,8 +515,8 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<PublishedDocument> getExistingPublishedDocument(String sid,
-            DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(String sid, DocumentLocation docLoc)
+            throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             return tree.getExistingPublishedDocument(docLoc);
@@ -569,89 +526,75 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<PublishedDocument> getPublishedDocumentInNode(
-            PublicationNode node) throws ClientException {
+    public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) throws ClientException {
         String sid = node.getSessionId();
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             return tree.getPublishedDocumentInNode(tree.getNodeByPath(node.getPath()));
         } else {
-            throw new ClientException(
-                    "Calling getPublishedDocumentInNode on a closed tree");
+            throw new ClientException("Calling getPublishedDocumentInNode on a closed tree");
         }
     }
 
     @Override
-    public void setCurrentDocument(String sid, DocumentModel currentDocument)
-            throws ClientException {
+    public void setCurrentDocument(String sid, DocumentModel currentDocument) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             tree.setCurrentDocument(currentDocument);
         } else {
-            throw new ClientException(
-                    "Calling validatorPublishDocument on a closed tree");
+            throw new ClientException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
     @Override
-    public void validatorPublishDocument(String sid,
-            PublishedDocument publishedDocument, String comment)
+    public void validatorPublishDocument(String sid, PublishedDocument publishedDocument, String comment)
             throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             tree.validatorPublishDocument(publishedDocument, comment);
         } else {
-            throw new ClientException(
-                    "Calling validatorPublishDocument on a closed tree");
+            throw new ClientException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
     @Override
-    public void validatorRejectPublication(String sid,
-            PublishedDocument publishedDocument, String comment)
+    public void validatorRejectPublication(String sid, PublishedDocument publishedDocument, String comment)
             throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             tree.validatorRejectPublication(publishedDocument, comment);
         } else {
-            throw new ClientException(
-                    "Calling validatorPublishDocument on a closed tree");
+            throw new ClientException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
     @Override
-    public boolean canPublishTo(String sid, PublicationNode publicationNode)
-            throws ClientException {
+    public boolean canPublishTo(String sid, PublicationNode publicationNode) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             return tree.canPublishTo(publicationNode);
         } else {
-            throw new ClientException(
-                    "Calling validatorPublishDocument on a closed tree");
+            throw new ClientException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
     @Override
-    public boolean canUnpublish(String sid, PublishedDocument publishedDocument)
-            throws ClientException {
+    public boolean canUnpublish(String sid, PublishedDocument publishedDocument) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             return tree.canUnpublish(publishedDocument);
         } else {
-            throw new ClientException(
-                    "Calling validatorPublishDocument on a closed tree");
+            throw new ClientException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
     @Override
-    public boolean canManagePublishing(String sid,
-            PublishedDocument publishedDocument) throws ClientException {
+    public boolean canManagePublishing(String sid, PublishedDocument publishedDocument) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             return tree.canManagePublishing(publishedDocument);
         } else {
-            throw new ClientException(
-                    "Calling validatorPublishDocument on a closed tree");
+            throw new ClientException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
@@ -661,15 +604,12 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public PublicationTree getPublicationTreeFor(DocumentModel doc,
-            CoreSession coreSession) throws ClientException {
+    public PublicationTree getPublicationTreeFor(DocumentModel doc, CoreSession coreSession) throws ClientException {
         PublicationTree tree = null;
         try {
-            tree = PublicationRelationHelper.getPublicationTreeUsedForPublishing(
-                    doc, coreSession);
+            tree = PublicationRelationHelper.getPublicationTreeUsedForPublishing(doc, coreSession);
         } catch (ClientException e) {
-            log.debug("Unable to get PublicationTree for "
-                    + doc.getPathAsString()
+            log.debug("Unable to get PublicationTree for " + doc.getPathAsString()
                     + ". Fallback on first PublicationTree accepting this document.");
             for (String treeName : treeConfigDescriptors.keySet()) {
                 tree = getPublicationTree(treeName, coreSession, null);
@@ -682,57 +622,48 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean hasValidationTask(String sid,
-            PublishedDocument publishedDocument) throws ClientException {
+    public boolean hasValidationTask(String sid, PublishedDocument publishedDocument) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             return tree.hasValidationTask(publishedDocument);
         } else {
-            throw new ClientException(
-                    "Calling validatorPublishDocument on a closed tree");
+            throw new ClientException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
     @Override
-    public PublishedDocument wrapToPublishedDocument(String sid,
-            DocumentModel documentModel) throws ClientException {
+    public PublishedDocument wrapToPublishedDocument(String sid, DocumentModel documentModel) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             return tree.wrapToPublishedDocument(documentModel);
         } else {
-            throw new ClientException(
-                    "Calling validatorPublishDocument on a closed tree");
+            throw new ClientException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
     @Override
-    public boolean isPublicationNode(String sid, DocumentModel documentModel)
-            throws ClientException {
+    public boolean isPublicationNode(String sid, DocumentModel documentModel) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             return tree.isPublicationNode(documentModel);
         } else {
-            throw new ClientException(
-                    "Calling validatorPublishDocument on a closed tree");
+            throw new ClientException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
     @Override
-    public PublicationNode wrapToPublicationNode(String sid,
-            DocumentModel documentModel) throws ClientException {
+    public PublicationNode wrapToPublicationNode(String sid, DocumentModel documentModel) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             return tree.wrapToPublicationNode(documentModel);
         } else {
-            throw new ClientException(
-                    "Calling validatorPublishDocument on a closed tree");
+            throw new ClientException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
     @Override
-    public PublicationNode wrapToPublicationNode(DocumentModel documentModel,
-            CoreSession coreSession) throws ClientException,
-            PublicationTreeNotAvailable {
+    public PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession)
+            throws ClientException, PublicationTreeNotAvailable {
         for (String name : getAvailablePublicationTree()) {
             PublicationTree tree = getPublicationTree(name, coreSession, null);
             PublicationTreeConfigDescriptor config = treeConfigDescriptors.get(tree.getConfigName());
@@ -757,11 +688,9 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
-    public void registerTreeConfigFor(DocumentModel domain)
-            throws ClientException {
+    public void registerTreeConfigFor(DocumentModel domain) throws ClientException {
         for (PublicationTreeConfigDescriptor desc : pendingDescriptors.values()) {
-            PublicationTreeConfigDescriptor newDesc = new PublicationTreeConfigDescriptor(
-                    desc);
+            PublicationTreeConfigDescriptor newDesc = new PublicationTreeConfigDescriptor(desc);
             String newTreeName = desc.getName() + "-" + domain.getName();
             newDesc.setName(newTreeName);
             Path newPath = domain.getPath();

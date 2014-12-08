@@ -51,7 +51,6 @@ public class ThreadedStreamGobbler extends Thread {
 
     private OutputStream outputStream;
 
-
     public ThreadedStreamGobbler(String prefix, InputStream is, int logLevel) {
         this.is = is;
         this.logLevel = logLevel;

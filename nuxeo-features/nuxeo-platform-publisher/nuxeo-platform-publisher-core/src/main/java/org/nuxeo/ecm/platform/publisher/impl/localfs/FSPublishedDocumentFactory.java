@@ -28,12 +28,10 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 
-public class FSPublishedDocumentFactory extends
-        AbstractBasePublishedDocumentFactory implements
+public class FSPublishedDocumentFactory extends AbstractBasePublishedDocumentFactory implements
         PublishedDocumentFactory {
 
-    public PublishedDocument publishDocument(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
 
         try {
@@ -45,16 +43,13 @@ public class FSPublishedDocumentFactory extends
         }
     }
 
-    public PublishedDocument wrapDocumentModel(DocumentModel doc)
-            throws ClientException {
+    public PublishedDocument wrapDocumentModel(DocumentModel doc) throws ClientException {
         try {
 
             doc = snapshotDocumentBeforePublish(doc);
             return new FSPublishedDocument("local", doc);
         } catch (DocumentException e) {
-            throw new ClientException(
-                    "Error while wrapping DocumentModel as FSPublishedDocument",
-                    e);
+            throw new ClientException("Error while wrapping DocumentModel as FSPublishedDocument", e);
         }
     }
 

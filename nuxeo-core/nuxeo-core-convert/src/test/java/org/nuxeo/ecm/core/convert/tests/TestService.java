@@ -186,8 +186,7 @@ public class TestService {
         notRegistred = false;
         boolean notAvailable = false;
         try {
-            cs.convert("NotAvailableConverter", new SimpleBlobHolder(
-                    new StringBlob("")), null);
+            cs.convert("NotAvailableConverter", new SimpleBlobHolder(new StringBlob("")), null);
         } catch (ConverterNotRegistered e) {
             notRegistred = true;
         } catch (ConverterNotAvailable e) {
@@ -255,12 +254,9 @@ public class TestService {
         deploy("OSGI-INF/converters-test-contrib1.xml");
 
         ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-        assertTrue(conversionService.isSourceMimeTypeSupported("dummy1",
-                "text/plain"));
-        assertTrue(conversionService.isSourceMimeTypeSupported("dummy1",
-                "text/xml"));
-        assertFalse(conversionService.isSourceMimeTypeSupported("dummy1",
-                "application/pdf"));
+        assertTrue(conversionService.isSourceMimeTypeSupported("dummy1", "text/plain"));
+        assertTrue(conversionService.isSourceMimeTypeSupported("dummy1", "text/xml"));
+        assertFalse(conversionService.isSourceMimeTypeSupported("dummy1", "application/pdf"));
     }
 
 }

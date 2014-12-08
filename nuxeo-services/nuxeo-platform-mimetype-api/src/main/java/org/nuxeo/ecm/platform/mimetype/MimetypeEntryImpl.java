@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
  * A mimetype instance holds mimetype meta information.
  *
  * @see MimetypeEntry
- *
  * @author <a href="ja@nuxeo.com">Julien Anguenot</a>
  */
 public class MimetypeEntryImpl implements MimetypeEntry {
@@ -50,8 +49,7 @@ public class MimetypeEntryImpl implements MimetypeEntry {
 
     protected final String normalized;
 
-    public MimetypeEntryImpl(String normalized,
-            List<String> mimetypes, List<String> extensions, String iconPath,
+    public MimetypeEntryImpl(String normalized, List<String> mimetypes, List<String> extensions, String iconPath,
             boolean binary, boolean onlineEditable, boolean oleSupported) {
         this.normalized = normalized;
         this.mimetypes = mimetypes;

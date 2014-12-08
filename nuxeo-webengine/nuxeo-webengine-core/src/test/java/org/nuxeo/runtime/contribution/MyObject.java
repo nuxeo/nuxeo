@@ -23,14 +23,17 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MyObject {
 
     public String id;
+
     public String fid;
+
     public String str;
+
     public List<String> list;
+
     public String[] parents;
 
     public MyObject() {
@@ -56,7 +59,7 @@ public class MyObject {
             return true;
         }
         if (obj instanceof MyObject) {
-            MyObject myf = (MyObject)obj;
+            MyObject myf = (MyObject) obj;
             if (!id.equals(myf.id)) {
                 return false;
             }

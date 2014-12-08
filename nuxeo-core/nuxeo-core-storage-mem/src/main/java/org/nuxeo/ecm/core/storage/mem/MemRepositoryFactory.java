@@ -14,8 +14,7 @@ package org.nuxeo.ecm.core.storage.mem;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 
 /**
- * In-memory implementation of a {@link RepositoryFactory}, creating a
- * {@link MemRepository}.
+ * In-memory implementation of a {@link RepositoryFactory}, creating a {@link MemRepository}.
  *
  * @since 5.9.4
  */

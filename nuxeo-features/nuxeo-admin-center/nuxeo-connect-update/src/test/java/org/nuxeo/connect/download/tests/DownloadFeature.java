@@ -32,23 +32,18 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-@Deploy({
-        "org.nuxeo.connect.client.wrapper:OSGI-INF/runtimeserver-contrib.xml",
-        "org.nuxeo.connect.client.wrapper:OSGI-INF/connect-client-framework.xml",
-        "org.nuxeo.connect.update" })
+@Deploy({ "org.nuxeo.connect.client.wrapper:OSGI-INF/runtimeserver-contrib.xml",
+        "org.nuxeo.connect.client.wrapper:OSGI-INF/connect-client-framework.xml", "org.nuxeo.connect.update" })
 @Features({ JettyFeature.class })
-public class DownloadFeature extends SimpleFeature implements
-        WorkingDirectoryConfigurator {
+public class DownloadFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(
-                this);
+        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
     }
 
     @Override
-    public void configure(RuntimeHarness harness, File workingDir)
-            throws IOException {
+    public void configure(RuntimeHarness harness, File workingDir) throws IOException {
         File dest = new File(workingDir, "web/root.war/WEB-INF/");
         dest.mkdirs();
 
@@ -65,7 +60,6 @@ public class DownloadFeature extends SimpleFeature implements
     }
 
     private static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResource(
-                resource);
+        return Thread.currentThread().getContextClassLoader().getResource(resource);
     }
 }

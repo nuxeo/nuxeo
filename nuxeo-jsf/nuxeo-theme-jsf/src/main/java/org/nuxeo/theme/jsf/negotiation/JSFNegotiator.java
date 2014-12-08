@@ -26,8 +26,7 @@ public final class JSFNegotiator extends AbstractNegotiator {
         return "jsf-facelets";
     }
 
-    public JSFNegotiator(final String strategy, final FacesContext context,
-            final HttpServletRequest request) {
+    public JSFNegotiator(final String strategy, final FacesContext context, final HttpServletRequest request) {
         super(strategy, context, request);
     }
 

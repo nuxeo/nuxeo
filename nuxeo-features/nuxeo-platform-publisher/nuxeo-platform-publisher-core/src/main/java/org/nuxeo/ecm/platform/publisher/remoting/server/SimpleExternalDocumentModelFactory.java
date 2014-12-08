@@ -33,25 +33,21 @@ import org.nuxeo.runtime.api.Framework;
 import java.util.Map;
 
 /**
- * {@link PublishedDocumentFactory} implementation that creates
- * {@link DocumentModel} instead of simple proxies.
+ * {@link PublishedDocumentFactory} implementation that creates {@link DocumentModel} instead of simple proxies.
  *
  * @author tiry
  */
-public class SimpleExternalDocumentModelFactory extends
-        AbstractBasePublishedDocumentFactory implements
+public class SimpleExternalDocumentModelFactory extends AbstractBasePublishedDocumentFactory implements
         PublishedDocumentFactory {
 
-    public PublishedDocument publishDocument(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
 
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         doc.setPathInfo(targetNode.getPath(), "remote_doc_" + pss.generatePathSegment(doc));
         // We don't want to erase the current version
         final ScopedMap ctxData = doc.getContextData();
-        ctxData.putScopedValue(ScopeType.REQUEST,
-                VersioningActions.SKIP_VERSIONING, true);
+        ctxData.putScopedValue(ScopeType.REQUEST, VersioningActions.SKIP_VERSIONING, true);
         doc = coreSession.createDocument(doc);
         coreSession.save();
 
@@ -60,8 +56,7 @@ public class SimpleExternalDocumentModelFactory extends
 
     @Override
     protected boolean needToVersionDocument(DocumentModel doc) {
-        if (!doc.getRepositoryName().equalsIgnoreCase(
-                coreSession.getRepositoryName())) {
+        if (!doc.getRepositoryName().equalsIgnoreCase(coreSession.getRepositoryName())) {
             return false;
         } else {
             return super.needToVersionDocument(doc);
@@ -69,18 +64,14 @@ public class SimpleExternalDocumentModelFactory extends
     }
 
     /*
-     * public DocumentModel unwrapPublishedDocument(PublishedDocument pubDoc)
-     * throws ClientException { if (pubDoc instanceof
-     * SimpleCorePublishedDocument) { SimpleCorePublishedDocument pubProxy =
-     * (SimpleCorePublishedDocument) pubDoc; return pubProxy.getProxy(); } if
-     * (pubDoc instanceof ExternalCorePublishedDocument) {
-     * ExternalCorePublishedDocument pubExt = (ExternalCorePublishedDocument)
-     * pubDoc; return pubExt.getDocumentModel(); } throw new ClientException(
-     * "factory can not unwrap this PublishedDocument"); }
+     * public DocumentModel unwrapPublishedDocument(PublishedDocument pubDoc) throws ClientException { if (pubDoc
+     * instanceof SimpleCorePublishedDocument) { SimpleCorePublishedDocument pubProxy = (SimpleCorePublishedDocument)
+     * pubDoc; return pubProxy.getProxy(); } if (pubDoc instanceof ExternalCorePublishedDocument) {
+     * ExternalCorePublishedDocument pubExt = (ExternalCorePublishedDocument) pubDoc; return pubExt.getDocumentModel();
+     * } throw new ClientException( "factory can not unwrap this PublishedDocument"); }
      */
 
-    public PublishedDocument wrapDocumentModel(DocumentModel doc)
-            throws ClientException {
+    public PublishedDocument wrapDocumentModel(DocumentModel doc) throws ClientException {
         if (doc.isProxy()) {
             return new SimpleCorePublishedDocument(doc);
         }

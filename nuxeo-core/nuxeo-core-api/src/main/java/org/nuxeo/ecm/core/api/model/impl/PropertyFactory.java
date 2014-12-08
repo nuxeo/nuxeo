@@ -79,8 +79,7 @@ public class PropertyFactory {
                 return new ListProperty(parent, field, flags);
             }
         } else {
-            throw new IllegalArgumentException("Unsupported field type: "
-                    + field.getType().getName());
+            throw new IllegalArgumentException("Unsupported field type: " + field.getType().getName());
         }
     }
 

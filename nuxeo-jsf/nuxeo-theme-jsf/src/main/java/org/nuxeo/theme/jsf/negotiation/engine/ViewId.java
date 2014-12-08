@@ -31,8 +31,8 @@ public final class ViewId implements Scheme {
 
         final String applicationPath = ((FacesContext) context).getExternalContext().getRequestContextPath();
 
-        final ApplicationType application = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, applicationPath);
+        final ApplicationType application = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION,
+                applicationPath);
         if (application == null) {
             return null;
         }

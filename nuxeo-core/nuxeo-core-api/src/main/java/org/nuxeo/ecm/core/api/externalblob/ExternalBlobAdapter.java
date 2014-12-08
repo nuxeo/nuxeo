@@ -18,17 +18,15 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- * Interface to implement when defining a way to get a {@link Blob} that is not stored at
- * the usual place handled by the repository.
+ * Interface to implement when defining a way to get a {@link Blob} that is not stored at the usual place handled by the
+ * repository.
  * <p>
- * This is done storing a string instead of a blob, using a prefix that makes it
- * possible to find the adapter in charge of retrieving the file. It makes it
- * also possible to use the same adapter implementation for different
+ * This is done storing a string instead of a blob, using a prefix that makes it possible to find the adapter in charge
+ * of retrieving the file. It makes it also possible to use the same adapter implementation for different
  * configurations, in conjunction with properties.
  * <p>
- * The string will look something like "fs:file/foo.odt", "fs" being the prefix,
- * and "file/foo.odt" being the local name, with all the needed information to
- * retrieve the actual file for this adapter.
+ * The string will look something like "fs:file/foo.odt", "fs" being the prefix, and "file/foo.odt" being the local
+ * name, with all the needed information to retrieve the actual file for this adapter.
  *
  * @author Anahide Tchertchian
  */
@@ -47,8 +45,7 @@ public interface ExternalBlobAdapter extends Serializable {
     void setPrefix(String prefix);
 
     /**
-     * Return specific properties for this adapter. Can be used for whatever
-     * useful property.
+     * Return specific properties for this adapter. Can be used for whatever useful property.
      */
     Map<String, String> getProperties();
 
@@ -60,19 +57,17 @@ public interface ExternalBlobAdapter extends Serializable {
     String getProperty(String name);
 
     /**
-     * Set specific properties for this adapter. Can be used for whatever useful
-     * property.
+     * Set specific properties for this adapter. Can be used for whatever useful property.
      */
     void setProperties(Map<String, String> properties);
 
     /**
      * Retrieves the blob for given uri.
      *
-     * @param uri the uri describing what adapter handles the file and the
-     *            needed info to retrieve it.
+     * @param uri the uri describing what adapter handles the file and the needed info to retrieve it.
      * @return the resolved blob.
-     * @throws PropertyException if the blob cannot be retrieved (if adapter
-     *             cannot retrieve it or if file is not found for instance)
+     * @throws PropertyException if the blob cannot be retrieved (if adapter cannot retrieve it or if file is not found
+     *             for instance)
      */
     Blob getBlob(String uri) throws PropertyException;
 

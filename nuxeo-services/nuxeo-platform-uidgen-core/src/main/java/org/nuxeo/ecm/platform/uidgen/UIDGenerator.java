@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Common interface for UID generators. All UID generators must implement this
- * interface.
+ * Common interface for UID generators. All UID generators must implement this interface.
  *
  * @author <a href="mailto:dm@nuxeo.com>Dragos Mihalache</a>
  */
@@ -32,13 +31,10 @@ public interface UIDGenerator {
     /**
      * Sets the property name used to set the identifier value.
      * <p>
-     * The property must be a string like 'schemaPrefix:fieldName' ; the syntax
-     * 'schemaName:fieldName' is also accepted.
-     *
+     * The property must be a string like 'schemaPrefix:fieldName' ; the syntax 'schemaName:fieldName' is also accepted.
      * Could be used as a convenient method when there is only one property to set.
      *
      * @param propertyName
-     *
      * @see #setPropertyNames(String[])
      */
     void setPropertyName(String propertyName);
@@ -71,8 +67,7 @@ public interface UIDGenerator {
      */
     void setSequencer(UIDSequencer sequencer);
 
-    String getSequenceKey(DocumentModel document)
-            throws DocumentException;
+    String getSequenceKey(DocumentModel document) throws DocumentException;
 
     /**
      * Returns a new UID for the given doc.
@@ -80,8 +75,7 @@ public interface UIDGenerator {
     String createUID(DocumentModel document) throws DocumentException;
 
     /**
-     * Creates a new UID for the given doc and sets the field configured in the
-     * generator component with this value.
+     * Creates a new UID for the given doc and sets the field configured in the generator component with this value.
      */
     void setUID(DocumentModel document) throws DocumentException;
 

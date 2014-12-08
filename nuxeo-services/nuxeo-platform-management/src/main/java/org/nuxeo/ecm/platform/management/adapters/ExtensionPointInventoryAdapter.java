@@ -21,8 +21,7 @@ import org.nuxeo.runtime.model.ExtensionPoint;
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class ExtensionPointInventoryAdapter implements
-        ExtensionPointInventoryMBean {
+public class ExtensionPointInventoryAdapter implements ExtensionPointInventoryMBean {
 
     protected final ExtensionPoint point;
 

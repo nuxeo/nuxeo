@@ -25,25 +25,21 @@ import javax.servlet.http.HttpServletResponseWrapper;
 /**
  * Buffers the response until {@link #stopBuffering()} is called.
  * <p>
- * This allows a container to commit a transaction before the body is written to
- * the client.
+ * This allows a container to commit a transaction before the body is written to the client.
  */
 public class BufferingHttpServletResponse extends HttpServletResponseWrapper {
 
     protected BufferingServletOutputStream bufferingOutputStream;
 
     /**
-     * A {@link HttpServletResponse} wrapper that buffers all data until
-     * {@link #stopBuffering()} is called.
+     * A {@link HttpServletResponse} wrapper that buffers all data until {@link #stopBuffering()} is called.
      * <p>
-     * {@link #stopBuffering()} <b>MUST</b> be called in a {@code finally}
-     * statement in order for resources to be closed properly.
+     * {@link #stopBuffering()} <b>MUST</b> be called in a {@code finally} statement in order for resources to be closed
+     * properly.
      */
-    public BufferingHttpServletResponse(HttpServletResponse response)
-            throws IOException {
+    public BufferingHttpServletResponse(HttpServletResponse response) throws IOException {
         super(response);
-        bufferingOutputStream = new BufferingServletOutputStream(
-                response.getOutputStream());
+        bufferingOutputStream = new BufferingServletOutputStream(response.getOutputStream());
     }
 
     @Override
@@ -57,8 +53,7 @@ public class BufferingHttpServletResponse extends HttpServletResponseWrapper {
     }
 
     /**
-     * Stops buffering and sends any buffered data to the response's output
-     * stream.
+     * Stops buffering and sends any buffered data to the response's output stream.
      */
     public void stopBuffering() throws IOException {
         bufferingOutputStream.stopBuffering();

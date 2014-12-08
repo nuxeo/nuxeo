@@ -50,8 +50,7 @@ public class Deploy extends DeployPlaceholder {
         super(file);
     }
 
-    protected Undeploy deployFile(File file, ReloadService service)
-            throws PackageException {
+    protected Undeploy deployFile(File file, ReloadService service) throws PackageException {
         String name = service.getOSGIBundleName(file);
         if (name == null) {
             // not an OSGI bundle => ignore
@@ -65,8 +64,7 @@ public class Deploy extends DeployPlaceholder {
         return new Undeploy(file);
     }
 
-    protected CompositeCommand deployDirectory(File dir, ReloadService service)
-            throws PackageException {
+    protected CompositeCommand deployDirectory(File dir, ReloadService service) throws PackageException {
         CompositeCommand cmd = new CompositeCommand();
         File[] files = dir.listFiles();
         if (files != null) {
@@ -85,8 +83,7 @@ public class Deploy extends DeployPlaceholder {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         if (!file.exists()) {
             log.warn("Can't deploy file " + file + ". File is missing.");
             return null;

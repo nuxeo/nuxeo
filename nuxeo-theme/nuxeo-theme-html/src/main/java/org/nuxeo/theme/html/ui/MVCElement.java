@@ -40,8 +40,7 @@ public class MVCElement {
 
         /* insert the content from a file source */
         if (null != resource) {
-            ResourceType resourceType = (ResourceType) Manager.getTypeRegistry().lookup(
-                    TypeFamily.RESOURCE, resource);
+            ResourceType resourceType = (ResourceType) Manager.getTypeRegistry().lookup(TypeFamily.RESOURCE, resource);
             if (resourceType == null) {
                 log.warn("Could not find resource: " + resource);
             } else {

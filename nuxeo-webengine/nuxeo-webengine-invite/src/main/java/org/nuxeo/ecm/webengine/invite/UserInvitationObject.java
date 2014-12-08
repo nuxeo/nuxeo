@@ -72,23 +72,17 @@ public class UserInvitationObject extends ModuleRoot {
         // Check if both entered passwords are correct
         if (password == null || "".equals(password.trim())) {
             return redisplayFormWithErrorMessage("EnterPassword",
-                    ctx.getMessage("label.registerForm.validation.password"),
-                    formData);
+                    ctx.getMessage("label.registerForm.validation.password"), formData);
         }
-        if (passwordConfirmation == null
-                || "".equals(passwordConfirmation.trim())) {
-            return redisplayFormWithErrorMessage(
-                    "EnterPassword",
-                    ctx.getMessage("label.registerForm.validation.passwordconfirmation"),
-                    formData);
+        if (passwordConfirmation == null || "".equals(passwordConfirmation.trim())) {
+            return redisplayFormWithErrorMessage("EnterPassword",
+                    ctx.getMessage("label.registerForm.validation.passwordconfirmation"), formData);
         }
         password = password.trim();
         passwordConfirmation = passwordConfirmation.trim();
         if (!password.equals(passwordConfirmation)) {
-            return redisplayFormWithErrorMessage(
-                    "EnterPassword",
-                    ctx.getMessage("label.registerForm.validation.passwordvalidation"),
-                    formData);
+            return redisplayFormWithErrorMessage("EnterPassword",
+                    ctx.getMessage("label.registerForm.validation.passwordvalidation"), formData);
         }
         Map<String, Serializable> registrationData = new HashMap<String, Serializable>();
         try {
@@ -97,8 +91,7 @@ public class UserInvitationObject extends ModuleRoot {
             // Add the entered password to the document model
             additionalInfo.put(usr.getConfiguration(configurationName).getUserInfoPasswordField(), password);
             // Validate the creation of the user
-            registrationData = usr.validateRegistration(requestId,
-                    additionalInfo);
+            registrationData = usr.validateRegistration(requestId, additionalInfo);
 
         } catch (AlreadyProcessedRegistrationException ape) {
             log.info("Try to validate an already processed registration");
@@ -115,8 +108,7 @@ public class UserInvitationObject extends ModuleRoot {
         // User redirected to the logout page after validating the password
         String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
         String logoutUrl = "/" + webappName + "/logout";
-        return getView("UserCreated").arg("data", registrationData).arg(
-                "logout", logoutUrl);
+        return getView("UserCreated").arg("data", registrationData).arg("logout", logoutUrl);
     }
 
     protected UserInvitationService fetchService() {
@@ -126,9 +118,8 @@ public class UserInvitationObject extends ModuleRoot {
 
     @GET
     @Path("enterpassword/{configurationName}/{requestId}")
-    public Object validatePasswordForm(@PathParam("requestId")
-    String requestId, @PathParam("configurationName")
-    String configurationName) {
+    public Object validatePasswordForm(@PathParam("requestId") String requestId,
+            @PathParam("configurationName") String configurationName) {
 
         UserInvitationService usr = fetchService();
         try {
@@ -146,7 +137,7 @@ public class UserInvitationObject extends ModuleRoot {
         data.put("ConfigurationName", configurationName);
         String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
         String validationRelUrl = usr.getConfiguration(configurationName).getValidationRelUrl();
-        String valUrl = "/" + webappName + "/"+validationRelUrl;
+        String valUrl = "/" + webappName + "/" + validationRelUrl;
         data.put("ValidationUrl", valUrl);
         return getView("EnterPassword").arg("data", data);
     }
@@ -155,23 +146,19 @@ public class UserInvitationObject extends ModuleRoot {
         return new HashMap<String, Serializable>();
     }
 
-    protected Template redisplayFormWithMessage(String messageType,
-            String formName, String message, FormData data) {
+    protected Template redisplayFormWithMessage(String messageType, String formName, String message, FormData data) {
         Map<String, String> savedData = new HashMap<String, String>();
         for (String key : data.getKeys()) {
             savedData.put(key, data.getString(key));
         }
-        return getView(formName).arg("data", savedData).arg(messageType,
-                message);
+        return getView(formName).arg("data", savedData).arg(messageType, message);
     }
 
-    protected Template redisplayFormWithInfoMessage(String formName,
-            String message, FormData data) {
+    protected Template redisplayFormWithInfoMessage(String formName, String message, FormData data) {
         return redisplayFormWithMessage("info", formName, message, data);
     }
 
-    protected Template redisplayFormWithErrorMessage(String formName,
-            String message, FormData data) {
+    protected Template redisplayFormWithErrorMessage(String formName, String message, FormData data) {
         return redisplayFormWithMessage("err", formName, message, data);
     }
 

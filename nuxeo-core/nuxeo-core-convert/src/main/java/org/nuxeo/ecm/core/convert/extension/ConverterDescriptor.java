@@ -87,8 +87,7 @@ public class ConverterDescriptor implements Serializable {
 
     public void initConverter() {
         if (instance == null) {
-            if (className == null
-                    || converterType.equals(CHAINED_CONVERTER_TYPE)) {
+            if (className == null || converterType.equals(CHAINED_CONVERTER_TYPE)) {
 
                 if (subConverters == null || subConverters.isEmpty()) {
                     // create a Chained converter based on mimetypes
@@ -121,8 +120,7 @@ public class ConverterDescriptor implements Serializable {
     public ConverterDescriptor merge(ConverterDescriptor other) {
 
         if (!other.converterName.equals(converterName)) {
-            throw new UnsupportedOperationException(
-                    "Can not merge ConverterDesciptors with different names");
+            throw new UnsupportedOperationException("Can not merge ConverterDesciptors with different names");
         }
 
         if (wrappedTransformer) {

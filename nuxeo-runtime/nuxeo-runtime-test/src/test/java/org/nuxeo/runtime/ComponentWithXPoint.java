@@ -52,8 +52,7 @@ public class ComponentWithXPoint extends DefaultComponent {
     public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            log.debug("Un-Registering: "
-                    + ((DummyContribution) contrib).message);
+            log.debug("Un-Registering: " + ((DummyContribution) contrib).message);
             this.contribs.add((DummyContribution) contrib);
         }
     }

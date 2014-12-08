@@ -26,9 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Remotable implementation of the {@link PublicationTree} interface. Because
- * some {@link PublicationTree} implementation may be bound to local resources
- * (network connexions, local filesystem ...) all {@link PublicationTree}
+ * Remotable implementation of the {@link PublicationTree} interface. Because some {@link PublicationTree}
+ * implementation may be bound to local resources (network connexions, local filesystem ...) all {@link PublicationTree}
  * returned by the service are wrapped into this RemotablePublicationTree.
  *
  * @author tiry
@@ -58,13 +57,11 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
     }
 
     @Override
-    protected List<PublicationNode> switchToClientNodes(
-            List<PublicationNode> nodes) {
+    protected List<PublicationNode> switchToClientNodes(List<PublicationNode> nodes) {
         return nodes;
     }
 
-    protected RemotePublicationTreeManager getTreeService()
-            throws ClientException {
+    protected RemotePublicationTreeManager getTreeService() throws ClientException {
         if (treeService == null) {
             treeService = Framework.getService(RemotePublicationTreeManager.class);
         }
@@ -100,20 +97,17 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
         return treeType;
     }
 
-    public void initTree(String sid, CoreSession coreSession,
-            Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName) throws ClientException {
+    public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
+            PublishedDocumentFactory factory, String configName) throws ClientException {
         // NOP
     }
 
-    public void initTree(String sid, CoreSession coreSession,
-            Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName, String title) throws ClientException {
+    public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
+            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
         // NOP
     }
 
-    public List<PublishedDocument> getChildrenDocuments()
-            throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
         return rootNode.getChildrenDocuments();
     }
 
@@ -140,8 +134,7 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
 
     // make fail tests with surefire !
     /*
-     * @Override protected void finalize() throws Throwable { try { release(); }
-     * finally { super.finalize(); } }
+     * @Override protected void finalize() throws Throwable { try { release(); } finally { super.finalize(); } }
      */
 
     public List<PublicationNode> getChildrenNodes() throws ClientException {
@@ -149,8 +142,7 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
     }
 
     @Override
-    protected PublicationNode switchToClientNode(PublicationNode node)
-            throws ClientException {
+    protected PublicationNode switchToClientNode(PublicationNode node) throws ClientException {
         // no wrap
         return node;
     }

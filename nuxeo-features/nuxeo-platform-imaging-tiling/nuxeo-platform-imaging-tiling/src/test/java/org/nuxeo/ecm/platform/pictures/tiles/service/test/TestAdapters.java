@@ -51,12 +51,9 @@ public class TestAdapters extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-                "OSGI-INF/pictures-tiles-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-                "OSGI-INF/pictures-tiles-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-                "OSGI-INF/pictures-tiles-adapter-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.pictures.tiles", "OSGI-INF/pictures-tiles-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.pictures.tiles", "OSGI-INF/pictures-tiles-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.pictures.tiles", "OSGI-INF/pictures-tiles-adapter-contrib.xml");
         openSession();
     }
 
@@ -72,8 +69,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
 
         DocumentModel root = session.getRootDocument();
 
-        DocumentModel doc = session.createDocumentModel(root.getPathAsString(),
-                "file", "File");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "file", "File");
         doc.setProperty("dublincore", "title", "MyDoc");
         doc.setProperty("dublincore", "coverage", "MyDocCoverage");
         doc.setProperty("dublincore", "modified", new GregorianCalendar());
@@ -103,8 +99,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
     @Test
     public void testAdapterOnPicture() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel picture = session.createDocumentModel(
-                root.getPathAsString(), "picture1", "Picture");
+        DocumentModel picture = session.createDocumentModel(root.getPathAsString(), "picture1", "Picture");
         picture.setProperty("dublincore", "description", "test picture");
         picture.setProperty("dublincore", "modified", new GregorianCalendar());
 
@@ -122,8 +117,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
     @Test
     public void testAdapterOnPictureWithOriginalJpegView() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel picture = session.createDocumentModel(
-                root.getPathAsString(), "picture1", "Picture");
+        DocumentModel picture = session.createDocumentModel(root.getPathAsString(), "picture1", "Picture");
         picture.setProperty("dublincore", "description", "test picture");
         picture.setProperty("dublincore", "modified", new GregorianCalendar());
 

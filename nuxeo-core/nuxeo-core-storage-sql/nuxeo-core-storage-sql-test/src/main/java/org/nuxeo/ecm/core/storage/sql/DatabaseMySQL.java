@@ -49,10 +49,8 @@ public class DatabaseMySQL extends DatabaseHelper {
         super.setUp();
         Class.forName(DRIVER);
         setProperties();
-        Connection connection = DriverManager.getConnection(
-                Framework.getProperty(URL_PROPERTY),
-                Framework.getProperty(USER_PROPERTY),
-                Framework.getProperty(PASSWORD_PROPERTY));
+        Connection connection = DriverManager.getConnection(Framework.getProperty(URL_PROPERTY),
+                Framework.getProperty(USER_PROPERTY), Framework.getProperty(PASSWORD_PROPERTY));
         doOnAllTables(connection, null, null, "DROP TABLE `%s` CASCADE");
         connection.close();
     }

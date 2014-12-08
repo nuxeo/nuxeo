@@ -23,10 +23,9 @@ import java.io.Serializable;
 
 import org.nuxeo.common.utils.Path;
 
-
 /**
- * A tree view manage a tree structure of items.
- * The tree data is lazy loaded by using the data provider specified at tree view creation.
+ * A tree view manage a tree structure of items. The tree data is lazy loaded by using the data provider specified at
+ * tree view creation.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -64,9 +63,7 @@ public interface TreeModel extends Serializable {
     TreeItem getRoot();
 
     /**
-     * Find the item at the given path.
-     * Only loaded items are searched.
-     * This operation will not load any extra item.
+     * Find the item at the given path. Only loaded items are searched. This operation will not load any extra item.
      *
      * @param path the path to search
      * @return the item at the given path or null if none
@@ -74,9 +71,8 @@ public interface TreeModel extends Serializable {
     TreeItem find(String path);
 
     /**
-     * Find and item given it's path and expand parents if needed.
-     * The returned item is not explicitly expanded so it may be collapsed or
-     * its children if any not yet loaded
+     * Find and item given it's path and expand parents if needed. The returned item is not explicitly expanded so it
+     * may be collapsed or its children if any not yet loaded
      *
      * @param path the path to search
      * @return the item or null if none

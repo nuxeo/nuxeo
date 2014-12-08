@@ -85,8 +85,7 @@ public class SuggestCollectionEntry {
     public Blob run() throws OperationException {
         JSONArray result = new JSONArray();
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
         Map<String, Object> vars = ctx.getVars();
 
@@ -95,15 +94,12 @@ public class SuggestCollectionEntry {
         sl.add(DocumentPageProviderOperation.CURRENT_USERID_PATTERN);
         vars.put("queryParams", sl);
         vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
-                vars);
+        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
         OperationChain chain = new OperationChain("operation");
-        OperationParameters oparams = new OperationParameters(
-                DocumentPageProviderOperation.ID, vars);
+        OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, vars);
         chain.add(oparams);
         @SuppressWarnings("unchecked")
-        List<DocumentModel> docs = (List<DocumentModel>) service.run(subctx,
-                chain);
+        List<DocumentModel> docs = (List<DocumentModel>) service.run(subctx, chain);
 
         boolean found = false;
         for (DocumentModel doc : docs) {
@@ -115,10 +111,8 @@ public class SuggestCollectionEntry {
                 found = true;
             }
             obj.element(Select2Common.LABEL, doc.getTitle());
-            if (StringUtils.isNotBlank((String) doc.getProperty("common",
-                    "icon"))) {
-                obj.element(Select2Common.ICON,
-                        doc.getProperty("common", "icon"));
+            if (StringUtils.isNotBlank((String) doc.getProperty("common", "icon"))) {
+                obj.element(Select2Common.ICON, doc.getProperty("common", "icon"));
             }
             obj.element(PATH, doc.getPath().toString());
             result.add(obj);
@@ -127,8 +121,7 @@ public class SuggestCollectionEntry {
         if (!found && StringUtils.isNotBlank(searchTerm)) {
             JSONObject obj = new JSONObject();
             obj.element(Select2Common.LABEL, searchTerm);
-            obj.element(Select2Common.ID, CollectionConstants.MAGIC_PREFIX_ID
-                    + searchTerm);
+            obj.element(Select2Common.ID, CollectionConstants.MAGIC_PREFIX_ID + searchTerm);
             result.add(0, obj);
         }
 

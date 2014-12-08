@@ -37,13 +37,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@link PublicationTree} implementation that points to a remote tree on a
- * remote server.
+ * {@link PublicationTree} implementation that points to a remote tree on a remote server.
  *
  * @author tiry
  */
-public class ClientRemotePublicationTree extends AbstractRemotableTree
-        implements PublicationTree {
+public class ClientRemotePublicationTree extends AbstractRemotableTree implements PublicationTree {
 
     private static final long serialVersionUID = 1L;
 
@@ -98,33 +96,29 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
     }
 
     @Override
-    protected PublicationNode switchToClientNode(PublicationNode node)
-            throws ClientException {
-        return new ClientRemotePublicationNode(configName, sessionId, node,
-                serverSessionId, treeService, getTargetTreeName());
+    protected PublicationNode switchToClientNode(PublicationNode node) throws ClientException {
+        return new ClientRemotePublicationNode(configName, sessionId, node, serverSessionId, treeService,
+                getTargetTreeName());
     }
 
     @Override
     protected PublicationNode switchToServerNode(PublicationNode node) {
         if (node instanceof ClientRemotePublicationNode) {
             ClientRemotePublicationNode cNode = (ClientRemotePublicationNode) node;
-            return new BasicPublicationNode(cNode.getNodeType(),
-                    cNode.getPath(), cNode.getTitle(),
+            return new BasicPublicationNode(cNode.getNodeType(), cNode.getPath(), cNode.getTitle(),
                     cNode.getUnwrappedTreeName(), serverSessionId);
         }
         if (node instanceof ProxyNode) {
             ProxyNode rNode = (ProxyNode) node;
-            return new BasicPublicationNode(rNode.getNodeType(),
-                    rNode.getPath(), rNode.getTitle(), getTargetTreeName(),
-                    serverSessionId);
+            return new BasicPublicationNode(rNode.getNodeType(), rNode.getPath(), rNode.getTitle(),
+                    getTargetTreeName(), serverSessionId);
         } else {
             return node;
         }
     }
 
-    public void initTree(String sid, CoreSession coreSession,
-            Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName, String title) throws ClientException {
+    public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
+            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
 
         this.sessionId = sid;
         this.name = "Remote";
@@ -155,8 +149,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
             marshaler = new DefaultMarshaler();
         } else {
             try {
-                marshaler = (RemotePublisherMarshaler) Class.forName(
-                        marshalerClassName).newInstance();
+                marshaler = (RemotePublisherMarshaler) Class.forName(marshalerClassName).newInstance();
             } catch (ReflectiveOperationException e) {
                 marshaler = new DefaultMarshaler();
             }
@@ -165,39 +158,32 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
         marshaler.setAssociatedCoreSession(coreSession);
         marshaler.setParameters(parameters);
 
-        treeService = new RemotePublicationTreeManagerRestProxy(baseURL,
-                userName, password, marshaler);
+        treeService = new RemotePublicationTreeManagerRestProxy(baseURL, userName, password, marshaler);
 
         Map<String, String> remoteParameters = new HashMap<String, String>();
-            Map<String, String> rTree = treeService.initRemoteSession(
-                    targetTreeName, remoteParameters);
+        Map<String, String> rTree = treeService.initRemoteSession(targetTreeName, remoteParameters);
 
         serverSessionId = rTree.get("sessionId");
         this.title = rTree.get("title");
         rootPath = rTree.get("path");
         nodeType = rTree.get("nodeType");
 
-        PublicationNode basicRootNode = new BasicPublicationNode(nodeType,
-                rootPath, this.title, configName, sessionId);
-        rootNode = new ClientRemotePublicationNode(configName, sessionId,
-                basicRootNode, serverSessionId, treeService,
+        PublicationNode basicRootNode = new BasicPublicationNode(nodeType, rootPath, this.title, configName, sessionId);
+        rootNode = new ClientRemotePublicationNode(configName, sessionId, basicRootNode, serverSessionId, treeService,
                 getTargetTreeName());
 
     }
 
     @Override
-    protected RemotePublicationTreeManager getTreeService()
-            throws ClientException {
+    protected RemotePublicationTreeManager getTreeService() throws ClientException {
         return treeService;
     }
 
     /*
-     * public List<PublicationNode> getTree() throws ClientException { return
-     * rootNode.getChildrenNodes(); }
+     * public List<PublicationNode> getTree() throws ClientException { return rootNode.getChildrenNodes(); }
      */
 
-    public List<PublishedDocument> getChildrenDocuments()
-            throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
         return rootNode.getChildrenDocuments();
     }
 
@@ -242,8 +228,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
         return serverSessionId;
     }
 
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
 
         doc = factory.snapshotDocumentBeforePublish(doc);
@@ -259,8 +244,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
     }
 
     @Override
-    public List<PublishedDocument> getExistingPublishedDocument(
-            DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
 
         List<PublishedDocument> allPubDocs = new ArrayList<PublishedDocument>();
 
@@ -274,8 +258,8 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
         possibleDocsToCheck.add(0, livedoc);
 
         for (DocumentModel doc : possibleDocsToCheck) {
-            List<PublishedDocument> pubDocs = getTreeService().getExistingPublishedDocument(
-                    getServerTreeSessionId(), new DocumentLocationImpl(doc));
+            List<PublishedDocument> pubDocs = getTreeService().getExistingPublishedDocument(getServerTreeSessionId(),
+                    new DocumentLocationImpl(doc));
             allPubDocs.addAll(pubDocs);
         }
 

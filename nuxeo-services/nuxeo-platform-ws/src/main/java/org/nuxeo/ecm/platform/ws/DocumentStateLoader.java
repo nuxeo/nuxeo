@@ -29,22 +29,20 @@ import org.nuxeo.ecm.platform.api.ws.DocumentLoader;
 import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 
-
 /**
  * @author matic
- *
  */
 public class DocumentStateLoader implements DocumentLoader {
 
     protected static final Log log = LogFactory.getLog(DocumentStateLoader.class);
 
     @Override
-    public void fillProperties(DocumentModel doc,
-            List<DocumentProperty> props, WSRemotingSession rs) throws ClientException {
+    public void fillProperties(DocumentModel doc, List<DocumentProperty> props, WSRemotingSession rs)
+            throws ClientException {
         CoreSession repo = rs.getDocumentManager();
         DocumentRef ref = doc.getRef();
         DocumentModel.DocumentModelRefresh dmr = repo.refreshDocument(ref, DocumentModel.REFRESH_STATE, null);
-        for (Field f:dmr.getClass().getDeclaredFields()) {
+        for (Field f : dmr.getClass().getDeclaredFields()) {
             final String fn = f.getName();
             try {
                 final Object fv = f.get(dmr);

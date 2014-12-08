@@ -29,9 +29,7 @@ import java.io.Serializable;
 public interface PublishedDocument extends Serializable {
 
     enum Type {
-        REMOTE,
-        LOCAL,
-        FILE_SYSTEM;
+        REMOTE, LOCAL, FILE_SYSTEM;
     }
 
     DocumentRef getSourceDocumentRef();
@@ -47,8 +45,7 @@ public interface PublishedDocument extends Serializable {
     String getParentPath();
 
     /**
-     * Returns {@code true} if this document is waiting approval, {@code false}
-     * otherwise.
+     * Returns {@code true} if this document is waiting approval, {@code false} otherwise.
      */
     boolean isPending();
 

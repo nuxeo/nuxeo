@@ -58,8 +58,8 @@ public class FilterRule {
     public FilterRule() {
     }
 
-    public FilterRule(boolean grant, String[] permissions, String[] facets,
-            String[] conditions, String[] types, String[] schemas) {
+    public FilterRule(boolean grant, String[] permissions, String[] facets, String[] conditions, String[] types,
+            String[] schemas) {
         this.grant = grant;
         this.permissions = permissions;
         this.facets = facets;

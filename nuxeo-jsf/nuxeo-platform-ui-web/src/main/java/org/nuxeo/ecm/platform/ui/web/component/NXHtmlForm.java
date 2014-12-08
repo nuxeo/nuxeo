@@ -27,8 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Override the default form component to add warnings for nested forms issues
- * when debug mode is on.
+ * Override the default form component to add warnings for nested forms issues when debug mode is on.
  *
  * @since 5.7
  */
@@ -44,10 +43,8 @@ public class NXHtmlForm extends HtmlForm {
             UIComponent parent = getParent();
             while (parent != null) {
                 if (parent instanceof NXHtmlForm) {
-                    log.error(String.format(
-                            "Form component with id '%s' is already surrounded"
-                                    + " by a form with id '%s'", this.getId(),
-                            parent.getId()));
+                    log.error(String.format("Form component with id '%s' is already surrounded"
+                            + " by a form with id '%s'", this.getId(), parent.getId()));
                     break;
                 }
                 parent = parent.getParent();

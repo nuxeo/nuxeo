@@ -26,10 +26,8 @@ import java.util.Map;
  * Statement interface.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
-public interface Statement extends Comparable<Statement>, Serializable,
-        Cloneable {
+public interface Statement extends Comparable<Statement>, Serializable, Cloneable {
 
     Node getObject();
 

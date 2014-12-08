@@ -35,25 +35,20 @@ public class ImageIdentifier extends MagickExecutor {
 
     private static final Log log = LogFactory.getLog(ImageIdentifier.class);
 
-    public static ImageInfo getInfo(String inputFilePath)
-            throws CommandNotAvailable, CommandException {
+    public static ImageInfo getInfo(String inputFilePath) throws CommandNotAvailable, CommandException {
 
         ExecResult result = getIdentifyResult(inputFilePath);
         if (!result.isSuccessful()) {
             log.debug("identify failed for file: " + inputFilePath);
             throw result.getError();
         }
-        String out = result.getOutput().get(
-                result.getOutput().size() > 1 ? result.getOutput().size() - 1
-                        : 0);
+        String out = result.getOutput().get(result.getOutput().size() > 1 ? result.getOutput().size() - 1 : 0);
         String[] res = out.split(" ");
 
-        return new ImageInfo(res[1], res[2], res[0], res[3], res[4],
-                inputFilePath);
+        return new ImageInfo(res[1], res[2], res[0], res[3], res[4], inputFilePath);
     }
 
-    public static ExecResult getIdentifyResult(String inputFilePath)
-            throws CommandNotAvailable {
+    public static ExecResult getIdentifyResult(String inputFilePath) throws CommandNotAvailable {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("inputFilePath", inputFilePath);
         return execCommand("identify", params);

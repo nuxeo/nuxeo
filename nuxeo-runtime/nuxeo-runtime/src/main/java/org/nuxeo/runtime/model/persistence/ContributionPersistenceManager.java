@@ -15,7 +15,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ContributionPersistenceManager {
 
@@ -30,42 +29,38 @@ public interface ContributionPersistenceManager {
     Contribution getContribution(String name);
 
     /**
-     * Persists a new contribution. The contribution will not be installed. You
-     * need to explicitly call {@link #installContribution(Contribution)} to
-     * install the contribution.
+     * Persists a new contribution. The contribution will not be installed. You need to explicitly call
+     * {@link #installContribution(Contribution)} to install the contribution.
      */
     Contribution addContribution(Contribution contrib);
 
     /**
-     * Removes a persisted contribution given its name. The contribution will not
-     * be uninstalled before being removed. You need to explicitly call
-     * {@link #uninstallContribution(Contribution)} to uninstall it.
+     * Removes a persisted contribution given its name. The contribution will not be uninstalled before being removed.
+     * You need to explicitly call {@link #uninstallContribution(Contribution)} to uninstall it.
      *
-     * @return true if the contribution was removed, false if the contribution
-     *         was not found in persistence.
+     * @return true if the contribution was removed, false if the contribution was not found in persistence.
      */
     boolean removeContribution(Contribution contrib);
 
     /**
-     * Installs the contribution given its name. Return true if contribution
-     * install succeeds, false if the contribution is already installed.
+     * Installs the contribution given its name. Return true if contribution install succeeds, false if the contribution
+     * is already installed.
      * <p>
      * To be able to install a contribution you need to persist it first.
      */
     boolean installContribution(Contribution contrib);
 
     /**
-     * Uninstalls a contribution given is name. If not already installed return
-     * false otherwise return true. The contribution persisted state is not
-     * modified by this operation.
+     * Uninstalls a contribution given is name. If not already installed return false otherwise return true. The
+     * contribution persisted state is not modified by this operation.
      */
     boolean uninstallContribution(Contribution contrib);
 
     /**
      * Updates in the storage the given contribution modifications.
      * <p>
-     * A contribution cannot be renamed. The only permitted modifications are
-     * changing the description and the auto start status.
+     * A contribution cannot be renamed. The only permitted modifications are changing the description and the auto
+     * start status.
      * <p>
      * Return back the contribution object.
      */
@@ -82,8 +77,8 @@ public interface ContributionPersistenceManager {
     boolean isPersisted(Contribution contrib);
 
     /**
-     * Starts the service. This will install all persisted contributions that are
-     * marked as auto-install. See {@link Contribution#isDisabled()}
+     * Starts the service. This will install all persisted contributions that are marked as auto-install. See
+     * {@link Contribution#isDisabled()}
      */
     void start();
 

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.domsync.core.events;
 
 /**
  * @author Max Stepanov
- *
  */
 public class DOMNodeRemovedEvent extends DOMMutationEvent {
 
@@ -33,7 +32,7 @@ public class DOMNodeRemovedEvent extends DOMMutationEvent {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof DOMNodeRemovedEvent) {
+        if (obj instanceof DOMNodeRemovedEvent) {
             return super.equals(obj);
         }
         return false;
@@ -41,7 +40,7 @@ public class DOMNodeRemovedEvent extends DOMMutationEvent {
 
     @Override
     public String toString() {
-        return "DOMNodeRemovedEvent "+super.toString();
+        return "DOMNodeRemovedEvent " + super.toString();
     }
 
 }

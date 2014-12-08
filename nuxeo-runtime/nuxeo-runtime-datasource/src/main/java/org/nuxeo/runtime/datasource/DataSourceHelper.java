@@ -28,8 +28,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
- * Helper class to look up {@link DataSource}s without having to deal with
- * vendor-specific JNDI prefixes.
+ * Helper class to look up {@link DataSource}s without having to deal with vendor-specific JNDI prefixes.
  *
  * @author Thierry Delprat
  * @author Florent Guillaume
@@ -49,8 +48,7 @@ public class DataSourceHelper {
     /**
      * Look up a datasource JNDI name given a partial name.
      * <p>
-     * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass
-     * {@code "foo"} to this method.
+     * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass {@code "foo"} to this method.
      *
      * @param partialName the partial name
      * @return the datasource JNDI name
@@ -70,39 +68,33 @@ public class DataSourceHelper {
     /**
      * Look up a datasource given a partial name.
      * <p>
-     * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass
-     * {@code "foo"} to this method.
+     * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass {@code "foo"} to this method.
      *
      * @param partialName the partial name
      * @return the datasource
      * @throws NamingException
      */
-    public static DataSource getDataSource(String partialName)
-            throws NamingException {
+    public static DataSource getDataSource(String partialName) throws NamingException {
         return getDataSource(partialName, DataSource.class);
     }
 
-    public static XADataSource getXADataSource(String partialName)
-            throws NamingException {
+    public static XADataSource getXADataSource(String partialName) throws NamingException {
         return getDataSource(partialName, XADataSource.class);
     }
 
-    public static <T> T getDataSource(String name, Class<T> clazz)
-            throws NamingException {
+    public static <T> T getDataSource(String name, Class<T> clazz) throws NamingException {
         PooledDataSourceRegistry pools = Framework.getService(PooledDataSourceRegistry.class);
         if (pools == null) {
             throw new NamingException("runtime datasource no installed");
         }
-        T ds = pools.getPool(
-                relativize(name), clazz);
+        T ds = pools.getPool(relativize(name), clazz);
         if (ds == null) {
             throw new NameNotFoundException(name + " not found in container");
         }
         return ds;
     }
 
-    public static Map<String, DataSource> getDatasources()
-            throws NamingException {
+    public static Map<String, DataSource> getDatasources() throws NamingException {
         String prefix = getDataSourceJNDIPrefix();
         Context naming = NuxeoContainer.getRootContext();
         if (naming == null) {
@@ -128,7 +120,6 @@ public class DataSourceHelper {
     /**
      * @param repositoryName
      * @return
-     *
      * @since TODO
      */
     public static String getDataSourceRepositoryJNDIName(String repositoryName) {

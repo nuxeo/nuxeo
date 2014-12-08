@@ -38,8 +38,7 @@ import org.nuxeo.ecm.platform.ec.placeful.Annotation;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 
 /**
- * Propagate previously set notifications when a proxy is replaced by a new
- * version.
+ * Propagate previously set notifications when a proxy is replaced by a new version.
  *
  * @author ogrisel
  */
@@ -70,8 +69,7 @@ public class ProxySubscriptionPropagationListener implements EventListener {
             return;
         }
 
-        List<String> replacedProxyIds = (List<String>) ctx.getProperties().get(
-                CoreEventConstants.REPLACED_PROXY_IDS);
+        List<String> replacedProxyIds = (List<String>) ctx.getProperties().get(CoreEventConstants.REPLACED_PROXY_IDS);
         if (replacedProxyIds == null) {
             return;
         }
@@ -79,15 +77,13 @@ public class ProxySubscriptionPropagationListener implements EventListener {
         for (String replacedProxyId : replacedProxyIds) {
             // there should be only one replaced proxy, but just in case,
             // iterate over them
-            propagateSubscription(replacedProxyId,
-                    publishedDoc.getRef().toString());
+            propagateSubscription(replacedProxyId, publishedDoc.getRef().toString());
         }
     }
 
     protected void propagateSubscription(String fromDocId, String toDocId) {
         PlacefulService service = NotificationServiceHelper.getPlacefulService();
-        String className = service.getAnnotationRegistry().get(
-                NotificationService.SUBSCRIPTION_NAME);
+        String className = service.getAnnotationRegistry().get(NotificationService.SUBSCRIPTION_NAME);
         String shortClassName = className.substring(className.lastIndexOf('.') + 1);
 
         Map<String, Object> paramMap = new HashMap<String, Object>();
@@ -96,8 +92,7 @@ public class ProxySubscriptionPropagationListener implements EventListener {
         }
         PlacefulService placefulService = NotificationServiceHelper.getPlacefulServiceBean();
 
-        List<Annotation> subscriptions = placefulService.getAnnotationListByParamMap(
-                paramMap, shortClassName);
+        List<Annotation> subscriptions = placefulService.getAnnotationListByParamMap(paramMap, shortClassName);
         for (Object obj : subscriptions) {
             UserSubscription subscription = (UserSubscription) obj;
             subscription.setDocId(toDocId);

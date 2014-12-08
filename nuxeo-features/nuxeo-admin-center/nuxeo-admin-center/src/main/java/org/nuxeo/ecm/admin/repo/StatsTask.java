@@ -27,8 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Runnable Class that is executed in the ThreadPool of {@link RepoStat} to
- * gather statistics.
+ * Runnable Class that is executed in the ThreadPool of {@link RepoStat} to gather statistics.
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
@@ -44,8 +43,7 @@ public class StatsTask implements Runnable {
 
     protected final String repositoryName;
 
-    public StatsTask(String repoName, DocumentRef rootDocRef,
-            boolean includeBlob, RepoStat instance) {
+    public StatsTask(String repoName, DocumentRef rootDocRef, boolean includeBlob, RepoStat instance) {
         this.repositoryName = repoName;
         this.rootDocRef = rootDocRef;
         this.includeBlob = includeBlob;
@@ -53,8 +51,7 @@ public class StatsTask implements Runnable {
     }
 
     public synchronized void run() {
-        StatsTaskRunner runner = new StatsTaskRunner(repositoryName,
-                includeBlob, rootDocRef, this);
+        StatsTaskRunner runner = new StatsTaskRunner(repositoryName, includeBlob, rootDocRef, this);
 
         try {
             TransactionHelper.startTransaction();
@@ -74,8 +71,7 @@ public class StatsTask implements Runnable {
         if (cmdInstance.isPoolFull()) {
             return null;
         }
-        return new StatsTask(repositoryName, root.getRef(), includeBlob,
-                cmdInstance);
+        return new StatsTask(repositoryName, root.getRef(), includeBlob, cmdInstance);
     }
 
     protected RepoStatInfo getInfo() {

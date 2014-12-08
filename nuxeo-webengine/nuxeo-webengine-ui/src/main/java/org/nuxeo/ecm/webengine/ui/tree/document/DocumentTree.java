@@ -28,7 +28,6 @@ import org.nuxeo.ecm.webengine.ui.tree.TreeModelImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentTree extends JSonTree {
 
@@ -58,12 +57,12 @@ public class DocumentTree extends JSonTree {
     @Override
     protected Object getInput(WebContext ctx) {
         return rootDoc;
-//        try {
-//            return ctx.getCoreSession().getRootDocument();
-//
-//        } catch (ClientException e) {
-//            throw WebException.wrap(e);
-//        }
+        // try {
+        // return ctx.getCoreSession().getRootDocument();
+        //
+        // } catch (ClientException e) {
+        // throw WebException.wrap(e);
+        // }
     }
 
 }

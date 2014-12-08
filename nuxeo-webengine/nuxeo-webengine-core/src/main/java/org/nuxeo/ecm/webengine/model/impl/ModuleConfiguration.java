@@ -37,7 +37,6 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("module")
 public class ModuleConfiguration implements Cloneable {
@@ -45,16 +44,14 @@ public class ModuleConfiguration implements Cloneable {
     /**
      * A web module may have multiple roots
      *
-     * @deprecated you should use new module definition - through
-     *             {@link WebEngineModule}
+     * @deprecated you should use new module definition - through {@link WebEngineModule}
      */
     @Deprecated
     @XNode("@path")
     public String path;
 
     /**
-     * @deprecated you should use new module definition - through
-     *             {@link WebEngineModule}
+     * @deprecated you should use new module definition - through {@link WebEngineModule}
      */
     @Deprecated
     @XNode("@root-type")
@@ -72,42 +69,37 @@ public class ModuleConfiguration implements Cloneable {
     public String name;
 
     /**
-     * Use module links instead. If a module doesn't declare a module item it
-     * will be headless by default. Still used for compatibility mode - for
-     * those modules not yet using moduleItems.
+     * Use module links instead. If a module doesn't declare a module item it will be headless by default. Still used
+     * for compatibility mode - for those modules not yet using moduleItems.
      */
     @Deprecated
     @XNode("@headless")
     public boolean isHeadless;
 
     /**
-     * A list of entry points into the module - to be shown in the main
-     * webengine page. This is optional and may be ignored if your don't want to
-     * provide shortcuts to your module entry points.
+     * A list of entry points into the module - to be shown in the main webengine page. This is optional and may be
+     * ignored if your don't want to provide shortcuts to your module entry points.
      */
     @XNodeList(value = "shortcuts/shortcut", type = ArrayList.class, componentType = ModuleShortcut.class, nullByDefault = true)
     public List<ModuleShortcut> moduleShortcuts;
 
     /**
-     * Web Types explicitly declared. If null no web types were explicitly
-     * declared and old type loading method from the generated web-types file
-     * should be used.
+     * Web Types explicitly declared. If null no web types were explicitly declared and old type loading method from the
+     * generated web-types file should be used.
      */
     public Class<?>[] types;
 
     /**
-     * The module directory. Must be set by the client before registering the
-     * descriptor.
+     * The module directory. Must be set by the client before registering the descriptor.
      */
     @XNode("home")
     public File directory;
 
-    @XNodeList(value = "fragments/directory", type=ArrayList.class, componentType = File.class, nullByDefault=false)
+    @XNodeList(value = "fragments/directory", type = ArrayList.class, componentType = File.class, nullByDefault = false)
     public List<File> fragmentDirectories = new ArrayList<File>();
 
     /**
-     * The module configuration file (this will be set by the module config
-     * parser)
+     * The module configuration file (this will be set by the module config parser)
      */
     public File file;
 
@@ -118,8 +110,7 @@ public class ModuleConfiguration implements Cloneable {
     public List<LinkDescriptor> links;
 
     /**
-     * @deprecated resources are deprecated - you should use a jax-rs
-     *             application to declare more resources.
+     * @deprecated resources are deprecated - you should use a jax-rs application to declare more resources.
      */
     @XNodeList(value = "resources/resource", type = ArrayList.class, componentType = ResourceBinding.class, nullByDefault = true)
     public List<ResourceBinding> resources;
@@ -172,8 +163,7 @@ public class ModuleConfiguration implements Cloneable {
     }
 
     /**
-     * @deprecated you should use new module definition - through
-     *             {@link WebEngineModule}
+     * @deprecated you should use new module definition - through {@link WebEngineModule}
      */
     @Deprecated
     public String getPath() {
@@ -184,13 +174,10 @@ public class ModuleConfiguration implements Cloneable {
         if (module == null) {
             Module superModule = null;
             if (base != null) { // make sure super modules are resolved
-                ModuleConfiguration superM = engine.getModuleManager().getModule(
-                        base);
+                ModuleConfiguration superM = engine.getModuleManager().getModule(base);
                 if (superM == null) {
-                    throw new WebResourceNotFoundException("The module '"
-                            + name
-                            + "' cannot be loaded since it's super module '"
-                            + base + "' cannot be found");
+                    throw new WebResourceNotFoundException("The module '" + name
+                            + "' cannot be loaded since it's super module '" + base + "' cannot be found");
                 }
                 // force super module loading
                 superModule = superM.get();

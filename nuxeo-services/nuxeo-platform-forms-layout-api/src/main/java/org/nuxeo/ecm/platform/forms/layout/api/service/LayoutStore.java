@@ -30,16 +30,14 @@ import org.nuxeo.ecm.platform.forms.layout.api.converters.WidgetDefinitionConver
 /**
  * Layout store interface.
  * <p>
- * It manages registries of layout definitions, widget types, widget
- * definitions and converters.
+ * It manages registries of layout definitions, widget types, widget definitions and converters.
  *
  * @since 5.5
  */
 public interface LayoutStore extends Serializable {
 
     /**
-     * Returns categories of layout and widgets definitions and instances held
-     * by this service.
+     * Returns categories of layout and widgets definitions and instances held by this service.
      */
     List<String> getCategories();
 
@@ -51,11 +49,9 @@ public interface LayoutStore extends Serializable {
     WidgetType getWidgetType(String category, String typeName);
 
     /**
-     * Returns the widget type definition with given name, or null if no widget
-     * type with this name is found.
+     * Returns the widget type definition with given name, or null if no widget type with this name is found.
      */
-    WidgetTypeDefinition getWidgetTypeDefinition(String category,
-            String typeName);
+    WidgetTypeDefinition getWidgetTypeDefinition(String category, String typeName);
 
     /**
      * Returns the widget type definitions for all the registered widget types.
@@ -65,8 +61,7 @@ public interface LayoutStore extends Serializable {
     /**
      * @since 6.0
      */
-    LayoutTypeDefinition getLayoutTypeDefinition(String category,
-            String typeName);
+    LayoutTypeDefinition getLayoutTypeDefinition(String category, String typeName);
 
     /**
      * @since 6.0

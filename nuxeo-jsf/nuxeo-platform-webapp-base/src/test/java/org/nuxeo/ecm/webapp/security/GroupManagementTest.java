@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
 /**
  * @author dmetzler
- *
  */
 public class GroupManagementTest extends BaseUserGroupMock {
 
@@ -37,11 +36,9 @@ public class GroupManagementTest extends BaseUserGroupMock {
     public void doBefore() throws Exception {
         actions.userManager = mockUserManager();
 
-        //For this test, user is at least a power user
+        // For this test, user is at least a power user
         actions.webActions = mock(WebActions.class);
-        when(
-                actions.webActions.checkFilter(USERS_GROUPS_MANAGEMENT_ACCESS_FILTER)).thenReturn(
-                true);
+        when(actions.webActions.checkFilter(USERS_GROUPS_MANAGEMENT_ACCESS_FILTER)).thenReturn(true);
 
     }
 
@@ -49,7 +46,7 @@ public class GroupManagementTest extends BaseUserGroupMock {
     public void aPowerUserShouldNotBeAbleToEditAdminGroup() throws Exception {
 
         // Given a power user (not admin)
-        actions.currentUser = getMockedUser("Power",false);
+        actions.currentUser = getMockedUser("Power", false);
 
         // When selected group is administrators
         actions.selectedGroup = mockGroup("administrators");
@@ -67,8 +64,8 @@ public class GroupManagementTest extends BaseUserGroupMock {
 
     @Test
     public void anAdministratorShouldBeAbleToEditAdminGroup() throws Exception {
-        //Given an admin user
-        actions.currentUser = getMockedUser("Administrator",true);
+        // Given an admin user
+        actions.currentUser = getMockedUser("Administrator", true);
 
         // When selected group is administrators
         actions.selectedGroup = mockGroup("administrators");

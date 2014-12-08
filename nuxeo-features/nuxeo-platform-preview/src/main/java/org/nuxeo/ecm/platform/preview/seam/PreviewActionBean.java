@@ -92,7 +92,7 @@ public class PreviewActionBean implements Serializable {
         if (document == null) {
             return false;
         }
-        if(PreviewHelper.typeSupportsPreview(document)) {
+        if (PreviewHelper.typeSupportsPreview(document)) {
             try {
                 return PreviewHelper.docHasBlobToPreview(document);
             } catch (PreviewException e) {
@@ -101,7 +101,6 @@ public class PreviewActionBean implements Serializable {
         } else {
             return false;
         }
-
 
     }
 
@@ -145,10 +144,8 @@ public class PreviewActionBean implements Serializable {
      * @since 5.7
      */
     public String getPreviewPopupURL(DocumentModel doc, boolean newConversation) {
-        DocumentLocation docLocation = new DocumentLocationImpl(
-                doc.getRepositoryName(), doc.getRef());
-        DocumentView docView = new DocumentViewImpl(docLocation,
-                PREVIEW_POPUP_VIEW);
+        DocumentLocation docLocation = new DocumentLocationImpl(doc.getRepositoryName(), doc.getRef());
+        DocumentView docView = new DocumentViewImpl(docLocation, PREVIEW_POPUP_VIEW);
         docView.setPatternName("id");
         URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
         String url = urlPolicyService.getUrlFromDocumentView(docView, null);
@@ -169,8 +166,7 @@ public class PreviewActionBean implements Serializable {
         }
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void resetFields() {
         fieldXPathValue = null;

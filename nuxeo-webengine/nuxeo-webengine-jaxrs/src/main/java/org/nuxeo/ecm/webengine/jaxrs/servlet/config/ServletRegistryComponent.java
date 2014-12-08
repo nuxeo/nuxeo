@@ -21,7 +21,6 @@ import org.osgi.service.http.NamespaceException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ServletRegistryComponent extends DefaultComponent {
 
@@ -50,41 +49,39 @@ public class ServletRegistryComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_SERVLETS.equals(extensionPoint)) {
-            ((ServletDescriptor)contribution).setBundle(contributor.getContext().getBundle());
+            ((ServletDescriptor) contribution).setBundle(contributor.getContext().getBundle());
             try {
-                registry.addServlet((ServletDescriptor)contribution);
+                registry.addServlet((ServletDescriptor) contribution);
             } catch (ServletException | NamespaceException e) {
                 throw new RuntimeException(e);
             }
         } else if (XP_FILTERS.equals(extensionPoint)) {
-            registry.addFilterSet((FilterSetDescriptor)contribution);
+            registry.addFilterSet((FilterSetDescriptor) contribution);
         } else if (XP_RESOURCES.equals(extensionPoint)) {
-            ResourcesDescriptor rd = (ResourcesDescriptor)contribution;
+            ResourcesDescriptor rd = (ResourcesDescriptor) contribution;
             rd.setBundle(contributor.getContext().getBundle());
             registry.addResources(rd);
         } else if (XP_SUBRESOURCES.equals(extensionPoint)) {
-            ResourceExtension rxt = (ResourceExtension)contribution;
+            ResourceExtension rxt = (ResourceExtension) contribution;
             rxt.setBundle(contributor.getContext().getBundle());
             ApplicationManager.getInstance().getOrCreateApplication(rxt.getApplication()).addExtension(rxt);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_SERVLETS.equals(extensionPoint)) {
-            registry.removeServlet((ServletDescriptor)contribution);
+            registry.removeServlet((ServletDescriptor) contribution);
         } else if (XP_FILTERS.equals(extensionPoint)) {
-            registry.removeFilterSet((FilterSetDescriptor)contribution);
+            registry.removeFilterSet((FilterSetDescriptor) contribution);
         } else if (XP_RESOURCES.equals(extensionPoint)) {
-            ResourcesDescriptor rd = (ResourcesDescriptor)contribution;
+            ResourcesDescriptor rd = (ResourcesDescriptor) contribution;
             rd.setBundle(contributor.getContext().getBundle());
             registry.removeResources(rd);
         } else if (XP_SUBRESOURCES.equals(extensionPoint)) {
-            ResourceExtension rxt = (ResourceExtension)contribution;
+            ResourceExtension rxt = (ResourceExtension) contribution;
             rxt.setBundle(contributor.getContext().getBundle());
             ApplicationManager.getInstance().getOrCreateApplication(rxt.getApplication()).removeExtension(rxt);
         }

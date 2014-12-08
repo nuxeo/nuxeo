@@ -26,7 +26,6 @@ import org.nuxeo.ecm.automation.client.model.OperationDocumentation.Param;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JsonOperationMarshaller {
 
@@ -60,8 +59,7 @@ public class JsonOperationMarshaller {
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
         return op;
     }
@@ -79,20 +77,18 @@ public class JsonOperationMarshaller {
         return list.toArray(new String[list.size()]);
     }
 
-    private static void readParams(JsonParser jp, OperationDocumentation op)
-            throws IOException {
-        JsonToken tok = jp.nextToken();  // skip [
+    private static void readParams(JsonParser jp, OperationDocumentation op) throws IOException {
+        JsonToken tok = jp.nextToken(); // skip [
         if (tok == JsonToken.END_ARRAY) {
             return;
         }
         do {
             readParam(jp, op);
             tok = jp.nextToken();
-        } while(tok != JsonToken.END_ARRAY);
+        } while (tok != JsonToken.END_ARRAY);
     }
 
-    private static void readParam(JsonParser jp, OperationDocumentation op)
-            throws IOException {
+    private static void readParam(JsonParser jp, OperationDocumentation op) throws IOException {
         Param para = new Param();
         JsonToken tok = jp.nextToken(); // skip {
         while (tok != null && tok != JsonToken.END_OBJECT) {

@@ -53,28 +53,23 @@ public class TestLayoutStoreService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests",
-                "layouts-core-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests", "layouts-core-test-contrib.xml");
         service = Framework.getService(LayoutStore.class);
         assertNotNull(service);
     }
 
     @Test
     public void testWidgetType() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests",
-                "layouts-core-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests", "layouts-core-test-contrib.xml");
         WidgetType wType = service.getWidgetType("testCategory", "test");
         assertEquals("test", wType.getName());
         assertEquals(2, wType.getProperties().size());
-        assertEquals(DummyWidgetTypeHandler.class.getName(),
-                wType.getWidgetTypeClass().getName());
+        assertEquals(DummyWidgetTypeHandler.class.getName(), wType.getWidgetTypeClass().getName());
 
-        WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(
-                "testCategory", "test");
+        WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition("testCategory", "test");
         assertEquals("test", wTypeDef.getName());
         assertEquals(2, wTypeDef.getProperties().size());
-        assertEquals(DummyWidgetTypeHandler.class.getName(),
-                wTypeDef.getHandlerClassName());
+        assertEquals(DummyWidgetTypeHandler.class.getName(), wTypeDef.getHandlerClassName());
         WidgetTypeConfiguration conf = wTypeDef.getConfiguration();
         assertNotNull(conf);
         assertEquals("Test widget type", conf.getTitle());
@@ -110,8 +105,7 @@ public class TestLayoutStoreService extends NXRuntimeTestCase {
         List<String> categories = conf.getCategories();
         assertNotNull(categories);
         assertEquals(2, categories.size());
-        List<LayoutDefinition> layouts = conf.getPropertyLayouts(
-                BuiltinModes.EDIT, BuiltinModes.ANY);
+        List<LayoutDefinition> layouts = conf.getPropertyLayouts(BuiltinModes.EDIT, BuiltinModes.ANY);
         assertNotNull(layouts);
         assertEquals(2, layouts.size());
 

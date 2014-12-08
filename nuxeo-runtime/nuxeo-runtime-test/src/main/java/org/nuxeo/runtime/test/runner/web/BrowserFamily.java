@@ -26,7 +26,6 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public enum BrowserFamily {
 
@@ -51,12 +50,14 @@ public enum BrowserFamily {
         @Override
         public WebDriver createDriver() {
             FirefoxDriver ff = new FirefoxDriver();
-            //ff.manage().setSpeed(Speed.FAST);
+            // ff.manage().setSpeed(Speed.FAST);
             return ff;
         }
+
         @Override
         public void disposeDriver(WebDriver driver) {
         }
+
         @Override
         public BrowserFamily getBrowserFamily() {
             return BrowserFamily.this;
@@ -67,12 +68,14 @@ public enum BrowserFamily {
         @Override
         public WebDriver createDriver() {
             ChromeDriver ff = new ChromeDriver();
-            //ff.manage().setSpeed(Speed.FAST);
+            // ff.manage().setSpeed(Speed.FAST);
             return ff;
         }
+
         @Override
         public void disposeDriver(WebDriver driver) {
         }
+
         @Override
         public BrowserFamily getBrowserFamily() {
             return BrowserFamily.this;
@@ -83,12 +86,14 @@ public enum BrowserFamily {
         @Override
         public WebDriver createDriver() {
             InternetExplorerDriver driver = new InternetExplorerDriver();
-            //driver.manage().setSpeed(Speed.FAST);
+            // driver.manage().setSpeed(Speed.FAST);
             return driver;
         }
+
         @Override
         public void disposeDriver(WebDriver driver) {
         }
+
         @Override
         public BrowserFamily getBrowserFamily() {
             return BrowserFamily.this;
@@ -100,9 +105,11 @@ public enum BrowserFamily {
         public WebDriver createDriver() {
             return new HtmlUnitDriver();
         }
+
         @Override
         public void disposeDriver(WebDriver driver) {
         }
+
         @Override
         public BrowserFamily getBrowserFamily() {
             return BrowserFamily.this;
@@ -116,25 +123,27 @@ public enum BrowserFamily {
             driver.setJavascriptEnabled(true);
             return driver;
         }
+
         @Override
         public void disposeDriver(WebDriver driver) {
         }
+
         @Override
         public BrowserFamily getBrowserFamily() {
             return BrowserFamily.this;
         }
     }
 
-//    private WebDriver _old_makeFirefoxDriver() {
-//        String Xport = System.getProperty("nuxeo.xvfb.id", ":0");
-//        File firefoxPath = new File(System.getProperty("firefox.path",
-//                "/usr/bin/firefox"));
-//        FirefoxBinary firefox = new FirefoxBinary(firefoxPath);
-//        firefox.setEnvironmentProperty("DISPLAY", Xport);
-//        WebDriver driver = new FirefoxDriver(firefox, null);
-//        //driver.setVisible(false);
-//        driver.manage().setSpeed(Speed.FAST);
-//        return driver;
-//    }
+    // private WebDriver _old_makeFirefoxDriver() {
+    // String Xport = System.getProperty("nuxeo.xvfb.id", ":0");
+    // File firefoxPath = new File(System.getProperty("firefox.path",
+    // "/usr/bin/firefox"));
+    // FirefoxBinary firefox = new FirefoxBinary(firefoxPath);
+    // firefox.setEnvironmentProperty("DISPLAY", Xport);
+    // WebDriver driver = new FirefoxDriver(firefox, null);
+    // //driver.setVisible(false);
+    // driver.manage().setSpeed(Speed.FAST);
+    // return driver;
+    // }
 
 }

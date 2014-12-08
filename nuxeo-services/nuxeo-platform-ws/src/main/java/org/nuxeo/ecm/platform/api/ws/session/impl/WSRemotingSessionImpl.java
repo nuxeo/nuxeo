@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  * Web service remoting session implementation.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class WSRemotingSessionImpl implements WSRemotingSession {
 
@@ -41,8 +40,8 @@ public class WSRemotingSessionImpl implements WSRemotingSession {
 
     private final String password;
 
-    public WSRemotingSessionImpl(CoreSession session, UserManager um,
-            String repository, String username, String password) {
+    public WSRemotingSessionImpl(CoreSession session, UserManager um, String repository, String username,
+            String password) {
         docMgr = session;
         userMgr = um;
         this.repository = repository;

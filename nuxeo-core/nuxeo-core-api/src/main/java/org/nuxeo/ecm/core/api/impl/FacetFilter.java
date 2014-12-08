@@ -32,8 +32,7 @@ public class FacetFilter implements Filter {
 
     private static final long serialVersionUID = 1L;
 
-    public static final FacetFilter ALLOW = new FacetFilter((List<String>) null,
-            (List<String>) null);
+    public static final FacetFilter ALLOW = new FacetFilter((List<String>) null, (List<String>) null);
 
     /** Set of required facets. Never {@code null}. */
     public final Set<String> required;
@@ -47,8 +46,7 @@ public class FacetFilter implements Filter {
      * Generic constructor.
      *
      * @param required list of facets the models must have to pass the filter
-     * @param excluded list of facets the models must not have to pass the
-     *            filter
+     * @param excluded list of facets the models must not have to pass the filter
      */
     public FacetFilter(List<String> required, List<String> excluded) {
         if (required == null) {
@@ -68,8 +66,7 @@ public class FacetFilter implements Filter {
      * Simpler constructor to filter on a single facet.
      *
      * @param facet the facet to filter on
-     * @param isRequired if true, accepted models must have the facet; if false,
-     *            accepted models must not have the facet
+     * @param isRequired if true, accepted models must have the facet; if false, accepted models must not have the facet
      */
     public FacetFilter(String facet, boolean isRequired) {
         if (isRequired) {

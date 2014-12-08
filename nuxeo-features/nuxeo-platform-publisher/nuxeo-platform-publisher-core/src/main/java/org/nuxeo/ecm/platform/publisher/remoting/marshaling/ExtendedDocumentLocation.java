@@ -21,8 +21,7 @@ import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 
 /**
- * Extension to {@link DocumentLocation} to provide information about source
- * server.
+ * Extension to {@link DocumentLocation} to provide information about source server.
  *
  * @author tiry
  */
@@ -36,8 +35,7 @@ public class ExtendedDocumentLocation extends DocumentLocationImpl {
         super(serverName, docRef);
     }
 
-    public ExtendedDocumentLocation(String originalServer, String serverName,
-            DocumentRef docRef) {
+    public ExtendedDocumentLocation(String originalServer, String serverName, DocumentRef docRef) {
         super(serverName, docRef);
         this.originalServer = originalServer;
     }
@@ -53,8 +51,7 @@ public class ExtendedDocumentLocation extends DocumentLocationImpl {
 
     @Override
     public String toString() {
-        return getServerName() + "@" + getOriginalServer() + ":"
-                + getDocRef().toString();
+        return getServerName() + "@" + getOriginalServer() + ":" + getDocRef().toString();
     }
 
     public static ExtendedDocumentLocation parseString(String source) {
@@ -65,8 +62,7 @@ public class ExtendedDocumentLocation extends DocumentLocationImpl {
         return new ExtendedDocumentLocation(sourceServer, repositoryName, ref);
     }
 
-    public static ExtendedDocumentLocation extractFromDoc(DocumentModel doc)
-            throws ClientException {
+    public static ExtendedDocumentLocation extractFromDoc(DocumentModel doc) throws ClientException {
         if (doc.hasSchema("dublincore")) {
             String source = (String) doc.getProperty("dublincore", "source");
 

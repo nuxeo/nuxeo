@@ -19,8 +19,7 @@ public class Constants {
     /**
      * A chain id prefix used in mysterious situations (old rest api it seems).
      * <p>
-     * Hardcoded here to better track usage now that chains are registered as
-     * operations on the service?
+     * Hardcoded here to better track usage now that chains are registered as operations on the service?
      *
      * @since 5.9.4
      */

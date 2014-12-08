@@ -21,7 +21,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author matic
- *
  */
 @XObject("factory")
 public class ResourceFactoryDescriptor {
@@ -29,8 +28,7 @@ public class ResourceFactoryDescriptor {
     @XNode("@class")
     private Class<? extends ResourceFactory> factoryClass;
 
-    public ResourceFactoryDescriptor(
-            Class<? extends ResourceFactory> factoryClass) {
+    public ResourceFactoryDescriptor(Class<? extends ResourceFactory> factoryClass) {
         this.factoryClass = factoryClass;
     }
 

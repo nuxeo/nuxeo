@@ -80,40 +80,33 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     public String origUserName;
 
     /**
-     * Constructor that sets principal to not anonymous, not administrator, and
-     * updates all the principal groups.
+     * Constructor that sets principal to not anonymous, not administrator, and updates all the principal groups.
      */
     public NuxeoPrincipalImpl(String name) throws ClientException {
         this(name, false, false);
     }
 
     /**
-     * Constructor that sets principal to not administrator, and updates all the
-     * principal groups.
+     * Constructor that sets principal to not administrator, and updates all the principal groups.
      */
-    public NuxeoPrincipalImpl(String name, boolean isAnonymous)
-            throws ClientException {
+    public NuxeoPrincipalImpl(String name, boolean isAnonymous) throws ClientException {
         this(name, isAnonymous, false);
     }
 
     /**
      * Constructor that updates all the principal groups.
      */
-    public NuxeoPrincipalImpl(String name, boolean isAnonymous,
-            boolean isAdministrator) throws ClientException {
+    public NuxeoPrincipalImpl(String name, boolean isAnonymous, boolean isAdministrator) throws ClientException {
         this(name, isAnonymous, isAdministrator, true);
     }
 
-    public NuxeoPrincipalImpl(String name, boolean isAnonymous,
-            boolean isAdministrator, boolean updateAllGroups)
+    public NuxeoPrincipalImpl(String name, boolean isAnonymous, boolean isAdministrator, boolean updateAllGroups)
             throws ClientException {
-        DocumentModelImpl documentModelImpl = new DocumentModelImpl(
-                config.schemaName);
+        DocumentModelImpl documentModelImpl = new DocumentModelImpl(config.schemaName);
         // schema name hardcoded default when setModel is never called
         // which happens when a principal is created just to encapsulate
         // a username
-        documentModelImpl.addDataModel(new DataModelImpl(config.schemaName,
-                new HashMap<String, Object>()));
+        documentModelImpl.addDataModel(new DataModelImpl(config.schemaName, new HashMap<String, Object>()));
         setModel(documentModelImpl, updateAllGroups);
         dataModel.setData(config.nameKey, name);
         this.isAnonymous = isAnonymous;
@@ -315,8 +308,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     /**
      * Sets model and recomputes all groups.
      */
-    public void setModel(DocumentModel model, boolean updateAllGroups)
-            throws ClientException {
+    public void setModel(DocumentModel model, boolean updateAllGroups) throws ClientException {
         this.model = model;
         dataModel = model.getDataModels().values().iterator().next();
         if (updateAllGroups) {
@@ -357,10 +349,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                     } catch (DirectoryException de) {
                         if (virtualGroups.contains(groupName)) {
                             // do not fail while retrieving a virtual group
-                            log.warn("Failed to get group '"
-                                    + groupName
-                                    + "' due to '"
-                                    + de.getMessage()
+                            log.warn("Failed to get group '" + groupName + "' due to '" + de.getMessage()
                                     + "': permission resolution involving groups may not be correct");
                             nxGroup = null;
                         } else {
@@ -375,8 +364,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                     } else if (userManager != null) {
                         // XXX this should only happens in case of
                         // inconsistency in DB
-                        log.error("User " + getName() + " references the "
-                                + groupName + " group that does not exists");
+                        log.error("User " + getName() + " references the " + groupName + " group that does not exists");
                     }
                 } else {
                     groupsToProcess.addAll(nxGroup.getParentGroups());
@@ -410,8 +398,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         return new ArrayList<String>(virtualGroups);
     }
 
-    public void setVirtualGroups(List<String> virtualGroups,
-            boolean updateAllGroups) throws ClientException {
+    public void setVirtualGroups(List<String> virtualGroups, boolean updateAllGroups) throws ClientException {
         this.virtualGroups = new ArrayList<String>(virtualGroups);
         if (updateAllGroups) {
             updateAllGroups();
@@ -421,15 +408,13 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     /**
      * Sets virtual groups and recomputes all groups.
      */
-    public void setVirtualGroups(List<String> virtualGroups)
-            throws ClientException {
+    public void setVirtualGroups(List<String> virtualGroups) throws ClientException {
         setVirtualGroups(virtualGroups, true);
     }
 
     @Override
     public boolean isAdministrator() {
-        return isAdministrator
-                || SecurityConstants.SYSTEM_USERNAME.equals(getName());
+        return isAdministrator || SecurityConstants.SYSTEM_USERNAME.equals(getName());
     }
 
     @Override

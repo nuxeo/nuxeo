@@ -26,7 +26,6 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MyRenderingExtension implements TemplateMethodModelEx {
 

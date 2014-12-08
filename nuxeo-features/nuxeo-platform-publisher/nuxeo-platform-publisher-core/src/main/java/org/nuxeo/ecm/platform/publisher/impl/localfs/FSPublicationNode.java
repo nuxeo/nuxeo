@@ -29,8 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class FSPublicationNode extends AbstractPublicationNode implements
-        PublicationNode {
+public class FSPublicationNode extends AbstractPublicationNode implements PublicationNode {
 
     private static final long serialVersionUID = 1L;
 
@@ -51,8 +50,7 @@ public class FSPublicationNode extends AbstractPublicationNode implements
         this.sid = sid;
     }
 
-    public List<PublishedDocument> getChildrenDocuments()
-            throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
 
         List<PublishedDocument> childrenDocs = new ArrayList<PublishedDocument>();
         List<File> children = Arrays.asList(folder.listFiles());
@@ -62,9 +60,7 @@ public class FSPublicationNode extends AbstractPublicationNode implements
                 try {
                     childrenDocs.add(new FSPublishedDocument(child));
                 } catch (NotFSPublishedDocumentException e) {
-                    throw new ClientException(
-                            "Error whild creating PublishedDocument from file",
-                            e);
+                    throw new ClientException("Error whild creating PublishedDocument from file", e);
                 }
             }
         }
@@ -77,8 +73,7 @@ public class FSPublicationNode extends AbstractPublicationNode implements
         Collections.sort(children);
         for (File child : children) {
             if (child.isDirectory()) {
-                childrenNodes.add(new FSPublicationNode(child,
-                        getTreeConfigName(), sid));
+                childrenNodes.add(new FSPublicationNode(child, getTreeConfigName(), sid));
             }
         }
         return childrenNodes;

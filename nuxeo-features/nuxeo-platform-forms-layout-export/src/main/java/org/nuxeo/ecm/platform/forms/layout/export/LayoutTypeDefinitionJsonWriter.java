@@ -36,26 +36,21 @@ import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
  */
 @Provider
 @Produces({ "application/json", "text/plain" })
-public class LayoutTypeDefinitionJsonWriter implements
-        MessageBodyWriter<LayoutTypeDefinition> {
+public class LayoutTypeDefinitionJsonWriter implements MessageBodyWriter<LayoutTypeDefinition> {
 
     @Override
-    public long getSize(LayoutTypeDefinition arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(LayoutTypeDefinition arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
         return LayoutTypeDefinition.class.isAssignableFrom(arg0);
     }
 
     @Override
-    public void writeTo(LayoutTypeDefinition arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream arg6)
-            throws IOException, WebApplicationException {
+    public void writeTo(LayoutTypeDefinition arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
+            MultivaluedMap<String, Object> arg5, OutputStream arg6) throws IOException, WebApplicationException {
         JSONLayoutExporter.exportLayoutType(arg0, arg6);
     }
 

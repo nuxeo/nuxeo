@@ -48,8 +48,7 @@ public class ResourceServlet extends HttpServlet {
     private static final long serialVersionUID = 6548084847887645044L;
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         WebEngine engine = Framework.getService(WebEngine.class);
         String path = req.getPathInfo();
         if (path == null) {
@@ -73,15 +72,15 @@ public class ResourceServlet extends HttpServlet {
         }
 
         try {
-            service(req, resp, module, "/resources"+path);
+            service(req, resp, module, "/resources" + path);
         } catch (IOException e) {
             log.error("Unable to serve resource for " + path, e);
             resp.sendError(404);
         }
     }
 
-    protected void service(HttpServletRequest req, HttpServletResponse resp,
-            Module module, String path) throws IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp, Module module, String path)
+            throws IOException {
 
         ScriptFile file = module.getSkinResource(path);
         if (file != null) {
@@ -106,28 +105,24 @@ public class ResourceServlet extends HttpServlet {
         resp.sendError(404);
     }
 
-    protected static void sendBinaryContent(ScriptFile file, HttpServletResponse resp)
-            throws IOException {
+    protected static void sendBinaryContent(ScriptFile file, HttpServletResponse resp) throws IOException {
         OutputStream out = resp.getOutputStream();
         InputStream in = file.getInputStream();
         try {
             FileUtils.copy(in, out);
-        }
-        finally {
+        } finally {
             in.close();
         }
         out.flush();
     }
 
-    protected static void sendTextContent(ScriptFile file, HttpServletResponse resp)
-            throws IOException {
-        //Writer out = resp.getWriter();
+    protected static void sendTextContent(ScriptFile file, HttpServletResponse resp) throws IOException {
+        // Writer out = resp.getWriter();
         OutputStream out = resp.getOutputStream();
         InputStream in = file.getInputStream();
         try {
             FileUtils.copy(in, out);
-        }
-        finally {
+        } finally {
             in.close();
         }
         out.flush();

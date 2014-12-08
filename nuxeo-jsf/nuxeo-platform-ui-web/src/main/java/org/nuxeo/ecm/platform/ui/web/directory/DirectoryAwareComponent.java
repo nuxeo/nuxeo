@@ -63,8 +63,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
     protected String displayValueOnlyStyleClass;
 
     /**
-     * This field is used to specify what to display from the entry of a
-     * directory,the id, label or both of them.
+     * This field is used to specify what to display from the entry of a directory,the id, label or both of them.
      */
     protected String display;
 
@@ -178,19 +177,16 @@ public abstract class DirectoryAwareComponent extends UIInput {
 
         List<DirectorySelectItem> optionList;
         if (!StringUtils.isEmpty(directoryName)) {
-            optionList = DirectoryHelper.instance().getSelectItems(
-                    directoryName, filter, getLocalize());
+            optionList = DirectoryHelper.instance().getSelectItems(directoryName, filter, getLocalize());
         } else if (directoryValues != null) {
-            optionList = DirectoryHelper.getSelectItems(directoryValues,
-                    filter, getLocalize());
+            optionList = DirectoryHelper.getSelectItems(directoryValues, filter, getLocalize());
         } else {
             optionList = new ArrayList<DirectorySelectItem>();
         }
         String ordering = getOrdering();
         Boolean caseSensitive = getCaseSensitive();
         if (ordering != null && !"".equals(ordering)) {
-            Collections.sort(optionList, new DirectorySelectItemComparator(ordering,
-                    caseSensitive));
+            Collections.sort(optionList, new DirectorySelectItemComparator(ordering, caseSensitive));
         }
 
         for (DirectorySelectItem item : optionList) {

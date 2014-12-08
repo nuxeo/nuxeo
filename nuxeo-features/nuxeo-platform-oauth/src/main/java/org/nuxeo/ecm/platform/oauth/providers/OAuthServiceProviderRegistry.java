@@ -20,11 +20,10 @@ package org.nuxeo.ecm.platform.oauth.providers;
 import java.util.List;
 
 /**
- * This service is used to manage OAuth Service Providers:
- * ie REST Services that can be used by Nuxeo via OAuth.
+ * This service is used to manage OAuth Service Providers: ie REST Services that can be used by Nuxeo via OAuth.
  * <p>
- * Typically, this service is used by Shindig to determine what
- * what shared secret should be used by gadgets to fetch their data.
+ * Typically, this service is used by Shindig to determine what what shared secret should be used by gadgets to fetch
+ * their data.
  *
  * @author tiry
  */
@@ -36,17 +35,14 @@ public interface OAuthServiceProviderRegistry {
      * @param gadgetUri the gadget url (or AppId)
      * @param serviceName the service name as defined in MakeRequest
      */
-    NuxeoOAuthServiceProvider getProvider(String gadgetUri,
-            String serviceName);
+    NuxeoOAuthServiceProvider getProvider(String gadgetUri, String serviceName);
 
     /**
-     * This method is here for compatibility reasons.
-     * Providers that are directly contributed to the OpenSocialService
+     * This method is here for compatibility reasons. Providers that are directly contributed to the OpenSocialService
      * are forwarded to the new centralized service.
      */
-    NuxeoOAuthServiceProvider addReadOnlyProvider(String gadgetUri,
-            String serviceName, String consumerKey, String consumerSecret,
-            String publicKey);
+    NuxeoOAuthServiceProvider addReadOnlyProvider(String gadgetUri, String serviceName, String consumerKey,
+            String consumerSecret, String publicKey);
 
     /**
      * Deletes a provider.
@@ -59,8 +55,7 @@ public interface OAuthServiceProviderRegistry {
     void deleteProvider(String providerId);
 
     /**
-     * Return the list of all know providers
-     * (both readonly and editable ones).
+     * Return the list of all know providers (both readonly and editable ones).
      */
     List<NuxeoOAuthServiceProvider> listProviders();
 

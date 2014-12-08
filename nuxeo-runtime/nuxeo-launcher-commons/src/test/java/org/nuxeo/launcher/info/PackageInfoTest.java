@@ -66,16 +66,12 @@ public class PackageInfoTest {
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.marshal(packageInfo1, xml);
         log.debug(xml.toString());
-        JSONObject entity = XML.toJSONObject(xml.toString()).getJSONObject(
-                "package");
-        assertEquals(PackageVisibility.UNKNOWN,
-                PackageVisibility.valueOf(entity.getString("visibility")));
+        JSONObject entity = XML.toJSONObject(xml.toString()).getJSONObject("package");
+        assertEquals(PackageVisibility.UNKNOWN, PackageVisibility.valueOf(entity.getString("visibility")));
         assertEquals(false, entity.getBoolean("supported"));
         assertEquals("test", entity.getString("name"));
-        assertEquals(PackageState.UNKNOWN,
-                PackageState.getByLabel(entity.getString("state")));
+        assertEquals(PackageState.UNKNOWN, PackageState.getByLabel(entity.getString("state")));
         assertEquals(false, entity.getBoolean("supportsHotReload"));
-        assertEquals(new Version("1.0.0"),
-                new Version(entity.getString("version")));
+        assertEquals(new Version("1.0.0"), new Version(entity.getString("version")));
     }
 }

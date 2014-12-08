@@ -20,8 +20,8 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 
 /**
  * For test only
- * @author tm@nuxeo.com
  *
+ * @author tm@nuxeo.com
  */
 public class NotificationVeto2 implements NotificationListenerVeto {
 

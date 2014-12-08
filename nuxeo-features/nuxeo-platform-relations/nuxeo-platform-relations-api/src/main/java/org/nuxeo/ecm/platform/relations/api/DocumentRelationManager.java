@@ -34,60 +34,11 @@ public interface DocumentRelationManager {
      * @param from the document to link from
      * @param to the document to link to
      * @param predicate is the type of link
-     * @param inverse if to is related to from ( the event will still be
-     *            generated with from document )
-     * 
+     * @param inverse if to is related to from ( the event will still be generated with from document )
      * @throws ClientException
      * @throws RelationAlreadyExistsException
      */
-    void addRelation(CoreSession session, DocumentModel from, DocumentModel to,
-            String predicate, boolean inverse) throws ClientException;
-
-    /**
-     * Add link between two document
-     * 
-     * @param from the document to link from
-     * @param to the node to link to
-     * @param predicate is the type of link
-     * @param inverse if to is related to from ( the event will still be
-     *            generated with from document )
-     * 
-     * @throws ClientException
-     * @throws RelationAlreadyExistsException
-     */
-    void addRelation(CoreSession session, DocumentModel from, Node to,
-            String predicate, boolean inverse) throws ClientException;
-
-    /**
-     * Add link between two document
-     * 
-     * @param from the document to link from
-     * @param to the node to link to
-     * @param predicate is the type of link
-     * 
-     * @throws ClientException
-     * @throws RelationAlreadyExistsException
-     */
-    void addRelation(CoreSession session, DocumentModel from, Node to,
-            String predicate) throws ClientException;
-
-    /**
-     * Add link between two document
-     * 
-     * @param from the document to link from
-     * @param to the node to link to
-     * @param predicate is the type of link
-     * @param inverse if to is related to from ( the event will still be
-     *            generated with from document )
-     * @param includeStatementsInEvents will add the statement to the events
-     *            RelationEvents.BEFORE_RELATION_CREATION and
-     *            RelationEvents.AFTER_RELATION_CREATION
-     * 
-     * @throws ClientException
-     * @throws RelationAlreadyExistsException
-     */
-    void addRelation(CoreSession session, DocumentModel from, Node to,
-            String predicate, boolean inverse, boolean includeStatementsInEvents)
+    void addRelation(CoreSession session, DocumentModel from, DocumentModel to, String predicate, boolean inverse)
             throws ClientException;
 
     /**
@@ -96,59 +47,87 @@ public interface DocumentRelationManager {
      * @param from the document to link from
      * @param to the node to link to
      * @param predicate is the type of link
-     * @param inverse if to is related to from ( the event will still be
-     *            generated with from document )
-     * @param includeStatementsInEvents will add the statement to the events
-     *            RelationEvents.BEFORE_RELATION_CREATION and
+     * @param inverse if to is related to from ( the event will still be generated with from document )
+     * @throws ClientException
+     * @throws RelationAlreadyExistsException
+     */
+    void addRelation(CoreSession session, DocumentModel from, Node to, String predicate, boolean inverse)
+            throws ClientException;
+
+    /**
+     * Add link between two document
+     * 
+     * @param from the document to link from
+     * @param to the node to link to
+     * @param predicate is the type of link
+     * @throws ClientException
+     * @throws RelationAlreadyExistsException
+     */
+    void addRelation(CoreSession session, DocumentModel from, Node to, String predicate) throws ClientException;
+
+    /**
+     * Add link between two document
+     * 
+     * @param from the document to link from
+     * @param to the node to link to
+     * @param predicate is the type of link
+     * @param inverse if to is related to from ( the event will still be generated with from document )
+     * @param includeStatementsInEvents will add the statement to the events RelationEvents.BEFORE_RELATION_CREATION and
+     *            RelationEvents.AFTER_RELATION_CREATION
+     * @throws ClientException
+     * @throws RelationAlreadyExistsException
+     */
+    void addRelation(CoreSession session, DocumentModel from, Node to, String predicate, boolean inverse,
+            boolean includeStatementsInEvents) throws ClientException;
+
+    /**
+     * Add link between two document
+     * 
+     * @param from the document to link from
+     * @param to the node to link to
+     * @param predicate is the type of link
+     * @param inverse if to is related to from ( the event will still be generated with from document )
+     * @param includeStatementsInEvents will add the statement to the events RelationEvents.BEFORE_RELATION_CREATION and
      *            RelationEvents.AFTER_RELATION_CREATION
      * @param comment of the relation
-     * 
      * @throws ClientException
      * @throws RelationAlreadyExistsException
      */
-    void addRelation(CoreSession session, DocumentModel from, Node to,
-            String predicate, boolean inverse,
-            boolean includeStatementsInEvents, String comment)
-            throws ClientException;
+    void addRelation(CoreSession session, DocumentModel from, Node to, String predicate, boolean inverse,
+            boolean includeStatementsInEvents, String comment) throws ClientException;
 
     /**
      * @param from document
      * @param to document
      * @param predicate relation type
-     * 
      * @throws ClientException
      */
-    void deleteRelation(CoreSession session, DocumentModel from,
-            DocumentModel to, String predicate) throws ClientException;
+    void deleteRelation(CoreSession session, DocumentModel from, DocumentModel to, String predicate)
+            throws ClientException;
 
     /**
      * @param statement to delete
      * @throws ClientException
      */
-    void deleteRelation(CoreSession session, Statement statement)
-            throws ClientException;
+    void deleteRelation(CoreSession session, Statement statement) throws ClientException;
 
     /**
      * @param stmt to delete
-     * @param includeStatementsInEvents add the current statement in event
-     *            RelationEvents.BEFORE_RELATION_REMOVAL and
+     * @param includeStatementsInEvents add the current statement in event RelationEvents.BEFORE_RELATION_REMOVAL and
      *            RelationEvents.AFTER_RELATION_REMOVAL
      * @throws ClientException
      */
-    void deleteRelation(CoreSession session, Statement stmt,
-            boolean includeStatementsInEvents) throws ClientException;
+    void deleteRelation(CoreSession session, Statement stmt, boolean includeStatementsInEvents) throws ClientException;
 
     /**
      * @param from document
      * @param to document
      * @param predicate relation type
-     * @param includeStatementsInEvents add the current statement in event
-     *            RelationEvents.BEFORE_RELATION_REMOVAL and
+     * @param includeStatementsInEvents add the current statement in event RelationEvents.BEFORE_RELATION_REMOVAL and
      *            RelationEvents.AFTER_RELATION_REMOVAL
      * @throws ClientException
      */
-    void deleteRelation(CoreSession session, DocumentModel from,
-            DocumentModel to, String predicate,
+    void deleteRelation(CoreSession session, DocumentModel from, DocumentModel to, String predicate,
             boolean includeStatementsInEvents) throws ClientException;
 
 }

@@ -16,7 +16,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- *
  * Adds page support on {@link RecordSet}
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>

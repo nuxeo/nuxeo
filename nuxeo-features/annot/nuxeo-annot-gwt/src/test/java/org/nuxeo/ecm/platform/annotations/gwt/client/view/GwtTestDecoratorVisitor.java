@@ -36,12 +36,10 @@ public class GwtTestDecoratorVisitor extends AbstractDocumentGWTTest {
 
     public void testStraight() {
         createDocument();
-        Element bNode = RootPanel.getBodyElement().getElementsByTagName("b").getItem(
-                0);
+        Element bNode = RootPanel.getBodyElement().getElementsByTagName("b").getItem(0);
         assertNotNull(bNode);
 
-        AnnoteaDecoratorVisitor processor = new AnnoteaDecoratorVisitor(bNode, 8, 13,
-                getDefaultAnnotation(), null);
+        AnnoteaDecoratorVisitor processor = new AnnoteaDecoratorVisitor(bNode, 8, 13, getDefaultAnnotation(), null);
         Visitor visitor = new Visitor(processor);
         visitor.process(bNode);
         assertNotNull(bNode);
@@ -63,12 +61,10 @@ public class GwtTestDecoratorVisitor extends AbstractDocumentGWTTest {
 
     public void testReverse() {
         createDocument();
-        Element bNode = RootPanel.getBodyElement().getElementsByTagName("b").getItem(
-                0);
+        Element bNode = RootPanel.getBodyElement().getElementsByTagName("b").getItem(0);
         assertNotNull(bNode);
 
-        AnnoteaDecoratorVisitor processor = new AnnoteaDecoratorVisitor(bNode, 5, 23, getDefaultAnnotation(),
-                null);
+        AnnoteaDecoratorVisitor processor = new AnnoteaDecoratorVisitor(bNode, 5, 23, getDefaultAnnotation(), null);
         Visitor visitor = new Visitor(processor);
         visitor.process(bNode);
         assertNotNull(bNode);
@@ -90,19 +86,16 @@ public class GwtTestDecoratorVisitor extends AbstractDocumentGWTTest {
 
     public void testMultiLine() {
         createDocument();
-        Element bNode = RootPanel.getBodyElement().getElementsByTagName("b").getItem(
-                0);
+        Element bNode = RootPanel.getBodyElement().getElementsByTagName("b").getItem(0);
         assertNotNull(bNode);
 
-        AnnoteaDecoratorVisitor processor = new AnnoteaDecoratorVisitor(bNode, 48, 13, getDefaultAnnotation(),
-                null);
+        AnnoteaDecoratorVisitor processor = new AnnoteaDecoratorVisitor(bNode, 48, 13, getDefaultAnnotation(), null);
         Visitor visitor = new Visitor(processor);
         visitor.process(bNode.getOwnerDocument());
         NodeList list = bNode.getChildNodes();
         assertEquals(2, list.getLength());
 
-        DivElement div = DivElement.as(RootPanel.getBodyElement().getElementsByTagName(
-                "div").getItem(0));
+        DivElement div = DivElement.as(RootPanel.getBodyElement().getElementsByTagName("div").getItem(0));
         @SuppressWarnings("unused")
         String testString = div.getInnerHTML();
         assertTrue(div.getInnerHTML().contains(parsedResult));

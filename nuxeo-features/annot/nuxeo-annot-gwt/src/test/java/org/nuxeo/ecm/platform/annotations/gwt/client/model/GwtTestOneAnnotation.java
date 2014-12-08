@@ -23,7 +23,6 @@ import com.google.gwt.junit.client.GWTTestCase;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class GwtTestOneAnnotation extends GWTTestCase {
     private Annotation annotation = new Annotation();

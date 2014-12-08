@@ -38,16 +38,13 @@ public class ValueExpressionHelper {
     }
 
     /**
-     * Returns true if given expression contains some special characters, in
-     * which case no transformation of the widget field definition will be done
-     * to make it compliant with {@link DocumentModelResolver} lookups when
-     * handling document fields. Special characters are:
+     * Returns true if given expression contains some special characters, in which case no transformation of the widget
+     * field definition will be done to make it compliant with {@link DocumentModelResolver} lookups when handling
+     * document fields. Special characters are:
      * <ul>
-     * <li>".": this makes it possible to resolve subelements, for instance
-     * "myfield.mysubfield".</li>
-     * <li>"[": this makes it possible to include map or array sub elements,
-     * for instance "contextData['request/comment']" to fill a document model
-     * context map.</li>
+     * <li>".": this makes it possible to resolve subelements, for instance "myfield.mysubfield".</li>
+     * <li>"[": this makes it possible to include map or array sub elements, for instance
+     * "contextData['request/comment']" to fill a document model context map.</li>
      * </ul>
      *
      * @throws NullPointerException if expression is null
@@ -60,12 +57,10 @@ public class ValueExpressionHelper {
     }
 
     /**
-     * Returns the value expression string representation without the
-     * surrounding brackets, for instance: "value.property" instead of
-     * #{value.property}.
+     * Returns the value expression string representation without the surrounding brackets, for instance:
+     * "value.property" instead of #{value.property}.
      */
-    public static String createBareExpressionString(String valueName,
-            FieldDefinition field) {
+    public static String createBareExpressionString(String valueName, FieldDefinition field) {
         if (field == null || "".equals(field.getPropertyName())) {
             return valueName;
         }
@@ -106,8 +101,7 @@ public class ValueExpressionHelper {
             String[] splittedFieldName = fieldName.split("/");
             for (String item : splittedFieldName) {
                 try {
-                    expressionElements.add(String.format("[%s]",
-                            Integer.valueOf(Integer.parseInt(item))));
+                    expressionElements.add(String.format("[%s]", Integer.valueOf(Integer.parseInt(item))));
                 } catch (NumberFormatException e) {
                     expressionElements.add(String.format("['%s']", item));
                 }
@@ -117,8 +111,7 @@ public class ValueExpressionHelper {
         }
     }
 
-    public static String createExpressionString(String valueName,
-            FieldDefinition field) {
+    public static String createExpressionString(String valueName, FieldDefinition field) {
         String bareExpression = createBareExpressionString(valueName, field);
         return String.format("#{%s}", bareExpression);
     }

@@ -31,15 +31,15 @@ import org.nuxeo.ecm.webengine.forms.validation.annotations.Range;
 import org.nuxeo.ecm.webengine.forms.validation.annotations.Regex;
 import org.nuxeo.ecm.webengine.forms.validation.annotations.Required;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FormDescriptor {
 
     protected FormValidator validator;
+
     protected Map<String, Field> fields = new HashMap<String, Field>();
+
     protected HashSet<String> requiredFields = new HashSet<String>();
 
     public FormDescriptor(Class<?> type) throws ReflectiveOperationException {
@@ -69,13 +69,21 @@ public class FormDescriptor {
 
     static class Field {
         CompositeValidator validator;
+
         String name;
+
         Method m;
+
         boolean isArray;
+
         boolean required;
+
         boolean notnull;
+
         String defaultValue;
+
         TypeConvertor<?> convertor;
+
         Field(Method m, String name) throws ReflectiveOperationException {
             validator = new CompositeValidator();
             // not null
@@ -134,7 +142,7 @@ public class FormDescriptor {
         Object validate(String value) throws ValidationException {
             if (value == null || value.length() == 0) {
                 value = null; // "" empty strings are treated as null values
-                if (notnull)  {
+                if (notnull) {
                     throw new ValidationException();
                 } else if (defaultValue != null) {
                     value = defaultValue;
@@ -165,9 +173,9 @@ public class FormDescriptor {
 
     static String getFieldName(String key, int len) {
         if (len == 4) {
-            return ""+Character.toLowerCase(key.charAt(3));
+            return "" + Character.toLowerCase(key.charAt(3));
         } else {
-            return Character.toLowerCase(key.charAt(3))+key.substring(4);
+            return Character.toLowerCase(key.charAt(3)) + key.substring(4);
         }
     }
 

@@ -24,8 +24,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Information about what's to be prefetched: individual properties and whole
- * schemas.
+ * Information about what's to be prefetched: individual properties and whole schemas.
  */
 public class Prefetch implements Serializable {
 
@@ -60,14 +59,12 @@ public class Prefetch implements Serializable {
         return values.isEmpty();
     }
 
-    public void put(String prefixedName, String schemaName, String name,
-            Serializable value) {
+    public void put(String prefixedName, String schemaName, String name, Serializable value) {
         values.put(prefixedName, value);
         if (schemaName != null) {
             Map<String, String> keysByName = keysBySchemaAndName.get(schemaName);
             if (keysByName == null) {
-                keysBySchemaAndName.put(schemaName,
-                        keysByName = new HashMap<String, String>());
+                keysBySchemaAndName.put(schemaName, keysByName = new HashMap<String, String>());
             }
             keysByName.put(name, prefixedName);
             List<String> keys = keysBySchema.get(schemaName);

@@ -80,8 +80,7 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
                     }
                 }
             } else if (value != null) {
-                log.warn("Could not map values to select items, value is not supported: "
-                        + value);
+                log.warn("Could not map values to select items, value is not supported: " + value);
             }
             return items;
         } finally {

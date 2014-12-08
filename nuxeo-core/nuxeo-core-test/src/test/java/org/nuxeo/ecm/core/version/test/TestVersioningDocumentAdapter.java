@@ -49,8 +49,7 @@ public class TestVersioningDocumentAdapter extends SQLRepositoryTestCase {
 
     @Test
     public void testVersionLabel() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "testfile1",
-                "File");
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
         assertNotNull(vdoc);

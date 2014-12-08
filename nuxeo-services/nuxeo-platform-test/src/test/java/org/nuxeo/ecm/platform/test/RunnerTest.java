@@ -40,27 +40,31 @@ import com.google.inject.Inject;
  * Tests features available in platform runner
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @LocalDeploy("org.nuxeo.ecm.core:local-resource-test.xml")
 public class RunnerTest {
 
-    @Inject protected DirectoryService dirs;
-    @Inject protected CoreSession session;
-    @Inject protected SchemaManager sm;
+    @Inject
+    protected DirectoryService dirs;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected SchemaManager sm;
 
     @Test
     public void testLocalResource() {
-       DocumentType dt = sm.getDocumentType("MyFolder");
-       assertEquals("MyFolder", dt.getName());
+        DocumentType dt = sm.getDocumentType("MyFolder");
+        assertEquals("MyFolder", dt.getName());
     }
 
     @Test
     @Ignore
     public void testDatasourceBinding() throws Exception {
-        DataSource ds = (DataSource)new InitialContext().lookup(DataSourceHelper.getDataSourceJNDIName("nxsqldirectory"));
+        DataSource ds = (DataSource) new InitialContext().lookup(DataSourceHelper.getDataSourceJNDIName("nxsqldirectory"));
         assertNotNull(ds);
     }
 
@@ -69,7 +73,8 @@ public class RunnerTest {
         assertNotNull(dirs);
     }
 
-    @Test public void testCoreSessionInjection() {
+    @Test
+    public void testCoreSessionInjection() {
         assertNotNull(session);
     }
 

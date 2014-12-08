@@ -32,8 +32,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Versioning service component and implementation.
  */
-public class VersioningComponent extends DefaultComponent implements
-        VersioningService {
+public class VersioningComponent extends DefaultComponent implements VersioningService {
 
     private static final Log log = LogFactory.getLog(VersioningComponent.class);
 
@@ -70,12 +69,10 @@ public class VersioningComponent extends DefaultComponent implements
 
     @Override
     @SuppressWarnings("unchecked")
-    public void registerContribution(Object contrib, String xp,
-            ComponentInstance contributor) {
+    public void registerContribution(Object contrib, String xp, ComponentInstance contributor) {
         if (XP.equals(xp)) {
             if (!(contrib instanceof VersioningServiceDescriptor)) {
-                log.error("Invalid contribution: "
-                        + contrib.getClass().getName());
+                log.error("Invalid contribution: " + contrib.getClass().getName());
                 return;
             }
             VersioningServiceDescriptor desc = (VersioningServiceDescriptor) contrib;
@@ -97,8 +94,7 @@ public class VersioningComponent extends DefaultComponent implements
             if (contrib instanceof VersioningRuleDescriptor) {
                 VersioningRuleDescriptor typeSaveOptDescriptor = (VersioningRuleDescriptor) contrib;
                 if (typeSaveOptDescriptor.isEnabled()) {
-                    versioningRules.put(typeSaveOptDescriptor.getTypeName(),
-                            typeSaveOptDescriptor);
+                    versioningRules.put(typeSaveOptDescriptor.getTypeName(), typeSaveOptDescriptor);
                 } else {
                     versioningRules.remove(typeSaveOptDescriptor.getTypeName());
                 }
@@ -114,8 +110,7 @@ public class VersioningComponent extends DefaultComponent implements
 
     @Override
     @SuppressWarnings("unchecked")
-    public void unregisterContribution(Object contrib, String xp,
-            ComponentInstance contributor) {
+    public void unregisterContribution(Object contrib, String xp, ComponentInstance contributor) {
         if (XP.equals(xp)) {
             if (!(contrib instanceof VersioningServiceDescriptor)) {
                 return;
@@ -185,49 +180,41 @@ public class VersioningComponent extends DefaultComponent implements
     }
 
     @Override
-    public void doPostCreate(Document doc, Map<String, Serializable> options)
-            throws DocumentException {
+    public void doPostCreate(Document doc, Map<String, Serializable> options) throws DocumentException {
         getService().doPostCreate(doc, options);
     }
 
     @Override
-    public List<VersioningOption> getSaveOptions(DocumentModel docModel)
-            throws ClientException {
+    public List<VersioningOption> getSaveOptions(DocumentModel docModel) throws ClientException {
         return getService().getSaveOptions(docModel);
     }
 
     @Override
-    public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty,
-            VersioningOption option, Map<String, Serializable> options)
-            throws DocumentException {
-        return getService().isPreSaveDoingCheckOut(doc, isDirty, option,
-                options);
+    public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty, VersioningOption option,
+            Map<String, Serializable> options) throws DocumentException {
+        return getService().isPreSaveDoingCheckOut(doc, isDirty, option, options);
     }
 
     @Override
-    public VersioningOption doPreSave(Document doc, boolean isDirty,
-            VersioningOption option, String checkinComment,
+    public VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
             Map<String, Serializable> options) throws DocumentException {
         return getService().doPreSave(doc, isDirty, option, checkinComment, options);
     }
 
     @Override
-    public boolean isPostSaveDoingCheckIn(Document doc,
-            VersioningOption option, Map<String, Serializable> options)
+    public boolean isPostSaveDoingCheckIn(Document doc, VersioningOption option, Map<String, Serializable> options)
             throws DocumentException {
         return getService().isPostSaveDoingCheckIn(doc, option, options);
     }
 
     @Override
-    public Document doPostSave(Document doc, VersioningOption option,
-            String checkinComment, Map<String, Serializable> options)
-            throws DocumentException {
+    public Document doPostSave(Document doc, VersioningOption option, String checkinComment,
+            Map<String, Serializable> options) throws DocumentException {
         return getService().doPostSave(doc, option, checkinComment, options);
     }
 
     @Override
-    public Document doCheckIn(Document doc, VersioningOption option,
-            String checkinComment) throws DocumentException {
+    public Document doCheckIn(Document doc, VersioningOption option, String checkinComment) throws DocumentException {
         return getService().doCheckIn(doc, option, checkinComment);
     }
 

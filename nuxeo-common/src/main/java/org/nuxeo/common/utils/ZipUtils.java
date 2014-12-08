@@ -50,15 +50,13 @@ public final class ZipUtils {
 
     // _____________________________ ZIP ________________________________
 
-    public static void _putDirectoryEntry(String entryName, ZipOutputStream out)
-            throws IOException {
+    public static void _putDirectoryEntry(String entryName, ZipOutputStream out) throws IOException {
         ZipEntry zentry = new ZipEntry(entryName + '/');
         out.putNextEntry(zentry);
         out.closeEntry();
     }
 
-    public static void _putFileEntry(File file, String entryName,
-            ZipOutputStream out) throws IOException {
+    public static void _putFileEntry(File file, String entryName, ZipOutputStream out) throws IOException {
         FileInputStream in = null;
         try {
             in = new FileInputStream(file);
@@ -70,8 +68,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void _zip(String entryName, InputStream in,
-            ZipOutputStream out) throws IOException {
+    public static void _zip(String entryName, InputStream in, ZipOutputStream out) throws IOException {
         ZipEntry zentry = new ZipEntry(entryName);
         out.putNextEntry(zentry);
         // Transfer bytes from the input stream to the ZIP file
@@ -79,8 +76,7 @@ public final class ZipUtils {
         out.closeEntry();
     }
 
-    public static void _zip(String entryName, File file, ZipOutputStream out)
-            throws IOException {
+    public static void _zip(String entryName, File file, ZipOutputStream out) throws IOException {
         // System.out.println("Compressing "+entryName);
         if (file.isDirectory()) {
             entryName += '/';
@@ -104,8 +100,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void _zip(File[] files, ZipOutputStream out, String prefix)
-            throws IOException {
+    public static void _zip(File[] files, ZipOutputStream out, String prefix) throws IOException {
         if (prefix != null) {
             int len = prefix.length();
             if (len == 0) {
@@ -115,14 +110,12 @@ public final class ZipUtils {
             }
         }
         for (int i = 0, len = files.length; i < len; i++) {
-            String name = prefix != null ? prefix + files[i].getName()
-                    : files[i].getName();
+            String name = prefix != null ? prefix + files[i].getName() : files[i].getName();
             _zip(name, files[i], out);
         }
     }
 
-    public static void zip(File file, OutputStream out, String prefix)
-            throws IOException {
+    public static void zip(File file, OutputStream out, String prefix) throws IOException {
         if (prefix != null) {
             int len = prefix.length();
             if (len == 0) {
@@ -143,8 +136,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void zip(File[] files, OutputStream out, String prefix)
-            throws IOException {
+    public static void zip(File[] files, OutputStream out, String prefix) throws IOException {
         ZipOutputStream zout = null;
         try {
             zout = new ZipOutputStream(out);
@@ -180,8 +172,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void zip(File file, File zip, String prefix)
-            throws IOException {
+    public static void zip(File file, File zip, String prefix) throws IOException {
         OutputStream out = null;
         try {
             out = new BufferedOutputStream(new FileOutputStream(zip));
@@ -193,8 +184,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void zip(File[] files, File zip, String prefix)
-            throws IOException {
+    public static void zip(File[] files, File zip, String prefix) throws IOException {
         OutputStream out = null;
         try {
             out = new BufferedOutputStream(new FileOutputStream(zip));
@@ -206,8 +196,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void zipFilesUsingPrefix(String prefix, File[] files,
-            OutputStream out) throws IOException {
+    public static void zipFilesUsingPrefix(String prefix, File[] files, OutputStream out) throws IOException {
         ZipOutputStream zout = null;
         try {
             zout = new ZipOutputStream(out);
@@ -235,8 +224,7 @@ public final class ZipUtils {
 
     // _____________________________ UNZIP ________________________________
 
-    public static void unzip(String prefix, InputStream zipStream, File dir)
-            throws IOException {
+    public static void unzip(String prefix, InputStream zipStream, File dir) throws IOException {
         ZipInputStream in = null;
         try {
             in = new ZipInputStream(new BufferedInputStream(zipStream));
@@ -248,8 +236,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void unzip(InputStream zipStream, File dir)
-            throws IOException {
+    public static void unzip(InputStream zipStream, File dir) throws IOException {
         ZipInputStream in = null;
         try {
             in = new ZipInputStream(new BufferedInputStream(zipStream));
@@ -261,8 +248,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void unzip(String prefix, URL zip, File dir)
-            throws IOException {
+    public static void unzip(String prefix, URL zip, File dir) throws IOException {
         ZipInputStream in = null;
         try {
             in = new ZipInputStream(new BufferedInputStream(zip.openStream()));
@@ -286,12 +272,10 @@ public final class ZipUtils {
         }
     }
 
-    public static void unzip(String prefix, File zip, File dir)
-            throws IOException {
+    public static void unzip(String prefix, File zip, File dir) throws IOException {
         ZipInputStream in = null;
         try {
-            in = new ZipInputStream(new BufferedInputStream(
-                    new FileInputStream(zip)));
+            in = new ZipInputStream(new BufferedInputStream(new FileInputStream(zip)));
             unzip(prefix, in, dir);
         } finally {
             if (in != null) {
@@ -303,8 +287,7 @@ public final class ZipUtils {
     public static void unzip(File zip, File dir) throws IOException {
         ZipInputStream in = null;
         try {
-            in = new ZipInputStream(new BufferedInputStream(
-                    new FileInputStream(zip)));
+            in = new ZipInputStream(new BufferedInputStream(new FileInputStream(zip)));
             unzip(in, dir);
         } finally {
             if (in != null) {
@@ -313,8 +296,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void unzip(String prefix, ZipInputStream in, File dir)
-            throws IOException {
+    public static void unzip(String prefix, ZipInputStream in, File dir) throws IOException {
         dir.mkdirs();
         ZipEntry entry = in.getNextEntry();
         while (entry != null) {
@@ -322,8 +304,7 @@ public final class ZipUtils {
                 entry = in.getNextEntry();
                 continue;
             }
-            File file = new File(dir,
-                    entry.getName().substring(prefix.length()));
+            File file = new File(dir, entry.getName().substring(prefix.length()));
             if (entry.isDirectory()) {
                 file.mkdirs();
             } else {
@@ -350,8 +331,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void unzipIgnoreDirs(ZipInputStream in, File dir)
-            throws IOException {
+    public static void unzipIgnoreDirs(ZipInputStream in, File dir) throws IOException {
         dir.mkdirs();
         ZipEntry entry = in.getNextEntry();
         while (entry != null) {
@@ -369,8 +349,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void unzipIgnoreDirs(InputStream zipStream, File dir)
-            throws IOException {
+    public static void unzipIgnoreDirs(InputStream zipStream, File dir) throws IOException {
         ZipInputStream in = null;
         try {
             in = new ZipInputStream(new BufferedInputStream(zipStream));
@@ -382,12 +361,10 @@ public final class ZipUtils {
         }
     }
 
-    public static void unzip(File zip, File dir, PathFilter filter)
-            throws IOException {
+    public static void unzip(File zip, File dir, PathFilter filter) throws IOException {
         ZipInputStream in = null;
         try {
-            in = new ZipInputStream(new BufferedInputStream(
-                    new FileInputStream(zip)));
+            in = new ZipInputStream(new BufferedInputStream(new FileInputStream(zip)));
             unzip(in, dir, filter);
         } finally {
             if (in != null) {
@@ -396,8 +373,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void unzip(ZipInputStream in, File dir, PathFilter filter)
-            throws IOException {
+    public static void unzip(ZipInputStream in, File dir, PathFilter filter) throws IOException {
         if (filter == null) {
             unzip(in, dir);
             return;
@@ -419,12 +395,10 @@ public final class ZipUtils {
         }
     }
 
-    public static void unzip(String prefix, File zip, File dir,
-            PathFilter filter) throws IOException {
+    public static void unzip(String prefix, File zip, File dir, PathFilter filter) throws IOException {
         ZipInputStream in = null;
         try {
-            in = new ZipInputStream(new BufferedInputStream(
-                    new FileInputStream(zip)));
+            in = new ZipInputStream(new BufferedInputStream(new FileInputStream(zip)));
             unzip(prefix, in, dir, filter);
         } finally {
             if (in != null) {
@@ -433,10 +407,9 @@ public final class ZipUtils {
         }
     }
 
-    public static void unzip(String prefix, ZipInputStream in, File dir, PathFilter filter)
-            throws IOException {
+    public static void unzip(String prefix, ZipInputStream in, File dir, PathFilter filter) throws IOException {
         if (filter == null) {
-            unzip(prefix,in, dir);
+            unzip(prefix, in, dir);
             return;
         }
         dir.mkdirs();
@@ -448,8 +421,7 @@ public final class ZipUtils {
                     entry = in.getNextEntry();
                     continue;
                 }
-                File file = new File(dir,
-                        entry.getName().substring(prefix.length()));
+                File file = new File(dir, entry.getName().substring(prefix.length()));
                 if (entry.isDirectory()) {
                     file.mkdirs();
                 } else {
@@ -465,13 +437,11 @@ public final class ZipUtils {
     /**
      * Unzip directly the entry. The returned InputStream has to be closed.
      *
-     * @return the input stream of the desired entry - has to be closed by the
-     *         caller, or null if not found
+     * @return the input stream of the desired entry - has to be closed by the caller, or null if not found
      * @param file the source file
      * @param entryName the entry name that has to be extracted
      */
-    public static InputStream getEntryContentAsStream(File file,
-            String entryName) throws IOException {
+    public static InputStream getEntryContentAsStream(File file, String entryName) throws IOException {
         InputStream result = null;
         ZipFile zip = new ZipFile(file);
         ZipEntry entry = zip.getEntry(entryName);
@@ -488,8 +458,7 @@ public final class ZipUtils {
      * @param file the source file
      * @param entryName the entry name that has to be extracted
      */
-    public static String getEntryContentAsString(File file, String entryName)
-            throws IOException {
+    public static String getEntryContentAsString(File file, String entryName) throws IOException {
         InputStream resultStream = getEntryContentAsStream(file, entryName);
         // resultStream has been closed by FileUtils call
         return FileUtils.read(resultStream);
@@ -502,8 +471,7 @@ public final class ZipUtils {
      * @param file the source file
      * @param entryName the entry name that has to be extracted
      */
-    public static byte[] getEntryContentAsBytes(File file, String entryName)
-            throws IOException {
+    public static byte[] getEntryContentAsBytes(File file, String entryName) throws IOException {
         InputStream resultStream = getEntryContentAsStream(file, entryName);
         // resultStream has been closed by FileUtils call
         return FileUtils.readBytes(resultStream);
@@ -537,14 +505,12 @@ public final class ZipUtils {
      * @param entryName The content to be checked
      * @return True if the file contains entryName. False otherwise
      */
-    public static boolean hasEntry(File file, String entryName)
-            throws IOException {
+    public static boolean hasEntry(File file, String entryName) throws IOException {
         List<String> elements = getEntryNames(file);
         return elements.contains(entryName);
     }
 
-    public static InputStream getEntryContentAsStream(InputStream stream,
-            String entryName) throws IOException {
+    public static InputStream getEntryContentAsStream(InputStream stream, String entryName) throws IOException {
         ZipInputStream zip = new ZipInputStream(stream);
         ZipEntry entry = zip.getNextEntry();
         while (entry != null) {
@@ -556,24 +522,19 @@ public final class ZipUtils {
         return null;
     }
 
-    public static String getEntryContentAsString(InputStream stream,
-            String searchedEntryName) throws IOException {
-        InputStream resultStream = getEntryContentAsStream(stream,
-                searchedEntryName);
+    public static String getEntryContentAsString(InputStream stream, String searchedEntryName) throws IOException {
+        InputStream resultStream = getEntryContentAsStream(stream, searchedEntryName);
         // resultStream has been closed by FileUtils call
         return FileUtils.read(resultStream);
     }
 
-    public static byte[] getEntryContentAsBytes(InputStream stream,
-            String searchedEntryName) throws IOException {
-        InputStream resultStream = getEntryContentAsStream(stream,
-                searchedEntryName);
+    public static byte[] getEntryContentAsBytes(InputStream stream, String searchedEntryName) throws IOException {
+        InputStream resultStream = getEntryContentAsStream(stream, searchedEntryName);
         // resultStream has been closed by FileUtils call
         return FileUtils.readBytes(resultStream);
     }
 
-    public static List<String> getEntryNames(InputStream stream)
-            throws IOException {
+    public static List<String> getEntryNames(InputStream stream) throws IOException {
 
         List<String> result = new ArrayList<String>();
         ZipInputStream zip = new ZipInputStream(stream);
@@ -590,26 +551,22 @@ public final class ZipUtils {
         return result;
     }
 
-    public static boolean hasEntry(InputStream stream, String entryName)
-            throws IOException {
+    public static boolean hasEntry(InputStream stream, String entryName) throws IOException {
         List<String> elements = getEntryNames(stream);
         return elements.contains(entryName);
     }
 
-    public static InputStream getEntryContentAsStream(URL url, String entryName)
-            throws IOException {
+    public static InputStream getEntryContentAsStream(URL url, String entryName) throws IOException {
         return getEntryContentAsStream(url.openStream(), entryName);
     }
 
-    public static String getEntryContentAsString(URL url, String entryName)
-            throws IOException {
+    public static String getEntryContentAsString(URL url, String entryName) throws IOException {
         InputStream resultStream = getEntryContentAsStream(url, entryName);
         // resultStream has been closed by FileUtils call
         return FileUtils.read(resultStream);
     }
 
-    public static byte[] getEntryContentAsBytes(URL url, String entryName)
-            throws IOException {
+    public static byte[] getEntryContentAsBytes(URL url, String entryName) throws IOException {
         InputStream resultStream = getEntryContentAsStream(url, entryName);
         // resultStream has been closed by FileUtils call
         return FileUtils.readBytes(resultStream);
@@ -619,8 +576,7 @@ public final class ZipUtils {
         return getEntryNames(url.openStream());
     }
 
-    public static boolean hasEntry(URL url, String entryName)
-            throws IOException {
+    public static boolean hasEntry(URL url, String entryName) throws IOException {
         return hasEntry(url.openStream(), entryName);
     }
 

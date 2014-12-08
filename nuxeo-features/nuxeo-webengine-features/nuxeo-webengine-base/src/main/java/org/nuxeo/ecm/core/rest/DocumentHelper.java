@@ -52,8 +52,7 @@ public class DocumentHelper {
             if (name != null) {
                 newDoc.setPropertyValue("dc:title", name);
             }
-            newDoc.setPathInfo(parent.getPathAsString(),
-                    pss.generatePathSegment(newDoc));
+            newDoc.setPathInfo(parent.getPathAsString(), pss.generatePathSegment(newDoc));
             newDoc = session.createDocument(newDoc);
             newDoc.setPropertyValue("dc:title", newDoc.getName());
             session.saveDocument(newDoc);
@@ -68,8 +67,7 @@ public class DocumentHelper {
         try {
             FormData form = ctx.getForm();
             form.fillDocument(doc);
-            doc.putContextData(VersioningService.VERSIONING_OPTION,
-                    form.getVersioningOption());
+            doc.putContextData(VersioningService.VERSIONING_OPTION, form.getVersioningOption());
             doc = ctx.getCoreSession().saveDocument(doc);
             ctx.getCoreSession().save();
             return doc;

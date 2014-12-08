@@ -38,8 +38,8 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
 
     private static final Log log = LogFactory.getLog(DuplicateCollectionMemberWork.class);
 
-    public DuplicateCollectionMemberWork(final String repoName,
-            final String newCollectionId, final List<String> collectionMemberIds, final int offset) {
+    public DuplicateCollectionMemberWork(final String repoName, final String newCollectionId,
+            final List<String> collectionMemberIds, final int offset) {
         super(repoName + ":" + newCollectionId + ":" + offset);
         this.newCollectionId = newCollectionId;
         this.repositoryName = repoName;
@@ -85,22 +85,15 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
                 log.trace(String.format("Worker %s, populating Collection %s, processing CollectionMember %s", getId(),
                         newCollectionId, collectionMemberIds.get(i)));
                 if (collectionMemberIds.get(i) != null) {
-                    DocumentModel collectionMember = session.getDocument(new IdRef(
-                            collectionMemberIds.get(i)));
+                    DocumentModel collectionMember = session.getDocument(new IdRef(collectionMemberIds.get(i)));
                     if (collectionManager.isCollectable(collectionMember)) {
 
                         // We want to disable the following listener on a
                         // collection member when it is added to a collection
-                        collectionMember.putContextData(
-                                DublinCoreListener.DISABLE_DUBLINCORE_LISTENER,
-                                true);
-                        collectionMember.putContextData(
-                                NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
-                                true);
-                        collectionMember.putContextData(
-                                NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
-                        collectionMember.putContextData(
-                                VersioningService.DISABLE_AUTO_CHECKOUT, true);
+                        collectionMember.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
+                        collectionMember.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
+                        collectionMember.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+                        collectionMember.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, true);
 
                         CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
                         collectionMemberAdapter.addToCollection(newCollectionId);

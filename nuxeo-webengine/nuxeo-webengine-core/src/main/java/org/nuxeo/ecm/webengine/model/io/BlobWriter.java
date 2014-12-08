@@ -36,16 +36,13 @@ import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
-@Produces( { "*/*", "text/plain" })
+@Produces({ "*/*", "text/plain" })
 public class BlobWriter implements MessageBodyWriter<Blob> {
 
-    public void writeTo(Blob t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(Blob t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         try {
             BufferingServletOutputStream.stopBufferingThread();
             t.transferTo(entityStream);
@@ -55,14 +52,12 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
         }
     }
 
-    public long getSize(Blob arg0, Class<?> arg1, Type arg2, Annotation[] arg3,
-            MediaType arg4) {
+    public long getSize(Blob arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         long n = arg0.getLength();
         return n <= 0 ? -1 : n;
     }
 
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return Blob.class.isAssignableFrom(arg0);
     }
 

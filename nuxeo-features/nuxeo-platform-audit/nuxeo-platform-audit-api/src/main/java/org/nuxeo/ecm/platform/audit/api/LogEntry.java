@@ -52,11 +52,9 @@ public interface LogEntry extends Serializable {
     void setEventId(String eventId);
 
     /**
-     * @return the date of the log insertion: this up to max transaction timeout
-     *         later than eventDate.
-     *
-     *         This date is useful for services such as Nuxeo Drive that need
-     *         fine grained incremental near-monotonic access to the audit log.
+     * @return the date of the log insertion: this up to max transaction timeout later than eventDate. This date is
+     *         useful for services such as Nuxeo Drive that need fine grained incremental near-monotonic access to the
+     *         audit log.
      * @since 5.7
      * @since 5.6-HF16
      */
@@ -76,8 +74,7 @@ public interface LogEntry extends Serializable {
     /**
      * Returns the doc UUID related to the log entry.
      * <p>
-     * It might be null if the event that originated the event is noe bound to
-     * any document.
+     * It might be null if the event that originated the event is noe bound to any document.
      *
      * @return the doc UUID related to the log entry.
      */
@@ -90,8 +87,7 @@ public interface LogEntry extends Serializable {
     /**
      * Returns the doc path related to the log entry.
      * <p>
-     * It might be null if the event that originated the event is noe bound to
-     * any document.
+     * It might be null if the event that originated the event is noe bound to any document.
      *
      * @return the doc path related to the log entry.
      */
@@ -102,8 +98,7 @@ public interface LogEntry extends Serializable {
     /**
      * Returns the doc type related to the log entry.
      * <p>
-     * It might be null if the event that originated the event is not bound to
-     * any document.
+     * It might be null if the event that originated the event is not bound to any document.
      *
      * @return the doc type related to the log entry.
      */
@@ -114,8 +109,7 @@ public interface LogEntry extends Serializable {
     /**
      * Returns the category for this log entry.
      * <p>
-     * This is defined at client level. Categories are not restricted in any
-     * ways.
+     * This is defined at client level. Categories are not restricted in any ways.
      *
      * @return the category for this log entry.
      */
@@ -135,8 +129,7 @@ public interface LogEntry extends Serializable {
     /**
      * Return the life cycle if the document related to the log entry.
      * <p>
-     * It might be null if the event that originated the event is noe bound to
-     * any document.
+     * It might be null if the event that originated the event is noe bound to any document.
      *
      * @return the life cycle if the document related to the log entry.
      */
@@ -158,9 +151,8 @@ public interface LogEntry extends Serializable {
     void setExtendedInfos(Map<String, ExtendedInfo> infos);
 
     /**
-     * Return the comment preprocessed to be ready for display.
-     * (extract info about linked documents)
-     * Only available when accessed via the entry is fetched via the {@link AuditPageProvider}
+     * Return the comment preprocessed to be ready for display. (extract info about linked documents) Only available
+     * when accessed via the entry is fetched via the {@link AuditPageProvider}
      *
      * @return
      */

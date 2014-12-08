@@ -36,11 +36,9 @@ public class TestDirectoryServiceRegistration extends SQLDirectoryTestCase {
         Directory dir = getDirectory("userDirectory");
         assertTrue(dir instanceof SQLDirectory);
 
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-directories-memory-factory.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-directories-memory-factory.xml");
 
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-directories-several-factories.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-directories-several-factories.xml");
 
         dir = getDirectory("userDirectory");
         assertTrue(dir instanceof MemoryDirectory);

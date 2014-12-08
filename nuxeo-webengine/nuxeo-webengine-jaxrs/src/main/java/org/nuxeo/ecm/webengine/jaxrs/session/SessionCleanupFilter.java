@@ -24,7 +24,6 @@ import org.nuxeo.ecm.webengine.jaxrs.session.impl.PerSessionCoreProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SessionCleanupFilter extends HttpFilter {
 
@@ -34,10 +33,9 @@ public class SessionCleanupFilter extends HttpFilter {
     public void init(FilterConfig filterConfig) throws ServletException {
     }
 
-
     @Override
-    public void run(HttpServletRequest request, HttpServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void run(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         if (getBoolean(request, STATEFUL_KEY)) {
             PerSessionCoreProvider.install(request);
         }

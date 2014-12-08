@@ -74,8 +74,7 @@ public class UITypesConfigurationActions implements Serializable {
     /**
      * @since 5.9.1
      */
-    protected static class TypeLabelAlphabeticalOrder implements
-            Comparator<Type> {
+    protected static class TypeLabelAlphabeticalOrder implements Comparator<Type> {
 
         private final Map<String, String> messages;
 
@@ -116,16 +115,14 @@ public class UITypesConfigurationActions implements Serializable {
      * @throws ClientException
      * @since 5.5
      */
-    public List<Type> getNotSelectedTypes(DocumentModel document)
-            throws ClientException {
+    public List<Type> getNotSelectedTypes(DocumentModel document) throws ClientException {
         if (!document.hasFacet(UI_TYPES_CONFIGURATION_FACET)) {
             return Collections.emptyList();
         }
 
         List<String> allowedTypes = getAllowedTypes(document);
 
-        List<Type> notSelectedTypes = new ArrayList<Type>(
-                typeManager.findAllAllowedSubTypesFrom(document.getType()));
+        List<Type> notSelectedTypes = new ArrayList<Type>(typeManager.findAllAllowedSubTypesFrom(document.getType()));
 
         for (Iterator<Type> it = notSelectedTypes.iterator(); it.hasNext();) {
             Type type = it.next();
@@ -139,14 +136,12 @@ public class UITypesConfigurationActions implements Serializable {
         return notSelectedTypes;
     }
 
-    protected List<String> getAllowedTypes(DocumentModel doc)
-            throws ClientException {
+    protected List<String> getAllowedTypes(DocumentModel doc) throws ClientException {
         UITypesConfiguration uiTypesConfiguration = doc.getAdapter(UITypesConfiguration.class);
         if (uiTypesConfiguration == null) {
             return Collections.emptyList();
         }
-        List<String> allowedTypes = new ArrayList<String>(
-                uiTypesConfiguration.getAllowedTypes());
+        List<String> allowedTypes = new ArrayList<String>(uiTypesConfiguration.getAllowedTypes());
         if (allowedTypes.isEmpty()) {
             allowedTypes = computeAllowedTypes(doc);
         }
@@ -166,8 +161,7 @@ public class UITypesConfigurationActions implements Serializable {
      * @throws ClientException
      * @since 5.5
      */
-    public List<Type> getSelectedTypes(DocumentModel document)
-            throws ClientException {
+    public List<Type> getSelectedTypes(DocumentModel document) throws ClientException {
         if (!document.hasFacet(UI_TYPES_CONFIGURATION_FACET)) {
             return Collections.emptyList();
         }
@@ -186,21 +180,17 @@ public class UITypesConfigurationActions implements Serializable {
         return selectedTypes;
     }
 
-    protected List<String> computeAllowedTypes(DocumentModel currentDoc)
-            throws ClientException {
+    protected List<String> computeAllowedTypes(DocumentModel currentDoc) throws ClientException {
         List<String> types = new ArrayList<String>();
 
         DocumentModel parent = documentManager.getRootDocument();
 
         DocumentRef parentRef = currentDoc.getParentRef();
-        if (parentRef != null
-                && documentManager.hasPermission(parentRef,
-                        SecurityConstants.READ)) {
+        if (parentRef != null && documentManager.hasPermission(parentRef, SecurityConstants.READ)) {
             parent = documentManager.getDocument(parentRef);
         }
 
-        for (Type type : typeManager.findAllAllowedSubTypesFrom(
-                currentDoc.getType(), parent)) {
+        for (Type type : typeManager.findAllAllowedSubTypesFrom(currentDoc.getType(), parent)) {
             types.add(type.getId());
         }
 
@@ -213,21 +203,19 @@ public class UITypesConfigurationActions implements Serializable {
     }
 
     /**
-     * Returns a List of Document Types associated with Schema file for the
-     * domain given as parameter, if they're allowed for it.
+     * Returns a List of Document Types associated with Schema file for the domain given as parameter, if they're
+     * allowed for it.
      *
      * @param document the domain
      * @return List of Document types which have assoctiated Schema files.
      * @throws ClientException
      * @Since 5.5
      */
-    public List<Type> getTypesWithSchemaFile(DocumentModel document)
-            throws ClientException {
+    public List<Type> getTypesWithSchemaFile(DocumentModel document) throws ClientException {
         List<Type> types = new ArrayList<Type>();
         for (String type : getAllowedTypes(document)) {
             DocumentType documentType = getSchemaManager().getDocumentType(type);
-            if (documentType != null
-                    && documentType.hasSchema(UI_TYPES_DEFAULT_NEEDED_SCHEMA)) {
+            if (documentType != null && documentType.hasSchema(UI_TYPES_DEFAULT_NEEDED_SCHEMA)) {
                 types.add(typeManager.getType(type));
             }
         }

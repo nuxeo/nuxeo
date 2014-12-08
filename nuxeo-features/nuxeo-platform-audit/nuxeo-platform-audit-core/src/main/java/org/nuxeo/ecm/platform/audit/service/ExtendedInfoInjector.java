@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 
-public class ExtendedInfoInjector  {
+public class ExtendedInfoInjector {
 
     protected final ExpressionEvaluator evaluator;
 
@@ -33,11 +33,9 @@ public class ExtendedInfoInjector  {
         this.evaluator = evaluator;
     }
 
-    public void injectExtendedInfo(Map<String, ExtendedInfo> info,
-            ExtendedInfoDescriptor descriptor,
+    public void injectExtendedInfo(Map<String, ExtendedInfo> info, ExtendedInfoDescriptor descriptor,
             ExtendedInfoContext context) {
-        Serializable value = evaluator.evaluateExpression(
-                context, descriptor.getExpression(), Serializable.class);
+        Serializable value = evaluator.evaluateExpression(context, descriptor.getExpression(), Serializable.class);
         if (value == null) {
             return;
         }

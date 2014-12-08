@@ -17,8 +17,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Helper class to run jobs in lock step in several threads.
  * <p>
- * You should override the {@link #job} method and make it execute code where
- * blocks are wrapped in:
+ * You should override the {@link #job} method and make it execute code where blocks are wrapped in:
  *
  * <pre>
  * if (thread(1)) {
@@ -26,8 +25,7 @@ import java.util.concurrent.TimeUnit;
  * }
  * </pre>
  *
- * The parameter to {@link #thread} should be 1, 2, 3... depending on the thread
- * you want this block to be executed in.
+ * The parameter to {@link #thread} should be 1, 2, 3... depending on the thread you want this block to be executed in.
  * <p>
  * After you created the job instances, run the whole process by calling:
  *

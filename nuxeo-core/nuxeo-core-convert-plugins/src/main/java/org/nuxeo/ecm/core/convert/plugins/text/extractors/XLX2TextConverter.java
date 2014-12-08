@@ -41,8 +41,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 
-public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements
-        Converter {
+public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(XLX2TextConverter.class);
 
@@ -51,8 +50,7 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements
     private static final String ROW_SEP = "\n";
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         InputStream stream = null;
         StringBuffer sb = new StringBuffer();

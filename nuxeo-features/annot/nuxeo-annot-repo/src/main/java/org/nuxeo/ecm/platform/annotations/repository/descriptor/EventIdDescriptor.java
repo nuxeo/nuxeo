@@ -24,7 +24,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 @XObject("eventId")
 public class EventIdDescriptor {

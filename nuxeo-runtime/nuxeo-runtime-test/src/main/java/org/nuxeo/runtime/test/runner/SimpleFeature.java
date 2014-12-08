@@ -24,6 +24,7 @@ import com.google.inject.Binder;
 
 /**
  * These are the states the runner goes through when using runtime feature:
+ *
  * <pre>
  * CREATE FRAMEWORK
  * new feature()        --> constructor
@@ -74,18 +75,15 @@ public class SimpleFeature implements RunnerFeature {
     }
 
     @Override
-    public void initialize(FeaturesRunner runner)
-            throws Exception {
+    public void initialize(FeaturesRunner runner) throws Exception {
     }
 
     @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
     }
 
     @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
     }
 
     @Override

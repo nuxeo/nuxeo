@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.convert.plugins.text.extractors.PDF2TextConverter;
 
 /**
  * @author matic
- *
  */
 public class PDFEncodingWarn {
 

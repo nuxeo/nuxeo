@@ -34,7 +34,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author matic
- *
  */
 public class ResetCheckedoutGraphListener implements GraphManagerEventListener {
 
@@ -61,14 +60,13 @@ public class ResetCheckedoutGraphListener implements GraphManagerEventListener {
         try {
             removeGraphFor(session, repo, doc, (NuxeoPrincipal) context.getPrincipal());
         } catch (ClientException e) {
-            throw new ClientRuntimeException(
-                    "Cannot remove annotations from checked-out version of "
-                            + doc.getPathAsString(), e);
+            throw new ClientRuntimeException("Cannot remove annotations from checked-out version of "
+                    + doc.getPathAsString(), e);
         }
     }
 
-    protected void removeGraphFor(CoreSession session, String repositoryName, DocumentModel doc,
-            NuxeoPrincipal user) throws ClientException {
+    protected void removeGraphFor(CoreSession session, String repositoryName, DocumentModel doc, NuxeoPrincipal user)
+            throws ClientException {
         URI uri = translator.getNuxeoUrn(repositoryName, doc.getId());
         AnnotationsService service = Framework.getLocalService(AnnotationsService.class);
 
@@ -79,6 +77,5 @@ public class ResetCheckedoutGraphListener implements GraphManagerEventListener {
             service.deleteAnnotationFor(uri, annotation, user);
         }
     }
-
 
 }

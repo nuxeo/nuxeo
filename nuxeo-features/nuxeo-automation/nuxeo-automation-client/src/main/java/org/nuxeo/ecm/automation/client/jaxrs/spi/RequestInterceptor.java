@@ -20,20 +20,18 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.filter.ClientFilter;
 
 /**
- * Provide a way of intercepting requests before they are sent server side.
- * Authentication headers are injected this way.
+ * Provide a way of intercepting requests before they are sent server side. Authentication headers are injected this
+ * way.
  *
  * @see BasicAuthInterceptor
  * @see PortalSSOAuthInterceptor
- *
  */
 public abstract class RequestInterceptor extends ClientFilter {
 
     public abstract void processRequest(Request request, Connector connector);
 
     @Override
-    public ClientResponse handle(ClientRequest cr)
-            throws ClientHandlerException {
+    public ClientResponse handle(ClientRequest cr) throws ClientHandlerException {
         return getNext().handle(cr);
     }
 }

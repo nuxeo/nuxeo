@@ -30,8 +30,7 @@ public class StudioSnapshotHelper {
     }
 
     public static boolean isSnapshot(DownloadablePackage pkg) {
-        return pkg.getVersion() != null
-                && pkg.getVersion().toString().endsWith(SNAPSHOT_SUFFIX);
+        return pkg.getVersion() != null && pkg.getVersion().toString().endsWith(SNAPSHOT_SUFFIX);
     }
 
     public static List<DownloadablePackage> removeSnapshot(List<DownloadablePackage> pkgs) {

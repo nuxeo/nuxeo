@@ -20,20 +20,22 @@ import java.util.ArrayList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class EntryFilter {
 
     public static final EntryFilter ANY = new EntryFilter() {
-        public boolean match(String name) { return true; }
+        public boolean match(String name) {
+            return true;
+        }
     };
-
 
     static class ExactMatch extends EntryFilter {
         protected String pattern;
+
         public ExactMatch(String pattern) {
             this.pattern = pattern;
         }
+
         @Override
         public boolean match(String name) {
             return name.equals(pattern);
@@ -42,13 +44,17 @@ public abstract class EntryFilter {
 
     static class Filter extends EntryFilter {
         protected String[] parts;
+
         protected boolean startAny;
+
         protected boolean endAny;
+
         public Filter(String[] parts, boolean startAny, boolean endAny) {
             this.startAny = startAny;
             this.endAny = endAny;
             this.parts = parts;
         }
+
         @Override
         public boolean match(String name) {
             int len = name.length();
@@ -73,7 +79,7 @@ public abstract class EntryFilter {
                 i += parts[p++].length();
             }
             if (p < parts.length) {
-                return p == parts.length-1 && endAny;
+                return p == parts.length - 1 && endAny;
             } else if (i < len) {
                 return endAny;
             }
@@ -96,7 +102,7 @@ public abstract class EntryFilter {
         int i = pattern.indexOf('*', s);
         while (i > -1) {
             parts.add(pattern.substring(s, i));
-            s = i+1;
+            s = i + 1;
             i = pattern.indexOf('*', s);
         }
         if (s < pattern.length()) {

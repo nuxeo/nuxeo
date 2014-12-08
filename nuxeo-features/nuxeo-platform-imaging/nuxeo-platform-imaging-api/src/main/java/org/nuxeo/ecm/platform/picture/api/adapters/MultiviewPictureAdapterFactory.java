@@ -34,8 +34,7 @@ public class MultiviewPictureAdapterFactory implements DocumentAdapterFactory {
 
     @Override
     public Object getAdapter(DocumentModel doc, Class itf) {
-        if (doc.hasFacet(PICTURE_FACET)
-                || doc.hasFacet(MULTIVIEW_PICTURE_FACET)) {
+        if (doc.hasFacet(PICTURE_FACET) || doc.hasFacet(MULTIVIEW_PICTURE_FACET)) {
             try {
                 return new MultiviewPictureAdapter(doc);
             } catch (ClientException e) {

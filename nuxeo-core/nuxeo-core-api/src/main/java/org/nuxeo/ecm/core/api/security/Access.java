@@ -18,18 +18,18 @@ import java.io.Serializable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class Access implements Serializable {
 
     public static final Access GRANT = new Access(1);
+
     public static final Access DENY = new Access(0);
+
     public static final Access UNKNOWN = new Access(-1);
 
     private static final long serialVersionUID = 4797108620404301529L;
 
     private final int value;
-
 
     private Access(int value) {
         this.value = value;
@@ -54,8 +54,7 @@ public final class Access implements Serializable {
     }
 
     /**
-     * Be aware of Java serialization.
-     * Avoid initializing another instance than allowed constants.
+     * Be aware of Java serialization. Avoid initializing another instance than allowed constants.
      *
      * @return GRANT, DENY or UNKNOWN
      */

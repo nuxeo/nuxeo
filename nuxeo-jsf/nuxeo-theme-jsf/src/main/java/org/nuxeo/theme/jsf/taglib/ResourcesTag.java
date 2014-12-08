@@ -20,7 +20,7 @@ import javax.faces.webapp.UIComponentELTag;
 public class ResourcesTag extends UIComponentELTag {
 
     private String ignoreLocal;
-    
+
     @Override
     public String getComponentType() {
         return "nxthemes.resources";

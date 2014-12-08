@@ -17,21 +17,21 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BundleResourceResolver implements ResourceResolver {
 
     protected Bundle bundle;
+
     protected String prefix;
 
     public BundleResourceResolver(Bundle bundle, String prefix) {
         this.bundle = bundle;
-        this.prefix = prefix.endsWith("/") ? prefix.substring(0, prefix.length()-1) : prefix;
+        this.prefix = prefix.endsWith("/") ? prefix.substring(0, prefix.length() - 1) : prefix;
     }
 
     @Override
     public URL getResource(String name) {
-        return bundle.getEntry(name.startsWith("/") ? prefix+name : prefix+'/'+name);
+        return bundle.getEntry(name.startsWith("/") ? prefix + name : prefix + '/' + name);
     }
 
 }

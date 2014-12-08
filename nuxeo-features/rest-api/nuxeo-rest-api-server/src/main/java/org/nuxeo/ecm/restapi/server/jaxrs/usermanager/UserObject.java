@@ -29,18 +29,14 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @WebObject(type = "user")
-@Produces({ MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class UserObject extends AbstractUMObject<NuxeoPrincipal> {
 
     @Path("group/{groupName}")
-    public Object doGetUserToGroup(@PathParam("groupName")
-    String groupName) {
+    public Object doGetUserToGroup(@PathParam("groupName") String groupName) {
         try {
             NuxeoGroup group = um.getGroup(groupName);
             if (group == null) {
@@ -54,8 +50,7 @@ public class UserObject extends AbstractUMObject<NuxeoPrincipal> {
     }
 
     @Override
-    protected NuxeoPrincipal updateArtifact(NuxeoPrincipal principal)
-            throws ClientException {
+    protected NuxeoPrincipal updateArtifact(NuxeoPrincipal principal) throws ClientException {
         um.updateUser(principal.getModel());
         return um.getPrincipal(principal.getName());
     }

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.api;
 
 /**
  * @author <a href='mailto:glefter@nuxeo.com'>George Lefter</a>
- *
  */
 public class SortNotSupportedException extends RuntimeException {
 

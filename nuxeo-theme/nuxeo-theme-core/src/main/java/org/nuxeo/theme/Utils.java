@@ -56,8 +56,7 @@ public final class Utils {
 
     private static final String EMPTY_CSS_SELECTOR = "EMPTY";
 
-    private static final Pattern emptyCssSelectorPattern = Pattern.compile(
-            "(.*?)\\{(.*?)\\}", Pattern.DOTALL);
+    private static final Pattern emptyCssSelectorPattern = Pattern.compile("(.*?)\\{(.*?)\\}", Pattern.DOTALL);
 
     private Utils() {
         // This class is not supposed to be instantiated.
@@ -65,9 +64,7 @@ public final class Utils {
 
     public static String listToCsv(List<String> list) {
         StringWriter sw = new StringWriter();
-        try (CSVPrinter writer = new CSVPrinter(sw,
-                CSVFormat.DEFAULT.withDelimiter(',').withQuoteMode(
-                        QuoteMode.ALL))) {
+        try (CSVPrinter writer = new CSVPrinter(sw, CSVFormat.DEFAULT.withDelimiter(',').withQuoteMode(QuoteMode.ALL))) {
             writer.printRecord(list);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
@@ -80,8 +77,7 @@ public final class Utils {
             return new ArrayList<>();
         }
         StringReader sr = new StringReader(str);
-        try (CSVParser reader = new CSVParser(sr,
-                CSVFormat.DEFAULT.withDelimiter(','))) {
+        try (CSVParser reader = new CSVParser(sr, CSVFormat.DEFAULT.withDelimiter(','))) {
             Iterator<CSVRecord> iterator = reader.iterator();
             if (!iterator.hasNext()) {
                 return new ArrayList<>();
@@ -106,22 +102,18 @@ public final class Utils {
     }
 
     public static String cleanUp(String text) {
-        return text.replaceAll("\n", " ").replaceAll("\\t+", " ").replaceAll(
-                "\\s+", " ").trim();
+        return text.replaceAll("\n", " ").replaceAll("\\t+", " ").replaceAll("\\s+", " ").trim();
     }
 
-    public static byte[] readResourceAsBytes(final String path)
-            throws IOException {
+    public static byte[] readResourceAsBytes(final String path) throws IOException {
         return readResource(path).toByteArray();
     }
 
-    public static String readResourceAsString(final String path)
-            throws IOException {
+    public static String readResourceAsString(final String path) throws IOException {
         return readResource(path).toString();
     }
 
-    private static ByteArrayOutputStream readResource(final String path)
-            throws IOException {
+    private static ByteArrayOutputStream readResource(final String path) throws IOException {
         InputStream is = null;
         ByteArrayOutputStream os = null;
         try {
@@ -211,8 +203,7 @@ public final class Utils {
 
     }
 
-    public static void loadProperties(final Properties properties,
-            final String resourceName) {
+    public static void loadProperties(final Properties properties, final String resourceName) {
         if (properties.isEmpty()) {
             InputStream in = null;
             try {
@@ -235,20 +226,18 @@ public final class Utils {
     }
 
     /**
-     * Parses and loads CSS resources into given style element. If boolean merge
-     * is set to true, keep existing properties already defined in style.
+     * Parses and loads CSS resources into given style element. If boolean merge is set to true, keep existing
+     * properties already defined in style.
      *
      * @since 5.5
      */
-    public static void loadCss(final Style style, String cssSource,
-            final String viewName, final boolean merge) {
+    public static void loadCss(final Style style, String cssSource, final String viewName, final boolean merge) {
         // pre-processing: replace empty selectors (which are invalid
         // selectors) with a marker selector
 
         // replace ${basePath} occurrences with a temporary marker to avoid
         // interfering with the regexp logic
-        cssSource = cssSource.replaceAll("\\$\\{basePath\\}",
-                "TEMPORARY_BASE_PATH_MARKER");
+        cssSource = cssSource.replaceAll("\\$\\{basePath\\}", "TEMPORARY_BASE_PATH_MARKER");
         final Matcher matcher = emptyCssSelectorPattern.matcher(cssSource);
         final StringBuilder buf = new StringBuilder();
         while (matcher.find()) {
@@ -258,11 +247,9 @@ public final class Utils {
             buf.append(matcher.group(0));
         }
         cssSource = buf.toString();
-        cssSource = cssSource.replaceAll("TEMPORARY_BASE_PATH_MARKER",
-                "\\$\\{basePath\\}");
+        cssSource = cssSource.replaceAll("TEMPORARY_BASE_PATH_MARKER", "\\$\\{basePath\\}");
 
-        CascadingStyleSheet styleSheet = CSSReader.readFromString(cssSource,
-                "utf-8", ECSSVersion.CSS30);
+        CascadingStyleSheet styleSheet = CSSReader.readFromString(cssSource, "utf-8", ECSSVersion.CSS30);
         if (styleSheet == null) {
             log.error("Could not parse CSS:\n" + cssSource);
             return;
@@ -273,13 +260,11 @@ public final class Utils {
             style.clearPropertiesFor(viewName);
         }
 
-        ICSSWriterSettings writerSettings = new CSSWriterSettings(
-                ECSSVersion.CSS30, true);
+        ICSSWriterSettings writerSettings = new CSSWriterSettings(ECSSVersion.CSS30, true);
         for (CSSStyleRule rule : styleSheet.getAllStyleRules()) {
             Properties properties = new Properties();
             for (CSSDeclaration declaration : rule.getAllDeclarations()) {
-                String expression = declaration.getExpression().getAsCSSString(
-                        writerSettings, 0);
+                String expression = declaration.getExpression().getAsCSSString(writerSettings, 0);
                 if (declaration.isImportant()) {
                     expression = expression + CCSS.IMPORTANT_SUFFIX;
                 }
@@ -288,8 +273,7 @@ public final class Utils {
 
             for (CSSSelector cssSelector : rule.getAllSelectors()) {
                 String selector = cssSelector.getAsCSSString(writerSettings, 0);
-                if (selector.equals(EMPTY_CSS_SELECTOR)
-                        || selector.toLowerCase().equals("body")
+                if (selector.equals(EMPTY_CSS_SELECTOR) || selector.toLowerCase().equals("body")
                         || selector.toLowerCase().equals("html")) {
                     selector = "";
                 }
@@ -298,8 +282,7 @@ public final class Utils {
         }
     }
 
-    public static void loadCss(final Style style, String cssSource,
-            final String viewName) {
+    public static void loadCss(final Style style, String cssSource, final String viewName) {
         loadCss(style, cssSource, viewName, false);
     }
 }

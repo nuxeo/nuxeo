@@ -20,8 +20,7 @@ import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
 /**
  * Work task that does fulltext extraction from the blobs of the given document.
  * <p>
- * The extracted fulltext is then passed to the single-threaded
- * {@link FulltextUpdaterWork}.
+ * The extracted fulltext is then passed to the single-threaded {@link FulltextUpdaterWork}.
  *
  * @since 5.7
  */
@@ -30,8 +29,7 @@ public class DBSFulltextExtractorWork extends FulltextExtractorWork {
     private static final long serialVersionUID = 1L;
 
     public DBSFulltextExtractorWork(String repositoryName, String docId) {
-        super(repositoryName, docId, repositoryName + ':' + docId
-                + ":dbsFulltextExtractor", true);
+        super(repositoryName, docId, repositoryName + ':' + docId + ":dbsFulltextExtractor", true);
     }
 
     @Override

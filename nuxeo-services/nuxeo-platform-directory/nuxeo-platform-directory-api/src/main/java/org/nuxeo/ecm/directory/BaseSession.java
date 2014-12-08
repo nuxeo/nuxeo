@@ -44,8 +44,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
- * Base session class with helper methods common to all kinds of directory
- * sessions.
+ * Base session class with helper methods common to all kinds of directory sessions.
  *
  * @author Anahide Tchertchian
  * @since 5.2M4
@@ -63,11 +62,9 @@ public abstract class BaseSession implements Session {
     protected PermissionDescriptor[] permissions = null;
 
     /**
-     * Check the current user rights for the given permission against the
-     * permission descriptor
+     * Check the current user rights for the given permission against the permission descriptor
      * 
      * @return true if the user
-     *
      * @since 6.0
      */
     public boolean isCurrentUserAllowed(String permissionTocheck) {
@@ -102,36 +99,32 @@ public abstract class BaseSession implements Session {
             }
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "User '%s', is not allowed for permission '%s' on the directory",
-                        currentUser, permissionTocheck));
+                log.debug(String.format("User '%s', is not allowed for permission '%s' on the directory", currentUser,
+                        permissionTocheck));
             }
             // Deny in all other case
             return false;
         }
-        boolean allowed = checkPermission(permDescriptors, permissionTocheck,
-                username, userGroups);
+        boolean allowed = checkPermission(permDescriptors, permissionTocheck, username, userGroups);
         if (allowed != true) {
             // If the permission has not been found and if the permission to
             // check is read
             // Then try to check if the current user is allowed, because having
             // write access include read
             if (permissionTocheck.equalsIgnoreCase(SecurityConstants.READ)) {
-                allowed = checkPermission(permDescriptors,
-                        SecurityConstants.WRITE, username, userGroups);
+                allowed = checkPermission(permDescriptors, SecurityConstants.WRITE, username, userGroups);
             }
         }
         if (log.isDebugEnabled() && !allowed) {
-            log.debug(String.format(
-                    "User '%s', is not allowed for permission '%s' on the directory",
-                    currentUser, permissionTocheck));
+            log.debug(String.format("User '%s', is not allowed for permission '%s' on the directory", currentUser,
+                    permissionTocheck));
         }
         return allowed;
 
     }
 
-    private boolean checkPermission(PermissionDescriptor permDescriptors[],
-            String permToChek, String username, List<String> userGroups) {
+    private boolean checkPermission(PermissionDescriptor permDescriptors[], String permToChek, String username,
+            List<String> userGroups) {
         for (int i = 0; i < permDescriptors.length; i++) {
             PermissionDescriptor currentDesc = permDescriptors[i];
             if (currentDesc.name.equalsIgnoreCase(permToChek)) {
@@ -164,12 +157,10 @@ public abstract class BaseSession implements Session {
      *
      * @since 5.2M4
      */
-    public static DocumentModel createEntryModel(String sessionId,
-            String schema, String id, Map<String, Object> values)
+    public static DocumentModel createEntryModel(String sessionId, String schema, String id, Map<String, Object> values)
             throws PropertyException {
-        DocumentModelImpl entry = new DocumentModelImpl(sessionId, schema, id,
-                null, null, null, null, new String[] { schema },
-                new HashSet<String>(), null, null);
+        DocumentModelImpl entry = new DocumentModelImpl(sessionId, schema, id, null, null, null, null,
+                new String[] { schema }, new HashSet<String>(), null, null);
         DataModel dataModel;
         if (values == null) {
             values = Collections.emptyMap();
@@ -182,14 +173,12 @@ public abstract class BaseSession implements Session {
     /**
      * Returns a bare document model suitable for directory implementations.
      * <p>
-     * Allow setting the readonly entry flag to {@code Boolean.TRUE}. See
-     * {@code Session#isReadOnlyEntry(DocumentModel)}
+     * Allow setting the readonly entry flag to {@code Boolean.TRUE}. See {@code Session#isReadOnlyEntry(DocumentModel)}
      *
      * @since 5.3.1
      */
-    public static DocumentModel createEntryModel(String sessionId,
-            String schema, String id, Map<String, Object> values,
-            boolean readOnly) throws PropertyException {
+    public static DocumentModel createEntryModel(String sessionId, String schema, String id,
+            Map<String, Object> values, boolean readOnly) throws PropertyException {
         DocumentModel entry = createEntryModel(sessionId, schema, id, values);
         if (readOnly) {
             setReadOnlyEntry(entry);
@@ -197,8 +186,7 @@ public abstract class BaseSession implements Session {
         return entry;
     }
 
-    protected static Map<String, Serializable> mkSerializableMap(
-            Map<String, Object> map) {
+    protected static Map<String, Serializable> mkSerializableMap(Map<String, Object> map) {
         Map<String, Serializable> serializableMap = null;
         if (map != null) {
             serializableMap = new HashMap<String, Serializable>();
@@ -209,8 +197,7 @@ public abstract class BaseSession implements Session {
         return serializableMap;
     }
 
-    protected static Map<String, Object> mkObjectMap(
-            Map<String, Serializable> map) {
+    protected static Map<String, Object> mkObjectMap(Map<String, Serializable> map) {
         Map<String, Object> objectMap = null;
         if (map != null) {
             objectMap = new HashMap<String, Object>();
@@ -228,32 +215,27 @@ public abstract class BaseSession implements Session {
      */
     public static boolean isReadOnlyEntry(DocumentModel entry) {
         ScopedMap contextData = entry.getContextData();
-        return contextData.getScopedValue(ScopeType.REQUEST,
-                READONLY_ENTRY_FLAG) == Boolean.TRUE;
+        return contextData.getScopedValue(ScopeType.REQUEST, READONLY_ENTRY_FLAG) == Boolean.TRUE;
     }
 
     /**
-     * Set the read-only flag of a directory entry. To be used by EntryAdaptor
-     * implementations for instance.
+     * Set the read-only flag of a directory entry. To be used by EntryAdaptor implementations for instance.
      *
      * @since 5.3.2
      */
     public static void setReadOnlyEntry(DocumentModel entry) {
         ScopedMap contextData = entry.getContextData();
-        contextData.putScopedValue(ScopeType.REQUEST, READONLY_ENTRY_FLAG,
-                Boolean.TRUE);
+        contextData.putScopedValue(ScopeType.REQUEST, READONLY_ENTRY_FLAG, Boolean.TRUE);
     }
 
     /**
-     * Unset the read-only flag of a directory entry. To be used by EntryAdaptor
-     * implementations for instance.
+     * Unset the read-only flag of a directory entry. To be used by EntryAdaptor implementations for instance.
      *
      * @since 5.3.2
      */
     public static void setReadWriteEntry(DocumentModel entry) {
         ScopedMap contextData = entry.getContextData();
-        contextData.putScopedValue(ScopeType.REQUEST, READONLY_ENTRY_FLAG,
-                Boolean.FALSE);
+        contextData.putScopedValue(ScopeType.REQUEST, READONLY_ENTRY_FLAG, Boolean.FALSE);
     }
 
     /**
@@ -262,19 +244,15 @@ public abstract class BaseSession implements Session {
      * @return the computed directory id
      * @since 5.6
      */
-    public static String computeMultiTenantDirectoryId(String tenantId,
-            String id) {
+    public static String computeMultiTenantDirectoryId(String tenantId, String id) {
         return String.format(MULTI_TENANT_ID_FORMAT, tenantId, id);
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset)
-            throws ClientException, DirectoryException {
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences, int limit, int offset) throws ClientException, DirectoryException {
         log.info("Call an unoverrided query with offset and limit.");
-        DocumentModelList entries = query(filter, fulltext, orderBy,
-                fetchReferences);
+        DocumentModelList entries = query(filter, fulltext, orderBy, fetchReferences);
         int toIndex = offset + limit;
         if (toIndex > entries.size()) {
             toIndex = entries.size();

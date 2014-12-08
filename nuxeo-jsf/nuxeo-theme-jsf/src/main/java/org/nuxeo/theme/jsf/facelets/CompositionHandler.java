@@ -53,11 +53,9 @@ import com.sun.faces.facelets.tag.ui.ParamHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositionHandler.java,v 1.15 2009/02/02 22:58:59 driscoll
- *          Exp $
+ * @version $Id: CompositionHandler.java,v 1.15 2009/02/02 22:58:59 driscoll Exp $
  */
-public final class CompositionHandler extends TagHandlerImpl implements
-        TemplateClient {
+public final class CompositionHandler extends TagHandlerImpl implements TemplateClient {
 
     private static final Log log = LogFactory.getLog(CompositionHandler.class);
 
@@ -106,13 +104,11 @@ public final class CompositionHandler extends TagHandlerImpl implements
 
     /*
      * (non-Javadoc)
-     * @see
-     * com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext,
-     * javax.faces.component.UIComponent)
+     * @see com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext, javax.faces.component.UIComponent)
      */
     @Override
-    public void apply(FaceletContext ctxObj, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+    public void apply(FaceletContext ctxObj, UIComponent parent) throws IOException, FacesException, FaceletException,
+            ELException {
         FaceletContextImplBase ctx = (FaceletContextImplBase) ctxObj;
 
         VariableMapper orig = ctx.getVariableMapper();
@@ -139,12 +135,9 @@ public final class CompositionHandler extends TagHandlerImpl implements
             if (application != null) {
                 final NegotiationDef negotiation = application.getNegotiation();
                 if (negotiation != null) {
-                    requestMap.put("org.nuxeo.theme.default.theme",
-                            negotiation.getDefaultTheme());
-                    requestMap.put("org.nuxeo.theme.default.engine",
-                            negotiation.getDefaultEngine());
-                    requestMap.put("org.nuxeo.theme.default.perspective",
-                            negotiation.getDefaultPerspective());
+                    requestMap.put("org.nuxeo.theme.default.theme", negotiation.getDefaultTheme());
+                    requestMap.put("org.nuxeo.theme.default.engine", negotiation.getDefaultEngine());
+                    requestMap.put("org.nuxeo.theme.default.perspective", negotiation.getDefaultPerspective());
                     strategy = negotiation.getStrategy();
                 }
             }
@@ -154,23 +147,19 @@ public final class CompositionHandler extends TagHandlerImpl implements
             }
             String contextPath = BaseURL.getContextPath();
             if (strategy == null) {
-                log.error("Could not obtain the negotiation strategy for "
-                        + root);
-                external.redirect(contextPath
-                        + "/nxthemes/error/negotiationStrategyNotSet.faces");
+                log.error("Could not obtain the negotiation strategy for " + root);
+                external.redirect(contextPath + "/nxthemes/error/negotiationStrategyNotSet.faces");
 
             } else {
                 try {
-                    final String spec = new JSFNegotiator(strategy,
-                            facesContext,
+                    final String spec = new JSFNegotiator(strategy, facesContext,
                             (HttpServletRequest) external.getRequest()).getSpec();
                     final URL themeUrl = new URL(spec);
                     requestMap.put("org.nuxeo.theme.url", themeUrl);
                     ctx.includeFacelet(parent, themeUrl);
                 } catch (NegotiationException e) {
                     log.error("Could not get default negotiation settings.", e);
-                    external.redirect(contextPath
-                            + "/nxthemes/error/negotiationDefaultValuesNotSet.faces");
+                    external.redirect(contextPath + "/nxthemes/error/negotiationDefaultValuesNotSet.faces");
                 }
             }
 
@@ -182,8 +171,8 @@ public final class CompositionHandler extends TagHandlerImpl implements
     }
 
     @Override
-    public boolean apply(FaceletContext ctx, UIComponent parent, String name)
-            throws IOException, FacesException, FaceletException, ELException {
+    public boolean apply(FaceletContext ctx, UIComponent parent, String name) throws IOException, FacesException,
+            FaceletException, ELException {
         if (name != null) {
             if (this.handlers == null) {
                 return false;

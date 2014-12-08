@@ -53,8 +53,7 @@ import static org.jboss.seam.ScopeType.EVENT;
  */
 @Name("uploadFileRestlet")
 @Scope(EVENT)
-public class UploadFileRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants, Serializable {
+public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConstants, Serializable {
 
     public static final String LIVED_AUTOVERSIONING_PROP = "org.nuxeo.ecm.platform.liveedit.autoversioning";
 
@@ -87,8 +86,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
 
         DocumentModel dm = null;
         try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(
-                    repo));
+            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
             if (docid != null) {
                 dm = documentManager.getDocument(new IdRef(docid));
@@ -100,28 +98,22 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
 
         try {
 
-            String blobPropertyName = getQueryParamValue(req,
-                    BLOB_PROPERTY_NAME, null);
-            String filenamePropertyName = getQueryParamValue(req,
-                    FILENAME_PROPERTY_NAME, null);
+            String blobPropertyName = getQueryParamValue(req, BLOB_PROPERTY_NAME, null);
+            String filenamePropertyName = getQueryParamValue(req, FILENAME_PROPERTY_NAME, null);
 
             if (blobPropertyName == null || filenamePropertyName == null) {
                 // find the names of the fields from the optional request
                 // parameters with fallback to defaults if none is provided
-                String schemaName = getQueryParamValue(req, SCHEMA,
-                        DEFAULT_SCHEMA);
-                String blobFieldName = getQueryParamValue(req, BLOB_FIELD,
-                        DEFAULT_BLOB_FIELD);
-                String filenameFieldName = getQueryParamValue(req,
-                        FILENAME_FIELD, DEFAULT_FILENAME_FIELD);
+                String schemaName = getQueryParamValue(req, SCHEMA, DEFAULT_SCHEMA);
+                String blobFieldName = getQueryParamValue(req, BLOB_FIELD, DEFAULT_BLOB_FIELD);
+                String filenameFieldName = getQueryParamValue(req, FILENAME_FIELD, DEFAULT_FILENAME_FIELD);
                 blobPropertyName = schemaName + ":" + blobFieldName;
                 filenamePropertyName = schemaName + ":" + filenameFieldName;
             }
 
             InputStream is = req.getEntity().getStream();
 
-            saveFileToDocument(filename, dm, blobPropertyName,
-                    filenamePropertyName, is);
+            saveFileToDocument(filename, dm, blobPropertyName, filenamePropertyName, is);
         } catch (ClientException | IOException e) {
             handleError(res, e);
         }
@@ -134,9 +126,8 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
     /**
      * Save the file into the document.
      */
-    protected void saveFileToDocument(String filename, DocumentModel dm,
-            String blobPropertyName, String filenamePropertyName, InputStream is)
-            throws IOException, PropertyException, ClientException {
+    protected void saveFileToDocument(String filename, DocumentModel dm, String blobPropertyName,
+            String filenamePropertyName, InputStream is) throws IOException, PropertyException, ClientException {
         // persisting the blob makes it possible to read the binary content
         // of the request stream several times (mimetype sniffing, digest
         // computation, core binary storage)
@@ -152,8 +143,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
         String versioningPolicy = Framework.getProperty(LIVED_AUTOVERSIONING_PROP);
         if (doAutoMinorIncrement(versioningPolicy, dm)) {
             if (dm.isCheckedOut()) {
-                dm.checkIn(VersioningOption.MINOR,
-                        "Live edit (UploadFileRestlet) autoversioning");
+                dm.checkIn(VersioningOption.MINOR, "Live edit (UploadFileRestlet) autoversioning");
             }
         }
 

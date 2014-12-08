@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.directory.ldap.dns;
 
-
 /**
  * Encapsulates a hostname and port.
  */
@@ -39,16 +38,15 @@ public class DNSServiceEntry implements Comparable<DNSServiceEntry> {
     }
 
     /**
-     * Get the priority of this DNS entry, descending priority
-     * 0(highest)..Integer.MAX_VALUE(lowest)
+     * Get the priority of this DNS entry, descending priority 0(highest)..Integer.MAX_VALUE(lowest)
      */
     public int getPriority() {
         return priority;
     }
 
     /**
-     * Get the weight of this DNS entry to compare entries with equal
-     * priority, ascending weight 0(lowest)..Integer.MAX_VALUE(highest)
+     * Get the weight of this DNS entry to compare entries with equal priority, ascending weight
+     * 0(lowest)..Integer.MAX_VALUE(highest)
      */
     public int getWeight() {
         return weight;

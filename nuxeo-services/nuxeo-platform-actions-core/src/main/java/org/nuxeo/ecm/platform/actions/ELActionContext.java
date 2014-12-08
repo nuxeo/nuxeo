@@ -31,8 +31,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  *
  * @since 5.7.3
  */
-public class ELActionContext extends AbstractActionContext implements
-        ActionContext {
+public class ELActionContext extends AbstractActionContext implements ActionContext {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,8 +39,7 @@ public class ELActionContext extends AbstractActionContext implements
 
     protected final ExpressionFactory expressionFactory;
 
-    public ELActionContext(ELContext originalContext,
-            ExpressionFactory expressionFactory) {
+    public ELActionContext(ELContext originalContext, ExpressionFactory expressionFactory) {
         super();
         this.originalContext = originalContext;
         this.expressionFactory = expressionFactory;
@@ -49,11 +47,10 @@ public class ELActionContext extends AbstractActionContext implements
 
     @Override
     public boolean checkCondition(String expression) throws ELException {
-        if (StringUtils.isBlank(expression)
-                || (expression != null && StringUtils.isBlank(expression.trim()))) {
+        if (StringUtils.isBlank(expression) || (expression != null && StringUtils.isBlank(expression.trim()))) {
             return false;
         }
-        String expr  = expression.trim();
+        String expr = expression.trim();
         // compatibility code, as JEXL could resolve that kind of expression:
         // detect if expression is in brackets #{}, otherwise add it
         if (!expr.startsWith("#{") && !expr.startsWith("${")
@@ -64,10 +61,9 @@ public class ELActionContext extends AbstractActionContext implements
         }
         VariableMapper vm = originalContext.getVariableMapper();
         // init default variables
-        ValueExpression documentExpr = expressionFactory.createValueExpression(
-                getCurrentDocument(), DocumentModel.class);
-        ValueExpression userExpr = expressionFactory.createValueExpression(
-                getCurrentPrincipal(), NuxeoPrincipal.class);
+        ValueExpression documentExpr = expressionFactory.createValueExpression(getCurrentDocument(),
+                DocumentModel.class);
+        ValueExpression userExpr = expressionFactory.createValueExpression(getCurrentPrincipal(), NuxeoPrincipal.class);
         // add variables originally exposed by the action framework,
         // do not add aliases currentDocument and currentUser here as they
         // should already be available in this JSF context
@@ -77,13 +73,11 @@ public class ELActionContext extends AbstractActionContext implements
         vm.setVariable("currentUser", userExpr);
         // get custom context from ActionContext
         for (String key : localVariables.keySet()) {
-            vm.setVariable(key, expressionFactory.createValueExpression(
-                    getLocalVariable(key), Object.class));
+            vm.setVariable(key, expressionFactory.createValueExpression(getLocalVariable(key), Object.class));
         }
 
         // evaluate expression
-        ValueExpression ve = expressionFactory.createValueExpression(
-                originalContext, expr, Boolean.class);
+        ValueExpression ve = expressionFactory.createValueExpression(originalContext, expr, Boolean.class);
         return Boolean.TRUE.equals(ve.getValue(originalContext));
     }
 

@@ -33,10 +33,9 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**
- * Testing the mime type icon updater listener. This listener should update
- * mime type of a blob when this one is dirty (updated). When the blob is about
- * is on file:content, it also updates the common:icon field setting the right
- * icon according to the mime type
+ * Testing the mime type icon updater listener. This listener should update mime type of a blob when this one is dirty
+ * (updated). When the blob is about is on file:content, it also updates the common:icon field setting the right icon
+ * according to the mime type
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * @author Benjamin Jalon <bjalon@nuxeo.com>
@@ -54,8 +53,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.types.core");
         deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener",
                 "OSGI-INF/filemanager-iconupdater-event-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener.test",
-                "OSGI-INF/core-type-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener.test", "OSGI-INF/core-type-contrib.xml");
 
         openSession();
     }
@@ -83,7 +81,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         String icon = (String) file.getProperty("common", "icon");
         assertNotNull(icon);
         assertEquals("/icons/pdf.png", icon);
-        assertTrue((Long)file.getPropertyValue("common:size") > 0L);
+        assertTrue((Long) file.getPropertyValue("common:size") > 0L);
 
         // removing blob
         removeMainBlob(file);
@@ -94,8 +92,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
     }
 
     /**
-     * Testing mime type update with a schema without prefix.
-     * https://jira.nuxeo.org/browse/NXP-3972 <a
+     * Testing mime type update with a schema without prefix. https://jira.nuxeo.org/browse/NXP-3972 <a
      * href="https://jira.nuxeo.org/browse/NXP-3972">NXP-3972</a>
      *
      * @throws Exception
@@ -111,8 +108,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
     }
 
     /**
-     * Testing mime type update with a schema with prefix.
-     * https://jira.nuxeo.org/browse/NXP-3972 <a
+     * Testing mime type update with a schema with prefix. https://jira.nuxeo.org/browse/NXP-3972 <a
      * href="https://jira.nuxeo.org/browse/NXP-3972">NXP-3972</a>
      *
      * @throws Exception
@@ -145,10 +141,9 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         return session;
     }
 
-    protected DocumentModel createWithoutPrefixBlobDocument(boolean setMimeType)
-            throws ClientException {
-        DocumentModel withoutPrefixBlobDoc = getCoreSession().createDocumentModel(
-                "/", "testFile", "WithoutPrefixDocument");
+    protected DocumentModel createWithoutPrefixBlobDocument(boolean setMimeType) throws ClientException {
+        DocumentModel withoutPrefixBlobDoc = getCoreSession().createDocumentModel("/", "testFile",
+                "WithoutPrefixDocument");
         withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
 
         Blob blob = new StringBlob("SOMEDUMMYDATA", null);
@@ -158,8 +153,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         }
         withoutPrefixBlobDoc.setProperty("wihtoutpref", "blob", blob);
 
-        withoutPrefixBlobDoc = getCoreSession().createDocument(
-                withoutPrefixBlobDoc);
+        withoutPrefixBlobDoc = getCoreSession().createDocument(withoutPrefixBlobDoc);
 
         getCoreSession().saveDocument(withoutPrefixBlobDoc);
         getCoreSession().save();
@@ -167,10 +161,8 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         return withoutPrefixBlobDoc;
     }
 
-    protected DocumentModel createWithPrefixBlobDocument(boolean setMimeType)
-            throws ClientException {
-        DocumentModel withoutPrefixBlobDoc = getCoreSession().createDocumentModel(
-                "/", "testFile", "SimpleBlobDocument");
+    protected DocumentModel createWithPrefixBlobDocument(boolean setMimeType) throws ClientException {
+        DocumentModel withoutPrefixBlobDoc = getCoreSession().createDocumentModel("/", "testFile", "SimpleBlobDocument");
         withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
 
         Blob blob = new StringBlob("SOMEDUMMYDATA", null);
@@ -180,8 +172,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         }
         withoutPrefixBlobDoc.setProperty("simpleblob", "blob", blob);
 
-        withoutPrefixBlobDoc = getCoreSession().createDocument(
-                withoutPrefixBlobDoc);
+        withoutPrefixBlobDoc = getCoreSession().createDocument(withoutPrefixBlobDoc);
 
         getCoreSession().saveDocument(withoutPrefixBlobDoc);
         getCoreSession().save();
@@ -189,10 +180,8 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         return withoutPrefixBlobDoc;
     }
 
-    protected DocumentModel createFileDocument(boolean setMimeType)
-            throws ClientException {
-        DocumentModel fileDoc = getCoreSession().createDocumentModel("/",
-                "testFile", "File");
+    protected DocumentModel createFileDocument(boolean setMimeType) throws ClientException {
+        DocumentModel fileDoc = getCoreSession().createDocumentModel("/", "testFile", "File");
         fileDoc.setProperty("dublincore", "title", "TestFile");
 
         Blob blob = new StringBlob("SOMEDUMMYDATA", null);
@@ -218,8 +207,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
     }
 
     protected DocumentModel createWorkspace() throws ClientException {
-        DocumentModel doc = getCoreSession().createDocumentModel("/",
-                "testWorkspace", "Workspace");
+        DocumentModel doc = getCoreSession().createDocumentModel("/", "testWorkspace", "Workspace");
         doc.setProperty("dublincore", "title", "TestWorkspace");
         Blob blob = new StringBlob("SOMEDUMMYDATA", null);
         blob.setFilename("test.pdf");

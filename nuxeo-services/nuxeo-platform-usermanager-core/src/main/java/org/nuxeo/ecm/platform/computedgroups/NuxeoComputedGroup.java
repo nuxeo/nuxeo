@@ -24,13 +24,10 @@ import java.util.List;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Computed group implementation class.
- * Delegates part of the implementation logic to the
- * {@link ComputedGroupsService} that is pluggable.
+ * Computed group implementation class. Delegates part of the implementation logic to the {@link ComputedGroupsService}
+ * that is pluggable.
  *
  * @author Thierry Delprat
- *
  */
 public class NuxeoComputedGroup implements ComputedGroup {
 

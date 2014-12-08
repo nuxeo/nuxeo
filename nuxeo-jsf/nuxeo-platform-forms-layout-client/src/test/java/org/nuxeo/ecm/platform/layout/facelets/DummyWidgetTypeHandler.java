@@ -45,9 +45,8 @@ public class DummyWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final long serialVersionUID = 1495841177711755669L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetTagConfigId = widget.getTagConfigId();
@@ -56,17 +55,15 @@ public class DummyWidgetTypeHandler extends AbstractWidgetTypeHandler {
         TagAttributes attributes = helper.getTagAttributes(originalId, widget);
         FaceletHandler leaf = new LeafFaceletHandler();
         if (BuiltinWidgetModes.VIEW.equals(mode)) {
-            ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+            ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
             handlers = new FaceletHandler[] { output };
         } else if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+            ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlInputText.COMPONENT_TYPE, null);
             String msgId = helper.generateUniqueId(originalId);
-            ComponentHandler message = helper.getMessageComponentHandler(
-                    widgetTagConfigId, msgId, originalId, "errorMessage");
+            ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, originalId,
+                    "errorMessage");
             handlers = new FaceletHandler[] { input, message };
         }
         if (handlers == null) {

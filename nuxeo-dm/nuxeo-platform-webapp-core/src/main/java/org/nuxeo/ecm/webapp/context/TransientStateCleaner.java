@@ -37,17 +37,16 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
 /**
- * Seam Bean that is responsible from refetching the CurrentDocument in case it
- * is Dirty (Transient modifications not pushed inside the DB).
+ * Seam Bean that is responsible from refetching the CurrentDocument in case it is Dirty (Transient modifications not
+ * pushed inside the DB).
  * <p>
  * This can happen if a low level Listener decides to RollBack the transaction.
  * <p>
- * In this case the DocumentModel won't be saved to the DB, but since the
- * ApplyModelValue JSF phase has run, the DocumentModel will have been modified
- * resulting in a Dirty state inside the Context.
+ * In this case the DocumentModel won't be saved to the DB, but since the ApplyModelValue JSF phase has run, the
+ * DocumentModel will have been modified resulting in a Dirty state inside the Context.
  * <p>
- * We want to keep this dirty state as long as we stay on the same Tab, but as
- * soon as we navigate somewhere else, we must reset the state.
+ * We want to keep this dirty state as long as we stay on the same Tab, but as soon as we navigate somewhere else, we
+ * must reset the state.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
@@ -68,8 +67,7 @@ public class TransientStateCleaner implements Serializable {
     public void flushTransientStateIfNeeded() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null && currentDocument.isDirty()) {
-            CoreSession documentManager = (CoreSession) Component.getInstance(
-                    "documentManager", false);
+            CoreSession documentManager = (CoreSession) Component.getInstance("documentManager", false);
             if (documentManager != null) {
                 try {
                     // refetch

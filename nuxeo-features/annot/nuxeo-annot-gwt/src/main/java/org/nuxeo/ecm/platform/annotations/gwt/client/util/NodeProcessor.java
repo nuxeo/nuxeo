@@ -23,7 +23,6 @@ import com.google.gwt.dom.client.Node;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface NodeProcessor {
     void process(Node node);

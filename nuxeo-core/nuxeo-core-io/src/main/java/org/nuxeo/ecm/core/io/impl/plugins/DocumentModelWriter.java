@@ -42,16 +42,14 @@ public class DocumentModelWriter extends AbstractDocumentModelWriter {
 
     /**
      * @param session the session to the repository where to write
-     * @param parentPath where to write the tree. this document will be used as
-     *            the parent of all top level documents passed as input. Note
-     *            that you may have
+     * @param parentPath where to write the tree. this document will be used as the parent of all top level documents
+     *            passed as input. Note that you may have
      */
     public DocumentModelWriter(CoreSession session, String parentPath) {
         super(session, parentPath);
     }
 
-    public DocumentModelWriter(CoreSession session, String parentPath,
-            int saveInterval) {
+    public DocumentModelWriter(CoreSession session, String parentPath, int saveInterval) {
         super(session, parentPath, saveInterval);
     }
 
@@ -63,29 +61,27 @@ public class DocumentModelWriter extends AbstractDocumentModelWriter {
             return null;
         }
         Path path = xdoc.getPath();
-//        if (path.isEmpty() || path.isRoot()) {
-//            return; // TODO avoid to import the root
-//        }
+        // if (path.isEmpty() || path.isRoot()) {
+        // return; // TODO avoid to import the root
+        // }
         path = root.append(path); // compute target path
 
         try {
             return doWrite(xdoc, path);
         } catch (ClientException e) {
-            IOException ioe = new IOException(
-                    "Failed to import document in repository: "
-                            + e.getMessage());
+            IOException ioe = new IOException("Failed to import document in repository: " + e.getMessage());
             ioe.setStackTrace(e.getStackTrace());
             log.error(e, e);
             return null;
         }
     }
 
-    private DocumentTranslationMap doWrite(ExportedDocument xdoc,
-            Path targetPath) throws ClientException {
+    private DocumentTranslationMap doWrite(ExportedDocument xdoc, Path targetPath) throws ClientException {
 
         DocumentModel previousDoc = null;
-        /*NXP-1688 Rux: if the document doesn't exist, the thrown ClientException is
-         * wrapped. Instead, an explicit query about the existence should do the job.
+        /*
+         * NXP-1688 Rux: if the document doesn't exist, the thrown ClientException is wrapped. Instead, an explicit
+         * query about the existence should do the job.
          */
         PathRef pathRef = new PathRef(targetPath.toString());
         try {
@@ -93,7 +89,7 @@ public class DocumentModelWriter extends AbstractDocumentModelWriter {
                 previousDoc = session.getDocument(pathRef);
             }
         } catch (ClientException ce) {
-            //don't care, document considered inexistent
+            // don't care, document considered inexistent
             previousDoc = null;
         }
 
@@ -105,8 +101,7 @@ public class DocumentModelWriter extends AbstractDocumentModelWriter {
         }
 
         DocumentLocation source = xdoc.getSourceLocation();
-        DocumentTranslationMap map = new DocumentTranslationMapImpl(
-                source.getServerName(), doc.getRepositoryName());
+        DocumentTranslationMap map = new DocumentTranslationMapImpl(source.getServerName(), doc.getRepositoryName());
         map.put(source.getDocRef(), doc.getRef());
         return map;
     }

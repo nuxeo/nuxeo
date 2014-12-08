@@ -21,8 +21,7 @@ import java.io.IOException;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
- * Tranfert content to binary storage without 
- * duplicating the source content.
+ * Tranfert content to binary storage without duplicating the source content.
  *
  * @author matic
  * @since 5.6

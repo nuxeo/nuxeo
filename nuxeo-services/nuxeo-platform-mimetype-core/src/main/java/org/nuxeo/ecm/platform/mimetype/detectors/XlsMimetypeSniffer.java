@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.nuxeo.common.utils.FileUtils;
 
-
 public class XlsMimetypeSniffer implements MagicDetector {
 
     private static final Log log = LogFactory.getLog(XlsMimetypeSniffer.class);
@@ -46,10 +45,7 @@ public class XlsMimetypeSniffer implements MagicDetector {
     }
 
     public String[] getHandledTypes() {
-        return new String[] {
-                "application/vnd.ms-excel",
-                "application/msexcel",
-                "application/vnd.microsoft-excel" };
+        return new String[] { "application/vnd.ms-excel", "application/msexcel", "application/vnd.microsoft-excel" };
     }
 
     public String getName() {
@@ -60,8 +56,8 @@ public class XlsMimetypeSniffer implements MagicDetector {
         return "0.1";
     }
 
-    public String[] process(byte[] data, int offset, int length, long bitmask,
-            char comparator, String mimeType, Map params) {
+    public String[] process(byte[] data, int offset, int length, long bitmask, char comparator, String mimeType,
+            Map params) {
 
         String[] mimetypes = { "" };
         File file = null;
@@ -81,8 +77,8 @@ public class XlsMimetypeSniffer implements MagicDetector {
         return mimetypes;
     }
 
-    public String[] process(File file, int offset, int length, long bitmask,
-            char comparator, String mimeType, Map params) {
+    public String[] process(File file, int offset, int length, long bitmask, char comparator, String mimeType,
+            Map params) {
 
         return guessExcel(file);
     }

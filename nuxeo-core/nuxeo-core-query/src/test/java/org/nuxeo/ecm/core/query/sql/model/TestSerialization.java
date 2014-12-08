@@ -24,12 +24,10 @@ import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 /**
  * Test that serialization of SQLQuery instances actually works.
  * <p>
- * This test case certainly doesn't cover all neeeded aspects. One should also
- * be concerned that standard serialization might be inefficient in terms of
- * weight for such object and rely on something else if possible.
+ * This test case certainly doesn't cover all neeeded aspects. One should also be concerned that standard serialization
+ * might be inefficient in terms of weight for such object and rely on something else if possible.
  *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- *
  */
 public class TestSerialization {
 
@@ -40,8 +38,7 @@ public class TestSerialization {
 
     @Test
     public void testQuery1() {
-        check("SELECT dc:title, dc:dublincore FROM Document "
-                + "WHERE dc:created > TIMESTAMP '2007-02-03 0:0'");
+        check("SELECT dc:title, dc:dublincore FROM Document " + "WHERE dc:created > TIMESTAMP '2007-02-03 0:0'");
     }
 
     @Test
@@ -56,8 +53,7 @@ public class TestSerialization {
         elements.put("abc", new StringLiteral("table"));
         assertEquals(1, elements.size());
 
-        SerializableArrayMap<String, Operand> elements2
-                = (SerializableArrayMap<String, Operand>) SerializableHelper.serializeUnserialize(elements);
+        SerializableArrayMap<String, Operand> elements2 = (SerializableArrayMap<String, Operand>) SerializableHelper.serializeUnserialize(elements);
         assertEquals(1, elements2.size());
     }
 
@@ -93,16 +89,12 @@ public class TestSerialization {
 
         String queryString = "SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'";
         SQLQuery parsed = SQLQueryParser.parse(queryString);
-        assertEquals(
-                "SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'",
-                parsed.toString());
+        assertEquals("SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'", parsed.toString());
         assertEquals(0, parsed.getSelectClause().elements.size());
         assertEquals(1, parsed.getFromClause().elements.size());
 
         SQLQuery dumped = (SQLQuery) SerializableHelper.serializeUnserialize(parsed);
-        assertEquals(
-                "SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'",
-                dumped.toString());
+        assertEquals("SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'", dumped.toString());
         assertEquals(0, dumped.getSelectClause().elements.size());
         assertEquals(1, dumped.getFromClause().elements.size());
 

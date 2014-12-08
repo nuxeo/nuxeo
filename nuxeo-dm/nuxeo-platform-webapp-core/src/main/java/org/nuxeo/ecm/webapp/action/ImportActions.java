@@ -139,11 +139,9 @@ public class ImportActions implements Serializable {
 
     public String getSelectedImportOptionId() {
         if (selectedImportOption == null) {
-            selectedImportOption = importOptions != null
-                    && importOptions.size() > 0 ? importOptions.get(0) : null;
+            selectedImportOption = importOptions != null && importOptions.size() > 0 ? importOptions.get(0) : null;
         }
-        return selectedImportOption != null ? selectedImportOption.getId()
-                : null;
+        return selectedImportOption != null ? selectedImportOption.getId() : null;
     }
 
     public void setSelectedImportOptionId(String id) {
@@ -157,8 +155,7 @@ public class ImportActions implements Serializable {
 
     public Action getSelectedImportOption() {
         if (selectedImportOption == null) {
-            selectedImportOption = importOptions != null
-                    && importOptions.size() > 0 ? importOptions.get(0) : null;
+            selectedImportOption = importOptions != null && importOptions.size() > 0 ? importOptions.get(0) : null;
         }
         return selectedImportOption;
     }
@@ -177,10 +174,8 @@ public class ImportActions implements Serializable {
             if (currentDocument == null) {
                 return null;
             }
-            if (currentDocument.isFolder()
-                    && !"/".equals(currentDocument.getPathAsString())
-                    && documentManager.hasPermission(currentDocument.getRef(),
-                            SecurityConstants.ADD_CHILDREN)) {
+            if (currentDocument.isFolder() && !"/".equals(currentDocument.getPathAsString())
+                    && documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.ADD_CHILDREN)) {
                 selectedImportFolderId = currentDocument.getId();
             } else {
                 // try to find the first folderish parent
@@ -189,8 +184,7 @@ public class ImportActions implements Serializable {
 
                 for (DocumentModel parent : parents) {
                     if (parent.isFolder()
-                            && documentManager.hasPermission(parent.getRef(),
-                                    SecurityConstants.ADD_CHILDREN)) {
+                            && documentManager.hasPermission(parent.getRef(), SecurityConstants.ADD_CHILDREN)) {
                         selectedImportFolderId = parent.getId();
                         break;
                     }
@@ -210,8 +204,7 @@ public class ImportActions implements Serializable {
 
     public String generateBatchId() {
         if (currentBatchId == null) {
-            currentBatchId = "batch-" + new Date().getTime() + "-"
-                    + random.nextInt(1000);
+            currentBatchId = "batch-" + new Date().getTime() + "-" + random.nextInt(1000);
         }
         return currentBatchId;
     }
@@ -250,20 +243,16 @@ public class ImportActions implements Serializable {
         try {
             List<DocumentModel> importedDocuments;
             if (dndConfigHelper.useHtml5DragAndDrop()) {
-                importedDocuments = importDocumentsThroughBatchManager(
-                        chainOrOperationId, contextParams);
+                importedDocuments = importDocumentsThroughBatchManager(chainOrOperationId, contextParams);
 
             } else {
-                importedDocuments = importDocumentsThroughUploadItems(
-                        chainOrOperationId, contextParams);
+                importedDocuments = importDocumentsThroughUploadItems(chainOrOperationId, contextParams);
             }
 
-            Events.instance().raiseEvent(DOCUMENTS_IMPORTED, importedDocuments,
-                    importDocumentModel);
+            Events.instance().raiseEvent(DOCUMENTS_IMPORTED, importedDocuments, importDocumentModel);
 
             if (selectedImportFolderId != null) {
-                return navigationContext.navigateToRef(new IdRef(
-                        selectedImportFolderId));
+                return navigationContext.navigateToRef(new IdRef(selectedImportFolderId));
             }
         } catch (ClientException e) {
             log.debug(e, e);
@@ -272,9 +261,8 @@ public class ImportActions implements Serializable {
             if (t.getMessage().contains("Cannot create")) {
                 // do not reset state
                 resetBatchState = false;
-                FacesMessage message = new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        Messages.instance().get(LABEL_IMPORT_CANNOT_CREATE_ERROR), null);
+                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, Messages.instance().get(
+                        LABEL_IMPORT_CANNOT_CREATE_ERROR), null);
                 FacesContext faces = FacesContext.getCurrentInstance();
                 if (fancyboxFormId != null && fancyboxFormId.startsWith(":")) {
                     faces.addMessage(fancyboxFormId.substring(1), message);
@@ -284,12 +272,10 @@ public class ImportActions implements Serializable {
                 HttpServletRequest httpRequest = (HttpServletRequest) faces.getExternalContext().getRequest();
                 // avoid redirect for message to be displayed (and fancybox to
                 // be reopened)
-                httpRequest.setAttribute(
-                        FancyNavigationHandler.DISABLE_REDIRECT_FOR_URL_REWRITE,
-                        Boolean.TRUE);
+                httpRequest.setAttribute(FancyNavigationHandler.DISABLE_REDIRECT_FOR_URL_REWRITE, Boolean.TRUE);
             } else {
-                facesMessages.addFromResourceBundle(
-                        StatusMessage.Severity.ERROR, Messages.instance().get(LABEL_IMPORT_PROBLEM));
+                facesMessages.addFromResourceBundle(StatusMessage.Severity.ERROR,
+                        Messages.instance().get(LABEL_IMPORT_PROBLEM));
             }
         } finally {
             if (resetBatchState) {
@@ -302,18 +288,16 @@ public class ImportActions implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    protected List<DocumentModel> importDocumentsThroughBatchManager(
-            String chainOrOperationId, Map<String, Object> contextParams)
-            throws ClientException {
+    protected List<DocumentModel> importDocumentsThroughBatchManager(String chainOrOperationId,
+            Map<String, Object> contextParams) throws ClientException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
-        return (List<DocumentModel>) bm.execute(currentBatchId,
-                chainOrOperationId, documentManager, contextParams, null);
+        return (List<DocumentModel>) bm.execute(currentBatchId, chainOrOperationId, documentManager, contextParams,
+                null);
     }
 
     @SuppressWarnings("unchecked")
-    protected List<DocumentModel> importDocumentsThroughUploadItems(
-            String chainOrOperationId, Map<String, Object> contextParams)
-            throws ClientException {
+    protected List<DocumentModel> importDocumentsThroughUploadItems(String chainOrOperationId,
+            Map<String, Object> contextParams) throws ClientException {
         if (uploadedFiles == null) {
             return Collections.emptyList();
         }
@@ -322,8 +306,7 @@ public class ImportActions implements Serializable {
             List<Blob> blobs = new ArrayList<>();
             for (NxUploadedFile uploadItem : uploadedFiles) {
                 String filename = FileUtils.getCleanFileName(uploadItem.getName());
-                Blob blob = FileUtils.createTemporaryFileBlob(
-                        uploadItem.getFile(), filename,
+                Blob blob = FileUtils.createTemporaryFileBlob(uploadItem.getFile(), filename,
                         uploadItem.getContentType());
                 blobs.add(blob);
             }
@@ -334,12 +317,10 @@ public class ImportActions implements Serializable {
 
             AutomationService as = Framework.getLocalService(AutomationService.class);
             if (chainOrOperationId.startsWith("Chain.")) {
-                return (List<DocumentModel>) as.run(ctx,
-                        chainOrOperationId.substring(6));
+                return (List<DocumentModel>) as.run(ctx, chainOrOperationId.substring(6));
             } else {
                 OperationChain chain = new OperationChain("operation");
-                OperationParameters params = new OperationParameters(
-                        chainOrOperationId, new HashMap<String, Object>());
+                OperationParameters params = new OperationParameters(chainOrOperationId, new HashMap<String, Object>());
                 chain.add(params);
                 return (List<DocumentModel>) as.run(ctx, chain);
             }
@@ -403,8 +384,7 @@ public class ImportActions implements Serializable {
             }
             InputStream in = uploadEvent.getUploadedFile().getInputStream();
             org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
-            uploadedFiles.add(new NxUploadedFile(
-                    uploadEvent.getUploadedFile().getName(),
+            uploadedFiles.add(new NxUploadedFile(uploadEvent.getUploadedFile().getName(),
                     uploadEvent.getUploadedFile().getContentType(), file));
         } catch (Exception e) {
             log.error(e, e);

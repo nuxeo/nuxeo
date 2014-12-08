@@ -59,12 +59,11 @@ public abstract class AbstractDirectory implements Directory {
     protected AbstractDirectory(String name) {
         this.name = name;
         cache = new DirectoryCache(name);
-        sessionCount = registry.counter(MetricRegistry.name(
-                "nuxeo", "directories", name,  "sessions", "active"));
+        sessionCount = registry.counter(MetricRegistry.name("nuxeo", "directories", name, "sessions", "active"));
 
-        sessionMaxCount =  registry.counter(MetricRegistry.name(
-                "nuxeo", "directories", name,  "sessions", "max"));
+        sessionMaxCount = registry.counter(MetricRegistry.name("nuxeo", "directories", name, "sessions", "max"));
     }
+
     /**
      * Invalidate my cache and the caches of linked directories by references.
      */
@@ -116,10 +115,8 @@ public abstract class AbstractDirectory implements Directory {
      * @param entries the list of entries.
      * @param orderBy an ordered map of field name -> "asc" or "desc".
      */
-    public void orderEntries(List<DocumentModel> entries,
-            Map<String, String> orderBy) throws DirectoryException {
-        Collections.sort(entries, new DocumentModelComparator(getSchema(),
-                orderBy));
+    public void orderEntries(List<DocumentModel> entries, Map<String, String> orderBy) throws DirectoryException {
+        Collections.sort(entries, new DocumentModelComparator(getSchema(), orderBy));
     }
 
     @Override
@@ -139,7 +136,7 @@ public abstract class AbstractDirectory implements Directory {
     }
 
     @Override
-    public void invalidateDirectoryCache() throws DirectoryException{
+    public void invalidateDirectoryCache() throws DirectoryException {
         getCache().invalidateAll();
     }
 
@@ -153,6 +150,5 @@ public abstract class AbstractDirectory implements Directory {
         sessionCount.dec(sessionCount.getCount());
         sessionMaxCount.dec(sessionMaxCount.getCount());
     }
-
 
 }

@@ -17,8 +17,6 @@
 package org.nuxeo.runtime.test.runner;
 
 /**
- *
- *
  * @since 5.8
  */
 public interface AFakeService {

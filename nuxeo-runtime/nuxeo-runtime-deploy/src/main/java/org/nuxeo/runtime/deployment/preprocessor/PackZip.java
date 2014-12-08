@@ -41,7 +41,6 @@ import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PackZip {
 
@@ -65,14 +64,12 @@ public class PackZip {
 
     public PackZip(File nuxeoEar, File target) {
         if (!nuxeoEar.isDirectory()) {
-            throw new IllegalArgumentException(
-                    "Invalid build - no exploded nuxeo.ear found at "
-                            + nuxeoEar.getAbsolutePath());
+            throw new IllegalArgumentException("Invalid build - no exploded nuxeo.ear found at "
+                    + nuxeoEar.getAbsolutePath());
         }
         if (!target.isDirectory()) {
-            throw new IllegalArgumentException(
-                    "Invalid configuration - no target directory found at "
-                            + nuxeoEar.getAbsolutePath());
+            throw new IllegalArgumentException("Invalid configuration - no target directory found at "
+                    + nuxeoEar.getAbsolutePath());
         }
         this.nuxeoEar = nuxeoEar;
         this.target = target;
@@ -86,8 +83,7 @@ public class PackZip {
                     "Invalid nuxeo.ear location - no nuxeo jboss deployer JAR found in deployers directory");
         }
         for (String name : names) {
-            if (name.startsWith("nuxeo-jboss-deployer")
-                    && name.endsWith(".jar")) {
+            if (name.startsWith("nuxeo-jboss-deployer") && name.endsWith(".jar")) {
                 deployerJar = new File(deployers, name);
             }
         }
@@ -97,16 +93,14 @@ public class PackZip {
         }
     }
 
-    protected void executePreprocessing() throws ConfigurationException,
-            IOException {
+    protected void executePreprocessing() throws ConfigurationException, IOException {
         // configure from templates
         new ConfigurationGenerator().run();
         // run preprocessor
         runPreprocessor();
     }
 
-    protected void executePackaging() throws IOException, SAXException,
-            ParserConfigurationException {
+    protected void executePackaging() throws IOException, SAXException, ParserConfigurationException {
         // move non ejb jars to nuxeo.ear/lib
         moveNonEjbsToLib(nuxeoEar);
         // replace nuxeo-structure.xml with nuxeo-structure-zip.xml
@@ -114,16 +108,15 @@ public class PackZip {
         // move libs in jboss/lib to nuxeo.ear/lib
         moveJarsFromJbossLib();
         // move nuxeo jboss deployer to nuxeo.ear/lib
-        FileUtils.moveFile(deployerJar, new File(nuxeoEar, "lib"
-                + File.separator + deployerJar.getName()));
+        FileUtils.moveFile(deployerJar, new File(nuxeoEar, "lib" + File.separator + deployerJar.getName()));
         // zip the ear into target directory
         ZipUtils.zip(nuxeoEar.listFiles(), new File(target, "nuxeo.ear"));
         // copy nuxeo-ds.xml to target dir
         FileUtils.copyFileToDirectory(dsFile, target);
     }
 
-    public void execute(String order) throws ConfigurationException,
-            IOException, ParserConfigurationException, SAXException {
+    public void execute(String order) throws ConfigurationException, IOException, ParserConfigurationException,
+            SAXException {
         if (ORDER_PREPROCESSING.equals(order) || StringUtils.isBlank(order)) {
             executePreprocessing();
         }
@@ -131,8 +124,7 @@ public class PackZip {
             executePackaging();
         }
         if (!(ORDER_PREPROCESSING.equals(order) || StringUtils.isBlank(order) || ORDER_PACKAGING.equals(order))) {
-            fail("Order param should be " + ORDER_PREPROCESSING + " or "
-                    + ORDER_PACKAGING);
+            fail("Order param should be " + ORDER_PREPROCESSING + " or " + ORDER_PACKAGING);
         }
     }
 
@@ -141,13 +133,10 @@ public class PackZip {
     }
 
     protected void replaceStructureFile() throws IOException {
-        File oldf = new File(nuxeoEar, "META-INF" + File.separator
-                + "nuxeo-structure.xml");
-        File newf = new File(nuxeoEar, "META-INF" + File.separator
-                + "nuxeo-structure-zip.xml");
+        File oldf = new File(nuxeoEar, "META-INF" + File.separator + "nuxeo-structure.xml");
+        File newf = new File(nuxeoEar, "META-INF" + File.separator + "nuxeo-structure-zip.xml");
         if (oldf.exists() && !FileUtils.deleteQuietly(oldf)) {
-            log.warn("Cannot delete " + oldf.getName()
-                    + ", it may not replace it with the new file.");
+            log.warn("Cannot delete " + oldf.getName() + ", it may not replace it with the new file.");
         }
         FileUtils.moveFile(newf, oldf);
     }
@@ -155,10 +144,8 @@ public class PackZip {
     protected void moveJarsFromJbossLib() {
     }
 
-    protected void moveNonEjbsToLib(File wd)
-            throws ParserConfigurationException, SAXException, IOException {
-        File file = new File(wd, "META-INF" + File.separator
-                + "application.xml");
+    protected void moveNonEjbsToLib(File wd) throws ParserConfigurationException, SAXException, IOException {
+        File file = new File(wd, "META-INF" + File.separator + "application.xml");
         if (!file.isFile()) {
             log.error("You should run this tool from a preprocessed nuxeo.ear folder");
         }
@@ -223,16 +210,15 @@ public class PackZip {
         System.exit(1);
     }
 
-    public static void main(String[] args) throws IOException,
-            ConfigurationException, ParserConfigurationException, SAXException {
+    public static void main(String[] args) throws IOException, ConfigurationException, ParserConfigurationException,
+            SAXException {
         if (args.length < 2) {
             fail("Usage: PackZip nuxeo_ear_directory target_directory [order]");
         }
         String v = args[0];
         File ear = new File(v);
         if (!ear.isDirectory()) {
-            fail("Invalid build - no exploded nuxeo.ear found at "
-                    + ear.getAbsolutePath());
+            fail("Invalid build - no exploded nuxeo.ear found at " + ear.getAbsolutePath());
         }
         v = args[1];
         File target = new File(v);
@@ -243,12 +229,10 @@ public class PackZip {
         }
         target.mkdirs();
         if (!target.isDirectory()) {
-            fail("Invalid target directory: " + v
-                    + ". Not a directory or directory could not be created");
+            fail("Invalid target directory: " + v + ". Not a directory or directory could not be created");
         }
 
-        log.info("Packing nuxeo.ear at " + ear.getAbsolutePath() + " into "
-                + target.getAbsolutePath());
+        log.info("Packing nuxeo.ear at " + ear.getAbsolutePath() + " into " + target.getAbsolutePath());
 
         PackZip pack = new PackZip(ear, target);
         if (args.length >= 3) {

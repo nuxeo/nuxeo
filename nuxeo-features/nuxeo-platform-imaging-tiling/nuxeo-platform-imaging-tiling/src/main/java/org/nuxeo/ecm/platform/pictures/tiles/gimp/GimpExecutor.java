@@ -29,11 +29,9 @@ import java.util.Map;
 import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent;
 
 /**
- *
  * Helper class to execute a Gimp procedure
  *
  * @author tiry
- *
  */
 public class GimpExecutor {
 
@@ -56,8 +54,7 @@ public class GimpExecutor {
         useQuickExec = quickExec;
     }
 
-    protected static Map<String, String> execCmd(String[] cmd)
-            throws IOException {
+    protected static Map<String, String> execCmd(String[] cmd) throws IOException {
         long t0 = System.currentTimeMillis();
         Process p1 = Runtime.getRuntime().exec(cmd);
         int exitValue;
@@ -73,8 +70,7 @@ public class GimpExecutor {
         Map<String, String> result = new HashMap<String, String>();
 
         if (exitValue == 0) {
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(
-                    p1.getInputStream()));
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p1.getInputStream()));
             String strLine;
 
             while ((strLine = stdInput.readLine()) != null) {
@@ -92,8 +88,7 @@ public class GimpExecutor {
         return result;
     }
 
-    protected static Map<String, String> quickExecCmd(String[] cmd)
-            throws IOException {
+    protected static Map<String, String> quickExecCmd(String[] cmd) throws IOException {
         long t0 = System.currentTimeMillis();
         Process p1 = Runtime.getRuntime().exec(cmd);
 
@@ -101,8 +96,7 @@ public class GimpExecutor {
         Map<String, String> result = new HashMap<String, String>();
 
         while (!execTerminated) {
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(
-                    p1.getInputStream()));
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p1.getInputStream()));
             String strLine;
 
             while ((strLine = stdInput.readLine()) != null) {
@@ -131,8 +125,7 @@ public class GimpExecutor {
         return result;
     }
 
-    public static Map<String, String> exec(String procName, List<Object> params)
-            throws IOException {
+    public static Map<String, String> exec(String procName, List<Object> params) throws IOException {
 
         StringBuffer procStringBuf = new StringBuffer();
 
@@ -157,11 +150,7 @@ public class GimpExecutor {
         String procString = procStringBuf.toString();
 
         // init command script
-        String[] cmd = {
-                "/bin/sh",
-                "-c",
-                getGimpPath() + " " + gimpOpts + procString + gimpQuit
-                        + " 2>&1" };
+        String[] cmd = { "/bin/sh", "-c", getGimpPath() + " " + gimpOpts + procString + gimpQuit + " 2>&1" };
 
         if (isWindows()) {
             cmd[0] = "cmd";
@@ -178,12 +167,10 @@ public class GimpExecutor {
     protected static String getGimpPath() {
         if ((gimpPath == null) || ("".equals(gimpPath))) {
             if (isWindows()) {
-                gimpPath = PictureTilingComponent.getEnvValue("GimpExecutable",
-                        "gimp.exe");
+                gimpPath = PictureTilingComponent.getEnvValue("GimpExecutable", "gimp.exe");
                 // gimpPath="gimp.exe";
             } else {
-                gimpPath = PictureTilingComponent.getEnvValue("GimpExecutable",
-                        "gimp");
+                gimpPath = PictureTilingComponent.getEnvValue("GimpExecutable", "gimp");
                 // gimpPath="gimp";
             }
         }

@@ -195,7 +195,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     @SuppressWarnings("unchecked")
     public void init(Serializable value) throws PropertyException {
         if (value == null) { // IGNORE null values - properties will be
-                                // considered PHANTOMS
+                             // considered PHANTOMS
             return;
         }
         List<Serializable> list;
@@ -205,7 +205,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
             list = (List<Serializable>) value;
         }
         children.clear(); // do not use clear() method since it is marking the
-                            // list as dirty
+                          // list as dirty
         Field lfield = getType().getField();
         for (Serializable obj : list) {
             Property property = getRoot().createProperty(this, lfield, 0);
@@ -281,8 +281,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     @Override
-    public void accept(PropertyVisitor visitor, Object arg)
-            throws PropertyException {
+    public void accept(PropertyVisitor visitor, Object arg) throws PropertyException {
         arg = visitor.visit(this, arg);
         if (arg != null && isContainer()) {
             for (Property property : children) {
@@ -295,13 +294,11 @@ public class ListProperty extends AbstractProperty implements List<Property> {
 
     @Override
     public boolean isNormalized(Object value) {
-        return value == null
-                || (value instanceof Collection && value instanceof Serializable);
+        return value == null || (value instanceof Collection && value instanceof Serializable);
     }
 
     @Override
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
             return (Serializable) value;
         }
@@ -313,8 +310,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType)
-            throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
         if (value == null) {
             return null;
         } else if (toType.isAssignableFrom(value.getClass())) {
@@ -400,8 +396,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     @Override
     public Iterator<Property> getDirtyChildren() {
         if (!isContainer()) {
-            throw new UnsupportedOperationException(
-                    "Cannot iterate over children of scalar properties");
+            throw new UnsupportedOperationException("Cannot iterate over children of scalar properties");
         }
         return new DirtyPropertyIterator(children.iterator());
     }
@@ -418,13 +413,12 @@ public class ListProperty extends AbstractProperty implements List<Property> {
 
     boolean moveTo(Property property, int index) {
         if (index < 0 || index > children.size()) {
-            throw new IndexOutOfBoundsException("Index out of bounds: " + index
-                    + ". Bounds are: 0 - " + children.size());
+            throw new IndexOutOfBoundsException("Index out of bounds: " + index + ". Bounds are: 0 - "
+                    + children.size());
         }
         int i = indexOf(property);
         if (i == -1) {
-            throw new UnsupportedOperationException(
-                    "You are trying to move a property that is not part of a list");
+            throw new UnsupportedOperationException("You are trying to move a property that is not part of a list");
         }
         if (i == index) {
             return false;
@@ -440,8 +434,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public void add(int index, Property element) {
@@ -449,8 +442,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public boolean add(Property o) {
@@ -458,8 +450,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public boolean addAll(Collection<? extends Property> c) {
@@ -467,8 +458,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public boolean addAll(int index, Collection<? extends Property> c) {
@@ -476,8 +466,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public boolean contains(Object o) {
@@ -485,8 +474,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public boolean containsAll(Collection<?> c) {
@@ -494,8 +482,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public int indexOf(Object o) {
@@ -508,8 +495,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public int lastIndexOf(Object o) {
@@ -517,8 +503,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public ListIterator<Property> listIterator() {
@@ -526,8 +511,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public ListIterator<Property> listIterator(int index) {
@@ -535,8 +519,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public boolean remove(Object o) {
@@ -544,8 +527,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public boolean removeAll(Collection<?> c) {
@@ -553,8 +535,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public boolean retainAll(Collection<?> c) {
@@ -562,8 +543,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public Property set(int index, Property element) {
@@ -571,8 +551,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public List<Property> subList(int fromIndex, int toIndex) {

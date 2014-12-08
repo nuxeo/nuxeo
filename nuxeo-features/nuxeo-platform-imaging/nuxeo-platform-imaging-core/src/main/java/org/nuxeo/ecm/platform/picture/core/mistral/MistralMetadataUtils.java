@@ -56,10 +56,8 @@ import it.tidalwave.image.metadata.EXIFDirectory;
 import it.tidalwave.image.op.ReadOp;
 
 /**
- *
  * @author Max Stepanov
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
  */
 public class MistralMetadataUtils implements MetadataUtils {
 
@@ -72,8 +70,7 @@ public class MistralMetadataUtils implements MetadataUtils {
         Map<String, Object> metadata = new HashMap<String, Object>();
 
         try {
-            EditableImage image = EditableImage.create(new ReadOp(
-                    blob.getStream(), ReadOp.Type.METADATA));
+            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(), ReadOp.Type.METADATA));
             EXIFDirectory exif = image.getEXIFDirectory();
 
             // CB: NXP-4348 - Return correct values for image width/height
@@ -97,8 +94,7 @@ public class MistralMetadataUtils implements MetadataUtils {
             }
 
             if (exif.isDateTimeOriginalAvailable()) {
-                metadata.put(META_ORIGINALDATE,
-                        exif.getDateTimeOriginalAsDate());
+                metadata.put(META_ORIGINALDATE, exif.getDateTimeOriginalAsDate());
             }
 
             if (exif.isXResolutionAvailable() && exif.isYResolutionAvailable()) {
@@ -106,8 +102,7 @@ public class MistralMetadataUtils implements MetadataUtils {
                 metadata.put(META_VRESOLUTION, exif.getYResolution().intValue());
             }
 
-            if (exif.isPixelXDimensionAvailable()
-                    && exif.isPixelYDimensionAvailable()) {
+            if (exif.isPixelXDimensionAvailable() && exif.isPixelYDimensionAvailable()) {
                 metadata.put(META_PIXEL_XDIMENSION, exif.getPixelXDimension());
                 metadata.put(META_PIXEL_YDIMENSION, exif.getPixelYDimension());
             }
@@ -134,8 +129,7 @@ public class MistralMetadataUtils implements MetadataUtils {
             }
 
             if (exif.isFocalLengthAvailable()) {
-                metadata.put(META_FOCALLENGTH,
-                        exif.getFocalLength().doubleValue());
+                metadata.put(META_FOCALLENGTH, exif.getFocalLength().doubleValue());
             }
 
             if (exif.isColorSpaceAvailable()) {
@@ -143,8 +137,7 @@ public class MistralMetadataUtils implements MetadataUtils {
             }
 
             if (exif.isWhiteBalanceAvailable()) {
-                metadata.put(META_WHITEBALANCE,
-                        exif.getWhiteBalance().toString().toLowerCase());
+                metadata.put(META_WHITEBALANCE, exif.getWhiteBalance().toString().toLowerCase());
             }
 
             if (exif.isInterColourProfileAvailable()) {
@@ -159,11 +152,8 @@ public class MistralMetadataUtils implements MetadataUtils {
                 metadata.put(META_FNUMBER, exif.getFNumber().doubleValue());
             }
         } catch (IOException e) {
-            log.warn("Failed to get EXIF metadata for the file: "
-                    + blob.getFilename());
-            log.debug(
-                    "Failed to get EXIF metadata for the file: "
-                            + blob.getFilename(), e);
+            log.warn("Failed to get EXIF metadata for the file: " + blob.getFilename());
+            log.debug("Failed to get EXIF metadata for the file: " + blob.getFilename(), e);
         }
 
         try {
@@ -172,13 +162,9 @@ public class MistralMetadataUtils implements MetadataUtils {
                 IPTCHelper.extractMetadata(blob.getStream(), metadata);
             }
         } catch (IOException e) {
-            log.error(
-                    "Failed to get IPTC metadata for the file:"
-                            + blob.getFilename(), e);
+            log.error("Failed to get IPTC metadata for the file:" + blob.getFilename(), e);
         } catch (JpegProcessingException e) {
-            log.error(
-                    "Failed to get IPTC metadata for the file:"
-                            + blob.getFilename(), e);
+            log.error("Failed to get IPTC metadata for the file:" + blob.getFilename(), e);
         }
 
         return metadata;

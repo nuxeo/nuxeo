@@ -34,14 +34,12 @@ public interface PageProviderService extends Serializable {
     /**
      * Returns a named page provider definition.
      * <p>
-     * Useful to share the definition between the page provider service, and
-     * the content view service (as content views can reference a named page
-     * provider that is already registered instead of redefining it).
+     * Useful to share the definition between the page provider service, and the content view service (as content views
+     * can reference a named page provider that is already registered instead of redefining it).
      *
      * @since 5.4
      * @param name the page provider name
-     * @return the page provider definition or null, if no page provider with
-     *         this name was found.
+     * @return the page provider definition or null, if no page provider with this name was found.
      */
     PageProviderDefinition getPageProviderDefinition(String name);
 
@@ -55,21 +53,17 @@ public interface PageProviderService extends Serializable {
      *             with search document model as additional parameter
      */
     @Deprecated
-    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
-            throws ClientException;
+    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, List<SortInfo> sortInfos, Long pageSize,
+            Long currentPage, Map<String, Serializable> properties, Object... parameters) throws ClientException;
 
     /**
      * Returns an instance of page provider with given name and definition.
      * <p>
-     * Useful to share the definition between the page provider service, and
-     * the content view service (as content views can reference a named page
-     * provider that is already registered instead of redefining it).
+     * Useful to share the definition between the page provider service, and the content view service (as content views
+     * can reference a named page provider that is already registered instead of redefining it).
      * <p>
-     * If not null, parameters sortInfos and pageSize will override information
-     * computed in the XML file. If not null, currentPage will override default
-     * current page (0).
+     * If not null, parameters sortInfos and pageSize will override information computed in the XML file. If not null,
+     * currentPage will override default current page (0).
      *
      * @param name the name that will be set on the provider.
      * @param desc the definition used to build the provider instance.
@@ -83,11 +77,9 @@ public interface PageProviderService extends Serializable {
      * @throws ClientException if the page provider instantiation fails.
      * @since 5.7
      */
-    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc,
-            DocumentModel searchDocument, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
-            throws ClientException;
+    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
+            Object... parameters) throws ClientException;
 
     /**
      * Returns an instance of page provider with given name.
@@ -102,23 +94,18 @@ public interface PageProviderService extends Serializable {
      * @throws ClientException if the page provider instantiation fails.
      * @since 5.4
      */
-    PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
-            throws ClientException;
+    PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, Object... parameters) throws ClientException;
 
     /**
      * Returns an instance of page provider with given name.
      *
-     * @see #getPageProvider(String, PageProviderDefinition, DocumentModel,
-     *      List, Long, Long, Map, Object...)
+     * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
      * @throws ClientException if the page provider instantiation fails.
      * @since 5.7
      */
-    PageProvider<?> getPageProvider(String name, DocumentModel searchDocument,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
-            throws ClientException;
+    PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
+            Long currentPage, Map<String, Serializable> properties, Object... parameters) throws ClientException;
 
     /**
      * @since 6.0
@@ -130,10 +117,8 @@ public interface PageProviderService extends Serializable {
      */
     void unregisterPageProviderDefinition(PageProviderDefinition desc);
 
-
     /**
-     * Returns all the registered page provider names, or an empty set if no
-     * page provider is registered.
+     * Returns all the registered page provider names, or an empty set if no page provider is registered.
      *
      * @since 6.0
      */

@@ -26,14 +26,12 @@ import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.runtime.api.Framework;
 
-public class RepositoryInitializationListener extends
-        RepositoryInitializationHandler {
+public class RepositoryInitializationListener extends RepositoryInitializationHandler {
 
     private ContentTemplateService service;
 
     @Override
-    public void doInitializeRepository(CoreSession session)
-            throws ClientException {
+    public void doInitializeRepository(CoreSession session) throws ClientException {
         // This method gets called as a system user
         // so we have all needed rights to do the check and the creation
         DocumentModel root = session.getRootDocument();

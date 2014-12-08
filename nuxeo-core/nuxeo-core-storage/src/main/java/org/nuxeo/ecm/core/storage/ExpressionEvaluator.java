@@ -77,16 +77,14 @@ public abstract class ExpressionEvaluator {
 
     public ExpressionEvaluator(PathResolver pathResolver, String[] principals) {
         this.pathResolver = pathResolver;
-        this.principals = principals == null ? null : new HashSet<String>(
-                Arrays.asList(principals));
+        this.principals = principals == null ? null : new HashSet<String>(Arrays.asList(principals));
     }
 
     public Object walkExpression(Expression expr) {
         Operator op = expr.operator;
         Operand lvalue = expr.lvalue;
         Operand rvalue = expr.rvalue;
-        String name = lvalue instanceof Reference ? ((Reference) lvalue).name
-                : null;
+        String name = lvalue instanceof Reference ? ((Reference) lvalue).name : null;
         if (op == Operator.STARTSWITH) {
             return walkStartsWith(lvalue, rvalue);
         } else if (NXQL.ECM_PATH.equals(name)) {
@@ -150,12 +148,10 @@ public abstract class ExpressionEvaluator {
 
     protected Boolean walkEcmPath(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
-            throw new RuntimeException(NXQL.ECM_PATH
-                    + " requires = or <> operator");
+            throw new RuntimeException(NXQL.ECM_PATH + " requires = or <> operator");
         }
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(NXQL.ECM_PATH
-                    + " requires literal path as right argument");
+            throw new RuntimeException(NXQL.ECM_PATH + " requires literal path as right argument");
         }
         String path = ((StringLiteral) rvalue).value;
         if (path.length() > 1 && path.endsWith("/")) {
@@ -171,16 +167,13 @@ public abstract class ExpressionEvaluator {
 
     protected Boolean walkAncestorId(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
-            throw new RuntimeException(NXQL.ECM_ANCESTORID
-                    + " requires = or <> operator");
+            throw new RuntimeException(NXQL.ECM_ANCESTORID + " requires = or <> operator");
         }
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(NXQL.ECM_ANCESTORID
-                    + " requires literal id as right argument");
+            throw new RuntimeException(NXQL.ECM_ANCESTORID + " requires literal id as right argument");
         }
         String ancestorId = ((StringLiteral) rvalue).value;
-        Object[] ancestorIds = (Object[]) walkReference(new Reference(
-                NXQL_ECM_ANCESTOR_IDS));
+        Object[] ancestorIds = (Object[]) walkReference(new Reference(NXQL_ECM_ANCESTOR_IDS));
         boolean eq = op == Operator.EQ ? true : false;
         if (ancestorIds == null) {
             // placeless
@@ -331,8 +324,7 @@ public abstract class ExpressionEvaluator {
         return list;
     }
 
-    public Boolean walkLike(Operand lvalue, Operand rvalue, boolean positive,
-            boolean caseInsensitive) {
+    public Boolean walkLike(Operand lvalue, Operand rvalue, boolean positive, boolean caseInsensitive) {
         Object left = walkOperand(lvalue);
         Object right = walkOperand(rvalue);
         if (!(right instanceof String)) {
@@ -347,15 +339,11 @@ public abstract class ExpressionEvaluator {
 
     public Boolean walkStartsWith(Operand lvalue, Operand rvalue) {
         if (!(lvalue instanceof Reference)) {
-            throw new RuntimeException(
-                    "Invalid STARTSWITH query, left hand side must be a property: "
-                            + lvalue);
+            throw new RuntimeException("Invalid STARTSWITH query, left hand side must be a property: " + lvalue);
         }
         String name = ((Reference) lvalue).name;
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(
-                    "Invalid STARTSWITH query, right hand side must be a literal path: "
-                            + rvalue);
+            throw new RuntimeException("Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
         }
         String path = ((StringLiteral) rvalue).value;
         if (path.length() > 1 && path.endsWith("/")) {
@@ -376,8 +364,7 @@ public abstract class ExpressionEvaluator {
             // no such path
             return FALSE;
         }
-        Object[] ancestorIds = (Object[]) walkReference(new Reference(
-                NXQL_ECM_ANCESTOR_IDS));
+        Object[] ancestorIds = (Object[]) walkReference(new Reference(NXQL_ECM_ANCESTOR_IDS));
         if (ancestorIds == null) {
             // placeless
             return FALSE;
@@ -545,8 +532,7 @@ public abstract class ExpressionEvaluator {
         }
     }
 
-    protected Boolean likeMaybeList(Object left, String right,
-            boolean positive, boolean caseInsensitive) {
+    protected Boolean likeMaybeList(Object left, String right, boolean positive, boolean caseInsensitive) {
         if (left instanceof Object[]) {
             for (Object l : ((Object[]) left)) {
                 Boolean like = like(l, right, caseInsensitive);

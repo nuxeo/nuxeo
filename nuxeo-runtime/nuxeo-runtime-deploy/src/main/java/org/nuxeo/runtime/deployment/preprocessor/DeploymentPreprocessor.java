@@ -55,8 +55,8 @@ import org.nuxeo.runtime.deployment.preprocessor.template.TemplateContribution;
 import org.nuxeo.runtime.deployment.preprocessor.template.TemplateParser;
 
 /**
- * Initializer for the deployment skeleton, taking care of creating templates,
- * aggregating default components before runtime is started.
+ * Initializer for the deployment skeleton, taking care of creating templates, aggregating default components before
+ * runtime is started.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -152,8 +152,7 @@ public class DeploymentPreprocessor {
         }
     }
 
-    protected void processFile(ContainerDescriptor cd, File file)
-            throws IOException {
+    protected void processFile(ContainerDescriptor cd, File file) throws IOException {
         String fileName = file.getName();
         FragmentDescriptor fd = null;
         boolean isBundle = false;
@@ -164,8 +163,8 @@ public class DeploymentPreprocessor {
             // this is useful to deploy libraries
             collectXMLFragments(cd, file);
             return;
-        } else if (fileName.endsWith(".jar") || fileName.endsWith(".war")
-                || fileName.endsWith(".sar") || fileName.endsWith(".rar")) {
+        } else if (fileName.endsWith(".jar") || fileName.endsWith(".war") || fileName.endsWith(".sar")
+                || fileName.endsWith(".rar")) {
             isBundle = true;
             if (file.isDirectory()) {
                 fd = getDirectoryFragment(file);
@@ -176,8 +175,7 @@ public class DeploymentPreprocessor {
         // register the fragment if any was found
         if (fd != null) {
             fd.fileName = fileName;
-            fd.filePath = getRelativeChildPath(cd.directory.getAbsolutePath(),
-                    file.getAbsolutePath());
+            fd.filePath = getRelativeChildPath(cd.directory.getAbsolutePath(), file.getAbsolutePath());
             cd.fragments.add(fd);
             if (fd.templates != null) {
                 for (TemplateDescriptor td : fd.templates.values()) {
@@ -221,8 +219,7 @@ public class DeploymentPreprocessor {
         return name;
     }
 
-    protected void init(ContainerDescriptor cd, File[] files)
-            throws IOException {
+    protected void init(ContainerDescriptor cd, File[] files) throws IOException {
         for (File file : files) {
             processFile(cd, file);
         }
@@ -303,8 +300,7 @@ public class DeploymentPreprocessor {
         if (errors.length() != 0) {
             // set system property to log startup errors
             // this is read by AbstractRuntimeService
-            System.setProperty("org.nuxeo.runtime.deployment.errors",
-                    errors.toString());
+            System.setProperty("org.nuxeo.runtime.deployment.errors", errors.toString());
         }
     }
 
@@ -348,8 +344,7 @@ public class DeploymentPreprocessor {
                         td.template = TemplateParser.parse(file);
                     }
                 } else {
-                    log.warn("No template '" + tc.getTemplate()
-                            + "' found for deployment fragment:  " + fd.name);
+                    log.warn("No template '" + tc.getTemplate() + "' found for deployment fragment:  " + fd.name);
                     continue;
                 }
                 // get the marker where contribution should be inserted
@@ -398,8 +393,7 @@ public class DeploymentPreprocessor {
         return fd;
     }
 
-    protected void collectXMLFragments(ContainerDescriptor cd, File file)
-            throws IOException {
+    protected void collectXMLFragments(ContainerDescriptor cd, File file) throws IOException {
         String fileName = file.getName();
         URL url;
         try {
@@ -412,34 +406,30 @@ public class DeploymentPreprocessor {
             FragmentDescriptor fd = (FragmentDescriptor) entry;
             assert fd != null;
             if (fd.name == null) {
-                log.error("Invalid fragments file: "
-                        + file.getName()
+                log.error("Invalid fragments file: " + file.getName()
                         + ". Fragments declared in a -fragments.xml file must have names.");
             } else {
                 cd.fragments.add(fd);
                 fd.fileName = fileName;
-                fd.filePath = getRelativeChildPath(
-                        cd.directory.getAbsolutePath(), file.getAbsolutePath());
+                fd.filePath = getRelativeChildPath(cd.directory.getAbsolutePath(), file.getAbsolutePath());
             }
         }
     }
 
     protected void processBundleForCompat(FragmentDescriptor fd, File file) {
         // TODO disable for now the warning
-        log.warn("Entering compatibility mode - Please update the deployment-fragment.xml in "
-                + file.getName() + " to use new dependency management");
+        log.warn("Entering compatibility mode - Please update the deployment-fragment.xml in " + file.getName()
+                + " to use new dependency management");
         Manifest mf = JarUtils.getManifest(file);
         if (mf != null) {
             fd.name = file.getName();
             processManifest(fd, fd.name, mf);
         } else {
-            throw new RuntimeException(
-                    "Compat: Fragments without a name must reside in an OSGi bundle");
+            throw new RuntimeException("Compat: Fragments without a name must reside in an OSGi bundle");
         }
     }
 
-    protected FragmentDescriptor getDirectoryFragment(File directory)
-            throws IOException {
+    protected FragmentDescriptor getDirectoryFragment(File directory) throws IOException {
         FragmentDescriptor fd = null;
         File file = new File(directory.getAbsolutePath() + '/' + FRAGMENT_FILE);
         if (file.isFile()) {
@@ -497,8 +487,7 @@ public class DeploymentPreprocessor {
         return fd;
     }
 
-    protected void processManifest(FragmentDescriptor fd, String fileName,
-            Manifest mf) {
+    protected void processManifest(FragmentDescriptor fd, String fileName, Manifest mf) {
         Attributes attrs = mf.getMainAttributes();
         String id = attrs.getValue("Bundle-SymbolicName");
         if (id != null) {
@@ -552,11 +541,9 @@ public class DeploymentPreprocessor {
     }
 
     /**
-     * Reads a container fragment metadata file and returns the container
-     * descriptor.
+     * Reads a container fragment metadata file and returns the container descriptor.
      */
-    protected ContainerDescriptor getContainer(File home, File file)
-            throws IOException {
+    protected ContainerDescriptor getContainer(File home, File file) throws IOException {
         URL url;
         try {
             url = file.toURI().toURL();
@@ -573,12 +560,10 @@ public class DeploymentPreprocessor {
         return cd;
     }
 
-    protected ContainerDescriptor getDefaultContainer(File directory)
-            throws IOException {
+    protected ContainerDescriptor getDefaultContainer(File directory) throws IOException {
         File file = new File(directory.getAbsolutePath() + '/' + CONTAINER_FILE);
         if (!file.isFile()) {
-            file = new File(directory.getAbsolutePath() + '/'
-                    + CONTAINER_FILE_COMPAT);
+            file = new File(directory.getAbsolutePath() + '/' + CONTAINER_FILE_COMPAT);
         }
         ContainerDescriptor cd = null;
         if (file.isFile()) {
@@ -605,16 +590,13 @@ public class DeploymentPreprocessor {
     }
 
     /**
-     * Run preprocessing in the given home directory and using the given list
-     * of bundles. Bundles must be ordered by the caller to have same
-     * deployment order on all computers.
+     * Run preprocessing in the given home directory and using the given list of bundles. Bundles must be ordered by the
+     * caller to have same deployment order on all computers.
      * <p>
-     * The metadata file is the metadat file to be used to configure the
-     * processor. If null the default location will be used (relative to home):
-     * {@link #CONTAINER_FILE}.
+     * The metadata file is the metadat file to be used to configure the processor. If null the default location will be
+     * used (relative to home): {@link #CONTAINER_FILE}.
      */
-    public static void process(File home, File metadata, File[] files)
-            throws IOException {
+    public static void process(File home, File metadata, File[] files) throws IOException {
         DeploymentPreprocessor processor = new DeploymentPreprocessor(home);
         // initialize
         processor.init(metadata, files);

@@ -19,9 +19,8 @@ package org.nuxeo.connect.update.task.guards;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
- * This class can be used to check if the current platform match a given
- * platform. For example in a command you may want a guard that define the
- * platform string format.
+ * This class can be used to check if the current platform match a given platform. For example in a command you may want
+ * a guard that define the platform string format.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -36,10 +35,8 @@ public class PlatformHelper {
     public PlatformHelper() {
         cg = new ConfigurationGenerator();
         cg.init();
-        name = cg.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_PRODUCT_NAME);
-        version = cg.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_PRODUCT_VERSION);
+        name = cg.getUserConfig().getProperty(ConfigurationGenerator.PARAM_PRODUCT_NAME);
+        version = cg.getUserConfig().getProperty(ConfigurationGenerator.PARAM_PRODUCT_VERSION);
     }
 
     public String getName() {
@@ -51,8 +48,7 @@ public class PlatformHelper {
     }
 
     /**
-     * Test whether or not the current platform is same as (or compatible) with
-     * the given one.
+     * Test whether or not the current platform is same as (or compatible) with the given one.
      *
      * @return not implemented, always return true
      */

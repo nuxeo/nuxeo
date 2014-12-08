@@ -42,8 +42,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
 
     @Test
     public void testRegisterResource() {
-        publisherService.registerResource("dummy", "org.nuxeo:name=dummy",
-                DummyMBean.class, new DummyService());
+        publisherService.registerResource("dummy", "org.nuxeo:name=dummy", DummyMBean.class, new DummyService());
         publisherService.bindResources();
         Set<ObjectName> registeredNames = doQuery("org.nuxeo:name=dummy");
         assertNotNull(registeredNames);
@@ -53,8 +52,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
     @Test
     @Ignore
     public void testRegisterFactory() throws Exception {
-        ResourceFactoryDescriptor descriptor = new ResourceFactoryDescriptor(
-                DummyFactory.class);
+        ResourceFactoryDescriptor descriptor = new ResourceFactoryDescriptor(DummyFactory.class);
         publisherService.registerContribution(descriptor, "factories", null);
         Set<ObjectName> registeredNames = doQuery("org.nuxeo:name=dummy");
         assertNotNull(registeredNames);
@@ -89,7 +87,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
 
         shortcutsName = publisherService.getShortcutsName();
         assertNotNull(shortcutsName);
-        assertEquals(size+4, shortcutsName.size());
+        assertEquals(size + 4, shortcutsName.size());
         assertTrue(shortcutsName.contains("dummy"));
     }
 

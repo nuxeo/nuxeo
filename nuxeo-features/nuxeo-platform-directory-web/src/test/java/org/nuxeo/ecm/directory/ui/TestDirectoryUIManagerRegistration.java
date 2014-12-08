@@ -32,7 +32,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
 
@@ -50,8 +49,7 @@ public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory.web");
 
         // deploy test dirs + ui config
-        deployContrib("org.nuxeo.ecm.directory.web.tests",
-                "OSGI-INF/test-directory-ui-contrib.xml");
+        deployContrib("org.nuxeo.ecm.directory.web.tests", "OSGI-INF/test-directory-ui-contrib.xml");
 
         service = Framework.getService(DirectoryUIManager.class);
         assertNotNull(service);
@@ -93,8 +91,7 @@ public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
 
     @Test
     public void testDirectoryUIOverride() throws Exception {
-        deployContrib("org.nuxeo.ecm.directory.web.tests",
-                "OSGI-INF/test-directory-ui-override-contrib.xml");
+        deployContrib("org.nuxeo.ecm.directory.web.tests", "OSGI-INF/test-directory-ui-override-contrib.xml");
 
         List<String> dirs = service.getDirectoryNames();
         assertNotNull(dirs);

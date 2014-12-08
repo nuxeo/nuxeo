@@ -26,7 +26,8 @@ import org.javasimon.SimonManager;
 import org.javasimon.jmx.JmxRegisterCallback;
 import org.javasimon.utils.LoggingCallback;
 
-public class MetricEnabler implements MetricEnablerMXBean {;
+public class MetricEnabler implements MetricEnablerMXBean {
+    ;
 
     protected MetricSerializer serializer;
 
@@ -86,16 +87,16 @@ public class MetricEnabler implements MetricEnablerMXBean {;
 
     @Override
     public void enableSerializing() throws IOException {
-            serializer.resetOutput();
-            srzCB = new MetricSerializingCallback(serializer);
-            SimonManager.callback().addCallback(srzCB);
+        serializer.resetOutput();
+        srzCB = new MetricSerializingCallback(serializer);
+        SimonManager.callback().addCallback(srzCB);
     }
 
     @Override
     public void disableSerializing() throws IOException {
-            serializer.closeOutput();
-            SimonManager.callback().removeCallback(srzCB);
-            srzCB = null;
+        serializer.closeOutput();
+        SimonManager.callback().removeCallback(srzCB);
+        srzCB = null;
     }
 
     @Override

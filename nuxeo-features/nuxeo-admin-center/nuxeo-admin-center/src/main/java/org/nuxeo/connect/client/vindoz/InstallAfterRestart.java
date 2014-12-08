@@ -30,12 +30,10 @@ import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper class used to manage packages installation issue under windows
- * systems.
+ * Helper class used to manage packages installation issue under windows systems.
  * <p>
- * Because the Windows OS locks all the jar files loaded by the JVM, we can not
- * do proper installation. So installation is delayed until next restart where
- * installation is done before Nuxeo starts (and loads the jars).
+ * Because the Windows OS locks all the jar files loaded by the JVM, we can not do proper installation. So installation
+ * is delayed until next restart where installation is done before Nuxeo starts (and loads the jars).
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
@@ -65,11 +63,9 @@ public class InstallAfterRestart {
         if (!Framework.isDevModeSet()) {
             return true;
         }
-        boolean isNotStudioOrWindows = PackageType.STUDIO != pkg.getType()
-                && isNeededByOs();
+        boolean isNotStudioOrWindows = PackageType.STUDIO != pkg.getType() && isNeededByOs();
         boolean isHotFix = PackageType.HOT_FIX == pkg.getType();
-        boolean isAddonAndNoHotReload = PackageType.ADDON == pkg.getType()
-                && !pkg.supportsHotReload();
+        boolean isAddonAndNoHotReload = PackageType.ADDON == pkg.getType() && !pkg.supportsHotReload();
         return isNotStudioOrWindows || isHotFix || isAddonAndNoHotReload;
     }
 
@@ -89,8 +85,7 @@ public class InstallAfterRestart {
     }
 
     public static void addPackageForUnInstallation(String pkgNameOrId) {
-        if (!pkgNameOrIds.contains(pkgNameOrId)
-                && !(uninstallpkgNameOrIds.contains(pkgNameOrId))) {
+        if (!pkgNameOrIds.contains(pkgNameOrId) && !(uninstallpkgNameOrIds.contains(pkgNameOrId))) {
             pkgNameOrIds.add(pkgNameOrId);
             uninstallpkgNameOrIds.add(pkgNameOrId);
             savePkgList();
@@ -116,9 +111,7 @@ public class InstallAfterRestart {
         try {
             FileUtils.writeLines(installFile, cmds);
         } catch (IOException e) {
-            log.error(
-                    "Unable to same listing of packages to install on restart",
-                    e);
+            log.error("Unable to same listing of packages to install on restart", e);
         }
     }
 

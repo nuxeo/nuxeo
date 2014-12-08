@@ -141,8 +141,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             path = currentDocument.getPath();
         } else {
             // Find any document, and lookup its domain.
-            DocumentModelList docs = documentManager.query(
-                    "SELECT * FROM Document", 1);
+            DocumentModelList docs = documentManager.query("SELECT * FROM Document", 1);
             if (docs.size() < 1) {
                 log.debug("Could not find a single document readable by current user.");
                 return null;
@@ -157,17 +156,14 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
     }
 
-    public void setCurrentDocument(DocumentModel documentModel)
-            throws ClientException {
+    public void setCurrentDocument(DocumentModel documentModel) throws ClientException {
         if (log.isDebugEnabled()) {
             log.debug("Setting current document to " + documentModel);
         }
 
         if (!checkIfUpdateNeeded(currentDocument, documentModel)) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Current document already set to %s => give up updates",
-                        documentModel));
+                log.debug(String.format("Current document already set to %s => give up updates", documentModel));
             }
             return;
         }
@@ -233,8 +229,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return currentDomain;
     }
 
-    public void setCurrentDomain(DocumentModel domainDocModel)
-            throws ClientException {
+    public void setCurrentDomain(DocumentModel domainDocModel) throws ClientException {
         if (!checkIfUpdateNeeded(currentDomain, domainDocModel)) {
             return;
         }
@@ -243,8 +238,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         Contexts.getEventContext().remove("currentDomain");
 
         if (domainDocModel == null) {
-            Events.instance().raiseEvent(EventNames.DOMAIN_SELECTION_CHANGED,
-                    currentDomain);
+            Events.instance().raiseEvent(EventNames.DOMAIN_SELECTION_CHANGED, currentDomain);
             return;
         }
 
@@ -258,8 +252,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
         // if we switched branch then realign currentDocument
         if (currentDocumentParents != null
-                && !DocumentsListsUtils.isDocumentInList(domainDocModel,
-                        currentDocumentParents)) {
+                && !DocumentsListsUtils.isDocumentInList(domainDocModel, currentDocumentParents)) {
             try {
                 setCurrentDocument(domainDocModel);
             } catch (ClientException e) {
@@ -267,18 +260,15 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             }
         }
 
-        Events.instance().raiseEvent(EventNames.DOMAIN_SELECTION_CHANGED,
-                currentDomain);
+        Events.instance().raiseEvent(EventNames.DOMAIN_SELECTION_CHANGED, currentDomain);
     }
 
-    protected boolean checkIfUpdateNeeded(DocumentModel ctxDoc,
-            DocumentModel newDoc) {
+    protected boolean checkIfUpdateNeeded(DocumentModel ctxDoc, DocumentModel newDoc) {
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Check if update needed: compare context "
-                    + "doc '%s' to new doc '%s'", ctxDoc, newDoc));
+            log.debug(String.format("Check if update needed: compare context " + "doc '%s' to new doc '%s'", ctxDoc,
+                    newDoc));
         }
-        if (ctxDoc == null && newDoc != null || ctxDoc != null
-                && newDoc == null) {
+        if (ctxDoc == null && newDoc != null || ctxDoc != null && newDoc == null) {
             return true;
         }
         if (ctxDoc == null && newDoc == null) {
@@ -286,10 +276,8 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Check if update needed: compare cache key on "
-                                + "context doc '%s' with new doc '%s'",
-                        ctxDoc.getCacheKey(), newDoc.getCacheKey()));
+                log.debug(String.format("Check if update needed: compare cache key on "
+                        + "context doc '%s' with new doc '%s'", ctxDoc.getCacheKey(), newDoc.getCacheKey()));
             }
             return !ctxDoc.getCacheKey().equals(newDoc.getCacheKey());
         } catch (ClientException e) {
@@ -331,11 +319,9 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     /**
-     * Switches to a new server location by updating the context and updating
-     * to the CoreSession (DocumentManager).
+     * Switches to a new server location by updating the context and updating to the CoreSession (DocumentManager).
      */
-    public void setCurrentServerLocation(RepositoryLocation serverLocation)
-            throws ClientException {
+    public void setCurrentServerLocation(RepositoryLocation serverLocation) throws ClientException {
         if (serverLocation == null) {
             log.warn("Setting ServerLocation to null, is this normal ?");
         }
@@ -343,8 +329,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         RepositoryLocation currentServerLocation = serverLocation;
         getServerLocator().setRepositoryLocation(serverLocation);
         resetCurrentContext();
-        Contexts.getEventContext().set("currentServerLocation",
-                currentServerLocation);
+        Contexts.getEventContext().set("currentServerLocation", currentServerLocation);
 
         // update the documentManager
         documentManager = null;
@@ -352,16 +337,14 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         Events.instance().raiseEvent(EventNames.LOCATION_SELECTION_CHANGED);
 
         DocumentModel rootDocument = documentManager.getRootDocument();
-        if (documentManager.hasPermission(rootDocument.getRef(),
-                SecurityConstants.READ)) {
+        if (documentManager.hasPermission(rootDocument.getRef(), SecurityConstants.READ)) {
             currentDocument = rootDocument;
             updateContextVariables();
         }
     }
 
     /**
-     * Returns the current documentManager if any or create a new session to
-     * the current location.
+     * Returns the current documentManager if any or create a new session to the current location.
      */
     public CoreSession getOrCreateDocumentManager() throws ClientException {
         if (documentManager != null) {
@@ -374,8 +357,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             if (supposedDocumentManager instanceof DocumentManagerBusinessDelegate) {
                 documentManagerBD = (DocumentManagerBusinessDelegate) supposedDocumentManager;
             } else {
-                log.error("Found the documentManager being "
-                        + supposedDocumentManager.getClass()
+                log.error("Found the documentManager being " + supposedDocumentManager.getClass()
                         + " instead of DocumentManagerBusinessDelegate. This is wrong.");
             }
         }
@@ -383,8 +365,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             // this is the first time we select the location, create a
             // DocumentManagerBusinessDelegate instance
             documentManagerBD = new DocumentManagerBusinessDelegate();
-            Contexts.getConversationContext().set("documentManager",
-                    documentManagerBD);
+            Contexts.getConversationContext().set("documentManager", documentManagerBD);
         }
         documentManager = documentManagerBD.getDocumentManager(getCurrentServerLocation());
         return documentManager;
@@ -433,8 +414,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return getCurrentSuperSpace();
     }
 
-    public void setCurrentWorkspace(DocumentModel workspaceDocModel)
-            throws ClientException {
+    public void setCurrentWorkspace(DocumentModel workspaceDocModel) throws ClientException {
 
         if (!checkIfUpdateNeeded(currentWorkspace, workspaceDocModel)) {
             return;
@@ -452,8 +432,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
         // if we switched branch then realign currentDocument
         if (currentDocumentParents != null
-                && !DocumentsListsUtils.isDocumentInList(workspaceDocModel,
-                        currentDocumentParents)) {
+                && !DocumentsListsUtils.isDocumentInList(workspaceDocModel, currentDocumentParents)) {
             setCurrentDocument(workspaceDocModel);
             return;
         }
@@ -464,8 +443,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     /**
-     * Updates variables according to hierarchy rules and to the new
-     * currentDocument.
+     * Updates variables according to hierarchy rules and to the new currentDocument.
      */
     protected void updateContextVariables() throws ClientException {
 
@@ -473,8 +451,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         Contexts.getEventContext().set("currentDocument", currentDocument);
 
         // Don't flush changeable document with a null id (NXP-10732)
-        if ((getChangeableDocument() != null)
-                && (getChangeableDocument().getId() != null)) {
+        if ((getChangeableDocument() != null) && (getChangeableDocument().getId() != null)) {
             setChangeableDocument(null);
         }
 
@@ -485,9 +462,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
         DocumentRef ref = currentDocument.getRef();
         if (ref == null) {
-            throw new ClientException(
-                    "DocumentRef is null for currentDocument: "
-                            + currentDocument.getName());
+            throw new ClientException("DocumentRef is null for currentDocument: " + currentDocument.getName());
         }
         // Recompute document parents
         currentDocumentParents = documentManager.getParentDocuments(ref);
@@ -505,8 +480,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
                     setCurrentWorkspace(docModel);
                 }
 
-                if (docType == null || hasSuperType(docType, "WorkspaceRoot")
-                        || hasSuperType(docType, "SectionRoot")) {
+                if (docType == null || hasSuperType(docType, "WorkspaceRoot") || hasSuperType(docType, "SectionRoot")) {
                     setCurrentContentRoot(docModel);
                 }
 
@@ -526,8 +500,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             setCurrentDomain(currentDocument);
             setCurrentContentRoot(null);
             setCurrentWorkspace(null);
-        } else if (hasSuperType(docType, "WorkspaceRoot")
-                || hasSuperType(docType, "SectionRoot")) {
+        } else if (hasSuperType(docType, "WorkspaceRoot") || hasSuperType(docType, "SectionRoot")) {
             setCurrentContentRoot(currentDocument);
             setCurrentWorkspace(null);
         } else if (hasSuperType(docType, "Workspace")) {
@@ -539,8 +512,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         parents = null;
     }
 
-    private boolean hasSuperType(String targetDocType, String superType)
-            throws ClientException {
+    private boolean hasSuperType(String targetDocType, String superType) throws ClientException {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         return schemaManager.hasSuperType(targetDocType, superType);
     }
@@ -562,8 +534,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     // (edition) and decide what's the next view, let's just handle context
     // setting and redirection + this should be callable from templates i.e use
     // view as a string.
-    public String getActionResult(DocumentModel doc, UserAction action)
-            throws ClientException {
+    public String getActionResult(DocumentModel doc, UserAction action) throws ClientException {
 
         TypesTool typesTool = (TypesTool) Component.getInstance("typesTool");
 
@@ -601,9 +572,8 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             EventManager.raiseEventsOnGoingHome();
             result = "home";
         } else {
-            log.error(String.format("Unknown action '%s' for navigation on "
-                    + "document '%s' with title '%s': ", action.name(),
-                    doc.getId(), doc.getTitle()));
+            log.error(String.format("Unknown action '%s' for navigation on " + "document '%s' with title '%s': ",
+                    action.name(), doc.getId(), doc.getTitle()));
             result = null;
         }
         return result;
@@ -647,8 +617,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return navigateToDocument(doc, "view");
     }
 
-    public String navigateToDocument(DocumentModel doc, String viewId)
-            throws ClientException {
+    public String navigateToDocument(DocumentModel doc, String viewId) throws ClientException {
         if (doc != null) {
             updateDocumentContext(doc);
         }
@@ -677,15 +646,12 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return chosenView;
     }
 
-    public String navigateToDocumentWithView(DocumentModel doc, String viewId)
-            throws ClientException {
+    public String navigateToDocumentWithView(DocumentModel doc, String viewId) throws ClientException {
         return navigateToDocument(doc, viewId);
     }
 
-    public String navigateToDocument(DocumentModel docModel,
-            VersionModel versionModel) throws ClientException {
-        DocumentModel docVersion = documentManager.getDocumentWithVersion(
-                docModel.getRef(), versionModel);
+    public String navigateToDocument(DocumentModel docModel, VersionModel versionModel) throws ClientException {
+        DocumentModel docVersion = documentManager.getDocumentWithVersion(docModel.getRef(), versionModel);
         return navigateToDocument(docVersion);
     }
 
@@ -703,8 +669,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             log.error("current document is null");
             return null;
         }
-        return DocumentLocator.getDocumentUrl(getCurrentServerLocation(),
-                currentDocument.getRef());
+        return DocumentLocator.getDocumentUrl(getCurrentServerLocation(), currentDocument.getRef());
     }
 
     public String getCurrentDocumentFullUrl() {
@@ -712,14 +677,12 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             log.error("current document is null");
             return null;
         }
-        return DocumentLocator.getFullDocumentUrl(getCurrentServerLocation(),
-                currentDocument.getRef());
+        return DocumentLocator.getFullDocumentUrl(getCurrentServerLocation(), currentDocument.getRef());
     }
 
     // start a new conversation if needed, join main if possible
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
-    public String navigateTo(RepositoryLocation serverLocation,
-            DocumentRef docRef) throws ClientException {
+    public String navigateTo(RepositoryLocation serverLocation, DocumentRef docRef) throws ClientException {
         // re-connect only if there is another repository specified
         if (!serverLocation.equals(getCurrentServerLocation())) {
             setCurrentServerLocation(serverLocation);
@@ -734,13 +697,11 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         try {
             docLoc = DocumentLocator.parseDocRef(documentUrl);
         } catch (BadDocumentUriException e) {
-            log.error("Cannot get document ref from uri " + documentUrl + ". "
-                    + e.getMessage(), e);
+            log.error("Cannot get document ref from uri " + documentUrl + ". " + e.getMessage(), e);
             return null;
         }
         final DocumentRef docRef = docLoc.getDocRef();
-        RepositoryLocation repLoc = new RepositoryLocation(
-                docLoc.getServerName());
+        RepositoryLocation repLoc = new RepositoryLocation(docLoc.getServerName());
         return navigateTo(repLoc, docRef);
     }
 
@@ -823,8 +784,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
         // if we switched branch then realign currentDocument
         if (currentDocumentParents != null
-                && !DocumentsListsUtils.isDocumentInList(crDocumentModel,
-                        currentDocumentParents)) {
+                && !DocumentsListsUtils.isDocumentInList(crDocumentModel, currentDocumentParents)) {
             try {
                 setCurrentDocument(crDocumentModel);
             } catch (ClientException e) {

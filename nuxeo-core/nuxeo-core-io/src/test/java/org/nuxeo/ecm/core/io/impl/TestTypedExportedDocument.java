@@ -77,8 +77,7 @@ public class TestTypedExportedDocument {
     @Test
     public void testTypedExportedDocument() throws Exception {
 
-        DocumentModel doc = session.getDocument(new PathRef("/"
-                + TypedExportedDocumentRepositoryInit.TEST_DOC_NAME));
+        DocumentModel doc = session.getDocument(new PathRef("/" + TypedExportedDocumentRepositoryInit.TEST_DOC_NAME));
         ExportedDocument exportedDoc = new TypedExportedDocumentImpl(doc);
 
         // Check system elements.
@@ -93,110 +92,81 @@ public class TestTypedExportedDocument {
         xpath.setNamespaceContext(new CoreNamespaceContext());
 
         // Check dublincore schema
-        Node schemaNode = (Node) xpath.evaluate("//schema[@name='dublincore']",
-                document, XPathConstants.NODE);
+        Node schemaNode = (Node) xpath.evaluate("//schema[@name='dublincore']", document, XPathConstants.NODE);
         assertNotNull(schemaNode);
 
-        Node fieldNode = (Node) xpath.evaluate("//dc:title[@type='string']",
-                document, XPathConstants.NODE);
+        Node fieldNode = (Node) xpath.evaluate("//dc:title[@type='string']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("My test doc", fieldNode.getTextContent());
 
-        fieldNode = (Node) xpath.evaluate("//dc:created[@type='date']",
-                document, XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//dc:created[@type='date']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("2011-12-29T11:24:25.00Z", fieldNode.getTextContent());
 
-        fieldNode = (Node) xpath.evaluate("//dc:creator[@type='string']",
-                document, XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//dc:creator[@type='string']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("Administrator", fieldNode.getTextContent());
 
-        fieldNode = (Node) xpath.evaluate("//dc:modified[@type='date']",
-                document, XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//dc:modified[@type='date']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("2011-12-29T11:24:25.00Z", fieldNode.getTextContent());
 
-        fieldNode = (Node) xpath.evaluate(
-                "//dc:lastContributor[@type='string']", document,
+        fieldNode = (Node) xpath.evaluate("//dc:lastContributor[@type='string']", document, XPathConstants.NODE);
+        assertNotNull(fieldNode);
+        assertEquals("Administrator", fieldNode.getTextContent());
+
+        fieldNode = (Node) xpath.evaluate("//dc:contributors[@type='scalarList']", document, XPathConstants.NODE);
+        assertNotNull(fieldNode);
+
+        fieldNode = (Node) xpath.evaluate("//dc:contributors[@type='scalarList']/item[1]", document,
                 XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("Administrator", fieldNode.getTextContent());
 
-        fieldNode = (Node) xpath.evaluate(
-                "//dc:contributors[@type='scalarList']", document,
-                XPathConstants.NODE);
-        assertNotNull(fieldNode);
-
-        fieldNode = (Node) xpath.evaluate(
-                "//dc:contributors[@type='scalarList']/item[1]", document,
-                XPathConstants.NODE);
-        assertNotNull(fieldNode);
-        assertEquals("Administrator", fieldNode.getTextContent());
-
-        fieldNode = (Node) xpath.evaluate(
-                "//dc:contributors[@type='scalarList']/item[2]", document,
+        fieldNode = (Node) xpath.evaluate("//dc:contributors[@type='scalarList']/item[2]", document,
                 XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("Joe", fieldNode.getTextContent());
 
-        fieldNode = (Node) xpath.evaluate("//dc:subjects[@type='scalarList']",
-                document, XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//dc:subjects[@type='scalarList']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
 
-        fieldNode = (Node) xpath.evaluate(
-                "//dc:subjects[@type='scalarList']/item[1]", document,
-                XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//dc:subjects[@type='scalarList']/item[1]", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("Art", fieldNode.getTextContent());
 
-        fieldNode = (Node) xpath.evaluate(
-                "//dc:subjects[@type='scalarList']/item[2]", document,
-                XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//dc:subjects[@type='scalarList']/item[2]", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("Architecture", fieldNode.getTextContent());
 
         // Check file schema
-        schemaNode = (Node) xpath.evaluate("//schema[@name='file']", document,
-                XPathConstants.NODE);
+        schemaNode = (Node) xpath.evaluate("//schema[@name='file']", document, XPathConstants.NODE);
         assertNotNull(schemaNode);
 
-        fieldNode = (Node) xpath.evaluate("//file:filename[@type='string']",
-                document, XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//file:filename[@type='string']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("test_file.doc", fieldNode.getTextContent());
 
-        fieldNode = (Node) xpath.evaluate("//file:content[@type='content']",
-                document, XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//file:content[@type='content']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
 
-        fieldNode = (Node) xpath.evaluate(
-                "//file:content[@type='content']/encoding", document,
-                XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//file:content[@type='content']/encoding", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("UTF-8", fieldNode.getTextContent());
 
-        fieldNode = (Node) xpath.evaluate(
-                "//file:content[@type='content']/mime-type", document,
-                XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//file:content[@type='content']/mime-type", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("text/plain", fieldNode.getTextContent());
 
-        fieldNode = (Node) xpath.evaluate(
-                "//file:content[@type='content']/filename", document,
-                XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//file:content[@type='content']/filename", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertEquals("test_file.doc", fieldNode.getTextContent());
 
-        fieldNode = (Node) xpath.evaluate(
-                "//file:content[@type='content']/data", document,
-                XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//file:content[@type='content']/data", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertTrue(!StringUtils.isEmpty(fieldNode.getTextContent()));
 
-        fieldNode = (Node) xpath.evaluate(
-                "//file:content[@type='content']/digest", document,
-                XPathConstants.NODE);
+        fieldNode = (Node) xpath.evaluate("//file:content[@type='content']/digest", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
         assertTrue(!StringUtils.isEmpty(fieldNode.getTextContent()));
     }
@@ -208,8 +178,7 @@ public class TestTypedExportedDocument {
      * @return the org.w3c.dom.Document document
      * @throws TransformerException the transformer exception
      */
-    protected final Document dom4jToW3c(org.dom4j.Document dom4jdoc)
-            throws TransformerException {
+    protected final Document dom4jToW3c(org.dom4j.Document dom4jdoc) throws TransformerException {
 
         SAXSource source = new DocumentSource(dom4jdoc);
         DOMResult result = new DOMResult();

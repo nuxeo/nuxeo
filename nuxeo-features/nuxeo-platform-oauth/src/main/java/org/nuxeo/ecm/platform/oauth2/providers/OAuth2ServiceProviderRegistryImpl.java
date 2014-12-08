@@ -35,8 +35,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent
-        implements OAuth2ServiceProviderRegistry {
+public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implements OAuth2ServiceProviderRegistry {
 
     protected static final Log log = LogFactory.getLog(OAuth2ServiceProviderRegistryImpl.class);
 
@@ -52,20 +51,18 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent
         }
     }
 
-    public NuxeoOAuth2ServiceProvider addProvider(String serviceName,
-            String tokenServerURL, String authorizationServerURL,
-            String clientId, String clientSecret, List<String> scopes) {
+    public NuxeoOAuth2ServiceProvider addProvider(String serviceName, String tokenServerURL,
+            String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
 
-        NuxeoOAuth2ServiceProvider provider = new NuxeoOAuth2ServiceProvider(
-                null, serviceName, tokenServerURL, authorizationServerURL,
-                clientId, clientSecret, scopes);
+        NuxeoOAuth2ServiceProvider provider = new NuxeoOAuth2ServiceProvider(null, serviceName, tokenServerURL,
+                authorizationServerURL, clientId, clientSecret, scopes);
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
 
         try {
             session = ds.open(DIRECTORY_NAME);
-            DocumentModel creationEntry = BaseSession.createEntryModel(null,
-                    NuxeoOAuth2ServiceProvider.SCHEMA, null, null);
+            DocumentModel creationEntry = BaseSession.createEntryModel(null, NuxeoOAuth2ServiceProvider.SCHEMA, null,
+                    null);
             DocumentModel entry = session.createEntry(creationEntry);
             provider.asDocumentModel(entry);
             session.updateEntry(entry);
@@ -85,8 +82,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent
         return serviceName;
     }
 
-    protected NuxeoOAuth2ServiceProvider getEntry(String serviceName,
-            Set<String> ftFilter) throws ClientException {
+    protected NuxeoOAuth2ServiceProvider getEntry(String serviceName, Set<String> ftFilter) throws ClientException {
 
         // normalize "empty" service name
         serviceName = preProcessServiceName(serviceName);
@@ -110,8 +106,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent
                 return null;
             }
             if (entries.size() > 1) {
-                log.warn("Found several entries for  serviceName="
-                        + serviceName);
+                log.warn("Found several entries for  serviceName=" + serviceName);
             }
             // XXX do better than that !
             DocumentModel entry = entries.get(0);

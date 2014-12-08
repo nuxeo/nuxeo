@@ -26,23 +26,22 @@ import org.openqa.selenium.support.How;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LoginPage extends WebPage {
 
-    @FindBy(how=How.ID, using="username")
+    @FindBy(how = How.ID, using = "username")
     protected WebElement inputUsername;
 
-    @FindBy(how=How.ID, using="password")
+    @FindBy(how = How.ID, using = "password")
     protected WebElement inputPassword;
 
-    @FindBy(how=How.NAME, using="nuxeo_login")
+    @FindBy(how = How.NAME, using = "nuxeo_login")
     protected WebElement login;
 
-    @FindBy(how=How.ID, using="logout")
+    @FindBy(how = How.ID, using = "logout")
     protected WebElement logout;
 
-    @FindBy(how=How.ID, using="logstate")
+    @FindBy(how = How.ID, using = "logstate")
     protected WebElement logstate;
 
     public void login(String username, String password) {

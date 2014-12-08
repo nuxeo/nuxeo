@@ -37,12 +37,14 @@ public interface AuditLogger {
 
     /**
      * Create a new LogEntry instance.
+     *
      * @return
      */
     LogEntry newLogEntry();
 
     /**
      * Create a new ExtendedInfo instance
+     *
      * @return
      */
     ExtendedInfo newExtendedInfo(Serializable value);

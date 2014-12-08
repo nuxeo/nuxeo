@@ -45,11 +45,9 @@ import org.nuxeo.runtime.api.Framework;
 import com.sun.faces.application.ApplicationAssociate;
 
 /**
- * View id helper that matches view ids and outcomes thanks to navigation cases
- * defined in a faces-config.xml file.
+ * View id helper that matches view ids and outcomes thanks to navigation cases defined in a faces-config.xml file.
  * <p>
- * Also handle some hot reload cases, by parsing the main faces-config.xml
- * file.
+ * Also handle some hot reload cases, by parsing the main faces-config.xml file.
  */
 public class StaticNavigationHandler {
 
@@ -59,8 +57,7 @@ public class StaticNavigationHandler {
 
     private final HashMap<String, String> viewIdToOutcome = new HashMap<String, String>();
 
-    public StaticNavigationHandler(ServletContext context,
-            HttpServletRequest request, HttpServletResponse response) {
+    public StaticNavigationHandler(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
         boolean created = false;
         FacesContext faces = FacesContext.getCurrentInstance();
         if (faces == null) {
@@ -70,8 +67,7 @@ public class StaticNavigationHandler {
             // force using default lifecycle instead of performing lookup on
             // conf
             Lifecycle lifecycle = lifecycleFactory.getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE);
-            faces = facesContextFactory.getFacesContext(context, request,
-                    response, lifecycle);
+            faces = facesContextFactory.getFacesContext(context, request, response, lifecycle);
             created = true;
         }
         try {
@@ -114,18 +110,15 @@ public class StaticNavigationHandler {
         }
         // try to guess the view name
         String viewId = "/" + outcome + ".faces";
-        log.warn(String.format("Guessing view id for outcome '%s': use '%s'",
-                outcome, viewId));
+        log.warn(String.format("Guessing view id for outcome '%s': use '%s'", outcome, viewId));
         return viewId;
     }
 
     /**
-     * XXX hack: add manual parsing of the main faces-config.xml file
-     * navigation cases, to handle hot reload and work around the JSF
-     * application cache.
+     * XXX hack: add manual parsing of the main faces-config.xml file navigation cases, to handle hot reload and work
+     * around the JSF application cache.
      * <p>
-     * TODO: try to reset and rebuild the app navigation cases by reflection,
-     * if it works...
+     * TODO: try to reset and rebuild the app navigation cases by reflection, if it works...
      *
      * @since 5.6
      */

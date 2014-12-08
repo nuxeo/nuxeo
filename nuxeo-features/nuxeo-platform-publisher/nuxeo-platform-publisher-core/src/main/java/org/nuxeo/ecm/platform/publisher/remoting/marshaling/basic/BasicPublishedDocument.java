@@ -43,9 +43,8 @@ public class BasicPublishedDocument implements PublishedDocument {
 
     private static final long serialVersionUID = 1L;
 
-    public BasicPublishedDocument(DocumentRef docRef, String repositoryName,
-            String serverName, String versionLabel, String path,
-            String parentPath, boolean isPending) {
+    public BasicPublishedDocument(DocumentRef docRef, String repositoryName, String serverName, String versionLabel,
+            String path, String parentPath, boolean isPending) {
         this.docRef = docRef;
         this.repositoryName = repositoryName;
         this.serverName = serverName;

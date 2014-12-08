@@ -36,10 +36,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
  * A scalar property that is linked to a schema field
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public abstract class ComplexProperty extends AbstractProperty implements
-        Map<String, Property> {
+public abstract class ComplexProperty extends AbstractProperty implements Map<String, Property> {
 
     private static final long serialVersionUID = 1L;
 
@@ -56,18 +54,14 @@ public abstract class ComplexProperty extends AbstractProperty implements
     }
 
     /**
-     * Gets the property given its name. If the property was not set, returns
-     * null.
+     * Gets the property given its name. If the property was not set, returns null.
      * <p>
-     * This method will always be called using a valid property name (a property
-     * specified by the schema). The returned property will be cached by its
-     * parent so the next time it is needed, it will be reused from the cache.
-     * That means this method servers as a initializer for properties - usually
-     * you create a new property and return it - you don't need to cache created
-     * properties.
+     * This method will always be called using a valid property name (a property specified by the schema). The returned
+     * property will be cached by its parent so the next time it is needed, it will be reused from the cache. That means
+     * this method servers as a initializer for properties - usually you create a new property and return it - you don't
+     * need to cache created properties.
      * <p>
-     * If you want to change the way a property is fetched / stored, you must
-     * override this method.
+     * If you want to change the way a property is fetched / stored, you must override this method.
      *
      * @return the child. Cannot return null
      * @throws UnsupportedOperationException
@@ -85,19 +79,16 @@ public abstract class ComplexProperty extends AbstractProperty implements
     }
 
     @Override
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
             return (Serializable) value;
         }
-        throw new PropertyConversionException(value.getClass(), Map.class,
-                getPath());
+        throw new PropertyConversionException(value.getClass(), Map.class, getPath());
     }
 
     @Override
     public Property get(int index) {
-        throw new UnsupportedOperationException(
-                "accessing children by index is not allowed for complex properties");
+        throw new UnsupportedOperationException("accessing children by index is not allowed for complex properties");
     }
 
     public final Property getNonPhantomChild(Field field) {
@@ -125,8 +116,8 @@ public abstract class ComplexProperty extends AbstractProperty implements
     public final Collection<Property> getNonPhantomChildren() {
         ComplexType type = getType();
         if (children.size() < type.getFieldsCount()) { // populate with
-                                                        // unloaded props only
-                                                        // if needed
+                                                       // unloaded props only
+                                                       // if needed
             for (Field field : type.getFields()) {
                 getNonPhantomChild(field); // force loading non phantom props
             }
@@ -138,10 +129,10 @@ public abstract class ComplexProperty extends AbstractProperty implements
     public Collection<Property> getChildren() {
         ComplexType type = getType();
         if (children.size() < type.getFieldsCount()) { // populate with
-                                                        // phantoms if needed
+                                                       // phantoms if needed
             for (Field field : type.getFields()) {
                 getChild(field); // force loading all props including
-                                    // phantoms
+                                 // phantoms
             }
         }
         return Collections.unmodifiableCollection(children.values());
@@ -182,7 +173,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
     @SuppressWarnings("unchecked")
     public void init(Serializable value) throws PropertyException {
         if (value == null) { // IGNORE null values - properties will be
-                                // considered PHANTOMS
+                             // considered PHANTOMS
             return;
         }
         Map<String, Serializable> map = (Map<String, Serializable>) value;
@@ -224,24 +215,20 @@ public abstract class ComplexProperty extends AbstractProperty implements
 
     @Override
     public Property addValue(Object value) {
-        throw new UnsupportedOperationException(
-                "add(value) operation not supported on map properties");
+        throw new UnsupportedOperationException("add(value) operation not supported on map properties");
     }
 
     @Override
     public Property addValue(int index, Object value) {
-        throw new UnsupportedOperationException(
-                "add(value, index) operation not supported on map properties");
+        throw new UnsupportedOperationException("add(value, index) operation not supported on map properties");
     }
 
     @Override
     public Property addEmpty() {
-        throw new UnsupportedOperationException(
-                "add() operation not supported on map properties");
+        throw new UnsupportedOperationException("add() operation not supported on map properties");
     }
 
-    public void visitChildren(PropertyVisitor visitor, Object arg)
-            throws PropertyException {
+    public void visitChildren(PropertyVisitor visitor, Object arg) throws PropertyException {
         boolean includePhantoms = visitor.acceptPhantoms();
         if (includePhantoms) {
             for (Property property : getChildren()) {
@@ -262,8 +249,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
     }
 
     /**
-     * Should be used by container properties. Non container props must
-     * overwrite this.
+     * Should be used by container properties. Non container props must overwrite this.
      */
     @Override
     public boolean isSameAs(Property property) throws PropertyException {
@@ -296,15 +282,13 @@ public abstract class ComplexProperty extends AbstractProperty implements
     @Override
     public Iterator<Property> getDirtyChildren() {
         if (!isContainer()) {
-            throw new UnsupportedOperationException(
-                    "Cannot iterate over children of scalar properties");
+            throw new UnsupportedOperationException("Cannot iterate over children of scalar properties");
         }
         return new DirtyPropertyIterator(children.values().iterator());
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public void clear() {
@@ -312,8 +296,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public boolean containsKey(Object key) {
@@ -321,8 +304,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public boolean containsValue(Object value) {
@@ -350,8 +332,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public Property put(String key, Property value) {
@@ -359,8 +340,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public void putAll(Map<? extends String, ? extends Property> t) {
@@ -368,8 +348,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
     }
 
     /**
-     * Throws UnsupportedOperationException, added to implement List<Property>
-     * interface
+     * Throws UnsupportedOperationException, added to implement List<Property> interface
      */
     @Override
     public Property remove(Object key) {

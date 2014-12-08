@@ -59,8 +59,7 @@ public class ACPWriterTest {
         JsonNode node = writeAcpAsJson(acp);
 
         // Then the json reflects the acp properties
-        assertEquals(ACPWriter.ENTITY_TYPE,
-                node.get("entity-type").getValueAsText());
+        assertEquals(ACPWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         JsonNode aclNode = node.get("acl").get(0);
         assertEquals("local", aclNode.get("name").getValueAsText());
 
@@ -76,10 +75,8 @@ public class ACPWriterTest {
      * @return
      * @throws IOException
      * @throws ClientException
-     *
      */
-    private JsonNode writeAcpAsJson(ACP acp) throws IOException,
-            ClientException {
+    private JsonNode writeAcpAsJson(ACP acp) throws IOException, ClientException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = JsonHelper.createJsonGenerator(factory, out);
 
@@ -93,7 +90,6 @@ public class ACPWriterTest {
 
     /**
      * @return
-     *
      */
     private ACP getTestACP() {
         ACP acp = new ACPImpl();

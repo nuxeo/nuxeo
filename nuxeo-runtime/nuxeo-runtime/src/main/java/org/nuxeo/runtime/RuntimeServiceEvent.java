@@ -19,28 +19,25 @@ package org.nuxeo.runtime;
  * <p>
  * The following event types are defined:
  * <ul>
- * <li> <code>RUNTIME_ABOUT_TO_START</code>
- * Sent before starting the runtime
- * <li> <code>RUNTIME_STARTED</code>
- * Sent after the runtime was started
- * <li> <code>RUNTIME_ABOUT_TO_STOP</code>
- * Sent before stopping the runtime
- * <li> <code>RUNTIME_STOPPED</code>
- * Sent after the runtime stopped
+ * <li> <code>RUNTIME_ABOUT_TO_START</code> Sent before starting the runtime
+ * <li> <code>RUNTIME_STARTED</code> Sent after the runtime was started
+ * <li> <code>RUNTIME_ABOUT_TO_STOP</code> Sent before stopping the runtime
+ * <li> <code>RUNTIME_STOPPED</code> Sent after the runtime stopped
  * </ul>
+ * Note: these events are not supposed to leave the runtime, hence are not declared serializable.
  *
- * Note: these events are not supposed to leave the runtime, hence are not declared
- * serializable.
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class RuntimeServiceEvent {
 
     // the event IDs
     public static final int RUNTIME_ABOUT_TO_START = 0;
-    public static final int RUNTIME_STARTED        = 1;
-    public static final int RUNTIME_ABOUT_TO_STOP  = 2;
-    public static final int RUNTIME_STOPPED        = 3;
+
+    public static final int RUNTIME_STARTED = 1;
+
+    public static final int RUNTIME_ABOUT_TO_STOP = 2;
+
+    public static final int RUNTIME_STOPPED = 3;
 
     /** The event id. */
     public final int id;
@@ -69,7 +66,7 @@ public class RuntimeServiceEvent {
             return "RUNTIME_ABOUT_TO_START";
         }
         return "UNKNOWN";
-   }
+    }
 
     @Override
     public String toString() {

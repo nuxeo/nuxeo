@@ -30,8 +30,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Asynchronous event handler to update Collection of a removed CollectiomMember
- * and CollectionMember of a Collection.
+ * Asynchronous event handler to update Collection of a removed CollectiomMember and CollectionMember of a Collection.
  *
  * @since 5.9.3
  */
@@ -72,8 +71,7 @@ public class RemovedCollectionListener implements PostCommitEventListener {
                 log.trace(String.format("Collection %s removed", doc.getId()));
                 collectionManager.processRemovedCollection(doc);
             } else if (isCollectionMemberRemoved) {
-                log.trace(String.format("CollectionMember %s removed",
-                        doc.getId()));
+                log.trace(String.format("CollectionMember %s removed", doc.getId()));
                 collectionManager.processRemovedCollectionMember(doc);
             }
         }

@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  * Web service remoting session manager.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface WSRemotingSessionManager {
 
@@ -39,11 +38,10 @@ public interface WSRemotingSessionManager {
      * @param repository the repository name
      * @param um the user manager
      * @param session the Nuxeo Core session
-     *
      * @return an intialized <code>WSRemotingSession</code> instance.
      */
-    WSRemotingSession createSession(String username, String password,
-            String repository, UserManager um, CoreSession session);
+    WSRemotingSession createSession(String username, String password, String repository, UserManager um,
+            CoreSession session);
 
     /**
      * Adds a new session.

@@ -26,7 +26,6 @@ import com.allen_sauer.gwt.log.client.Log;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class TilingModel {
 
@@ -69,10 +68,8 @@ public class TilingModel {
             updateModel();
 
             // compute new center
-            int x = (int) Math.round(oldXToCenterOn * getCurrentZoom()
-                    / oldZoom);
-            int y = (int) Math.round(oldYToCenterOn * getCurrentZoom()
-                    / oldZoom);
+            int x = (int) Math.round(oldXToCenterOn * getCurrentZoom() / oldZoom);
+            int y = (int) Math.round(oldYToCenterOn * getCurrentZoom() / oldZoom);
             // center
             Log.debug("center on: x=" + x + ", y=" + y);
             centerOn(x, y, false);
@@ -82,8 +79,7 @@ public class TilingModel {
         }
     };
 
-    public TilingModel(TilingInfo ti, int viewAreaWidth, int viewAreaHeight,
-            double defaultZoom) {
+    public TilingModel(TilingInfo ti, int viewAreaWidth, int viewAreaHeight, double defaultZoom) {
         tilingInfo = ti;
         this.defaultZoom = defaultZoom;
         this.viewAreaWidth = viewAreaWidth;
@@ -97,10 +93,8 @@ public class TilingModel {
     }
 
     private void updateModel() {
-        totalWidth = (int) Math.round(tilingInfo.getOriginalImageWidth()
-                * getCurrentZoom());
-        totalHeight = (int) Math.round(tilingInfo.getOriginalImageHeight()
-                * getCurrentZoom());
+        totalWidth = (int) Math.round(tilingInfo.getOriginalImageWidth() * getCurrentZoom());
+        totalHeight = (int) Math.round(tilingInfo.getOriginalImageHeight() * getCurrentZoom());
 
         maxLeft = totalWidth - viewAreaWidth;
         maxTop = totalHeight - viewAreaHeight;
@@ -139,8 +133,7 @@ public class TilingModel {
     public void centerOn(int x, int y, boolean fireEvent) {
         viewAreaLeft = x - viewAreaWidth / 2;
         viewAreaTop = y - viewAreaHeight / 2;
-        Log.debug("viewAreaLeft= " + viewAreaLeft + " viewAreaTop= "
-                + viewAreaTop);
+        Log.debug("viewAreaLeft= " + viewAreaLeft + " viewAreaTop= " + viewAreaTop);
         ensureCorrectValues();
         if (fireEvent) {
             fireEvent(TilingModelEvent.MOVE_EVENT);

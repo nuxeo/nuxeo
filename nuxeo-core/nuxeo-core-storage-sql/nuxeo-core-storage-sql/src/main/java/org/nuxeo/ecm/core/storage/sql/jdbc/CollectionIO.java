@@ -22,25 +22,22 @@ import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
 /**
- * Interface for a class that knows how to get a collection's value from a
- * result set, and set a collection's values to a prepared statement (and
- * execute it).
+ * Interface for a class that knows how to get a collection's value from a result set, and set a collection's values to
+ * a prepared statement (and execute it).
  */
 public interface CollectionIO {
 
     /**
      * Gets one value from the current position of the result set.
      */
-    Serializable getCurrentFromResultSet(ResultSet rs, List<Column> columns,
-            Model model, Serializable[] returnId, int[] returnPos)
-            throws SQLException;
+    Serializable getCurrentFromResultSet(ResultSet rs, List<Column> columns, Model model, Serializable[] returnId,
+            int[] returnPos) throws SQLException;
 
     /**
-     * Sets the values of a fragment to a SQL prepared statement, and executes
-     * the statement for each value. Uses batching if possible.
+     * Sets the values of a fragment to a SQL prepared statement, and executes the statement for each value. Uses
+     * batching if possible.
      */
-    void executeInserts(PreparedStatement ps, List<Row> rows,
-            List<Column> columns, boolean supportsBatchUpdates, String sql,
-            JDBCConnection connection) throws SQLException;
+    void executeInserts(PreparedStatement ps, List<Row> rows, List<Column> columns, boolean supportsBatchUpdates,
+            String sql, JDBCConnection connection) throws SQLException;
 
 }

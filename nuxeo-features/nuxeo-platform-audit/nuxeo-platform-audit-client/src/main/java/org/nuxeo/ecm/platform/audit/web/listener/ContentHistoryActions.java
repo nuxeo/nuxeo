@@ -44,8 +44,7 @@ public interface ContentHistoryActions extends Serializable {
     /**
      * Computes all log entries for given document.
      */
-    List<? extends LogEntry> computeLogEntries(DocumentModel document)
-            throws AuditException;
+    List<? extends LogEntry> computeLogEntries(DocumentModel document) throws AuditException;
 
     /**
      * Computes latest logs only.
@@ -54,14 +53,13 @@ public interface ContentHistoryActions extends Serializable {
 
     Map<Long, String> computeLogEntriesComments() throws AuditException;
 
-    Map<Long, LinkedDocument> computeLogEntrieslinkedDocs()
-            throws AuditException;
+    Map<Long, LinkedDocument> computeLogEntrieslinkedDocs() throws AuditException;
 
     /**
      * Returns the log comment.
      * <p>
-     * This log may be filled automatically when dealing with copy/paste/move
-     * log entries.
+     * This log may be filled automatically when dealing with copy/paste/move log entries.
+     *
      * @Deprecated This now handled by the PageProvider
      */
     @Deprecated
@@ -70,8 +68,8 @@ public interface ContentHistoryActions extends Serializable {
     /**
      * Returns the log linked document.
      * <p>
-     * The linked document is resolved from the log original comment, when
-     * dealing with copy/paste/move log entries.
+     * The linked document is resolved from the log original comment, when dealing with copy/paste/move log entries.
+     *
      * @Deprecated This now handled by the PageProvider
      */
     @Deprecated

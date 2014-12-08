@@ -26,8 +26,6 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- *
- *
  * @since 5.8
  */
 @XObject("marshaller")

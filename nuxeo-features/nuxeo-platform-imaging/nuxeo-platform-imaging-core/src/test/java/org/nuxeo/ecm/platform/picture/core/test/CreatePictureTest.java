@@ -29,11 +29,9 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features",
-        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.picture.core",
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.automation.server",
+        "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.picture.api",
+        "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert" })
 public class CreatePictureTest {
 
@@ -49,13 +47,11 @@ public class CreatePictureTest {
     @Test
     public void testCreate() throws Exception {
 
-        Blob source = new FileBlob(
-                FileUtils.getResourceFileFromContext("images/test.jpg"));
+        Blob source = new FileBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
         String fileName = "MyTest.jpg";
         String mimeType = "image/jpeg";
 
-        batchManager.addStream("BID", "1", source.getStream(), fileName,
-                mimeType);
+        batchManager.addStream("BID", "1", source.getStream(), fileName, mimeType);
 
         StringBuilder fakeJSON = new StringBuilder("{ ");
         fakeJSON.append(" \"type\" : \"blob\"");
@@ -92,8 +88,7 @@ public class CreatePictureTest {
         params.put("properties", properties);
         params.put("pictureTemplates", templates);
 
-        DocumentModel picture = (DocumentModel) service.run(ctx,
-                CreatePicture.ID, params);
+        DocumentModel picture = (DocumentModel) service.run(ctx, CreatePicture.ID, params);
         assertNotNull(picture);
 
         MultiviewPicture mvp = picture.getAdapter(MultiviewPicture.class);

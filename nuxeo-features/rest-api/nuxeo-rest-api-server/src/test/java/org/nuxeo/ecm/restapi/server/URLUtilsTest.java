@@ -29,8 +29,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- *
- *
  * @since 5.8
  */
 public class URLUtilsTest {
@@ -41,8 +39,7 @@ public class URLUtilsTest {
 
     @Before
     public void doBefore() {
-        when(req.getRequestDispatcher(anyString())).thenReturn(
-                mock(RequestDispatcher.class));
+        when(req.getRequestDispatcher(anyString())).thenReturn(mock(RequestDispatcher.class));
     }
 
     @Test
@@ -64,7 +61,6 @@ public class URLUtilsTest {
         APIServlet servlet = new APIServlet();
         servlet.service(req, resp);
 
-        verify(req).getRequestDispatcher(
-                "/site/api/path/default-domain/@children");
+        verify(req).getRequestDispatcher("/site/api/path/default-domain/@children");
     }
 }

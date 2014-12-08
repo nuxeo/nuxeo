@@ -28,8 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Basic operation that just record the documents on which it was called and
- * the parameters used
+ * Basic operation that just record the documents on which it was called and the parameters used
  *
  * @since 5.7.2
  */

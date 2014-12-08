@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class DefaultUriResolver implements UriResolver {
     private static final String NUXEO_ANNOTATIONS = "nuxeo/Annotations/";
@@ -42,8 +41,7 @@ public class DefaultUriResolver implements UriResolver {
         try {
             String url = uri.toURL().toString();
             if (url.contains(NUXEO_ANNOTATIONS)) {
-                return url.substring(0, url.indexOf(NUXEO_ANNOTATIONS)
-                        + NUXEO_ANNOTATIONS.length());
+                return url.substring(0, url.indexOf(NUXEO_ANNOTATIONS) + NUXEO_ANNOTATIONS.length());
             } else {
                 return url.substring(0, url.indexOf("nuxeo") + "nuxeo".length());
             }
@@ -56,11 +54,9 @@ public class DefaultUriResolver implements UriResolver {
         return Collections.singletonList(uri);
     }
 
-    public URI translateFromGraphURI(URI uri, String baseUrl)
-            throws AnnotationException {
+    public URI translateFromGraphURI(URI uri, String baseUrl) throws AnnotationException {
         if (uri.toString().startsWith("urn:annotation:")) {
-            String annId = uri.toString().substring(
-                    uri.toString().lastIndexOf(":") + 1);
+            String annId = uri.toString().substring(uri.toString().lastIndexOf(":") + 1);
             try {
                 return new URI(baseUrl + annId);
             } catch (URISyntaxException e) {
@@ -74,8 +70,7 @@ public class DefaultUriResolver implements UriResolver {
         String path = uri.getPath();
         if (uri.toString().contains(NUXEO_ANNOTATIONS)) {
             try {
-                return new URI("urn:annotation:"
-                        + path.substring(path.lastIndexOf("/") + 1));
+                return new URI("urn:annotation:" + path.substring(path.lastIndexOf("/") + 1));
             } catch (URISyntaxException e) {
                 throw new AnnotationException(e);
             }

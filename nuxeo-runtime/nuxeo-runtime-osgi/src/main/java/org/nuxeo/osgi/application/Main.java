@@ -32,9 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Main {
 
@@ -45,17 +43,15 @@ public class Main {
         }
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         if (!(cl instanceof URLClassLoader)) {
-            System.err.println("Not a valid class loader: "+cl);
+            System.err.println("Not a valid class loader: " + cl);
             System.exit(10);
         }
         ClassLoader parent = cl.getParent();
         if (parent == null) {
             parent = ClassLoader.getSystemClassLoader();
         }
-        RootClassLoader rootLoader = new RootClassLoader(parent,
-                SharedClassLoader.class);
-        SharedClassLoaderImpl classLoader = new SharedClassLoaderImpl(
-                ((URLClassLoader) cl).getURLs(), rootLoader);
+        RootClassLoader rootLoader = new RootClassLoader(parent, SharedClassLoader.class);
+        SharedClassLoaderImpl classLoader = new SharedClassLoaderImpl(((URLClassLoader) cl).getURLs(), rootLoader);
         Thread.currentThread().setContextClassLoader(classLoader.getLoader());
         URL systemBundle = classLoader.getURLs()[0];
         // build the class path now
@@ -66,13 +62,11 @@ public class Main {
         args = tmp;
         // reload classes from this JAR using a SharedClassLoader
         Class<?> me = classLoader.loadClass(StandaloneApplication.class.getName());
-        Method main = me.getMethod("main", URL.class, List.class,
-                String[].class);
+        Method main = me.getMethod("main", URL.class, List.class, String[].class);
         main.invoke(null, systemBundle, cp, args);
     }
 
-    public static List<File> buildClassPath(SharedClassLoader classLoader,
-            String rawcp) throws IOException {
+    public static List<File> buildClassPath(SharedClassLoader classLoader, String rawcp) throws IOException {
         List<File> result = new ArrayList<File>();
         String[] cp = rawcp.split(":");
         for (String entry : cp) {
@@ -98,6 +92,7 @@ public class Main {
     private static class RootClassLoader extends ClassLoader {
 
         private final Class<?> loaderClass;
+
         private final String loaderName;
 
         RootClassLoader(ClassLoader parent, Class<?> loaderClass) {

@@ -27,6 +27,7 @@ public abstract class AbstractComponent implements Component {
     private static final long serialVersionUID = 3472450841328363350L;
 
     protected String name;
+
     private boolean isLive;
 
     public String getName() {
@@ -37,8 +38,7 @@ public abstract class AbstractComponent implements Component {
         return isLive;
     }
 
-    public void initialize(UserSession session, String name)
-            throws SessionException {
+    public void initialize(UserSession session, String name) throws SessionException {
         if (isLive) {
             throw new InvalidStateException(this, "initialize");
         }

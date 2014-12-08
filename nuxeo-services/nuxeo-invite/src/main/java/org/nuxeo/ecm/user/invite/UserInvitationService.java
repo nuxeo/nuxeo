@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 public interface UserInvitationService {
 
     public static final String REGISTRATION_CONFIGURATION_NAME = "configurationName";
-    
+
     public static final String REGISTRATION_DATA_DOC = "registrationDoc";
 
     public static final String REGISTRATION_DATA_USER = "registeredUser";
@@ -45,29 +45,24 @@ public interface UserInvitationService {
      * @param configurationName The name of the configuration.
      * @throws ClientException
      * @return The document model
-     *
      * @since 5.9.3
      */
-    DocumentModel getUserRegistrationModel(String configurationName)
-            throws ClientException;
+    DocumentModel getUserRegistrationModel(String configurationName) throws ClientException;
 
     /**
      * Stores a registration request and return a unique ID for it
      *
      * @return
      */
-    String submitRegistrationRequest(DocumentModel userRegistrationModel,
-            Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept)
-            throws ClientException, UserRegistrationException;
+    String submitRegistrationRequest(DocumentModel userRegistrationModel, Map<String, Serializable> additionnalInfo,
+            ValidationMethod validationMethod, boolean autoAccept) throws ClientException, UserRegistrationException;
 
     /**
      * accept the registration request
      *
      * @param requestId
      */
-    void acceptRegistrationRequest(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException,
+    void acceptRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo) throws ClientException,
             UserRegistrationException;
 
     /**
@@ -75,8 +70,7 @@ public interface UserInvitationService {
      *
      * @param requestId
      */
-    void rejectRegistrationRequest(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException,
+    void rejectRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo) throws ClientException,
             UserRegistrationException;
 
     /**
@@ -84,37 +78,34 @@ public interface UserInvitationService {
      *
      * @param requestId
      */
-    Map<String, Serializable> validateRegistration(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException;
+    Map<String, Serializable> validateRegistration(String requestId, Map<String, Serializable> additionnalInfo)
+            throws ClientException;
 
     /**
      * Validate a registration request and generate the target User
      *
      * @param requestId
      */
-    Map<String, Serializable> validateRegistrationAndSendEmail(
-            String requestId, Map<String, Serializable> additionnalInfo)
-            throws ClientException, UserRegistrationException;
+    Map<String, Serializable> validateRegistrationAndSendEmail(String requestId,
+            Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException;
 
-    NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc)
-            throws ClientException, UserRegistrationException;
+    NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc) throws ClientException,
+            UserRegistrationException;
 
     /**
-     * Send a mail to the invited user to revive his invitation If an error
-     * occured while sending an email, it logs it and continue.
+     * Send a mail to the invited user to revive his invitation If an error occured while sending an email, it logs it
+     * and continue.
      *
      * @since 5.6
      */
-    void reviveRegistrationRequests(CoreSession session,
-            List<DocumentModel> registrationDocs) throws ClientException;
+    void reviveRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs) throws ClientException;
 
     /**
      * Delete a registration document
      *
      * @since 5.6
      */
-    void deleteRegistrationRequests(CoreSession session,
-            List<DocumentModel> registrationDoc) throws ClientException;
+    void deleteRegistrationRequests(CoreSession session, List<DocumentModel> registrationDoc) throws ClientException;
 
     UserRegistrationConfiguration getConfiguration();
 
@@ -125,7 +116,7 @@ public interface UserInvitationService {
      */
     DocumentModelList getRegistrationsForUser(String docId, String username, String configurationName)
             throws ClientException;
-    
+
     /**
      * Return specific configuration for the specified name
      *
@@ -140,26 +131,21 @@ public interface UserInvitationService {
     UserRegistrationConfiguration getConfiguration(DocumentModel requestDoc);
 
     /**
-     * Get documentmodel that stores request configuration using
-     * RegistrationConfiguration facet.
+     * Get documentmodel that stores request configuration using RegistrationConfiguration facet.
      *
      * @param session
      * @return
      */
-    DocumentModel getRegistrationRulesDocument(CoreSession session,
-            String configurationName) throws ClientException;
+    DocumentModel getRegistrationRulesDocument(CoreSession session, String configurationName) throws ClientException;
 
     /**
-     * Stores a resgitration request like submitRegistrationRequest with
-     * Document information
+     * Stores a resgitration request like submitRegistrationRequest with Document information
      *
      * @return a unique ID for it
      * @since 5.6
      */
-    String submitRegistrationRequest(String configurationName,
-            DocumentModel userRegistrationModel,
-            Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept)
+    String submitRegistrationRequest(String configurationName, DocumentModel userRegistrationModel,
+            Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept)
             throws ClientException, UserRegistrationException;
 
     /**
@@ -167,8 +153,7 @@ public interface UserInvitationService {
      *
      * @since 5.6
      */
-    RegistrationRules getRegistrationRules(String configurationName)
-            throws ClientException;
+    RegistrationRules getRegistrationRules(String configurationName) throws ClientException;
 
     /**
      * List all registered onfiguration name
@@ -179,36 +164,30 @@ public interface UserInvitationService {
      * The method checks if the request id is a valid one.
      *
      * @param requestId The value of the request id.
-     *
      * @since 5.9.3
      */
-    void checkRequestId(String requestId) throws ClientException,
-            UserRegistrationException;
+    void checkRequestId(String requestId) throws ClientException, UserRegistrationException;
 
     /**
      * @return The name of the event when the registration is submitted.
-     *
      * @since 5.9.3
      */
     String getNameEventRegistrationSubmitted();
 
     /**
      * @return The name of the event when the registration is accepted.
-     *
      * @since 5.9.3
      */
     String getNameEventRegistrationAccepted();
 
     /**
      * @return The name of the event when the registration is rejected.
-     *
      * @since 5.9.3
      */
     String getNameEventRegistrationRejected();
 
     /**
      * @return The name of the event when the registration is validated.
-     *
      * @since 5.9.3
      */
     String getNameEventRegistrationValidated();

@@ -47,7 +47,6 @@ import com.codahale.metrics.SharedMetricRegistries;
 
 /**
  * @author matic
- *
  */
 public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
 
@@ -71,8 +70,7 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
             field.setAccessible(true);
             return field;
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Cannot get access to " + clazz + "#"
-                    + name + " field");
+            throw new RuntimeException("Cannot get access to " + clazz + "#" + name + " field");
         }
     }
 
@@ -93,8 +91,7 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
         }
     }
 
-    protected AbstractConnectionManager enhanceConnectionManager(
-            AbstractConnectionManager cm) {
+    protected AbstractConnectionManager enhanceConnectionManager(AbstractConnectionManager cm) {
         if (!log.isTraceEnabled()) {
             return cm;
         }
@@ -120,10 +117,8 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
         } catch (RuntimeException e) {
             ;
         }
-        return (ConnectionInterceptor) Proxy.newProxyInstance(
-                Thread.currentThread().getContextClassLoader(),
-                new Class[] { ConnectionInterceptor.class }, new StackHandler(
-                        stack));
+        return (ConnectionInterceptor) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+                new Class[] { ConnectionInterceptor.class }, new StackHandler(stack));
     }
 
     protected class StackHandler implements InvocationHandler {
@@ -139,14 +134,11 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
             if (ConnectionInterceptor.class.isAssignableFrom(m.getDeclaringClass())) {
                 stackTrace = new Throwable("debug stack trace");
             }
-            log.trace("invoked " + stack.getClass().getSimpleName() + "."
-                    + m.getName(), stackTrace);
+            log.trace("invoked " + stack.getClass().getSimpleName() + "." + m.getName(), stackTrace);
         }
 
-
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             try {
                 return method.invoke(stack, args);
             } finally {
@@ -196,7 +188,7 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
 
                     @Override
                     public Object id(ManagedConnection connection) {
-                        return ((AbstractManagedConnection)connection).getPhysicalConnection();
+                        return ((AbstractManagedConnection) connection).getPhysicalConnection();
                     }
 
                 };
@@ -207,14 +199,13 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
 
     interface IdProvider {
         String key();
+
         Object id(ManagedConnection connection);
     }
 
-    private static final Field SESSION_FIELD = field(
-            ManagedConnectionImpl.class, "session");
+    private static final Field SESSION_FIELD = field(ManagedConnectionImpl.class, "session");
 
-    private static final Field WRAPPED_FIELD = field(
-            SoftRefCachingMapper.class, "mapper");
+    private static final Field WRAPPED_FIELD = field(SoftRefCachingMapper.class, "mapper");
 
     protected Identification mapperId(ManagedConnection connection) {
         SessionImpl session = fetch(SESSION_FIELD, connection);
@@ -235,21 +226,17 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
     @Override
     public void install() {
         self = DefaultMonitorComponent.bind(this, name);
-        registry.register(MetricRegistry.name("nuxeo", "repositories",
-                name, "connections", "count"), new JmxAttributeGauge(
-                self.getObjectName(), "ConnectionCount"));
-        registry.register(MetricRegistry.name("nuxeo", "repositories",
-                name, "connections", "idle"), new JmxAttributeGauge(
-                self.getObjectName(), "IdleConnectionCount"));
+        registry.register(MetricRegistry.name("nuxeo", "repositories", name, "connections", "count"),
+                new JmxAttributeGauge(self.getObjectName(), "ConnectionCount"));
+        registry.register(MetricRegistry.name("nuxeo", "repositories", name, "connections", "idle"),
+                new JmxAttributeGauge(self.getObjectName(), "IdleConnectionCount"));
     }
 
     @Override
     public void uninstall() {
         DefaultMonitorComponent.unbind(self);
-        registry.remove(MetricRegistry.name("nuxeo", "repositories",
-                name, "connections", "count"));
-        registry.remove(MetricRegistry.name("nuxeo", "repositories",
-                name, "connections", "idle"));
+        registry.remove(MetricRegistry.name("nuxeo", "repositories", name, "connections", "count"));
+        registry.remove(MetricRegistry.name("nuxeo", "repositories", name, "connections", "idle"));
         self = null;
     }
 

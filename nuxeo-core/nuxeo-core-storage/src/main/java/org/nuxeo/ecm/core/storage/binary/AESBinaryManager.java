@@ -49,13 +49,11 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * A binary manager that encrypts binaries on the filesystem using AES.
  * <p>
- * The {@link BinaryManagerDescriptor} configuration holds the keystore
- * information to retrieve the AES key, or the password that is used to generate
- * a per-file key using PBKDF2. This configuration comes from the
+ * The {@link BinaryManagerDescriptor} configuration holds the keystore information to retrieve the AES key, or the
+ * password that is used to generate a per-file key using PBKDF2. This configuration comes from the
  * {@code <binaryManager key="...">} of the repository configuration.
  * <p>
- * The configuration has the form {@code key1=value1,key2=value2,...} where the
- * possible keys are, for keystore use:
+ * The configuration has the form {@code key1=value1,key2=value2,...} where the possible keys are, for keystore use:
  * <ul>
  * <li>keyStoreType: the keystore type, for instance JCEKS
  * <li>keyStoreFile: the path to the keystore, if applicable
@@ -69,21 +67,17 @@ import org.nuxeo.runtime.api.Framework;
  * <li>password: the password
  * </ul>
  * <p>
- * To encrypt a binary, an AES key is needed. This key can be retrieved from a
- * keystore, or generated from a password using PBKDF2 (in which case each
- * stored file contains a different salt for security reasons). The file format
- * is described in {@link #storeAndDigest(InputStream, OutputStream)}.
+ * To encrypt a binary, an AES key is needed. This key can be retrieved from a keystore, or generated from a password
+ * using PBKDF2 (in which case each stored file contains a different salt for security reasons). The file format is
+ * described in {@link #storeAndDigest(InputStream, OutputStream)}.
  * <p>
- * While the binary is being used by the application, a temporarily-decrypted
- * file is held in a temporary directory. It is removed as soon as possible.
+ * While the binary is being used by the application, a temporarily-decrypted file is held in a temporary directory. It
+ * is removed as soon as possible.
  * <p>
- * Note: if the Java Cryptographic Extension (JCE) is not configured for 256-bit
- * key length, you may get an exception
- * "java.security.InvalidKeyException: Illegal key size or default parameters".
- * If this is the case, go to <a
- * href="http://www.oracle.com/technetwork/java/javase/downloads/index.html"
- * >Oracle Java SE Downloads</a> and download and install the Java Cryptography
- * Extension (JCE) Unlimited Strength Jurisdiction Policy Files for your JDK.
+ * Note: if the Java Cryptographic Extension (JCE) is not configured for 256-bit key length, you may get an exception
+ * "java.security.InvalidKeyException: Illegal key size or default parameters". If this is the case, go to <a
+ * href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" >Oracle Java SE Downloads</a> and download
+ * and install the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files for your JDK.
  *
  * @since 6.0
  */
@@ -91,8 +85,7 @@ public class AESBinaryManager extends LocalBinaryManager {
 
     private static final Log log = LogFactory.getLog(AESBinaryManager.class);
 
-    protected static final byte[] FILE_MAGIC = new byte[] { 'N', 'U', 'X', 'E',
-            'O', 'C', 'R', 'Y', 'P', 'T' };
+    protected static final byte[] FILE_MAGIC = new byte[] { 'N', 'U', 'X', 'E', 'O', 'C', 'R', 'Y', 'P', 'T' };
 
     protected static final int FILE_VERSION_1 = 1;
 
@@ -154,36 +147,31 @@ public class AESBinaryManager extends LocalBinaryManager {
     }
 
     /**
-     * By default the JRE may ship with restricted key length. Instead of having
-     * administrators download the Java Cryptography Extension (JCE) Unlimited
-     * Strength Jurisdiction Policy Files from
-     * http://www.oracle.com/technetwork/java/javase/downloads/index.html, we
-     * attempt to directly unrestrict the JCE using reflection.
+     * By default the JRE may ship with restricted key length. Instead of having administrators download the Java
+     * Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files from
+     * http://www.oracle.com/technetwork/java/javase/downloads/index.html, we attempt to directly unrestrict the JCE
+     * using reflection.
      */
     protected static void setUnlimitedJCEPolicy() {
         try {
-            Field field = Class.forName("javax.crypto.JceSecurity").getDeclaredField(
-                    "isRestricted");
+            Field field = Class.forName("javax.crypto.JceSecurity").getDeclaredField("isRestricted");
             field.setAccessible(true);
             if (Boolean.TRUE.equals(field.get(null))) {
                 log.info("Setting JCE Unlimited Strength");
                 field.set(null, Boolean.FALSE);
             }
-        } catch (ReflectiveOperationException | SecurityException
-                | IllegalArgumentException e) {
+        } catch (ReflectiveOperationException | SecurityException | IllegalArgumentException e) {
             log.debug("Cannot check/set JCE Unlimited Strength", e);
         }
     }
 
     @Override
-    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
-            throws IOException {
+    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
         super.initialize(binaryManagerDescriptor);
         digestAlgorithm = descriptor.digest;
         String options = binaryManagerDescriptor.key;
         if (StringUtils.isBlank(options)) {
-            throw new NuxeoException("Missing key for "
-                    + getClass().getSimpleName());
+            throw new NuxeoException("Missing key for " + getClass().getSimpleName());
         }
         initializeOptions(options);
     }
@@ -221,24 +209,19 @@ public class AESBinaryManager extends LocalBinaryManager {
         usePBKDF2 = password != null;
         if (usePBKDF2) {
             if (keyStoreType != null) {
-                throw new NuxeoException("Cannot use " + PARAM_KEY_STORE_TYPE
-                        + " with " + PARAM_PASSWORD);
+                throw new NuxeoException("Cannot use " + PARAM_KEY_STORE_TYPE + " with " + PARAM_PASSWORD);
             }
             if (keyStoreFile != null) {
-                throw new NuxeoException("Cannot use " + PARAM_KEY_STORE_FILE
-                        + " with " + PARAM_PASSWORD);
+                throw new NuxeoException("Cannot use " + PARAM_KEY_STORE_FILE + " with " + PARAM_PASSWORD);
             }
             if (keyStorePassword != null) {
-                throw new NuxeoException("Cannot use "
-                        + PARAM_KEY_STORE_PASSWORD + " with " + PARAM_PASSWORD);
+                throw new NuxeoException("Cannot use " + PARAM_KEY_STORE_PASSWORD + " with " + PARAM_PASSWORD);
             }
             if (keyAlias != null) {
-                throw new NuxeoException("Cannot use " + PARAM_KEY_ALIAS
-                        + " with " + PARAM_PASSWORD);
+                throw new NuxeoException("Cannot use " + PARAM_KEY_ALIAS + " with " + PARAM_PASSWORD);
             }
             if (keyPassword != null) {
-                throw new NuxeoException("Cannot use " + PARAM_KEY_PASSWORD
-                        + " with " + PARAM_PASSWORD);
+                throw new NuxeoException("Cannot use " + PARAM_KEY_PASSWORD + " with " + PARAM_PASSWORD);
             }
         } else {
             if (keyStoreType == null) {
@@ -260,8 +243,7 @@ public class AESBinaryManager extends LocalBinaryManager {
     /**
      * Gets the password for PBKDF2.
      * <p>
-     * The caller must clear it from memory when done with it by calling
-     * {@link #clearPassword}.
+     * The caller must clear it from memory when done with it by calling {@link #clearPassword}.
      */
     protected char[] getPassword() {
         return password.toCharArray();
@@ -281,12 +263,10 @@ public class AESBinaryManager extends LocalBinaryManager {
      *
      * @param salt the salt
      */
-    protected Key generateSecretKey(byte[] salt)
-            throws GeneralSecurityException {
+    protected Key generateSecretKey(byte[] salt) throws GeneralSecurityException {
         char[] password = getPassword();
         SecretKeyFactory factory = SecretKeyFactory.getInstance(PBKDF2_WITH_HMAC_SHA1);
-        PBEKeySpec spec = new PBEKeySpec(password, salt, PBKDF2_ITERATIONS,
-                PBKDF2_KEY_LENGTH);
+        PBEKeySpec spec = new PBEKeySpec(password, salt, PBKDF2_ITERATIONS, PBKDF2_KEY_LENGTH);
         clearPassword(password);
         Key derived = factory.generateSecret(spec);
         spec.clearPassword();
@@ -298,11 +278,9 @@ public class AESBinaryManager extends LocalBinaryManager {
      */
     protected Key getSecretKey() throws GeneralSecurityException, IOException {
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-        char[] kspw = keyStorePassword == null ? null
-                : keyStorePassword.toCharArray();
+        char[] kspw = keyStorePassword == null ? null : keyStorePassword.toCharArray();
         if (keyStoreFile != null) {
-            try (InputStream in = new BufferedInputStream(new FileInputStream(
-                    keyStoreFile))) {
+            try (InputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile))) {
                 keyStore.load(in, kspw);
             }
         } else {
@@ -346,8 +324,7 @@ public class AESBinaryManager extends LocalBinaryManager {
         File tmp;
         try {
             tmp = File.createTempFile("bin_", ".tmp", tmpDir);
-            OutputStream out = new BufferedOutputStream(new FileOutputStream(
-                    tmp));
+            OutputStream out = new BufferedOutputStream(new FileOutputStream(tmp));
             InputStream in = new BufferedInputStream(new FileInputStream(file));
             try {
                 decrypt(in, out);
@@ -367,8 +344,7 @@ public class AESBinaryManager extends LocalBinaryManager {
         File tmp = File.createTempFile("create_", ".tmp", tmpDir);
         OutputStream out = new BufferedOutputStream(new FileOutputStream(tmp));
         /*
-         * First, write the input stream to a temporary file, while computing a
-         * digest.
+         * First, write the input stream to a temporary file, while computing a digest.
          */
         try {
             String digest;
@@ -390,8 +366,8 @@ public class AESBinaryManager extends LocalBinaryManager {
     }
 
     /**
-     * Encrypts the given input stream into the given output stream, while also
-     * computing the digest of the input stream.
+     * Encrypts the given input stream into the given output stream, while also computing the digest of the input
+     * stream.
      * <p>
      * File format version 1 (values are in network order):
      * <ul>
@@ -413,8 +389,7 @@ public class AESBinaryManager extends LocalBinaryManager {
      * @return the digest of the input stream
      */
     @Override
-    public String storeAndDigest(InputStream in, OutputStream out)
-            throws IOException {
+    public String storeAndDigest(InputStream in, OutputStream out) throws IOException {
         out.write(FILE_MAGIC);
         DataOutputStream data = new DataOutputStream(out);
         data.writeByte(FILE_VERSION_1);
@@ -451,8 +426,7 @@ public class AESBinaryManager extends LocalBinaryManager {
             data.write(iv);
 
             // digest and write the encrypted data
-            CipherAndDigestOutputStream cipherOut = new CipherAndDigestOutputStream(
-                    out, cipher, messageDigest);
+            CipherAndDigestOutputStream cipherOut = new CipherAndDigestOutputStream(out, cipher, messageDigest);
             IOUtils.copy(in, cipherOut);
             cipherOut.close();
             byte[] digest = cipherOut.getDigest();
@@ -535,8 +509,8 @@ public class AESBinaryManager extends LocalBinaryManager {
     }
 
     /**
-     * A {@link javax.crypto.CipherOutputStream CipherOutputStream} that also
-     * does a digest of the original stream at the same time.
+     * A {@link javax.crypto.CipherOutputStream CipherOutputStream} that also does a digest of the original stream at
+     * the same time.
      */
     public static class CipherAndDigestOutputStream extends FilterOutputStream {
 
@@ -548,8 +522,7 @@ public class AESBinaryManager extends LocalBinaryManager {
 
         protected byte[] digest;
 
-        public CipherAndDigestOutputStream(OutputStream out, Cipher cipher,
-                MessageDigest messageDigest) {
+        public CipherAndDigestOutputStream(OutputStream out, Cipher cipher, MessageDigest messageDigest) {
             super(out);
             this.out = out;
             this.cipher = cipher;

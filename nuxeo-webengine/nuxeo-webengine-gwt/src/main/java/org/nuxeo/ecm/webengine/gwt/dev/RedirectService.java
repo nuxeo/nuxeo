@@ -42,12 +42,18 @@ public class RedirectService extends HttpServlet implements Debug {
 
     protected static Pattern HTTP_RESP = Pattern.compile("HTTP/1\\..\\s+([0-9]+)\\s+(.*)");
 
-    protected String  redirectPrefix = REDIRECT_PREFIX;
-    protected String  redirectHost = REDIRECT_HOST;
-    protected int  redirectPort = REDIRECT_PORT;
+    protected String redirectPrefix = REDIRECT_PREFIX;
+
+    protected String redirectHost = REDIRECT_HOST;
+
+    protected int redirectPort = REDIRECT_PORT;
+
     protected String redirectPattern = REDIRECT_PATTERN;
+
     protected String redirectReplacement = REDIRECT_REPLACEMENT;
+
     protected boolean trace = REDIRECT_TRACE;
+
     protected boolean traceContent = REDIRECT_TRACE_CONTENT;
 
     public RedirectService(String host, int port) {
@@ -56,12 +62,12 @@ public class RedirectService extends HttpServlet implements Debug {
         // TODO: use logging instead
         System.out.println("----------------------------------------------------------");
         System.out.println("Redirect Service Enabled: ");
-        System.out.println("redirect.prefix: "+redirectPrefix);
-        System.out.println("redirect.host: "+redirectHost);
-        System.out.println("redirect.port: "+redirectPort);
-        System.out.println("redirect.pattern: "+redirectPattern);
-        System.out.println("redirect.replacement: "+redirectReplacement);
-        System.out.println("redirect.trace: "+trace);
+        System.out.println("redirect.prefix: " + redirectPrefix);
+        System.out.println("redirect.host: " + redirectHost);
+        System.out.println("redirect.port: " + redirectPort);
+        System.out.println("redirect.pattern: " + redirectPattern);
+        System.out.println("redirect.replacement: " + redirectReplacement);
+        System.out.println("redirect.trace: " + trace);
         System.out.println("----------------------------------------------------------");
     }
 
@@ -82,8 +88,7 @@ public class RedirectService extends HttpServlet implements Debug {
     }
 
     @SuppressWarnings("unchecked")
-    public void redirect(HttpServletRequest req, HttpServletResponse resp)
-        throws ServletException, IOException {
+    public void redirect(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         StringBuilder buf = new StringBuilder(); // getRequestURL(req);
         String urlPath = req.getRequestURI();
@@ -109,14 +114,14 @@ public class RedirectService extends HttpServlet implements Debug {
         buf.append("\r\n");
 
         InputStream rin = null;
-        OutputStream rout =null;
+        OutputStream rout = null;
         InputStream in = null;
 
         try {
             Socket socket = new Socket(redirectHost, redirectPort);
             rout = socket.getOutputStream();
             rout.write(buf.toString().getBytes());
-            in =  req.getInputStream();
+            in = req.getInputStream();
             if (trace) {
                 traceln("========== HTTP REQUEST ===========");
                 traceln(buf.toString());
@@ -148,9 +153,8 @@ public class RedirectService extends HttpServlet implements Debug {
         }
     }
 
-
     public void copy(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024*64];
+        byte[] buffer = new byte[1024 * 64];
         int read;
         while ((read = in.read(buffer)) != -1) {
             out.write(buffer, 0, read);
@@ -158,7 +162,7 @@ public class RedirectService extends HttpServlet implements Debug {
     }
 
     public void copyDebug(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024*64];
+        byte[] buffer = new byte[1024 * 64];
         int read;
         while ((read = in.read(buffer)) != -1) {
             out.write(buffer, 0, read);
@@ -169,7 +173,6 @@ public class RedirectService extends HttpServlet implements Debug {
         traceln("");
     }
 
-
     public int getStatusCode(String line) {
         Matcher matcher = HTTP_RESP.matcher(line.trim());
         if (matcher.matches()) {
@@ -177,7 +180,6 @@ public class RedirectService extends HttpServlet implements Debug {
         }
         return -1;
     }
-
 
     public void transferResponse(InputStream in, HttpServletResponse resp) throws IOException {
         int cnt = 0;
@@ -200,10 +202,10 @@ public class RedirectService extends HttpServlet implements Debug {
                         if (trace) {
                             traceln(buf.toString());
                         }
-//                        if (status >= 400) {
-//                            resp.sendError(status);
-//                            return;
-//                        }
+                        // if (status >= 400) {
+                        // resp.sendError(status);
+                        // return;
+                        // }
                         resp.setStatus(status);
                     } else {
                         setHeader(buf.toString().trim(), resp);
@@ -214,7 +216,7 @@ public class RedirectService extends HttpServlet implements Debug {
                     break;
                 }
             } else {
-                buf.append((char)c);
+                buf.append((char) c);
             }
         }
 
@@ -238,13 +240,14 @@ public class RedirectService extends HttpServlet implements Debug {
         }
         int p = header.indexOf(':');
         if (p > -1) {
-            resp.setHeader(header.substring(0, p), header.substring(p+1).trim());
+            resp.setHeader(header.substring(0, p), header.substring(p + 1).trim());
         }
     }
 
     public static void traceln(String str) {
         System.out.println(str);
     }
+
     public static void trace(String str) {
         System.out.print(str);
     }
@@ -256,6 +259,5 @@ public class RedirectService extends HttpServlet implements Debug {
             System.out.println(m.group(2));
         }
     }
-
 
 }

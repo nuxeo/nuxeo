@@ -24,12 +24,10 @@ import org.apache.commons.logging.LogFactory;
 import org.wikimodel.wem.IWikiPrinter;
 
 /**
- * Special writer used to split the serialization result in dynamic or static segments.
- * This way we can generate final output after parsing the entire file. This is needed for example to
- * generate TOC.
+ * Special writer used to split the serialization result in dynamic or static segments. This way we can generate final
+ * output after parsing the entire file. This is needed for example to generate TOC.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WikiWriter implements IWikiPrinter, WikiText {
 
@@ -38,10 +36,12 @@ public class WikiWriter implements IWikiPrinter, WikiText {
     protected static final String LINE_SEP = System.getProperty("line.separator");
 
     protected WikiWriter parent;
-    protected final List<String> segments = new ArrayList<String>();
-    protected final List<WikiText> dynamicSegments = new ArrayList<WikiText>();
-    protected final StringBuilder buf = new StringBuilder();
 
+    protected final List<String> segments = new ArrayList<String>();
+
+    protected final List<WikiText> dynamicSegments = new ArrayList<WikiText>();
+
+    protected final StringBuilder buf = new StringBuilder();
 
     public WikiWriter() {
     }
@@ -78,7 +78,7 @@ public class WikiWriter implements IWikiPrinter, WikiText {
     }
 
     public void writeTo(WikiSerializerHandler handler, Writer writer) throws IOException {
-        for (int i=0, len=segments.size(); i<len; i++) {
+        for (int i = 0, len = segments.size(); i < len; i++) {
             writer.write(segments.get(i));
             dynamicSegments.get(i).writeTo(handler, writer);
         }

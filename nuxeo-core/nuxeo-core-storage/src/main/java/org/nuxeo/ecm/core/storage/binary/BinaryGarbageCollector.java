@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.storage.binary;
 
-
 /**
  * A Garbage Collector for a {@link BinaryManager}.
  * <p>
@@ -24,18 +23,15 @@ package org.nuxeo.ecm.core.storage.binary;
  * <p>
  * Then for all binaries to mark, call {@link #mark}.
  * <p>
- * Finally when all binaries have been marked, call{@link #stop} to delete the
- * non-marked binaries.
+ * Finally when all binaries have been marked, call{@link #stop} to delete the non-marked binaries.
  * <p>
- * After this, {@link #getStatus} returns information about the binaries
- * remaining and those that have been GCed.
+ * After this, {@link #getStatus} returns information about the binaries remaining and those that have been GCed.
  */
 public interface BinaryGarbageCollector {
 
     /**
-     * Gets a unique identifier for this garbage collector. Two garbage
-     * collectors that would impact the same files must have the same
-     * identifier.
+     * Gets a unique identifier for this garbage collector. Two garbage collectors that would impact the same files must
+     * have the same identifier.
      *
      * @return a unique identifier
      */
@@ -56,12 +52,10 @@ public interface BinaryGarbageCollector {
     void mark(String digest);
 
     /**
-     * Stops the garbage collection process and deletes all binaries that have
-     * not been marked (sweep).
+     * Stops the garbage collection process and deletes all binaries that have not been marked (sweep).
      *
-     * @param delete {@code true} if actual deletion must be performed,
-     *            {@code false} if the binaries to delete should simply be
-     *            counted in the status
+     * @param delete {@code true} if actual deletion must be performed, {@code false} if the binaries to delete should
+     *            simply be counted in the status
      */
     void stop(boolean delete);
 
@@ -77,11 +71,9 @@ public interface BinaryGarbageCollector {
     /**
      * Checks if a GC is in progress.
      * <p>
-     * A GC is in progress is {@code #start} has been called but not
-     * {@code #stop}.
+     * A GC is in progress is {@code #start} has been called but not {@code #stop}.
      * <p>
-     * It's only useful to call this from a separate thread from the one that
-     * calls {@link #mark}.
+     * It's only useful to call this from a separate thread from the one that calls {@link #mark}.
      *
      * @return {@code true} if a GC is in progress
      */

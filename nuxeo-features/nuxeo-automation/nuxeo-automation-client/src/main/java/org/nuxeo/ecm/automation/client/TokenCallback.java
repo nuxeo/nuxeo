@@ -19,8 +19,7 @@ package org.nuxeo.ecm.automation.client;
 import java.util.Map;
 
 /**
- * Callback to handle a token acquired remotely using a set of parameters and
- * saved locally.
+ * Callback to handle a token acquired remotely using a set of parameters and saved locally.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7

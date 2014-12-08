@@ -36,28 +36,23 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
-@Produces({"text/html", "*/*"})
+@Produces({ "text/html", "*/*" })
 public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
 
-    public void writeTo(ScriptFile t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(ScriptFile t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
 
         new Template(WebEngine.getActiveContext(), t).render(entityStream);
         entityStream.flush();
     }
 
-    public long getSize(ScriptFile arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(ScriptFile arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return arg0 == ScriptFile.class;
     }
 

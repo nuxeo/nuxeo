@@ -50,21 +50,18 @@ import org.nuxeo.theme.resources.BankUtils;
 public class Utils {
     private static final Log log = LogFactory.getLog(Utils.class);
 
-    private static final List<String> PRESET_CATEGORIES = Arrays.asList(
-            "color", "background", "font", "border");
+    private static final List<String> PRESET_CATEGORIES = Arrays.asList("color", "background", "font", "border");
 
-    public static List<String> getCollections(String bankName)
-            throws IOException {
+    public static List<String> getCollections(String bankName) throws IOException {
         return BankManager.getCollections(bankName);
     }
 
-    public static List<String> getItemsInCollection(String bankName,
-            String collection, String typeName) throws IOException {
+    public static List<String> getItemsInCollection(String bankName, String collection, String typeName)
+            throws IOException {
         return BankManager.getItemsInCollection(bankName, collection, typeName);
     }
 
-    public static List<String> listSkinsInCollection(String bankName,
-            String collection) throws IOException {
+    public static List<String> listSkinsInCollection(String bankName, String collection) throws IOException {
         Map<String, Object> info;
         info = BankManager.getInfo(bankName, collection, "style");
         List<String> skins = new ArrayList<String>();
@@ -84,10 +81,8 @@ public class Utils {
         return skins;
     }
 
-    public static Properties getPresetProperties(String bank,
-            String collection, String category) {
-        String path = String.format("%s/%s/preset/%s", bank, collection,
-                category);
+    public static Properties getPresetProperties(String bank, String collection, String category) {
+        String path = String.format("%s/%s/preset/%s", bank, collection, category);
         File file;
         try {
             file = BankManager.getFile(path);
@@ -107,11 +102,9 @@ public class Utils {
                 continue;
             }
             try {
-                properties.putAll(PaletteParser.parse(content.getBytes(),
-                        f.getName()));
+                properties.putAll(PaletteParser.parse(content.getBytes(), f.getName()));
             } catch (PaletteIdentifyException e) {
-                log.warn("Could not identify palette type: "
-                        + f.getAbsolutePath());
+                log.warn("Could not identify palette type: " + f.getAbsolutePath());
             } catch (PaletteParseException e) {
                 log.warn("Could not parse palette: " + f.getAbsolutePath());
             }
@@ -125,8 +118,7 @@ public class Utils {
     public static String listBankSkins(String bankName) throws IOException {
         JSONArray skins = new JSONArray();
         for (String collection : BankManager.getCollections(bankName)) {
-            Map<String, Object> info = BankManager.getInfo(bankName,
-                    collection, "style");
+            Map<String, Object> info = BankManager.getInfo(bankName, collection, "style");
             if (info == null) {
                 continue;
             }
@@ -142,8 +134,7 @@ public class Utils {
                     skinMap.put("bank", bankName);
                     skinMap.put("collection", collection);
                     skinMap.put("resource", resource);
-                    skinMap.put("name", String.format("%s (%s)",
-                            resource.replace(".css", ""), collection));
+                    skinMap.put("name", String.format("%s (%s)", resource.replace(".css", ""), collection));
                     skinMap.put("base", isBase);
                     skins.add(skinMap);
                 }
@@ -155,14 +146,12 @@ public class Utils {
     public static String listBankStyles(String bankName) throws IOException {
         JSONArray styles = new JSONArray();
         for (String collection : BankManager.getCollections(bankName)) {
-            for (String resource : getItemsInCollection(bankName, collection,
-                    "style")) {
+            for (String resource : getItemsInCollection(bankName, collection, "style")) {
                 JSONObject styleMap = new JSONObject();
                 styleMap.put("bank", bankName);
                 styleMap.put("collection", collection);
                 styleMap.put("resource", resource);
-                styleMap.put("name", String.format("%s (%s)", resource.replace(
-                        ".css", ""), collection));
+                styleMap.put("name", String.format("%s (%s)", resource.replace(".css", ""), collection));
                 styles.add(styleMap);
             }
         }
@@ -173,8 +162,7 @@ public class Utils {
         JSONArray presets = new JSONArray();
         for (String collection : BankManager.getCollections(bankName)) {
             for (String category : PRESET_CATEGORIES) {
-                for (Map.Entry property : getPresetProperties(bankName,
-                        collection, category).entrySet()) {
+                for (Map.Entry property : getPresetProperties(bankName, collection, category).entrySet()) {
                     JSONObject presetMap = new JSONObject();
                     presetMap.put("bank", bankName);
                     presetMap.put("collection", collection);
@@ -242,8 +230,7 @@ public class Utils {
         return tree.toString();
     }
 
-    private static JSONObject getNavTreeCollectionNode(String bankName,
-            String collection) throws IOException {
+    private static JSONObject getNavTreeCollectionNode(String bankName, String collection) throws IOException {
 
         JSONObject collectionNode = new JSONObject();
 
@@ -252,10 +239,8 @@ public class Utils {
 
         JSONObject collectionAttributes = new JSONObject();
         collectionAttributes.put("rel", "collection");
-        collectionAttributes.put("path", String.format("/%s/%s", bankName,
-                collection));
-        collectionAttributes.put("id", BankUtils.getDomId(String.format(
-                "%s-%s", bankName, collection)));
+        collectionAttributes.put("path", String.format("/%s/%s", bankName, collection));
+        collectionAttributes.put("id", BankUtils.getDomId(String.format("%s-%s", bankName, collection)));
 
         collectionNode.put("data", collectionMap);
         collectionNode.put("attributes", collectionAttributes);
@@ -269,20 +254,17 @@ public class Utils {
 
             JSONObject folderTypeAttributes = new JSONObject();
             folderTypeAttributes.put("rel", "folder");
-            folderTypeAttributes.put("path", String.format("/%s/%s/%s",
-                    bankName, collection, typeName));
-            folderTypeAttributes.put("id", BankUtils.getDomId(String.format(
-                    "%s-%s-%s", bankName, collection, typeName)));
+            folderTypeAttributes.put("path", String.format("/%s/%s/%s", bankName, collection, typeName));
+            folderTypeAttributes.put("id",
+                    BankUtils.getDomId(String.format("%s-%s-%s", bankName, collection, typeName)));
 
             folderTypeNode.put("attributes", folderTypeAttributes);
             folderTypeNode.put("data", folderTypeMap);
 
             JSONArray items = new JSONArray();
             List<String> skins = listSkinsInCollection(bankName, collection);
-            String effectiveTypeName = "skin".equals(typeName) ? "style"
-                    : typeName;
-            for (String item : BankManager.getItemsInCollection(bankName,
-                    collection, effectiveTypeName)) {
+            String effectiveTypeName = "skin".equals(typeName) ? "style" : typeName;
+            for (String item : BankManager.getItemsInCollection(bankName, collection, effectiveTypeName)) {
 
                 if ("skin".equals(typeName)) {
                     if (!skins.contains(item)) {
@@ -299,10 +281,9 @@ public class Utils {
 
                 JSONObject itemAttributes = new JSONObject();
                 itemAttributes.put("rel", typeName);
-                itemAttributes.put("path", String.format("/%s/%s/%s/%s",
-                        bankName, collection, typeName, item));
-                itemAttributes.put("id", BankUtils.getDomId(String.format(
-                        "%s-%s-%s-%s", bankName, collection, typeName, item)));
+                itemAttributes.put("path", String.format("/%s/%s/%s/%s", bankName, collection, typeName, item));
+                itemAttributes.put("id",
+                        BankUtils.getDomId(String.format("%s-%s-%s-%s", bankName, collection, typeName, item)));
                 itemNode.put("attributes", itemAttributes);
                 itemNode.put("data", itemMap);
 
@@ -321,18 +302,15 @@ public class Utils {
     public static StreamingOutput streamFile(final File file) {
         return new StreamingOutput() {
             @Override
-            public void write(OutputStream out) throws IOException,
-                    WebApplicationException {
+            public void write(OutputStream out) throws IOException, WebApplicationException {
                 InputStream in = null;
                 try {
                     in = new FileInputStream(file);
                     IOUtils.copy(in, out);
                 } catch (FileNotFoundException e) {
-                    throw new WebApplicationException(e,
-                            Response.Status.NOT_FOUND);
+                    throw new WebApplicationException(e, Response.Status.NOT_FOUND);
                 } catch (IOException e) {
-                    throw new WebApplicationException(e,
-                            Response.Status.INTERNAL_SERVER_ERROR);
+                    throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
                 } finally {
                     IOUtils.closeQuietly(in);
                 }

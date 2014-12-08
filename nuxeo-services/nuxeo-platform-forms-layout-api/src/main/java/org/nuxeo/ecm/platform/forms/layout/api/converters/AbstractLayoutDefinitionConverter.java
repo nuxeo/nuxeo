@@ -23,8 +23,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
  *
  * @since 5.5
  */
-public abstract class AbstractLayoutDefinitionConverter implements
-        LayoutDefinitionConverter {
+public abstract class AbstractLayoutDefinitionConverter implements LayoutDefinitionConverter {
 
     protected LayoutDefinition getClonedLayout(LayoutDefinition layout) {
         return layout.clone();

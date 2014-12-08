@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DoubleProperty extends ScalarProperty {
 
@@ -39,28 +38,26 @@ public class DoubleProperty extends ScalarProperty {
     }
 
     @Override
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
         if (value.getClass() == String.class) {
-            String string = (String)value;
+            String string = (String) value;
             if (string.length() == 0) {
                 return null;
             }
             return Double.valueOf(value.toString());
         }
         if (value instanceof Number) {
-            return ((Number)value).doubleValue();
+            return ((Number) value).doubleValue();
         }
         throw new PropertyConversionException(value.getClass(), Double.class);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType)
-            throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
         if (value == null || Double.class == toType) {
             return (T) value;
         }

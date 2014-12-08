@@ -124,8 +124,7 @@ public class TestSQLSecurityManager {
         ace = new ACE("x", "y", true);
         acl.add(ace);
         acp.addACL(acl);
-        ACLRow[] aclrows = SQLSession.updateAclRows(new ACLRow[] { acl1, acl2,
-                acl3 }, acp);
+        ACLRow[] aclrows = SQLSession.updateAclRows(new ACLRow[] { acl1, acl2, acl3 }, acp);
 
         assertEquals(5, aclrows.length);
 

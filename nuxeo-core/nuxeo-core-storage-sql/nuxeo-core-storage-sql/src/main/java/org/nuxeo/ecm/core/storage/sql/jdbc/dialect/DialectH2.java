@@ -54,8 +54,8 @@ public class DialectH2 extends Dialect {
 
     protected final String usersSeparator;
 
-    public DialectH2(DatabaseMetaData metadata, BinaryManager binaryManager,
-            RepositoryDescriptor repositoryDescriptor) throws StorageException {
+    public DialectH2(DatabaseMetaData metadata, BinaryManager binaryManager, RepositoryDescriptor repositoryDescriptor)
+            throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
@@ -119,8 +119,7 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    public boolean isAllowedConversion(int expected, int actual,
-            String actualName, int actualSize) {
+    public boolean isAllowedConversion(int expected, int actual, String actualName, int actualSize) {
         // CLOB vs VARCHAR compatibility
         if (expected == Types.VARCHAR && actual == Types.CLOB) {
             return true;
@@ -139,8 +138,8 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    public void setToPreparedStatement(PreparedStatement ps, int index,
-            Serializable value, Column column) throws SQLException {
+    public void setToPreparedStatement(PreparedStatement ps, int index, Serializable value, Column column)
+            throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
@@ -161,15 +160,13 @@ public class DialectH2 extends Dialect {
             setToPreparedStatementTimestamp(ps, index, value, column);
             return;
         default:
-            throw new SQLException("Unhandled JDBC type: "
-                    + column.getJdbcType());
+            throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
         }
     }
 
     @Override
     @SuppressWarnings("boxing")
-    public Serializable getFromResultSet(ResultSet rs, int index, Column column)
-            throws SQLException {
+    public Serializable getFromResultSet(ResultSet rs, int index, Column column) throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
@@ -189,23 +186,19 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, Table table, List<Column> columns,
-            Model model) {
+    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table,
+            List<Column> columns, Model model) {
         List<String> columnNames = new ArrayList<String>(columns.size());
         for (Column col : columns) {
             columnNames.add("'" + col.getPhysicalName() + "'");
         }
-        String fullIndexName = String.format("PUBLIC_%s_%s",
-                table.getPhysicalName(), indexName);
+        String fullIndexName = String.format("PUBLIC_%s_%s", table.getPhysicalName(), indexName);
         String analyzer = model.getFulltextConfiguration().indexAnalyzer.get(indexName);
         if (analyzer == null) {
             analyzer = DEFAULT_FULLTEXT_ANALYZER;
         }
-        return String.format(
-                "CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', (%s), '%s')",
-                fullIndexName, table.getPhysicalName(),
-                StringUtils.join(columnNames, ", "), analyzer);
+        return String.format("CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', (%s), '%s')", fullIndexName,
+                table.getPhysicalName(), StringUtils.join(columnNames, ", "), analyzer);
     }
 
     @Override
@@ -215,8 +208,7 @@ public class DialectH2 extends Dialect {
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        return FulltextQueryAnalyzer.translateFulltext(ft, "OR", "AND", "NOT",
-                "\"");
+        return FulltextQueryAnalyzer.translateFulltext(ft, "OR", "AND", "NOT", "\"");
     }
 
     // SELECT ..., 1 as nxscore
@@ -225,9 +217,8 @@ public class DialectH2 extends Dialect {
     // WHERE ... AND nxfttbl.KEY IS NOT NULL
     // ORDER BY nxscore DESC
     @Override
-    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
-            String indexName, int nthMatch, Column mainColumn, Model model,
-            Database database) {
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery, String indexName, int nthMatch,
+            Column mainColumn, Model model, Database database) {
         String phftname = database.getTable(Model.FULLTEXT_TABLE_NAME).getPhysicalName();
         String fullIndexName = "PUBLIC_" + phftname + "_" + indexName;
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
@@ -235,10 +226,8 @@ public class DialectH2 extends Dialect {
         String quotedTableAlias = openQuote() + tableAlias + closeQuote();
         FulltextMatchInfo info = new FulltextMatchInfo();
         info.joins = Collections.singletonList( //
-        new Join(
-                Join.LEFT, //
-                String.format("NXFT_SEARCH('%s', ?)", fullIndexName),
-                tableAlias, // alias
+        new Join(Join.LEFT, //
+                String.format("NXFT_SEARCH('%s', ?)", fullIndexName), tableAlias, // alias
                 fulltextQuery, // param
                 String.format("%s.KEY", quotedTableAlias), // on1
                 mainColumn.getFullQuotedName() // on2
@@ -246,8 +235,7 @@ public class DialectH2 extends Dialect {
         info.whereExpr = String.format("%s.KEY IS NOT NULL", quotedTableAlias);
         info.scoreExpr = "1";
         info.scoreAlias = "_NXSCORE" + nthSuffix;
-        info.scoreCol = new Column(mainColumn.getTable(), null,
-                ColumnType.DOUBLE, null);
+        info.scoreCol = new Column(mainColumn.getTable(), null, ColumnType.DOUBLE, null);
         return info;
     }
 
@@ -341,12 +329,10 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    public Map<String, Serializable> getSQLStatementsProperties(Model model,
-            Database database) {
+    public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("idType", "VARCHAR(36)");
-        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
-                SecurityConstants.BROWSE);
+        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<String>();
         for (String perm : permissions) {
             permsList.add("('" + perm + "')");
@@ -354,10 +340,8 @@ public class DialectH2 extends Dialect {
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         properties.put("readPermissions", StringUtils.join(permsList, ", "));
-        properties.put("h2Functions",
-                "org.nuxeo.ecm.core.storage.sql.db.H2Functions");
-        properties.put("h2Fulltext",
-                "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext");
+        properties.put("h2Functions", "org.nuxeo.ecm.core.storage.sql.db.H2Functions");
+        properties.put("h2Fulltext", "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext");
         properties.put("usersSeparator", getUsersSeparator());
         return properties;
     }

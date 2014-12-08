@@ -25,8 +25,7 @@ import org.nuxeo.runtime.api.Framework;
 import com.sun.faces.config.WebConfiguration;
 
 /**
- * Overrides the default JSF facelet cache factory to customize cache
- * behaviour.
+ * Overrides the default JSF facelet cache factory to customize cache behaviour.
  *
  * @since 6.0
  */

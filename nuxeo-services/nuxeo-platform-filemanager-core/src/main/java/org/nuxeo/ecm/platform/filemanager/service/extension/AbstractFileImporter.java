@@ -117,8 +117,7 @@ public abstract class AbstractFileImporter implements FileImporter {
     }
 
     /**
-     * Default document type to use when the plugin XML configuration does not
-     * specify one.
+     * Default document type to use when the plugin XML configuration does not specify one.
      * <p>
      * To implement when the default {@link #create} method is used.
      */
@@ -136,19 +135,16 @@ public abstract class AbstractFileImporter implements FileImporter {
     }
 
     /**
-     * Creates the document (sets its properties). {@link #updateDocument} will
-     * be called after this.
+     * Creates the document (sets its properties). {@link #updateDocument} will be called after this.
      * <p>
      * Default implementation sets the title.
      */
-    public void createDocument(DocumentModel doc, Blob content, String title)
-            throws ClientException {
+    public void createDocument(DocumentModel doc, Blob content, String title) throws ClientException {
         doc.setPropertyValue("dc:title", title);
     }
 
     /**
-     * Tries to update the document <code>doc</code> with the blob
-     * <code>content</code>.
+     * Tries to update the document <code>doc</code> with the blob <code>content</code>.
      * <p>
      * Returns <code>true</code> if the document is really updated.
      *
@@ -164,8 +160,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      * <p>
      * Default implementation sets the content.
      */
-    public void updateDocument(DocumentModel doc, Blob content)
-            throws ClientException {
+    public void updateDocument(DocumentModel doc, Blob content) throws ClientException {
         try {
             content = content.persist();
         } catch (IOException e) {
@@ -179,9 +174,8 @@ public abstract class AbstractFileImporter implements FileImporter {
     }
 
     @Override
-    public DocumentModel create(CoreSession session, Blob content, String path,
-            boolean overwrite, String fullname, TypeManager typeService)
-            throws ClientException, IOException {
+    public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String fullname,
+            TypeManager typeService) throws ClientException, IOException {
         path = getNearestContainerPath(session, path);
         DocumentModel container = session.getDocument(new PathRef(path));
         String docType = getDocType(container); // from override or descriptor
@@ -197,8 +191,7 @@ public abstract class AbstractFileImporter implements FileImporter {
         if (isOverwriteByTitle()) {
             doc = FileManagerUtils.getExistingDocByTitle(session, path, title);
         } else {
-            doc = FileManagerUtils.getExistingDocByFileName(session, path,
-                    filename);
+            doc = FileManagerUtils.getExistingDocByFileName(session, path, filename);
         }
         boolean skipCheckInAfterAdd = false;
         if (overwrite && doc != null) {
@@ -239,9 +232,8 @@ public abstract class AbstractFileImporter implements FileImporter {
     }
 
     /**
-     * Avoid checkin for a 0-length blob. Microsoft-WebDAV-MiniRedir first
-     * creates a 0-length file and then locks it before putting the real file.
-     * But we don't want this first placeholder to cause a versioning event.
+     * Avoid checkin for a 0-length blob. Microsoft-WebDAV-MiniRedir first creates a 0-length file and then locks it
+     * before putting the real file. But we don't want this first placeholder to cause a versioning event.
      */
     protected boolean skipCheckInForBlob(Blob blob) {
         return blob == null || blob.getLength() == 0;
@@ -286,13 +278,10 @@ public abstract class AbstractFileImporter implements FileImporter {
     /**
      * Returns nearest container path
      * <p>
-     * If given path points to a folderish document, return it. Else, return
-     * parent path.
+     * If given path points to a folderish document, return it. Else, return parent path.
      */
-    protected String getNearestContainerPath(CoreSession documentManager,
-            String path) throws ClientException {
-        DocumentModel currentDocument = documentManager.getDocument(new PathRef(
-                path));
+    protected String getNearestContainerPath(CoreSession documentManager, String path) throws ClientException {
+        DocumentModel currentDocument = documentManager.getDocument(new PathRef(path));
         if (!currentDocument.isFolder()) {
             path = path.substring(0, path.lastIndexOf('/'));
         }
@@ -315,27 +304,22 @@ public abstract class AbstractFileImporter implements FileImporter {
     }
 
     /**
-     * @deprecated use {@link #checkIn} instead, noting that it does not save
-     *             the document
+     * @deprecated use {@link #checkIn} instead, noting that it does not save the document
      */
     @Deprecated
-    protected DocumentModel overwriteAndIncrementversion(
-            CoreSession documentManager, DocumentModel doc)
+    protected DocumentModel overwriteAndIncrementversion(CoreSession documentManager, DocumentModel doc)
             throws ClientException {
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                fileManagerService.getVersioningOption());
+        doc.putContextData(VersioningService.VERSIONING_OPTION, fileManagerService.getVersioningOption());
         return documentManager.saveDocument(doc);
     }
 
-    protected void doSecurityCheck(CoreSession documentManager, String path,
-            String typeName, TypeManager typeService)
+    protected void doSecurityCheck(CoreSession documentManager, String path, String typeName, TypeManager typeService)
             throws DocumentSecurityException, ClientException {
         // perform the security checks
         PathRef containerRef = new PathRef(path);
         if (!documentManager.hasPermission(containerRef, READ_PROPERTIES)
                 || !documentManager.hasPermission(containerRef, ADD_CHILDREN)) {
-            throw new DocumentSecurityException(
-                    "Not enough rights to create folder");
+            throw new DocumentSecurityException("Not enough rights to create folder");
         }
         DocumentModel container = documentManager.getDocument(containerRef);
 
@@ -344,12 +328,9 @@ public abstract class AbstractFileImporter implements FileImporter {
             return;
         }
 
-        if (!typeService.isAllowedSubType(typeName, container.getType(),
-                container)) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot create document of type %s in container with type %s",
-                            typeName, containerType.getId()));
+        if (!typeService.isAllowedSubType(typeName, container.getType(), container)) {
+            throw new ClientException(String.format("Cannot create document of type %s in container with type %s",
+                    typeName, containerType.getId()));
         }
     }
 

@@ -28,14 +28,13 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ExtendsDirective implements TemplateDirectiveModel {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public void execute(Environment env, Map params, TemplateModel[] loopVars,
-            TemplateDirectiveBody body) throws TemplateException, IOException {
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+            throws TemplateException, IOException {
 
         if (body == null) {
             throw new TemplateModelException("Expecting a body");

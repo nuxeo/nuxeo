@@ -151,8 +151,7 @@ public class UIImage extends org.jboss.seam.pdf.ui.UIRectangle {
     }
 
     @Override
-    public void createITextObject(FacesContext context) throws IOException,
-            DocumentException {
+    public void createITextObject(FacesContext context) throws IOException, DocumentException {
         value = valueBinding(context, "value", value);
 
         // instance() doesn't work here - we need a new instance
@@ -217,37 +216,31 @@ public class UIImage extends org.jboss.seam.pdf.ui.UIRectangle {
             image.setAlt(alt);
         }
 
-        indentationLeft = (Float) valueBinding(context, "indentationLeft",
-                indentationLeft);
+        indentationLeft = (Float) valueBinding(context, "indentationLeft", indentationLeft);
         if (indentationLeft != null) {
             image.setIndentationLeft(indentationLeft);
         }
 
-        indentationRight = (Float) valueBinding(context, "indentationRight",
-                indentationRight);
+        indentationRight = (Float) valueBinding(context, "indentationRight", indentationRight);
         if (indentationRight != null) {
             image.setIndentationRight(indentationRight);
         }
 
-        spacingBefore = (Float) valueBinding(context, "spacingBefore",
-                spacingBefore);
+        spacingBefore = (Float) valueBinding(context, "spacingBefore", spacingBefore);
         if (spacingBefore != null) {
             image.setSpacingBefore(spacingBefore);
         }
 
-        spacingAfter = (Float) valueBinding(context, "spacingAfter",
-                spacingAfter);
+        spacingAfter = (Float) valueBinding(context, "spacingAfter", spacingAfter);
         if (spacingAfter != null) {
             image.setSpacingAfter(spacingAfter);
         }
-        widthPercentage = (Float) valueBinding(context, "widthPercentage",
-                widthPercentage);
+        widthPercentage = (Float) valueBinding(context, "widthPercentage", widthPercentage);
         if (widthPercentage != null) {
             image.setWidthPercentage(widthPercentage);
         }
 
-        initialRotation = (Float) valueBinding(context, "initialRotation",
-                initialRotation);
+        initialRotation = (Float) valueBinding(context, "initialRotation", initialRotation);
         if (initialRotation != null) {
             image.setInitialRotation(initialRotation);
         }
@@ -260,8 +253,7 @@ public class UIImage extends org.jboss.seam.pdf.ui.UIRectangle {
 
         applyRectangleProperties(context, image);
 
-        scalePercent = (String) valueBinding(context, "scalePercent",
-                scalePercent);
+        scalePercent = (String) valueBinding(context, "scalePercent", scalePercent);
         if (scalePercent != null) {
             float[] scale = ITextUtils.stringToFloatArray(scalePercent);
             if (scale.length == 1) {
@@ -269,16 +261,14 @@ public class UIImage extends org.jboss.seam.pdf.ui.UIRectangle {
             } else if (scale.length == 2) {
                 image.scalePercent(scale[0], scale[1]);
             } else {
-                throw new RuntimeException(
-                        "scalePercent must contain one or two scale percentages");
+                throw new RuntimeException("scalePercent must contain one or two scale percentages");
             }
         }
     }
 
     @Override
     public void handleAdd(Object o) {
-        throw new RuntimeException("can't add " + o.getClass().getName()
-                + " to image");
+        throw new RuntimeException("can't add " + o.getClass().getName() + " to image");
     }
 
 }

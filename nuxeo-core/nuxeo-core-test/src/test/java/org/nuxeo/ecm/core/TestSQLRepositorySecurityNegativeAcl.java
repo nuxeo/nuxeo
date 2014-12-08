@@ -16,8 +16,7 @@ package org.nuxeo.ecm.core;
 /**
  * Tests about security in a context where negative ACLs are allowed.
  */
-public class TestSQLRepositorySecurityNegativeAcl extends
-        TestSQLRepositorySecurity {
+public class TestSQLRepositorySecurityNegativeAcl extends TestSQLRepositorySecurity {
 
     @Override
     protected boolean allowNegativeAcl() {

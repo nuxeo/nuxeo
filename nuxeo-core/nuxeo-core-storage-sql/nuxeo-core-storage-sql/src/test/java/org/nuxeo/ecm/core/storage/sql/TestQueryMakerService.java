@@ -43,10 +43,8 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
         }
 
         @Override
-        public Query buildQuery(SQLInfo sqlInfo, Model model,
-                PathResolver pathResolver, String query,
-                QueryFilter queryFilter, Object... params)
-                throws StorageException {
+        public Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String query,
+                QueryFilter queryFilter, Object... params) throws StorageException {
             throw new UnsupportedOperationException();
         }
     }
@@ -63,10 +61,8 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
         }
 
         @Override
-        public Query buildQuery(SQLInfo sqlInfo, Model model,
-                PathResolver pathResolver, String query,
-                QueryFilter queryFilter, Object... params)
-                throws StorageException {
+        public Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String query,
+                QueryFilter queryFilter, Object... params) throws StorageException {
             throw new UnsupportedOperationException();
         }
     }
@@ -75,8 +71,7 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployTestContrib("org.nuxeo.ecm.core.storage.sql",
-                "OSGI-INF/querymaker-service.xml");
+        deployTestContrib("org.nuxeo.ecm.core.storage.sql", "OSGI-INF/querymaker-service.xml");
     }
 
     @Test

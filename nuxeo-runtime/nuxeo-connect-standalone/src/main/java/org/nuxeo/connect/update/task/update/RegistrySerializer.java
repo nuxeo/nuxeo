@@ -39,7 +39,6 @@ import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RegistrySerializer extends XmlWriter {
 
@@ -59,8 +58,7 @@ public class RegistrySerializer extends XmlWriter {
      * @param file
      * @throws IOException
      */
-    public static void store(Map<String, Entry> registry, File file)
-            throws IOException {
+    public static void store(Map<String, Entry> registry, File file) throws IOException {
         RegistrySerializer serializer = new RegistrySerializer();
         serializer.write(registry);
         serializer.write(file);
@@ -72,14 +70,12 @@ public class RegistrySerializer extends XmlWriter {
      * @param file
      * @return The Nuxeo packages registry described by the given file
      */
-    public static Map<String, Entry> load(File file) throws PackageException,
-            IOException {
+    public static Map<String, Entry> load(File file) throws PackageException, IOException {
         RegistrySerializer serializer = new RegistrySerializer();
         return serializer.read(file);
     }
 
-    protected Map<String, Entry> read(File file) throws PackageException,
-            IOException {
+    protected Map<String, Entry> read(File file) throws PackageException, IOException {
         FileInputStream in = new FileInputStream(file);
         try {
             HashMap<String, Entry> registry = new HashMap<String, Entry>();
@@ -95,12 +91,10 @@ public class RegistrySerializer extends XmlWriter {
         }
     }
 
-    protected void read(Element element, Map<String, Entry> registry)
-            throws PackageException {
+    protected void read(Element element, Map<String, Entry> registry) throws PackageException {
         Node node = element.getFirstChild();
         while (node != null) {
-            if (node.getNodeType() == Node.ELEMENT_NODE
-                    && "entry".equals(node.getNodeName())) {
+            if (node.getNodeType() == Node.ELEMENT_NODE && "entry".equals(node.getNodeName())) {
                 Entry entry = readEntryElement((Element) node);
                 registry.put(entry.getKey(), entry);
             }
@@ -130,8 +124,7 @@ public class RegistrySerializer extends XmlWriter {
     protected String readKeyAttr(Element element) throws PackageException {
         String key = element.getAttribute("key");
         if (key.length() == 0) {
-            throw new PackageException(
-                    "Invalid entry. No 'key' attribute found!");
+            throw new PackageException("Invalid entry. No 'key' attribute found!");
         }
         return key;
     }
@@ -139,8 +132,7 @@ public class RegistrySerializer extends XmlWriter {
     protected String readNameAttr(Element element) throws PackageException {
         String version = element.getAttribute("name");
         if (version.length() == 0) {
-            throw new PackageException(
-                    "Invalid version entry. No 'name' attribute found!");
+            throw new PackageException("Invalid version entry. No 'name' attribute found!");
         }
         return version;
     }
@@ -148,20 +140,17 @@ public class RegistrySerializer extends XmlWriter {
     protected String readPathAttr(Element element) throws PackageException {
         String path = element.getAttribute("path");
         if (path.length() == 0) {
-            throw new PackageException(
-                    "Invalid version entry. No 'path' attribute found!");
+            throw new PackageException("Invalid version entry. No 'path' attribute found!");
         }
         return path;
     }
 
-    protected Version readVersionElement(Element element)
-            throws PackageException {
+    protected Version readVersionElement(Element element) throws PackageException {
         Version v = new Version(readNameAttr(element));
         v.setPath(readPathAttr(element));
         Node node = element.getFirstChild();
         while (node != null) {
-            if (node.getNodeType() == Node.ELEMENT_NODE
-                    && "package".equals(node.getNodeName())) {
+            if (node.getNodeType() == Node.ELEMENT_NODE && "package".equals(node.getNodeName())) {
                 UpdateOptions opt = new UpdateOptions();
                 opt.pkgId = ((Element) node).getTextContent().trim();
                 opt.upgradeOnly = Boolean.parseBoolean(((Element) node).getAttribute("upgradeOnly"));

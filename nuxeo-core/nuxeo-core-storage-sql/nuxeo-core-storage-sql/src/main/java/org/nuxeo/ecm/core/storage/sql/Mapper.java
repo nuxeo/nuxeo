@@ -32,8 +32,7 @@ import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 public interface Mapper extends RowMapper, XAResource {
 
     /**
-     * Identifiers assigned by a server to identify a client mapper and its
-     * repository.
+     * Identifiers assigned by a server to identify a client mapper and its repository.
      */
     public static final class Identification implements Serializable {
         private static final long serialVersionUID = 1L;
@@ -49,17 +48,15 @@ public interface Mapper extends RowMapper, XAResource {
 
         @Override
         public String toString() {
-            return getClass().getSimpleName() + '(' + repositoryId + ','
-                    + mapperId + ')';
+            return getClass().getSimpleName() + '(' + repositoryId + ',' + mapperId + ')';
         }
     }
 
     /**
      * Returns the repository id and mapper id assigned.
      * <p>
-     * This is used in remote stateless mode to be able to identify to which
-     * mapper an incoming connection is targeted, and from which repository
-     * instance.
+     * This is used in remote stateless mode to be able to identify to which mapper an incoming connection is targeted,
+     * and from which repository instance.
      *
      * @return the repository and mapper identification
      * @throws StorageException when initial connection failed (for a NetMapper)
@@ -105,8 +102,7 @@ public interface Mapper extends RowMapper, XAResource {
      * @param repositoryId the repository id, usually 0
      * @param id the root id
      */
-    void setRootId(Serializable repositoryId, Serializable id)
-            throws StorageException;
+    void setRootId(Serializable repositoryId, Serializable id) throws StorageException;
 
     /*
      * ----- Query -----
@@ -118,12 +114,10 @@ public interface Mapper extends RowMapper, XAResource {
      * @param query the query
      * @param query the query type
      * @param queryFilter the query filter
-     * @param countTotal if {@code true}, count the total size without
-     *            limit/offset
+     * @param countTotal if {@code true}, count the total size without limit/offset
      * @return the list of matching document ids
      */
-    PartialList<Serializable> query(String query, String queryType,
-            QueryFilter queryFilter, boolean countTotal)
+    PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, boolean countTotal)
             throws StorageException;
 
     /**
@@ -132,22 +126,18 @@ public interface Mapper extends RowMapper, XAResource {
      * @param query the query
      * @param query the query type
      * @param queryFilter the query filter
-     * @param countUpTo if {@code -1}, count the total size without
-     *            offset/limit.<br>
+     * @param countUpTo if {@code -1}, count the total size without offset/limit.<br>
      *            If {@code 0}, don't count the total size.<br>
-     *            If {@code n}, count the total number if there are less than n
-     *            documents otherwise set the size to {@code -1}.
+     *            If {@code n}, count the total number if there are less than n documents otherwise set the size to
+     *            {@code -1}.
      * @return the list of matching document ids
-     *
      * @Since 5.6
      */
-    PartialList<Serializable> query(String query, String queryType,
-            QueryFilter queryFilter, long countUpTo)
+    PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
             throws StorageException;
 
     /**
-     * Makes a query to the database and returns an iterable (which must be
-     * closed when done).
+     * Makes a query to the database and returns an iterable (which must be closed when done).
      *
      * @param query the query
      * @param queryType the query type
@@ -156,8 +146,8 @@ public interface Mapper extends RowMapper, XAResource {
      * @return an iterable, which <b>must</b> be closed when done
      */
     // queryFilter used for principals and permissions
-    IterableQueryResult queryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, Object... params) throws StorageException;
+    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params)
+            throws StorageException;
 
     /**
      * Gets the ids for all the ancestors of the given row ids.
@@ -165,8 +155,7 @@ public interface Mapper extends RowMapper, XAResource {
      * @param ids the ids
      * @return the set of ancestor ids
      */
-    Set<Serializable> getAncestorsIds(Collection<Serializable> ids)
-            throws StorageException;
+    Set<Serializable> getAncestorsIds(Collection<Serializable> ids) throws StorageException;
 
     /*
      * ----- ACLs -----
@@ -195,14 +184,12 @@ public interface Mapper extends RowMapper, XAResource {
     /**
      * Inserts the invalidation rows for the other cluster nodes.
      */
-    void insertClusterInvalidations(Invalidations invalidations, String nodeId)
-            throws StorageException;
+    void insertClusterInvalidations(Invalidations invalidations, String nodeId) throws StorageException;
 
     /**
      * Gets the invalidations from other cluster nodes.
      */
-    Invalidations getClusterInvalidations(String nodeId)
-            throws StorageException;
+    Invalidations getClusterInvalidations(String nodeId) throws StorageException;
 
     /*
      * ----- Locking -----
@@ -221,13 +208,12 @@ public interface Mapper extends RowMapper, XAResource {
     /**
      * Sets a lock on a document.
      * <p>
-     * If the document is already locked, returns its existing lock status
-     * (there is no re-locking, {@link #removeLock} must be called first).
+     * If the document is already locked, returns its existing lock status (there is no re-locking, {@link #removeLock}
+     * must be called first).
      *
      * @param id the document id
      * @param lock the lock object to set
-     * @return {@code null} if locking succeeded, or the existing lock if
-     *         locking failed, or a
+     * @return {@code null} if locking succeeded, or the existing lock if locking failed, or a
      */
     Lock setLock(Serializable id, Lock lock) throws StorageException;
 
@@ -236,44 +222,35 @@ public interface Mapper extends RowMapper, XAResource {
      * <p>
      * The previous lock is returned.
      * <p>
-     * If {@code owner} is {@code null} then the lock is unconditionally
-     * removed.
+     * If {@code owner} is {@code null} then the lock is unconditionally removed.
      * <p>
-     * If {@code owner} is not {@code null}, it must match the existing lock
-     * owner for the lock to be removed. If it doesn't match, the returned lock
-     * will return {@code true} for {@link Lock#getFailed}.
+     * If {@code owner} is not {@code null}, it must match the existing lock owner for the lock to be removed. If it
+     * doesn't match, the returned lock will return {@code true} for {@link Lock#getFailed}.
      *
      * @param id the document id
      * @param the owner to check, or {@code null} for no check
-     * @param force {@code true} to just do the remove and not return the
-     *            previous lock
+     * @param force {@code true} to just do the remove and not return the previous lock
      * @return the previous lock
      */
-    Lock removeLock(Serializable id, String owner, boolean force)
-            throws StorageException;
+    Lock removeLock(Serializable id, String owner, boolean force) throws StorageException;
 
     /**
-     * Marks the binaries referenced by this mapper with the referenced binary
-     * garbage collector.
+     * Marks the binaries referenced by this mapper with the referenced binary garbage collector.
      *
      * @param gc the binary garbage collector
      */
-    void markReferencedBinaries(BinaryGarbageCollector gc)
-            throws StorageException;
+    void markReferencedBinaries(BinaryGarbageCollector gc) throws StorageException;
 
     /**
-     * Cleans up (hard-delete) any rows that have been soft-deleted in the
-     * database.
+     * Cleans up (hard-delete) any rows that have been soft-deleted in the database.
      *
      * @param max the maximum number of rows to delete at a time
      * @param beforeTime the maximum deletion time of the rows to delete
      * @return the number of rows deleted
      */
-    int cleanupDeletedRows(int max, Calendar beforeTime)
-            throws StorageException;
+    int cleanupDeletedRows(int max, Calendar beforeTime) throws StorageException;
 
     /**
-     *
      * @since 5.9.3
      */
     boolean isConnected();

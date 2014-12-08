@@ -31,8 +31,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 /**
  * Layout manager interface.
  * <p>
- * It manages access to layout definitions, widget definitions and widget types
- * for a given category.
+ * It manages access to layout definitions, widget definitions and widget types for a given category.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -53,8 +52,7 @@ public interface LayoutManager extends Serializable {
     WidgetType getWidgetType(String typeName);
 
     /**
-     * Returns the widget type definition with given name, or null if no widget
-     * type with this name is found.
+     * Returns the widget type definition with given name, or null if no widget type with this name is found.
      *
      * @since 5.4
      */
@@ -68,8 +66,7 @@ public interface LayoutManager extends Serializable {
     List<WidgetTypeDefinition> getWidgetTypeDefinitions();
 
     /**
-     * Returns the layout type definition with given name, or null if no layout
-     * type with this name is found.
+     * Returns the layout type definition with given name, or null if no layout type with this name is found.
      *
      * @since 6.0
      */

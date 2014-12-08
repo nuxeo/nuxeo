@@ -25,14 +25,13 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * @author Alexandre Russel
- *
  */
-public class AnnotationsRepositoryServiceImpl implements
-        AnnotationsRepositoryService {
+public class AnnotationsRepositoryServiceImpl implements AnnotationsRepositoryService {
 
     private DocumentAnnotability annotability;
 
     private SecurityManager securityManager;
+
     public SecurityManager getSecurityManager() {
         return securityManager;
     }
@@ -51,6 +50,7 @@ public class AnnotationsRepositoryServiceImpl implements
     public boolean isAnnotable(DocumentModel document) throws ClientException {
         return annotability.isAnnotable(document);
     }
+
     // for testing
     DocumentAnnotability getAnnotability() {
         return annotability;
@@ -60,8 +60,7 @@ public class AnnotationsRepositoryServiceImpl implements
         this.annotability = annotability;
     }
 
-    public boolean check(NuxeoPrincipal user, String permission,
-            DocumentModel model) {
+    public boolean check(NuxeoPrincipal user, String permission, DocumentModel model) {
         return securityManager.check(user, permission, model);
     }
 

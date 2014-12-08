@@ -82,8 +82,7 @@ public class ServerActionsBean implements ServerActions, Serializable {
             }
             if (found) {
                 log.debug("Selected core name: " + repositoryName);
-                RepositoryLocation selectedLocation = new RepositoryLocation(
-                        repositoryName);
+                RepositoryLocation selectedLocation = new RepositoryLocation(repositoryName);
                 navigationContext.setCurrentServerLocation(selectedLocation);
                 return DEFAULT_VIEW;
             } else {

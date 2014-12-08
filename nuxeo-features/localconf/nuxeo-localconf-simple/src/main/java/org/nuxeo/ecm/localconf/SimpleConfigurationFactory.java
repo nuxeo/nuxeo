@@ -23,8 +23,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
- * Factory creating the {@code SimpleConfigurationAdapter} adapter if the
- * document has the {@code SimpleConfiguration} facet.
+ * Factory creating the {@code SimpleConfigurationAdapter} adapter if the document has the {@code SimpleConfiguration}
+ * facet.
  *
  * @see SimpleConfigurationAdapter
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

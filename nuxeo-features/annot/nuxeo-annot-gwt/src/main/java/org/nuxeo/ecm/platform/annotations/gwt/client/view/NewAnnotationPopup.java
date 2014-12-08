@@ -51,7 +51,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class NewAnnotationPopup extends PopupPanel {
 
@@ -70,12 +69,10 @@ public class NewAnnotationPopup extends PopupPanel {
 
                 @SuppressWarnings("deprecation")
                 @Override
-                public void onKeyPress(Widget sender, char keyCode,
-                        int modifiers) {
+                public void onKeyPress(Widget sender, char keyCode, int modifiers) {
                     TextArea ta = (TextArea) sender;
                     String content = ta.getText();
-                    if (Character.isLetterOrDigit(keyCode)
-                            || Character.isSpace(keyCode)) {
+                    if (Character.isLetterOrDigit(keyCode) || Character.isSpace(keyCode)) {
                         if (content.length() >= AnnotationConstant.MAX_ANNOTATION_TEXT_LENGTH) {
                             ta.cancelKey();
                         }
@@ -111,16 +108,13 @@ public class NewAnnotationPopup extends PopupPanel {
 
     private final boolean removeOnCancel;
 
-    public NewAnnotationPopup(final Element element,
-            final AnnotationController controller,
+    public NewAnnotationPopup(final Element element, final AnnotationController controller,
             final boolean removeOnCancel, final String annotationType) {
         this(element, controller, removeOnCancel, annotationType, null);
     }
 
-    public NewAnnotationPopup(final Element element,
-            final AnnotationController controller,
-            final boolean removeOnCancel, final String annotationType,
-            final String annotationName) {
+    public NewAnnotationPopup(final Element element, final AnnotationController controller,
+            final boolean removeOnCancel, final String annotationType, final String annotationName) {
         this.controller = controller;
         this.element = element;
         this.removeOnCancel = removeOnCancel;
@@ -139,8 +133,7 @@ public class NewAnnotationPopup extends PopupPanel {
             // Add into the view
             verticalPanel.add(new Label(selectedAnnotationType));
 
-            Map<String, String[]> fields = controller.getWebConfiguration().getAnnotationDefinition(
-                    annotationName).getFields();
+            Map<String, String[]> fields = controller.getWebConfiguration().getAnnotationDefinition(annotationName).getFields();
             for (String fieldName : fields.keySet()) {
                 ListBox fieldListBox = new ListBox();
                 fieldListBox.setName(fieldName);
@@ -154,8 +147,7 @@ public class NewAnnotationPopup extends PopupPanel {
             }
         } else {
             WebConfiguration webConf = controller.getWebConfiguration();
-            List<AnnotationDefinition> annotationDefs = webConf.getAnnotationDefinitions(new TypeFilter(
-                    annotationType));
+            List<AnnotationDefinition> annotationDefs = webConf.getAnnotationDefinitions(new TypeFilter(annotationType));
             if (annotationDefs.size() == 1) {
                 selectedAnnotationType = annotationDefs.get(0).getName();
                 String label = selectedAnnotationType;
@@ -245,8 +237,7 @@ public class NewAnnotationPopup extends PopupPanel {
         public void onClick(Widget sender) {
             String text = annotationTextArea.getText();
             if (text.length() > AnnotationConstant.MAX_ANNOTATION_TEXT_LENGTH) {
-                Window.alert("Your annotation must not exceed "
-                        + AnnotationConstant.MAX_ANNOTATION_TEXT_LENGTH
+                Window.alert("Your annotation must not exceed " + AnnotationConstant.MAX_ANNOTATION_TEXT_LENGTH
                         + " characters long.");
                 return;
             }
@@ -256,8 +247,7 @@ public class NewAnnotationPopup extends PopupPanel {
             annotation.setType(getType());
 
             for (ListBox fieldListBox : fieldListBoxes) {
-                annotation.getFields().put(
-                        fieldListBox.getName(),
+                annotation.getFields().put(fieldListBox.getName(),
                         fieldListBox.getItemText(fieldListBox.getSelectedIndex()));
             }
 

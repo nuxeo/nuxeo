@@ -56,9 +56,8 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
  * <p>
  * Internally, the repository is a map from id to document object.
  * <p>
- * A document object is a JSON-like document stored as a Map recursively
- * containing the data, see {@link DBSDocument} for the description of the
- * document.
+ * A document object is a JSON-like document stored as a Map recursively containing the data, see {@link DBSDocument}
+ * for the description of the document.
  *
  * @since 5.9.4
  */
@@ -158,8 +157,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public State readChildState(String parentId, String name,
-            Set<String> ignored) {
+    public State readChildState(String parentId, String name, Set<String> ignored) {
         // TODO optimize by maintaining a parent/child index
         for (State state : states.values()) {
             if (ignored.contains(state.get(KEY_ID))) {
@@ -182,8 +180,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public List<State> queryKeyValue(String key, String value,
-            Set<String> ignored) {
+    public List<State> queryKeyValue(String key, String value, Set<String> ignored) {
         List<State> list = new ArrayList<>();
         for (State state : states.values()) {
             String id = (String) state.get(KEY_ID);
@@ -199,8 +196,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void queryKeyValueArray(String key, Object value, Set<String> ids,
-            Map<String, String> proxyTargets,
+    public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
         STATE: for (State state : states.values()) {
             Object[] array = (Object[]) state.get(key);
@@ -209,8 +205,7 @@ public class MemRepository extends DBSRepositoryBase {
                 for (Object v : array) {
                     if (value.equals(v)) {
                         ids.add(id);
-                        if (proxyTargets != null
-                                && TRUE.equals(state.get(KEY_IS_PROXY))) {
+                        if (proxyTargets != null && TRUE.equals(state.get(KEY_IS_PROXY))) {
                             String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
                             proxyTargets.put(id, targetId);
                         }
@@ -228,8 +223,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public boolean queryKeyValuePresence(String key, String value,
-            Set<String> ignored) {
+    public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
         for (State state : states.values()) {
             String id = (String) state.get(KEY_ID);
             if (ignored.contains(id)) {
@@ -243,10 +237,8 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public PartialList<State> queryAndFetch(Expression expression,
-            DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, boolean deepCopy,
-            boolean fulltextScore) {
+    public PartialList<State> queryAndFetch(Expression expression, DBSExpressionEvaluator evaluator,
+            OrderByClause orderByClause, int limit, int offset, int countUpTo, boolean deepCopy, boolean fulltextScore) {
         List<State> maps = new ArrayList<>();
         for (State state : states.values()) {
             if (evaluator.matches(state)) {
@@ -258,8 +250,7 @@ public class MemRepository extends DBSRepositoryBase {
         }
         // ORDER BY
         if (orderByClause != null) {
-            Collections.sort(maps, new OrderByComparator(orderByClause,
-                    evaluator));
+            Collections.sort(maps, new OrderByComparator(orderByClause, evaluator));
         }
         // LIMIT / OFFSET
         int totalSize = maps.size();
@@ -304,8 +295,7 @@ public class MemRepository extends DBSRepositoryBase {
                     // enter the next if
                 }
                 if (!(old instanceof State)) {
-                    throw new UnsupportedOperationException(
-                            "Cannot apply StateDiff on non-State: " + old);
+                    throw new UnsupportedOperationException("Cannot apply StateDiff on non-State: " + old);
                 }
                 applyDiff((State) old, (StateDiff) diffElem);
             } else if (diffElem instanceof ListDiff) {
@@ -327,8 +317,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     /**
-     * Applies a {@link ListDiff} onto an array or {@link List}, and returns the
-     * resulting value.
+     * Applies a {@link ListDiff} onto an array or {@link List}, and returns the resulting value.
      * <p>
      * Uses thread-safe datastructures.
      */
@@ -337,8 +326,7 @@ public class MemRepository extends DBSRepositoryBase {
         // TODO this is costly, use a separate code path for arrays
         if (listDiff.isArray && value != null) {
             if (!(value instanceof Object[])) {
-                throw new UnsupportedOperationException(
-                        "Cannot apply ListDiff on non-array: " + value);
+                throw new UnsupportedOperationException("Cannot apply ListDiff on non-array: " + value);
             }
             value = new CopyOnWriteArrayList<>(Arrays.asList((Object[]) value));
         }
@@ -346,8 +334,7 @@ public class MemRepository extends DBSRepositoryBase {
             value = new CopyOnWriteArrayList<>();
         }
         if (!(value instanceof List)) {
-            throw new UnsupportedOperationException(
-                    "Cannot apply ListDiff on non-List: " + value);
+            throw new UnsupportedOperationException("Cannot apply ListDiff on non-List: " + value);
         }
         @SuppressWarnings("unchecked")
         List<Serializable> list = (List<Serializable>) value;

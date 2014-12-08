@@ -26,7 +26,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 @XObject("imageToConvert")
 public class ImageToConvertDescriptor implements Serializable {

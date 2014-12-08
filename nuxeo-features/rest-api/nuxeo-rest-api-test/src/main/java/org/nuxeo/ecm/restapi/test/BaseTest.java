@@ -94,13 +94,11 @@ public class BaseTest {
         return getResponse(requestType, path, null, null, null, null);
     }
 
-    protected ClientResponse getResponse(RequestType requestType,
-            String path, Map<String, String> headers) {
+    protected ClientResponse getResponse(RequestType requestType, String path, Map<String, String> headers) {
         return getResponse(requestType, path, null, null, null, headers);
     }
 
-    protected ClientResponse getResponse(RequestType requestType, String path,
-            MultiPart mp) {
+    protected ClientResponse getResponse(RequestType requestType, String path, MultiPart mp) {
         return getResponse(requestType, path, null, null, mp, null);
     }
 
@@ -113,13 +111,12 @@ public class BaseTest {
         return getResponse(requestType, path, data, null, null, null);
     }
 
-    protected ClientResponse getResponse(RequestType requestType,
-            String path, String data, Map<String, String> headers) {
+    protected ClientResponse getResponse(RequestType requestType, String path, String data, Map<String, String> headers) {
         return getResponse(requestType, path, data, null, null, headers);
     }
 
-    protected ClientResponse getResponse(RequestType requestType, String path,
-            String data, MultivaluedMap<String, String> queryParams, MultiPart mp, Map<String, String> headers) {
+    protected ClientResponse getResponse(RequestType requestType, String path, String data,
+            MultivaluedMap<String, String> queryParams, MultiPart mp, Map<String, String> headers) {
         WebResource wr = service.path(path);
 
         if (queryParams != null && !queryParams.isEmpty()) {
@@ -129,8 +126,7 @@ public class BaseTest {
         if (requestType == RequestType.GETES) {
             builder = wr.accept("application/json+esentity");
         } else {
-            builder = wr.accept(MediaType.APPLICATION_JSON).header(
-                    "X-NXDocumentProperties", "dublincore");
+            builder = wr.accept(MediaType.APPLICATION_JSON).header("X-NXDocumentProperties", "dublincore");
         }
         if (mp != null) {
             builder = wr.type(MediaType.MULTIPART_FORM_DATA_TYPE);
@@ -143,7 +139,7 @@ public class BaseTest {
         }
 
         // Adding some headers if needed
-        if(headers!=null && !headers.isEmpty()) {
+        if (headers != null && !headers.isEmpty()) {
             for (String headerKey : headers.keySet()) {
                 builder.header(headerKey, headers.get(headerKey));
             }
@@ -172,25 +168,22 @@ public class BaseTest {
         }
     }
 
-    protected JsonNode getResponseAsJson(RequestType responseType, String url)
-            throws IOException, JsonProcessingException {
+    protected JsonNode getResponseAsJson(RequestType responseType, String url) throws IOException,
+            JsonProcessingException {
         return getResponseAsJson(responseType, url, null);
     }
 
     /**
-     *
      * @param get
      * @param string
      * @param queryParamsForPage
      * @return
      * @throws IOException
      * @throws JsonProcessingException
-     *
      * @since 5.8
      */
     protected JsonNode getResponseAsJson(RequestType responseType, String url,
-            MultivaluedMap<String, String> queryParams) throws JsonProcessingException,
-            IOException {
+            MultivaluedMap<String, String> queryParams) throws JsonProcessingException, IOException {
         ClientResponse response = getResponse(responseType, url, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         return mapper.readTree(response.getEntityInputStream());
@@ -209,8 +202,7 @@ public class BaseTest {
         }
     }
 
-    protected void assertNodeEqualsDoc(JsonNode node, DocumentModel note)
-            throws Exception {
+    protected void assertNodeEqualsDoc(JsonNode node, DocumentModel note) throws Exception {
         assertEquals("document", node.get("entity-type").getValueAsText());
         assertEquals(note.getPathAsString(), node.get("path").getValueAsText());
         assertEquals(note.getId(), node.get("uid").getValueAsText());
@@ -228,8 +220,7 @@ public class BaseTest {
         return result;
     }
 
-    protected void assertEntityEqualsDoc(InputStream in, DocumentModel doc)
-            throws Exception {
+    protected void assertEntityEqualsDoc(InputStream in, DocumentModel doc) throws Exception {
 
         JsonNode node = mapper.readTree(in);
         assertNodeEqualsDoc(node, doc);

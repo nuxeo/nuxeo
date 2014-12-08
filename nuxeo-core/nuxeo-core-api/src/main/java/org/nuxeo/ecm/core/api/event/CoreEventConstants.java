@@ -24,17 +24,14 @@ public final class CoreEventConstants {
     public static final String DOC_LIFE_CYCLE = "documentLifeCycle";
 
     /**
-     * BBB for NXP-666: change events to manage DocumentModel instances instead
-     * of Document instances.
+     * BBB for NXP-666: change events to manage DocumentModel instances instead of Document instances.
      * <p>
-     * Document is passed as an option in event in case old listeners need it
-     * and cannot handle the document model.
+     * Document is passed as an option in event in case old listeners need it and cannot handle the document model.
      */
-    //public static final String DOCUMENT = "document";
+    // public static final String DOCUMENT = "document";
 
     /**
-     * Path the of the container of the empty document model that is being
-     * created.
+     * Path the of the container of the empty document model that is being created.
      */
     public static final String PARENT_PATH = "parentPath";
 
@@ -53,15 +50,14 @@ public final class CoreEventConstants {
     public static final String REPLACED_PROXY_IDS = "replacedProxyRefs";
 
     /**
-     * Passed with beforeDocumentModification and documentModified events to
-     * hold the state that is about to be / has been overwritten by the
-     * saveDocument.
+     * Passed with beforeDocumentModification and documentModified events to hold the state that is about to be / has
+     * been overwritten by the saveDocument.
      */
     public static final String PREVIOUS_DOCUMENT_MODEL = "previousDocumentModel";
 
     /**
-     * Passed with aboutToCopy, aboutToMove, documentCreatedbyCopy and documentMoved events to be able to
-     * change the destination name
+     * Passed with aboutToCopy, aboutToMove, documentCreatedbyCopy and documentMoved events to be able to change the
+     * destination name
      *
      * @since 5.7
      */
@@ -76,8 +72,7 @@ public final class CoreEventConstants {
     public static final String SOURCE_REF = "sourceRef";
 
     /**
-     * Passed with documentCreatedbyCopy event to be able to reset the life
-     * cycle or not
+     * Passed with documentCreatedbyCopy event to be able to reset the life cycle or not
      *
      * @since 5.7
      */

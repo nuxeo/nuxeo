@@ -16,16 +16,16 @@ import java.util.NoSuchElementException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CompoundEnumeration<E> implements Enumeration<E> {
 
     private final Enumeration<E>[] enums;
+
     private int index = 0;
 
     @SuppressWarnings("unchecked")
     public CompoundEnumeration(Enumeration<?>[] enums) {
-        this.enums = (Enumeration<E>[])enums;
+        this.enums = (Enumeration<E>[]) enums;
     }
 
     private boolean next() {

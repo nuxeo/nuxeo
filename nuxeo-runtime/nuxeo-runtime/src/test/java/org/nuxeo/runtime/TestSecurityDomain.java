@@ -47,7 +47,7 @@ public class TestSecurityDomain {
         AppConfigurationEntry entry2 = new AppConfigurationEntry(name2, flag2, opts2);
 
         String securityDomainName = "nuxeo-test";
-        SecurityDomain sd = new SecurityDomain(securityDomainName, new AppConfigurationEntry[]{entry1, entry2});
+        SecurityDomain sd = new SecurityDomain(securityDomainName, new AppConfigurationEntry[] { entry1, entry2 });
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);

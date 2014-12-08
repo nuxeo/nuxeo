@@ -17,23 +17,20 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 /**
- * A simple binary manager that "hides" binaries on the filesystem by scrambling
- * them on write and unscrambling them on read using XOR.
+ * A simple binary manager that "hides" binaries on the filesystem by scrambling them on write and unscrambling them on
+ * read using XOR.
  * <p>
- * The {@link BinaryManagerDescriptor} holds a key that can be used to drive the
- * scrambling/unscrambling.
+ * The {@link BinaryManagerDescriptor} holds a key that can be used to drive the scrambling/unscrambling.
  * <p>
- * This is to prevent casual reading of the files, but of course the algorithm
- * and key for scrambling are available on the system as well, so this not a
- * secure store.
+ * This is to prevent casual reading of the files, but of course the algorithm and key for scrambling are available on
+ * the system as well, so this not a secure store.
  */
 public class XORBinaryManager extends LocalBinaryManager {
 
     protected byte[] pattern;
 
     @Override
-    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
-            throws IOException {
+    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
         super.initialize(binaryManagerDescriptor);
         String key = binaryManagerDescriptor.key;
         if (key == null || key.length() == 0) {
@@ -82,8 +79,7 @@ public class XORBinaryManager extends LocalBinaryManager {
         }
 
         @Override
-        public Binary getUnscrambledBinary(File file, String digest,
-                String repoName) {
+        public Binary getUnscrambledBinary(File file, String digest, String repoName) {
             return new ScrambledBinary(file, digest, repoName, this);
         }
 

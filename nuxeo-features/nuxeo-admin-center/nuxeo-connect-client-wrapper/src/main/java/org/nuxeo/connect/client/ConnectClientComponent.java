@@ -31,8 +31,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Nuxeo Runtime Component used to wrap nuxeo-connect-client services as Nuxeo Services.
  * <p>
- * This is required because nuxeo-connect-client can not depend on Nuxeo Runtime,
- * so this wrapper manages the integration and the callbacks needed.
+ * This is required because nuxeo-connect-client can not depend on Nuxeo Runtime, so this wrapper manages the
+ * integration and the callbacks needed.
  *
  * @author tiry
  */
@@ -46,29 +46,23 @@ public class ConnectClientComponent extends DefaultComponent {
     // Wrap connect client services as Nuxeo Services
     public <T> T getAdapter(Class<T> adapter) {
 
-        if (adapter.getCanonicalName().equals(
-                ConnectConnector.class.getCanonicalName())) {
+        if (adapter.getCanonicalName().equals(ConnectConnector.class.getCanonicalName())) {
             return adapter.cast(NuxeoConnectClient.getConnectConnector());
         }
 
-        if (adapter.getCanonicalName().equals(
-                ConnectRegistrationService.class.getCanonicalName())) {
-            return adapter.cast(NuxeoConnectClient
-                    .getConnectRegistrationService());
+        if (adapter.getCanonicalName().equals(ConnectRegistrationService.class.getCanonicalName())) {
+            return adapter.cast(NuxeoConnectClient.getConnectRegistrationService());
         }
 
-        if (adapter.getCanonicalName().equals(
-                ConnectDownloadManager.class.getCanonicalName())) {
+        if (adapter.getCanonicalName().equals(ConnectDownloadManager.class.getCanonicalName())) {
             return adapter.cast(NuxeoConnectClient.getDownloadManager());
         }
 
-        if (adapter.getCanonicalName().equals(
-                PackageManager.class.getCanonicalName())) {
+        if (adapter.getCanonicalName().equals(PackageManager.class.getCanonicalName())) {
             return adapter.cast(NuxeoConnectClient.getPackageManager());
         }
 
-        if (adapter.getCanonicalName().equals(
-                PackageUpdateService.class.getCanonicalName())) {
+        if (adapter.getCanonicalName().equals(PackageUpdateService.class.getCanonicalName())) {
             return adapter.cast(NuxeoConnectClient.getPackageUpdateService());
         }
 

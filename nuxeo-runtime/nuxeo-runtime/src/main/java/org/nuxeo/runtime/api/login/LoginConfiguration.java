@@ -41,8 +41,7 @@ public class LoginConfiguration extends Configuration {
 
     @Override
     public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
-        AppConfigurationEntry[] appConfigurationEntry = holder.get().getAppConfigurationEntry(
-                name);
+        AppConfigurationEntry[] appConfigurationEntry = holder.get().getAppConfigurationEntry(name);
         if (appConfigurationEntry == null) {
             appConfigurationEntry = context.parent.getAppConfigurationEntry(name);
         }
@@ -70,8 +69,7 @@ public class LoginConfiguration extends Configuration {
 
         @Override
         public String toString() {
-            return "Login Installation Context [parent=" + parent + ", thread="
-                    + thread + "]";
+            return "Login Installation Context [parent=" + parent + ", thread=" + thread + "]";
         }
 
     }
@@ -84,8 +82,7 @@ public class LoginConfiguration extends Configuration {
         if (count == 1) {
             context = new InstallContext(provider);
             Configuration.setConfiguration(this);
-            LogFactory.getLog(LoginConfiguration.class).trace(
-                    "installed login configuration", context.stacktrace);
+            LogFactory.getLog(LoginConfiguration.class).trace("installed login configuration", context.stacktrace);
         }
     }
 
@@ -93,8 +90,7 @@ public class LoginConfiguration extends Configuration {
         holder.remove();
         int count = counter.decrementAndGet();
         if (count == 0) {
-            LogFactory.getLog(LoginConfiguration.class).trace(
-                    "uninstalled login configuration " + context.thread,
+            LogFactory.getLog(LoginConfiguration.class).trace("uninstalled login configuration " + context.thread,
                     context.stacktrace);
             Configuration.setConfiguration(context.parent);
             context = null;

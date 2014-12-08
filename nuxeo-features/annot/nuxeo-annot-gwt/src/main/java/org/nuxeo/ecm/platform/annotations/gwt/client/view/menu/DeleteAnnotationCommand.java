@@ -25,7 +25,6 @@ import com.google.gwt.user.client.Window;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class DeleteAnnotationCommand extends AbstractAnnotationCommand {
 

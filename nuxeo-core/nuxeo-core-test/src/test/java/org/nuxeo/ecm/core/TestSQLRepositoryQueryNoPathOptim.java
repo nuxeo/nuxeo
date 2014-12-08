@@ -35,16 +35,14 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestSQLRepositoryQueryNoPathOptim extends SQLRepositoryTestCase {
 
-
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.test.tests",
-                 "OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");
         openSession();
-        RepositoryDescriptor desc = Framework.getLocalService(SQLRepositoryService.class)
-                .getRepositoryDescriptor(database.repositoryName);
+        RepositoryDescriptor desc = Framework.getLocalService(SQLRepositoryService.class).getRepositoryDescriptor(
+                database.repositoryName);
         Assert.assertFalse("Path optim should be disabled", desc.getPathOptimizationsEnabled());
     }
 
@@ -57,9 +55,7 @@ public class TestSQLRepositoryQueryNoPathOptim extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
-
-    protected Calendar getCalendar(int year, int month, int day, int hours,
-                                   int minutes, int seconds) {
+    protected Calendar getCalendar(int year, int month, int day, int hours, int minutes, int seconds) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month - 1); // 0-based
@@ -85,19 +81,16 @@ public class TestSQLRepositoryQueryNoPathOptim extends SQLRepositoryTestCase {
      * </pre>
      */
     protected void createDocs() throws Exception {
-        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
-                "Folder");
+        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
         folder1 = session.createDocument(folder1);
 
-        DocumentModel file1 = new DocumentModelImpl("/testfolder1",
-                "testfile1", "File");
+        DocumentModel file1 = new DocumentModelImpl("/testfolder1", "testfile1", "File");
         file1.setPropertyValue("dc:title", "testfile1_Title");
         file1.setPropertyValue("dc:description", "testfile1_description");
         String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
         String filename = "testfile.txt";
-        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"),
-                "text/plain", "UTF-8", filename, null);
+        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"), "text/plain", "UTF-8", filename, null);
         file1.setPropertyValue("content", blob1);
         file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
@@ -107,37 +100,29 @@ public class TestSQLRepositoryQueryNoPathOptim extends SQLRepositoryTestCase {
         file1.setPropertyValue("uid", "uid123");
         file1 = session.createDocument(file1);
 
-        DocumentModel file2 = new DocumentModelImpl("/testfolder1",
-                "testfile2", "File");
+        DocumentModel file2 = new DocumentModelImpl("/testfolder1", "testfile2", "File");
         file2.setPropertyValue("dc:title", "testfile2_Title");
         file2.setPropertyValue("dc:description", "testfile2_DESCRIPTION2");
         Calendar cal2 = getCalendar(2007, 4, 1, 12, 0, 0);
         file2.setPropertyValue("dc:created", cal2);
-        file2.setPropertyValue("dc:contributors",
-                new String[] { "bob", "pete" });
+        file2.setPropertyValue("dc:contributors", new String[] { "bob", "pete" });
         file2.setPropertyValue("dc:coverage", "foo/bar");
         file2 = session.createDocument(file2);
 
-        DocumentModel file3 = new DocumentModelImpl("/testfolder1",
-                "testfile3", "Note");
+        DocumentModel file3 = new DocumentModelImpl("/testfolder1", "testfile3", "Note");
         file3.setPropertyValue("dc:title", "testfile3_Title");
-        file3.setPropertyValue("dc:description",
-                "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
-        file3.setPropertyValue("dc:contributors",
-                new String[] { "bob", "john" });
+        file3.setPropertyValue("dc:description", "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
+        file3.setPropertyValue("dc:contributors", new String[] { "bob", "john" });
         file3 = session.createDocument(file3);
 
-        DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",
-                "Folder");
+        DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2", "Folder");
         folder2 = session.createDocument(folder2);
 
-        DocumentModel folder3 = new DocumentModelImpl("/testfolder2",
-                "testfolder3", "Folder");
+        DocumentModel folder3 = new DocumentModelImpl("/testfolder2", "testfolder3", "Folder");
         folder3 = session.createDocument(folder3);
 
         // create file 4
-        DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3",
-                "testfile4", "File");
+        DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3", "testfile4", "File");
         // title without space or _ for Oracle fulltext searchability
         // (testFulltextProxy)
         file4.setPropertyValue("dc:title", "testfile4Title");
@@ -186,8 +171,7 @@ public class TestSQLRepositoryQueryNoPathOptim extends SQLRepositoryTestCase {
         createDocs();
 
         // move folder2 into folder1
-        session.move(new PathRef("/testfolder2/"),
-                new PathRef("/testfolder1/"), null);
+        session.move(new PathRef("/testfolder2/"), new PathRef("/testfolder1/"), null);
         session.save();
 
         sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder1/'";
@@ -229,24 +213,20 @@ public class TestSQLRepositoryQueryNoPathOptim extends SQLRepositoryTestCase {
         createDocs();
 
         String query = "SELECT * FROM Document WHERE ecm:ancestorId = '%s'";
-        dml = session.query(String.format(query,
-                session.getRootDocument().getId()));
+        dml = session.query(String.format(query, session.getRootDocument().getId()));
         assertEquals(7, dml.size());
 
         dml = session.query(String.format(query, "nosuchid"));
         assertEquals(0, dml.size());
 
-        dml = session.query(String.format(query,
-                session.getDocument(new PathRef("/testfolder1")).getId()));
+        dml = session.query(String.format(query, session.getDocument(new PathRef("/testfolder1")).getId()));
         assertEquals(3, dml.size());
 
-        dml = session.query(String.format(query,
-                session.getDocument(new PathRef("/testfolder2")).getId()));
+        dml = session.query(String.format(query, session.getDocument(new PathRef("/testfolder2")).getId()));
         assertEquals(2, dml.size());
 
         // negative query
-        dml = session.query(String.format(
-                "SELECT * FROM Document WHERE ecm:ancestorId <> '%s'",
+        dml = session.query(String.format("SELECT * FROM Document WHERE ecm:ancestorId <> '%s'",
                 session.getDocument(new PathRef("/testfolder1")).getId()));
         assertEquals(4, dml.size());
 

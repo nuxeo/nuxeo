@@ -54,15 +54,12 @@ public class ConfigBuilderHelper {
             System.arraycopy(paths, 0, tmp, 0, paths.length);
             tmp[paths.length] = ldPath;
             field.set(null, tmp);
-            System.setProperty("java.library.path",
-                    System.getProperty("java.library.path"));
+            System.setProperty("java.library.path", System.getProperty("java.library.path"));
 
         } catch (IllegalAccessException e) {
-            throw new IOException(
-                    "Failed to get permissions to set library path");
+            throw new IOException("Failed to get permissions to set library path");
         } catch (NoSuchFieldException e) {
-            throw new IOException(
-                    "Failed to get field handle to set library path");
+            throw new IOException("Failed to get field handle to set library path");
         }
     }
 

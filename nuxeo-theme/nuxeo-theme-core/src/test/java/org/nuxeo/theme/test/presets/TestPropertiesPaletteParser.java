@@ -27,8 +27,7 @@ public class TestPropertiesPaletteParser extends NXRuntimeTestCase {
 
     @Test
     public void testParser() {
-        URL url = getClass().getClassLoader().getResource(
-                "properties-palette.properties");
+        URL url = getClass().getClassLoader().getResource("properties-palette.properties");
         Map<String, String> entries = PaletteParser.parse(url);
         Object[] keys = entries.keySet().toArray();
 

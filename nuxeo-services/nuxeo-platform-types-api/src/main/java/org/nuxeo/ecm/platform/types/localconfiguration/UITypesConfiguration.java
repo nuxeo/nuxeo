@@ -47,7 +47,7 @@ public interface UITypesConfiguration extends LocalConfiguration<UITypesConfigur
     /**
      * Filter the {@code allowedSubTypes} according to this object configuration.
      */
-    Map<String,SubType> filterSubTypes(Map<String,SubType> allowedSubTypes);
+    Map<String, SubType> filterSubTypes(Map<String, SubType> allowedSubTypes);
 
     String getDefaultType();
 }

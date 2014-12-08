@@ -27,6 +27,7 @@ import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 
 public class EmailHelperMock extends EmailHelper {
     public Log log = LogFactory.getLog(this.getClass());
+
     public int compteur = 0;
 
     @Override
@@ -34,7 +35,7 @@ public class EmailHelperMock extends EmailHelper {
         compteur++;
         log.info("Faking send mail : ");
         for (String key : mail.keySet()) {
-               log.info(key+" : "+mail.get(key));
+            log.info(key + " : " + mail.get(key));
         }
 
     }

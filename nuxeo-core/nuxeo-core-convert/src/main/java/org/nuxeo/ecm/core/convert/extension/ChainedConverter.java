@@ -44,6 +44,7 @@ public class ChainedConverter implements Converter {
     protected boolean subConvertersBased = false;
 
     protected List<String> steps = new ArrayList<String>();
+
     protected List<String> subConverters = new ArrayList<String>();
 
     public ChainedConverter() {
@@ -58,8 +59,7 @@ public class ChainedConverter implements Converter {
     }
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         if (subConvertersBased) {
             return convertBasedSubConverters(blobHolder, parameters);
@@ -68,8 +68,8 @@ public class ChainedConverter implements Converter {
         }
     }
 
-    protected BlobHolder convertBasedSubConverters(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    protected BlobHolder convertBasedSubConverters(BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException {
 
         try {
             String srcMT = blobHolder.getBlob().getMimeType();
@@ -80,8 +80,7 @@ public class ChainedConverter implements Converter {
 
                 ConverterDescriptor desc = ConversionServiceImpl.getConverterDescriptor(converterName);
                 if (!desc.getSourceMimeTypes().contains(srcMT)) {
-                    throw new ConversionException(
-                            "Conversion Chain is not well defined");
+                    throw new ConversionException("Conversion Chain is not well defined");
                 }
                 Converter converter = ConversionServiceImpl.getConverter(converterName);
                 result = converter.convert(result, parameters);
@@ -90,27 +89,26 @@ public class ChainedConverter implements Converter {
 
             return result;
         } catch (ClientException e) {
-            throw new ConversionException(
-                    "error while trying to execute converters chain", e);
+            throw new ConversionException("error while trying to execute converters chain", e);
         }
     }
 
     /**
      * Tries to find a chain of converters that fits the mime-types chain.
      */
-    protected BlobHolder convertBasedOnMimeTypes(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    protected BlobHolder convertBasedOnMimeTypes(BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException {
 
         try {
             String srcMT = blobHolder.getBlob().getMimeType();
 
             BlobHolder result = blobHolder;
             for (String dstMT : steps) {
-                String converterName = Framework.getLocalService(MimeTypeTranslationHelper.class).getConverterName(srcMT, dstMT);
+                String converterName = Framework.getLocalService(MimeTypeTranslationHelper.class).getConverterName(
+                        srcMT, dstMT);
                 if (converterName == null) {
-                    throw new ConversionException(
-                            "Chained conversion error : unable to find converter between "
-                                    + srcMT + " and " + dstMT);
+                    throw new ConversionException("Chained conversion error : unable to find converter between "
+                            + srcMT + " and " + dstMT);
                 }
 
                 Converter converter = ConversionServiceImpl.getConverter(converterName);
@@ -121,8 +119,7 @@ public class ChainedConverter implements Converter {
 
             return result;
         } catch (ClientException e) {
-            throw new ConversionException(
-                    "error while trying to determine converter name", e);
+            throw new ConversionException("error while trying to determine converter name", e);
         }
     }
 

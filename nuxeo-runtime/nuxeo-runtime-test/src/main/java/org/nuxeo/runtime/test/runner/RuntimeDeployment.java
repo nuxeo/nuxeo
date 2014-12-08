@@ -52,23 +52,21 @@ public class RuntimeDeployment {
 
     Map<String, Collection<String>> mainContribs = new HashMap<>();
 
-    SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(
-            mainContribs, new Supplier<Set<String>>() {
-                @Override
-                public Set<String> get() {
-                    return new HashSet<String>();
-                }
-            });
+    SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainContribs, new Supplier<Set<String>>() {
+        @Override
+        public Set<String> get() {
+            return new HashSet<String>();
+        }
+    });
 
     Map<String, Collection<String>> localContribs = new HashMap<>();
 
-    SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(
-            localContribs, new Supplier<Set<String>>() {
-                @Override
-                public Set<String> get() {
-                    return new HashSet<String>();
-                }
-            });
+    SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localContribs, new Supplier<Set<String>>() {
+        @Override
+        public Set<String> get() {
+            return new HashSet<String>();
+        }
+    });
 
     protected LinkedList<RuntimeContext> contexts = new LinkedList<RuntimeContext>();
 
@@ -134,8 +132,7 @@ public class RuntimeDeployment {
 
     protected void deploy(FeaturesRunner runner, RuntimeHarness harness) {
         AssertionError errors = new AssertionError("deployment errors");
-        OSGiRuntimeService runtime = (OSGiRuntimeService) harness.getContext()
-            .getRuntime();
+        OSGiRuntimeService runtime = (OSGiRuntimeService) harness.getContext().getRuntime();
         for (String name : bundles) {
             Bundle bundle = harness.getOSGiAdapter().getBundle(name);
             if (bundle == null) {
@@ -164,12 +161,10 @@ public class RuntimeDeployment {
                         url = bundle.getEntry(resource);
                     }
                     if (url == null) {
-                        url = runner.getTargetTestClass().getClassLoader()
-                            .getResource(resource);
+                        url = runner.getTargetTestClass().getClassLoader().getResource(resource);
                     }
                     if (url == null) {
-                        throw new AssertionError("Cannot find " + resource
-                                + " in " + name);
+                        throw new AssertionError("Cannot find " + resource + " in " + name);
                     }
                     contexts.add(harness.deployTestContrib(name, url));
                 }
@@ -187,8 +182,7 @@ public class RuntimeDeployment {
         }
         for (Map.Entry<String, String> resource : localIndex.entries()) {
             try {
-                contexts.add(harness.deployTestContrib(resource.getKey(),
-                        resource.getValue()));
+                contexts.add(harness.deployTestContrib(resource.getKey(), resource.getValue()));
             } catch (Exception error) {
                 errors.addSuppressed(error);
             }
@@ -222,7 +216,7 @@ public class RuntimeDeployment {
     public static RuntimeDeployment onTest(FeaturesRunner runner) {
         RuntimeDeployment deployment = new RuntimeDeployment();
         deployment.index(runner.getDescription().getTestClass());
-        for (RunnerFeature each:runner.getFeatures()) {
+        for (RunnerFeature each : runner.getFeatures()) {
             deployment.index(each);
         }
         return deployment;
@@ -238,18 +232,15 @@ public class RuntimeDeployment {
         protected FeaturesRunner runner;
 
         @Override
-        public Statement apply(Statement base, FrameworkMethod method,
-                Object target) {
+        public Statement apply(Statement base, FrameworkMethod method, Object target) {
             RuntimeDeployment deployment = new RuntimeDeployment();
             deployment.index(method.getMethod());
-            return deployment.onStatement(runner,
-                    runner.getFeature(RuntimeFeature.class).harness, base);
+            return deployment.onStatement(runner, runner.getFeature(RuntimeFeature.class).harness, base);
         }
 
     }
 
-    protected Statement onStatement(FeaturesRunner runner,
-            RuntimeHarness harness, Statement base) {
+    protected Statement onStatement(FeaturesRunner runner, RuntimeHarness harness, Statement base) {
         return new DeploymentStatement(runner, harness, base);
     }
 
@@ -261,8 +252,7 @@ public class RuntimeDeployment {
 
         protected final Statement base;
 
-        public DeploymentStatement(FeaturesRunner runner,
-                RuntimeHarness harness, Statement base) {
+        public DeploymentStatement(FeaturesRunner runner, RuntimeHarness harness, Statement base) {
             this.runner = runner;
             this.harness = harness;
             this.base = base;

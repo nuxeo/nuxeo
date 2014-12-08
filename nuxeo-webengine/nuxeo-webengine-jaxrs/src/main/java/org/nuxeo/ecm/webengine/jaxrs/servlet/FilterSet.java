@@ -29,16 +29,15 @@ import org.nuxeo.ecm.webengine.jaxrs.servlet.mapping.Path;
 /**
  * A filter set is a collections of filters that should be run for a given request in a servlet context.
  * <p>
- * The filter set is selected when it match the current pathInfo of the request.
- * Only one filter set can match a given path - the first one which is matching will be used,
- * all the other filter sets defined by a servlet will be ignored.
+ * The filter set is selected when it match the current pathInfo of the request. Only one filter set can match a given
+ * path - the first one which is matching will be used, all the other filter sets defined by a servlet will be ignored.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FilterSet {
 
     protected FilterSetDescriptor descriptor;
+
     private Filter[] filters;
 
     public FilterSet(FilterSetDescriptor descriptor) {
@@ -61,7 +60,7 @@ public class FilterSet {
         try {
             List<FilterDescriptor> fds = descriptor.getFilters();
             filters = new Filter[fds.size()];
-            for (int i=0, len=fds.size(); i<len; i++) {
+            for (int i = 0, len = fds.size(); i < len; i++) {
                 FilterDescriptor fd = fds.get(i);
                 Filter filter = fd.getFilter();
                 filter.init(new FilterConfigAdapter(fd, config));
@@ -80,9 +79,9 @@ public class FilterSet {
         filters = null;
     }
 
-
     static class FilterConfigAdapter implements FilterConfig {
         protected final ServletConfig config;
+
         protected final FilterDescriptor fd;
 
         public FilterConfigAdapter(FilterDescriptor fd, ServletConfig config) {

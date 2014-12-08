@@ -33,8 +33,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Information about what's to be prefetched: individual properties and whole
- * schemas.
+ * Information about what's to be prefetched: individual properties and whole schemas.
  */
 public class PrefetchInfo implements Serializable {
 

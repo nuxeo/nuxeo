@@ -23,7 +23,6 @@ import static org.junit.Assert.*;
  * Test date range query.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class TestDateRangeQuery {
 

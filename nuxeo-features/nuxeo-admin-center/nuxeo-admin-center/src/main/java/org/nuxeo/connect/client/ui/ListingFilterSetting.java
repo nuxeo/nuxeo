@@ -20,11 +20,10 @@ package org.nuxeo.connect.client.ui;
 import java.io.Serializable;
 
 /**
- * Store filter settings for a package listing.
- * This class is used to share state between the WebEngine and the JSF parts
+ * Store filter settings for a package listing. This class is used to share state between the WebEngine and the JSF
+ * parts
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class ListingFilterSetting implements Serializable {
 

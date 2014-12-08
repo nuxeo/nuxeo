@@ -22,11 +22,9 @@ package org.nuxeo.ecm.platform.pictures.tiles.serializer;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 
 /**
- *
  * Interface for the PictureTiles serializers
  *
  * @author tiry
- *
  */
 public interface PictureTilesSerializer {
 

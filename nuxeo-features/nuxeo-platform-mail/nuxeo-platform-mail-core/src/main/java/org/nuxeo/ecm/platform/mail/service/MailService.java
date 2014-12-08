@@ -39,15 +39,13 @@ public interface MailService {
     /**
      * Returns an actions pipe configured with this factory.
      * <p>
-     * The actions will start from this folder. The context is be passed to the
-     * sessionFactory to be able to find the session. Use the default session if
-     * context is not used.
+     * The actions will start from this folder. The context is be passed to the sessionFactory to be able to find the
+     * session. Use the default session if context is not used.
      */
-    MailBoxActions getMailBoxActions(String factoryName,
-            String folderName) throws MessagingException;
+    MailBoxActions getMailBoxActions(String factoryName, String folderName) throws MessagingException;
 
-    MailBoxActions getMailBoxActions(String factoryName, String folderName,
-            Map<String, Object> context) throws MessagingException;
+    MailBoxActions getMailBoxActions(String factoryName, String folderName, Map<String, Object> context)
+            throws MessagingException;
 
     /**
      * Gets the pipe of actions for given name
@@ -57,43 +55,36 @@ public interface MailService {
     /**
      * Sends a mail using the setting of this factory to this recipients.
      * <p>
-     * The context is passed to the sessionFactory to be able to find the
-     * session. Use the default session if context is not used. This template is
-     * used, replacing variables with the ones from this variables.
+     * The context is passed to the sessionFactory to be able to find the session. Use the default session if context is
+     * not used. This template is used, replacing variables with the ones from this variables.
      */
-    void sendMail(String text, String subject, String factory,
-            Address[] recipients);
+    void sendMail(String text, String subject, String factory, Address[] recipients);
 
-    void sendMail(String text, String subject, String factory,
-            Address[] recipients, Map<String, Object> context);
+    void sendMail(String text, String subject, String factory, Address[] recipients, Map<String, Object> context);
 
     /**
-     * Returns a connected store for this factory. The store needs to be closed
-     * after use.
+     * Returns a connected store for this factory. The store needs to be closed after use.
      *
      * @param name The name of the factory that provides the properties.
      * @return the store.
      */
     Store getConnectedStore(String name) throws MessagingException;
 
-    Store getConnectedStore(String name, Map<String, Object> context)
-            throws MessagingException;
+    Store getConnectedStore(String name, Map<String, Object> context) throws MessagingException;
 
     /**
-     * Returns a connected transport for this factory. The transport needs to be
-     * closed after use.
+     * Returns a connected transport for this factory. The transport needs to be closed after use.
      *
      * @param name the name of the factory that provides the properties.
      * @return the transport.
      */
     Transport getConnectedTransport(String name) throws MessagingException;
 
-    Transport getConnectedTransport(String name, Map<String, Object> context)
-            throws MessagingException;
+    Transport getConnectedTransport(String name, Map<String, Object> context) throws MessagingException;
 
     /**
-     * Returns a session for this factory, using the context to find the session
-     * or the default if no context is provided.
+     * Returns a session for this factory, using the context to find the session or the default if no context is
+     * provided.
      */
     Session getSession(String name);
 

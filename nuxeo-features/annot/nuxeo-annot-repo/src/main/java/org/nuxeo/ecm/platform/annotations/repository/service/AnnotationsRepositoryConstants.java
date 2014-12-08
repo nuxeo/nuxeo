@@ -21,13 +21,11 @@ package org.nuxeo.ecm.platform.annotations.repository.service;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface AnnotationsRepositoryConstants {
 
     enum ExtensionPoint {
-        documentAnnotability, securityManager, documentEventListener, jcrLifecycleEventId,
-        graphManagerEventListener
+        documentAnnotability, securityManager, documentEventListener, jcrLifecycleEventId, graphManagerEventListener
     }
 
 }

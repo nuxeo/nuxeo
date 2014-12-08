@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public final class MockDocumentModel extends DocumentModelImpl {
 

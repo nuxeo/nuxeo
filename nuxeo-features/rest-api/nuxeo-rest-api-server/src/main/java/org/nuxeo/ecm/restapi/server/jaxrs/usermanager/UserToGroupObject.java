@@ -34,8 +34,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @WebObject(type = "userToGroup")
@@ -48,8 +46,7 @@ public class UserToGroupObject extends DefaultObject {
     @Override
     protected void initialize(Object... args) {
         if (args.length != 2) {
-            throw new IllegalArgumentException(
-                    "UserToGroup object takes two parameters");
+            throw new IllegalArgumentException("UserToGroup object takes two parameters");
         }
         principal = (NuxeoPrincipal) args[0];
         group = (NuxeoGroup) args[1];
@@ -65,8 +62,7 @@ public class UserToGroupObject extends DefaultObject {
             groups.add(group.getName());
             principal.setGroups(groups);
             um.updateUser(principal.getModel());
-            return Response.status(Status.CREATED).entity(
-                    um.getPrincipal(principal.getName())).build();
+            return Response.status(Status.CREATED).entity(um.getPrincipal(principal.getName())).build();
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
@@ -75,8 +71,7 @@ public class UserToGroupObject extends DefaultObject {
     private void checkPrincipalCanAdministerGroupAndUser(UserManager um) {
         NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!currentPrincipal.isAdministrator()) {
-            if (!principal.isMemberOf("powerusers")
-                    || !UserRootObject.isAPowerUserEditableUser(principal)
+            if (!principal.isMemberOf("powerusers") || !UserRootObject.isAPowerUserEditableUser(principal)
                     || !GroupRootObject.isAPowerUserEditableGroup(group)) {
                 throw new WebSecurityException("Cannot edit user");
             }

@@ -24,7 +24,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author matic
- *
  */
 @XObject("locator")
 public class ServerLocatorDescriptor {

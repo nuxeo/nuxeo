@@ -38,8 +38,8 @@ import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Default thumbnail factory for all non folderish documents Return the main
- * blob converted in thumbnail or get the document big icon as a thumbnail
+ * Default thumbnail factory for all non folderish documents Return the main blob converted in thumbnail or get the
+ * document big icon as a thumbnail
  *
  * @since 5.7
  */
@@ -48,8 +48,7 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
     private static final Log log = LogFactory.getLog(ThumbnailDocumentFactory.class);
 
     @Override
-    public Blob getThumbnail(DocumentModel doc, CoreSession session)
-            throws ClientException {
+    public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
         Blob thumbnailBlob = null;
         try {
             if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
@@ -81,10 +80,8 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
             if (bh != null) {
                 Map<String, Serializable> params = new HashMap<String, Serializable>();
                 // Thumbnail converter
-                params.put(ThumbnailConstants.THUMBNAIL_SIZE_PARAMETER_NAME,
-                        ThumbnailConstants.THUMBNAIL_DEFAULT_SIZE);
-                bh = conversionService.convert(ANY_TO_THUMBNAIL_CONVERTER_NAME,
-                        bh, params);
+                params.put(ThumbnailConstants.THUMBNAIL_SIZE_PARAMETER_NAME, ThumbnailConstants.THUMBNAIL_DEFAULT_SIZE);
+                bh = conversionService.convert(ANY_TO_THUMBNAIL_CONVERTER_NAME, bh, params);
                 if (bh != null) {
                     thumbnailBlob = bh.getBlob();
                 }
@@ -112,15 +109,12 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
             return null;
         }
         try {
-            InputStream iconStream = ctx.getExternalContext().getResourceAsStream(
-                    iconPath);
+            InputStream iconStream = ctx.getExternalContext().getResourceAsStream(iconPath);
             if (iconStream != null) {
                 return new FileBlob(iconStream);
             }
         } catch (IOException e) {
-            log.warn(String.format(
-                    "Could not fetch the thumbnail blob from icon path '%s'",
-                    iconPath), e);
+            log.warn(String.format("Could not fetch the thumbnail blob from icon path '%s'", iconPath), e);
         }
         return null;
     }

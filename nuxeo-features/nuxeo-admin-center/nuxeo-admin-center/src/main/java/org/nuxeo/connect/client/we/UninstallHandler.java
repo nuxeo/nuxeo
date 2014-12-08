@@ -58,8 +58,7 @@ public class UninstallHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "start/{pkgId}")
-    public Object startUninstall(@PathParam("pkgId") String pkgId,
-            @QueryParam("source") String source,
+    public Object startUninstall(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
@@ -67,18 +66,16 @@ public class UninstallHandler extends DefaultObject {
             Task uninstallTask = pkg.getUninstallTask();
             ValidationStatus status = uninstallTask.validate();
             if (status.hasErrors()) {
-                return getView("canNotUninstall").arg("status", status).arg(
-                        "pkg", pkg).arg("source", source);
+                return getView("canNotUninstall").arg("status", status).arg("pkg", pkg).arg("source", source);
             }
             PackageManager pm = Framework.getLocalService(PackageManager.class);
-            List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(
-                    pkg, getTargetPlatform(filterOnPlatform));
+            List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(pkg,
+                    getTargetPlatform(filterOnPlatform));
             if (pkgToRemove.size() > 0) {
-                return getView("displayDependencies").arg("pkg", pkg).arg(
-                        "pkgToRemove", pkgToRemove).arg("source", source);
+                return getView("displayDependencies").arg("pkg", pkg).arg("pkgToRemove", pkgToRemove).arg("source",
+                        source);
             }
-            return getView("startUninstall").arg("status", status).arg(
-                    "uninstallTask", uninstallTask).arg("pkg", pkg).arg(
+            return getView("startUninstall").arg("status", status).arg("uninstallTask", uninstallTask).arg("pkg", pkg).arg(
                     "source", source);
         } catch (PackageException e) {
             log.error("Error during first step of installation", e);
@@ -100,15 +97,14 @@ public class UninstallHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "run/{pkgId}")
-    public Object doUninstall(@PathParam("pkgId") String pkgId,
-            @QueryParam("source") String source,
+    public Object doUninstall(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
         try {
             LocalPackage pkg = pus.getPackage(pkgId);
             PackageManager pm = Framework.getLocalService(PackageManager.class);
-            List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(
-                    pkg, getTargetPlatform(filterOnPlatform));
+            List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(pkg,
+                    getTargetPlatform(filterOnPlatform));
             boolean restartRequired = InstallAfterRestart.isNeededForPackage(pkg);
             if (!restartRequired) {
                 for (DownloadablePackage rpkg : pkgToRemove) {
@@ -120,8 +116,7 @@ public class UninstallHandler extends DefaultObject {
             }
             if (restartRequired) {
                 InstallAfterRestart.addPackageForUnInstallation(pkg.getName());
-                return getView("uninstallOnRestart").arg("pkg", pkg).arg(
-                        "source", source);
+                return getView("uninstallOnRestart").arg("pkg", pkg).arg("source", source);
             } else {
                 log.debug("Uninstalling: " + pkgToRemove);
                 Task uninstallTask;
@@ -130,8 +125,8 @@ public class UninstallHandler extends DefaultObject {
                     performUninstall(localPackage);
                 }
                 uninstallTask = performUninstall(pkg);
-                return getView("uninstallDone").arg("uninstallTask",
-                        uninstallTask).arg("pkg", pkg).arg("source", source);
+                return getView("uninstallDone").arg("uninstallTask", uninstallTask).arg("pkg", pkg).arg("source",
+                        source);
             }
         } catch (PackageException e) {
             log.error("Error during uninstall of " + pkgId, e);
@@ -145,11 +140,9 @@ public class UninstallHandler extends DefaultObject {
      * @since 5.6
      * @param localPackage Package to uninstall
      * @return {@link UninstallTask} of {@code localPackage}
-     * @throws PackageException If uninstall fails. A rollback is done before
-     *             the exception is raised.
+     * @throws PackageException If uninstall fails. A rollback is done before the exception is raised.
      */
-    protected Task performUninstall(LocalPackage localPackage)
-            throws PackageException {
+    protected Task performUninstall(LocalPackage localPackage) throws PackageException {
         log.info("Uninstalling " + localPackage.getId());
         Task uninstallTask = localPackage.getUninstallTask();
         try {

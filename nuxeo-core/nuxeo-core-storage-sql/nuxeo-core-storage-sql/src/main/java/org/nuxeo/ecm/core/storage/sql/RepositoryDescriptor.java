@@ -77,8 +77,7 @@ public class RepositoryDescriptor {
             excludeFields = new HashSet<String>(other.excludeFields);
         }
 
-        public static List<FulltextIndexDescriptor> copyList(
-                List<FulltextIndexDescriptor> other) {
+        public static List<FulltextIndexDescriptor> copyList(List<FulltextIndexDescriptor> other) {
             List<FulltextIndexDescriptor> copy = new ArrayList<FulltextIndexDescriptor>(other.size());
             for (FulltextIndexDescriptor fid : other) {
                 copy.add(new FulltextIndexDescriptor(fid));
@@ -119,8 +118,7 @@ public class RepositoryDescriptor {
             column = other.column;
         }
 
-        public static List<FieldDescriptor> copyList(
-                List<FieldDescriptor> other) {
+        public static List<FieldDescriptor> copyList(List<FieldDescriptor> other) {
             List<FieldDescriptor> copy = new ArrayList<FieldDescriptor>(other.size());
             for (FieldDescriptor fd : other) {
                 copy.add(new FieldDescriptor(fd));
@@ -169,8 +167,8 @@ public class RepositoryDescriptor {
 
         @Override
         public String toString() {
-            return this.getClass().getSimpleName() + '(' + field + ",type="
-                    + type + ",table=" + table + ",column=" + column + ")";
+            return this.getClass().getSimpleName() + '(' + field + ",type=" + type + ",table=" + table + ",column="
+                    + column + ")";
         }
     }
 
@@ -189,7 +187,7 @@ public class RepositoryDescriptor {
     @XNode("@name")
     public void setName(String name) {
         this.name = name;
-        pool.setName("repository/"+name);
+        pool.setName("repository/" + name);
     }
 
     @XNode("@label")
@@ -222,7 +220,7 @@ public class RepositoryDescriptor {
 
     @XNode("pool")
     public void setPool(NuxeoConnectionManagerConfiguration pool) {
-        pool.setName("repository/"+name);
+        pool.setName("repository/" + name);
         this.pool = pool;
     }
 
@@ -341,10 +339,10 @@ public class RepositoryDescriptor {
     @XNodeList(value = "indexing/fulltext/index", type = ArrayList.class, componentType = FulltextIndexDescriptor.class)
     public List<FulltextIndexDescriptor> fulltextIndexes = new ArrayList<FulltextIndexDescriptor>(0);
 
-    @XNodeList(value = "indexing/excludedTypes/type", type =  HashSet.class, componentType = String.class)
+    @XNodeList(value = "indexing/excludedTypes/type", type = HashSet.class, componentType = String.class)
     public Set<String> fulltextExcludedTypes = new HashSet<String>(0);
 
-    @XNodeList(value = "indexing/includedTypes/type", type =  HashSet.class, componentType = String.class)
+    @XNodeList(value = "indexing/includedTypes/type", type = HashSet.class, componentType = String.class)
     public Set<String> fulltextIncludedTypes = new HashSet<String>(0);
 
     // compat
@@ -367,8 +365,7 @@ public class RepositoryDescriptor {
     private Integer pathOptimizationsVersion;
 
     public int getPathOptimizationsVersion() {
-        return pathOptimizationsVersion == null ? DEFAULT_PATH_OPTIM_VERSION
-                : pathOptimizationsVersion.intValue();
+        return pathOptimizationsVersion == null ? DEFAULT_PATH_OPTIM_VERSION : pathOptimizationsVersion.intValue();
     }
 
     @XNode("aclOptimizations@enabled")
@@ -417,8 +414,7 @@ public class RepositoryDescriptor {
         label = other.label;
         isDefault = other.isDefault;
         repositoryFactoryClass = other.repositoryFactoryClass;
-        pool = other.pool == null ? null
-                : new NuxeoConnectionManagerConfiguration(other.pool);
+        pool = other.pool == null ? null : new NuxeoConnectionManagerConfiguration(other.pool);
         backendClass = other.backendClass;
         cachingMapperClass = other.cachingMapperClass;
         cachingMapperEnabled = other.cachingMapperEnabled;

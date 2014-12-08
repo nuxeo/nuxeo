@@ -26,7 +26,6 @@ import org.nuxeo.connect.update.PackageUpdateService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class InstallTask extends CommandsTask {
 

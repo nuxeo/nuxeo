@@ -17,19 +17,15 @@ import org.nuxeo.ecm.automation.client.Session;
 /**
  * @since 5.7
  */
-public class BusinessServiceFactory implements
-		AdapterFactory<BusinessService<?>> {
+public class BusinessServiceFactory implements AdapterFactory<BusinessService<?>> {
 
-	@Override
-	public BusinessService<?> getAdapter(Session session,
-			Class<BusinessService<?>> clazz) {
-		try {
-			return clazz.getDeclaredConstructor(Session.class).newInstance(
-					session);
-		} catch (Exception e) { // Java 6 doesn't have ReflectiveOperationException
-			throw new IllegalArgumentException("Cannot instantiate bo service "
-					+ clazz.getName(), e);
-		}
-	}
+    @Override
+    public BusinessService<?> getAdapter(Session session, Class<BusinessService<?>> clazz) {
+        try {
+            return clazz.getDeclaredConstructor(Session.class).newInstance(session);
+        } catch (Exception e) { // Java 6 doesn't have ReflectiveOperationException
+            throw new IllegalArgumentException("Cannot instantiate bo service " + clazz.getName(), e);
+        }
+    }
 
 }

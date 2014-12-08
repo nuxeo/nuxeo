@@ -37,13 +37,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- * An entry present in a Summary. Each entry has a parent,
- * except for the root entry whose parent is null.
+ * An entry present in a Summary. Each entry has a parent, except for the root entry whose parent is null.
  * <p>
- * Note that {@code SummaryEntry.getPath()} can be different than
- * {@code DocumentModel.getPath()}
- * since a DocumentModel object can be added many times at different level of the
- * working list.
+ * Note that {@code SummaryEntry.getPath()} can be different than {@code DocumentModel.getPath()} since a DocumentModel
+ * object can be added many times at different level of the working list.
  *
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */
@@ -80,8 +77,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
     private SummaryEntry parent;
 
     // Not used?
-    public SummaryEntry(String uuid, String title, String modifiedDate,
-            String filename, String version) {
+    public SummaryEntry(String uuid, String title, String modifiedDate, String filename, String version) {
         this.uuid = uuid;
         this.title = title;
         this.modifiedDate = modifiedDate;
@@ -90,8 +86,8 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
     }
 
     // Used in ClipBoardActionBean
-    public SummaryEntry(String uuid, String title, Date modifiedDate,
-            String filename, String version, SummaryEntry parent) {
+    public SummaryEntry(String uuid, String title, Date modifiedDate, String filename, String version,
+            SummaryEntry parent) {
         this.uuid = uuid;
         this.title = title;
         if (modifiedDate != null) {
@@ -283,8 +279,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
         if (!(obj instanceof SummaryEntry)) {
             return false;
         }
-        return documentRef.equals(((SummaryEntry) obj).documentRef)
-                && getPath().equals(((SummaryEntry) obj).getPath());
+        return documentRef.equals(((SummaryEntry) obj).documentRef) && getPath().equals(((SummaryEntry) obj).getPath());
     }
 
     @Override
@@ -303,8 +298,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
      * @param parentEntry is the SummaryEntry to watch
      * @return all entry in the path for a given entry (parentEntry).
      */
-    public static List<SummaryEntry> getPathList(List<SummaryEntry> pathList,
-            SummaryEntry parentEntry) {
+    public static List<SummaryEntry> getPathList(List<SummaryEntry> pathList, SummaryEntry parentEntry) {
         if (pathList == null) {
             pathList = new ArrayList<SummaryEntry>();
         }
@@ -319,8 +313,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
     }
 
     /**
-     * Returns something like /Workspace1/Folder1/File1.
-     * Is not tied to DocumentModel.getPath()
+     * Returns something like /Workspace1/Folder1/File1. Is not tied to DocumentModel.getPath()
      *
      * @return the full path of the SummaryEntry in the summary.
      */
@@ -362,6 +355,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
     public void setBullet(String bullet) {
         this.bullet = bullet;
     }
+
     public String getCr() {
         return cr;
     }

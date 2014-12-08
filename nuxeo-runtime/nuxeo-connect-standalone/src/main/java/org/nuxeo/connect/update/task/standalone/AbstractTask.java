@@ -111,8 +111,7 @@ public abstract class AbstractTask implements Task {
     protected PackageUpdateService service;
 
     /**
-     * A map of environment key/values that can be used in XML install files as
-     * variables.
+     * A map of environment key/values that can be used in XML install files as variables.
      */
     protected final Map<String, String> env;
 
@@ -142,10 +141,8 @@ public abstract class AbstractTask implements Task {
             env.put(ENV_LIB, new File(nxHome, "lib").getAbsolutePath());
             env.put(ENV_BUNDLES, new File(nxHome, "bundles").getAbsolutePath());
         }
-        env.put(ENV_TEMPLATES,
-                new File(serverHome, "templates").getAbsolutePath());
-        env.put(ENV_TIMESTAMP,
-                new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
+        env.put(ENV_TEMPLATES, new File(serverHome, "templates").getAbsolutePath());
+        env.put(ENV_TIMESTAMP, new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
         updateMgr = new UpdateManager(serverHome, service.getRegistry());
     }
 
@@ -153,8 +150,7 @@ public abstract class AbstractTask implements Task {
 
     @Override
     @SuppressWarnings("hiding")
-    public void initialize(LocalPackage pkg, boolean restart)
-            throws PackageException {
+    public void initialize(LocalPackage pkg, boolean restart) throws PackageException {
         this.pkg = pkg;
         this.restart = restart;
         env.put(PKG_ID, pkg.getId());
@@ -171,8 +167,7 @@ public abstract class AbstractTask implements Task {
     }
 
     /**
-     * Get a file given its key in the environment map. If no key exists then
-     * null is returned.
+     * Get a file given its key in the environment map. If no key exists then null is returned.
      *
      * @param key
      */
@@ -200,15 +195,13 @@ public abstract class AbstractTask implements Task {
         return map;
     }
 
-    protected String loadParametrizedFile(File file, Map<String, String> params)
-            throws IOException {
+    protected String loadParametrizedFile(File file, Map<String, String> params) throws IOException {
         String content = FileUtils.readFile(file);
         // replace variables.
         return StringUtils.expandVars(content, createContextMap(params));
     }
 
-    protected void saveParams(Map<String, String> params)
-            throws PackageException {
+    protected void saveParams(Map<String, String> params) throws PackageException {
         if (params == null || params.isEmpty()) {
             return;
         }
@@ -228,15 +221,12 @@ public abstract class AbstractTask implements Task {
     }
 
     @Override
-    public synchronized void run(Map<String, String> params)
-            throws PackageException {
+    public synchronized void run(Map<String, String> params) throws PackageException {
         if (isInstallTask()) {
             LocalPackage oldpkg = service.getActivePackage(pkg.getName());
             if (oldpkg != null) {
                 if (oldpkg.getPackageState() == PackageState.INSTALLING) {
-                    throw new PackageException(
-                            "Another package with the same name is installing: "
-                                    + oldpkg.getName());
+                    throw new PackageException("Another package with the same name is installing: " + oldpkg.getName());
                 } else {
                     // uninstall it.
                     Task utask = oldpkg.getUninstallTask();
@@ -244,10 +234,8 @@ public abstract class AbstractTask implements Task {
                         utask.run(new HashMap<String, String>());
                     } catch (PackageException e) {
                         utask.rollback();
-                        throw new PackageException("Failed to uninstall: "
-                                + oldpkg.getId()
-                                + ". Cannot continue installation of "
-                                + pkg.getId(), e);
+                        throw new PackageException("Failed to uninstall: " + oldpkg.getId()
+                                + ". Cannot continue installation of " + pkg.getId(), e);
                     }
                 }
             }
@@ -261,8 +249,7 @@ public abstract class AbstractTask implements Task {
         }
     }
 
-    public synchronized UpdateManager getUpdateManager()
-            throws PackageException {
+    public synchronized UpdateManager getUpdateManager() throws PackageException {
         if (!updateMgrLoaded) {
             updateMgr.load();
             updateMgrLoaded = true;
@@ -288,8 +275,7 @@ public abstract class AbstractTask implements Task {
         this.restart = isRestartRequired;
     }
 
-    protected abstract void doRun(Map<String, String> params)
-            throws PackageException;
+    protected abstract void doRun(Map<String, String> params) throws PackageException;
 
     protected abstract void doRollback() throws PackageException;
 
@@ -303,20 +289,16 @@ public abstract class AbstractTask implements Task {
         return status;
     }
 
-    public abstract void doValidate(ValidationStatus status)
-            throws PackageException;
+    public abstract void doValidate(ValidationStatus status) throws PackageException;
 
-    protected LocalPackage validateInstall(ValidationStatus status)
-            throws PackageException {
+    protected LocalPackage validateInstall(ValidationStatus status) throws PackageException {
         LocalPackage oldpkg = service.getActivePackage(pkg.getName());
         if (oldpkg != null) {
             if (oldpkg.getPackageState() == PackageState.INSTALLING) {
-                status.addWarning("A package with the same name: "
-                        + oldpkg.getId()
+                status.addWarning("A package with the same name: " + oldpkg.getId()
                         + " is being installing. Try again later.");
             } else {
-                status.addWarning("The package " + oldpkg.getId()
-                        + " will be uninstalled!");
+                status.addWarning("The package " + oldpkg.getId() + " will be uninstalled!");
             }
             return oldpkg;
         }

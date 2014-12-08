@@ -56,8 +56,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.test.tests",
-                "OSGI-INF/test-repo-core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib.xml");
         openSession();
     }
 
@@ -69,8 +68,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     }
 
     /**
-     * Sleep 1s, useful for stupid databases (like MySQL) that don't have
-     * subsecond resolution in TIMESTAMP fields.
+     * Sleep 1s, useful for stupid databases (like MySQL) that don't have subsecond resolution in TIMESTAMP fields.
      */
     public void maybeSleepToNextSecond() {
         DatabaseHelper.DATABASE.maybeSleepToNextSecond();
@@ -96,15 +94,13 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
-                "file#1", "File");
+        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "file#1", "File");
         file = session.createDocument(file);
 
         checkVersions(file);
 
         file.setPropertyValue("file:filename", "A");
-        file.putContextData(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        file.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         file = session.saveDocument(file);
 
         checkVersions(file, "0.1");
@@ -124,15 +120,13 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
-                "file#1", "File");
+        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "file#1", "File");
         file = session.createDocument(file);
 
         createTrioVersions(file);
 
         final int VERSION_INDEX = 0;
-        DocumentModel firstversion = session.getVersions(file.getRef()).get(
-                VERSION_INDEX);
+        DocumentModel firstversion = session.getVersions(file.getRef()).get(VERSION_INDEX);
         assertNotNull(firstversion);
 
         assertTrue(firstversion.isVersion());
@@ -147,15 +141,13 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
-                "file#1", "File");
+        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "file#1", "File");
         file = session.createDocument(file);
 
         createTrioVersions(file);
 
         final int VERSION_INDEX = 1;
-        DocumentModel version = session.getVersions(file.getRef()).get(
-                VERSION_INDEX);
+        DocumentModel version = session.getVersions(file.getRef()).get(VERSION_INDEX);
         assertNotNull(version);
 
         assertTrue(version.isVersion());
@@ -170,15 +162,13 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
-                "file#1", "File");
+        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "file#1", "File");
         file = session.createDocument(file);
 
         createTrioVersions(file);
 
         final int VERSION_INDEX = 2;
-        DocumentModel lastversion = session.getVersions(file.getRef()).get(
-                VERSION_INDEX);
+        DocumentModel lastversion = session.getVersions(file.getRef()).get(VERSION_INDEX);
         assertNotNull(lastversion);
 
         assertTrue(lastversion.isVersion());
@@ -190,8 +180,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     private void createTrioVersions(DocumentModel file) throws Exception {
         // create a first version
         file.setProperty("file", "filename", "A");
-        file.putContextData(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        file.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         file = session.saveDocument(file);
 
         checkVersions(file, "0.1");
@@ -199,8 +188,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         // create a second version
         // make it dirty so it will be saved
         file.setProperty("file", "filename", "B");
-        file.putContextData(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        file.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         maybeSleepToNextSecond();
         file = session.saveDocument(file);
 
@@ -208,16 +196,14 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
         // create a third version
         file.setProperty("file", "filename", "C");
-        file.putContextData(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        file.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         maybeSleepToNextSecond();
         file = session.saveDocument(file);
 
         checkVersions(file, "0.1", "0.2", "0.3");
     }
 
-    private void checkVersions(DocumentModel doc, String... labels)
-            throws ClientException {
+    private void checkVersions(DocumentModel doc, String... labels) throws ClientException {
         List<String> actual = new LinkedList<String>();
         for (DocumentModel ver : session.getVersions(doc.getRef())) {
             assertTrue(ver.isVersion());
@@ -289,8 +275,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
         // disable auto-checkout
         doc.setPropertyValue("dc:title", "t2");
-        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
-                Boolean.TRUE);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
         doc = session.saveDocument(doc);
         assertFalse(doc.isCheckedOut());
         assertEquals("t2", doc.getPropertyValue("dc:title"));
@@ -409,8 +394,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
         // restore, no snapshot as already pristine
         waitForFulltextIndexing();
-        DocumentModel restoredDoc = session.restoreToVersion(
-                childFile.getRef(), v1Ref);
+        DocumentModel restoredDoc = session.restoreToVersion(childFile.getRef(), v1Ref);
 
         assertNotNull(restoredDoc);
         assertNotNull(restoredDoc.getRef());
@@ -477,11 +461,9 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
     @Test
     public void testVersionRemoval() throws Exception {
-        DocumentModel folder = session.createDocumentModel("/", "folder",
-                "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
-        DocumentModel file = session.createDocumentModel("/folder", "file",
-                "File");
+        DocumentModel file = session.createDocumentModel("/folder", "file", "File");
         file = session.createDocument(file);
         DocumentModel proxy = session.publishDocument(file, folder);
         DocumentModel version = session.getLastDocumentVersion(file.getRef());
@@ -559,23 +541,20 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         String versionSeriesId = doc.getVersionSeriesId();
 
         // copy
-        DocumentModel copy = session.copy(doc.getRef(),
-                session.getRootDocument().getRef(), "fileCopied");
+        DocumentModel copy = session.copy(doc.getRef(), session.getRootDocument().getRef(), "fileCopied");
 
         // check different version series id
         assertNotSame(versionSeriesId, copy.getVersionSeriesId());
 
         // create version and proxy
-        DocumentModel folder = session.createDocumentModel("/", "folder",
-                "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel proxy = session.publishDocument(doc, folder);
         // check same version series id
         assertEquals(versionSeriesId, proxy.getVersionSeriesId());
 
         // copy proxy
-        DocumentModel proxyCopy = session.copy(proxy.getRef(),
-                session.getRootDocument().getRef(), "proxyCopied");
+        DocumentModel proxyCopy = session.copy(proxy.getRef(), session.getRootDocument().getRef(), "proxyCopied");
         // check same version series id
         assertEquals(versionSeriesId, proxyCopy.getVersionSeriesId());
     }
@@ -590,8 +569,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("1.0", doc.getVersionLabel());
 
         // copy
-        DocumentModel copy = session.copy(doc.getRef(),
-                session.getRootDocument().getRef(), "fileCopied");
+        DocumentModel copy = session.copy(doc.getRef(), session.getRootDocument().getRef(), "fileCopied");
 
         assertTrue(copy.isCheckedOut());
         assertEquals("0.0", copy.getVersionLabel());
@@ -599,8 +577,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
     @Test
     public void testPublishing() throws ClientException {
-        DocumentModel folder = session.createDocumentModel("/", "folder",
-                "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
@@ -633,8 +610,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
     @Test
     public void testPublishingAfterVersionDelete() throws ClientException {
-        DocumentModel folder = session.createDocumentModel("/", "folder",
-                "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
@@ -660,8 +636,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         // delete the version
         List<VersionModel> versions = session.getVersionsForDocument(doc.getRef());
         assertEquals(1, versions.size());
-        DocumentModel docVersion = session.getDocumentWithVersion(doc.getRef(),
-                versions.get(0));
+        DocumentModel docVersion = session.getDocumentWithVersion(doc.getRef(), versions.get(0));
         session.removeDocument(docVersion.getRef());
 
         checkVersions(doc);
@@ -683,8 +658,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
     @Test
     public void testPublishingAfterCopy() throws ClientException {
-        DocumentModel folder = session.createDocumentModel("/", "folder",
-                "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
@@ -701,8 +675,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("file", lastVersionDocument.getName());
 
         // copy published file, version is reset
-        DocumentModel copy = session.copy(doc.getRef(), folder.getRef(),
-                "fileCopied");
+        DocumentModel copy = session.copy(doc.getRef(), folder.getRef(), "fileCopied");
         checkVersions(copy);
         lastVersion = session.getLastDocumentVersion(copy.getRef());
         assertNull(lastVersion);
@@ -750,8 +723,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
          * proxy to checked out doc (live proxy)
          */
 
-        DocumentModel proxy = session.createProxy(doc.getRef(),
-                session.getRootDocument().getRef());
+        DocumentModel proxy = session.createProxy(doc.getRef(), session.getRootDocument().getRef());
 
         assertTrue(proxy.isCheckedOut()); // nuxeo prop, false only on live
         assertFalse(proxy.isVersion());
@@ -766,8 +738,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertFalse(proxy.isLatestMajorVersion());
         assertTrue(proxy.isVersionSeriesCheckedOut());
         assertTrue(doc.isVersionSeriesCheckedOut());
-        assertEquals(doc.getId(),
-                session.getWorkingCopy(proxy.getRef()).getId());
+        assertEquals(doc.getId(), session.getWorkingCopy(proxy.getRef()).getId());
 
         /*
          * checked in doc
@@ -791,8 +762,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertFalse(doc.isLatestMajorVersion());
         assertFalse(doc.isVersionSeriesCheckedOut());
         assertFalse(proxy.isVersionSeriesCheckedOut());
-        assertEquals(doc.getId(),
-                session.getWorkingCopy(proxy.getRef()).getId());
+        assertEquals(doc.getId(), session.getWorkingCopy(proxy.getRef()).getId());
 
         // TODO proxy to checked in doc
 
@@ -818,8 +788,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
          * proxy to version
          */
 
-        proxy = session.createProxy(ver.getRef(),
-                session.getRootDocument().getRef());
+        proxy = session.createProxy(ver.getRef(), session.getRootDocument().getRef());
 
         assertFalse(proxy.isCheckedOut());
         assertFalse(proxy.isVersion());
@@ -835,8 +804,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertFalse(proxy.isVersionSeriesCheckedOut());
         assertFalse(doc.isVersionSeriesCheckedOut());
         assertFalse(ver.isVersionSeriesCheckedOut());
-        assertEquals(doc.getId(),
-                session.getWorkingCopy(proxy.getRef()).getId());
+        assertEquals(doc.getId(), session.getWorkingCopy(proxy.getRef()).getId());
 
         /*
          * re-checked out doc
@@ -887,26 +855,23 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testSaveRestoredVersionWithVersionAutoIncrement()
-            throws ClientException {
+    public void testSaveRestoredVersionWithVersionAutoIncrement() throws ClientException {
         // check-in version 1.0, 2.0 and restore version 1.0
         DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
         DocumentRef co = doc.getRef();
-        DocumentRef ci1 = session.checkIn(co, VersioningOption.MAJOR,
-                "first check-in");
+        DocumentRef ci1 = session.checkIn(co, VersioningOption.MAJOR, "first check-in");
         session.checkOut(co);
-        DocumentRef ci2 = session.checkIn(co, VersioningOption.MAJOR,
-                "second check-in");
+        DocumentRef ci2 = session.checkIn(co, VersioningOption.MAJOR, "second check-in");
         waitForFulltextIndexing();
         session.restoreToVersion(co, ci1);
 
         // save document with auto-increment should produce version 3.0
         doc = session.getDocument(co);
         assertEquals(doc.getVersionLabel(), "1.0");
-        doc.getContextData().putScopedValue(ScopeType.DEFAULT,
-                VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
+        doc.getContextData().putScopedValue(ScopeType.DEFAULT, VersioningService.VERSIONING_OPTION,
+                VersioningOption.MAJOR);
         // mark as dirty
         doc.setPropertyValue("dc:title", doc.getPropertyValue("dc:title"));
         doc = session.saveDocument(doc);
@@ -959,11 +924,9 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.save();
-        DocumentRef v1ref = session.checkIn(doc.getRef(),
-                VersioningOption.MAJOR, null);
+        DocumentRef v1ref = session.checkIn(doc.getRef(), VersioningOption.MAJOR, null);
         session.checkOut(doc.getRef());
-        DocumentRef v2ref = session.checkIn(doc.getRef(),
-                VersioningOption.MINOR, null);
+        DocumentRef v2ref = session.checkIn(doc.getRef(), VersioningOption.MINOR, null);
 
         // last version on the doc
         DocumentModel last = session.getLastDocumentVersion(doc.getRef());
@@ -983,8 +946,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.save();
-        DocumentRef v1ref = session.checkIn(doc.getRef(),
-                VersioningOption.MAJOR, null);
+        DocumentRef v1ref = session.checkIn(doc.getRef(), VersioningOption.MAJOR, null);
         session.checkOut(doc.getRef());
         session.checkIn(doc.getRef(), VersioningOption.MINOR, null);
 

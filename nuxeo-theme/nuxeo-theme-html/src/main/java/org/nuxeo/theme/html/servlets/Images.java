@@ -37,14 +37,12 @@ public final class Images extends HttpServlet implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws IOException {
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 
     @Override
-    protected void doPost(final HttpServletRequest request,
-            final HttpServletResponse response) throws IOException {
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 
         final String path = request.getPathInfo().substring(1);
         byte[] data = null;

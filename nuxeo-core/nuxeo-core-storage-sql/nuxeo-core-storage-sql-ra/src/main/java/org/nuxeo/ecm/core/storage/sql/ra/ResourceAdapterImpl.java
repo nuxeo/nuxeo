@@ -22,11 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * This is the singleton representing the resource adapter, created by the
- * application server.
+ * This is the singleton representing the resource adapter, created by the application server.
  * <p>
- * It is the central point where all non-local state (network endpoints, etc.)
- * is registered.
+ * It is the central point where all non-local state (network endpoints, etc.) is registered.
  *
  * @author Florent Guillaume
  */
@@ -63,17 +61,13 @@ public class ResourceAdapterImpl implements ResourceAdapter {
     }
 
     @Override
-    public void endpointActivation(MessageEndpointFactory factory,
-            ActivationSpec spec) {
-        throw new UnsupportedOperationException(
-                "Message endpoints not supported");
+    public void endpointActivation(MessageEndpointFactory factory, ActivationSpec spec) {
+        throw new UnsupportedOperationException("Message endpoints not supported");
     }
 
     @Override
-    public void endpointDeactivation(MessageEndpointFactory factory,
-            ActivationSpec spec) {
-        throw new UnsupportedOperationException(
-                "Message endpoints not supported");
+    public void endpointDeactivation(MessageEndpointFactory factory, ActivationSpec spec) {
+        throw new UnsupportedOperationException("Message endpoints not supported");
     }
 
     /*

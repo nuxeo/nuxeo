@@ -23,7 +23,6 @@ package org.nuxeo.common.server;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DataSource {
 

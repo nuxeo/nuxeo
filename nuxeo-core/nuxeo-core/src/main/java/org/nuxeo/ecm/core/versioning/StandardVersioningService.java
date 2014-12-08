@@ -34,8 +34,7 @@ import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 
 /**
- * Implementation of the versioning service that follows standard checkout /
- * checkin semantics.
+ * Implementation of the versioning service that follows standard checkout / checkin semantics.
  */
 public class StandardVersioningService implements ExtendableVersioningService {
 
@@ -90,8 +89,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
         return getVersion(docModel, VersioningService.MINOR_VERSION_PROP);
     }
 
-    protected long getVersion(DocumentModel docModel, String prop)
-            throws ClientException {
+    protected long getVersion(DocumentModel docModel, String prop) throws ClientException {
         Object propVal = docModel.getPropertyValue(prop);
         if (propVal == null || !(propVal instanceof Long)) {
             return 0;
@@ -108,8 +106,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
         return getVersion(doc, MINOR_VERSION);
     }
 
-    protected long getVersion(Document doc, String prop)
-            throws DocumentException {
+    protected long getVersion(Document doc, String prop) throws DocumentException {
         Object propVal = doc.getPropertyValue(prop);
         if (propVal == null || !(propVal instanceof Long)) {
             return 0;
@@ -118,8 +115,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
         }
     }
 
-    protected void setVersion(Document doc, long major, long minor)
-            throws DocumentException {
+    protected void setVersion(Document doc, long major, long minor) throws DocumentException {
         doc.setPropertyValue(MAJOR_VERSION, Long.valueOf(major));
         doc.setPropertyValue(MINOR_VERSION, Long.valueOf(minor));
     }
@@ -132,8 +128,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
         doc.setPropertyValue(MINOR_VERSION, Long.valueOf(getMinor(doc) + 1));
     }
 
-    protected void incrementByOption(Document doc, VersioningOption option)
-            throws DocumentException {
+    protected void incrementByOption(Document doc, VersioningOption option) throws DocumentException {
         try {
             if (option == MAJOR) {
                 incrementMajor(doc);
@@ -182,13 +177,11 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public List<VersioningOption> getSaveOptions(DocumentModel docModel)
-            throws ClientException {
+    public List<VersioningOption> getSaveOptions(DocumentModel docModel) throws ClientException {
         boolean versionable = docModel.isVersionable();
         String lifecycleState;
         try {
-            lifecycleState = docModel.getCoreSession().getCurrentLifeCycleState(
-                    docModel.getRef());
+            lifecycleState = docModel.getCoreSession().getCurrentLifeCycleState(docModel.getRef());
         } catch (ClientException e) {
             lifecycleState = null;
         }
@@ -196,10 +189,8 @@ public class StandardVersioningService implements ExtendableVersioningService {
         return getSaveOptions(versionable, lifecycleState, type);
     }
 
-    protected List<VersioningOption> getSaveOptions(Document doc)
-            throws DocumentException {
-        boolean versionable = doc.getType().getFacets().contains(
-                FacetNames.VERSIONABLE);
+    protected List<VersioningOption> getSaveOptions(Document doc) throws DocumentException {
+        boolean versionable = doc.getType().getFacets().contains(FacetNames.VERSIONABLE);
         String lifecycleState;
         try {
             lifecycleState = doc.getLifeCycleState();
@@ -210,8 +201,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
         return getSaveOptions(versionable, lifecycleState, type);
     }
 
-    protected List<VersioningOption> getSaveOptions(boolean versionable,
-            String lifecycleState, String type) {
+    protected List<VersioningOption> getSaveOptions(boolean versionable, String lifecycleState, String type) {
         if (!versionable) {
             return Arrays.asList(NONE);
         }
@@ -239,8 +229,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
         if (option != null) {
             return option.getVersioningOptionList();
         }
-        if (PROJECT_STATE.equals(lifecycleState)
-                || APPROVED_STATE.equals(lifecycleState)
+        if (PROJECT_STATE.equals(lifecycleState) || APPROVED_STATE.equals(lifecycleState)
                 || OBSOLETE_STATE.equals(lifecycleState)) {
             return Arrays.asList(NONE, MINOR, MAJOR);
         }
@@ -250,8 +239,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
         return Arrays.asList(NONE);
     }
 
-    protected VersioningOption validateOption(Document doc,
-            VersioningOption option) throws DocumentException {
+    protected VersioningOption validateOption(Document doc, VersioningOption option) throws DocumentException {
         List<VersioningOption> options = getSaveOptions(doc);
         if (!options.contains(option)) {
             option = options.isEmpty() ? NONE : options.get(0);
@@ -260,16 +248,14 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty,
-            VersioningOption option, Map<String, Serializable> options)
-            throws DocumentException {
+    public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty, VersioningOption option,
+            Map<String, Serializable> options) throws DocumentException {
         boolean disableAutoCheckOut = Boolean.TRUE.equals(options.get(VersioningService.DISABLE_AUTO_CHECKOUT));
         return !doc.isCheckedOut() && isDirty && !disableAutoCheckOut;
     }
 
     @Override
-    public VersioningOption doPreSave(Document doc, boolean isDirty,
-            VersioningOption option, String checkinComment,
+    public VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
             Map<String, Serializable> options) throws DocumentException {
         option = validateOption(doc, option);
         if (isPreSaveDoingCheckOut(doc, isDirty, option, options)) {
@@ -280,12 +266,10 @@ public class StandardVersioningService implements ExtendableVersioningService {
         return option;
     }
 
-    protected void followTransitionByOption(Document doc,
-            VersioningOption option) throws DocumentException {
+    protected void followTransitionByOption(Document doc, VersioningOption option) throws DocumentException {
         try {
             String lifecycleState = doc.getLifeCycleState();
-            if (APPROVED_STATE.equals(lifecycleState)
-                    || OBSOLETE_STATE.equals(lifecycleState)) {
+            if (APPROVED_STATE.equals(lifecycleState) || OBSOLETE_STATE.equals(lifecycleState)) {
                 doc.followTransition(BACK_TO_PROJECT_TRANSITION);
             }
         } catch (LifeCycleException e) {
@@ -294,17 +278,15 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public boolean isPostSaveDoingCheckIn(Document doc,
-            VersioningOption option, Map<String, Serializable> options)
+    public boolean isPostSaveDoingCheckIn(Document doc, VersioningOption option, Map<String, Serializable> options)
             throws DocumentException {
         // option = validateOption(doc, option); // validated before
         return doc.isCheckedOut() && option != NONE;
     }
 
     @Override
-    public Document doPostSave(Document doc, VersioningOption option,
-            String checkinComment, Map<String, Serializable> options)
-            throws DocumentException {
+    public Document doPostSave(Document doc, VersioningOption option, String checkinComment,
+            Map<String, Serializable> options) throws DocumentException {
         if (isPostSaveDoingCheckIn(doc, option, options)) {
             incrementByOption(doc, option);
             return doc.checkIn(null, checkinComment); // auto-label
@@ -313,8 +295,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public Document doCheckIn(Document doc, VersioningOption option,
-            String checkinComment) throws DocumentException {
+    public Document doCheckIn(Document doc, VersioningOption option, String checkinComment) throws DocumentException {
         if (option != VersioningOption.NONE) {
             incrementByOption(doc, option == MAJOR ? MAJOR : MINOR);
         }
@@ -341,14 +322,12 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public void setVersioningRules(
-            Map<String, VersioningRuleDescriptor> versioningRules) {
+    public void setVersioningRules(Map<String, VersioningRuleDescriptor> versioningRules) {
         this.versioningRules = versioningRules;
     }
 
     @Override
-    public void setDefaultVersioningRule(
-            DefaultVersioningRuleDescriptor defaultVersioningRule) {
+    public void setDefaultVersioningRule(DefaultVersioningRuleDescriptor defaultVersioningRule) {
         this.defaultVersioningRule = defaultVersioningRule;
     }
 

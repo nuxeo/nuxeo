@@ -22,8 +22,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor for properties that should not be referenced using value
- * expressions, see
+ * Descriptor for properties that should not be referenced using value expressions, see
  * {@link WebLayoutManager#referencePropertyAsExpression(String, java.io.Serializable, String, String, String)}
  *
  * @since 5.6
@@ -55,8 +54,7 @@ public class DisabledPropertyRefDescriptor implements Serializable {
     protected Boolean enabled = Boolean.TRUE;
 
     public String getId() {
-        return String.format("%s/%s/%s/%s/%s", name, widgetType,
-                widgetTypeCategory, widgetMode, template);
+        return String.format("%s/%s/%s/%s/%s", name, widgetType, widgetTypeCategory, widgetMode, template);
     }
 
     public String getName() {
@@ -107,8 +105,7 @@ public class DisabledPropertyRefDescriptor implements Serializable {
         this.enabled = enabled;
     }
 
-    public boolean matches(String name, String widgetType,
-            String widgetTypeCategory, String widgetMode, String template) {
+    public boolean matches(String name, String widgetType, String widgetTypeCategory, String widgetMode, String template) {
         if (name != null && name.equals(this.name)) {
             if (matches(this.widgetType, widgetType)) {
                 if (matches(this.widgetTypeCategory, widgetTypeCategory)) {
@@ -127,8 +124,7 @@ public class DisabledPropertyRefDescriptor implements Serializable {
         if ("*".equals(value1)) {
             return true;
         }
-        if ((value1 == null && value2 == null) || (value1 == null)
-                || (value1 != null && value1.equals(value2))
+        if ((value1 == null && value2 == null) || (value1 == null) || (value1 != null && value1.equals(value2))
                 || (value2 != null && value2.equals(value1))) {
             return true;
         }

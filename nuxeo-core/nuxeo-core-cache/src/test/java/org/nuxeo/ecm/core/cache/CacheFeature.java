@@ -64,28 +64,24 @@ public class CacheFeature extends SimpleFeature {
     }
 
     protected void bindCache(Binder binder, final String name) {
-        binder.bind(Cache.class).annotatedWith(Names.named(name)).toProvider(
-                new Provider<Cache>() {
+        binder.bind(Cache.class).annotatedWith(Names.named(name)).toProvider(new Provider<Cache>() {
 
-                    @Override
-                    public Cache get() {
-                        return Framework.getService(CacheService.class).getCache(
-                                name);
-                    }
+            @Override
+            public Cache get() {
+                return Framework.getService(CacheService.class).getCache(name);
+            }
 
-                });
+        });
     }
 
     @Override
     public void beforeSetup(FeaturesRunner runner) throws Exception {
-        Framework.getService(CacheService.class).getCache(
-                DEFAULT_TEST_CACHE_NAME).put(KEY, VAL);
+        Framework.getService(CacheService.class).getCache(DEFAULT_TEST_CACHE_NAME).put(KEY, VAL);
     }
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws IOException {
-        IOException errors = new IOException(
-                "Check suppressed errors for cache cleanup");
+        IOException errors = new IOException("Check suppressed errors for cache cleanup");
         clearCache(errors, DEFAULT_TEST_CACHE_NAME);
         if (errors.getSuppressed().length > 0) {
             throw errors;

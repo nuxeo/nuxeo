@@ -22,7 +22,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 @XObject("item")
-public class PermissionUIItemDescriptor implements Serializable{
+public class PermissionUIItemDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,7 +45,8 @@ public class PermissionUIItemDescriptor implements Serializable{
         this.permission = permission.trim();
     }
 
-    public PermissionUIItemDescriptor() {}
+    public PermissionUIItemDescriptor() {
+    }
 
     public PermissionUIItemDescriptor(PermissionUIItemDescriptor referenceDescriptor) {
         show = referenceDescriptor.show;
@@ -145,8 +146,7 @@ public class PermissionUIItemDescriptor implements Serializable{
     public void merge(PermissionUIItemDescriptor pid) {
         // sanity check
         if (!permission.equals(pid.permission)) {
-            throw new NuxeoException(String.format(
-                    "cannot merge permission item '%s' with '%s'", permission,
+            throw new NuxeoException(String.format("cannot merge permission item '%s' with '%s'", permission,
                     pid.permission));
         }
         // do not merge unset attributes

@@ -22,13 +22,11 @@ package org.nuxeo.ecm.platform.ec.notification;
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
- *
  */
 public class NotificationConstants {
 
     /**
-     * A event property to block the notification service.
-     * (use Boolen.TRUE as the value to block)
+     * A event property to block the notification service. (use Boolen.TRUE as the value to block)
      */
     public static final String DISABLE_NOTIFICATION_SERVICE = "disableNotificationService";
 

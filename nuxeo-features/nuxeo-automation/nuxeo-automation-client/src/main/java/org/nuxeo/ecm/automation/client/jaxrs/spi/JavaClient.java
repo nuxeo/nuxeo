@@ -31,17 +31,17 @@ import org.nuxeo.ecm.automation.client.Session;
 /**
  * Abstract class for clients running on real JVMs.
  * <p>
- * When your implementation is designed for running in environment that supports
- * limited Java API like GWT or portable devices you may need to directly implement
- * the {@link AutomationClient} interface.
+ * When your implementation is designed for running in environment that supports limited Java API like GWT or portable
+ * devices you may need to directly implement the {@link AutomationClient} interface.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class JavaClient implements AutomationClient {
 
     protected String url;
+
     protected AdapterManager adapters;
+
     protected ExecutorService async;
 
     protected JavaClient(String url) {
@@ -49,20 +49,18 @@ public abstract class JavaClient implements AutomationClient {
     }
 
     public JavaClient(String url, ExecutorService executor) {
-        this.url = url.endsWith("/") ? url : url+"/";
-        this.async = executor == null ?
-                Executors.newCachedThreadPool(new ThreadFactory() {
-                    public Thread newThread(Runnable r) {
-                        return new Thread("AutomationAsyncExecutor");
-                    }
-                })
-                : executor;
+        this.url = url.endsWith("/") ? url : url + "/";
+        this.async = executor == null ? Executors.newCachedThreadPool(new ThreadFactory() {
+            public Thread newThread(Runnable r) {
+                return new Thread("AutomationAsyncExecutor");
+            }
+        }) : executor;
     }
 
     /**
-     * Validate the credentials. The login must occurs in first place
-     * before a session is created. A stateless session may login each time
-     * using these credentials but you canot get a session without login-in first.
+     * Validate the credentials. The login must occurs in first place before a session is created. A stateless session
+     * may login each time using these credentials but you canot get a session without login-in first.
+     *
      * @param username
      * @param password
      * @return
@@ -70,8 +68,9 @@ public abstract class JavaClient implements AutomationClient {
     protected abstract LoginInfo login(String username, String password);
 
     /**
-     * Create a valid session using the authenticated login.
-     * The session will download any required data like the operation registry before being usable.
+     * Create a valid session using the authenticated login. The session will download any required data like the
+     * operation registry before being usable.
+     *
      * @param login
      * @return
      */
@@ -110,14 +109,14 @@ public abstract class JavaClient implements AutomationClient {
     public Session getSession(String username, String password) {
         LoginInfo login = login(username, password);
         if (login == null) {
-            throw new RuntimeException("Failed to login as "+username);
+            throw new RuntimeException("Failed to login as " + username);
         }
         return createSession(login);
     }
 
     @Override
     public Session getSession() {
-        return getSession((String)null, (String)null);
+        return getSession((String) null, (String) null);
     }
 
     @Override
@@ -127,6 +126,7 @@ public abstract class JavaClient implements AutomationClient {
 
     /**
      * TODO Move this in interface?
+     *
      * @param timeout
      */
     public void shutdown(long timeout) {

@@ -49,21 +49,20 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
-@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit",
-        "org.nuxeo.elasticsearch.seqgen", "org.nuxeo.elasticsearch.audit" })
+@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit", "org.nuxeo.elasticsearch.seqgen",
+        "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml", "org.nuxeo.elasticsearch.audit:es-audit-pageprovider-test-contrib.xml" })
+        "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml",
+        "org.nuxeo.elasticsearch.audit:es-audit-pageprovider-test-contrib.xml" })
 public class TestAuditPageProviderWithElasticSearch {
 
-    protected @Inject
-    CoreSession session;
+    protected @Inject CoreSession session;
 
     @Inject
     protected PageProviderService pps;
-    
-    
+
     @Inject
     protected ElasticSearchAdmin esa;
 
@@ -74,8 +73,7 @@ public class TestAuditPageProviderWithElasticSearch {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
         esa.getClient().admin().indices().prepareFlush(ESAuditBackend.IDX_NAME).execute().actionGet();
-        esa.getClient().admin().indices().prepareRefresh(
-                ESAuditBackend.IDX_NAME).execute().actionGet();
+        esa.getClient().admin().indices().prepareRefresh(ESAuditBackend.IDX_NAME).execute().actionGet();
 
         TransactionHelper.startTransaction();
 
@@ -88,8 +86,7 @@ public class TestAuditPageProviderWithElasticSearch {
         return infos;
     }
 
-    protected LogEntry doCreateEntry(String docId, String eventId,
-            String category) {
+    protected LogEntry doCreateEntry(String docId, String eventId, String category) {
         LogEntry createdEntry = new LogEntryImpl();
         createdEntry.setEventId(eventId);
         createdEntry.setCategory(category);
@@ -102,13 +99,12 @@ public class TestAuditPageProviderWithElasticSearch {
         return createdEntry;
     }
 
-    
     @Test
     public void testSimplePageProvider() throws Exception {
 
-        LogEntryGen.generate("dummy", "entry", "category", 15);                
+        LogEntryGen.generate("dummy", "entry", "category", 15);
         PageProvider<?> pp = pps.getPageProvider("SimpleESAuditPP", null, Long.valueOf(5), Long.valueOf(0),
-                new HashMap<String, Serializable>());                
+                new HashMap<String, Serializable>());
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
@@ -118,27 +114,26 @@ public class TestAuditPageProviderWithElasticSearch {
         Assert.assertEquals(7, pp.getResultsCount());
 
         // check that sort does work
-        Assert.assertTrue(entries.get(0).getId()< entries.get(1).getId());
-        Assert.assertTrue(entries.get(3).getId()< entries.get(4).getId());
+        Assert.assertTrue(entries.get(0).getId() < entries.get(1).getId());
+        Assert.assertTrue(entries.get(3).getId() < entries.get(4).getId());
     }
-    
+
     @Test
     public void testSimplePageProviderWithParams() throws Exception {
 
-        LogEntryGen.generate("withParams", "entry", "category", 15);                        
+        LogEntryGen.generate("withParams", "entry", "category", 15);
         PageProvider<?> pp = pps.getPageProvider("SimpleESAuditPPWithParams", null, Long.valueOf(5), Long.valueOf(0),
-                new HashMap<String, Serializable>(), "category1");                
+                new HashMap<String, Serializable>(), "category1");
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
         Assert.assertEquals(2, entries.size());
-        
-        // check that sort does work
-        Assert.assertTrue(entries.get(0).getId()> entries.get(1).getId());
 
-        
+        // check that sort does work
+        Assert.assertTrue(entries.get(0).getId() > entries.get(1).getId());
+
         pp = pps.getPageProvider("SimpleESAuditPPWithParams", null, Long.valueOf(5), Long.valueOf(0),
-                new HashMap<String, Serializable>(), "category0");                
+                new HashMap<String, Serializable>(), "category0");
         entries = (List<LogEntry>) pp.getCurrentPage();
         Assert.assertEquals(1, entries.size());
 
@@ -147,9 +142,9 @@ public class TestAuditPageProviderWithElasticSearch {
     @Test
     public void testSimplePageProviderWithUUID() throws Exception {
 
-        LogEntryGen.generate("uuid1", "uentry", "ucategory", 10);                        
+        LogEntryGen.generate("uuid1", "uentry", "ucategory", 10);
         PageProvider<?> pp = pps.getPageProvider("SearchById", null, Long.valueOf(5), Long.valueOf(0),
-                new HashMap<String, Serializable>(), "uuid1");                
+                new HashMap<String, Serializable>(), "uuid1");
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
@@ -160,15 +155,13 @@ public class TestAuditPageProviderWithElasticSearch {
     public void testAdminPageProvider() throws Exception {
 
         LogEntryGen.generate("uuid2", "aentry", "acategory", 10);
-        
+
         PageProvider<?> pp = pps.getPageProvider("ADMIN_HISTORY", null, Long.valueOf(5), Long.valueOf(0),
-                new HashMap<String, Serializable>());                
+                new HashMap<String, Serializable>());
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
         Assert.assertEquals(5, entries.size());
     }
-
-    
 
 }

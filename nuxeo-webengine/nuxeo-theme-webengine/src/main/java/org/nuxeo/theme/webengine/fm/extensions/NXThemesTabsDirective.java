@@ -47,17 +47,15 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- *
  */
 public class NXThemesTabsDirective implements TemplateDirectiveModel {
 
     @SuppressWarnings("unchecked")
-    public void execute(Environment env, Map params, TemplateModel[] loopVars,
-            TemplateDirectiveBody body) throws TemplateException, IOException {
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+            throws TemplateException, IOException {
 
         if (loopVars.length != 0) {
-            throw new TemplateModelException(
-                    "This directive doesn't allow loop variables.");
+            throw new TemplateModelException("This directive doesn't allow loop variables.");
         }
         if (body == null) {
             throw new TemplateModelException("Expected a body");
@@ -82,16 +80,14 @@ public class NXThemesTabsDirective implements TemplateDirectiveModel {
 
         StringWriter sw = new StringWriter();
         body.render(sw);
-        String content = String.format("<tabs>%s</tabs>",
-                sw.getBuffer().toString());
+        String content = String.format("<tabs>%s</tabs>", sw.getBuffer().toString());
 
         final List<Map<String, String>> items = new ArrayList<Map<String, String>>();
 
         // Parse the XML content
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
-            Document doc = dbf.newDocumentBuilder().parse(
-                    new ByteArrayInputStream(content.getBytes()));
+            Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(content.getBytes()));
             NodeList itemList = doc.getElementsByTagName("tab");
             for (int i = 0; i < itemList.getLength(); i++) {
                 Node itemNode = itemList.item(i);
@@ -118,8 +114,7 @@ public class NXThemesTabsDirective implements TemplateDirectiveModel {
         view.put("widget", widget);
 
         Writer writer = env.getOut();
-        writer.write(String.format("<ins class=\"view\">%s</ins>",
-                org.nuxeo.theme.html.Utils.toJson(view)));
+        writer.write(String.format("<ins class=\"view\">%s</ins>", org.nuxeo.theme.html.Utils.toJson(view)));
 
     }
 }

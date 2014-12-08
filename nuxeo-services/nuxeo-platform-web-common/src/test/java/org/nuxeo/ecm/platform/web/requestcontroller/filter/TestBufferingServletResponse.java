@@ -128,8 +128,8 @@ public class TestBufferingServletResponse {
 
     protected HttpServletResponse getFakeResponse(ResponseProxy responseProxy) {
         ClassLoader cl = getClass().getClassLoader();
-        HttpServletResponse response = (HttpServletResponse) Proxy.newProxyInstance(
-                cl, new Class[] { HttpServletResponse.class }, responseProxy);
+        HttpServletResponse response = (HttpServletResponse) Proxy.newProxyInstance(cl,
+                new Class[] { HttpServletResponse.class }, responseProxy);
         return response;
     }
 
@@ -147,8 +147,7 @@ public class TestBufferingServletResponse {
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             String name = method.getName();
             if (name.equals("getOutputStream")) {
                 return sout;

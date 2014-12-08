@@ -16,11 +16,8 @@
  */
 package org.nuxeo.ecm.webengine.forms.validation;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractFieldValidator implements FieldValidator {
 

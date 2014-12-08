@@ -31,9 +31,8 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 // FileManagerService#createDefaultFolder method is extracted to a plugin.
 public interface FolderImporter {
 
-    DocumentModel create(CoreSession documentManager, String fullname,
-            String path, boolean overwrite, TypeManager typeManager)
-            throws ClientException, IOException;
+    DocumentModel create(CoreSession documentManager, String fullname, String path, boolean overwrite,
+            TypeManager typeManager) throws ClientException, IOException;
 
     String getName();
 

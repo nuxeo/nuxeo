@@ -25,8 +25,7 @@ public class TestNuxeoPrincipal {
 
     @Test
     public void test() {
-        NuxeoPrincipal principal = new UserPrincipal("john",
-                new ArrayList<String>(), false, false);
+        NuxeoPrincipal principal = new UserPrincipal("john", new ArrayList<String>(), false, false);
 
         assertEquals("john", principal.getName());
 
@@ -42,12 +41,9 @@ public class TestNuxeoPrincipal {
 
     @Test
     public void testEquals() {
-        NuxeoPrincipal john1 = new UserPrincipal("john",
-                new ArrayList<String>(), false, false);
-        NuxeoPrincipal john2 = new UserPrincipal("john",
-                new ArrayList<String>(), false, false);
-        NuxeoPrincipal jim = new UserPrincipal("jim", new ArrayList<String>(),
-                false, false);
+        NuxeoPrincipal john1 = new UserPrincipal("john", new ArrayList<String>(), false, false);
+        NuxeoPrincipal john2 = new UserPrincipal("john", new ArrayList<String>(), false, false);
+        NuxeoPrincipal jim = new UserPrincipal("jim", new ArrayList<String>(), false, false);
 
         assertEquals(john1, john2);
         assertEquals(john1.hashCode(), john2.hashCode());

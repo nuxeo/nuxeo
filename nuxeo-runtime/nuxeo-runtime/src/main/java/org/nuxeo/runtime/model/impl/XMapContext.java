@@ -20,8 +20,7 @@ import org.nuxeo.common.xmap.Context;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class XMapContext extends Context {
 

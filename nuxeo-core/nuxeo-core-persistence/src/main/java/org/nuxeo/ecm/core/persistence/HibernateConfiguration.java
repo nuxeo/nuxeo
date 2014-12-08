@@ -75,11 +75,9 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     public void setDatasource(String name) {
         String expandedValue = Framework.expandVars(name);
         if (expandedValue.startsWith("$")) {
-            throw new PersistenceError("Cannot expand " + name
-                    + " for datasource");
+            throw new PersistenceError("Cannot expand " + name + " for datasource");
         }
-        hibernateProperties.put("hibernate.connection.datasource",
-                DataSourceHelper.getDataSourceJNDIName(name));
+        hibernateProperties.put("hibernate.connection.datasource", DataSourceHelper.getDataSourceJNDIName(name));
     }
 
     @XNodeMap(value = "properties/property", key = "@name", type = Properties.class, componentType = String.class)
@@ -105,7 +103,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     public Ejb3Configuration setupConfiguration(Map<String, String> properties) {
         cfg = new Ejb3Configuration();
 
-        if (properties!=null) {
+        if (properties != null) {
             cfg.configure(name, properties);
         } else {
             cfg.configure(name, Collections.emptyMap());
@@ -149,8 +147,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
             // don't set up our connection provider for unit tests
             // that use an explicit driver + connection URL and so use
             // a DriverManagerConnectionProvider
-            props.put(Environment.CONNECTION_PROVIDER,
-                    NuxeoConnectionProvider.class.getName());
+            props.put(Environment.CONNECTION_PROVIDER, NuxeoConnectionProvider.class.getName());
         }
         if (txType.equals(RESOURCE_LOCAL)) {
             props.remove(Environment.DATASOURCE);
@@ -159,7 +156,8 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
             dsname = DataSourceHelper.getDataSourceJNDIName(dsname);
             props.put(Environment.DATASOURCE, dsname);
             props.put(Environment.JNDI_CLASS, NamingContextFactory.class.getName());
-            props.put(Environment.JNDI_PREFIX.concat(".").concat(javax.naming.Context.URL_PKG_PREFIXES), NuxeoContainer.class.getPackage().getName());
+            props.put(Environment.JNDI_PREFIX.concat(".").concat(javax.naming.Context.URL_PKG_PREFIXES),
+                    NuxeoContainer.class.getPackage().getName());
         }
         return createEntityManagerFactory(properties);
     }
@@ -168,40 +166,33 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
      * Don't close the connection aggressively after each statement.
      */
     // needs to be public as hibernate calls newInstance
-    public static class NuxeoTransactionFactory extends
-            JoinableCMTTransactionFactory {
+    public static class NuxeoTransactionFactory extends JoinableCMTTransactionFactory {
         @Override
         public ConnectionReleaseMode getDefaultReleaseMode() {
             return ConnectionReleaseMode.AFTER_TRANSACTION;
         }
 
         @Override
-        public org.hibernate.Transaction createTransaction(
-                JDBCContext jdbcContext,
-                TransactionFactory.Context transactionContext)
-                throws HibernateException {
-            return new NuxeoHibernateTransaction(jdbcContext,
-                    transactionContext);
+        public org.hibernate.Transaction createTransaction(JDBCContext jdbcContext,
+                TransactionFactory.Context transactionContext) throws HibernateException {
+            return new NuxeoHibernateTransaction(jdbcContext, transactionContext);
         }
     }
 
     /**
-     * Hibernate transaction that will register a synchronization that runs
-     * before the one from ConnectionHelper in single-datasource mode.
+     * Hibernate transaction that will register a synchronization that runs before the one from ConnectionHelper in
+     * single-datasource mode.
      * <p>
-     * Needed because the sync from org.hibernate.ejb.EntityManagerImpl#close
-     * must run before the one from ConnectionHelper.
+     * Needed because the sync from org.hibernate.ejb.EntityManagerImpl#close must run before the one from
+     * ConnectionHelper.
      */
-    public static class NuxeoHibernateTransaction extends
-            JoinableCMTTransaction {
-        public NuxeoHibernateTransaction(JDBCContext jdbcContext,
-                TransactionFactory.Context transactionContext) {
+    public static class NuxeoHibernateTransaction extends JoinableCMTTransaction {
+        public NuxeoHibernateTransaction(JDBCContext jdbcContext, TransactionFactory.Context transactionContext) {
             super(jdbcContext, transactionContext);
         }
 
         @Override
-        public void registerSynchronization(Synchronization sync)
-                throws HibernateException {
+        public void registerSynchronization(Synchronization sync) throws HibernateException {
             boolean registered;
             try {
                 registered = ConnectionHelper.registerSynchronization(sync);
@@ -217,10 +208,9 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     // this must be executed always outside a transaction
     // because SchemaUpdate tries to setAutoCommit(true)
     // so we use a new thread
-    protected EntityManagerFactory createEntityManagerFactory(
-            final Map<String, String> properties) {
+    protected EntityManagerFactory createEntityManagerFactory(final Map<String, String> properties) {
         final EntityManagerFactory[] emf = new EntityManagerFactory[1];
-        Thread t = new Thread("persistence-init-"+name) {
+        Thread t = new Thread("persistence-init-" + name) {
             @SuppressWarnings("deprecation")
             @Override
             public void run() {
@@ -239,8 +229,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     /**
      * Hibernate Transaction Manager Lookup that uses our framework.
      */
-    public static class NuxeoTransactionManagerLookup implements
-            TransactionManagerLookup {
+    public static class NuxeoTransactionManagerLookup implements TransactionManagerLookup {
         public NuxeoTransactionManagerLookup() {
             // look up UserTransaction once to know its JNDI name
             try {
@@ -299,8 +288,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         try {
             return (HibernateConfiguration) map.load(location);
         } catch (IOException e) {
-            throw new PersistenceError(
-                    "Cannot load hibernate configuration from " + location, e);
+            throw new PersistenceError("Cannot load hibernate configuration from " + location, e);
         }
     }
 

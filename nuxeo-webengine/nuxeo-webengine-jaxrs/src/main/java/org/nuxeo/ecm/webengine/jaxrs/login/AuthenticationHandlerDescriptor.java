@@ -19,7 +19,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("handler")
 public class AuthenticationHandlerDescriptor {
@@ -30,12 +29,10 @@ public class AuthenticationHandlerDescriptor {
     @XNode("class")
     protected Class<?> clazz;
 
-    @XNodeMap(value="property", key="@name", type=HashMap.class, componentType=String.class, nullByDefault=false)
-    protected HashMap<String,String> properties;
+    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class, nullByDefault = false)
+    protected HashMap<String, String> properties;
 
-
-    protected AuthenticationHandler newInstance()
-            throws ReflectiveOperationException {
+    protected AuthenticationHandler newInstance() throws ReflectiveOperationException {
         AuthenticationHandler ah = (AuthenticationHandler) clazz.newInstance();
         ah.init(properties);
         return ah;

@@ -32,7 +32,6 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class APIHelper implements RenderingExtensionFactory {
 

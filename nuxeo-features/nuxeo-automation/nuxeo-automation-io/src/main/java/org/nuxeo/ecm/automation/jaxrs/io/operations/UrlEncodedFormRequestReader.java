@@ -35,16 +35,13 @@ import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
- * Reads {@link ExecutionRequest} from a urlencoded POST (Needed for OAuth
- * calls)
+ * Reads {@link ExecutionRequest} from a urlencoded POST (Needed for OAuth calls)
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 @Provider
 @Consumes("application/x-www-form-urlencoded")
-public class UrlEncodedFormRequestReader implements
-        MessageBodyReader<ExecutionRequest> {
+public class UrlEncodedFormRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     @Context
     protected HttpServletRequest request;
@@ -57,15 +54,13 @@ public class UrlEncodedFormRequestReader implements
     }
 
     @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return (MediaType.APPLICATION_FORM_URLENCODED_TYPE.equals(mediaType) && ExecutionRequest.class.isAssignableFrom(type));
     }
 
     @Override
-    public ExecutionRequest readFrom(Class<ExecutionRequest> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public ExecutionRequest readFrom(Class<ExecutionRequest> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
 
         String content = IOUtils.toString(entityStream, "UTF-8");
@@ -74,8 +69,7 @@ public class UrlEncodedFormRequestReader implements
             // body was consumed by OAuth Filter and but Request parameters must
             // have been cached
             // => need to get access to the request params
-            jsonString = RequestContext.getActiveContext().getRequest().getParameter(
-                    "jsondata");
+            jsonString = RequestContext.getActiveContext().getRequest().getParameter("jsondata");
         } else {
             if (content.startsWith("jsondata=")) {
                 jsonString = content.substring(9);
@@ -90,11 +84,9 @@ public class UrlEncodedFormRequestReader implements
         }
         JsonParser jp = factory.createJsonParser(jsonString);
         try {
-            return JsonRequestReader.readRequest(jp, httpHeaders,
-                    getCoreSession());
+            return JsonRequestReader.readRequest(jp, httpHeaders, getCoreSession());
         } catch (IOException e) {
-            throw new WebApplicationException(
-                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
         }
     }
 

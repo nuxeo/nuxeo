@@ -32,7 +32,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-
 public class TestTestFramework extends NXRuntimeTestCase {
 
     @Override
@@ -56,13 +55,10 @@ public class TestTestFramework extends NXRuntimeTestCase {
     @Test
     public void testLookupBundleUrl() throws Exception {
 
-        urls = new URL[] {
-                new URL("file:/repo/org/nuxeo/nuxeo-runtime-1.4-SNAPSHOT.jar"),
-                new URL("file:/projects/nuxeo-core-test/bin/test"),
-                new URL("file:/projects/nuxeo-core-test/bin/main"),
+        urls = new URL[] { new URL("file:/repo/org/nuxeo/nuxeo-runtime-1.4-SNAPSHOT.jar"),
+                new URL("file:/projects/nuxeo-core-test/bin/test"), new URL("file:/projects/nuxeo-core-test/bin/main"),
                 new URL("file:/projects/nuxeo-common/target/test-classes"),
-                new URL("file:/projects/nuxeo-common/target/classes"),
-        };
+                new URL("file:/projects/nuxeo-common/target/classes"), };
         assertEquals(urls[0], lookupBundleUrl("nuxeo-runtime"));
         assertEquals(urls[2], lookupBundleUrl("nuxeo-core-test"));
         assertEquals(urls[4], lookupBundleUrl("nuxeo-common"));

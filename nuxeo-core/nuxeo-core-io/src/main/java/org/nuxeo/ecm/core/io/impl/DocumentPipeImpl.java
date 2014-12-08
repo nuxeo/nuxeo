@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentPipeImpl implements DocumentPipe {
 
@@ -39,7 +38,6 @@ public class DocumentPipeImpl implements DocumentPipe {
 
     private DocumentWriter writer;
 
-
     public DocumentPipeImpl(int pageSize) {
         this.pageSize = pageSize;
         transformers = new ArrayList<DocumentTransformer>();
@@ -48,7 +46,6 @@ public class DocumentPipeImpl implements DocumentPipe {
     public DocumentPipeImpl() {
         this(0);
     }
-
 
     @Override
     public void addTransformer(DocumentTransformer transformer) {
@@ -103,8 +100,7 @@ public class DocumentPipeImpl implements DocumentPipe {
         // NOP
     }
 
-    protected void readAndWriteDocs(List<DocumentTranslationMap> maps)
-            throws IOException {
+    protected void readAndWriteDocs(List<DocumentTranslationMap> maps) throws IOException {
         if (pageSize == 0) {
             // handle single doc case
             ExportedDocument doc;

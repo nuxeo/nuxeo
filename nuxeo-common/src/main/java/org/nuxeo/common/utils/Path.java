@@ -21,9 +21,13 @@ import java.io.Serializable;
 public class Path implements Serializable {
 
     private static final long serialVersionUID = -5420562131803786641L;
+
     private static final int HAS_LEADING = 1;
+
     private static final int HAS_TRAILING = 2;
+
     private static final int ALL_SEPARATORS = HAS_LEADING | HAS_TRAILING;
+
     private static final int USED_BITS = 2;
 
     private static final String[] NO_SEGMENTS = new String[0];
@@ -38,6 +42,7 @@ public class Path implements Serializable {
 
     /** Constant value containing the empty path with no device. */
     private static final Path EMPTY = new Path(EMPTY_STRING);
+
     //
     private static final int HASH_MASK = ~HAS_TRAILING;
 
@@ -48,19 +53,17 @@ public class Path implements Serializable {
     private static final Path ROOT = new Path(ROOT_STRING);
 
     private String[] segments;
+
     private int separators;
 
     /**
      * Constructs a new path from the given string path.
      * <p>
-     * The string path must represent a valid file system path
-     * on the local file system.
+     * The string path must represent a valid file system path on the local file system.
      * <p>
-     * The path is canonicalized and double slashes are removed
-     * except at the beginning. (to handle UNC paths). All forward
-     * slashes ('/') are treated as segment delimiters, and any
-     * segment and device delimiters for the local file system are
-     * also respected (such as colon (':') and backslash ('\') on some file systems).
+     * The path is canonicalized and double slashes are removed except at the beginning. (to handle UNC paths). All
+     * forward slashes ('/') are treated as segment delimiters, and any segment and device delimiters for the local file
+     * system are also respected (such as colon (':') and backslash ('\') on some file systems).
      *
      * @param fullPath the string path
      * @see #isValidPath(String)
@@ -78,15 +81,15 @@ public class Path implements Serializable {
     private Path(String[] segments, int separators) {
         // no segment validations are done for performance reasons
         this.segments = segments;
-        //hash code is cached in all but the bottom three bits of the separators field
+        // hash code is cached in all but the bottom three bits of the separators field
         this.separators = (computeHashCode() << USED_BITS) | (separators & ALL_SEPARATORS);
     }
 
     /**
      * Creates a path object from an absolute and canonical path.
      * <p>
-     * This method does not check the given path - it assumes the path
-     * has a valid format of the form "/a/b/c" without duplicate slashes or dots.
+     * This method does not check the given path - it assumes the path has a valid format of the form "/a/b/c" without
+     * duplicate slashes or dots.
      *
      * @return the path
      */
@@ -116,7 +119,6 @@ public class Path implements Serializable {
         return new Path(segments, HAS_LEADING);
     }
 
-
     public Path addFileExtension(String extension) {
         if (isRoot() || isEmpty() || hasTrailingSeparator()) {
             return this;
@@ -127,7 +129,6 @@ public class Path implements Serializable {
         newSegments[len - 1] = segments[len - 1] + '.' + extension;
         return new Path(newSegments, separators);
     }
-
 
     public Path addTrailingSeparator() {
         if (hasTrailingSeparator() || isRoot()) {
@@ -142,7 +143,7 @@ public class Path implements Serializable {
     // XXX: confusing, one may think that this modifies the path
     // being appended to (like Python's list.append()).
     public Path append(Path tail) {
-        //optimize some easy cases
+        // optimize some easy cases
         if (tail == null || tail.segmentCount() == 0) {
             return this;
         }
@@ -153,7 +154,7 @@ public class Path implements Serializable {
             return tail.makeAbsolute();
         }
 
-        //concatenate the two segment arrays
+        // concatenate the two segment arrays
         int myLen = segments.length;
         int tailLen = tail.segmentCount();
         String[] newSegments = new String[myLen + tailLen];
@@ -161,8 +162,9 @@ public class Path implements Serializable {
         for (int i = 0; i < tailLen; i++) {
             newSegments[myLen + i] = tail.segment(i);
         }
-        //use my leading separators and the tail's trailing separator
-        Path result = new Path(newSegments, (separators & HAS_LEADING) | (tail.hasTrailingSeparator() ? HAS_TRAILING : 0));
+        // use my leading separators and the tail's trailing separator
+        Path result = new Path(newSegments, (separators & HAS_LEADING)
+                | (tail.hasTrailingSeparator() ? HAS_TRAILING : 0));
         String tailFirstSegment = newSegments[myLen];
         if (tailFirstSegment.equals("..") || tailFirstSegment.equals(".")) { //$NON-NLS-1$ //$NON-NLS-2$
             result.canonicalize();
@@ -172,11 +174,11 @@ public class Path implements Serializable {
 
     // XXX: same remark
     public Path append(String tail) {
-        //optimize addition of a single segment
+        // optimize addition of a single segment
         if (tail.indexOf(SEPARATOR) == -1) {
             int tailLength = tail.length();
             if (tailLength < 3) {
-                //some special cases
+                // some special cases
                 if (tailLength == 0 || ".".equals(tail)) { //$NON-NLS-1$
                     return this;
                 }
@@ -184,39 +186,37 @@ public class Path implements Serializable {
                     return removeLastSegments(1);
                 }
             }
-            //just add the segment
+            // just add the segment
             int myLen = segments.length;
             String[] newSegments = new String[myLen + 1];
             System.arraycopy(segments, 0, newSegments, 0, myLen);
             newSegments[myLen] = tail;
             return new Path(newSegments, separators & ~HAS_TRAILING);
         }
-        //go with easy implementation
+        // go with easy implementation
         return append(new Path(tail));
     }
-
 
     /**
      * Destructively converts this path to its canonical form.
      * <p>
-     * In its canonical form, a path does not have any
-     * "." segments, and parent references ("..") are collapsed
-     * where possible.
+     * In its canonical form, a path does not have any "." segments, and parent references ("..") are collapsed where
+     * possible.
      *
      * @return true if the path was modified, and false otherwise.
      */
     private boolean canonicalize() {
-        //look for segments that need canonicalizing
+        // look for segments that need canonicalizing
         for (int i = 0, max = segments.length; i < max; i++) {
             String segment = segments[i];
             if (segment.charAt(0) == '.' && (segment.equals("..") || segment.equals("."))) { //$NON-NLS-1$ //$NON-NLS-2$
-                //path needs to be canonicalized
+                // path needs to be canonicalized
                 collapseParentReferences();
-                //paths of length 0 have no trailing separator
+                // paths of length 0 have no trailing separator
                 if (segments.length == 0) {
                     separators &= HAS_LEADING;
                 }
-                //recompute hash because canonicalize affects hash
+                // recompute hash because canonicalize affects hash
                 separators = (separators & ALL_SEPARATORS) | (computeHashCode() << USED_BITS);
                 return true;
             }
@@ -236,11 +236,11 @@ public class Path implements Serializable {
             if (segment.equals("..")) { //$NON-NLS-1$
                 if (stackPointer == 0) {
                     // if the stack is empty we are going out of our scope
-                    // so we need to accumulate segments.  But only if the original
-                    // path is relative.  If it is absolute then we can't go any higher than
+                    // so we need to accumulate segments. But only if the original
+                    // path is relative. If it is absolute then we can't go any higher than
                     // root so simply toss the .. references.
                     if (!isAbsolute()) {
-                        stack[stackPointer++] = segment; //stack push
+                        stack[stackPointer++] = segment; // stack push
                     }
                 } else {
                     // if the top is '..' then we are accumulating segments so don't pop
@@ -248,19 +248,19 @@ public class Path implements Serializable {
                         stack[stackPointer++] = ".."; //$NON-NLS-1$
                     } else {
                         stackPointer--;
-                        //stack pop
+                        // stack pop
                     }
                 }
-                //collapse current references
+                // collapse current references
             } else if (!segment.equals(".") || (i == 0 && !isAbsolute())) {
-                stack[stackPointer++] = segment; //stack push
+                stack[stackPointer++] = segment; // stack push
             }
         }
-        //if the number of segments hasn't changed, then no modification needed
+        // if the number of segments hasn't changed, then no modification needed
         if (stackPointer == segmentCount) {
             return;
         }
-        //build the new segment array backwards by popping the stack
+        // build the new segment array backwards by popping the stack
         String[] newSegments = new String[stackPointer];
         System.arraycopy(stack, 0, newSegments, 0, stackPointer);
         segments = newSegments;
@@ -276,7 +276,7 @@ public class Path implements Serializable {
         if (length < 2) {
             return path;
         }
-        // check for an occurrence of // in the path.  Start at index 1 to ensure we skip leading UNC //
+        // check for an occurrence of // in the path. Start at index 1 to ensure we skip leading UNC //
         // If there are no // then there is nothing to collapse so just return.
         if (path.indexOf("//", 1) == -1) {
             return path;
@@ -306,25 +306,24 @@ public class Path implements Serializable {
         int hash = 17;
         int segmentCount = segments.length;
         for (int i = 0; i < segmentCount; i++) {
-            //this function tends to given a fairly even distribution
+            // this function tends to given a fairly even distribution
             hash = hash * 37 + segments[i].hashCode();
         }
         return hash;
     }
-
 
     private int computeLength() {
         int length = 0;
         if ((separators & HAS_LEADING) != 0) {
             length++;
         }
-        //add the segment lengths
+        // add the segment lengths
         int max = segments.length;
         if (max > 0) {
             for (int i = 0; i < max; i++) {
                 length += segments[i].length();
             }
-            //add the separator lengths
+            // add the separator lengths
             length += max - 1;
         }
         if ((separators & HAS_TRAILING) != 0) {
@@ -397,17 +396,17 @@ public class Path implements Serializable {
             return false;
         }
         Path target = (Path) obj;
-        //check leading separators and hash code
+        // check leading separators and hash code
         if ((separators & HASH_MASK) != (target.separators & HASH_MASK)) {
             return false;
         }
         String[] targetSegments = target.segments;
         int i = segments.length;
-        //check segment count
+        // check segment count
         if (i != targetSegments.length) {
             return false;
         }
-        //check segments in reverse order - later segments more likely to differ
+        // check segments in reverse order - later segments more likely to differ
         while (--i >= 0) {
             if (!segments[i].equals(targetSegments[i])) {
                 return false;
@@ -449,7 +448,7 @@ public class Path implements Serializable {
         path = collapseSlashes(path);
         int len = path.length();
 
-        //compute the separators array
+        // compute the separators array
         if (len < 2) {
             if (len == 1 && path.charAt(0) == SEPARATOR) {
                 separators = HAS_LEADING;
@@ -464,22 +463,22 @@ public class Path implements Serializable {
                 separators |= HAS_TRAILING;
             }
         }
-        //compute segments and ensure canonical form
+        // compute segments and ensure canonical form
         segments = computeSegments(path);
         if (!canonicalize()) {
-            //compute hash now because canonicalize didn't need to do it
+            // compute hash now because canonicalize didn't need to do it
             separators = (separators & ALL_SEPARATORS) | (computeHashCode() << USED_BITS);
         }
         return this;
     }
 
     public boolean isAbsolute() {
-        //it's absolute if it has a leading separator
+        // it's absolute if it has a leading separator
         return (separators & HAS_LEADING) != 0;
     }
 
     public boolean isEmpty() {
-        //true if no segments and no leading prefix
+        // true if no segments and no leading prefix
         return segments.length == 0 && ((separators & ALL_SEPARATORS) != HAS_LEADING);
     }
 
@@ -500,7 +499,7 @@ public class Path implements Serializable {
     }
 
     public boolean isRoot() {
-        //must have no segments, a leading separator, and not be a UNC path.
+        // must have no segments, a leading separator, and not be a UNC path.
         return this == ROOT || (segments.length == 0 && ((separators & ALL_SEPARATORS) == HAS_LEADING));
     }
 
@@ -538,7 +537,7 @@ public class Path implements Serializable {
             return this;
         }
         Path result = new Path(segments, separators | HAS_LEADING);
-        //may need canonicalizing if it has leading ".." or "." segments
+        // may need canonicalizing if it has leading ".." or "." segments
         if (result.segmentCount() > 0) {
             String first = result.segment(0);
             if (first.equals("..") || first.equals(".")) { //$NON-NLS-1$ //$NON-NLS-2$
@@ -591,7 +590,7 @@ public class Path implements Serializable {
         String[] newSegments = new String[newSize];
         System.arraycopy(segments, count, newSegments, 0, newSize);
 
-        //result is always a relative path
+        // result is always a relative path
         return new Path(newSegments, separators & HAS_TRAILING);
     }
 
@@ -600,7 +599,7 @@ public class Path implements Serializable {
             return this;
         }
         if (count >= segments.length) {
-            //result will have no trailing separator
+            // result will have no trailing separator
             return new Path(NO_SEGMENTS, separators & HAS_LEADING);
         }
         assert count > 0;
@@ -647,14 +646,14 @@ public class Path implements Serializable {
         }
         final int len = segments.length - 1;
         if (len >= 0) {
-            //append all but the last segment, with separators
+            // append all but the last segment, with separators
             for (int i = 0; i < len; i++) {
                 final int size = segments[i].length();
                 segments[i].getChars(0, size, result, offset);
                 offset += size;
                 result[offset++] = SEPARATOR;
             }
-            //append the last segment
+            // append the last segment
             final int size = segments[len].length();
             segments[len].getChars(0, size, result, offset);
             offset += size;
@@ -683,16 +682,15 @@ public class Path implements Serializable {
      */
     public static String getFileNameFromPath(String iconPath) {
         String iconName;
-        //        String fileSeparator = System.getProperty("file.separator");
+        // String fileSeparator = System.getProperty("file.separator");
 
-        //temporary not working with the file separator, only with /
+        // temporary not working with the file separator, only with /
         int firstCharOfIconName = iconPath.lastIndexOf(SEPARATOR);
         int lastCharOfIconName = iconPath.lastIndexOf(".");
         if (firstCharOfIconName == -1) {
             iconName = iconPath;
         } else {
-            iconName = iconPath.substring(firstCharOfIconName,
-                    lastCharOfIconName);
+            iconName = iconPath.substring(firstCharOfIconName, lastCharOfIconName);
         }
         return iconName;
     }

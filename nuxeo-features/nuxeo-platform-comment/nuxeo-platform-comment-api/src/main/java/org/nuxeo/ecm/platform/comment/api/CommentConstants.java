@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.comment.api;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public final class CommentConstants {
 

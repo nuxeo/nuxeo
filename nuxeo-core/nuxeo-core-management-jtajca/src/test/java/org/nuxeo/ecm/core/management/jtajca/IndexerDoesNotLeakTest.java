@@ -22,18 +22,22 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ JtajcaManagementFeature.class})
-@RepositoryConfig(cleanup=Granularity.METHOD, repositoryFactoryClass=PoolingRepositoryFactory.class, singleDatasource="jdbc/NuxeoTestDS")
+@Features({ JtajcaManagementFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class, singleDatasource = "jdbc/NuxeoTestDS")
 public class IndexerDoesNotLeakTest {
 
-    @Inject CoreSession repo;
+    @Inject
+    CoreSession repo;
 
-    @Inject WorkManager works;
+    @Inject
+    WorkManager works;
 
-    @Inject @Named("repository/test")
+    @Inject
+    @Named("repository/test")
     ConnectionPoolMonitor repoMonitor;
 
-    @Inject @Named("jdbc/repository_test")
+    @Inject
+    @Named("jdbc/repository_test")
     ConnectionPoolMonitor dbMonitor;
 
     @Test

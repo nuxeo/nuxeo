@@ -24,7 +24,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 @XObject("settings")
 public class GeneralSettingsDescriptor {

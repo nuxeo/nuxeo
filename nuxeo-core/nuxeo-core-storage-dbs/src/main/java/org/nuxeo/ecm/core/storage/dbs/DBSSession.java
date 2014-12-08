@@ -193,14 +193,11 @@ public class DBSSession implements Session {
     }
 
     /*
-     * Normalize using NFC to avoid decomposed characters (like 'e' + COMBINING
-     * ACUTE ACCENT instead of LATIN SMALL LETTER E WITH ACUTE).
-     *
-     * NFKC (normalization using compatibility decomposition) is not used,
-     * because compatibility decomposition turns some characters (LATIN SMALL
-     * LIGATURE FFI, TRADE MARK SIGN, FULLWIDTH SOLIDUS) into a series of
-     * characters ('f'+'f'+'i', 'T'+'M', '/') that cannot be re-composed into
-     * the original, and therefore loses information.
+     * Normalize using NFC to avoid decomposed characters (like 'e' + COMBINING ACUTE ACCENT instead of LATIN SMALL
+     * LETTER E WITH ACUTE). NFKC (normalization using compatibility decomposition) is not used, because compatibility
+     * decomposition turns some characters (LATIN SMALL LIGATURE FFI, TRADE MARK SIGN, FULLWIDTH SOLIDUS) into a series
+     * of characters ('f'+'f'+'i', 'T'+'M', '/') that cannot be re-composed into the original, and therefore loses
+     * information.
      */
     protected String normalize(String path) {
         return Normalizer.normalize(path, Normalizer.Form.NFC);
@@ -235,8 +232,7 @@ public class DBSSession implements Session {
         for (int i = 1; i < names.length; i++) {
             String name = names[i];
             if (name.length() == 0) {
-                throw new IllegalArgumentException(
-                        "Path with empty component: " + path);
+                throw new IllegalArgumentException("Path with empty component: " + path);
             }
             docState = transaction.getChildState(parentId, name);
             if (docState == null) {
@@ -275,8 +271,7 @@ public class DBSSession implements Session {
         for (int i = 1; i < names.length; i++) {
             String name = names[i];
             if (name.length() == 0) {
-                throw new IllegalArgumentException(
-                        "Path with empty component: " + path);
+                throw new IllegalArgumentException("Path with empty component: " + path);
             }
             // TODO XXX add getChildId method
             docState = transaction.getChildState(parentId, name);
@@ -288,14 +283,12 @@ public class DBSSession implements Session {
         return docState.getId();
     }
 
-    protected Document getChild(String parentId, String name)
-            throws DocumentException {
+    protected Document getChild(String parentId, String name) throws DocumentException {
         DBSDocumentState docState = transaction.getChildState(parentId, name);
         return getDocument(docState);
     }
 
-    protected Iterator<Document> getChildren(String parentId)
-            throws DocumentException {
+    protected Iterator<Document> getChildren(String parentId) throws DocumentException {
         List<DBSDocumentState> docStates = transaction.getChildrenStates(parentId);
         if (isOrderable(parentId)) {
             // sort children in order
@@ -393,8 +386,7 @@ public class DBSSession implements Session {
         return getDocument(docState);
     }
 
-    protected List<Document> getDocuments(List<String> ids)
-            throws DocumentException {
+    protected List<Document> getDocuments(List<String> ids) throws DocumentException {
         List<DBSDocumentState> docStates = transaction.getStatesForUpdate(ids);
         List<Document> docs = new ArrayList<Document>(ids.size());
         for (DBSDocumentState docState : docStates) {
@@ -403,13 +395,11 @@ public class DBSSession implements Session {
         return docs;
     }
 
-    protected Document getDocument(DBSDocumentState docState)
-            throws DocumentException {
+    protected Document getDocument(DBSDocumentState docState) throws DocumentException {
         return getDocument(docState, true);
     }
 
-    protected Document getDocument(DBSDocumentState docState, boolean readonly)
-            throws DocumentException {
+    protected Document getDocument(DBSDocumentState docState, boolean readonly) throws DocumentException {
         if (docState == null) {
             return null;
         }
@@ -433,15 +423,14 @@ public class DBSSession implements Session {
         return transaction.hasChild(parentId, name);
     }
 
-    public Document createChild(String id, String parentId, String name,
-            Long pos, String typeName) throws DocumentException {
-        DBSDocumentState docState = createChildState(id, parentId, name, pos,
-                typeName);
+    public Document createChild(String id, String parentId, String name, Long pos, String typeName)
+            throws DocumentException {
+        DBSDocumentState docState = createChildState(id, parentId, name, pos, typeName);
         return getDocument(docState);
     }
 
-    protected DBSDocumentState createChildState(String id, String parentId,
-            String name, Long pos, String typeName) throws DocumentException {
+    protected DBSDocumentState createChildState(String id, String parentId, String name, Long pos, String typeName)
+            throws DocumentException {
         if (pos == null && parentId != null) {
             pos = getNextPos(parentId);
         }
@@ -452,8 +441,7 @@ public class DBSSession implements Session {
         State state = transaction.getStateForRead(id);
         String typeName = (String) state.get(KEY_PRIMARY_TYPE);
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        return schemaManager.getDocumentType(typeName).getFacets().contains(
-                FacetNames.ORDERABLE);
+        return schemaManager.getDocumentType(typeName).getFacets().contains(FacetNames.ORDERABLE);
     }
 
     protected Long getNextPos(String parentId) {
@@ -470,8 +458,7 @@ public class DBSSession implements Session {
         return Long.valueOf(max + 1);
     }
 
-    protected void orderBefore(String parentId, String sourceId, String destId)
-            throws DocumentException {
+    protected void orderBefore(String parentId, String sourceId, String destId) throws DocumentException {
         if (!isOrderable(parentId)) {
             // TODO throw exception?
             return;
@@ -529,8 +516,7 @@ public class DBSSession implements Session {
         docState.put(KEY_IS_CHECKED_IN, null);
     }
 
-    protected Document checkIn(String id, String label, String checkinComment)
-            throws DocumentException {
+    protected Document checkIn(String id, String label, String checkinComment) throws DocumentException {
         transaction.save();
         DBSDocumentState docState = transaction.getStateForUpdate(id);
         if (TRUE.equals(docState.get(KEY_IS_CHECKED_IN))) {
@@ -560,8 +546,7 @@ public class DBSSession implements Session {
         verState.put(KEY_IS_LATEST_VERSION, TRUE);
         verState.put(KEY_IS_CHECKED_IN, null);
         verState.put(KEY_BASE_VERSION_ID, null);
-        boolean isMajor = Long.valueOf(0).equals(
-                verState.get(KEY_MINOR_VERSION));
+        boolean isMajor = Long.valueOf(0).equals(verState.get(KEY_MINOR_VERSION));
         verState.put(KEY_IS_LATEST_MAJOR_VERSION, isMajor ? TRUE : null);
 
         // update the doc to mark it checked in
@@ -578,8 +563,7 @@ public class DBSSession implements Session {
      * Recomputes isLatest / isLatestMajor on all versions.
      */
     protected void recomputeVersionSeries(String versionSeriesId) {
-        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(
-                KEY_VERSION_SERIES_ID, versionSeriesId);
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId);
         Collections.sort(docStates, VERSION_CREATED_COMPARATOR);
         Collections.reverse(docStates);
         boolean isLatest = true;
@@ -589,10 +573,8 @@ public class DBSSession implements Session {
             docState.put(KEY_IS_LATEST_VERSION, isLatest ? TRUE : null);
             isLatest = false;
             // isLatestMajorVersion
-            boolean isMajor = Long.valueOf(0).equals(
-                    docState.get(KEY_MINOR_VERSION));
-            docState.put(KEY_IS_LATEST_MAJOR_VERSION,
-                    isMajor && isLatestMajor ? TRUE : null);
+            boolean isMajor = Long.valueOf(0).equals(docState.get(KEY_MINOR_VERSION));
+            docState.put(KEY_IS_LATEST_MAJOR_VERSION, isMajor && isLatestMajor ? TRUE : null);
             if (isMajor) {
                 isLatestMajor = false;
             }
@@ -646,8 +628,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Document copy(Document source, Document parent, String name)
-            throws DocumentException {
+    public Document copy(Document source, Document parent, String name) throws DocumentException {
         transaction.save();
         if (name == null) {
             name = source.getName();
@@ -668,8 +649,7 @@ public class DBSSession implements Session {
         ancestorIds.add(parentId);
         if (oldParentId != null && !oldParentId.equals(parentId)) {
             if (ancestorIds.contains(sourceId)) {
-                throw new DocumentException("Cannot copy a node under itself: "
-                        + parentId + " is under " + sourceId);
+                throw new DocumentException("Cannot copy a node under itself: " + parentId + " is under " + sourceId);
 
             }
             // checkNotUnder(parentId, sourceId, "copy");
@@ -690,8 +670,7 @@ public class DBSSession implements Session {
         return getDocument(copyState);
     }
 
-    protected String copyRecurse(String sourceId, String parentId,
-            LinkedList<String> ancestorIds, String name) {
+    protected String copyRecurse(String sourceId, String parentId, LinkedList<String> ancestorIds, String name) {
         String copyId = copy(sourceId, parentId, ancestorIds, name);
         ancestorIds.addLast(copyId);
         for (String childId : getChildrenIds(sourceId)) {
@@ -704,12 +683,10 @@ public class DBSSession implements Session {
     /**
      * Copy source under parent, and set its ancestors.
      */
-    protected String copy(String sourceId, String parentId,
-            List<String> ancestorIds, String name) {
+    protected String copy(String sourceId, String parentId, List<String> ancestorIds, String name) {
         DBSDocumentState copy = transaction.copy(sourceId);
         copy.put(KEY_PARENT_ID, parentId);
-        copy.put(KEY_ANCESTOR_IDS,
-                ancestorIds.toArray(new Object[ancestorIds.size()]));
+        copy.put(KEY_ANCESTOR_IDS, ancestorIds.toArray(new Object[ancestorIds.size()]));
         if (name != null) {
             copy.put(KEY_NAME, name);
         }
@@ -734,15 +711,12 @@ public class DBSSession implements Session {
     }
 
     /** Checks that we don't move/copy under ourselves. */
-    protected void checkNotUnder(String parentId, String id, String op)
-            throws DocumentException {
+    protected void checkNotUnder(String parentId, String id, String op) throws DocumentException {
         // TODO use ancestors
         String pid = parentId;
         do {
             if (pid.equals(id)) {
-                throw new DocumentException("Cannot " + op
-                        + " a node under itself: " + parentId + " is under "
-                        + id);
+                throw new DocumentException("Cannot " + op + " a node under itself: " + parentId + " is under " + id);
             }
             State state = transaction.getStateForRead(pid);
             if (state == null) {
@@ -754,8 +728,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Document move(Document source, Document parent, String name)
-            throws DocumentException {
+    public Document move(Document source, Document parent, String name) throws DocumentException {
         String oldName = (String) source.getName();
         if (name == null) {
             name = oldName;
@@ -769,8 +742,7 @@ public class DBSSession implements Session {
         if (ObjectUtils.equals(oldParentId, parentId)) {
             if (!oldName.equals(name)) {
                 if (hasChild(parentId, name)) {
-                    throw new DocumentException(
-                            "Destination name already exists: " + name);
+                    throw new DocumentException("Destination name already exists: " + name);
                 }
                 // do the move
                 sourceState.put(KEY_NAME, name);
@@ -781,8 +753,7 @@ public class DBSSession implements Session {
             // if not just a simple rename, flush
             transaction.save();
             if (hasChild(parentId, name)) {
-                throw new DocumentException("Destination name already exists: "
-                        + name);
+                throw new DocumentException("Destination name already exists: " + name);
             }
         }
 
@@ -799,8 +770,7 @@ public class DBSSession implements Session {
         Object[] ancestorIds = ancestorIdsList.toArray(new Object[ancestorIdsList.size()]);
 
         if (ancestorIdsList.contains(sourceId)) {
-            throw new DocumentException("Cannot move a node under itself: "
-                    + parentId + " is under " + sourceId);
+            throw new DocumentException("Cannot move a node under itself: " + parentId + " is under " + sourceId);
         }
 
         // do the move
@@ -824,9 +794,8 @@ public class DBSSession implements Session {
      * We also have to update everything impacted by "relations":
      * <ul>
      * <li>parent-child relations: delete all subchildren recursively,
-     * <li>proxy-target relations: if a proxy is removed, update the target's
-     * PROXY_IDS; and if a target is removed, raise an error if a proxy still
-     * exists for that target.
+     * <li>proxy-target relations: if a proxy is removed, update the target's PROXY_IDS; and if a target is removed,
+     * raise an error if a proxy still exists for that target.
      * </ul>
      */
     protected void remove(String id) throws DocumentException {
@@ -842,8 +811,7 @@ public class DBSSession implements Session {
         // find all sub-docs and whether they're proxies
         Map<String, String> proxyTargets = new HashMap<>();
         Map<String, Object[]> targetProxies = new HashMap<>();
-        Set<String> removedIds = transaction.getSubTree(id, proxyTargets,
-                targetProxies);
+        Set<String> removedIds = transaction.getSubTree(id, proxyTargets, targetProxies);
 
         // add this node
         removedIds.add(id);
@@ -865,8 +833,7 @@ public class DBSSession implements Session {
             }
             for (Object proxyId : en.getValue()) {
                 if (!removedIds.contains(proxyId)) {
-                    throw new DocumentException("Cannot remove " + id
-                            + ", subdocument " + targetId
+                    throw new DocumentException("Cannot remove " + id + ", subdocument " + targetId
                             + " is the target of proxy " + proxyId);
                 }
             }
@@ -894,8 +861,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Document createProxy(Document doc, Document folder)
-            throws DocumentException {
+    public Document createProxy(Document doc, Document folder) throws DocumentException {
         if (doc == null) {
             throw new NullPointerException();
         }
@@ -920,19 +886,16 @@ public class DBSSession implements Session {
         String name = findFreeName(folder, doc.getName());
         Long pos = parentId == null ? null : getNextPos(parentId);
 
-        DBSDocumentState docState = addProxyState(null, parentId, name, pos,
-                targetId, versionSeriesId);
+        DBSDocumentState docState = addProxyState(null, parentId, name, pos, targetId, versionSeriesId);
         return getDocument(docState);
     }
 
-    protected DBSDocumentState addProxyState(String id, String parentId,
-            String name, Long pos, String targetId, String versionSeriesId)
-            throws DocumentException {
+    protected DBSDocumentState addProxyState(String id, String parentId, String name, Long pos, String targetId,
+            String versionSeriesId) throws DocumentException {
         DBSDocumentState target = transaction.getStateForUpdate(targetId);
         String typeName = (String) target.get(KEY_PRIMARY_TYPE);
 
-        DBSDocumentState proxy = transaction.createChild(id, parentId, name,
-                pos, typeName);
+        DBSDocumentState proxy = transaction.createChild(id, parentId, name, pos, typeName);
         String proxyId = proxy.getId();
         proxy.put(KEY_IS_PROXY, TRUE);
         proxy.put(KEY_PROXY_TARGET_ID, targetId);
@@ -985,19 +948,16 @@ public class DBSSession implements Session {
                 keepIds.add(pid);
             }
         }
-        Object[] newProxyIds = keepIds.isEmpty() ? null
-                : keepIds.toArray(new Object[keepIds.size()]);
+        Object[] newProxyIds = keepIds.isEmpty() ? null : keepIds.toArray(new Object[keepIds.size()]);
         docState.put(KEY_PROXY_IDS, newProxyIds);
     }
 
     @Override
-    public Collection<Document> getProxies(Document doc, Document folder)
-            throws DocumentException {
+    public Collection<Document> getProxies(Document doc, Document folder) throws DocumentException {
         List<DBSDocumentState> docStates;
         String docId = doc.getUUID();
         if (doc.isVersion()) {
-            docStates = transaction.getKeyValuedStates(KEY_PROXY_TARGET_ID,
-                    docId);
+            docStates = transaction.getKeyValuedStates(KEY_PROXY_TARGET_ID, docId);
         } else {
             String versionSeriesId;
             if (doc.isProxy()) {
@@ -1006,8 +966,7 @@ public class DBSSession implements Session {
             } else {
                 versionSeriesId = docId;
             }
-            docStates = transaction.getKeyValuedStates(
-                    KEY_PROXY_VERSION_SERIES_ID, versionSeriesId);
+            docStates = transaction.getKeyValuedStates(KEY_PROXY_VERSION_SERIES_ID, versionSeriesId);
         }
 
         String parentId = folder == null ? null : folder.getUUID();
@@ -1023,8 +982,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public void setProxyTarget(Document proxy, Document target)
-            throws DocumentException {
+    public void setProxyTarget(Document proxy, Document target) throws DocumentException {
         String proxyId = proxy.getUUID();
         String targetId = target.getUUID();
         DBSDocumentState proxyState = transaction.getStateForUpdate(proxyId);
@@ -1041,9 +999,8 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Document importDocument(String id, Document parent, String name,
-            String typeName, Map<String, Serializable> properties)
-            throws DocumentException {
+    public Document importDocument(String id, Document parent, String name, String typeName,
+            Map<String, Serializable> properties) throws DocumentException {
         String parentId = parent == null ? null : parent.getUUID();
         boolean isProxy = typeName.equals(CoreSession.IMPORT_PROXY_TYPE);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
@@ -1053,23 +1010,18 @@ public class DBSSession implements Session {
             // check that target exists and find its typeName
             String targetId = (String) properties.get(CoreSession.IMPORT_PROXY_TARGET_ID);
             if (targetId == null) {
-                throw new DocumentException("Cannot import proxy " + id
-                        + " with null target");
+                throw new DocumentException("Cannot import proxy " + id + " with null target");
             }
             State targetState = transaction.getStateForRead(targetId);
             if (targetState == null) {
-                throw new DocumentException("Cannot import proxy " + id
-                        + " with missing target " + targetId);
+                throw new DocumentException("Cannot import proxy " + id + " with missing target " + targetId);
             }
             String versionSeriesId = (String) properties.get(CoreSession.IMPORT_PROXY_VERSIONABLE_ID);
-            docState = addProxyState(id, parentId, name, pos, targetId,
-                    versionSeriesId);
+            docState = addProxyState(id, parentId, name, pos, targetId, versionSeriesId);
         } else {
             // version & live document
-            props.put(KEY_LIFECYCLE_POLICY,
-                    properties.get(CoreSession.IMPORT_LIFECYCLE_POLICY));
-            props.put(KEY_LIFECYCLE_STATE,
-                    properties.get(CoreSession.IMPORT_LIFECYCLE_STATE));
+            props.put(KEY_LIFECYCLE_POLICY, properties.get(CoreSession.IMPORT_LIFECYCLE_POLICY));
+            props.put(KEY_LIFECYCLE_STATE, properties.get(CoreSession.IMPORT_LIFECYCLE_STATE));
             // compat with old lock import
             @SuppressWarnings("deprecation")
             String key = (String) properties.get(CoreSession.IMPORT_LOCK);
@@ -1079,8 +1031,7 @@ public class DBSSession implements Session {
                     String owner = values[0];
                     Calendar created = new GregorianCalendar();
                     try {
-                        created.setTimeInMillis(DateFormat.getDateInstance(
-                                DateFormat.MEDIUM).parse(values[1]).getTime());
+                        created.setTimeInMillis(DateFormat.getDateInstance(DateFormat.MEDIUM).parse(values[1]).getTime());
                     } catch (ParseException e) {
                         // use current date
                     }
@@ -1098,37 +1049,24 @@ public class DBSSession implements Session {
                 props.put(KEY_LOCK_CREATED, importLockCreatedProp);
             }
 
-            props.put(KEY_MAJOR_VERSION,
-                    properties.get(CoreSession.IMPORT_VERSION_MAJOR));
-            props.put(KEY_MINOR_VERSION,
-                    properties.get(CoreSession.IMPORT_VERSION_MINOR));
+            props.put(KEY_MAJOR_VERSION, properties.get(CoreSession.IMPORT_VERSION_MAJOR));
+            props.put(KEY_MINOR_VERSION, properties.get(CoreSession.IMPORT_VERSION_MINOR));
             Boolean isVersion = trueOrNull(properties.get(CoreSession.IMPORT_IS_VERSION));
             props.put(KEY_IS_VERSION, isVersion);
             if (TRUE.equals(isVersion)) {
                 // version
-                props.put(
-                        KEY_VERSION_SERIES_ID,
-                        properties.get(CoreSession.IMPORT_VERSION_VERSIONABLE_ID));
-                props.put(KEY_VERSION_CREATED,
-                        properties.get(CoreSession.IMPORT_VERSION_CREATED));
-                props.put(KEY_VERSION_LABEL,
-                        properties.get(CoreSession.IMPORT_VERSION_LABEL));
-                props.put(KEY_VERSION_DESCRIPTION,
-                        properties.get(CoreSession.IMPORT_VERSION_DESCRIPTION));
+                props.put(KEY_VERSION_SERIES_ID, properties.get(CoreSession.IMPORT_VERSION_VERSIONABLE_ID));
+                props.put(KEY_VERSION_CREATED, properties.get(CoreSession.IMPORT_VERSION_CREATED));
+                props.put(KEY_VERSION_LABEL, properties.get(CoreSession.IMPORT_VERSION_LABEL));
+                props.put(KEY_VERSION_DESCRIPTION, properties.get(CoreSession.IMPORT_VERSION_DESCRIPTION));
                 // TODO maybe these should be recomputed at end of import:
-                props.put(
-                        KEY_IS_LATEST_VERSION,
-                        trueOrNull(properties.get(CoreSession.IMPORT_VERSION_IS_LATEST)));
-                props.put(
-                        KEY_IS_LATEST_MAJOR_VERSION,
+                props.put(KEY_IS_LATEST_VERSION, trueOrNull(properties.get(CoreSession.IMPORT_VERSION_IS_LATEST)));
+                props.put(KEY_IS_LATEST_MAJOR_VERSION,
                         trueOrNull(properties.get(CoreSession.IMPORT_VERSION_IS_LATEST_MAJOR)));
             } else {
                 // live document
-                props.put(KEY_BASE_VERSION_ID,
-                        properties.get(CoreSession.IMPORT_BASE_VERSION_ID));
-                props.put(
-                        KEY_IS_CHECKED_IN,
-                        trueOrNull(properties.get(CoreSession.IMPORT_CHECKED_IN)));
+                props.put(KEY_BASE_VERSION_ID, properties.get(CoreSession.IMPORT_BASE_VERSION_ID));
+                props.put(KEY_IS_CHECKED_IN, trueOrNull(properties.get(CoreSession.IMPORT_CHECKED_IN)));
             }
             docState = createChildState(id, parentId, name, pos, typeName);
         }
@@ -1143,10 +1081,8 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Document getVersion(String versionSeriesId, VersionModel versionModel)
-            throws DocumentException {
-        DBSDocumentState docState = getVersionByLabel(versionSeriesId,
-                versionModel.getLabel());
+    public Document getVersion(String versionSeriesId, VersionModel versionModel) throws DocumentException {
+        DBSDocumentState docState = getVersionByLabel(versionSeriesId, versionModel.getLabel());
         if (docState == null) {
             return null;
         }
@@ -1155,10 +1091,8 @@ public class DBSSession implements Session {
         return getDocument(docState);
     }
 
-    protected DBSDocumentState getVersionByLabel(String versionSeriesId,
-            String label) {
-        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(
-                KEY_VERSION_SERIES_ID, versionSeriesId);
+    protected DBSDocumentState getVersionByLabel(String versionSeriesId, String label) {
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId);
         for (DBSDocumentState docState : docStates) {
             if (label.equals(docState.get(KEY_VERSION_LABEL))) {
                 return docState;
@@ -1169,8 +1103,7 @@ public class DBSSession implements Session {
 
     protected List<String> getVersionsIds(String versionSeriesId) {
         // order by creation date
-        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(
-                KEY_VERSION_SERIES_ID, versionSeriesId);
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId);
         Collections.sort(docStates, VERSION_CREATED_COMPARATOR);
         List<String> ids = new ArrayList<String>(docStates.size());
         for (DBSDocumentState docState : docStates) {
@@ -1179,10 +1112,8 @@ public class DBSSession implements Session {
         return ids;
     }
 
-    protected Document getLastVersion(String versionSeriesId)
-            throws DocumentException {
-        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(
-                KEY_VERSION_SERIES_ID, versionSeriesId);
+    protected Document getLastVersion(String versionSeriesId) throws DocumentException {
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId);
         if (docStates.isEmpty()) {
             return null;
         }
@@ -1257,9 +1188,7 @@ public class DBSSession implements Session {
             // get inherited ACLs only if no blocking inheritance ACE exists
             // in the top level ACP.
             ACL acl = null;
-            if (acp == null
-                    || acp.getAccess(SecurityConstants.EVERYONE,
-                            SecurityConstants.EVERYTHING) != Access.DENY) {
+            if (acp == null || acp.getAccess(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING) != Access.DENY) {
                 acl = getInheritedACLs(doc);
             }
             if (acp == null) {
@@ -1289,8 +1218,7 @@ public class DBSSession implements Session {
                 } else {
                     merged.addAll(acl);
                 }
-                if (acp.getAccess(SecurityConstants.EVERYONE,
-                        SecurityConstants.EVERYTHING) == Access.DENY) {
+                if (acp.getAccess(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING) == Access.DENY) {
                     break;
                 }
             }
@@ -1305,8 +1233,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public void setACP(Document doc, ACP acp, boolean overwrite)
-            throws DocumentException {
+    public void setACP(Document doc, ACP acp, boolean overwrite) throws DocumentException {
         checkNegativeAcl(acp);
         if (!overwrite) {
             if (acp == null) {
@@ -1343,8 +1270,7 @@ public class DBSSession implements Session {
                 if (permission.equals(SecurityConstants.WRITE)) {
                     continue;
                 }
-                throw new IllegalArgumentException("Negative ACL not allowed: "
-                        + ace);
+                throw new IllegalArgumentException("Negative ACL not allowed: " + ace);
             }
         }
     }
@@ -1397,8 +1323,7 @@ public class DBSSession implements Session {
                 continue;
             }
             ACE[] aces = acl.getACEs();
-            List<Serializable> aceList = new ArrayList<Serializable>(
-                    aces.length);
+            List<Serializable> aceList = new ArrayList<Serializable>(aces.length);
             for (ACE ace : aces) {
                 State aceMap = new State(3);
                 aceMap.put(KEY_ACE_USER, ace.getUsername());
@@ -1441,19 +1366,17 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(String id)
-            throws DocumentException {
+    public Map<String, String> getBinaryFulltext(String id) throws DocumentException {
         State state = transaction.getStateForRead(id);
         String fulltext = (String) state.get(KEY_FULLTEXT_BINARY);
         return Collections.singletonMap("binarytext", fulltext);
     }
 
     @Override
-    public DocumentModelList query(String query, String queryType,
-            QueryFilter queryFilter, long countUpTo) throws QueryException {
+    public DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
+            throws QueryException {
         // query
-        PartialList<String> pl = doQuery(query, queryType, queryFilter,
-                (int) countUpTo);
+        PartialList<String> pl = doQuery(query, queryType, queryFilter, (int) countUpTo);
 
         // get Documents in bulk
         List<Document> docs;
@@ -1477,10 +1400,9 @@ public class DBSSession implements Session {
         return new DocumentModelListImpl(list, pl.totalSize);
     }
 
-    protected PartialList<String> doQuery(String query, String queryType,
-            QueryFilter queryFilter, int countUpTo) throws QueryException {
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query,
-                queryType, queryFilter, countUpTo, true);
+    protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo)
+            throws QueryException {
+        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, countUpTo, true);
         List<String> ids = new ArrayList<String>(pl.list.size());
         for (Map<String, Serializable> map : pl.list) {
             String id = (String) map.get(NXQL.ECM_UUID);
@@ -1489,40 +1411,33 @@ public class DBSSession implements Session {
         return new PartialList<String>(ids, pl.totalSize);
     }
 
-    protected PartialList<Map<String, Serializable>> doQueryAndFetch(
-            String query, String queryType, QueryFilter queryFilter,
-            int countUpTo) throws QueryException {
+    protected PartialList<Map<String, Serializable>> doQueryAndFetch(String query, String queryType,
+            QueryFilter queryFilter, int countUpTo) throws QueryException {
         return doQueryAndFetch(query, queryType, queryFilter, countUpTo, false);
     }
 
-    protected PartialList<Map<String, Serializable>> doQueryAndFetch(
-            String query, String queryType, QueryFilter queryFilter,
-            int countUpTo, boolean onlyId) throws QueryException {
+    protected PartialList<Map<String, Serializable>> doQueryAndFetch(String query, String queryType,
+            QueryFilter queryFilter, int countUpTo, boolean onlyId) throws QueryException {
         if ("NXTAG".equals(queryType)) {
             // for now don't try to implement tags
             // and return an empty list
-            return new PartialList<Map<String, Serializable>>(
-                    Collections.<Map<String, Serializable>> emptyList(), 0);
+            return new PartialList<Map<String, Serializable>>(Collections.<Map<String, Serializable>> emptyList(), 0);
         }
         if (!NXQL.NXQL.equals(queryType)) {
-            throw new QueryException("No QueryMaker accepts query type: "
-                    + queryType);
+            throw new QueryException("No QueryMaker accepts query type: " + queryType);
         }
         // transform the query according to the transformers defined by the
         // security policies
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
         for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
-            sqlQuery = transformer.transform(queryFilter.getPrincipal(),
-                    sqlQuery);
+            sqlQuery = transformer.transform(queryFilter.getPrincipal(), sqlQuery);
         }
         OrderByClause orderByClause = sqlQuery.orderBy;
 
         QueryOptimizer optimizer = new QueryOptimizer();
         boolean fulltextScore = optimizer.hasSelectFulltextScore(sqlQuery);
-        MultiExpression expression = optimizer.getOptimizedQuery(
-                sqlQuery, queryFilter.getFacetFilter());
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this,
-                expression, queryFilter.getPrincipals());
+        MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, queryFilter.getFacetFilter());
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, expression, queryFilter.getPrincipals());
 
         int limit = (int) queryFilter.getLimit();
         int offset = (int) queryFilter.getOffset();
@@ -1552,9 +1467,8 @@ public class DBSSession implements Session {
 
         // query the repository
         boolean deepCopy = !onlyId;
-        PartialList<State> pl = repository.queryAndFetch(expression, evaluator,
-                repoOrderByClause, repoLimit, repoOffset, countUpTo, deepCopy,
-                fulltextScore);
+        PartialList<State> pl = repository.queryAndFetch(expression, evaluator, repoOrderByClause, repoLimit,
+                repoOffset, countUpTo, deepCopy, fulltextScore);
 
         List<State> states = pl.list;
         long totalSize = pl.totalSize;
@@ -1593,8 +1507,7 @@ public class DBSSession implements Session {
             // optimize because we just need the id
             flatList = new ArrayList<>(states.size());
             for (State state : states) {
-                flatList.add(Collections.singletonMap(NXQL.ECM_UUID,
-                        state.get(KEY_ID)));
+                flatList.add(Collections.singletonMap(NXQL.ECM_UUID, state.get(KEY_ID)));
             }
         } else {
             flatList = flatten(states);
@@ -1622,8 +1535,7 @@ public class DBSSession implements Session {
             String name = (String) state.get(KEY_NAME);
             String parentId = (String) state.get(KEY_PARENT_ID);
             list.addFirst(name);
-            if (parentId == null
-                    || (state = transaction.getStateForRead(parentId)) == null) {
+            if (parentId == null || (state = transaction.getStateForRead(parentId)) == null) {
                 if (first) {
                     if ("".equals(name)) {
                         return "/"; // root
@@ -1637,24 +1549,21 @@ public class DBSSession implements Session {
         }
     }
 
-    protected void doOrderBy(List<State> states, OrderByClause orderByClause,
-            DBSExpressionEvaluator evaluator) {
+    protected void doOrderBy(List<State> states, OrderByClause orderByClause, DBSExpressionEvaluator evaluator) {
         if (isOrderByPath(orderByClause)) {
             // add path info to do the sort
             for (State state : states) {
                 state.put(KEY_PATH_INTERNAL, getPath(state));
             }
         }
-        Collections.sort(states,
-                new OrderByComparator(orderByClause, evaluator));
+        Collections.sort(states, new OrderByComparator(orderByClause, evaluator));
     }
 
     /**
      * Flatten and convert from internal names to NXQL.
      */
     protected List<Map<String, Serializable>> flatten(List<State> states) {
-        List<Map<String, Serializable>> flatList = new ArrayList<>(
-                states.size());
+        List<Map<String, Serializable>> flatList = new ArrayList<>(states.size());
         for (State state : states) {
             flatList.add(flatten(state));
         }
@@ -1683,16 +1592,14 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, Object[] params) throws QueryException {
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params)
+            throws QueryException {
         int countUpTo = -1;
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query,
-                queryType, queryFilter, countUpTo);
+        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, countUpTo);
         return new DBSQueryResult(pl);
     }
 
-    protected static class DBSQueryResult implements IterableQueryResult,
-            Iterator<Map<String, Serializable>> {
+    protected static class DBSQueryResult implements IterableQueryResult, Iterator<Map<String, Serializable>> {
 
         boolean closed;
 

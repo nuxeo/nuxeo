@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentRefList;
 /**
  * @author Bogdan Stefanescu
  */
-public class DocumentRefListImpl extends ArrayList<DocumentRef> implements
-        DocumentRefList {
+public class DocumentRefListImpl extends ArrayList<DocumentRef> implements DocumentRefList {
 
     private static final long serialVersionUID = -7915146644486566862L;
 
@@ -43,13 +42,11 @@ public class DocumentRefListImpl extends ArrayList<DocumentRef> implements
     /**
      * Constructs a DocumentModelListImpl and sets the "total size" information.
      * <p>
-     * The total size is additional information that can be provided in some
-     * cases where the list returned is a slice of a bigger list, this is used
-     * when getting paged results from a database for instance.
+     * The total size is additional information that can be provided in some cases where the list returned is a slice of
+     * a bigger list, this is used when getting paged results from a database for instance.
      *
      * @param list the list of documents
-     * @param totalSize the total size, with -1 meaning
-     *            "same as the list's size"
+     * @param totalSize the total size, with -1 meaning "same as the list's size"
      */
     public DocumentRefListImpl(List<DocumentRef> list, long totalSize) {
         super(list);

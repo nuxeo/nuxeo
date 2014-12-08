@@ -33,22 +33,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@link PublicationTree} implementation that supports having plain Documents
- * directly inside the sections. This is typically used for Remote
- * {@link PublicationTree} implementation that will store proxies for locally
- * published documents and complete {@link DocumentModel} for remote published
- * Documents.
+ * {@link PublicationTree} implementation that supports having plain Documents directly inside the sections. This is
+ * typically used for Remote {@link PublicationTree} implementation that will store proxies for locally published
+ * documents and complete {@link DocumentModel} for remote published Documents.
  *
  * @author tiry
  */
-public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
-        PublicationTree {
+public class CoreTreeWithExternalDocs extends SectionPublicationTree implements PublicationTree {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public List<PublishedDocument> getExistingPublishedDocument(
-            DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
 
         List<PublishedDocument> publishedDocs = new ArrayList<PublishedDocument>();
 
@@ -60,8 +56,7 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
             // String source = xDocLoc.getServerName() + "@" + srv + ":" +
             // xDocLoc.getDocRef().toString();
             String source = xDocLoc.toString();
-            List<DocumentModel> foundDocs = findDocumentsCommingFromExternalRef(
-                    treeRoot, source);
+            List<DocumentModel> foundDocs = findDocumentsCommingFromExternalRef(treeRoot, source);
 
             for (DocumentModel doc : foundDocs) {
                 // publishedDocs.add(new
@@ -70,8 +65,7 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
             }
         } else {
             // std proxy management
-            if (getCoreSession().getRepositoryName().equals(
-                    docLoc.getServerName())) {
+            if (getCoreSession().getRepositoryName().equals(docLoc.getServerName())) {
                 // same repo publishing
                 publishedDocs.addAll(super.getExistingPublishedDocument(docLoc));
             }
@@ -79,8 +73,8 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
         return publishedDocs;
     }
 
-    protected List<DocumentModel> findDocumentsCommingFromExternalRef(
-            DocumentModel root, String extRef) throws ClientException {
+    protected List<DocumentModel> findDocumentsCommingFromExternalRef(DocumentModel root, String extRef)
+            throws ClientException {
         // XXX dummy impl : use Relations or Search to avoid this !!!!
 
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
@@ -99,32 +93,27 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode) throws ClientException {
-        ExternalCorePublishedDocument publishedDocument = (ExternalCorePublishedDocument) factory.publishDocument(
-                doc, targetNode);
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+        ExternalCorePublishedDocument publishedDocument = (ExternalCorePublishedDocument) factory.publishDocument(doc,
+                targetNode);
         return publishedDocument;
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
-        ExternalCorePublishedDocument publishedDocument = (ExternalCorePublishedDocument) factory.publishDocument(
-                doc, targetNode, params);
+        ExternalCorePublishedDocument publishedDocument = (ExternalCorePublishedDocument) factory.publishDocument(doc,
+                targetNode, params);
         return publishedDocument;
     }
 
     @Override
-    public void unpublish(PublishedDocument publishedDocument)
-            throws ClientException {
+    public void unpublish(PublishedDocument publishedDocument) throws ClientException {
         if (publishedDocument instanceof BasicPublishedDocument
                 || publishedDocument instanceof ExternalCorePublishedDocument) {
-            String source = publishedDocument.getSourceRepositoryName() + "@"
-                    + publishedDocument.getSourceServer() + ":"
-                    + publishedDocument.getSourceDocumentRef();
-            List<DocumentModel> foundDocs = findDocumentsCommingFromExternalRef(
-                    treeRoot, source);
+            String source = publishedDocument.getSourceRepositoryName() + "@" + publishedDocument.getSourceServer()
+                    + ":" + publishedDocument.getSourceDocumentRef();
+            List<DocumentModel> foundDocs = findDocumentsCommingFromExternalRef(treeRoot, source);
             for (DocumentModel doc : foundDocs) {
                 if (doc.getPathAsString().equals(publishedDocument.getPath())) {
                     getCoreSession().removeDocument(doc.getRef());
@@ -138,20 +127,15 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
     }
 
     @Override
-    public void unpublish(DocumentModel doc, PublicationNode targetNode)
-            throws ClientException {
+    public void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
         PublicationNode realPublciationNode = getNodeByPath(targetNode.getPath());
         List<PublishedDocument> publishedDocuments = getPublishedDocumentInNode(realPublciationNode);
         String source = (String) doc.getProperty("dublincore", "source");
         for (PublishedDocument publishedDocument : publishedDocuments) {
-            String publishedDocumentSource = publishedDocument.getSourceRepositoryName()
-                    + "@"
-                    + publishedDocument.getSourceServer()
-                    + ":"
-                    + publishedDocument.getSourceDocumentRef();
+            String publishedDocumentSource = publishedDocument.getSourceRepositoryName() + "@"
+                    + publishedDocument.getSourceServer() + ":" + publishedDocument.getSourceDocumentRef();
             if (source.equals(publishedDocumentSource)) {
-                getCoreSession().removeDocument(
-                        new PathRef(publishedDocument.getPath()));
+                getCoreSession().removeDocument(new PathRef(publishedDocument.getPath()));
                 break;
             }
         }

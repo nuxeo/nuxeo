@@ -59,13 +59,11 @@ public class TestFragmentTagFilter extends NXRuntimeTestCase {
         engine = new EngineType();
         engine.setName("engine");
 
-        themeService = (ThemeService) Framework.getRuntime().getComponent(
-                ThemeService.ID);
+        themeService = (ThemeService) Framework.getRuntime().getComponent(ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
 
         typeRegistry.register(engine);
-        info = new DummyRenderingInfo(page, new URL(
-                "nxtheme://element/engine/mode/1234"));
+        info = new DummyRenderingInfo(page, new URL("nxtheme://element/engine/mode/1234"));
         filter = new FragmentTag();
     }
 
@@ -74,10 +72,8 @@ public class TestFragmentTagFilter extends NXRuntimeTestCase {
         info.setMarkup("<div>orginal markup</div>");
         info.setDirty(true);
         filter.process(info, true);
-        assertEquals(
-                "<nxthemes:fragment xmlns:nxthemes=\"http://nuxeo.org/nxthemes\" "
-                    + "uid=\"1\" engine=\"engine\" mode=\"mode\" />",
-                info.getMarkup());
+        assertEquals("<nxthemes:fragment xmlns:nxthemes=\"http://nuxeo.org/nxthemes\" "
+                + "uid=\"1\" engine=\"engine\" mode=\"mode\" />", info.getMarkup());
     }
 
     @Test

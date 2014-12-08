@@ -60,12 +60,11 @@ public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {
      * @throws IOException
      * @throws JsonGenerationException
      * @throws ClientException
-     *
      * @since 5.7.3
      */
     @Override
-    public void writeEntityBody(JsonGenerator jg, NuxeoPrincipal principal)
-            throws JsonGenerationException, IOException, ClientException {
+    public void writeEntityBody(JsonGenerator jg, NuxeoPrincipal principal) throws JsonGenerationException,
+            IOException, ClientException {
 
         jg.writeStringField("id", principal.getName());
 
@@ -85,8 +84,8 @@ public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {
      * @throws ClientException
      * @since 5.7.3
      */
-    static private void writeProperties(JsonGenerator jg, DocumentModel doc)
-            throws JsonGenerationException, IOException, ClientException {
+    static private void writeProperties(JsonGenerator jg, DocumentModel doc) throws JsonGenerationException,
+            IOException, ClientException {
         UserManager um = Framework.getLocalService(UserManager.class);
 
         jg.writeFieldName("properties");
@@ -115,7 +114,6 @@ public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {
      * @param um
      * @return
      * @throws ClientException
-     *
      * @since 5.8
      */
     private static String getPasswordField(UserManager um) throws ClientException {
@@ -125,19 +123,16 @@ public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {
     }
 
     /**
-     * This part adds all groupe that the user belongs to directly or indirectly
-     * and adds the label in the result.
+     * This part adds all groupe that the user belongs to directly or indirectly and adds the label in the result.
      *
      * @param jg
      * @param allGroups
      * @throws IOException
      * @throws JsonGenerationException
      * @throws ClientException
-     *
      * @since 5.7.3
      */
-    static private void writeExtendedGroups(JsonGenerator jg,
-            List<String> allGroups) throws JsonGenerationException,
+    static private void writeExtendedGroups(JsonGenerator jg, List<String> allGroups) throws JsonGenerationException,
             IOException, ClientException {
         UserManager um = Framework.getLocalService(UserManager.class);
 

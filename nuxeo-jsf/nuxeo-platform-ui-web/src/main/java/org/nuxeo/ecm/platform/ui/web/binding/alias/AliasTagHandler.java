@@ -44,21 +44,18 @@ import org.nuxeo.runtime.api.Framework;
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
 /**
- * Tag handler that exposes variables to the variable map. Behaviour is close
- * to the c:set tag handler except:
+ * Tag handler that exposes variables to the variable map. Behaviour is close to the c:set tag handler except:
  * <ul>
  * <li>It handles several variables</li>
- * <li>It allows caching a variable using cache parameter: variable will be
- * resolved the first time is is called and will be put in the context after</li>
- * <li>The resolved variable is removed from context when tag is closed to
- * avoid filling the context with it</li>
- * <li>Variables are made available in the request context after the JSF
- * component tree build thanks to a backing component.</li>
+ * <li>It allows caching a variable using cache parameter: variable will be resolved the first time is is called and
+ * will be put in the context after</li>
+ * <li>The resolved variable is removed from context when tag is closed to avoid filling the context with it</li>
+ * <li>Variables are made available in the request context after the JSF component tree build thanks to a backing
+ * component.</li>
  * </ul>
  * <p>
- * The backing component value expressions are changed even if the component
- * was found to ensure a good resolution even when re-rendering the tag using
- * ajax.
+ * The backing component value expressions are changed even if the component was found to ensure a good resolution even
+ * when re-rendering the tag using ajax.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @since 5.4
@@ -83,16 +80,14 @@ public class AliasTagHandler extends ComponentHandler {
      */
     protected final TagAttribute anchor;
 
-    public AliasTagHandler(ComponentConfig config,
-            Map<String, ValueExpression> variables) {
+    public AliasTagHandler(ComponentConfig config, Map<String, ValueExpression> variables) {
         this(config, variables, null);
     }
 
     /**
      * @since 5.6
      */
-    public AliasTagHandler(ComponentConfig config,
-            Map<String, ValueExpression> variables, List<String> blockedPatterns) {
+    public AliasTagHandler(ComponentConfig config, Map<String, ValueExpression> variables, List<String> blockedPatterns) {
         super(config);
         id = getAttribute("id");
         cache = getAttribute("cache");
@@ -101,8 +96,8 @@ public class AliasTagHandler extends ComponentHandler {
         this.blockedPatterns = blockedPatterns;
     }
 
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
+            ELException {
         // make sure our parent is not null
         if (parent == null) {
             throw new TagException(this.tag, "Parent UIComponent was null");
@@ -120,10 +115,8 @@ public class AliasTagHandler extends ComponentHandler {
                 if (cacheValue) {
                     // resolve value and put it as is in variables
                     Object res = var.getValue().getValue(ctx);
-                    target.setVariable(
-                            var.getKey(),
-                            ctx.getExpressionFactory().createValueExpression(
-                                    res, Object.class));
+                    target.setVariable(var.getKey(),
+                            ctx.getExpressionFactory().createValueExpression(res, Object.class));
                 } else {
                     target.setVariable(var.getKey(), var.getValue());
                 }
@@ -135,8 +128,7 @@ public class AliasTagHandler extends ComponentHandler {
         apply(ctx, parent, target, this.nextHandler);
     }
 
-    protected void apply(FaceletContext ctx, UIComponent parent,
-            AliasVariableMapper alias, FaceletHandler nextHandler)
+    protected void apply(FaceletContext ctx, UIComponent parent, AliasVariableMapper alias, FaceletHandler nextHandler)
             throws IOException, FacesException, FaceletException, ELException {
         if (Framework.isBooleanPropertyTrue("nuxeo.jsf.removeAliasOptims")) {
             applyCompat(ctx, parent, alias, nextHandler);
@@ -151,8 +143,8 @@ public class AliasTagHandler extends ComponentHandler {
 
     protected boolean isAnchored(FaceletContext ctx) {
         ExpressionFactory eFactory = ctx.getExpressionFactory();
-        ValueExpression ve = eFactory.createValueExpression(ctx,
-                String.format("#{%s}", ANCHOR_ENABLED_VARIABLE), Boolean.class);
+        ValueExpression ve = eFactory.createValueExpression(ctx, String.format("#{%s}", ANCHOR_ENABLED_VARIABLE),
+                Boolean.class);
         if (Boolean.TRUE.equals(ve.getValue(ctx))) {
             return true;
         }
@@ -162,10 +154,9 @@ public class AliasTagHandler extends ComponentHandler {
         return false;
     }
 
-    protected void applyAliasHandler(FaceletContext ctx, UIComponent parent,
-            AliasVariableMapper alias, FaceletHandler nextHandler,
-            boolean createComponent) throws IOException, FacesException,
-            FaceletException, ELException {
+    protected void applyAliasHandler(FaceletContext ctx, UIComponent parent, AliasVariableMapper alias,
+            FaceletHandler nextHandler, boolean createComponent) throws IOException, FacesException, FaceletException,
+            ELException {
         if (createComponent) {
             // start by removing component from tree if it is already there, to
             // make sure it's recreated next
@@ -195,12 +186,11 @@ public class AliasTagHandler extends ComponentHandler {
     }
 
     /**
-     * Compatibility application of facelet handler, used to preserve behaviour
-     * while optimizing and improving variables exposure and resolution.
+     * Compatibility application of facelet handler, used to preserve behaviour while optimizing and improving variables
+     * exposure and resolution.
      */
-    protected void applyCompat(FaceletContext ctx, UIComponent parent,
-            AliasVariableMapper alias, FaceletHandler nextHandler)
-            throws IOException, FacesException, FaceletException, ELException {
+    protected void applyCompat(FaceletContext ctx, UIComponent parent, AliasVariableMapper alias,
+            FaceletHandler nextHandler) throws IOException, FacesException, FaceletException, ELException {
         String id = alias.getId();
 
         VariableMapper orig = ctx.getVariableMapper();

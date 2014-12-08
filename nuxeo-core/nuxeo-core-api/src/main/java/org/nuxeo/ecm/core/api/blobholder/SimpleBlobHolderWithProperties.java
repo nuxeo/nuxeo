@@ -25,14 +25,12 @@ public class SimpleBlobHolderWithProperties extends SimpleBlobHolder {
 
     protected final Map<String, Serializable> properties;
 
-    public SimpleBlobHolderWithProperties(Blob blob,
-            Map<String, Serializable> properties) {
+    public SimpleBlobHolderWithProperties(Blob blob, Map<String, Serializable> properties) {
         super(blob);
         this.properties = properties;
     }
 
-    public SimpleBlobHolderWithProperties(List<Blob> blobs,
-            Map<String, Serializable> properties) {
+    public SimpleBlobHolderWithProperties(List<Blob> blobs, Map<String, Serializable> properties) {
         super(blobs);
         this.properties = properties;
     }

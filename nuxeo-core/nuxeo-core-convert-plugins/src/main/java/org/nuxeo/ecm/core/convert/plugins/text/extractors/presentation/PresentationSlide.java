@@ -19,11 +19,9 @@ package org.nuxeo.ecm.core.convert.plugins.text.extractors.presentation;
 import java.io.Serializable;
 
 /**
- * Representation of a presentation document slide with its string content and
- * its order.
+ * Representation of a presentation document slide with its string content and its order.
  */
-public class PresentationSlide implements Serializable,
-        Comparable<PresentationSlide> {
+public class PresentationSlide implements Serializable, Comparable<PresentationSlide> {
 
     private static final long serialVersionUID = 1534438297504069864L;
 
@@ -67,8 +65,7 @@ public class PresentationSlide implements Serializable,
         if (order != otherOrder) {
             return false;
         }
-        return content == null && otherContent == null || content != null
-                && content.equals(otherContent);
+        return content == null && otherContent == null || content != null && content.equals(otherContent);
     }
 
     @Override
@@ -84,7 +81,6 @@ public class PresentationSlide implements Serializable,
 
     @Override
     public int compareTo(PresentationSlide other) {
-        return Integer.valueOf(order).compareTo(
-                Integer.valueOf(other.getOrder()));
+        return Integer.valueOf(order).compareTo(Integer.valueOf(other.getOrder()));
     }
 }

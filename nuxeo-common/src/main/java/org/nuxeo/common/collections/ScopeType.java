@@ -27,7 +27,6 @@ package org.nuxeo.common.collections;
  * Only request and default scopes are defined for now, but others may be added.
  *
  * @see ScopedMap
- *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public enum ScopeType {

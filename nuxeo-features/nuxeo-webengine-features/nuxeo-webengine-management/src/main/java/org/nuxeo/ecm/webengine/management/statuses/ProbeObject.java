@@ -26,12 +26,10 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * List and execute a probe
  *
  * @author matic
- *
  */
 @WebObject(type = "Probe")
 public class ProbeObject extends DefaultObject {
@@ -39,12 +37,12 @@ public class ProbeObject extends DefaultObject {
     private ProbeInfo info;
 
     public static ProbeObject newProbe(DefaultObject parent, ProbeInfo info) {
-        return (ProbeObject)parent.newObject("Probe", info);
+        return (ProbeObject) parent.newObject("Probe", info);
     }
 
     @Override
     protected void initialize(Object... args) {
-        assert args != null && args.length  == 1;
+        assert args != null && args.length == 1;
         info = (ProbeInfo) args[0];
     }
 

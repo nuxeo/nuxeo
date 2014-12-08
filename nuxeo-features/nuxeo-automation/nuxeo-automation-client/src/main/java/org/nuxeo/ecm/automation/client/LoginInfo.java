@@ -37,8 +37,7 @@ public class LoginInfo implements Serializable {
         this(username, groups, false);
     }
 
-    public LoginInfo(String username, Set<String> groups,
-            boolean isAdministrator) {
+    public LoginInfo(String username, Set<String> groups, boolean isAdministrator) {
         this.username = username;
         this.isAdministrator = isAdministrator;
         if (groups == null) {

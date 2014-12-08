@@ -28,7 +28,6 @@ import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileResourceStore implements ResourceStore {
 
@@ -63,7 +62,7 @@ public class FileResourceStore implements ResourceStore {
                 return file.toURI().toURL();
             }
         } catch (IOException e) {
-            log.error("Failed to transform file to URL: "+name, e);
+            log.error("Failed to transform file to URL: " + name, e);
         }
         return null;
     }
@@ -74,7 +73,7 @@ public class FileResourceStore implements ResourceStore {
             try {
                 return FileUtils.readBytes(in);
             } catch (IOException e) {
-                log.error("Failed to read file: "+name, e);
+                log.error("Failed to read file: " + name, e);
             }
         }
         return null;
@@ -110,7 +109,7 @@ public class FileResourceStore implements ResourceStore {
             return true;
         }
         if (obj instanceof FileResourceStore) {
-            FileResourceStore store = (FileResourceStore)obj;
+            FileResourceStore store = (FileResourceStore) obj;
             return store.root.equals(root);
         }
         return false;
@@ -123,7 +122,7 @@ public class FileResourceStore implements ResourceStore {
 
     @Override
     public String toString() {
-        return "FileResourceStore: "+root;
+        return "FileResourceStore: " + root;
     }
 
 }

@@ -42,8 +42,8 @@ import org.nuxeo.runtime.test.runner.RandomBug.Repeat;
 import org.nuxeo.runtime.test.runner.RandomBug.RepeatRule;
 
 /**
- * Tests verifying that test fixtures ({@link Before} and {@link After}) and
- * rules ({@link RandomBug.Repeat}) are properly working together.
+ * Tests verifying that test fixtures ({@link Before} and {@link After}) and rules ({@link RandomBug.Repeat}) are
+ * properly working together.
  *
  * @since 5.9.5
  */
@@ -80,7 +80,6 @@ public class RandomBugTest {
         @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
 
-
         @Before
         public void setup() {
             fail(FAILURE_MESSAGE);
@@ -95,10 +94,8 @@ public class RandomBugTest {
 
     @Test
     public void beforeShouldNotRunWhenAllTestsAreIgnored() {
-        System.setProperty(RandomBug.MODE_PROPERTY,
-                RandomBug.Mode.BYPASS.toString());
-        runClassAndVerifyNoFailures(
-                BeforeWithIgnoredTest.class,
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.BYPASS.toString());
+        runClassAndVerifyNoFailures(BeforeWithIgnoredTest.class,
                 "Before method should not have been executed because the test method is ignored");
     }
 
@@ -123,8 +120,7 @@ public class RandomBugTest {
 
     @Test
     public void afterShouldNotRunWhenAllTestsAreIgnored() {
-        System.setProperty(RandomBug.MODE_PROPERTY,
-                RandomBug.Mode.BYPASS.toString());
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.BYPASS.toString());
         runClassAndVerifyNoFailures(AfterWithIgnoredTest.class,
                 "After method should not have been executed because the test method is ignored");
     }
@@ -190,39 +186,32 @@ public class RandomBugTest {
 
     @Test
     public void testBypass() {
-        System.setProperty(RandomBug.MODE_PROPERTY,
-                RandomBug.Mode.BYPASS.toString());
-        runClassAndVerifyNoFailures(FailingTest.class,
-                "Test should be ignored in BYPASS mode!");
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.BYPASS.toString());
+        runClassAndVerifyNoFailures(FailingTest.class, "Test should be ignored in BYPASS mode!");
     }
 
     @Test
     public void testStrict() {
-        System.setProperty(RandomBug.MODE_PROPERTY,
-                RandomBug.Mode.STRICT.toString());
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.STRICT.toString());
         {
             Result result = JUnitCore.runClasses(FailingTest.class);
-            assertThat(result.wasSuccessful()).as(
-                    "strict mode should reveal failure").isFalse();
+            assertThat(result.wasSuccessful()).as("strict mode should reveal failure").isFalse();
             assertThat(result.getIgnoreCount()).isEqualTo(0);
         }
         {
             Result result = JUnitCore.runClasses(FailingMethod.class);
-            assertThat(result.wasSuccessful()).as(
-                    "strict mode should reveal failure").isFalse();
+            assertThat(result.wasSuccessful()).as("strict mode should reveal failure").isFalse();
             assertThat(result.getIgnoreCount()).isEqualTo(0);
         }
     }
 
     @Test
     public void testRelax() {
-        System.setProperty(RandomBug.MODE_PROPERTY,
-                RandomBug.Mode.RELAX.toString());
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.RELAX.toString());
         Result result = JUnitCore.runClasses(FailingTest.class);
         if (!result.wasSuccessful()) {
             Failures failures = new Failures(result.getFailures());
-            fail("Unexpected failure: RELAX mode expects a success\n"
-                    + failures.toString());
+            fail("Unexpected failure: RELAX mode expects a success\n" + failures.toString());
         }
     }
 
@@ -264,8 +253,7 @@ public class RandomBugTest {
 
     @Test
     public void shouldRepeatFeatures() {
-        System.setProperty(RandomBug.MODE_PROPERTY,
-                RandomBug.Mode.RELAX.toString());
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.RELAX.toString());
         Result result = JUnitCore.runClasses(RepeatFeaturesTest.class);
         if (!result.wasSuccessful()) {
             Failures failures = new Failures(result.getFailures());
@@ -273,8 +261,7 @@ public class RandomBugTest {
         }
     }
 
-    protected void runClassAndVerifyNoFailures(Class<?> klass,
-            String testFailureDescription) {
+    protected void runClassAndVerifyNoFailures(Class<?> klass, String testFailureDescription) {
         Result result = JUnitCore.runClasses(klass);
         analyseResult(result, testFailureDescription);
     }

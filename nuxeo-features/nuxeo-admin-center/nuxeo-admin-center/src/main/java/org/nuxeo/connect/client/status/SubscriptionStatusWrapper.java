@@ -29,7 +29,7 @@ import org.nuxeo.connect.data.SubscriptionStatus;
  */
 public class SubscriptionStatusWrapper extends SubscriptionStatus {
 
-    protected boolean isSecurityError=false;
+    protected boolean isSecurityError = false;
 
     protected boolean canNotReachConnectServer = false;
 
@@ -66,7 +66,7 @@ public class SubscriptionStatusWrapper extends SubscriptionStatus {
     }
 
     public boolean isError() {
-        return errorMessage!=null || isSecurityError || versionMismatch || canNotReachConnectServer;
+        return errorMessage != null || isSecurityError || versionMismatch || canNotReachConnectServer;
     }
 
     public boolean isConnectServerUnreachable() {

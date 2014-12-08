@@ -44,25 +44,21 @@ public class AnnotationQuery {
 
     private final AnnotationManager manager = new AnnotationManager();
 
-    public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph)
-            throws AnnotationException {
+    public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph) throws AnnotationException {
         return getAnnotationsForURIs(uris, graph, Collections.<String, String> emptyMap());
     }
 
-    public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph,
-            Map<String, String> filters) throws AnnotationException {
+    public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph, Map<String, String> filters)
+            throws AnnotationException {
         List<Annotation> annotations = new ArrayList<Annotation>();
         final String baseQuery = " SELECT ?s ?p ?o WHERE { ?s ?p ?o . }";
         for (URI uri : uris) {
             final StringBuilder query = new StringBuilder(baseQuery);
-            query.insert(query.lastIndexOf("}"), " ?s <"
-                    + AnnotationsConstants.A_ANNOTATES + "> <" + uri.toString()
+            query.insert(query.lastIndexOf("}"), " ?s <" + AnnotationsConstants.A_ANNOTATES + "> <" + uri.toString()
                     + "> . ");
             if (filters != null) {
                 for (Map.Entry<String, String> entry : filters.entrySet()) {
-                    query.insert(query.lastIndexOf("}"), " ?s <"
-                            + entry.getKey() + "> <" + entry.getValue()
-                            + "> . ");
+                    query.insert(query.lastIndexOf("}"), " ?s <" + entry.getKey() + "> <" + entry.getValue() + "> . ");
                 }
             }
             QueryResult results = graph.query(query.toString(), "sparql", null);

@@ -44,7 +44,6 @@ import org.w3c.dom.Element;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 // use by reflection from DevFrameworkBootstrap
 public class ComponentRegistrySerializer {

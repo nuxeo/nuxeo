@@ -49,22 +49,18 @@ public class PropertyWrapper {
                     return TemplateModel.NOTHING;
                 }
                 if (property.getType() == DateType.INSTANCE) {
-                    return new SimpleDate(((Calendar) value).getTime(),
-                            TemplateDateModel.DATETIME);
+                    return new SimpleDate(((Calendar) value).getTime(), TemplateDateModel.DATETIME);
                 }
                 return wrapper.wrap(value);
             } else if (property.isList()) {
                 if (property.isContainer()) {
-                    return new ListPropertyTemplate(wrapper,
-                            (ListProperty) property);
+                    return new ListPropertyTemplate(wrapper, (ListProperty) property);
                 } else {
                     Object value;
                     try {
                         value = property.getValue();
                     } catch (PropertyException e) {
-                        throw new IllegalArgumentException(
-                                "Cannot get array from array property "
-                                        + property);
+                        throw new IllegalArgumentException("Cannot get array from array property " + property);
                     }
                     if (value == null) {
                         return TemplateModel.NOTHING;
@@ -72,8 +68,7 @@ public class PropertyWrapper {
                     if (value instanceof ArrayList) {
                         // FIXME: some instances of ListProperty will answer "false"
                         // to isContainer()
-                        return new ListPropertyTemplate(wrapper,
-                                (ListProperty) property);
+                        return new ListPropertyTemplate(wrapper, (ListProperty) property);
                     }
                     return new ArrayModel(value, wrapper);
                 }

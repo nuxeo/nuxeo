@@ -24,8 +24,7 @@ import java.io.StringReader;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ByteArrayBlob extends DefaultBlob implements Serializable {
 
@@ -44,15 +43,14 @@ public class ByteArrayBlob extends DefaultBlob implements Serializable {
     public ByteArrayBlob(byte[] content, String ctype, String encoding) {
         this(content, ctype, encoding, null, null);
     }
-    public ByteArrayBlob(byte[] content, String mimeType, String encoding,
-            String filename, String digest) {
+
+    public ByteArrayBlob(byte[] content, String mimeType, String encoding, String filename, String digest) {
         this.content = content;
         this.mimeType = mimeType;
         this.encoding = encoding;
         this.filename = filename;
         this.digest = digest;
     }
-
 
     @Override
     public long getLength() {
@@ -61,7 +59,6 @@ public class ByteArrayBlob extends DefaultBlob implements Serializable {
         }
         return content.length;
     }
-
 
     @Override
     public InputStream getStream() throws IOException {

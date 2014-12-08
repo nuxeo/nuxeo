@@ -40,15 +40,12 @@ public final class ElementFormatter {
         if (oldFormat != null) {
             removeFormat(object, oldFormat);
         }
-        Manager.getRelationStorage().add(
-                new DyadicRelation(format.getPredicate(), (Element) object,
-                        format));
+        Manager.getRelationStorage().add(new DyadicRelation(format.getPredicate(), (Element) object, format));
     }
 
-    public static Format getFormatByType(final Object object,
-            final FormatType type) {
-        final Collection<Relation> relations = Manager.getRelationStorage().search(
-                type.getPredicate(), (Element) object, null);
+    public static Format getFormatByType(final Object object, final FormatType type) {
+        final Collection<Relation> relations = Manager.getRelationStorage().search(type.getPredicate(),
+                (Element) object, null);
         final Iterator<Relation> i = relations.iterator();
         if (i.hasNext()) {
             return (Format) ((DyadicRelation) i.next()).getRelate(2);
@@ -70,15 +67,12 @@ public final class ElementFormatter {
         return formats;
     }
 
-    public static Format getFormatFor(final Element element,
-            final String typeName) {
+    public static Format getFormatFor(final Element element, final String typeName) {
         final RelationStorage relationStorage = Manager.getRelationStorage();
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        final FormatType type = (FormatType) typeRegistry.lookup(
-                TypeFamily.FORMAT, typeName);
+        final FormatType type = (FormatType) typeRegistry.lookup(TypeFamily.FORMAT, typeName);
         // FIXME: this loop doesn't loop!
-        for (Relation relation : relationStorage.search(type.getPredicate(),
-                element, null)) {
+        for (Relation relation : relationStorage.search(type.getPredicate(), element, null)) {
             return (Format) relation.getRelate(2);
         }
         return null;
@@ -90,10 +84,8 @@ public final class ElementFormatter {
         final String[] formatTypeNames = { "widget", "style", "layout" };
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         for (String typeName : formatTypeNames) {
-            final FormatType type = (FormatType) typeRegistry.lookup(
-                    TypeFamily.FORMAT, typeName);
-            for (Relation relation : relationStorage.search(
-                    type.getPredicate(), null, format)) {
+            final FormatType type = (FormatType) typeRegistry.lookup(TypeFamily.FORMAT, typeName);
+            for (Relation relation : relationStorage.search(type.getPredicate(), null, format)) {
                 elements.add((Element) relation.getRelate(1));
             }
         }
@@ -102,8 +94,7 @@ public final class ElementFormatter {
 
     public static void removeFormat(final Object object, final Format format) {
         final RelationStorage relationStorage = Manager.getRelationStorage();
-        for (Relation relation : relationStorage.search(format.getPredicate(),
-                (Relate) object, format)) {
+        for (Relation relation : relationStorage.search(format.getPredicate(), (Relate) object, format)) {
             relationStorage.remove(relation);
         }
     }

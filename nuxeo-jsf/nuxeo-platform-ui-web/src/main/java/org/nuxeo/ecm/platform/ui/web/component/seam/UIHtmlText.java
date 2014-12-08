@@ -32,8 +32,7 @@ import com.lowagie.text.html.simpleparser.HTMLWorker;
 import com.lowagie.text.html.simpleparser.StyleSheet;
 
 /**
- * Overrides basic p:html tag to use {@link NuxeoITextImageProvider} to resolve
- * image resources.
+ * Overrides basic p:html tag to use {@link NuxeoITextImageProvider} to resolve image resources.
  *
  * @since 5.4.2
  */
@@ -70,8 +69,7 @@ public class UIHtmlText extends org.jboss.seam.pdf.ui.UIHtmlText {
                 (HttpServletRequest) context.getExternalContext().getRequest()));
 
         try {
-            for (Object o : HTMLWorker.parseToList(new StringReader(html),
-                    getStyle(), interfaceProps)) {
+            for (Object o : HTMLWorker.parseToList(new StringReader(html), getStyle(), interfaceProps)) {
                 addToITextParent(o);
             }
         } catch (IOException e) {

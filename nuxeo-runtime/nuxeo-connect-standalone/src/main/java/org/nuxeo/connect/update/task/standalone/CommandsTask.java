@@ -52,8 +52,7 @@ public abstract class CommandsTask extends AbstractTask {
     protected final List<Command> commands;
 
     /**
-     * The log is generated in the inverse order of commands to ensure last
-     * command is rollbacked first.
+     * The log is generated in the inverse order of commands to ensure last command is rollbacked first.
      */
     protected final LinkedList<Command> commandLog;
 
@@ -70,15 +69,13 @@ public abstract class CommandsTask extends AbstractTask {
 
     @SuppressWarnings("hiding")
     @Override
-    public void initialize(LocalPackage pkg, boolean restart)
-            throws PackageException {
+    public void initialize(LocalPackage pkg, boolean restart) throws PackageException {
         super.initialize(pkg, restart);
         loadCommands();
     }
 
     /**
-     * Load the commands of this task given the user parameters. The parameter
-     * map may be null.
+     * Load the commands of this task given the user parameters. The parameter map may be null.
      */
     protected void loadCommands() throws PackageException {
         try {
@@ -112,8 +109,7 @@ public abstract class CommandsTask extends AbstractTask {
     }
 
     /**
-     * User parameters are not handled by default. You need to implement your
-     * own task to do this.
+     * User parameters are not handled by default. You need to implement your own task to do this.
      */
     protected void doRun(Map<String, String> params) throws PackageException {
         for (Command cmd : commands) {
@@ -163,8 +159,8 @@ public abstract class CommandsTask extends AbstractTask {
             // corresponding variable otherwise the uninstall will not work
             // after renaming the installation directory
             String content = parametrizePaths(writer.toString());
-            content = content.replace(File.separator.concat(File.separator),
-                    File.separator); // replace '//' by '/' is any
+            content = content.replace(File.separator.concat(File.separator), File.separator); // replace '//' by '/' is
+                                                                                              // any
             FileUtils.writeFile(file, content);
         } catch (IOException e) {
             throw new PackageException("Failed to write commands", e);

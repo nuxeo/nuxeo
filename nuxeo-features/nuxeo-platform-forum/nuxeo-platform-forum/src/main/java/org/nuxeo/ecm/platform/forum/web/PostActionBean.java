@@ -60,8 +60,7 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
- * This action listener is used to create a Post inside a Thread and also to
- * handle the moderation cycle on Post.
+ * This action listener is used to create a Post inside a Thread and also to handle the moderation cycle on Post.
  *
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */
@@ -117,11 +116,9 @@ public class PostActionBean implements PostAction {
         try {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             if (currentDocument != null) {
-                return documentManager.hasPermission(currentDocument.getRef(),
-                        SecurityConstants.READ_WRITE);
+                return documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.READ_WRITE);
             } else {
-                log.error("Cannot check write permission on thread: "
-                        + "no current document found");
+                log.error("Cannot check write permission on thread: " + "no current document found");
             }
         } catch (ClientException e) {
             log.error(e);
@@ -137,15 +134,13 @@ public class PostActionBean implements PostAction {
     }
 
     /**
-     * Adds the post to the thread and starts the moderation WF on the post
-     * created.
+     * Adds the post to the thread and starts the moderation WF on the post created.
      */
     @Override
     public String addPost() throws ClientException {
         DocumentModel dm = documentManager.createDocumentModel("Post");
 
-        dm.setProperty("post", "author",
-                commentManagerActions.getPrincipalName());
+        dm.setProperty("post", "author", commentManagerActions.getPrincipalName());
 
         dm.setProperty("post", "title", title);
         dm.setProperty("post", "text", text);
@@ -156,22 +151,17 @@ public class PostActionBean implements PostAction {
         // save it to the repository
         dm = commentManagerActions.addComment(dm);
 
-        if (threadAction.isCurrentThreadModerated()
-                && !threadAction.isPrincipalModerator()) {
+        if (threadAction.isCurrentThreadModerated() && !threadAction.isPrincipalModerator()) {
             // start moderation workflow + warn user that post
             // won't be displayed until moderation kicks in
             startModeration(dm);
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "label.comment.waiting_approval"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get("label.comment.waiting_approval"));
         } else {
             // publish post
             DocumentRef postRef = dm.getRef();
-            if (documentManager.hasPermission(postRef,
-                    SecurityConstants.WRITE_LIFE_CYCLE)) {
-                documentManager.followTransition(postRef,
-                        ForumConstants.TRANSITION_TO_PUBLISHED_STATE);
+            if (documentManager.hasPermission(postRef, SecurityConstants.WRITE_LIFE_CYCLE)) {
+                documentManager.followTransition(postRef, ForumConstants.TRANSITION_TO_PUBLISHED_STATE);
                 documentManager.save();
             } else {
                 // Here user only granted with read rights should be able to
@@ -180,17 +170,14 @@ public class PostActionBean implements PostAction {
                 // state
                 try (CoreSession systemSession = CoreInstance.openCoreSessionSystem(currentServerLocation.getName())) {
                     // follow transition
-                    systemSession.followTransition(dm.getRef(),
-                            ForumConstants.TRANSITION_TO_PUBLISHED_STATE);
+                    systemSession.followTransition(dm.getRef(), ForumConstants.TRANSITION_TO_PUBLISHED_STATE);
                     systemSession.save();
                 }
             }
             fetchInvalidationsIfNeeded();
             // NXP-1262 display the message only when about to publish
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "label.comment.added.sucess"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get("label.comment.added.sucess"));
         }
 
         // force comment manager to reload posts
@@ -241,8 +228,7 @@ public class PostActionBean implements PostAction {
             throw new ClientException("No moderation task found");
         }
 
-        taskService.rejectTask(documentManager, (NuxeoPrincipal) currentUser,
-                moderationTask, null);
+        taskService.rejectTask(documentManager, (NuxeoPrincipal) currentUser, moderationTask, null);
 
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
 
@@ -265,8 +251,7 @@ public class PostActionBean implements PostAction {
         if (moderationTask == null) {
             throw new ClientException("No moderation task found");
         }
-        taskService.acceptTask(documentManager, (NuxeoPrincipal) currentUser,
-                moderationTask, null);
+        taskService.acceptTask(documentManager, (NuxeoPrincipal) currentUser, moderationTask, null);
 
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
 
@@ -286,8 +271,7 @@ public class PostActionBean implements PostAction {
     @Override
     public boolean isPostPublished(DocumentModel post) throws ClientException {
         boolean published = false;
-        if (post != null
-                && ForumConstants.PUBLISHED_STATE.equals(post.getCurrentLifeCycleState())) {
+        if (post != null && ForumConstants.PUBLISHED_STATE.equals(post.getCurrentLifeCycleState())) {
             published = true;
         }
         return published;
@@ -300,8 +284,7 @@ public class PostActionBean implements PostAction {
     protected void startModeration(DocumentModel post) throws ClientException {
 
         DocumentModel thread = getParentThread();
-        List<String> moderators = (ArrayList<String>) thread.getProperty(
-                "thread", "moderators");
+        List<String> moderators = (ArrayList<String>) thread.getProperty("thread", "moderators");
 
         if (moderators == null || moderators.isEmpty()) {
             throw new ClientException("No moderators defined");
@@ -309,36 +292,26 @@ public class PostActionBean implements PostAction {
 
         Map<String, String> vars = new HashMap<String, String>();
         vars.put(ForumConstants.COMMENT_ID, post.getId());
-        vars.put(
-                CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(),
-                "false");
+        vars.put(CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(), "false");
         vars.put(Task.TaskVariableName.needi18n.name(), "true");
-        vars.put(Task.TaskVariableName.taskType.name(),
-                ForumConstants.FORUM_TASK_TYPE);
+        vars.put(Task.TaskVariableName.taskType.name(), ForumConstants.FORUM_TASK_TYPE);
 
-        vars.put(
-                CreateTask.OperationTaskVariableName.acceptOperationChain.name(),
-                CommentsConstants.ACCEPT_CHAIN_NAME);
-        vars.put(
-                CreateTask.OperationTaskVariableName.rejectOperationChain.name(),
-                CommentsConstants.REJECT_CHAIN_NAME);
+        vars.put(CreateTask.OperationTaskVariableName.acceptOperationChain.name(), CommentsConstants.ACCEPT_CHAIN_NAME);
+        vars.put(CreateTask.OperationTaskVariableName.rejectOperationChain.name(), CommentsConstants.REJECT_CHAIN_NAME);
 
-        taskService.createTask(documentManager, (NuxeoPrincipal) currentUser,
-                thread, ForumConstants.MODERATION_TASK_NAME, moderators, false,
-                ForumConstants.MODERATION_TASK_NAME, null, null, vars, null);
+        taskService.createTask(documentManager, (NuxeoPrincipal) currentUser, thread,
+                ForumConstants.MODERATION_TASK_NAME, moderators, false, ForumConstants.MODERATION_TASK_NAME, null,
+                null, vars, null);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
 
     }
 
-    protected Task getModerationTask(DocumentModel thread, String postId)
-            throws ClientException {
-        List<Task> tasks = DocumentTaskProvider.getTasks(
-                "GET_FORUM_MODERATION_TASKS", documentManager, false, null,
+    protected Task getModerationTask(DocumentModel thread, String postId) throws ClientException {
+        List<Task> tasks = DocumentTaskProvider.getTasks("GET_FORUM_MODERATION_TASKS", documentManager, false, null,
                 thread.getId(), postId);
         if (tasks != null && !tasks.isEmpty()) {
             if (tasks.size() > 1) {
-                log.error("There are several moderation workflows running, "
-                        + "taking only first found");
+                log.error("There are several moderation workflows running, " + "taking only first found");
             }
             Task task = tasks.get(0);
             return task;
@@ -386,24 +359,20 @@ public class PostActionBean implements PostAction {
     }
 
     /**
-     * Gets the title of the post for creation purpose. If the post to be
-     * created reply to a previous post, the title of the new post comes with
-     * the previous title, and a prefix (i.e : Re : Previous Title).
+     * Gets the title of the post for creation purpose. If the post to be created reply to a previous post, the title of
+     * the new post comes with the previous title, and a prefix (i.e : Re : Previous Title).
      */
     @Override
     public String getTitle() throws ClientException {
 
         String previousId = commentManagerActions.getSavedReplyCommentId();
         if (previousId != null && !"".equals(previousId)) {
-            DocumentModel previousPost = documentManager.getDocument(new IdRef(
-                    previousId));
+            DocumentModel previousPost = documentManager.getDocument(new IdRef(previousId));
 
             // Test to ensure that previous comment got the "post" schema
             if (previousPost.getDataModel("post") != null) {
-                String previousTitle = (String) previousPost.getProperty(
-                        "post", "title");
-                String prefix = resourcesAccessor.getMessages().get(
-                        "label.forum.post.title.prefix");
+                String previousTitle = (String) previousPost.getProperty("post", "title");
+                String prefix = resourcesAccessor.getMessages().get("label.forum.post.title.prefix");
                 title = prefix + previousTitle;
             }
         }

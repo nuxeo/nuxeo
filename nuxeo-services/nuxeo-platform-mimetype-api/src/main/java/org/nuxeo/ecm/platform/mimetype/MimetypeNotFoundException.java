@@ -21,8 +21,7 @@ package org.nuxeo.ecm.platform.mimetype;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
- * Exception raised when no matching mimetype entry can be found / guessed by
- * the service.
+ * Exception raised when no matching mimetype entry can be found / guessed by the service.
  *
  * @author ogrisel@nuxeo.com
  */

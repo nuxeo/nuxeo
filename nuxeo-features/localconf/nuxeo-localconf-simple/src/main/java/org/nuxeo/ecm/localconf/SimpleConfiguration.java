@@ -24,14 +24,12 @@ import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
 /**
  * An object that maps keys to values.
  * <p>
- * The mappings can be stored on documents with the facet
- * {@code SimpleConfiguration}.
+ * The mappings can be stored on documents with the facet {@code SimpleConfiguration}.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public interface SimpleConfiguration extends
-        LocalConfiguration<SimpleConfiguration> {
+public interface SimpleConfiguration extends LocalConfiguration<SimpleConfiguration> {
 
     String SIMPLE_CONFIGURATION_FACET = "SimpleConfiguration";
 
@@ -44,16 +42,16 @@ public interface SimpleConfiguration extends
     String SIMPLE_CONFIGURATION_PARAMETER_VALUE = "value";
 
     /**
-     * Returns the value to which the specified {@code key} is mapped, or
-     * {@code null} if there is no mapping for the {@code key}.
+     * Returns the value to which the specified {@code key} is mapped, or {@code null} if there is no mapping for the
+     * {@code key}.
      *
      * @param key the key whose associated value is to be returned
      */
     String get(String key);
 
     /**
-     * Returns the value to which the specified key is mapped, or the given
-     * default value if there is no mapping for the key.
+     * Returns the value to which the specified key is mapped, or the given default value if there is no mapping for the
+     * key.
      *
      * @param key the key whose associated value is to be returned
      * @param defaultValue the value returned if there is no mapping for the key
@@ -63,19 +61,16 @@ public interface SimpleConfiguration extends
     /**
      * Associates the specified value with the specified key.
      * <p>
-     * If the map previously contained a mapping for the key, the old value is
-     * replaced by the specified value.
+     * If the map previously contained a mapping for the key, the old value is replaced by the specified value.
      *
      * @param key key with which the specified value is to be associated
      * @param value value to be associated with the specified key
-     * @return the previous value associated with {@code key}, or {@code null}
-     *         if there was no mapping for {@code key}.
+     * @return the previous value associated with {@code key}, or {@code null} if there was no mapping for {@code key}.
      */
     String put(String key, String value);
 
     /**
-     * Copies all of the parameters from the specified map to this Simple
-     * configuration
+     * Copies all of the parameters from the specified map to this Simple configuration
      *
      * @param parameters parameters to be stored in this Simple configuration
      */

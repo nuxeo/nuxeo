@@ -41,8 +41,7 @@ import com.sun.faces.facelets.tag.TagAttributesImpl;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class DirectorySelectOneWidgetTypeHandler extends
-        AbstractDirectorySelectWidgetTypeHandler {
+public class DirectorySelectOneWidgetTypeHandler extends AbstractDirectorySelectWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -51,18 +50,15 @@ public class DirectorySelectOneWidgetTypeHandler extends
     }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         String mode = widget.getMode();
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            return super.getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                    getEditComponentType());
+            return super.getFaceletHandler(ctx, tagConfig, widget, subHandlers, getEditComponentType());
         }
 
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
-                subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         String widgetId = widget.getId();
         String widgetTagConfigId = widget.getTagConfigId();
         TagAttributes attributes;
@@ -72,14 +68,12 @@ public class DirectorySelectOneWidgetTypeHandler extends
         } else {
             attributes = helper.getTagAttributes(widgetId, widget);
         }
-        ComponentHandler output = helper.getHtmlComponentHandler(
-                widgetTagConfigId, attributes, leaf,
+        ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                 DirectoryEntryOutputComponent.COMPONENT_TYPE, null);
         if (BuiltinWidgetModes.PDF.equals(mode)) {
             // add a surrounding p:html tag handler
-            return helper.getHtmlComponentHandler(widgetTagConfigId,
-                    new TagAttributesImpl(new TagAttribute[0]), output,
-                    UIHtmlText.class.getName(), null);
+            return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
+                    output, UIHtmlText.class.getName(), null);
         } else {
             return output;
         }

@@ -25,33 +25,31 @@ import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 @XObject("link")
 public class DataSourceLinkDescriptor {
 
-	protected String name;
+    protected String name;
 
-	@XNode("@name")
-	public void setName(String value) {
-	    name = DataSourceHelper.getDataSourceJNDIName(value);
-	}
+    @XNode("@name")
+    public void setName(String value) {
+        name = DataSourceHelper.getDataSourceJNDIName(value);
+    }
 
-	protected String global;
-
+    protected String global;
 
     @XNode("@global")
     public void setGlobal(String value) {
         global = DataSourceHelper.getDataSourceJNDIName(value);
     }
 
-	@XNode("@type")
-	protected String type;
-
+    @XNode("@type")
+    protected String type;
 
     public void bindSelf(Context namingContext) throws NamingException {
         namingContext.bind(name, new LinkRef(global));
         PooledDataSource pool = DataSourceHelper.getDataSource(global, PooledDataSource.class);
-        Framework.getLocalService(PooledDataSourceRegistry.class).createAlias(DataSourceHelper.relativize(name),pool);
+        Framework.getLocalService(PooledDataSourceRegistry.class).createAlias(DataSourceHelper.relativize(name), pool);
     }
 
     public void unbindSelf(Context namingContext) throws NamingException {
         namingContext.unbind(name);
     }
 
-  }
+}

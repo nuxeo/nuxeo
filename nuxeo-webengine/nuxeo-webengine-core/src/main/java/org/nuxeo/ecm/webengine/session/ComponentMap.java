@@ -43,7 +43,7 @@ public class ComponentMap<T extends Component> extends HashMap<String, T> {
             comp.destroy(session);
         }
         if (!isEmpty()) {
-            for (T comp :  values()) {
+            for (T comp : values()) {
                 comp.destroy(session);
             }
         }

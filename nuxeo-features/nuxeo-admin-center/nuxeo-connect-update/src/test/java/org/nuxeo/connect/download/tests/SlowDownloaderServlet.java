@@ -42,7 +42,7 @@ public class SlowDownloaderServlet extends HttpServlet {
 
         PrintWriter writer = resp.getWriter();
 
-        for(int i=1;i<10;i++) {
+        for (int i = 1; i < 10; i++) {
             writer.write("Yoooooo\n");
             try {
                 Thread.sleep(100);

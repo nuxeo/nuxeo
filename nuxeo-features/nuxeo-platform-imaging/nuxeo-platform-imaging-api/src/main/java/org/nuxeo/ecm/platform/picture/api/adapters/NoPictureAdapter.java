@@ -35,8 +35,7 @@ public class NoPictureAdapter extends AbstractPictureAdapter {
 
     @Override
     public boolean createPicture(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions)
-            throws IOException, ClientException {
+            ArrayList<Map<String, Object>> pictureConversions) throws IOException, ClientException {
         // create no views
         return true;
     }
@@ -50,8 +49,7 @@ public class NoPictureAdapter extends AbstractPictureAdapter {
     }
 
     @Override
-    public Blob getPictureFromTitle(String title) throws PropertyException,
-            ClientException {
+    public Blob getPictureFromTitle(String title) throws PropertyException, ClientException {
         if (ORIGINAL_VIEW_NAME.equals(title)) {
             return (Blob) doc.getPropertyValue("file:content");
         }
@@ -78,8 +76,7 @@ public class NoPictureAdapter extends AbstractPictureAdapter {
     }
 
     @Override
-    public void preFillPictureViews(Blob blob,
-            List<Map<String, Object>> pictureConversions, ImageInfo imageInfo) {
+    public void preFillPictureViews(Blob blob, List<Map<String, Object>> pictureConversions, ImageInfo imageInfo) {
     }
 
 }

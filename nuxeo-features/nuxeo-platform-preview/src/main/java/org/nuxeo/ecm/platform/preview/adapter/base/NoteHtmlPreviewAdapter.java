@@ -52,14 +52,15 @@ public class NoteHtmlPreviewAdapter extends PreprocessedHtmlPreviewAdapter {
             sb.append(note);
             sb.append("</body></html>");
 
-            byte[] bytes = blob.getEncoding() == null ? sb.toString().getBytes() : sb.toString().getBytes(blob.getEncoding());
+            byte[] bytes = blob.getEncoding() == null ? sb.toString().getBytes() : sb.toString().getBytes(
+                    blob.getEncoding());
             String mimeType = blob.getMimeType();
             if (mimeType == null) {
                 mimeType = "text/html";
             }
             Blob newBlob = new ByteArrayBlob(bytes, mimeType, blob.getEncoding());
             return newBlob;
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new PreviewException(e);
         } catch (UnsupportedCharsetException e) {
             throw new PreviewException(e);

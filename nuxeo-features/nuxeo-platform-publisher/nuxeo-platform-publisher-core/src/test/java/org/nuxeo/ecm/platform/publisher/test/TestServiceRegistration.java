@@ -70,8 +70,7 @@ public class TestServiceRegistration extends SQLRepositoryTestCase {
 
     @Test
     public void testContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.core", "OSGI-INF/publisher-contrib.xml");
         PublisherService service = Framework.getLocalService(PublisherService.class);
         List<String> treeNames = service.getAvailablePublicationTree();
         assertEquals(1, treeNames.size());

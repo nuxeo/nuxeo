@@ -41,14 +41,12 @@ public final class Styles extends HttpServlet implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws IOException {
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 
     @Override
-    protected void doPost(final HttpServletRequest request,
-            final HttpServletResponse response) throws IOException {
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 
         // headers
         response.addHeader("content-type", "text/css");
@@ -94,14 +92,11 @@ public final class Styles extends HttpServlet implements Serializable {
         final String basePath = request.getParameter("basepath");
 
         final ThemeManager themeManager = Manager.getThemeManager();
-        String rendered = themeManager.getCachedStyles(themeName, basePath,
-                collectionName);
+        String rendered = themeManager.getCachedStyles(themeName, basePath, collectionName);
 
         if (rendered == null) {
-            rendered = ThemeStyles.generateThemeStyles(themeName,
-                    themeDescriptor, basePath, collectionName, true);
-            themeManager.setCachedStyles(themeName, basePath, collectionName,
-                    rendered);
+            rendered = ThemeStyles.generateThemeStyles(themeName, themeDescriptor, basePath, collectionName, true);
+            themeManager.setCachedStyles(themeName, basePath, collectionName, rendered);
         }
 
         os.write(rendered.getBytes());

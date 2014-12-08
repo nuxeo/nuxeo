@@ -36,10 +36,8 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.picture.convert",
-        "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.commandline.executor" })
+@Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.convert",
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.commandline.executor" })
 public class TestPictureResize {
 
     @Inject
@@ -50,8 +48,7 @@ public class TestPictureResize {
 
     @Test
     public void testResizer1() throws Exception {
-        Blob source = new FileBlob(
-                FileUtils.getResourceFileFromContext("images/test.jpg"));
+        Blob source = new FileBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
 
         OperationContext ctx = new OperationContext(session);
 
@@ -61,8 +58,7 @@ public class TestPictureResize {
         params.put("maxWidth", 150);
         params.put("maxHeight", 300);
         OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(PictureResize.ID,
-                params);
+        OperationParameters oparams = new OperationParameters(PictureResize.ID, params);
         chain.add(oparams);
 
         Blob result = (Blob) service.run(ctx, chain);

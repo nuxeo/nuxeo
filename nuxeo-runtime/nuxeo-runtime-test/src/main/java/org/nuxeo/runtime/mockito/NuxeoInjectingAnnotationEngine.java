@@ -21,8 +21,6 @@ import org.mockito.internal.configuration.InjectingAnnotationEngine;
 import org.mockito.internal.configuration.SpyAnnotationEngine;
 
 /**
- *
- *
  * @since 5.7.8
  */
 public class NuxeoInjectingAnnotationEngine extends InjectingAnnotationEngine {
@@ -31,9 +29,8 @@ public class NuxeoInjectingAnnotationEngine extends InjectingAnnotationEngine {
     private AnnotationEngine spyAnnotationEngine = new SpyAnnotationEngine();
 
     /**
-     * Process the fields of the test instance and create Mocks, Spies, Captors
-     * and inject them on fields annotated &#64;InjectMocks.
-     *
+     * Process the fields of the test instance and create Mocks, Spies, Captors and inject them on fields annotated
+     * &#64;InjectMocks.
      * <p>
      * This code process the test class and the super classes.
      * <ol>
@@ -43,7 +40,6 @@ public class NuxeoInjectingAnnotationEngine extends InjectingAnnotationEngine {
      *
      * @param clazz Not used
      * @param testInstance The instance of the test, should not be null.
-     *
      * @see org.mockito.configuration.AnnotationEngine#process(Class, Object)
      */
     @Override
@@ -52,8 +48,7 @@ public class NuxeoInjectingAnnotationEngine extends InjectingAnnotationEngine {
         processInjectMocks(testInstance.getClass(), testInstance);
     }
 
-    private void processInjectMocks(final Class<?> clazz,
-            final Object testInstance) {
+    private void processInjectMocks(final Class<?> clazz, final Object testInstance) {
         Class<?> classContext = clazz;
         while (classContext != Object.class) {
             injectMocks(testInstance);
@@ -61,8 +56,7 @@ public class NuxeoInjectingAnnotationEngine extends InjectingAnnotationEngine {
         }
     }
 
-    private void processIndependentAnnotations(final Class<?> clazz,
-            final Object testInstance) {
+    private void processIndependentAnnotations(final Class<?> clazz, final Object testInstance) {
         Class<?> classContext = clazz;
         while (classContext != Object.class) {
             // this will create @Mocks, @Captors, etc:
@@ -73,6 +67,5 @@ public class NuxeoInjectingAnnotationEngine extends InjectingAnnotationEngine {
             classContext = classContext.getSuperclass();
         }
     }
-
 
 }

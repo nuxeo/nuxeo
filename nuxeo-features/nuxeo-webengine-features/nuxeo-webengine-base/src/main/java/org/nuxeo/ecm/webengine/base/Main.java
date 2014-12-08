@@ -59,7 +59,7 @@ public class Main extends ModuleRoot {
                 }
                 list.addAll(items);
             } else if (!mc.isHeadless) {
-                if (mc.roots != null && mc.roots.length > 0){
+                if (mc.roots != null && mc.roots.length > 0) {
                     Path path = mc.roots[0].getAnnotation(Path.class);
                     if (path != null) {
                         list.add(new ModuleShortcut(path.value(), mc.name));
@@ -79,11 +79,9 @@ public class Main extends ModuleRoot {
     @Override
     public Object handleError(WebApplicationException e) {
         if (e instanceof WebSecurityException) {
-            return Response.status(401).entity(
-                    getTemplate("error/error_401.ftl")).type("text/html").build();
+            return Response.status(401).entity(getTemplate("error/error_401.ftl")).type("text/html").build();
         } else if (e instanceof WebResourceNotFoundException) {
-            return Response.status(404).entity(
-                    getTemplate("error/error_404.ftl")).type("text/html").build();
+            return Response.status(404).entity(getTemplate("error/error_404.ftl")).type("text/html").build();
         } else {
             return super.handleError(e);
         }

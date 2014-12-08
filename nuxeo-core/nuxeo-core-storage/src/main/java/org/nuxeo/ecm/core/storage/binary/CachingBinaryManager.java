@@ -37,11 +37,9 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Abstract class for a {@link BinaryManager} that uses a cache for its files
- * because fetching them is expensive.
+ * Abstract class for a {@link BinaryManager} that uses a cache for its files because fetching them is expensive.
  * <p>
- * Initialization of the {@link BinaryManager} must call
- * {@link #initializeCache} from the {@link #initialize} method.
+ * Initialization of the {@link BinaryManager} must call {@link #initializeCache} from the {@link #initialize} method.
  *
  * @since 5.7
  */
@@ -58,13 +56,11 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
     protected FileStorage fileStorage;
 
     @Override
-    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
-            throws IOException {
+    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
         repositoryName = binaryManagerDescriptor.repositoryName;
         descriptor = new BinaryManagerRootDescriptor();
         descriptor.digest = getDigest();
-        log.info("Repository '" + repositoryName + "' using "
-                + getClass().getSimpleName());
+        log.info("Repository '" + repositoryName + "' using " + getClass().getSimpleName());
     }
 
     /**
@@ -72,13 +68,10 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
      *
      * @param dir the directory to use to store cached files
      * @param maxSize the maximum size of the cache (in bytes)
-     * @param fileStorage the file storage mechanism to use to store and fetch
-     *            files
-     *
+     * @param fileStorage the file storage mechanism to use to store and fetch files
      * @since 5.9.2
      */
-    public void initializeCache(File dir, long maxSize,
-            @SuppressWarnings("hiding") FileStorage fileStorage) {
+    public void initializeCache(File dir, long maxSize, @SuppressWarnings("hiding") FileStorage fileStorage) {
         fileCache = new LRUFileCache(dir, maxSize);
         this.fileStorage = fileStorage;
     }
@@ -87,22 +80,19 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
      * Initialize the cache.
      *
      * @param cacheSizeStr the maximum size of the cache (as a String)
-     * @param fileStorage the file storage mechanism to use to store and fetch
-     *            files
+     * @param fileStorage the file storage mechanism to use to store and fetch files
      * @since 6.0
      * @see #initializeCache(File, long, FileStorage)
      * @see SizeUtils#parseSizeInBytes(String)
      */
-    public void initializeCache(String cacheSizeStr,
-            @SuppressWarnings("hiding") FileStorage fileStorage)
+    public void initializeCache(String cacheSizeStr, @SuppressWarnings("hiding") FileStorage fileStorage)
             throws IOException {
         cachedir = File.createTempFile("nxbincache.", "", null);
         cachedir.delete();
         cachedir.mkdir();
         long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
         initializeCache(cachedir, cacheSize, fileStorage);
-        log.info("Using binary cache directory: " + cachedir.getPath() + " size: "
-                + cacheSizeStr);
+        log.info("Using binary cache directory: " + cachedir.getPath() + " size: " + cacheSizeStr);
     }
 
     @Override

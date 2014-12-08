@@ -24,8 +24,7 @@ import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 
 /**
- * Negotiation scheme for obtaining the local perspective from the current
- * document.
+ * Negotiation scheme for obtaining the local perspective from the current document.
  *
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
  * @deprecated since 5.5: use local theme flavour instead
@@ -36,8 +35,8 @@ public class LocalPerspective implements Scheme {
     /**
      * Called by the theme negotiation module.
      *
-     * @return the local theme associated to the current space (workspace,
-     *         section, ...) as a 'theme/page' string. Return null otherwise.
+     * @return the local theme associated to the current space (workspace, section, ...) as a 'theme/page' string.
+     *         Return null otherwise.
      */
     public String getOutcome(Object context) {
         Boolean useOldThemeConf = Boolean.valueOf(Framework.getProperty(LocalThemeConfig.OLD_THEME_CONFIGURATION_PROPERTY));

@@ -46,8 +46,7 @@ public abstract class AbstractAnnotationTest extends SQLRepositoryTestCase {
 
     protected Annotation annotation1;
 
-    protected final NuxeoPrincipal user = new UserPrincipal("bob",
-            new ArrayList<String>(), false, false);
+    protected final NuxeoPrincipal user = new UserPrincipal("bob", new ArrayList<String>(), false, false);
 
     protected final AnnotationManager manager = new AnnotationManager();
 
@@ -66,10 +65,8 @@ public abstract class AbstractAnnotationTest extends SQLRepositoryTestCase {
         ds.setUser("sa");
         ds.setPassword("");
         NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxrelations-default-jena", ds);
-        Framework.getProperties().setProperty(
-                "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
-        Framework.getProperties().setProperty(
-                "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
+        Framework.getProperties().setProperty("org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
+        Framework.getProperties().setProperty("org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations");
         deployBundle("org.nuxeo.ecm.annotations.contrib");
@@ -85,6 +82,5 @@ public abstract class AbstractAnnotationTest extends SQLRepositoryTestCase {
         annotation = manager.getAnnotation(is);
         assertNotNull(annotation);
     }
-
 
 }

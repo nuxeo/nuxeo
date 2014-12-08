@@ -50,13 +50,11 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime component that expose the PictureTilingService interface. Also
- * exposes the configuration Extension Point
+ * Runtime component that expose the PictureTilingService interface. Also exposes the configuration Extension Point
  *
  * @author tiry
  */
-public class PictureTilingComponent extends DefaultComponent implements
-        PictureTilingService {
+public class PictureTilingComponent extends DefaultComponent implements PictureTilingService {
 
     public static final String ENV_PARAMETERS_EP = "environment";
 
@@ -129,8 +127,7 @@ public class PictureTilingComponent extends DefaultComponent implements
 
     protected String defaultWorkingDirPath() {
         String defaultPath = new File(Environment.getDefault().getData(), "nuxeo-tiling-cache").getAbsolutePath();
-        String path = getEnvValue("WorkingDirPath",
-                defaultPath);
+        String path = getEnvValue("WorkingDirPath", defaultPath);
         return normalizeWorkingDirPath(path);
     }
 
@@ -174,43 +171,36 @@ public class PictureTilingComponent extends DefaultComponent implements
     }
 
     @Deprecated
-    public PictureTiles getTilesFromBlob(Blob blob, int tileWidth,
-            int tileHeight, int maxTiles) throws ClientException {
-        return getTilesFromBlob(blob, tileWidth, tileHeight, maxTiles, 0, 0,
-                false);
+    public PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles) throws ClientException {
+        return getTilesFromBlob(blob, tileWidth, tileHeight, maxTiles, 0, 0, false);
     }
 
-    public PictureTiles getTiles(ImageResource resource, int tileWidth,
-            int tileHeight, int maxTiles) throws ClientException {
+    public PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles)
+            throws ClientException {
         return getTiles(resource, tileWidth, tileHeight, maxTiles, 0, 0, false);
     }
 
-    public PictureTiles completeTiles(PictureTiles existingTiles, int xCenter,
-            int yCenter) throws ClientException {
+    public PictureTiles completeTiles(PictureTiles existingTiles, int xCenter, int yCenter) throws ClientException {
 
         String outputDirPath = existingTiles.getTilesPath();
 
         long lastModificationTime = Long.parseLong(existingTiles.getInfo().get(
                 PictureTilesImpl.LAST_MODIFICATION_DATE_KEY));
-        return computeTiles(existingTiles.getSourceImageInfo(), outputDirPath,
-                existingTiles.getTilesWidth(), existingTiles.getTilesHeight(),
-                existingTiles.getMaxTiles(), xCenter, yCenter,
-                lastModificationTime, false);
+        return computeTiles(existingTiles.getSourceImageInfo(), outputDirPath, existingTiles.getTilesWidth(),
+                existingTiles.getTilesHeight(), existingTiles.getMaxTiles(), xCenter, yCenter, lastModificationTime,
+                false);
     }
 
     @Deprecated
-    public PictureTiles getTilesFromBlob(Blob blob, int tileWidth,
-            int tileHeight, int maxTiles, int xCenter, int yCenter,
-            boolean fullGeneration) throws ClientException {
+    public PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles, int xCenter,
+            int yCenter, boolean fullGeneration) throws ClientException {
 
         ImageResource resource = new BlobResource(blob);
-        return getTiles(resource, tileWidth, tileHeight, maxTiles, xCenter,
-                yCenter, fullGeneration);
+        return getTiles(resource, tileWidth, tileHeight, maxTiles, xCenter, yCenter, fullGeneration);
     }
 
-    public PictureTiles getTiles(ImageResource resource, int tileWidth,
-            int tileHeight, int maxTiles, int xCenter, int yCenter,
-            boolean fullGeneration) throws ClientException {
+    public PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles, int xCenter,
+            int yCenter, boolean fullGeneration) throws ClientException {
 
         log.debug("enter getTiles");
         String cacheKey = resource.getHash();
@@ -223,23 +213,20 @@ public class PictureTilingComponent extends DefaultComponent implements
                     log.debug("Waiting for tiler sync");
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
-                    throw new ClientException(
-                            "Error while waiting for another tile processing on the same resource",
-                            e);
+                    throw new ClientException("Error while waiting for another tile processing on the same resource", e);
                 }
             }
         }
 
-        PictureTiles tiles = getTilesWithSync(resource, tileWidth, tileHeight,
-                maxTiles, xCenter, yCenter, fullGeneration);
+        PictureTiles tiles = getTilesWithSync(resource, tileWidth, tileHeight, maxTiles, xCenter, yCenter,
+                fullGeneration);
         inprocessTiles.remove(cacheKey);
 
         return tiles;
     }
 
-    protected PictureTiles getTilesWithSync(ImageResource resource,
-            int tileWidth, int tileHeight, int maxTiles, int xCenter,
-            int yCenter, boolean fullGeneration) throws ClientException {
+    protected PictureTiles getTilesWithSync(ImageResource resource, int tileWidth, int tileHeight, int maxTiles,
+            int xCenter, int yCenter, boolean fullGeneration) throws ClientException {
 
         String cacheKey = resource.getHash();
         String inputFilePath;
@@ -248,8 +235,7 @@ public class PictureTilingComponent extends DefaultComponent implements
         if (cache.containsKey(cacheKey)) {
             cacheInfo = cache.get(cacheKey);
 
-            PictureTiles pt = cacheInfo.getCachedPictureTiles(tileWidth,
-                    tileHeight, maxTiles);
+            PictureTiles pt = cacheInfo.getCachedPictureTiles(tileWidth, tileHeight, maxTiles);
 
             if ((pt != null) && (pt.isTileComputed(xCenter, yCenter))) {
                 return pt;
@@ -281,10 +267,8 @@ public class PictureTilingComponent extends DefaultComponent implements
                         transferBlob(blob, inputFile);
                     }
                 } catch (IOException e) {
-                    String msg = String.format(
-                            "Unable to transfer blob to file at '%s', "
-                                    + "working directory path: '%s'",
-                            inputFilePath, wdirPath);
+                    String msg = String.format("Unable to transfer blob to file at '%s', "
+                            + "working directory path: '%s'", inputFilePath, wdirPath);
                     log.error(msg, e);
                     throw new ClientException(msg, e);
                 }
@@ -295,16 +279,14 @@ public class PictureTilingComponent extends DefaultComponent implements
                         log.debug("Waiting concurrent convert / dump");
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
-                        throw new ClientException(
-                                "Error while waiting for another converting"
-                                        + " on the same resource", e);
+                        throw new ClientException("Error while waiting for another converting"
+                                + " on the same resource", e);
                     }
                 }
 
             }
             try {
-                cacheInfo = new PictureTilingCacheInfo(cacheKey, wdirPath,
-                        inputFilePath);
+                cacheInfo = new PictureTilingCacheInfo(cacheKey, wdirPath, inputFilePath);
                 cache.put(cacheKey, cacheInfo);
             } catch (CommandNotAvailable | CommandException e) {
                 throw new ClientException(e);
@@ -313,31 +295,23 @@ public class PictureTilingComponent extends DefaultComponent implements
         }
 
         // compute output dir
-        String outDirPath = cacheInfo.getTilingDir(tileWidth, tileHeight,
-                maxTiles);
+        String outDirPath = cacheInfo.getTilingDir(tileWidth, tileHeight, maxTiles);
 
         // try to see if a shrinked image can be used
-        ImageInfo bestImageInfo = cacheInfo.getBestSourceImage(tileWidth,
-                tileHeight, maxTiles);
+        ImageInfo bestImageInfo = cacheInfo.getBestSourceImage(tileWidth, tileHeight, maxTiles);
 
         inputFilePath = bestImageInfo.getFilePath();
-        log.debug("input source image path for tile computation="
-                + inputFilePath);
+        log.debug("input source image path for tile computation=" + inputFilePath);
 
         long lastModificationTime = resource.getModificationDate().getTimeInMillis();
-        PictureTiles tiles = computeTiles(bestImageInfo, outDirPath, tileWidth,
-                tileHeight, maxTiles, xCenter, yCenter, lastModificationTime,
-                fullGeneration);
+        PictureTiles tiles = computeTiles(bestImageInfo, outDirPath, tileWidth, tileHeight, maxTiles, xCenter, yCenter,
+                lastModificationTime, fullGeneration);
 
-        tiles.getInfo().put(PictureTilesImpl.MAX_TILES_KEY,
-                Integer.toString(maxTiles));
-        tiles.getInfo().put(PictureTilesImpl.TILES_WIDTH_KEY,
-                Integer.toString(tileWidth));
-        tiles.getInfo().put(PictureTilesImpl.TILES_HEIGHT_KEY,
-                Integer.toString(tileHeight));
+        tiles.getInfo().put(PictureTilesImpl.MAX_TILES_KEY, Integer.toString(maxTiles));
+        tiles.getInfo().put(PictureTilesImpl.TILES_WIDTH_KEY, Integer.toString(tileWidth));
+        tiles.getInfo().put(PictureTilesImpl.TILES_HEIGHT_KEY, Integer.toString(tileHeight));
         String lastModificationDate = Long.toString(lastModificationTime);
-        tiles.getInfo().put(PictureTilesImpl.LAST_MODIFICATION_DATE_KEY,
-                lastModificationDate);
+        tiles.getInfo().put(PictureTilesImpl.LAST_MODIFICATION_DATE_KEY, lastModificationDate);
         tiles.setCacheKey(cacheKey);
         tiles.setSourceImageInfo(bestImageInfo);
         tiles.setOriginalImageInfo(cacheInfo.getOriginalPictureInfos());
@@ -382,8 +356,7 @@ public class PictureTilingComponent extends DefaultComponent implements
         File tmpFile = new File(file.getAbsolutePath() + ".tmp");
         blob.transferTo(tmpFile);
         try {
-            ImageConverter.convert(tmpFile.getAbsolutePath(),
-                    file.getAbsolutePath());
+            ImageConverter.convert(tmpFile.getAbsolutePath(), file.getAbsolutePath());
         } catch (CommandNotAvailable | CommandException e) {
             throw new IOException(e);
         }
@@ -391,15 +364,13 @@ public class PictureTilingComponent extends DefaultComponent implements
         tmpFile.delete();
     }
 
-    protected PictureTiles computeTiles(ImageInfo input, String outputDirPath,
-            int tileWidth, int tileHeight, int maxTiles, int xCenter,
-            int yCenter, long lastModificationTime, boolean fullGeneration)
+    protected PictureTiles computeTiles(ImageInfo input, String outputDirPath, int tileWidth, int tileHeight,
+            int maxTiles, int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration)
             throws ClientException {
 
         PictureTiler pt = getDefaultTiler();
-        return pt.getTilesFromFile(input, outputDirPath, tileWidth, tileHeight,
-                maxTiles, xCenter, yCenter, lastModificationTime,
-                fullGeneration);
+        return pt.getTilesFromFile(input, outputDirPath, tileWidth, tileHeight, maxTiles, xCenter, yCenter,
+                lastModificationTime, fullGeneration);
     }
 
     protected PictureTiler getDefaultTiler() {
@@ -457,8 +428,7 @@ public class PictureTilingComponent extends DefaultComponent implements
 
     // EP management
 
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (ENV_PARAMETERS_EP.equals(extensionPoint)) {
             TilingConfigurationDescriptor desc = (TilingConfigurationDescriptor) contribution;
@@ -473,8 +443,7 @@ public class PictureTilingComponent extends DefaultComponent implements
         }
     }
 
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         // TODO
     }
 

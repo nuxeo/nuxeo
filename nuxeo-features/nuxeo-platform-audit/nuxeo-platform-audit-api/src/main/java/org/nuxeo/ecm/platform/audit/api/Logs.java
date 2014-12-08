@@ -14,7 +14,6 @@
 
 package org.nuxeo.ecm.platform.audit.api;
 
-
 /**
  * Logs interface.
  * <p>

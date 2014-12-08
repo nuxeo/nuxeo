@@ -48,8 +48,7 @@ public class TestDocumentType {
 
     @Test
     public void testFolderDocumentType() {
-        DocumentType docType = new DocumentTypeImpl("doc type", null, null,
-                Collections.singleton("Folderish"), null);
+        DocumentType docType = new DocumentTypeImpl("doc type", null, null, Collections.singleton("Folderish"), null);
 
         assertFalse(docType.isFile());
         assertTrue(docType.isFolder());
@@ -58,9 +57,8 @@ public class TestDocumentType {
 
     @Test
     public void testOrderedFolderDocumentType() {
-        DocumentType docType = new DocumentTypeImpl("doc type", null, null,
-                new HashSet<String>(Arrays.asList("Folderish", "Orderable")),
-                null);
+        DocumentType docType = new DocumentTypeImpl("doc type", null, null, new HashSet<String>(Arrays.asList(
+                "Folderish", "Orderable")), null);
 
         assertFalse(docType.isFile());
         assertTrue(docType.isFolder());

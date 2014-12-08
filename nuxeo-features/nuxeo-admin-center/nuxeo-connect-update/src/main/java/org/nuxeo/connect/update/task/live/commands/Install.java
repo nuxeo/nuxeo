@@ -44,8 +44,7 @@ public class Install extends InstallPlaceholder {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         BundleContext ctx = PackageUpdateComponent.getContext().getBundle().getBundleContext();
         try {
             Bundle bundle = ctx.installBundle(file.getAbsolutePath());
@@ -54,8 +53,7 @@ public class Install extends InstallPlaceholder {
             }
             bundle.start();
         } catch (BundleException e) {
-            throw new PackageException("Failed to install bundle "
-                    + file.getName());
+            throw new PackageException("Failed to install bundle " + file.getName());
         }
         return new Uninstall(file);
     }

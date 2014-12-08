@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class XSDTypes {
 

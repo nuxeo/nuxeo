@@ -36,14 +36,14 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
 
     private final String template;
 
-    public NotificationsRenderingEngine(String template){
+    public NotificationsRenderingEngine(String template) {
         this.template = template;
     }
 
     @Override
     public Configuration createConfiguration() {
         Configuration cfg = super.createConfiguration();
-        cfg.setSharedVariable("htmlEscape", new HtmlEscapeMethod() );
+        cfg.setSharedVariable("htmlEscape", new HtmlEscapeMethod());
         return cfg;
     }
 

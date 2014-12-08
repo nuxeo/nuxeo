@@ -32,7 +32,6 @@ public abstract class Blob implements OperationInput {
         return new StreamBlob(new ByteArrayInputStream(Base64.decode(content)), fileName, mimeType);
     }
 
-
     protected String mimeType;
 
     protected String fileName;
@@ -63,8 +62,7 @@ public abstract class Blob implements OperationInput {
     }
 
     public void setMimeType(String mimeType) {
-        this.mimeType = mimeType == null ? "application/octet-stream"
-                : mimeType;
+        this.mimeType = mimeType == null ? "application/octet-stream" : mimeType;
     }
 
     public int getLength() {

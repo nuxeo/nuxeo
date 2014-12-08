@@ -28,27 +28,22 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
     private final Map<String, Type> types = new HashMap<String, Type>();
 
     /**
-     * Constructor for a schema. Its types (fields) are then added through
-     * {@link #registerType}.
+     * Constructor for a schema. Its types (fields) are then added through {@link #registerType}.
      */
     public SchemaImpl(String name, Namespace ns) {
-        super(null, SchemaNames.SCHEMAS, name,
-                ns == null ? Namespace.DEFAULT_NS : ns);
+        super(null, SchemaNames.SCHEMAS, name, ns == null ? Namespace.DEFAULT_NS : ns);
     }
 
     /**
-     * 
      * Create a schema from a ComplexType
      * 
      * @since 5.7
-     * 
      * @param complexType
      * @param name
      * @param ns
      */
     public SchemaImpl(ComplexType complexType, String name, Namespace ns) {
-        super(null, SchemaNames.SCHEMAS, name,
-                ns == null ? Namespace.DEFAULT_NS : ns);
+        super(null, SchemaNames.SCHEMAS, name, ns == null ? Namespace.DEFAULT_NS : ns);
         if (complexType != null) {
             for (Field field : complexType.getFields()) {
                 addField(field);

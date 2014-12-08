@@ -36,7 +36,6 @@ import com.google.gwt.xml.client.XMLParser;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class RDFParser {
 
@@ -59,12 +58,10 @@ public class RDFParser {
     }
 
     public Annotation processAnnotation(Node item) {
-        if (item == null || item.getNamespaceURI() == null
-                || item.getNodeName() == null) {
+        if (item == null || item.getNamespaceURI() == null || item.getNodeName() == null) {
             return null;
         }
-        if (item.getNamespaceURI().equals(r)
-                && item.getNodeName().endsWith(":Description")) {
+        if (item.getNamespaceURI().equals(r) && item.getNodeName().endsWith(":Description")) {
             String about = item.getAttributes().item(0).getNodeValue();
             String annotationUUID = about.substring(about.lastIndexOf(":") + 1);
             return getAnnotation(annotationUUID, item.getChildNodes());
@@ -78,8 +75,7 @@ public class RDFParser {
         Map<String, String> fields = new HashMap<String, String>();
         for (int x = 0; x < list.getLength(); x++) {
             Node node = list.item(x);
-            if (node.getNodeName().equals("#text")
-                    || node.getNodeType() != Node.ELEMENT_NODE) {
+            if (node.getNodeName().equals("#text") || node.getNodeType() != Node.ELEMENT_NODE) {
                 continue;
             }
             if (node.getNamespaceURI().equals(nx)) {
@@ -97,15 +93,13 @@ public class RDFParser {
                 continue;
             }
             Statement statement = new Statement(node);
-            if (statement.getObject().equals(
-                    "http://www.w3.org/2000/10/annotation-ns#Annotation")) {
+            if (statement.getObject().equals("http://www.w3.org/2000/10/annotation-ns#Annotation")) {
                 continue;
             }
             map.put(statement.getPredicate(), statement);
         }
         annotation.setType(map.get(RDFConstant.R_TYPE).getObject());
-        XPointer xpointer = XPointerFactory.getXPointer(map.get(
-                RDFConstant.A_CONTEXT).getObject());
+        XPointer xpointer = XPointerFactory.getXPointer(map.get(RDFConstant.A_CONTEXT).getObject());
 
         annotation.setXpointer(xpointer);
         if (map.containsKey(RDFConstant.H_BODY)) {
@@ -119,12 +113,10 @@ public class RDFParser {
             }
         }
 
-        if (map.get(RDFConstant.D_CREATOR) != null
-                && map.get(RDFConstant.D_CREATOR).getObject() != null) {
+        if (map.get(RDFConstant.D_CREATOR) != null && map.get(RDFConstant.D_CREATOR).getObject() != null) {
             annotation.setAuthor(map.get(RDFConstant.D_CREATOR).getObject());
         }
-        if (map.get(RDFConstant.D_DATE) != null
-                && map.get(RDFConstant.D_DATE).getObject() != null) {
+        if (map.get(RDFConstant.D_DATE) != null && map.get(RDFConstant.D_DATE).getObject() != null) {
             annotation.setStringDate(map.get(RDFConstant.D_DATE).getObject());
         }
 

@@ -26,9 +26,7 @@ import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @Operation(id = "runOnListItemWithTx")
 public class RunOnListItemWithTx {

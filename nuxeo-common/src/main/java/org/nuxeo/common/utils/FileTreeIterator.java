@@ -30,15 +30,14 @@ import java.util.Queue;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileTreeIterator implements Iterator<File> {
 
     private final Queue<Iterator<File>> queue = new LinkedList<Iterator<File>>();
+
     private File file; // last iterated file
 
     private FileFilter filter;
-
 
     public FileTreeIterator(File root) {
         queue.add(new OneFileIterator(root));
@@ -104,14 +103,17 @@ public class FileTreeIterator implements Iterator<File> {
         private OneFileIterator(File file) {
             this.file = file;
         }
+
         public boolean hasNext() {
             return file != null;
         }
+
         public File next() {
             File next = file;
             file = null;
             return next;
         }
+
         public void remove() {
             throw new UnsupportedOperationException("remove not supported");
         }
@@ -122,7 +124,9 @@ public class FileTreeIterator implements Iterator<File> {
     private class LazyChildrenIterator implements Iterator<File> {
 
         private final File dir;
+
         private File[] children;
+
         private int pos = -1; // last pos
 
         private LazyChildrenIterator(File dir) {
@@ -150,9 +154,8 @@ public class FileTreeIterator implements Iterator<File> {
         }
     }
 
-
     public static void main(String[] args) {
-        FileTreeIterator it =  new FileTreeIterator(new File("/root/kits"), false);
+        FileTreeIterator it = new FileTreeIterator(new File("/root/kits"), false);
         while (it.hasNext()) {
             System.out.println(">> " + it.next());
         }

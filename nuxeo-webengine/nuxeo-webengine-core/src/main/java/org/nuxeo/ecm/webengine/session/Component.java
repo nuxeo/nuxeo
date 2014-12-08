@@ -24,11 +24,9 @@ import java.io.Serializable;
 /**
  * A stateful session component.
  * <p>
- * A component is instantiate and activated the first time it is requested.
- * It is destroyed when the user session ends.
+ * A component is instantiate and activated the first time it is requested. It is destroyed when the user session ends.
  * <p>
- * Stateful components are not necessarily thread safe and should be used only
- * from the UserSession thread.
+ * Stateful components are not necessarily thread safe and should be used only from the UserSession thread.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -37,34 +35,28 @@ public interface Component extends Serializable {
     /**
      * The component was instantiated by the given session.
      * <p>
-     * This method should initialize the component.
-     * After returning the component will become visible in the session.
+     * This method should initialize the component. After returning the component will become visible in the session.
      *
      * @param session the user session that created the component
-     * @param name the name under this component is registered.
-     *      Can be null for unnamed component.
-     *
+     * @param name the name under this component is registered. Can be null for unnamed component.
      * @throws InvalidStateException if the component is not in an appropriate life cycle state
      * @throws SessionException an internal error occurred
      */
     void initialize(UserSession session, String name) throws SessionException;
 
     /**
-     * Destroy this component.
-     * This is called by the when the owning session is about to be destroyed.
-     * The component should release any allocated resources.
+     * Destroy this component. This is called by the when the owning session is about to be destroyed. The component
+     * should release any allocated resources.
      *
      * @param session the session owning this component
-     *
      * @throws InvalidStateException if the component is not in an appropriate life cycle state
      * @throws SessionException an internal error occurred
      */
     void destroy(UserSession session) throws SessionException;
 
     /**
-     * Get the component name if any.
-     * A component may be initialized under a name.
-     * For singleton components no name is needed so this method might return null.
+     * Get the component name if any. A component may be initialized under a name. For singleton components no name is
+     * needed so this method might return null.
      *
      * @return the name if any otherwise null
      */

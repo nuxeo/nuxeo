@@ -48,7 +48,6 @@ public class RepositoryService extends DefaultComponent {
     // @GuardedBy("itself")
     private final Map<String, Repository> repositories = new HashMap<String, Repository>();
 
-
     public void shutdown() {
         log.info("Shutting down repository manager");
         synchronized (repositories) {
@@ -96,8 +95,7 @@ public class RepositoryService extends DefaultComponent {
         }
         // initialize repositories with a tx active
         try {
-            started = !TransactionHelper.isTransactionActive()
-                    && TransactionHelper.startTransaction();
+            started = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
             for (String name : repositoryManager.getRepositoryNames()) {
                 initializeRepository(handler, name);
             }
@@ -138,8 +136,7 @@ public class RepositoryService extends DefaultComponent {
         }.runUnrestricted();
     }
 
-    protected void initializeRepository(
-            final RepositoryInitializationHandler handler, String name) {
+    protected void initializeRepository(final RepositoryInitializationHandler handler, String name) {
         try {
             new UnrestrictedSessionRunner(name) {
                 @Override
@@ -148,8 +145,7 @@ public class RepositoryService extends DefaultComponent {
                 }
             }.runUnrestricted();
         } catch (ClientException e) {
-            throw new RuntimeException("Failed to initialize repository '"
-                    + name + "': " + e.getMessage(), e);
+            throw new RuntimeException("Failed to initialize repository '" + name + "': " + e.getMessage(), e);
         }
     }
 
@@ -159,8 +155,7 @@ public class RepositoryService extends DefaultComponent {
      * Null is returned if no repository with that name was registered.
      *
      * @param repositoryName the repository name
-     * @return the repository instance or null if no repository with that name
-     *         was registered
+     * @return the repository instance or null if no repository with that name was registered
      */
     public Repository getRepository(String repositoryName) {
         synchronized (repositories) {
@@ -189,9 +184,7 @@ public class RepositoryService extends DefaultComponent {
         }
         RepositoryFactory repositoryFactory = (RepositoryFactory) repo.getRepositoryFactory();
         if (repositoryFactory == null) {
-            throw new NullPointerException(
-                    "Missing repositoryFactory for repository: "
-                            + repositoryName);
+            throw new NullPointerException("Missing repositoryFactory for repository: " + repositoryName);
         }
         return repositoryFactory;
     }

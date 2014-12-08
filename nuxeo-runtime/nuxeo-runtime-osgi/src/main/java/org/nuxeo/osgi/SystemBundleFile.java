@@ -30,12 +30,11 @@ import org.osgi.framework.BundleException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SystemBundleFile extends DirectoryBundleFile {
 
     public SystemBundleFile(File file) throws IOException {
-        super (file, createManifest());
+        super(file, createManifest());
     }
 
     public static Manifest createManifest() {

@@ -119,8 +119,7 @@ public class Template {
 
         Part(String name, String text) {
             this.name = name;
-            this.text = text == null ? new StringBuffer() : new StringBuffer(
-                    text);
+            this.text = text == null ? new StringBuffer() : new StringBuffer(text);
             offset = this.text.length();
         }
 
@@ -147,21 +146,17 @@ public class Template {
     }
 
     /*
-     * TODO: Remove the following methods when deployment-fragment.xml files
-     * will be fixed. These files must not contain
+     * TODO: Remove the following methods when deployment-fragment.xml files will be fixed. These files must not contain
      * <modue><java>...</java></module> declarations.
      */
 
     /**
-     * Wrapper method introduced to fix JEE java modules in application
-     * template. XXX When this will be solved in trunk you can remove this
-     * method and simply call {@code tc.getContent();}.
+     * Wrapper method introduced to fix JEE java modules in application template. XXX When this will be solved in trunk
+     * you can remove this method and simply call {@code tc.getContent();}.
      */
-    protected String getContent(TemplateContribution tc,
-            Map<String, String> context) {
+    protected String getContent(TemplateContribution tc, Map<String, String> context) {
         String content = tc.getContent();
-        if (runningOnJBoss5 && "application".equals(tc.getTemplate())
-                && "MODULE".equals(tc.getMarker())) {
+        if (runningOnJBoss5 && "application".equals(tc.getTemplate()) && "MODULE".equals(tc.getMarker())) {
             // remove JEE java modules
             String oldcontent = content;
             content = removeJavaModules(content);
@@ -179,10 +174,8 @@ public class Template {
     protected static final Pattern JAVA_MODULE = Pattern.compile("<\\s*module\\s*>\\s*<\\s*java\\s*>.+<\\s*/\\s*java\\s*>\\s*<\\s*/\\s*module\\s*>");
 
     /**
-     * Remove {@code <module><java>...</java></module>} from
-     * {@code application.xml} contributions. This a temporary fix to remove
-     * incorrect java module declarations from deployment-fragments - this
-     * should be fixed in each fragment.
+     * Remove {@code <module><java>...</java></module>} from {@code application.xml} contributions. This a temporary fix
+     * to remove incorrect java module declarations from deployment-fragments - this should be fixed in each fragment.
      */
     protected static String removeJavaModules(String content) {
         Matcher m = JAVA_MODULE.matcher(content);

@@ -24,7 +24,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * XMap descriptor to configure a remote Elasticsearch connection
- *
  */
 @XObject(value = "elasticSearchRemote")
 public class ElasticSearchRemoteConfig implements Serializable {
@@ -94,8 +93,7 @@ public class ElasticSearchRemoteConfig implements Serializable {
     @Override
     public String toString() {
         if (isEnabled()) {
-            return String.format("EsRemoteConfig(%s, [%s])",
-                    getClusterName(), addressList);
+            return String.format("EsRemoteConfig(%s, [%s])", getClusterName(), addressList);
         }
         return "EsRemoteConfig disabled";
     }

@@ -30,7 +30,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @since 7.1
- *
  * @author Vincent Vergnolle
  */
 @RunWith(FeaturesRunner.class)
@@ -40,8 +39,7 @@ public class TestResizePictureConverter {
 
     @Test
     public void iShouldHaveResizePictureConverterRegistered() {
-        ConverterCheckResult check = Framework.getService(
-                ConversionService.class).isConverterAvailable(
+        ConverterCheckResult check = Framework.getService(ConversionService.class).isConverterAvailable(
                 ImagingConvertConstants.OPERATION_RESIZE);
         Assert.assertTrue(check.isAvailable());
     }

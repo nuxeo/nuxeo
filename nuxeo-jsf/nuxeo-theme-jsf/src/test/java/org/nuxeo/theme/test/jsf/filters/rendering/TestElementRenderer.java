@@ -54,12 +54,9 @@ public class TestElementRenderer extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         Manager.initializeProtocols();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
-        deployContrib("org.nuxeo.theme.html",
-                "OSGI-INF/nxthemes-html-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.html", "OSGI-INF/nxthemes-html-contrib.xml");
 
         deployContrib("org.nuxeo.theme.jsf.tests", "fragment-config.xml");
         themeManager = Manager.getThemeManager();
@@ -76,8 +73,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
     @Test
     public void testElement() throws MalformedURLException, NodeException {
 
-        URL themeUrl = new URL(
-                "nxtheme://theme/default/mode/jsf-facelets/theme/page");
+        URL themeUrl = new URL("nxtheme://theme/default/mode/jsf-facelets/theme/page");
 
         // create the elements to render
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
@@ -124,8 +120,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
 
         // render the tree
         RenderingInfo info = new RenderingInfo(theme, themeUrl);
-        assertEquals(getFileContent("elementRendererOutput.xml"),
-                ElementRenderer.render(info).getMarkup());
+        assertEquals(getFileContent("elementRendererOutput.xml"), ElementRenderer.render(info).getMarkup());
     }
 
     private String getFileContent(String name) {

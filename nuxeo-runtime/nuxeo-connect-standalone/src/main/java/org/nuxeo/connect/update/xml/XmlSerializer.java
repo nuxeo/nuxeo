@@ -58,8 +58,7 @@ public class XmlSerializer extends XmlWriter {
         element("classifier", def.getClassifier());
         element("home-page", def.getHomePage());
 
-        element("hotreload-support",
-                Boolean.valueOf(def.supportsHotReload()).toString());
+        element("hotreload-support", Boolean.valueOf(def.supportsHotReload()).toString());
         element("supported", Boolean.valueOf(def.isSupported()).toString());
         element("require-terms-and-conditions-acceptance",
                 Boolean.valueOf(def.requireTermsAndConditionsAcceptance()).toString());
@@ -69,21 +68,18 @@ public class XmlSerializer extends XmlWriter {
         if (def.getInstaller() != null) {
             start("installer");
             attr("class", def.getInstaller().getType());
-            attr("restart",
-                    String.valueOf(def.getInstaller().getRequireRestart()));
+            attr("restart", String.valueOf(def.getInstaller().getRequireRestart()));
             end();
         }
         if (def.getUninstaller() != null) {
             start("uninstaller");
             attr("class", def.getUninstaller().getType());
-            attr("restart",
-                    String.valueOf(def.getUninstaller().getRequireRestart()));
+            attr("restart", String.valueOf(def.getUninstaller().getRequireRestart()));
             end();
         }
         element("validator", def.getValidator());
 
-        if (def.getTargetPlatforms() != null
-                && def.getTargetPlatforms().length > 0) {
+        if (def.getTargetPlatforms() != null && def.getTargetPlatforms().length > 0) {
             start("platforms");
             startContent();
             for (String platform : def.getTargetPlatforms()) {

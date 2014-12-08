@@ -41,8 +41,7 @@ public class StyleFormat extends DefaultFormat implements Style {
         return null;
     }
 
-    public void setPropertiesFor(String viewName, String path,
-            Properties properties) {
+    public void setPropertiesFor(String viewName, String path, Properties properties) {
         Map<String, Properties> propertiesMap = styleProperties.get(viewName);
         if (propertiesMap == null) {
             propertiesMap = new LinkedHashMap<String, Properties>();
@@ -100,8 +99,7 @@ public class StyleFormat extends DefaultFormat implements Style {
         return selectorDescriptions.get(key);
     }
 
-    public void setSelectorDescription(String path, String viewName,
-            String description) {
+    public void setSelectorDescription(String path, String viewName, String description) {
         if (viewName == null) {
             viewName = "*";
         }
@@ -126,8 +124,7 @@ public class StyleFormat extends DefaultFormat implements Style {
         Style sourceStyle = (Style) source;
         for (String viewName : sourceStyle.getSelectorViewNames()) {
             for (String path : sourceStyle.getPathsForView(viewName)) {
-                setPropertiesFor(viewName, path, sourceStyle.getPropertiesFor(
-                        viewName, path));
+                setPropertiesFor(viewName, path, sourceStyle.getPropertiesFor(viewName, path));
             }
         }
     }

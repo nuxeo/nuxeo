@@ -52,10 +52,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
-@Deploy({ "org.nuxeo.ecm.platform.thumbnail",
-        "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.url.core",
-        "org.nuxeo.ecm.platform.web.common" })
+@Deploy({ "org.nuxeo.ecm.platform.thumbnail", "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-listener-contrib.xml")
 public class TestThumbnailStorage {
 
@@ -73,11 +71,10 @@ public class TestThumbnailStorage {
     @Test
     public void testCreation() throws ClientException, IOException {
         DocumentModel root = session.getRootDocument();
-        DocumentModel file = new DocumentModelImpl(root.getPathAsString(),
-                "File", "File");
+        DocumentModel file = new DocumentModelImpl(root.getPathAsString(), "File", "File");
         // Attach a blob
-        Blob blob = new InputStreamBlob(TestThumbnailStorage.class.getResource(
-                "/test-data/big_nuxeo_logo.jpg").openStream(), "image/jpeg",
+        Blob blob = new InputStreamBlob(
+                TestThumbnailStorage.class.getResource("/test-data/big_nuxeo_logo.jpg").openStream(), "image/jpeg",
                 null, "logo.jpg", null);
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
@@ -96,8 +93,7 @@ public class TestThumbnailStorage {
     @Test
     public void testUpdate() throws ClientException, IOException {
         DocumentModel root = session.getRootDocument();
-        DocumentModel file = new DocumentModelImpl(root.getPathAsString(),
-                "File", "File");
+        DocumentModel file = new DocumentModelImpl(root.getPathAsString(), "File", "File");
         file = session.createDocument(file);
 
         TransactionHelper.commitOrRollbackTransaction();
@@ -107,8 +103,8 @@ public class TestThumbnailStorage {
         Assert.assertFalse(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
 
         // Attach a blob
-        Blob blob = new InputStreamBlob(TestThumbnailStorage.class.getResource(
-                "/test-data/big_nuxeo_logo.jpg").openStream(), "image/jpeg",
+        Blob blob = new InputStreamBlob(
+                TestThumbnailStorage.class.getResource("/test-data/big_nuxeo_logo.jpg").openStream(), "image/jpeg",
                 null, "logo.jpg", null);
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.saveDocument(file);

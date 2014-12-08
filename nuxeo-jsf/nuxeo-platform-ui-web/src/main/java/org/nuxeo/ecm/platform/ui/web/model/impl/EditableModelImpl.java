@@ -47,8 +47,7 @@ import org.nuxeo.ecm.platform.ui.web.util.DeepCopy;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @SuppressWarnings("unchecked")
-public class EditableModelImpl extends DataModel implements EditableModel,
-        Serializable {
+public class EditableModelImpl extends DataModel implements EditableModel, Serializable {
 
     private static final long serialVersionUID = 2550850486035521538L;
 
@@ -73,8 +72,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
     public EditableModelImpl(Object value) {
         if (value != null) {
             if (!(value instanceof List) && !(value instanceof Object[])) {
-                log.error("Cannot build editable model from " + value
-                        + ", list or array needed");
+                log.error("Cannot build editable model from " + value + ", list or array needed");
                 value = null;
             }
         }
@@ -128,8 +126,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
     /**
      * Returns the initial data for the given key.
      * <p>
-     * Returns null marker if key is invalid or data did not exist for given key
-     * in the original data.
+     * Returns null marker if key is invalid or data did not exist for given key in the original data.
      */
     protected Object getOriginalRowDataForKey(int key) {
         if (originalData instanceof List) {
@@ -163,7 +160,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         if (keys.isEmpty()) {
             return 0;
         } else {
-            List<Integer> lkeys = Arrays.asList(keys.toArray(new Integer[]{}));
+            List<Integer> lkeys = Arrays.asList(keys.toArray(new Integer[] {}));
             Comparator<Integer> comp = Collections.reverseOrder();
             Collections.sort(lkeys, comp);
             Integer max = lkeys.get(0);

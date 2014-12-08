@@ -59,15 +59,13 @@ public class NuxeoLayoutManagerBean implements Serializable {
     public void setDevModeSet(boolean activated, boolean addMessage) {
         devModeSet = Boolean.valueOf(activated);
         if (addMessage) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                    activated ? activatedMessage : deactivatedMessage, null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, activated ? activatedMessage
+                    : deactivatedMessage, null);
             FacesContext faces = FacesContext.getCurrentInstance();
             faces.addMessage(null, message);
             // avoid redirect for message to be displayed
             HttpServletRequest httpRequest = (HttpServletRequest) faces.getExternalContext().getRequest();
-            httpRequest.setAttribute(
-                    FancyNavigationHandler.DISABLE_REDIRECT_FOR_URL_REWRITE,
-                    Boolean.TRUE);
+            httpRequest.setAttribute(FancyNavigationHandler.DISABLE_REDIRECT_FOR_URL_REWRITE, Boolean.TRUE);
         }
     }
 

@@ -47,8 +47,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
- * Seam component holding tasks actions created using the {@link TaskService} in
- * document context cache.
+ * Seam component holding tasks actions created using the {@link TaskService} in document context cache.
  *
  * @author Anahide Tchertchian
  */
@@ -92,21 +91,18 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
                 NuxeoPrincipal principal = (NuxeoPrincipal) documentManager.getPrincipal();
                 List<String> actors = new ArrayList<String>();
                 actors.addAll(TaskActorsHelper.getTaskActors(principal));
-                tasks = taskService.getTaskInstances(currentDocument, actors,
-                        true, documentManager);
+                tasks = taskService.getTaskInstances(currentDocument, actors, true, documentManager);
             }
         }
         return tasks;
     }
 
     @Factory(value = "currentDashBoardItems", scope = ScopeType.EVENT)
-    public List<DashBoardItem> getCurrentDashBoardItems()
-            throws ClientException {
+    public List<DashBoardItem> getCurrentDashBoardItems() throws ClientException {
         if (items == null) {
             items = new ArrayList<DashBoardItem>();
             for (Task task : getCurrentDocumentTasks()) {
-                DashBoardItem item = new DashBoardItemImpl(task,
-                        navigationContext.getCurrentDocument(),
+                DashBoardItem item = new DashBoardItemImpl(task, navigationContext.getCurrentDocument(),
                         localeSelector.getLocale());
                 items.add(item);
             }
@@ -115,15 +111,13 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     }
 
     @Factory(value = "currentDashBoardItemsExceptPublishingTasks", scope = ScopeType.EVENT)
-    public List<DashBoardItem> getCurrentDashBoardItemsExceptPublishingTasks()
-            throws ClientException {
+    public List<DashBoardItem> getCurrentDashBoardItemsExceptPublishingTasks() throws ClientException {
         if (items == null) {
             items = new ArrayList<DashBoardItem>();
             for (Task task : getCurrentDocumentTasks()) {
                 String taskType = task.getVariable(Task.TaskVariableName.taskType.name());
                 if (!"publish_moderate".equals(taskType)) {
-                    DashBoardItem item = new DashBoardItemImpl(task,
-                            navigationContext.getCurrentDocument(),
+                    DashBoardItem item = new DashBoardItemImpl(task, navigationContext.getCurrentDocument(),
                             localeSelector.getLocale());
                     items.add(item);
                 }
@@ -146,8 +140,8 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     }
 
     public void acceptTask(Task task, String comment) throws ClientException {
-        String seamEventName = taskService.acceptTask(documentManager,
-                (NuxeoPrincipal) documentManager.getPrincipal(), task, comment);
+        String seamEventName = taskService.acceptTask(documentManager, (NuxeoPrincipal) documentManager.getPrincipal(),
+                task, comment);
         if (seamEventName != null) {
             Events.instance().raiseEvent(seamEventName);
         }
@@ -159,17 +153,15 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
             rejectTask(task, userComment);
             setComment(null);
         } else {
-            facesMessages.add(
-                    StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.review.task.enterComment"));
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("label.review.task.enterComment"));
         }
 
     }
 
     public void rejectTask(Task task, String comment) throws ClientException {
-        String seamEventName = taskService.rejectTask(documentManager,
-                (NuxeoPrincipal) documentManager.getPrincipal(), task, comment);
+        String seamEventName = taskService.rejectTask(documentManager, (NuxeoPrincipal) documentManager.getPrincipal(),
+                task, comment);
         if (seamEventName != null) {
             Events.instance().raiseEvent(seamEventName);
         }
@@ -180,22 +172,14 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
         resetCache();
     }
 
-    @Observer(value = { TaskEventNames.WORKFLOW_ENDED,
-            TaskEventNames.WORKFLOW_NEW_STARTED,
-            TaskEventNames.WORKFLOW_TASK_START,
-            TaskEventNames.WORKFLOW_TASK_STOP,
-            TaskEventNames.WORKFLOW_TASK_REJECTED,
-            TaskEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
-            TaskEventNames.WORKFLOW_TASK_REASSIGNED,
-            TaskEventNames.WORKFLOW_TASK_DELEGATED,
-            TaskEventNames.WORKFLOW_TASK_COMPLETED,
-            TaskEventNames.WORKFLOW_TASK_REMOVED,
-            TaskEventNames.WORK_ITEMS_LIST_LOADED,
-            TaskEventNames.WORKFLOW_TASKS_COMPUTED,
-            TaskEventNames.WORKFLOW_ABANDONED,
-            TaskEventNames.WORKFLOW_CANCELED,
-            EventNames.DOMAIN_SELECTION_CHANGED, "documentPublicationRejected",
-            "documentPublished" }, create = false)
+    @Observer(value = { TaskEventNames.WORKFLOW_ENDED, TaskEventNames.WORKFLOW_NEW_STARTED,
+            TaskEventNames.WORKFLOW_TASK_START, TaskEventNames.WORKFLOW_TASK_STOP,
+            TaskEventNames.WORKFLOW_TASK_REJECTED, TaskEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
+            TaskEventNames.WORKFLOW_TASK_REASSIGNED, TaskEventNames.WORKFLOW_TASK_DELEGATED,
+            TaskEventNames.WORKFLOW_TASK_COMPLETED, TaskEventNames.WORKFLOW_TASK_REMOVED,
+            TaskEventNames.WORK_ITEMS_LIST_LOADED, TaskEventNames.WORKFLOW_TASKS_COMPUTED,
+            TaskEventNames.WORKFLOW_ABANDONED, TaskEventNames.WORKFLOW_CANCELED, EventNames.DOMAIN_SELECTION_CHANGED,
+            "documentPublicationRejected", "documentPublished" }, create = false)
     @BypassInterceptors
     public void resetCache() {
         tasks = null;

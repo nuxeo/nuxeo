@@ -21,8 +21,7 @@ import java.util.regex.Pattern;
 
 public class GimpPaletteParser extends PaletteParser {
 
-    static final Pattern colorPattern = Pattern.compile(
-            "^\\s*(\\d{1,3})\\s+(\\d{1,3})\\s+(\\d{1,3})\\t{0,1}(.*)$",
+    static final Pattern colorPattern = Pattern.compile("^\\s*(\\d{1,3})\\s+(\\d{1,3})\\s+(\\d{1,3})\\t{0,1}(.*)$",
             Pattern.MULTILINE);
 
     public static boolean checkSanity(byte[] bytes) {

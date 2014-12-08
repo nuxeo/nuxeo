@@ -39,8 +39,7 @@ public class FieldIO {
         }
     }
 
-    public static void updateFieldsFromProperties(Object object,
-            Properties properties) throws ThemeIOException {
+    public static void updateFieldsFromProperties(Object object, Properties properties) throws ThemeIOException {
         Enumeration<?> names = properties.propertyNames();
 
         while (names.hasMoreElements()) {
@@ -60,16 +59,14 @@ public class FieldIO {
             } catch (SecurityException e) {
                 throw new ThemeIOException(e);
             } catch (NoSuchFieldException e) {
-                throw new ThemeIOException("Failed to set field '" + name
-                        + "' on " + c.getCanonicalName());
+                throw new ThemeIOException("Failed to set field '" + name + "' on " + c.getCanonicalName());
             }
 
             Class<?> fieldType = field.getType();
             Type fieldGenericType = field.getGenericType();
 
             // boolean fields
-            if (fieldType.equals(boolean.class)
-                    || fieldType.equals(Boolean.class)) {
+            if (fieldType.equals(boolean.class) || fieldType.equals(Boolean.class)) {
                 try {
                     field.set(object, Boolean.parseBoolean(value));
                 } catch (IllegalArgumentException e) {
@@ -91,8 +88,7 @@ public class FieldIO {
             }
 
             // integer fields
-            else if (fieldType.equals(int.class)
-                    || fieldType.equals(Integer.class)) {
+            else if (fieldType.equals(int.class) || fieldType.equals(Integer.class)) {
                 try {
                     if ("".equals(value)) {
                         field.set(object, null);
@@ -100,8 +96,7 @@ public class FieldIO {
                         field.set(object, Integer.valueOf(value));
                     }
                 } catch (NumberFormatException e) {
-                    throw new ThemeIOException(
-                            "Failed to parse integer value: '" + value + "'");
+                    throw new ThemeIOException("Failed to parse integer value: '" + value + "'");
                 } catch (IllegalArgumentException e) {
                     throw new ThemeIOException(e);
                 } catch (IllegalAccessException e) {
@@ -111,15 +106,13 @@ public class FieldIO {
 
             // generics
             else if (fieldGenericType instanceof ParameterizedType) {
-                if (fieldType.equals(ArrayList.class)
-                        || fieldType.equals(List.class)
+                if (fieldType.equals(ArrayList.class) || fieldType.equals(List.class)
                         || fieldType.equals(Collection.class)) {
 
                     Type[] actualTypes = ((ParameterizedType) fieldGenericType).getActualTypeArguments();
 
                     if (actualTypes.length > 1) {
-                        throw new ThemeIOException(
-                                "Only one-dimension arrays are supported.");
+                        throw new ThemeIOException("Only one-dimension arrays are supported.");
                     }
 
                     // Collection<String>
@@ -140,17 +133,15 @@ public class FieldIO {
                     }
                 }
             } else {
-                throw new ThemeIOException("Cannot update field type '" + name
-                        + "' of " + c.getCanonicalName() + " because "
-                        + fieldType.getCanonicalName() + " is not supported.");
+                throw new ThemeIOException("Cannot update field type '" + name + "' of " + c.getCanonicalName()
+                        + " because " + fieldType.getCanonicalName() + " is not supported.");
             }
         }
 
     }
 
     @SuppressWarnings("unchecked")
-    public static Properties dumpFieldsToProperties(Object object)
-            throws ThemeIOException {
+    public static Properties dumpFieldsToProperties(Object object) throws ThemeIOException {
 
         Properties properties = new Properties();
 
@@ -176,13 +167,11 @@ public class FieldIO {
             }
 
             // boolean fields
-            if (fieldType.equals(boolean.class)
-                    || fieldType.equals(Boolean.class)) {
+            if (fieldType.equals(boolean.class) || fieldType.equals(Boolean.class)) {
                 if (value == null) {
                     property = "false";
                 } else {
-                    property = Boolean.parseBoolean(value.toString()) ? "true"
-                            : "false";
+                    property = Boolean.parseBoolean(value.toString()) ? "true" : "false";
                 }
             }
             // string fields
@@ -190,21 +179,18 @@ public class FieldIO {
                 property = value == null ? "" : value.toString();
             }
             // integer fields
-            else if (fieldType.equals(int.class)
-                    || fieldType.equals(Integer.class)) {
+            else if (fieldType.equals(int.class) || fieldType.equals(Integer.class)) {
                 property = value == null ? "" : value.toString();
             }
             // generics
             else if (fieldGenericType instanceof ParameterizedType) {
-                if (fieldType.equals(ArrayList.class)
-                        || fieldType.equals(List.class)
+                if (fieldType.equals(ArrayList.class) || fieldType.equals(List.class)
                         || fieldType.equals(Collection.class)) {
 
                     Type[] actualTypes = ((ParameterizedType) fieldGenericType).getActualTypeArguments();
 
                     if (actualTypes.length > 1) {
-                        throw new ThemeIOException(
-                                "Only one-dimension arrays are supported.");
+                        throw new ThemeIOException("Only one-dimension arrays are supported.");
                     }
 
                     // Collection<String>
@@ -215,17 +201,13 @@ public class FieldIO {
                             property = Utils.listToCsv((List<String>) (value));
                         }
                     } else {
-                        throw new ThemeIOException(
-                                "Only list of strings are supported.");
+                        throw new ThemeIOException("Only list of strings are supported.");
                     }
 
                 }
             } else {
-                throw new ThemeIOException(
-                        "Cannot extract property from field type '" + fieldName
-                                + "' of " + c.getCanonicalName() + " because "
-                                + fieldType.getCanonicalName()
-                                + " is not supported.");
+                throw new ThemeIOException("Cannot extract property from field type '" + fieldName + "' of "
+                        + c.getCanonicalName() + " because " + fieldType.getCanonicalName() + " is not supported.");
             }
 
             properties.setProperty(fieldName, property);

@@ -88,10 +88,8 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         super();
     }
 
-    public WidgetDefinitionImpl(String name, String type, String label,
-            String helpLabel, boolean translated, Map<String, String> modes,
-            List<FieldDefinition> fieldDefinitions,
-            Map<String, Serializable> properties,
+    public WidgetDefinitionImpl(String name, String type, String label, String helpLabel, boolean translated,
+            Map<String, String> modes, List<FieldDefinition> fieldDefinitions, Map<String, Serializable> properties,
             List<WidgetDefinition> subWidgets) {
         super();
         this.name = name;
@@ -123,13 +121,10 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         }
     }
 
-    public WidgetDefinitionImpl(String name, String type,
-            Map<String, String> labels, Map<String, String> helpLabels,
-            boolean translated, Map<String, String> modes,
-            List<FieldDefinition> fieldDefinitions,
+    public WidgetDefinitionImpl(String name, String type, Map<String, String> labels, Map<String, String> helpLabels,
+            boolean translated, Map<String, String> modes, List<FieldDefinition> fieldDefinitions,
             Map<String, Map<String, Serializable>> properties,
-            Map<String, Map<String, Serializable>> widgetModeProperties,
-            List<WidgetDefinition> subWidgets) {
+            Map<String, Map<String, Serializable>> widgetModeProperties, List<WidgetDefinition> subWidgets) {
         super();
         this.name = name;
         this.type = type;
@@ -151,13 +146,10 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         }
     }
 
-    public WidgetDefinitionImpl(String name, String type,
-            Map<String, String> labels, Map<String, String> helpLabels,
-            boolean translated, Map<String, String> modes,
-            FieldDefinition[] fieldDefinitions,
+    public WidgetDefinitionImpl(String name, String type, Map<String, String> labels, Map<String, String> helpLabels,
+            boolean translated, Map<String, String> modes, FieldDefinition[] fieldDefinitions,
             Map<String, Map<String, Serializable>> properties,
-            Map<String, Map<String, Serializable>> widgetModeProperties,
-            WidgetDefinition[] subWidgets) {
+            Map<String, Map<String, Serializable>> widgetModeProperties, WidgetDefinition[] subWidgets) {
         super();
         this.name = name;
         this.type = type;
@@ -174,15 +166,13 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     /**
      * @since 5.4.2
      */
-    public WidgetDefinitionImpl(String name, String type,
-            Map<String, String> labels, Map<String, String> helpLabels,
-            boolean translated, Map<String, String> modes,
-            FieldDefinition[] fieldDefinitions,
+    public WidgetDefinitionImpl(String name, String type, Map<String, String> labels, Map<String, String> helpLabels,
+            boolean translated, Map<String, String> modes, FieldDefinition[] fieldDefinitions,
             Map<String, Map<String, Serializable>> properties,
-            Map<String, Map<String, Serializable>> widgetModeProperties,
-            WidgetDefinition[] subWidgets, WidgetSelectOption[] selectOptions) {
-        this(name, type, labels, helpLabels, translated, modes,
-                fieldDefinitions, properties, widgetModeProperties, subWidgets);
+            Map<String, Map<String, Serializable>> widgetModeProperties, WidgetDefinition[] subWidgets,
+            WidgetSelectOption[] selectOptions) {
+        this(name, type, labels, helpLabels, translated, modes, fieldDefinitions, properties, widgetModeProperties,
+                subWidgets);
         this.selectOptions = selectOptions;
     }
 
@@ -263,12 +253,9 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     }
 
     @Override
-    public Map<String, Serializable> getProperties(String layoutMode,
-            String mode) {
-        Map<String, Serializable> modeProps = getProperties(properties,
-                layoutMode);
-        Map<String, Serializable> widgetModeProps = getProperties(
-                widgetModeProperties, mode);
+    public Map<String, Serializable> getProperties(String layoutMode, String mode) {
+        Map<String, Serializable> modeProps = getProperties(properties, layoutMode);
+        Map<String, Serializable> widgetModeProps = getProperties(widgetModeProperties, mode);
         if (modeProps == null && widgetModeProps == null) {
             return null;
         } else if (widgetModeProps == null) {
@@ -277,8 +264,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
             return widgetModeProps;
         } else {
             // take mode values, and override with widget mode values
-            Map<String, Serializable> res = new HashMap<String, Serializable>(
-                    modeProps);
+            Map<String, Serializable> res = new HashMap<String, Serializable>(modeProps);
             res.putAll(widgetModeProps);
             return res;
         }
@@ -298,8 +284,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return widgetModeProperties;
     }
 
-    public void setWidgetModeProperties(
-            Map<String, Map<String, Serializable>> widgetModeProperties) {
+    public void setWidgetModeProperties(Map<String, Map<String, Serializable>> widgetModeProperties) {
         this.widgetModeProperties = widgetModeProperties;
     }
 
@@ -378,8 +363,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
 
     public boolean isHandlingLabels() {
         // migration code
-        Map<String, Serializable> controls = getControls(BuiltinModes.ANY,
-                BuiltinModes.ANY);
+        Map<String, Serializable> controls = getControls(BuiltinModes.ANY, BuiltinModes.ANY);
         if (controls != null && controls.containsKey("handleLabels")) {
             Serializable handling = controls.get("handleLabels");
             if (handling != null) {
@@ -393,8 +377,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         this.handlingLabels = handlingLabels;
     }
 
-    public static Map<String, Serializable> getProperties(
-            Map<String, Map<String, Serializable>> properties, String mode) {
+    public static Map<String, Serializable> getProperties(Map<String, Map<String, Serializable>> properties, String mode) {
         Map<String, Serializable> res = new HashMap<String, Serializable>();
         if (properties != null) {
             Map<String, Serializable> propsInAnyMode = properties.get(BuiltinModes.ANY);
@@ -423,13 +406,11 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return renderingInfos;
     }
 
-    public void setRenderingInfos(
-            Map<String, List<RenderingInfo>> renderingInfos) {
+    public void setRenderingInfos(Map<String, List<RenderingInfo>> renderingInfos) {
         this.renderingInfos = renderingInfos;
     }
 
-    public static List<RenderingInfo> getRenderingInfos(
-            Map<String, List<RenderingInfo>> infos, String mode) {
+    public static List<RenderingInfo> getRenderingInfos(Map<String, List<RenderingInfo>> infos, String mode) {
         List<RenderingInfo> res = new ArrayList<RenderingInfo>();
         if (infos != null) {
             List<RenderingInfo> inAnyMode = infos.get(BuiltinModes.ANY);
@@ -573,9 +554,8 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
                 crenderingInfos.put(item.getKey(), clonedInfos);
             }
         }
-        WidgetDefinitionImpl clone = new WidgetDefinitionImpl(name, type,
-                clabels, chelpLabels, translated, cmodes, cfieldDefinitions,
-                cprops, cwidgetProps, csubWidgets, cselectOptions);
+        WidgetDefinitionImpl clone = new WidgetDefinitionImpl(name, type, clabels, chelpLabels, translated, cmodes,
+                cfieldDefinitions, cprops, cwidgetProps, csubWidgets, cselectOptions);
         clone.setRenderingInfos(crenderingInfos);
         clone.setSubWidgetReferences(csubWidgetRefs);
         clone.setHandlingLabels(handlingLabels);

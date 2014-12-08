@@ -26,10 +26,8 @@ import org.javasimon.jmx.CounterSample;
 
 /**
  * @author matic
- *
  */
-public class CounterMXBeanImpl extends org.javasimon.jmx.CounterMXBeanImpl implements CounterMXBean{
-
+public class CounterMXBeanImpl extends org.javasimon.jmx.CounterMXBeanImpl implements CounterMXBean {
 
     public CounterMXBeanImpl(Counter counter) {
         super(counter);
@@ -40,17 +38,17 @@ public class CounterMXBeanImpl extends org.javasimon.jmx.CounterMXBeanImpl imple
         return sample.toString();
     }
 
-    protected void doFillMap(CounterSample sample, Map<String,Serializable> map, Class<?> clazz) {
+    protected void doFillMap(CounterSample sample, Map<String, Serializable> map, Class<?> clazz) {
         if (clazz == null) {
             return;
         }
         if (Object.class.equals(clazz)) {
             return;
         }
-        for (Field f:clazz.getDeclaredFields()) {
+        for (Field f : clazz.getDeclaredFields()) {
             try {
                 f.setAccessible(true);
-                map.put(f.getName(), (Serializable)f.get(sample));
+                map.put(f.getName(), (Serializable) f.get(sample));
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
@@ -58,11 +56,10 @@ public class CounterMXBeanImpl extends org.javasimon.jmx.CounterMXBeanImpl imple
         doFillMap(sample, map, clazz.getSuperclass());
     }
 
-    public Map<String,Serializable> sampleAsMap() {
-        HashMap<String,Serializable> map = new HashMap<String,Serializable>();
+    public Map<String, Serializable> sampleAsMap() {
+        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
         CounterSample sample = sample();
         doFillMap(sample, map, sample.getClass());
         return map;
     }
 }
-

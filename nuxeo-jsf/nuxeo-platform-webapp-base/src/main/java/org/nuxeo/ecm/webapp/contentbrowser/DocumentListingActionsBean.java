@@ -80,8 +80,7 @@ public class DocumentListingActionsBean implements Serializable {
     protected transient DocumentsListsManager documentsListsManager;
 
     // only store 20 entries that cache chosen layout for a given document
-    protected LRUCachingMap<String, String> docTolistings = new LRUCachingMap<String, String>(
-            20);
+    protected LRUCachingMap<String, String> docTolistings = new LRUCachingMap<String, String>(20);
 
     protected String currentListingLayoutName = null;
 
@@ -189,8 +188,7 @@ public class DocumentListingActionsBean implements Serializable {
     // API for AJAX selection in listings of content views
 
     @SuppressWarnings("unchecked")
-    protected List<DocumentModel> getCurrentPageDocuments(String contentViewName)
-            throws ClientException {
+    protected List<DocumentModel> getCurrentPageDocuments(String contentViewName) throws ClientException {
         List<DocumentModel> documents = null;
         ContentView cView = contentViewActions.getContentView(contentViewName);
         if (cView != null) {
@@ -207,12 +205,10 @@ public class DocumentListingActionsBean implements Serializable {
         return documents;
     }
 
-    public void processSelectPage(String contentViewName, String listName,
-            Boolean selection) throws ClientException {
+    public void processSelectPage(String contentViewName, String listName, Boolean selection) throws ClientException {
         List<DocumentModel> documents = getCurrentPageDocuments(contentViewName);
         if (documents != null) {
-            String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
-                    : listName;
+            String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION : listName;
             if (Boolean.TRUE.equals(selection)) {
                 documentsListsManager.addToWorkingList(lName, documents);
             } else {
@@ -222,15 +218,13 @@ public class DocumentListingActionsBean implements Serializable {
     }
 
     /**
-     * Handle complete table selection event after having ensured that the
-     * navigation context stills points to currentDocumentRef to protect against
-     * browsers' back button errors
+     * Handle complete table selection event after having ensured that the navigation context stills points to
+     * currentDocumentRef to protect against browsers' back button errors
      *
      * @throws ClientException if currentDocRef is not a valid document
      */
-    public void checkCurrentDocAndProcessSelectPage(String contentViewName,
-            String listName, Boolean selection, String currentDocRef)
-            throws ClientException {
+    public void checkCurrentDocAndProcessSelectPage(String contentViewName, String listName, Boolean selection,
+            String currentDocRef) throws ClientException {
         DocumentRef currentDocumentRef = new IdRef(currentDocRef);
         if (!currentDocumentRef.equals(navigationContext.getCurrentDocument().getRef())) {
             navigationContext.navigateToRef(currentDocumentRef);
@@ -238,8 +232,8 @@ public class DocumentListingActionsBean implements Serializable {
         processSelectPage(contentViewName, listName, selection);
     }
 
-    public void processSelectRow(String docRef, String contentViewName,
-            String listName, Boolean selection) throws ClientException {
+    public void processSelectRow(String docRef, String contentViewName, String listName, Boolean selection)
+            throws ClientException {
         List<DocumentModel> documents = getCurrentPageDocuments(contentViewName);
         DocumentModel doc = null;
         if (documents != null) {
@@ -251,14 +245,11 @@ public class DocumentListingActionsBean implements Serializable {
             }
         }
         if (doc == null) {
-            log.error(String.format(
-                    "could not find doc '%s' in the current page of "
-                            + "content view page provider '%s'", docRef,
-                    contentViewName));
+            log.error(String.format("could not find doc '%s' in the current page of "
+                    + "content view page provider '%s'", docRef, contentViewName));
             return;
         }
-        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
-                : listName;
+        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION : listName;
         if (Boolean.TRUE.equals(selection)) {
             documentsListsManager.addToWorkingList(lName, doc);
         } else {
@@ -267,17 +258,14 @@ public class DocumentListingActionsBean implements Serializable {
     }
 
     /**
-     * Handle row selection event after having ensured that the navigation
-     * context stills points to currentDocumentRef to protect against browsers'
-     * back button errors
+     * Handle row selection event after having ensured that the navigation context stills points to currentDocumentRef
+     * to protect against browsers' back button errors
      *
      * @throws ClientException if currentDocRef is not a valid document
      */
-    public void checkCurrentDocAndProcessSelectRow(String docRef,
-            String providerName, String listName, Boolean selection,
-            String requestedCurrentDocRef) throws ClientException {
-        DocumentRef requestedCurrentDocumentRef = new IdRef(
-                requestedCurrentDocRef);
+    public void checkCurrentDocAndProcessSelectRow(String docRef, String providerName, String listName,
+            Boolean selection, String requestedCurrentDocRef) throws ClientException {
+        DocumentRef requestedCurrentDocumentRef = new IdRef(requestedCurrentDocRef);
         DocumentRef currentDocumentRef = null;
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
@@ -290,22 +278,18 @@ public class DocumentListingActionsBean implements Serializable {
     }
 
     /**
-     * Handle version row selection event after having ensured that the
-     * navigation context stills points to currentDocumentRef to protect against
-     * browsers' back button errors.
+     * Handle version row selection event after having ensured that the navigation context stills points to
+     * currentDocumentRef to protect against browsers' back button errors.
      *
      * @param versionModelSelection the version model selection
      * @param requestedCurrentDocRef the requested current doc ref
      * @throws ClientException if currentDocRef is not a valid document
-     *
      * @since 5.6
      */
-    public void checkCurrentDocAndProcessVersionSelectRow(
-            PageSelection<VersionModel> versionModelSelection,
+    public void checkCurrentDocAndProcessVersionSelectRow(PageSelection<VersionModel> versionModelSelection,
             String requestedCurrentDocRef) throws ClientException {
 
-        DocumentRef requestedCurrentDocumentRef = new IdRef(
-                requestedCurrentDocRef);
+        DocumentRef requestedCurrentDocumentRef = new IdRef(requestedCurrentDocRef);
         DocumentRef currentDocumentRef = null;
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
@@ -323,29 +307,24 @@ public class DocumentListingActionsBean implements Serializable {
      * @param versionModelSelection the version model selection
      * @throws ClientException the client exception
      */
-    protected final void processVersionSelectRow(
-            PageSelection<VersionModel> versionModelSelection)
+    protected final void processVersionSelectRow(PageSelection<VersionModel> versionModelSelection)
             throws ClientException {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
-            throw new ClientException(
-                    "Cannot process version select row since current document is null.");
+            throw new ClientException("Cannot process version select row since current document is null.");
         }
 
-        DocumentModel version = documentManager.getDocumentWithVersion(
-                currentDocument.getRef(), versionModelSelection.getData());
+        DocumentModel version = documentManager.getDocumentWithVersion(currentDocument.getRef(),
+                versionModelSelection.getData());
         if (version == null) {
-            throw new ClientException(
-                    "Cannot process version select row since selected version document is null.");
+            throw new ClientException("Cannot process version select row since selected version document is null.");
         }
 
         if (Boolean.TRUE.equals(versionModelSelection.isSelected())) {
-            documentsListsManager.addToWorkingList(
-                    DocumentsListsManager.CURRENT_VERSION_SELECTION, version);
+            documentsListsManager.addToWorkingList(DocumentsListsManager.CURRENT_VERSION_SELECTION, version);
         } else {
-            documentsListsManager.removeFromWorkingList(
-                    DocumentsListsManager.CURRENT_VERSION_SELECTION, version);
+            documentsListsManager.removeFromWorkingList(DocumentsListsManager.CURRENT_VERSION_SELECTION, version);
         }
     }
 

@@ -62,8 +62,7 @@ public class UIFragment extends UIOutput {
         context.setViewRoot(viewRoot);
 
         // Render the view
-        final String faceletId = String.format("nxtheme://element/%s/%s/%s/%s",
-                engine, mode, templateEngine, uid);
+        final String faceletId = String.format("nxtheme://element/%s/%s/%s/%s", engine, mode, templateEngine, uid);
         ApplicationAssociate associate = ApplicationAssociate.getCurrentInstance();
         DefaultFaceletFactory faceletFactory = associate.getFaceletFactory();
         final Facelet facelet = faceletFactory.getFacelet(context, faceletId);
@@ -86,16 +85,14 @@ public class UIFragment extends UIOutput {
         return true;
     }
 
-    private static void renderChildren(FacesContext context,
-            UIComponent component) throws IOException {
+    private static void renderChildren(FacesContext context, UIComponent component) throws IOException {
         List<UIComponent> children = component.getChildren();
         for (Object child : children) {
             renderChild(context, (UIComponent) child);
         }
     }
 
-    private static void renderChild(FacesContext context, UIComponent child)
-            throws IOException {
+    private static void renderChild(FacesContext context, UIComponent child) throws IOException {
         if (child.isRendered()) {
             child.encodeBegin(context);
             if (child.getRendersChildren()) {

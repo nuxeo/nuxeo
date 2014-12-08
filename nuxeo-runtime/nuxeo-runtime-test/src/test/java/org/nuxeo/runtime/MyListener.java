@@ -24,13 +24,12 @@ import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class MyListener implements EventListener {
 
     public MyListener() {
-        //System.out.println("created listener");
+        // System.out.println("created listener");
     }
 
     @Override
@@ -40,7 +39,7 @@ public class MyListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
-        //System.out.println("test listener :" + event);
+        // System.out.println("test listener :" + event);
     }
 
 }

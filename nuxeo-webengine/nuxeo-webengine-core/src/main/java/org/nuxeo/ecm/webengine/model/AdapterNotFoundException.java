@@ -19,17 +19,15 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AdapterNotFoundException extends TypeException {
 
     private static final long serialVersionUID = 1L;
 
     public AdapterNotFoundException(Resource ctx, String service) {
-        super("Service "+service+" not found for object: "+ctx.getPath()+" of type "+ctx.getType().getName());
+        super("Service " + service + " not found for object: " + ctx.getPath() + " of type " + ctx.getType().getName());
     }
 
 }

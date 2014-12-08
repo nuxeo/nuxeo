@@ -79,8 +79,8 @@ public class WidgetSelectOptionDescriptor {
     }
 
     public WidgetSelectOption getWidgetSelectOption() {
-        WidgetSelectOptionImpl res = new WidgetSelectOptionImpl(value, var,
-                itemLabel, itemValue, itemDisabled, itemRendered);
+        WidgetSelectOptionImpl res = new WidgetSelectOptionImpl(value, var, itemLabel, itemValue, itemDisabled,
+                itemRendered);
         res.setItemLabels(itemLabels);
         return res;
     }

@@ -27,12 +27,11 @@ import org.nuxeo.runtime.test.runner.distrib.NuxeoDistribution;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Ignore("distribution dependency is causing class loader pb.")
 @RunWith(FeaturesRunner.class)
 @Features(DistributionFeature.class)
-@NuxeoDistribution(profile="core-5.3.1-SNAPSHOT")
+@NuxeoDistribution(profile = "core-5.3.1-SNAPSHOT")
 public class DistributionTest {
 
     @Test

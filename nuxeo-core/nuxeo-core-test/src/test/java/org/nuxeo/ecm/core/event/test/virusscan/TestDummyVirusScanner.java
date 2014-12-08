@@ -36,12 +36,13 @@ import com.google.inject.Inject;
  * Test Blob scanning in standard use cases
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({"org.nuxeo.ecm.core.test"})
-@LocalDeploy({"org.nuxeo.ecm.core.test:vscan/core-types-contrib.xml","org.nuxeo.ecm.core.test:vscan/virusscan-service-contrib.xml","org.nuxeo.ecm.core.test:vscan/listeners-contrib.xml"})
+@Deploy({ "org.nuxeo.ecm.core.test" })
+@LocalDeploy({ "org.nuxeo.ecm.core.test:vscan/core-types-contrib.xml",
+        "org.nuxeo.ecm.core.test:vscan/virusscan-service-contrib.xml",
+        "org.nuxeo.ecm.core.test:vscan/listeners-contrib.xml" })
 public class TestDummyVirusScanner {
 
     @Inject
@@ -77,8 +78,7 @@ public class TestDummyVirusScanner {
 
         try {
             file = session.createDocumentModel("/", "file1", "File");
-            file.setPropertyValue("file:content",
-                    (Serializable) getFakeBlob(100, "Test1.txt"));
+            file.setPropertyValue("file:content", (Serializable) getFakeBlob(100, "Test1.txt"));
             file = session.createDocument(file);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
@@ -90,13 +90,11 @@ public class TestDummyVirusScanner {
             file2 = session.createDocument(file2);
             session.save();
 
-            file2.setPropertyValue("file:content",
-                    (Serializable) getFakeBlob(1001, "Test2.txt"));
+            file2.setPropertyValue("file:content", (Serializable) getFakeBlob(1001, "Test2.txt"));
             file2 = session.saveDocument(file2);
 
             file3 = session.createDocumentModel("/", "file3", "File");
-            file3.setPropertyValue("file:content",
-                    (Serializable) getFakeBlob(100, "Test3doFail.txt"));
+            file3.setPropertyValue("file:content", (Serializable) getFakeBlob(100, "Test3doFail.txt"));
             file3 = session.createDocument(file3);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
@@ -105,8 +103,7 @@ public class TestDummyVirusScanner {
         TransactionHelper.startTransaction();
         try {
             file4 = session.createDocumentModel("/", "file4", "File");
-            file4.setPropertyValue("file:content",
-                    (Serializable) getFakeBlob(100, "Test4.txt"));
+            file4.setPropertyValue("file:content", (Serializable) getFakeBlob(100, "Test4.txt"));
             file4 = session.createDocument(file4);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
@@ -119,8 +116,7 @@ public class TestDummyVirusScanner {
 
             for (int i = 0; i < 5; i++) {
                 Map<String, Serializable> map = new HashMap<String, Serializable>();
-                map.put("file",
-                        (Serializable) getFakeBlob(100, "Test4-" + i + ".txt"));
+                map.put("file", (Serializable) getFakeBlob(100, "Test4-" + i + ".txt"));
                 map.put("filename", "Test4-" + i + ".txt");
                 files.add(map);
             }

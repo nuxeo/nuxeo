@@ -62,16 +62,14 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
 
         @Override
         public LuaValue call(LuaValue luaOpcode, LuaValue luaKey) {
-            String opcode = (String) CoerceLuaToJava.coerce(luaOpcode,
-                    String.class);
+            String opcode = (String) CoerceLuaToJava.coerce(luaOpcode, String.class);
             String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
             opcode = opcode.toLowerCase();
             if ("get".equals(opcode)) {
                 return valueOfOrFalse(connection.get(key));
             }
             if ("del".equals(opcode)) {
-                return valueOfOrFalse(connection.del((String[]) CoerceLuaToJava
-                    .coerce(luaKey, String[].class)));
+                return valueOfOrFalse(connection.del((String[]) CoerceLuaToJava.coerce(luaKey, String[].class)));
             }
             if ("keys".equals(opcode)) {
                 LuaTable table = LuaValue.tableOf();
@@ -85,10 +83,8 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
         }
 
         @Override
-        public LuaValue call(LuaValue luaOpcode, LuaValue luaKey,
-                LuaValue luaArg) {
-            String opcode = (String) CoerceLuaToJava.coerce(luaOpcode,
-                    String.class);
+        public LuaValue call(LuaValue luaOpcode, LuaValue luaKey, LuaValue luaArg) {
+            String opcode = (String) CoerceLuaToJava.coerce(luaOpcode, String.class);
             String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
             String arg = (String) CoerceLuaToJava.coerce(luaArg, String.class);
             switch (opcode.toLowerCase()) {

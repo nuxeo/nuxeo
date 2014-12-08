@@ -45,8 +45,7 @@ public class RequestContext extends HashMap<String, Object> {
 
     protected List<RequestCleanupHandler> cleanupHandlers;
 
-    public RequestContext(HttpServletRequest request,
-            HttpServletResponse response) {
+    public RequestContext(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
         this.cleanupHandlers = new ArrayList<RequestCleanupHandler>();

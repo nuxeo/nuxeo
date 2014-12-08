@@ -33,14 +33,17 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class TestPropertiesFetcher extends NXRuntimeTestCase {
 
     private static final String VALUE2 = "value2";
+
     private static final String VALUE1 = "value1";
+
     private static final String KEY2 = "key2";
+
     private static final String KEY1 = "key1";
+
     MailService propertiesFetcherService;
 
     @Before

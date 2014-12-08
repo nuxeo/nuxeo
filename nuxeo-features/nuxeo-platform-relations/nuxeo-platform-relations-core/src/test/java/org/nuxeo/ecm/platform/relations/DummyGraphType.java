@@ -96,8 +96,7 @@ public class DummyGraphType implements Graph {
         return null;
     }
 
-    public List<Statement> getStatements(Node subject, Node predicate,
-            Node object) {
+    public List<Statement> getStatements(Node subject, Node predicate, Node object) {
         return null;
     }
 

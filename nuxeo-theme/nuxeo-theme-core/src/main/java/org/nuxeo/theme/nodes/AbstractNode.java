@@ -29,13 +29,11 @@ public abstract class AbstractNode implements Node {
 
     public void setParent(Node parent) throws NodeException {
         if (equals(parent)) {
-            throw new NodeException(String.format(
-                    "A node cannot be made a parent of itself: %s.", this));
+            throw new NodeException(String.format("A node cannot be made a parent of itself: %s.", this));
         }
         if (parent != null && parent.isChildOf(this)) {
-            throw new NodeException(String.format(
-                    "Cycle detected while trying to make %s a parent of %s.",
-                    parent, this));
+            throw new NodeException(String.format("Cycle detected while trying to make %s a parent of %s.", parent,
+                    this));
         }
         if (parentNode != null) {
             List<Node> siblings = parentNode.getChildren();
@@ -51,13 +49,10 @@ public abstract class AbstractNode implements Node {
 
     public Node addChild(Node node) throws NodeException {
         if (equals(node)) {
-            throw new NodeException(String.format(
-                    "A node cannot be made a child of itself: %s.", this));
+            throw new NodeException(String.format("A node cannot be made a child of itself: %s.", this));
         }
         if (isChildOf(node)) {
-            throw new NodeException(String.format(
-                    "Cycle detected while trying to add child %s to %s.", node,
-                    this));
+            throw new NodeException(String.format("Cycle detected while trying to add child %s to %s.", node, this));
         }
         childrenNodes.add(node);
         node.setParent(this);
@@ -66,8 +61,7 @@ public abstract class AbstractNode implements Node {
 
     public void removeChild(Node node) throws NodeException {
         if (!childrenNodes.contains(node)) {
-            throw new NodeException(String.format(
-                    "Trying to remove unexisting child %s of %s", node, this));
+            throw new NodeException(String.format("Trying to remove unexisting child %s of %s", node, this));
         }
         childrenNodes.remove(node);
         node.setParent(null);
@@ -80,13 +74,10 @@ public abstract class AbstractNode implements Node {
     public void setChildren(List<Node> children) throws NodeException {
         for (Node child : children) {
             if (equals(child)) {
-                throw new NodeException(String.format(
-                        "Node %s cannot be made a child of itself", child));
+                throw new NodeException(String.format("Node %s cannot be made a child of itself", child));
             }
             if (isChildOf(child)) {
-                throw new NodeException(String.format(
-                        "Cycle detected while trying to set children of %s.",
-                        this));
+                throw new NodeException(String.format("Cycle detected while trying to set children of %s.", this));
             }
         }
         childrenNodes = children;
@@ -108,18 +99,15 @@ public abstract class AbstractNode implements Node {
 
     public void setOrder(Integer order) throws NodeException {
         if (order == null) {
-            throw new NodeException(String.format(
-                    "Cannot set node order to null on %s", this));
+            throw new NodeException(String.format("Cannot set node order to null on %s", this));
         }
         if (parentNode == null) {
-            throw new NodeException(String.format(
-                    "Cannot set order on node %s unless it has a parent", this));
+            throw new NodeException(String.format("Cannot set order on node %s unless it has a parent", this));
         }
         List<Node> siblings = parentNode.getChildren();
         siblings.remove(this);
         if (order < 0 || (order > 0 && order > siblings.size())) {
-            throw new NodeException(String.format(
-                    "Incorrect node order value (%s) for %s", order, this));
+            throw new NodeException(String.format("Incorrect node order value (%s) for %s", order, this));
         }
         siblings.add(order, this);
         parentNode.setChildren(siblings);

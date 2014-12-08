@@ -26,8 +26,7 @@ import java.util.List;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
-public class OperationDocumentation implements
-        Comparable<OperationDocumentation>, Serializable {
+public class OperationDocumentation implements Comparable<OperationDocumentation>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,8 +38,7 @@ public class OperationDocumentation implements
     public String[] aliases;
 
     /**
-     * an array of size multiple of 2. Each pair in the array is the input and
-     * output type of a method.
+     * an array of size multiple of 2. Each pair in the array is the input and output type of a method.
      */
     public String[] signature;
 
@@ -105,8 +103,7 @@ public class OperationDocumentation implements
         public String widget; // the widget type
 
         // is this useful (?)
-        @XNodeList(value = "value", type = String[].class,
-                componentType = String.class)
+        @XNodeList(value = "value", type = String[].class, componentType = String.class)
         public String[] values; // the default values
 
         // is this useful (?)
@@ -153,8 +150,7 @@ public class OperationDocumentation implements
 
         @Override
         public String toString() {
-            return name + " [" + type + "] "
-                    + (isRequired ? "required" : "optional");
+            return name + " [" + type + "] " + (isRequired ? "required" : "optional");
         }
 
         public int compareTo(Param o) {
@@ -217,8 +213,7 @@ public class OperationDocumentation implements
      * @since 5.9.4
      */
     public boolean isChain() {
-        return (id != null && id.startsWith(Constants.CHAIN_ID_PREFIX))
-                || Constants.CAT_CHAIN.equals(category);
+        return (id != null && id.startsWith(Constants.CHAIN_ID_PREFIX)) || Constants.CAT_CHAIN.equals(category);
     }
 
     public String[] getSignature() {
@@ -263,8 +258,7 @@ public class OperationDocumentation implements
 
     @Override
     public String toString() {
-        return category + " > " + label + " [" + id + ": "
-                + Arrays.asList(signature) + "] (" + params + ")\n"
+        return category + " > " + label + " [" + id + ": " + Arrays.asList(signature) + "] (" + params + ")\n"
                 + description;
     }
 }

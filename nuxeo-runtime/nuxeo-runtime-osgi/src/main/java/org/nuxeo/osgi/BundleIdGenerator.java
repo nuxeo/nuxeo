@@ -37,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BundleIdGenerator {
 
@@ -50,8 +49,7 @@ public class BundleIdGenerator {
     public synchronized void load(File file) {
         DataInputStream in = null;
         try {
-            in = new DataInputStream(new BufferedInputStream(
-                    new FileInputStream(file)));
+            in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
             count = in.readLong();
             int size = in.readInt();
             for (int i = 0; i < size; i++) {
@@ -78,8 +76,7 @@ public class BundleIdGenerator {
     public synchronized void store(File file) throws IOException {
         DataOutputStream out = null;
         try {
-            out = new DataOutputStream(new BufferedOutputStream(
-                new FileOutputStream(file)));
+            out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
             out.writeLong(count);
             int size = ids.size();
             out.writeInt(size);

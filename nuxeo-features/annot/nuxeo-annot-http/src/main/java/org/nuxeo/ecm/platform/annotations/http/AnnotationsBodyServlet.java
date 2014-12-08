@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationsBodyServlet extends HttpServlet {
 
@@ -49,14 +48,11 @@ public class AnnotationsBodyServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String annId = req.getPathInfo().replaceFirst("/", "");
         String body;
         try {
-            body = facade.getAnnotationBody(annId,
-                    (NuxeoPrincipal) req.getUserPrincipal(),
-                    req.getRequestURL() + "/");
+            body = facade.getAnnotationBody(annId, (NuxeoPrincipal) req.getUserPrincipal(), req.getRequestURL() + "/");
         } catch (AnnotationException e) {
             throw new ServletException(e);
         }

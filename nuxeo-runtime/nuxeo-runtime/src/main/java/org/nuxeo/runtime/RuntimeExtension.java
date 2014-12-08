@@ -15,8 +15,7 @@
 package org.nuxeo.runtime;
 
 /**
- * A runtime extension is a service that is started by the runtime when it
- * starts using the runtime service context.
+ * A runtime extension is a service that is started by the runtime when it starts using the runtime service context.
  * <p>
  * Runtime Extensions may be used to add new functionality to the runtime service.
  *

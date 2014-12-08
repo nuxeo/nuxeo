@@ -85,11 +85,9 @@ import com.sun.faces.facelets.el.VariableMapperWrapper;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class WebLayoutManagerImpl extends AbstractLayoutManager implements
-        WebLayoutManager {
+public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLayoutManager {
 
-    public static final ComponentName NAME = new ComponentName(
-            WebLayoutManagerImpl.class.getName());
+    public static final ComponentName NAME = new ComponentName(WebLayoutManagerImpl.class.getName());
 
     private static final Log log = LogFactory.getLog(WebLayoutManagerImpl.class);
 
@@ -118,8 +116,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
             registerWidgetType(((WidgetTypeDescriptor) contribution).getWidgetTypeDefinition());
         } else if (extensionPoint.equals(LAYOUT_TYPES_EP_NAME)) {
@@ -131,15 +128,12 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         } else if (extensionPoint.equals(PROPS_REF_EP_NAME)) {
             registerDisabledPropertyRef(((DisabledPropertyRefDescriptor) contribution));
         } else {
-            log.error(String.format(
-                    "Unknown extension point '%s', can't register !",
-                    extensionPoint));
+            log.error(String.format("Unknown extension point '%s', can't register !", extensionPoint));
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
             unregisterWidgetType(((WidgetTypeDescriptor) contribution).getWidgetTypeDefinition());
         } else if (extensionPoint.equals(LAYOUT_TYPES_EP_NAME)) {
@@ -151,9 +145,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         } else if (extensionPoint.equals(PROPS_REF_EP_NAME)) {
             unregisterDisabledPropertyRef(((DisabledPropertyRefDescriptor) contribution));
         } else {
-            log.error(String.format(
-                    "Unknown extension point '%s', can't unregister !",
-                    extensionPoint));
+            log.error(String.format("Unknown extension point '%s', can't unregister !", extensionPoint));
         }
     }
 
@@ -172,14 +164,12 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     }
 
     @Override
-    public WidgetTypeHandler getWidgetTypeHandler(String typeName)
-            throws WidgetException {
+    public WidgetTypeHandler getWidgetTypeHandler(String typeName) throws WidgetException {
         return getWidgetTypeHandler(getDefaultStoreCategory(), typeName);
     }
 
     @Override
-    public WidgetTypeHandler getWidgetTypeHandler(String typeCategory,
-            String typeName) throws WidgetException {
+    public WidgetTypeHandler getWidgetTypeHandler(String typeCategory, String typeName) throws WidgetException {
         if (StringUtils.isBlank(typeCategory)) {
             typeCategory = getDefaultStoreCategory();
         }
@@ -203,29 +193,25 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     /**
      * Evaluates an EL expression in given context.
      * <p>
-     * If the expression resolves to an EL expression, evaluate it again this
-     * is useful when retrieving the expression from a configuration file.
+     * If the expression resolves to an EL expression, evaluate it again this is useful when retrieving the expression
+     * from a configuration file.
      * <p>
-     * If given context is null, do no try to evaluate it and return the
-     * expression itself.
+     * If given context is null, do no try to evaluate it and return the expression itself.
      *
      * @param context the facelet context.
      * @param expression the string expression.
      */
-    protected static Object evaluateExpression(FaceletContext context,
-            String expression) {
+    protected static Object evaluateExpression(FaceletContext context, String expression) {
         if (expression == null) {
             return null;
         }
         if (context == null) {
             return expression;
         }
-        Object value = ComponentTagUtils.resolveElExpression(context,
-                expression);
+        Object value = ComponentTagUtils.resolveElExpression(context, expression);
         if (value != null && value instanceof String) {
             // evaluate a second time in case it's another EL expression
-            value = ComponentTagUtils.resolveElExpression(context,
-                    (String) value);
+            value = ComponentTagUtils.resolveElExpression(context, (String) value);
         }
         return value;
     }
@@ -233,16 +219,14 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     /**
      * Evaluates an expression to a boolean value.
      */
-    protected static Boolean getBooleanValue(FaceletContext context,
-            String expression) {
+    protected static Boolean getBooleanValue(FaceletContext context, String expression) {
         Object value = evaluateExpression(context, expression);
         if (value instanceof Boolean) {
             return (Boolean) value;
         } else if (value == null || value instanceof String) {
             return Boolean.valueOf((String) value);
         } else {
-            log.error(String.format("Could not get boolean value for '%s'",
-                    value));
+            log.error(String.format("Could not get boolean value for '%s'", value));
             return Boolean.FALSE;
         }
     }
@@ -250,20 +234,17 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     /**
      * Evaluates an expression to a string value.
      */
-    protected static String getStringValue(FaceletContext context,
-            String expression) {
+    protected static String getStringValue(FaceletContext context, String expression) {
         Object value = evaluateExpression(context, expression);
         if (value == null || value instanceof String) {
             return (String) value;
         } else {
-            log.error(String.format("Could not get string value for '%s'",
-                    value));
+            log.error(String.format("Could not get string value for '%s'", value));
             return null;
         }
     }
 
-    protected static String getModeFromLayoutMode(FaceletContext context,
-            WidgetDefinition wDef, String layoutMode) {
+    protected static String getModeFromLayoutMode(FaceletContext context, WidgetDefinition wDef, String layoutMode) {
         String wMode = getStringValue(context, wDef.getMode(layoutMode));
         if (wMode == null) {
             wMode = BuiltinModes.getWidgetModeFromLayoutMode(layoutMode);
@@ -272,25 +253,21 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     }
 
     @Override
-    public Widget getWidget(FaceletContext ctx, String widgetName,
-            String widgetCategory, String layoutMode, String valueName,
-            String layoutName) {
-        WidgetReference widgetRef = new WidgetReferenceImpl(widgetCategory,
-                widgetName);
+    public Widget getWidget(FaceletContext ctx, String widgetName, String widgetCategory, String layoutMode,
+            String valueName, String layoutName) {
+        WidgetReference widgetRef = new WidgetReferenceImpl(widgetCategory, widgetName);
         WidgetDefinition wDef = lookupWidget(widgetRef);
         if (wDef != null) {
-            return getWidget(ctx, layoutName, null, wDef, layoutMode,
-                    valueName, 0);
+            return getWidget(ctx, layoutName, null, wDef, layoutMode, valueName, 0);
         }
         return null;
     }
 
     @Override
-    public Widget getWidget(FaceletContext ctx, WidgetDefinition wDef,
-            String layoutMode, String valueName, String layoutName) {
+    public Widget getWidget(FaceletContext ctx, WidgetDefinition wDef, String layoutMode, String valueName,
+            String layoutName) {
         if (wDef != null) {
-            return getWidget(ctx, layoutName, null, wDef, layoutMode,
-                    valueName, 0);
+            return getWidget(ctx, layoutName, null, wDef, layoutMode, valueName, 0);
         }
         return null;
     }
@@ -298,15 +275,13 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     /**
      * Computes a widget from a definition for a mode in a given context.
      * <p>
-     * If the widget is configured not to be rendered in the given mode,
-     * returns null.
+     * If the widget is configured not to be rendered in the given mode, returns null.
      * <p>
      * Sub widgets are also computed recursively.
      */
     @SuppressWarnings("deprecation")
-    protected Widget getWidget(FaceletContext context, String layoutName,
-            LayoutDefinition layoutDef, WidgetDefinition wDef,
-            String layoutMode, String valueName, int level) {
+    protected Widget getWidget(FaceletContext context, String layoutName, LayoutDefinition layoutDef,
+            WidgetDefinition wDef, String layoutMode, String valueName, int level) {
         VariableMapper orig = null;
         // avoid variable mapper changes if context is null for tests
         if (context != null) {
@@ -316,8 +291,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             VariableMapper vm = new VariableMapperWrapper(orig);
             context.setVariableMapper(vm);
             ExpressionFactory eFactory = context.getExpressionFactory();
-            ValueExpression modeVe = eFactory.createValueExpression(layoutMode,
-                    String.class);
+            ValueExpression modeVe = eFactory.createValueExpression(layoutMode, String.class);
             vm.setVariable(RenderVariables.globalVariables.mode.name(), modeVe);
         }
         String wMode = getModeFromLayoutMode(context, wDef, layoutMode);
@@ -332,8 +306,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         WidgetDefinition[] swDefs = wDef.getSubWidgetDefinitions();
         if (swDefs != null) {
             for (WidgetDefinition swDef : swDefs) {
-                Widget subWidget = getWidget(context, layoutName, layoutDef,
-                        swDef, wMode, valueName, level + 1);
+                Widget subWidget = getWidget(context, layoutName, layoutDef, swDef, wMode, valueName, level + 1);
                 if (subWidget != null) {
                     subWidgets.add(subWidget);
                 }
@@ -345,12 +318,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             for (WidgetReference swRef : swRefs) {
                 WidgetDefinition swDef = lookupWidget(layoutDef, swRef);
                 if (swDef == null) {
-                    log.error(String.format(
-                            "Widget '%s' not found in layout %s",
-                            swRef.getName(), layoutName));
+                    log.error(String.format("Widget '%s' not found in layout %s", swRef.getName(), layoutName));
                 } else {
-                    Widget subWidget = getWidget(context, layoutName,
-                            layoutDef, swDef, wMode, valueName, level + 1);
+                    Widget subWidget = getWidget(context, layoutName, layoutDef, swDef, wMode, valueName, level + 1);
 
                     if (subWidget != null) {
                         subWidgets.add(subWidget);
@@ -359,8 +329,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             }
         }
 
-        boolean required = getBooleanValue(context,
-                wDef.getRequired(layoutMode, wMode)).booleanValue();
+        boolean required = getBooleanValue(context, wDef.getRequired(layoutMode, wMode)).booleanValue();
 
         String wType = wDef.getType();
         String wTypeCat = wDef.getTypeCategory();
@@ -368,11 +337,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         Map<String, Serializable> controls = new HashMap<String, Serializable>();
         String actualWTypeCat = getStoreCategory(wTypeCat);
-        WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(
-                actualWTypeCat, wType);
+        WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(actualWTypeCat, wType);
 
-        WidgetTypeConfiguration conf = def != null ? def.getConfiguration()
-                : null;
+        WidgetTypeConfiguration conf = def != null ? def.getConfiguration() : null;
         if (conf != null) {
             Map<String, Serializable> defaultProps = conf.getDefaultPropertyValues(wMode);
             if (defaultProps != null && !defaultProps.isEmpty()) {
@@ -387,13 +354,10 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         props.putAll(wDef.getProperties(layoutMode, wMode));
         controls.putAll(wDef.getControls(layoutMode, wMode));
 
-        WidgetImpl widget = new WidgetImpl(layoutName, wDef.getName(), wMode,
-                wType, valueName, wDef.getFieldDefinitions(),
-                wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
-                wDef.isTranslated(), wDef.isHandlingLabels(), props, required,
-                subWidgets.toArray(new Widget[0]), level,
-                wDef.getSelectOptions(),
-                LayoutFunctions.computeWidgetDefinitionId(wDef),
+        WidgetImpl widget = new WidgetImpl(layoutName, wDef.getName(), wMode, wType, valueName,
+                wDef.getFieldDefinitions(), wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
+                wDef.isTranslated(), wDef.isHandlingLabels(), props, required, subWidgets.toArray(new Widget[0]),
+                level, wDef.getSelectOptions(), LayoutFunctions.computeWidgetDefinitionId(wDef),
                 wDef.getRenderingInfos(layoutMode));
         widget.setControls(controls);
         widget.setTypeCategory(actualWTypeCat);
@@ -404,41 +368,34 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     }
 
     @Override
-    public Layout getLayout(FaceletContext ctx, String layoutName, String mode,
-            String valueName) throws LayoutException {
+    public Layout getLayout(FaceletContext ctx, String layoutName, String mode, String valueName)
+            throws LayoutException {
         return getLayout(ctx, layoutName, mode, valueName, null, false);
     }
 
     @Override
-    public Layout getLayout(FaceletContext ctx, String layoutName, String mode,
-            String valueName, List<String> selectedRows,
-            boolean selectAllRowsByDefault) {
-        return getLayout(ctx, layoutName, null, mode, valueName, selectedRows,
-                selectAllRowsByDefault);
+    public Layout getLayout(FaceletContext ctx, String layoutName, String mode, String valueName,
+            List<String> selectedRows, boolean selectAllRowsByDefault) {
+        return getLayout(ctx, layoutName, null, mode, valueName, selectedRows, selectAllRowsByDefault);
     }
 
     @Override
-    public Layout getLayout(FaceletContext ctx, String layoutName,
-            String layoutCategory, String mode, String valueName,
-            List<String> selectedRows, boolean selectAllRowsByDefault) {
+    public Layout getLayout(FaceletContext ctx, String layoutName, String layoutCategory, String mode,
+            String valueName, List<String> selectedRows, boolean selectAllRowsByDefault) {
         if (StringUtils.isBlank(layoutCategory)) {
             layoutCategory = getDefaultStoreCategory();
         }
-        LayoutDefinition layoutDef = getLayoutStore().getLayoutDefinition(
-                layoutCategory, layoutName);
+        LayoutDefinition layoutDef = getLayoutStore().getLayoutDefinition(layoutCategory, layoutName);
         if (layoutDef == null) {
-            log.debug(String.format("Layout '%s' not found for category '%s'",
-                    layoutName, layoutCategory));
+            log.debug(String.format("Layout '%s' not found for category '%s'", layoutName, layoutCategory));
             return null;
         }
-        return getLayout(ctx, layoutDef, mode, valueName, selectedRows,
-                selectAllRowsByDefault);
+        return getLayout(ctx, layoutDef, mode, valueName, selectedRows, selectAllRowsByDefault);
     }
 
     @Override
-    public Layout getLayout(FaceletContext ctx, LayoutDefinition layoutDef,
-            String mode, String valueName, List<String> selectedRows,
-            boolean selectAllRowsByDefault) {
+    public Layout getLayout(FaceletContext ctx, LayoutDefinition layoutDef, String mode, String valueName,
+            List<String> selectedRows, boolean selectAllRowsByDefault) {
         if (layoutDef == null) {
             log.debug("Layout definition is null");
             return null;
@@ -459,17 +416,15 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 rowName = rowDef.getDefaultName(rowIndex);
                 if (selectedRows != null) {
                     log.debug(String.format("Generating default name '%s' in "
-                            + "layout '%s' for row or column at index %s",
-                            rowName, layoutName, Integer.valueOf(rowIndex)));
+                            + "layout '%s' for row or column at index %s", rowName, layoutName,
+                            Integer.valueOf(rowIndex)));
                 }
             }
             boolean emptyRow = true;
-            if (selectedRows != null && !selectedRows.contains(rowName)
-                    && !rowDef.isAlwaysSelected()) {
+            if (selectedRows != null && !selectedRows.contains(rowName) && !rowDef.isAlwaysSelected()) {
                 continue;
             }
-            if (selectedRows == null && !selectAllRowsByDefault
-                    && !rowDef.isSelectedByDefault()
+            if (selectedRows == null && !selectAllRowsByDefault && !rowDef.isSelectedByDefault()
                     && !rowDef.isAlwaysSelected()) {
                 continue;
             }
@@ -483,25 +438,19 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 }
                 WidgetDefinition wDef = lookupWidget(layoutDef, widgetRef);
                 if (wDef == null) {
-                    log.error(String.format(
-                            "Widget '%s' not found in layout %s", widgetName,
-                            layoutName));
+                    log.error(String.format("Widget '%s' not found in layout %s", widgetName, layoutName));
                     widgets.add(null);
                     continue;
                 }
-                Widget widget = getWidget(ctx, layoutName, layoutDef, wDef,
-                        mode, valueName, 0);
+                Widget widget = getWidget(ctx, layoutName, layoutDef, wDef, mode, valueName, 0);
                 if (widget != null) {
                     emptyRow = false;
                 }
                 widgets.add(widget);
             }
             if (!emptyRow) {
-                rows.add(new LayoutRowImpl(rowName,
-                        rowDef.isSelectedByDefault(),
-                        rowDef.isAlwaysSelected(), widgets,
-                        rowDef.getProperties(mode),
-                        LayoutFunctions.computeLayoutRowDefinitionId(rowDef)));
+                rows.add(new LayoutRowImpl(rowName, rowDef.isSelectedByDefault(), rowDef.isAlwaysSelected(), widgets,
+                        rowDef.getProperties(mode), LayoutFunctions.computeLayoutRowDefinitionId(rowDef)));
             }
             foundRowNames.add(rowName);
         }
@@ -509,9 +458,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             Collections.sort(rows, new LayoutRowComparator(selectedRows));
             for (String selectedRow : selectedRows) {
                 if (!foundRowNames.contains(selectedRow)) {
-                    log.debug(String.format(
-                            "Selected row or column named '%s' "
-                                    + "was not found in layout '%s'",
+                    log.debug(String.format("Selected row or column named '%s' " + "was not found in layout '%s'",
                             selectedRow, layoutName));
                 }
             }
@@ -523,12 +470,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         String layoutType = layoutDef.getType();
         if (!StringUtils.isBlank(layoutType)) {
             // retrieve type for templates and props mapping
-            layoutTypeDef = getLayoutStore().getLayoutTypeDefinition(
-                    actualLayoutTypeCategory, layoutType);
+            layoutTypeDef = getLayoutStore().getLayoutTypeDefinition(actualLayoutTypeCategory, layoutType);
             if (layoutTypeDef == null) {
-                log.debug(String.format(
-                        "Layout type '%s' not found for category '%s'",
-                        layoutType, layoutTypeCategory));
+                log.debug(String.format("Layout type '%s' not found for category '%s'", layoutType, layoutTypeCategory));
             }
         }
 
@@ -550,8 +494,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         if (lprops != null) {
             props.putAll(lprops);
         }
-        LayoutImpl layout = new LayoutImpl(layoutDef.getName(), mode, template,
-                rows, layoutDef.getColumns(), props,
+        LayoutImpl layout = new LayoutImpl(layoutDef.getName(), mode, template, rows, layoutDef.getColumns(), props,
                 LayoutFunctions.computeLayoutDefinitionId(layoutDef));
         layout.setValueName(valueName);
         layout.setType(layoutType);
@@ -561,20 +504,17 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             // resolve template in "dev" mode, avoiding default lookup on "any"
             // mode
             Map<String, String> templates = layoutDef.getTemplates();
-            String devTemplate = templates != null ? templates.get(BuiltinModes.DEV)
-                    : null;
+            String devTemplate = templates != null ? templates.get(BuiltinModes.DEV) : null;
             if (layoutTypeDef != null && StringUtils.isEmpty(devTemplate)) {
                 Map<String, String> typeTemplates = layoutTypeDef.getTemplates();
-                devTemplate = typeTemplates != null ? typeTemplates.get(BuiltinModes.DEV)
-                        : null;
+                devTemplate = typeTemplates != null ? typeTemplates.get(BuiltinModes.DEV) : null;
             }
             layout.setDevTemplate(devTemplate);
         }
         return layout;
     }
 
-    protected WidgetDefinition lookupWidget(LayoutDefinition layoutDef,
-            WidgetReference widgetRef) {
+    protected WidgetDefinition lookupWidget(LayoutDefinition layoutDef, WidgetReference widgetRef) {
         String widgetName = widgetRef.getName();
         WidgetDefinition wDef = null;
         if (layoutDef != null) {
@@ -603,26 +543,22 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig config, Widget widget) {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig config, Widget widget) {
         return getFaceletHandler(ctx, config, widget, null);
     }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig config, Widget widget, FaceletHandler nextHandler) {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig config, Widget widget,
+            FaceletHandler nextHandler) {
         String widgetTypeName = widget.getType();
         String widgetTypeCategory = widget.getTypeCategory();
-        WidgetTypeHandler handler = getWidgetTypeHandler(widgetTypeCategory,
-                widgetTypeName);
+        WidgetTypeHandler handler = getWidgetTypeHandler(widgetTypeCategory, widgetTypeName);
         if (handler == null) {
             FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-            String message = String.format(
-                    "No widget handler found for type '%s' in category '%s'",
-                    widgetTypeName, widgetTypeCategory);
+            String message = String.format("No widget handler found for type '%s' in category '%s'", widgetTypeName,
+                    widgetTypeCategory);
             log.error(message);
-            ComponentHandler output = helper.getErrorComponentHandler(null,
-                    message);
+            ComponentHandler output = helper.getErrorComponentHandler(null, message);
             return output;
         } else {
             FaceletHandler[] subHandlers = null;
@@ -633,8 +569,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             }
             if (subWidgets != null) {
                 for (Widget subWidget : subWidgets) {
-                    FaceletHandler h = getFaceletHandler(ctx, config,
-                            subWidget, null);
+                    FaceletHandler h = getFaceletHandler(ctx, config, subWidget, null);
                     if (h != null) {
                         subHandlersList.add(h);
                     }
@@ -643,15 +578,12 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             if (!subHandlersList.isEmpty()) {
                 subHandlers = subHandlersList.toArray(new FaceletHandler[0]);
             }
-            FaceletHandler widgetHandler = handler.getFaceletHandler(ctx,
-                    config, widget, subHandlers);
+            FaceletHandler widgetHandler = handler.getFaceletHandler(ctx, config, widget, subHandlers);
 
             if (FaceletHandlerHelper.isDevModeEnabled(ctx)) {
                 // decorate handler with dev handler
-                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx,
-                        config);
-                FaceletHandler devHandler = handler.getDevFaceletHandler(ctx,
-                        config, widget);
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+                FaceletHandler devHandler = handler.getDevFaceletHandler(ctx, config, widget);
                 if (devHandler == null) {
                     return widgetHandler;
                 }
@@ -659,19 +591,14 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 String widgetTagConfigId = widget.getTagConfigId();
                 Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
-                ValueExpression widgetVe = eFactory.createValueExpression(
-                        widget, Widget.class);
-                variables.put(RenderVariables.widgetVariables.widget.name(),
-                        widgetVe);
+                ValueExpression widgetVe = eFactory.createValueExpression(widget, Widget.class);
+                variables.put(RenderVariables.widgetVariables.widget.name(), widgetVe);
                 List<String> blockedPatterns = new ArrayList<String>();
-                blockedPatterns.add(RenderVariables.widgetVariables.widget.name()
-                        + "*");
-                FaceletHandler devAliasHandler = helper.getAliasTagHandler(
-                        widgetTagConfigId, variables, blockedPatterns,
-                        devHandler);
+                blockedPatterns.add(RenderVariables.widgetVariables.widget.name() + "*");
+                FaceletHandler devAliasHandler = helper.getAliasTagHandler(widgetTagConfigId, variables,
+                        blockedPatterns, devHandler);
                 String refId = widget.getName();
-                FaceletHandler widgetDevHandler = new DevTagHandler(config,
-                        refId, widgetHandler, devAliasHandler);
+                FaceletHandler widgetDevHandler = new DevTagHandler(config, refId, widgetHandler, devAliasHandler);
                 return widgetDevHandler;
             }
             return widgetHandler;
@@ -679,28 +606,24 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     }
 
     @Override
-    public Widget createWidget(FaceletContext ctx, String type, String mode,
-            String valueName, Map<String, Serializable> properties,
-            Widget[] subWidgets) {
-        return createWidget(ctx, type, mode, valueName, null, null, null, null,
-                properties, subWidgets);
+    public Widget createWidget(FaceletContext ctx, String type, String mode, String valueName,
+            Map<String, Serializable> properties, Widget[] subWidgets) {
+        return createWidget(ctx, type, mode, valueName, null, null, null, null, properties, subWidgets);
     }
 
     @Override
-    public Widget createWidget(FaceletContext ctx, String type, String mode,
-            String valueName, List<FieldDefinition> fieldDefinitions,
-            String label, String helpLabel, Boolean translated,
+    public Widget createWidget(FaceletContext ctx, String type, String mode, String valueName,
+            List<FieldDefinition> fieldDefinitions, String label, String helpLabel, Boolean translated,
             Map<String, Serializable> properties, Widget[] subWidgets) {
         return createWidget(
                 ctx,
-                createWidgetDefinition(ctx, type, null, mode, valueName,
-                        fieldDefinitions, null, label, helpLabel, translated,
-                        properties, subWidgets), mode, valueName, subWidgets);
+                createWidgetDefinition(ctx, type, null, mode, valueName, fieldDefinitions, null, label, helpLabel,
+                        translated, properties, subWidgets), mode, valueName, subWidgets);
     }
 
     @Override
-    public Widget createWidget(FaceletContext ctx, WidgetDefinition wDef,
-            String mode, String valueName, Widget[] subWidgets) {
+    public Widget createWidget(FaceletContext ctx, WidgetDefinition wDef, String mode, String valueName,
+            Widget[] subWidgets) {
 
         String wType = wDef.getType();
         String wTypeCat = wDef.getTypeCategory();
@@ -708,12 +631,10 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         Map<String, Serializable> controls = new HashMap<String, Serializable>();
         String actualWTypeCat = getStoreCategory(wTypeCat);
-        WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(
-                actualWTypeCat, wType);
+        WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(actualWTypeCat, wType);
 
         boolean required = false;
-        WidgetTypeConfiguration conf = def != null ? def.getConfiguration()
-                : null;
+        WidgetTypeConfiguration conf = def != null ? def.getConfiguration() : null;
         if (conf != null) {
             Map<String, Serializable> defaultProps = conf.getDefaultPropertyValues(mode);
             if (defaultProps != null && !defaultProps.isEmpty()) {
@@ -734,10 +655,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 } else if (requiredProp instanceof String) {
                     required = getBooleanValue(ctx, (String) requiredProp).booleanValue();
                 } else {
-                    log.error(String.format(
-                            "Invalid property '%s' on widget: '%s'",
-                            WidgetDefinition.REQUIRED_PROPERTY_NAME,
-                            requiredProp));
+                    log.error(String.format("Invalid property '%s' on widget: '%s'",
+                            WidgetDefinition.REQUIRED_PROPERTY_NAME, requiredProp));
                 }
             }
         }
@@ -745,11 +664,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         if (modeControls != null) {
             controls.putAll(modeControls);
         }
-        WidgetImpl widget = new WidgetImpl("layout", wDef.getName(), mode,
-                wType, valueName, wDef.getFieldDefinitions(),
-                wDef.getLabel(mode), wDef.getHelpLabel(mode),
-                wDef.isTranslated(), props, required, subWidgets, 0, null,
-                LayoutFunctions.computeWidgetDefinitionId(wDef));
+        WidgetImpl widget = new WidgetImpl("layout", wDef.getName(), mode, wType, valueName,
+                wDef.getFieldDefinitions(), wDef.getLabel(mode), wDef.getHelpLabel(mode), wDef.isTranslated(), props,
+                required, subWidgets, 0, null, LayoutFunctions.computeWidgetDefinitionId(wDef));
         widget.setControls(controls);
         widget.setTypeCategory(actualWTypeCat);
         widget.setDynamic(wDef.isDynamic());
@@ -760,18 +677,15 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         return widget;
     }
 
-    protected WidgetDefinition createWidgetDefinition(FaceletContext ctx,
-            String type, String category, String mode, String valueName,
-            List<FieldDefinition> fieldDefinitions, String widgetName,
-            String label, String helpLabel, Boolean translated,
-            Map<String, Serializable> properties, Widget[] subWidgets) {
+    protected WidgetDefinition createWidgetDefinition(FaceletContext ctx, String type, String category, String mode,
+            String valueName, List<FieldDefinition> fieldDefinitions, String widgetName, String label,
+            String helpLabel, Boolean translated, Map<String, Serializable> properties, Widget[] subWidgets) {
         String wName = widgetName;
         if (StringUtils.isBlank(widgetName)) {
             wName = type;
         }
-        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(wName, type,
-                label, helpLabel, Boolean.TRUE.equals(translated), null,
-                fieldDefinitions, properties, null);
+        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(wName, type, label, helpLabel,
+                Boolean.TRUE.equals(translated), null, fieldDefinitions, properties, null);
         wDef.setDynamic(true);
         return wDef;
     }
@@ -779,39 +693,29 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     /**
      * @since 5.6
      */
-    protected void registerDisabledPropertyRef(
-            DisabledPropertyRefDescriptor desc) {
+    protected void registerDisabledPropertyRef(DisabledPropertyRefDescriptor desc) {
         disabledPropertyRefsReg.addContribution(desc);
-        log.info(String.format(
-                "Registered disabled property reference descriptor: %s",
-                desc.toString()));
+        log.info(String.format("Registered disabled property reference descriptor: %s", desc.toString()));
     }
 
     /**
      * @since 5.6
      */
-    protected void unregisterDisabledPropertyRef(
-            DisabledPropertyRefDescriptor desc) {
+    protected void unregisterDisabledPropertyRef(DisabledPropertyRefDescriptor desc) {
         disabledPropertyRefsReg.removeContribution(desc);
-        log.info(String.format(
-                "Removed disabled property reference descriptor: %s",
-                desc.toString()));
+        log.info(String.format("Removed disabled property reference descriptor: %s", desc.toString()));
     }
 
     @Override
-    public boolean referencePropertyAsExpression(String name,
-            Serializable value, String widgetType, String widgetMode,
+    public boolean referencePropertyAsExpression(String name, Serializable value, String widgetType, String widgetMode,
             String template) {
-        return referencePropertyAsExpression(name, value, widgetType, null,
-                widgetMode, template);
+        return referencePropertyAsExpression(name, value, widgetType, null, widgetMode, template);
     }
 
     @Override
-    public boolean referencePropertyAsExpression(String name,
-            Serializable value, String widgetType, String widgetTypeCategory,
-            String widgetMode, String template) {
-        if ((value instanceof String)
-                && (ComponentTagUtils.isValueReference((String) value))) {
+    public boolean referencePropertyAsExpression(String name, Serializable value, String widgetType,
+            String widgetTypeCategory, String widgetMode, String template) {
+        if ((value instanceof String) && (ComponentTagUtils.isValueReference((String) value))) {
             return false;
         }
         String cat = widgetTypeCategory;
@@ -819,8 +723,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             cat = WebLayoutManager.JSF_CATEGORY;
         }
         for (DisabledPropertyRefDescriptor desc : disabledPropertyRefsReg.getDisabledPropertyRefs()) {
-            if (Boolean.TRUE.equals(desc.getEnabled())
-                    && desc.matches(name, widgetType, cat, widgetMode, template)) {
+            if (Boolean.TRUE.equals(desc.getEnabled()) && desc.matches(name, widgetType, cat, widgetMode, template)) {
                 return false;
             }
         }

@@ -27,8 +27,7 @@ import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 /**
  * Iterable query result implemented as a cursor on a SQL {@link ResultSet}.
  */
-public class ResultSetQueryResult implements IterableQueryResult,
-        Iterator<Map<String, Serializable>> {
+public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<String, Serializable>> {
 
     private QueryMaker.Query q;
 
@@ -46,13 +45,10 @@ public class ResultSetQueryResult implements IterableQueryResult,
 
     private final JDBCLogger logger;
 
-    public ResultSetQueryResult(QueryMaker queryMaker, String query,
-            QueryFilter queryFilter, PathResolver pathResolver,
-            JDBCMapper mapper, Object... params) throws StorageException,
-            SQLException {
+    public ResultSetQueryResult(QueryMaker queryMaker, String query, QueryFilter queryFilter,
+            PathResolver pathResolver, JDBCMapper mapper, Object... params) throws StorageException, SQLException {
         logger = mapper.logger;
-        q = queryMaker.buildQuery(mapper.sqlInfo, mapper.model, pathResolver,
-                query, queryFilter, params);
+        q = queryMaker.buildQuery(mapper.sqlInfo, mapper.model, pathResolver, query, queryFilter, params);
         if (q == null) {
             logger.log("Query cannot return anything due to conflicting clauses");
             ps = null;
@@ -65,8 +61,8 @@ public class ResultSetQueryResult implements IterableQueryResult,
         if (logger.isLogEnabled()) {
             logger.logSQL(q.selectInfo.sql, q.selectParams);
         }
-        ps = mapper.connection.prepareStatement(q.selectInfo.sql,
-                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ps = mapper.connection.prepareStatement(q.selectInfo.sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
         int i = 1;
         for (Serializable object : q.selectParams) {
             mapper.setToPreparedStatement(ps, i++, object);
@@ -76,8 +72,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
         // rs.setFetchDirection(ResultSet.FETCH_UNKNOWN); fails in H2
     }
 
-    protected static void closePreparedStatement(PreparedStatement ps)
-            throws SQLException {
+    protected static void closePreparedStatement(PreparedStatement ps) throws SQLException {
         try {
             ps.close();
         } catch (IllegalArgumentException e) {
@@ -135,8 +130,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
         }
         try {
             // save cursor pos
-            int old = rs.isBeforeFirst() ? -1 : rs.isAfterLast() ? -2
-                    : rs.getRow();
+            int old = rs.isBeforeFirst() ? -1 : rs.isAfterLast() ? -2 : rs.getRow();
             // find size
             rs.last();
             size = rs.getRow();
@@ -186,8 +180,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
         return this;
     }
 
-    protected Map<String, Serializable> fetchNext() throws StorageException,
-            SQLException {
+    protected Map<String, Serializable> fetchNext() throws StorageException, SQLException {
         checkLife();
         if (!rs.next()) {
             if (logger.isLogEnabled()) {

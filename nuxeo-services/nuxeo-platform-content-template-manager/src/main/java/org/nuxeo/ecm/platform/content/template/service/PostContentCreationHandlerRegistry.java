@@ -46,8 +46,7 @@ public class PostContentCreationHandlerRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            PostContentCreationHandlerDescriptor contrib,
+    public void contributionUpdated(String id, PostContentCreationHandlerDescriptor contrib,
             PostContentCreationHandlerDescriptor newOrigContrib) {
         if (contrib.isEnabled()) {
             postContentCreationHandlerDescriptors.put(id, contrib);
@@ -57,14 +56,12 @@ public class PostContentCreationHandlerRegistry extends
     }
 
     @Override
-    public void contributionRemoved(String id,
-            PostContentCreationHandlerDescriptor contrib) {
+    public void contributionRemoved(String id, PostContentCreationHandlerDescriptor contrib) {
         postContentCreationHandlerDescriptors.remove(id);
     }
 
     @Override
-    public PostContentCreationHandlerDescriptor clone(
-            PostContentCreationHandlerDescriptor postContentCreationHandler) {
+    public PostContentCreationHandlerDescriptor clone(PostContentCreationHandlerDescriptor postContentCreationHandler) {
         try {
             return (PostContentCreationHandlerDescriptor) postContentCreationHandler.clone();
         } catch (CloneNotSupportedException e) {
@@ -74,8 +71,7 @@ public class PostContentCreationHandlerRegistry extends
     }
 
     @Override
-    public void merge(PostContentCreationHandlerDescriptor src,
-            PostContentCreationHandlerDescriptor dst) {
+    public void merge(PostContentCreationHandlerDescriptor src, PostContentCreationHandlerDescriptor dst) {
         if (src.getClazz() != null) {
             dst.setClazz(src.getClazz());
         }
@@ -98,9 +94,7 @@ public class PostContentCreationHandlerRegistry extends
             try {
                 handlers.add(desc.getClazz().newInstance());
             } catch (ReflectiveOperationException e) {
-                log.error(
-                        "Unable to instantiate class for handler: "
-                                + desc.getName(), e);
+                log.error("Unable to instantiate class for handler: " + desc.getName(), e);
             }
         }
         return handlers;

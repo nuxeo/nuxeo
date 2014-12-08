@@ -26,7 +26,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
     private AnnotatedDocument annotatedDocument = new AnnotatedDocument(null);
@@ -39,29 +38,25 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
         String resultInnerHtml = RootPanel.get("insidediv").getElement().getInnerHTML();
         assertTrue(resultInnerHtml.contains("<b>Nuxeo EP 5 - Nuxeo<span class=\"decorate decorate1\"> Annotatio</span>n</b></span></nobr></div"));
         resultInnerHtml = resultInnerHtml.replace(
-                "<b>Nuxeo EP 5 - Nuxeo<span class=\"decorate decorate1\"> Annotatio</span>n</b></span></nobr></div",
-                "");
+                "<b>Nuxeo EP 5 - Nuxeo<span class=\"decorate decorate1\"> Annotatio</span>n</b></span></nobr></div", "");
         assertFalse(resultInnerHtml.contains("decorate1"));
     }
 
     public String getInnerHtml() {
         return new StringBuilder("<!-- Page 1 -->").append("<a name=\"1\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append(
-                ".ft0{font-size:30px;font-family:Helvetica;color:#000000;}").append(
-                ".ft1{font-size:10px;font-family:Helvetica;color:#000000;}").append(
-                "-->").append("</style>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append(".ft0{font-size:30px;font-family:Helvetica;color:#000000;}").append(
+                ".ft1{font-size:10px;font-family:Helvetica;color:#000000;}").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index001.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 290px; left: 59px;\"><nobr><span class=\"ft0\"><b>Nuxeo EP 5 - Nuxeo Annotation</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 329px; left: 242px;\"><nobr><span class=\"ft0\"><b>Service</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 691px; left: 199px;\"><nobr><span class=\"ft1\">Copyright © 2000-2007, Nuxeo SAS.</span></nobr></div>").append(
                 "</div>").append("<!-- Page 2 -->").append("<a name=\"2\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append(
-                ".ft2{font-size:15px;font-family:Helvetica;color:#000000;}").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append(".ft2{font-size:15px;font-family:Helvetica;color:#000000;}").append(
                 ".ft3{font-size:10px;font-family:Times;color:#000000;}").append(
-                ".ft4{font-size:10px;line-height:14px;font-family:Times;color:#000000;}").append(
-                "-->").append("</style>").append(
+                ".ft4{font-size:10px;line-height:14px;font-family:Times;color:#000000;}").append("-->").append(
+                "</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index002.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 83px; left: 51px;\"><nobr><span class=\"ft2\"><b>Table of Contents</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 112px; left: 51px;\"><nobr><span class=\"ft3\"><a href=\"http://localhost:8080/nuxeo/restAPI/preview/default/a8322dc5-e360-4cb1-a676-2f3a32e2e3fa/default/index.html#4\">1. Requirements overview </a>.............................................................................................................1</span></nobr></div>").append(
@@ -86,9 +81,8 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 760px; left: 75px;\"><nobr><span class=\"ft4\"><a href=\"http://localhost:8080/nuxeo/restAPI/preview/default/a8322dc5-e360-4cb1-a676-2f3a32e2e3fa/default/index.html#17\">8.1. Configure preview </a>........................................................................................................14<br><a href=\"http://localhost:8080/nuxeo/restAPI/preview/default/a8322dc5-e360-4cb1-a676-2f3a32e2e3fa/default/index.html#17\">8.2. Configure Annotation policy </a>........................................................................................14</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 538px;\"><nobr><span class=\"ft3\">ii</span></nobr></div>").append(
                 "</div>").append("<!-- Page 3 -->").append("<a name=\"3\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index003.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 44px; left: 75px;\"><nobr><span class=\"ft4\"><a href=\"http://localhost:8080/nuxeo/restAPI/preview/default/a8322dc5-e360-4cb1-a676-2f3a32e2e3fa/default/index.html#17\">8.3. Configure Annotation Meta-data </a>..................................................................................14<br><a href=\"http://localhost:8080/nuxeo/restAPI/preview/default/a8322dc5-e360-4cb1-a676-2f3a32e2e3fa/default/index.html#17\">8.4. Handle indexing </a>............................................................................................................14<br><a href=\"http://localhost:8080/nuxeo/restAPI/preview/default/a8322dc5-e360-4cb1-a676-2f3a32e2e3fa/default/index.html#17\">8.5. Integrate HTML/JS Client </a>............................................................................................14</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 88px; left: 51px;\"><nobr><span class=\"ft3\"><a href=\"http://localhost:8080/nuxeo/restAPI/preview/default/a8322dc5-e360-4cb1-a676-2f3a32e2e3fa/default/index.html#18\">9. Packaging and deployment </a>......................................................................................................15</span></nobr></div>").append(
@@ -99,12 +93,10 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 16px; left: 200px;\"><nobr><span class=\"ft3\">Nuxeo EP 5 - Nuxeo Annotation Service</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 534px;\"><nobr><span class=\"ft3\">iii</span></nobr></div>").append(
                 "</div>").append("<!-- Page 4 -->").append("<a name=\"4\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append(
-                ".ft5{font-size:19px;font-family:Helvetica;color:#000000;}").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append(".ft5{font-size:19px;font-family:Helvetica;color:#000000;}").append(
                 ".ft6{font-size:16px;font-family:Helvetica;color:#000000;}").append(
-                ".ft7{font-size:13px;font-family:Helvetica;color:#000000;}").append(
-                "-->").append("</style>").append(
+                ".ft7{font-size:13px;font-family:Helvetica;color:#000000;}").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index004.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 58px; left: 51px;\"><nobr><span class=\"ft5\"><b>Chapter 1. Requirements overview</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 95px; left: 51px;\"><nobr><span class=\"ft3\">This chapter provides an overview of the requirements for the Nuxeo Annotation Service.</span></nobr></div>").append(
@@ -126,9 +118,8 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 768px; left: 51px;\"><nobr><span class=\"ft7\"><b>1.2.3. Metadata management</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 538px;\"><nobr><span class=\"ft3\">1</span></nobr></div>").append(
                 "</div>").append("<!-- Page 5 -->").append("<a name=\"5\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index005.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 56px; left: 51px;\"><nobr><span class=\"ft4\">Annotea specification includes very few meta-data. Inside Nuxeo we want the annotation to have a<br>pluggable meta-data schema so that each project implementation may add it's own set of meta-data.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 107px; left: 51px;\"><nobr><span class=\"ft7\"><b>1.2.4. Permission management</b></span></nobr></div>").append(
@@ -141,10 +132,9 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 16px; left: 240px;\"><nobr><span class=\"ft3\">Requirements overview</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 538px;\"><nobr><span class=\"ft3\">2</span></nobr></div>").append(
                 "</div>").append("<!-- Page 6 -->").append("<a name=\"6\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append(
-                ".ft8{font-size:6px;font-family:Courier;color:#000000;}").append(
-                "-->").append("</style>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append(".ft8{font-size:6px;font-family:Courier;color:#000000;}").append("-->").append(
+                "</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index006.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 58px; left: 51px;\"><nobr><span class=\"ft5\"><b>Chapter 2. Logical architecture overview</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 95px; left: 51px;\"><nobr><span class=\"ft3\">This chapter provides an overview of the logical architecture of the Nuxeo Annotation service.</span></nobr></div>").append(
@@ -175,18 +165,15 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 667px; left: 82px;\"><nobr><span class=\"ft3\">This package will provide a simple stand-alone html client that embeds the JS client.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 538px;\"><nobr><span class=\"ft3\">3</span></nobr></div>").append(
                 "</div>").append("<!-- Page 7 -->").append("<a name=\"7\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append(
-                ".ft9{font-size:10px;font-family:Times;color:#000000;}").append(
-                "-->").append("</style>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append(".ft9{font-size:10px;font-family:Times;color:#000000;}").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index007.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 442px; left: 51px;\"><nobr><span class=\"ft9\"><b>Figure 2.1. NXAS Components JPG</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 16px; left: 226px;\"><nobr><span class=\"ft3\">Logical architecture overview</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 538px;\"><nobr><span class=\"ft3\">4</span></nobr></div>").append(
                 "</div>").append("<!-- Page 8 -->").append("<a name=\"8\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index008.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 58px; left: 51px;\"><nobr><span class=\"ft5\"><b>Chapter 3. NXAS HTML Client</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 110px; left: 51px;\"><nobr><span class=\"ft6\"><b>3.1. Overview</b></span></nobr></div>").append(
@@ -206,9 +193,8 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 605px; left: 51px;\"><nobr><span class=\"ft4\">The Html Client uses the NXAS JS library to handle communication with the server and to manage<br>annotations on the targeted web page.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 538px;\"><nobr><span class=\"ft3\">5</span></nobr></div>").append(
                 "</div>").append("<!-- Page 9 -->").append("<a name=\"9\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index009.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 58px; left: 51px;\"><nobr><span class=\"ft5\"><b>Chapter 4. Annotation Service Core</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 110px; left: 51px;\"><nobr><span class=\"ft6\"><b>4.1. Overview</b></span></nobr></div>").append(
@@ -232,11 +218,9 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 750px; left: 51px;\"><nobr><span class=\"ft6\"><b>4.4. Query Support</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 785px; left: 51px;\"><nobr><span class=\"ft3\">Even if Algae won't be implemented, NXAS will provide a Query API to retrive Annotations based on</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 538px;\"><nobr><span class=\"ft3\">6</span></nobr></div>").append(
-                "</div>").append("<!-- Page 10 -->").append(
-                "<a name=\"10\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "</div>").append("<!-- Page 10 -->").append("<a name=\"10\"></a>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index010.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 56px; left: 51px;\"><nobr><span class=\"ft3\">criteria.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 83px; left: 51px;\"><nobr><span class=\"ft3\">Search criteria include :</span></nobr></div>").append(
@@ -258,11 +242,9 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 761px; left: 51px;\"><nobr><span class=\"ft7\"><b>4.5.5. annotabilityManager</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 16px; left: 238px;\"><nobr><span class=\"ft3\">Annotation Service Core</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 538px;\"><nobr><span class=\"ft3\">7</span></nobr></div>").append(
-                "</div>").append("<!-- Page 11 -->").append(
-                "<a name=\"11\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "</div>").append("<!-- Page 11 -->").append("<a name=\"11\"></a>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index011.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 56px; left: 51px;\"><nobr><span class=\"ft4\">The annotabilityManager extension point allows to contribute a class to fine grain which documents<br>can be annotated. Default implementation will allow simple filtring on Document facet 'Annotable'.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 107px; left: 51px;\"><nobr><span class=\"ft7\"><b>4.5.6. eventManager</b></span></nobr></div>").append(
@@ -284,20 +266,16 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 764px; left: 51px;\"><nobr><span class=\"ft4\">The XPointer synthax will be extended to include the possibility to identify a shape inside a image<br>that is inside the HTML page. The NXPointer will typically contain the XPath to locate the image</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 16px; left: 238px;\"><nobr><span class=\"ft3\">Annotation Service Core</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 538px;\"><nobr><span class=\"ft3\">8</span></nobr></div>").append(
-                "</div>").append("<!-- Page 12 -->").append(
-                "<a name=\"12\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "</div>").append("<!-- Page 12 -->").append("<a name=\"12\"></a>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index012.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 56px; left: 51px;\"><nobr><span class=\"ft3\">within the HTML document and a shape descriptor with pixel based values.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 16px; left: 238px;\"><nobr><span class=\"ft3\">Annotation Service Core</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 538px;\"><nobr><span class=\"ft3\">9</span></nobr></div>").append(
-                "</div>").append("<!-- Page 13 -->").append(
-                "<a name=\"13\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "</div>").append("<!-- Page 13 -->").append("<a name=\"13\"></a>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index013.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 58px; left: 51px;\"><nobr><span class=\"ft5\"><b>Chapter 5. Annotation Service Facade</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 95px; left: 51px;\"><nobr><span class=\"ft4\">As for any Nuxeo Service, the facade will provide the integration of the service into JEE<br>infrastructure.</span></nobr></div>").append(
@@ -321,11 +299,9 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 751px; left: 70px;\"><nobr><span class=\"ft3\">• documentVersionned</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 778px; left: 70px;\"><nobr><span class=\"ft3\">• documentPublished</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 532px;\"><nobr><span class=\"ft3\">10</span></nobr></div>").append(
-                "</div>").append("<!-- Page 14 -->").append(
-                "<a name=\"14\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "</div>").append("<!-- Page 14 -->").append("<a name=\"14\"></a>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index014.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 56px; left: 70px;\"><nobr><span class=\"ft3\">• documentDeleted</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 83px; left: 70px;\"><nobr><span class=\"ft3\">• documentCopied</span></nobr></div>").append(
@@ -342,11 +318,9 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 406px; left: 51px;\"><nobr><span class=\"ft4\">This configuration will let the MDB define what action must be done when an event occurs. In most<br>case, the same action could be done directly by the synchronous event listener in the NXAS Core<br>service. But for performances reason, it is safer to let these actions handled asynchronously via JMS<br>and MDB pooling.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 16px; left: 233px;\"><nobr><span class=\"ft3\">Annotation Service Facade</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 532px;\"><nobr><span class=\"ft3\">11</span></nobr></div>").append(
-                "</div>").append("<!-- Page 15 -->").append(
-                "<a name=\"15\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append(
-                ".ft10{font-size:19px;line-height:26px;font-family:Helvetica;color:#000000;}").append(
+                "</div>").append("<!-- Page 15 -->").append("<a name=\"15\"></a>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append(".ft10{font-size:19px;line-height:26px;font-family:Helvetica;color:#000000;}").append(
                 "-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index015.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 58px; left: 51px;\"><nobr><span class=\"ft10\"><b>Chapter 6. Annotation Service Javascript<br>Library</b></span></nobr></div>").append(
@@ -360,11 +334,9 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 479px; left: 51px;\"><nobr><span class=\"ft6\"><b>6.4. Annotating images</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 514px; left: 51px;\"><nobr><span class=\"ft4\">The Client JS library will handle image annotation and permit to define a shape (rectangle/elipse) in<br>the image that should hold the annotation. The shape will be handled as respect to the image size in<br>the HTML. If the HTML conversion flattern all images in the documents as one background image in<br>the HTML preview, then the annotation client will see only one image.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 532px;\"><nobr><span class=\"ft3\">12</span></nobr></div>").append(
-                "</div>").append("<!-- Page 16 -->").append(
-                "<a name=\"16\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "</div>").append("<!-- Page 16 -->").append("<a name=\"16\"></a>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index016.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 58px; left: 51px;\"><nobr><span class=\"ft5\"><b>Chapter 7. Annotation Service HTTP Gateway</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 110px; left: 51px;\"><nobr><span class=\"ft6\"><b>7.1. Overview</b></span></nobr></div>").append(
@@ -385,11 +357,9 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 547px; left: 51px;\"><nobr><span class=\"ft6\"><b>7.4. State management</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 581px; left: 51px;\"><nobr><span class=\"ft4\">The restlets used to provide http access to the annotation service are stateless restlets.This means they<br>don't depend on Seam or JSF. Nevertheless, because of the Authentication system, client will have to<br>maintain a Session Cookie to avoid reauthenticating on each call.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 532px;\"><nobr><span class=\"ft3\">13</span></nobr></div>").append(
-                "</div>").append("<!-- Page 17 -->").append(
-                "<a name=\"17\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "</div>").append("<!-- Page 17 -->").append("<a name=\"17\"></a>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index017.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 58px; left: 51px;\"><nobr><span class=\"ft5\"><b>Chapter 8. Integrating the Annotation service</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 95px; left: 51px;\"><nobr><span class=\"ft3\">Integrating the Nuxeo Annotation Service to your project may require several steps.</span></nobr></div>").append(
@@ -408,11 +378,9 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 644px; left: 51px;\"><nobr><span class=\"ft3\">By default Nuxeo provides 2 clients : one integrated into the preview tab and one standalone.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 670px; left: 51px;\"><nobr><span class=\"ft4\">You may need to integrate the Preview in dedicated screens or to adapter the default screens to you<br>own graphic theme.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 532px;\"><nobr><span class=\"ft3\">14</span></nobr></div>").append(
-                "</div>").append("<!-- Page 18 -->").append(
-                "<a name=\"18\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "</div>").append("<!-- Page 18 -->").append("<a name=\"18\"></a>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index018.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 58px; left: 51px;\"><nobr><span class=\"ft5\"><b>Chapter 9. Packaging and deployment</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 110px; left: 51px;\"><nobr><span class=\"ft6\"><b>9.1. Target platform</b></span></nobr></div>").append(
@@ -440,11 +408,9 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 506px; left: 51px;\"><nobr><span class=\"ft3\">Some of these artifacts are resources only artifacts (for JS and HTML).</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 533px; left: 51px;\"><nobr><span class=\"ft4\">The support for NXAS inside the Nuxeo \"light packaging\" (Jetty bundle) is not directly targeted, but<br>this should not be a problem ouside of the facade artifact.</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 532px;\"><nobr><span class=\"ft3\">15</span></nobr></div>").append(
-                "</div>").append("<!-- Page 19 -->").append(
-                "<a name=\"19\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append("-->").append(
-                "</style>").append(
+                "</div>").append("<!-- Page 19 -->").append("<a name=\"19\"></a>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append("-->").append("</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index019.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 58px; left: 51px;\"><nobr><span class=\"ft5\"><b>Chapter 10. W3C Annotea compliance</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 95px; left: 51px;\"><nobr><span class=\"ft4\">As explained before, Annotea specification is not broad enought to include all Nuxeo EP requirements<br>for managing Annotations.</span></nobr></div>").append(
@@ -454,12 +420,10 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 268px; left: 51px;\"><nobr><span class=\"ft6\"><b>10.2. Annotea Algae.</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 303px; left: 51px;\"><nobr><span class=\"ft4\">The Algae specification describe a Query Language that may be implemented by Annotea clients and<br>servers. NXAS won't implement Algae</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 532px;\"><nobr><span class=\"ft3\">16</span></nobr></div>").append(
-                "</div>").append("<!-- Page 20 -->").append(
-                "<a name=\"20\"></a>").append(
-                "<div style=\"position: relative; width: 595px; height: 842px;\">").append(
-                "<style type=\"text/css\">").append("<!--").append(
-                ".ft11{font-size:10px;font-family:Times;color:#0000ff;}").append(
-                "-->").append("</style>").append(
+                "</div>").append("<!-- Page 20 -->").append("<a name=\"20\"></a>").append(
+                "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(
+                "<!--").append(".ft11{font-size:10px;font-family:Times;color:#0000ff;}").append("-->").append(
+                "</style>").append(
                 "<img src=\"_tmp_PDF2Html_1221805514793_index_files/index020.png\" alt=\"background image\" width=\"595\" height=\"842\">").append(
                 "<div style=\"position: absolute; top: 58px; left: 51px;\"><nobr><span class=\"ft5\"><b>Chapter 11. References</b></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 91px; left: 70px;\"><nobr><span class=\"ft3\">•</span></nobr></div>").append(
@@ -469,8 +433,7 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
                 "<div style=\"position: absolute; top: 144px; left: 70px;\"><nobr><span class=\"ft3\">•</span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 144px; left: 82px;\"><nobr><span class=\"ft11\"><a href=\"http://www.w3.org/TR/xptr-framework/\"><i>XPointer</i></a></span></nobr></div>").append(
                 "<div style=\"position: absolute; top: 816px; left: 532px;\"><nobr><span class=\"ft3\">17</span></nobr></div>").append(
-                "</div>").append("<hr>").append(
-                "<a name=\"outline\"></a><h1>Document Outline</h1>").append(
+                "</div>").append("<hr>").append("<a name=\"outline\"></a><h1>Document Outline</h1>").append(
                 "<ul><li>��").append("</li><li>��").toString();
     }
 }

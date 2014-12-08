@@ -13,7 +13,6 @@ package org.nuxeo.ecm.automation.jaxrs.io.operations;
 
 /**
  * @author matic
- *
  */
 public interface InputResolver<T> {
 

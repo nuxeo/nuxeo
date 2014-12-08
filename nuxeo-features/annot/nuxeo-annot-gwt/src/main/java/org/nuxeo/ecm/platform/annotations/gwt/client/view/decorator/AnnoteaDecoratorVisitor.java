@@ -37,7 +37,6 @@ import com.google.gwt.user.client.Event;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnoteaDecoratorVisitor implements DecoratorVisitor {
     private boolean decorating;
@@ -65,8 +64,8 @@ public class AnnoteaDecoratorVisitor implements DecoratorVisitor {
 
     private final AnnotationController controller;
 
-    public AnnoteaDecoratorVisitor(Node startNode, int annotatedText,
-            int offset, Annotation annotation, AnnotationController controller) {
+    public AnnoteaDecoratorVisitor(Node startNode, int annotatedText, int offset, Annotation annotation,
+            AnnotationController controller) {
         this.startNode = startNode;
         this.textToAnnotate = annotatedText;
         this.offset = offset;
@@ -131,8 +130,7 @@ public class AnnoteaDecoratorVisitor implements DecoratorVisitor {
             text = rawText.substring(0, x);
             text = removeWhiteSpace(text);
             if (text.length() == length) {
-                return new String[] { text, rawText.substring(0, x),
-                        rawText.substring(x) };
+                return new String[] { text, rawText.substring(0, x), rawText.substring(x) };
             }
         }
         return new String[] { text, rawText, "" };
@@ -143,11 +141,9 @@ public class AnnoteaDecoratorVisitor implements DecoratorVisitor {
         boolean startWithSpace = data.startsWith(" ");
         boolean endWithSpace = data.endsWith(" ");
         data = data.trim();
-        if (lastCharIsSpace && !startWithSpace
-                && !previousIsCarriageReturnElement) {
+        if (lastCharIsSpace && !startWithSpace && !previousIsCarriageReturnElement) {
             data = " " + data;
-        } else if (!lastCharIsSpace && startWithSpace
-                && !previousIsCarriageReturnElement) {
+        } else if (!lastCharIsSpace && startWithSpace && !previousIsCarriageReturnElement) {
             data = " " + data;
         }
         lastCharIsSpace = endWithSpace;
@@ -156,13 +152,10 @@ public class AnnoteaDecoratorVisitor implements DecoratorVisitor {
 
     private SpanElement getSpanElement(Document document) {
         SpanElement spanElement = document.createSpanElement();
-        DOM.sinkEvents((Element) spanElement.cast(), Event.ONMOUSEOVER
-                | Event.ONMOUSEOUT);
+        DOM.sinkEvents((Element) spanElement.cast(), Event.ONMOUSEOVER | Event.ONMOUSEOUT);
         DOM.setEventListener((Element) spanElement.cast(),
-                AnnotationPopupEventListener.getAnnotationPopupEventListener(
-                        annotation, controller));
-        spanElement.setClassName(AnnotationConstant.IGNORED_ELEMENT + " "
-                + controller.getDecorateClassName() + " "
+                AnnotationPopupEventListener.getAnnotationPopupEventListener(annotation, controller));
+        spanElement.setClassName(AnnotationConstant.IGNORED_ELEMENT + " " + controller.getDecorateClassName() + " "
                 + AnnotationConstant.DECORATE_CLASS_NAME + annotation.getId());
         return spanElement;
     }
@@ -189,8 +182,7 @@ public class AnnoteaDecoratorVisitor implements DecoratorVisitor {
 
     private void processDecoratedNode(Node node, String data, Node parent) {
         String[] selectedText = getSelectedText(data, textToAnnotate);
-        if (selectedText[1].trim().length() == 0
-                && selectedText[2].trim().length() == 0
+        if (selectedText[1].trim().length() == 0 && selectedText[2].trim().length() == 0
                 && node.getParentNode().getNodeName().equalsIgnoreCase("tr")) {
             // don't add nodes to tr
             textToAnnotate -= selectedText[0].length();
@@ -201,8 +193,7 @@ public class AnnoteaDecoratorVisitor implements DecoratorVisitor {
         spanElement.setInnerText(selectedText[1]);
         insertBefore(parent, node.getNextSibling(), spanElement);
         if (selectedText[2].length() > 0) {
-            insertBefore(parent, spanElement.getNextSibling(),
-                    document.createTextNode(selectedText[2]));
+            insertBefore(parent, spanElement.getNextSibling(), document.createTextNode(selectedText[2]));
         }
         textToAnnotate -= selectedText[0].length();
     }

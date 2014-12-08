@@ -21,24 +21,31 @@ package org.nuxeo.ecm.platform.annotations.gwt.client.annotea;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public interface RDFConstant {
 
     String R = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
     String A = "http://www.w3.org/2000/10/annotation-ns#";
+
     String D = "http://purl.org/dc/elements/1.1/";
+
     String H = "http://www.w3.org/1999/xx/http#";
 
     String R_ABOUT = "{" + R + "}about";
+
     String R_RESOURCE = "{" + R + "}resource";
+
     String R_TYPE = "{" + R + "}type";
 
     String D_TITLE = "{" + D + "}title";
+
     String D_CREATOR = "{" + D + "}creator";
+
     String D_DATE = "{" + D + "}date";
 
     String A_CONTEXT = "{" + A + "}context";
+
     String A_BODY = "{" + A + "}body";
 
     String H_BODY = "{" + H + "}Body";

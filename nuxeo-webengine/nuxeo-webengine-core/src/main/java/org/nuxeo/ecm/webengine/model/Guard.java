@@ -26,13 +26,13 @@ import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface Guard {
 
     String value();
+
     Class<?> type() default org.nuxeo.ecm.webengine.security.Guard.class;
 
 }

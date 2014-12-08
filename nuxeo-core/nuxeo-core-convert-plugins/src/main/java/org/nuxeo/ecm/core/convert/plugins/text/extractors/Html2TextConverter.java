@@ -40,8 +40,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
 import org.nuxeo.runtime.services.streaming.StringSource;
 
 /**
- * Extract the text content of HTML documents while trying to respect the
- * paragraph structure.
+ * Extract the text content of HTML documents while trying to respect the paragraph structure.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
@@ -51,8 +50,7 @@ public class Html2TextConverter implements Converter {
     private static final Log log = LogFactory.getLog(Html2TextConverter.class);
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         InputStream stream = null;
         try {
@@ -65,8 +63,7 @@ public class Html2TextConverter implements Converter {
                 StreamingBlob sblob = (StreamingBlob) blob;
                 StreamSource streamSource = sblob.getStreamSource();
                 if (streamSource instanceof StringSource) {
-                    source = new Source(
-                            ((StringSource) streamSource).getString());
+                    source = new Source(((StringSource) streamSource).getString());
                 }
             }
             if (source == null) {
@@ -81,8 +78,7 @@ public class Html2TextConverter implements Converter {
             text = text.replaceAll(" *\n", "\n"); // clean trailing spaces
             text = text.replaceAll("\\n\\n+", "\n\n"); // clean multiple lines
             text = text.trim();
-            return new SimpleCachableBlobHolder(new StringBlob(text,
-                    "text/plain"));
+            return new SimpleCachableBlobHolder(new StringBlob(text, "text/plain"));
         } catch (ClientException | IOException e) {
             throw new ConversionException("Error during Html2Text conversion", e);
         } finally {

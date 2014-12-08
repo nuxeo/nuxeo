@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.api.ws;
 
 import java.io.Serializable;
 
-
 public class DocumentSnapshot implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -34,11 +33,11 @@ public class DocumentSnapshot implements Serializable {
 
     private WsACE[] acl;
 
-
     public DocumentSnapshot() {
     }
 
-    public DocumentSnapshot(DocumentProperty[] noBlobProperties, DocumentBlob[] blobProperties, String pathAsString, WsACE[] acl) {
+    public DocumentSnapshot(DocumentProperty[] noBlobProperties, DocumentBlob[] blobProperties, String pathAsString,
+            WsACE[] acl) {
         this.acl = acl;
         this.noBlobProperties = noBlobProperties;
         this.blobProperties = blobProperties;

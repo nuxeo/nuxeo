@@ -105,14 +105,12 @@ public class CoreGraph implements Graph {
     public static String DOCUMENT_NAMESPACE = RelationConstants.DOCUMENT_NAMESPACE;
 
     /** Without final slash (compat). */
-    public static String DOCUMENT_NAMESPACE2 = DOCUMENT_NAMESPACE.substring(0,
-            DOCUMENT_NAMESPACE.length() - 1);
+    public static String DOCUMENT_NAMESPACE2 = DOCUMENT_NAMESPACE.substring(0, DOCUMENT_NAMESPACE.length() - 1);
 
     /** Has no final slash (compat). */
     public static final String COMMENT_NAMESPACE = "http://www.nuxeo.org/comments/uid";
 
-    public static final String[] DOC_NAMESPACES = { DOCUMENT_NAMESPACE,
-            DOCUMENT_NAMESPACE2, COMMENT_NAMESPACE };
+    public static final String[] DOC_NAMESPACES = { DOCUMENT_NAMESPACE, DOCUMENT_NAMESPACE2, COMMENT_NAMESPACE };
 
     protected static final List<Statement> EMPTY_STATEMENTS = Collections.emptyList();
 
@@ -138,8 +136,7 @@ public class CoreGraph implements Graph {
     }
 
     /**
-     * A graph with this base session. An unrestricted session will be opened
-     * based on it.
+     * A graph with this base session. An unrestricted session will be opened based on it.
      */
     public CoreGraph(CoreSession session) {
         this.session = session;
@@ -150,9 +147,8 @@ public class CoreGraph implements Graph {
         name = graphDescription.getName();
         setOptions(graphDescription.getOptions());
         namespaces = graphDescription.getNamespaces();
-        namespaceList = namespaces == null ? Collections.<String> emptyList()
-                : new ArrayList<String>(new LinkedHashSet<String>(
-                        namespaces.values()));
+        namespaceList = namespaces == null ? Collections.<String> emptyList() : new ArrayList<String>(
+                new LinkedHashSet<String>(namespaces.values()));
     }
 
     protected void setOptions(Map<String, String> options) {
@@ -163,15 +159,12 @@ public class CoreGraph implements Graph {
                 SchemaManager sm = Framework.getLocalService(SchemaManager.class);
                 DocumentType documentType = sm.getDocumentType(type);
                 if (documentType == null) {
-                    throw new IllegalArgumentException("Unknown type: " + type
-                            + " for graph: " + name);
+                    throw new IllegalArgumentException("Unknown type: " + type + " for graph: " + name);
                 }
                 Type[] th = documentType.getTypeHierarchy();
-                String baseType = th.length == 0 ? type
-                        : th[th.length - 1].getName();
+                String baseType = th.length == 0 ? type : th[th.length - 1].getName();
                 if (!REL_TYPE.equals(baseType)) {
-                    throw new IllegalArgumentException("Not a Relation type: "
-                            + type + " for graph: " + name);
+                    throw new IllegalArgumentException("Not a Relation type: " + type + " for graph: " + name);
                 }
                 docType = type;
             }
@@ -185,8 +178,7 @@ public class CoreGraph implements Graph {
 
     @Override
     public Long size() {
-        SizeFinder sizeFinder = session == null ? new SizeFinder()
-                : new SizeFinder(session);
+        SizeFinder sizeFinder = session == null ? new SizeFinder() : new SizeFinder(session);
         try {
             sizeFinder.runUnrestricted();
         } catch (ClientException e) {
@@ -210,8 +202,7 @@ public class CoreGraph implements Graph {
         @Override
         public void run() throws ClientException {
             // TODO could use a COUNT(*) query
-            IterableQueryResult it = session.queryAndFetch("SELECT "
-                    + NXQL.ECM_UUID + " FROM " + docType, NXQL.NXQL);
+            IterableQueryResult it = session.queryAndFetch("SELECT " + NXQL.ECM_UUID + " FROM " + docType, NXQL.NXQL);
             try {
                 size = it.size();
             } finally {
@@ -232,8 +223,8 @@ public class CoreGraph implements Graph {
 
     @Override
     public void add(List<Statement> statements) {
-        StatementAdder statementAdder = session == null ? new StatementAdder(
-                statements) : new StatementAdder(statements, session);
+        StatementAdder statementAdder = session == null ? new StatementAdder(statements) : new StatementAdder(
+                statements, session);
         try {
             statementAdder.runUnrestricted();
         } catch (ClientException e) {
@@ -266,25 +257,21 @@ public class CoreGraph implements Graph {
         }
 
         protected void add(Statement statement) throws ClientException {
-            DocumentModel rel = session.createDocumentModel(null, "relation",
-                    docType);
+            DocumentModel rel = session.createDocumentModel(null, "relation", docType);
             rel = setRelationProperties(rel, statement);
             session.createDocument(rel);
         }
 
-        protected DocumentModel setRelationProperties(DocumentModel rel,
-                Statement statement) throws ClientException {
+        protected DocumentModel setRelationProperties(DocumentModel rel, Statement statement) throws ClientException {
             Resource pred = statement.getPredicate();
             NodeAsString predicate = getNodeAsString(pred);
             if (predicate.uri == null) {
-                throw new IllegalArgumentException(
-                        "Invalid predicate in statement: " + statement);
+                throw new IllegalArgumentException("Invalid predicate in statement: " + statement);
             }
 
             Subject subject = statement.getSubject();
             if (subject.isLiteral()) {
-                throw new IllegalArgumentException(
-                        "Invalid literal subject in statement: " + statement);
+                throw new IllegalArgumentException("Invalid literal subject in statement: " + statement);
             }
             NodeAsString source = getNodeAsString(subject);
 
@@ -308,12 +295,9 @@ public class CoreGraph implements Graph {
 
             String comment = getComment(statement);
 
-            String title = (source.id != null ? source.id : source.uri)
-                    + " "
-                    + predicate.uri.substring(predicate.uri.lastIndexOf('/') + 1)
-                    + " "
-                    + (target.id != null ? target.id
-                            : target.uri != null ? target.uri : target.string);
+            String title = (source.id != null ? source.id : source.uri) + " "
+                    + predicate.uri.substring(predicate.uri.lastIndexOf('/') + 1) + " "
+                    + (target.id != null ? target.id : target.uri != null ? target.uri : target.string);
             int MAX_TITLE = 200;
             if (title.length() > MAX_TITLE) {
                 title = title.substring(0, MAX_TITLE);
@@ -362,8 +346,8 @@ public class CoreGraph implements Graph {
 
     @Override
     public void remove(List<Statement> statements) {
-        StatementRemover statementRemover = session == null ? new StatementRemover(
-                statements) : new StatementRemover(statements, session);
+        StatementRemover statementRemover = session == null ? new StatementRemover(statements) : new StatementRemover(
+                statements, session);
         try {
             statementRemover.runUnrestricted();
         } catch (ClientException e) {
@@ -382,8 +366,7 @@ public class CoreGraph implements Graph {
             this.statements = statements;
         }
 
-        protected StatementRemover(List<Statement> statements,
-                CoreSession session) {
+        protected StatementRemover(List<Statement> statements, CoreSession session) {
             super(session);
             this.statements = statements;
         }
@@ -432,11 +415,9 @@ public class CoreGraph implements Graph {
 
         @Override
         public void run() throws ClientException {
-            String query = "SELECT " + REL_PREDICATE + ", " + REL_SOURCE_ID
-                    + ", " + REL_SOURCE_URI + ", " + REL_TARGET_ID + ", "
-                    + REL_TARGET_URI + ", " + REL_TARGET_STRING + ", "
-                    + DC_CREATED + ", " + DC_CREATOR + ", " + DC_MODIFIED
-                    + ", " + DC_DESCRIPTION + " FROM " + docType;
+            String query = "SELECT " + REL_PREDICATE + ", " + REL_SOURCE_ID + ", " + REL_SOURCE_URI + ", "
+                    + REL_TARGET_ID + ", " + REL_TARGET_URI + ", " + REL_TARGET_STRING + ", " + DC_CREATED + ", "
+                    + DC_CREATOR + ", " + DC_MODIFIED + ", " + DC_DESCRIPTION + " FROM " + docType;
             query = whereBuilder(query, statement);
             if (query == null) {
                 statements = EMPTY_STATEMENTS;
@@ -472,8 +453,7 @@ public class CoreGraph implements Graph {
                     } else {
                         object = NodeFactory.createLiteral(targetString);
                     }
-                    Statement statement = new StatementImpl(subject, predicate,
-                            object);
+                    Statement statement = new StatementImpl(subject, predicate, object);
                     setCreationDate(statement, created);
                     setAuthor(statement, creator);
                     setModificationDate(statement, modified);
@@ -486,8 +466,7 @@ public class CoreGraph implements Graph {
         }
 
         protected QNameResource createId(String id) {
-            return NodeFactory.createQNameResource(DOCUMENT_NAMESPACE,
-                    session.getRepositoryName() + '/' + id);
+            return NodeFactory.createQNameResource(DOCUMENT_NAMESPACE, session.getRepositoryName() + '/' + id);
         }
 
         protected Node createUri(String uri) {
@@ -514,15 +493,14 @@ public class CoreGraph implements Graph {
     }
 
     @Override
-    public List<Statement> getStatements(Node subject, Node predicate,
-            Node object) {
+    public List<Statement> getStatements(Node subject, Node predicate, Node object) {
         return getStatements(new StatementImpl(subject, predicate, object));
     }
 
     @Override
     public List<Statement> getStatements(Statement statement) {
-        StatementFinder statementFinder = session == null ? new StatementFinder(
-                statement) : new StatementFinder(statement, session);
+        StatementFinder statementFinder = session == null ? new StatementFinder(statement) : new StatementFinder(
+                statement, session);
         try {
             statementFinder.runUnrestricted();
         } catch (ClientException e) {
@@ -533,8 +511,7 @@ public class CoreGraph implements Graph {
 
     @Override
     public List<Node> getSubjects(Node predicate, Node object) {
-        List<Statement> statements = getStatements(new StatementImpl(null,
-                predicate, object));
+        List<Statement> statements = getStatements(new StatementImpl(null, predicate, object));
         List<Node> nodes = new ArrayList<Node>(statements.size());
         for (Statement statement : statements) {
             nodes.add(statement.getSubject());
@@ -544,8 +521,7 @@ public class CoreGraph implements Graph {
 
     @Override
     public List<Node> getPredicates(Node subject, Node object) {
-        List<Statement> statements = getStatements(new StatementImpl(subject,
-                null, object));
+        List<Statement> statements = getStatements(new StatementImpl(subject, null, object));
         List<Node> nodes = new ArrayList<Node>(statements.size());
         for (Statement statement : statements) {
             nodes.add(statement.getPredicate());
@@ -555,8 +531,7 @@ public class CoreGraph implements Graph {
 
     @Override
     public List<Node> getObjects(Node subject, Node predicate) {
-        List<Statement> statements = getStatements(new StatementImpl(subject,
-                predicate, null));
+        List<Statement> statements = getStatements(new StatementImpl(subject, predicate, null));
         List<Node> nodes = new ArrayList<Node>(statements.size());
         for (Statement statement : statements) {
             nodes.add(statement.getObject());
@@ -579,8 +554,8 @@ public class CoreGraph implements Graph {
         if (resource == null) {
             return false;
         }
-        ResourceFinder resourceFinder = session == null ? new ResourceFinder(
-                resource) : new ResourceFinder(resource, session);
+        ResourceFinder resourceFinder = session == null ? new ResourceFinder(resource) : new ResourceFinder(resource,
+                session);
         try {
             resourceFinder.runUnrestricted();
         } catch (ClientException e) {
@@ -617,8 +592,7 @@ public class CoreGraph implements Graph {
             }
         }
 
-        protected String whereAnyBuilder(String query, Resource resource)
-                throws ClientException {
+        protected String whereAnyBuilder(String query, Resource resource) throws ClientException {
             List<Object> params = new ArrayList<Object>(3);
             List<String> clauses = new ArrayList<String>(3);
 
@@ -628,8 +602,7 @@ public class CoreGraph implements Graph {
                 clauses.add(REL_SOURCE_ID + " = ?");
                 params.add(nas.id);
                 clauses.add(REL_TARGET_URI + " = ?");
-                params.add(DOCUMENT_NAMESPACE + session.getRepositoryName()
-                        + '/' + nas.id);
+                params.add(DOCUMENT_NAMESPACE + session.getRepositoryName() + '/' + nas.id);
             } else if (nas.uri != null) {
                 for (String ns : DOC_NAMESPACES) {
                     if (nas.uri.startsWith(ns)) {
@@ -647,8 +620,7 @@ public class CoreGraph implements Graph {
                 params.add(nas.uri);
             }
             query += " WHERE " + StringUtils.join(clauses, " OR ");
-            query = NXQLQueryBuilder.getQuery(query, params.toArray(), true,
-                    true, null);
+            query = NXQLQueryBuilder.getQuery(query, params.toArray(), true, true, null);
             return query;
         }
     }
@@ -710,8 +682,7 @@ public class CoreGraph implements Graph {
         return Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
     }
 
-    protected String whereBuilder(String query, Statement statement)
-            throws ClientException {
+    protected String whereBuilder(String query, Statement statement) throws ClientException {
         List<Object> params = new ArrayList<Object>(3);
         List<String> clauses = new ArrayList<String>(3);
 
@@ -754,8 +725,7 @@ public class CoreGraph implements Graph {
 
         if (!clauses.isEmpty()) {
             query += " WHERE " + StringUtils.join(clauses, " AND ");
-            query = NXQLQueryBuilder.getQuery(query, params.toArray(), true,
-                    true, null);
+            query = NXQLQueryBuilder.getQuery(query, params.toArray(), true, true, null);
         }
         return query;
     }
@@ -770,8 +740,7 @@ public class CoreGraph implements Graph {
             nas.string = ((Literal) node).getValue();
         } else if (node.isQNameResource()) {
             String ns = ((QNameResource) node).getNamespace();
-            if (DOCUMENT_NAMESPACE.equals(ns) || DOCUMENT_NAMESPACE2.equals(ns)
-                    || COMMENT_NAMESPACE.equals(ns)) {
+            if (DOCUMENT_NAMESPACE.equals(ns) || DOCUMENT_NAMESPACE2.equals(ns) || COMMENT_NAMESPACE.equals(ns)) {
                 nas.id = localNameToId(((QNameResource) node).getLocalName());
             } else {
                 nas.uri = ((Resource) node).getUri();
@@ -820,10 +789,8 @@ public class CoreGraph implements Graph {
         return getDateProperty(statement, RelationConstants.MODIFICATION_DATE);
     }
 
-    protected static void setModificationDate(Statement statement,
-            Calendar modified) {
-        setDateProperty(statement, RelationConstants.MODIFICATION_DATE,
-                modified);
+    protected static void setModificationDate(Statement statement, Calendar modified) {
+        setDateProperty(statement, RelationConstants.MODIFICATION_DATE, modified);
     }
 
     protected static String getComment(Statement statement) {
@@ -842,8 +809,7 @@ public class CoreGraph implements Graph {
         return ((Literal) node).getValue();
     }
 
-    protected static void setStringProperty(Statement statement, Resource prop,
-            String string) {
+    protected static void setStringProperty(Statement statement, Resource prop, String string) {
         if (string == null) {
             return;
         }
@@ -858,8 +824,7 @@ public class CoreGraph implements Graph {
         return RelationDate.getDate((Literal) node);
     }
 
-    protected static void setDateProperty(Statement statement, Resource prop,
-            Calendar date) {
+    protected static void setDateProperty(Statement statement, Resource prop, Calendar date) {
         if (date == null) {
             return;
         }

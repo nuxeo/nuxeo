@@ -39,8 +39,7 @@ public class BlobHelper {
     /**
      * If the blob is backed by an actual file, return it.
      * <p>
-     * Note that the File may be short-lived (temporary file), so should be used
-     * immediately.
+     * Note that the File may be short-lived (temporary file), so should be used immediately.
      *
      * @return a File, or {@code null} if this blob doesn't have one
      */

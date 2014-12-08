@@ -20,9 +20,8 @@
 package org.nuxeo.ecm.platform.el;
 
 /**
- * Simple String wrapper to allow
- * manipulating a "standalone" string in the context
- * == changing value without changing reference.
+ * Simple String wrapper to allow manipulating a "standalone" string in the context == changing value without changing
+ * reference.
  *
  * @author tiry
  */

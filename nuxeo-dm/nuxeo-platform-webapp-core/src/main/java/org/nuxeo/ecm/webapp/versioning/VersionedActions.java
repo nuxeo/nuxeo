@@ -46,21 +46,17 @@ public interface VersionedActions {
     void retrieveVersions() throws ClientException;
 
     /**
-     * Restored the document to the selected version. If there is no selected
-     * version it does nothing.
+     * Restored the document to the selected version. If there is no selected version it does nothing.
      *
      * @return the page that needs to be displayed next
      */
-    String restoreToVersion(VersionModel selectedVersion)
-            throws ClientException;
+    String restoreToVersion(VersionModel selectedVersion) throws ClientException;
 
     /**
-     * Restores the version which id is returned by
-     * {@link #getSelectedVersionId()}.
+     * Restores the version which id is returned by {@link #getSelectedVersionId()}.
      *
      * @return the view id
      * @throws ClientException if cannot fetch the version
-     *
      * @since 5.6
      */
     String restoreToVersion() throws ClientException;
@@ -101,51 +97,43 @@ public interface VersionedActions {
     void initialize();
 
     /**
-     * When the user selects/changes other documents then we nullify the list of
-     * versions associated with the document so that the factory method gets
-     * called when the list is used.
+     * When the user selects/changes other documents then we nullify the list of versions associated with the document
+     * so that the factory method gets called when the list is used.
      * <p>
-     * This way we achieve lazy loading of data from backend - only when its
-     * needed and not loading it when the event is fired.
-     *
+     * This way we achieve lazy loading of data from backend - only when its needed and not loading it when the event is
+     * fired.
      */
     void resetVersions();
 
     /**
      * View an older version of the document.
      */
-    String viewArchivedVersion(VersionModel selectedVersion)
-            throws ClientException;
+    String viewArchivedVersion(VersionModel selectedVersion) throws ClientException;
 
     /**
-     * Navigates to the version which id is returned by
-     * {@link #getSelectedVersionId()}.
+     * Navigates to the version which id is returned by {@link #getSelectedVersionId()}.
      *
      * @return the view id
      * @throws ClientException if cannot fetch the version
-     *
      * @since 5.6
      */
     String viewArchivedVersion() throws ClientException;
 
     DocumentModel getSourceDocument() throws ClientException;
 
-    DocumentModel getSourceDocument(DocumentModel document)
-            throws ClientException;
+    DocumentModel getSourceDocument(DocumentModel document) throws ClientException;
 
     /**
-     * Check if a version can be removed. It won't be possible if a proxy is
-     * pointing to it.
+     * Check if a version can be removed. It won't be possible if a proxy is pointing to it.
      */
     boolean canRemoveArchivedVersion(VersionModel selectedVersion);
 
     /**
-     * Check if the currently selected versions can be removed. It won't be
-     * possible if a proxy is pointing to one of them.
+     * Check if the currently selected versions can be removed. It won't be possible if a proxy is pointing to one of
+     * them.
      *
      * @return true if can remove selected archived versions
-     * @throws ClientException if at least one of the selected versions cannot
-     *             be retrieved from the repository
+     * @throws ClientException if at least one of the selected versions cannot be retrieved from the repository
      * @since 5.6
      */
     boolean getCanRemoveSelectedArchivedVersions() throws ClientException;
@@ -155,8 +143,7 @@ public interface VersionedActions {
      *
      * @param selectedVersion the version model to remove
      */
-    String removeArchivedVersion(VersionModel selectedVersion)
-            throws ClientException;
+    String removeArchivedVersion(VersionModel selectedVersion) throws ClientException;
 
     /**
      * Remove currently selected archived versions.

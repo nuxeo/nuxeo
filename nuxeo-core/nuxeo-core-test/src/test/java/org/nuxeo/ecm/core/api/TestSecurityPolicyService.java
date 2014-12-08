@@ -63,8 +63,7 @@ public class TestSecurityPolicyService {
     @Inject
     protected RuntimeHarness harness;
 
-    private void setTestPermissions(String user, String... perms)
-            throws ClientException {
+    private void setTestPermissions(String user, String... perms) throws ClientException {
         try (CoreSession session = repo.openSessionAs(SecurityConstants.SYSTEM_USERNAME)) {
             DocumentModel doc = session.getRootDocument();
             ACP acp = doc.getACP();
@@ -89,8 +88,7 @@ public class TestSecurityPolicyService {
         try (CoreSession session = repo.openSessionAs(ADMINISTRATOR)) {
             setTestPermissions(ANONYMOUS, READ);
             DocumentModel root = session.getRootDocument();
-            DocumentModel folder = new DocumentModelImpl(
-                    root.getPathAsString(), "folder#1", "Folder");
+            DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder#1", "Folder");
             // set access security
             folder.setProperty("secupolicy", "securityLevel", Long.valueOf(4));
             folder = session.createDocument(folder);
@@ -98,8 +96,7 @@ public class TestSecurityPolicyService {
             session.save();
 
             // test permission for 'foo' user using hasPermission
-            Principal fooUser = new UserPrincipal("foo",
-                    new ArrayList<String>(), false, false);
+            Principal fooUser = new UserPrincipal("foo", new ArrayList<String>(), false, false);
             assertFalse(session.hasPermission(fooUser, folder.getRef(), READ));
         }
 
@@ -113,8 +110,7 @@ public class TestSecurityPolicyService {
             // access level is too low for this doc
             assertFalse(session.hasPermission(folderRef, READ));
             // change user access level => can read
-            ((NuxeoPrincipal) session.getPrincipal()).getModel().setProperty(
-                    "user", "accessLevel", Long.valueOf(5));
+            ((NuxeoPrincipal) session.getPrincipal()).getModel().setProperty("user", "accessLevel", Long.valueOf(5));
             assertTrue(session.hasPermission(folderRef, READ));
             session.save();
         }

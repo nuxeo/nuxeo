@@ -89,8 +89,7 @@ public class TestDocumentModel {
     }
 
     /**
-     * Verifies that checked out state, lifecycle state and lock info are stored
-     * on a detached document.
+     * Verifies that checked out state, lifecycle state and lock info are stored on a detached document.
      */
     @Test
     public void testDetachedSystemInfo() throws Exception {

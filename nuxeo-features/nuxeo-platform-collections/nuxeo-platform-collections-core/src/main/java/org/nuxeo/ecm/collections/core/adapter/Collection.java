@@ -60,11 +60,8 @@ public class Collection {
         setDocumentIds(documentIds);
     }
 
-    public void setDocumentIds(final List<String> documentIds)
-            throws ClientException {
-        document.setPropertyValue(
-                CollectionConstants.COLLECTION_DOCUMENT_IDS_PROPERTY_NAME,
-                (Serializable) documentIds);
+    public void setDocumentIds(final List<String> documentIds) throws ClientException {
+        document.setPropertyValue(CollectionConstants.COLLECTION_DOCUMENT_IDS_PROPERTY_NAME, (Serializable) documentIds);
     }
 
     public DocumentModel getDocument() {

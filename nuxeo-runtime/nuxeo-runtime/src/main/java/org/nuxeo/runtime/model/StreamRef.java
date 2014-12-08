@@ -16,11 +16,9 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- * A named stream used to be able to deploy new components without referring to
- * them via URLs.
+ * A named stream used to be able to deploy new components without referring to them via URLs.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface StreamRef {
 

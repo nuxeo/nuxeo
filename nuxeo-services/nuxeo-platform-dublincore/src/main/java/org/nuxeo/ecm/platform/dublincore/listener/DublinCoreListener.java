@@ -67,10 +67,8 @@ public class DublinCoreListener implements EventListener {
         }
         String eventId = event.getName();
 
-        if (!eventId.equals(DOCUMENT_CREATED)
-                && !eventId.equals(BEFORE_DOC_UPDATE)
-                && !eventId.equals(TRANSITION_EVENT)
-                && !eventId.equals(DOCUMENT_PUBLISHED)) {
+        if (!eventId.equals(DOCUMENT_CREATED) && !eventId.equals(BEFORE_DOC_UPDATE)
+                && !eventId.equals(TRANSITION_EVENT) && !eventId.equals(DOCUMENT_PUBLISHED)) {
             return;
         }
 
@@ -80,8 +78,7 @@ public class DublinCoreListener implements EventListener {
             return;
         }
 
-        Boolean block = (Boolean) event.getContext().getProperty(
-                DISABLE_DUBLINCORE_LISTENER);
+        Boolean block = (Boolean) event.getContext().getProperty(DISABLE_DUBLINCORE_LISTENER);
         if (Boolean.TRUE.equals(block)) {
             // ignore the event - we are blocked by the caller
             return;
@@ -106,8 +103,8 @@ public class DublinCoreListener implements EventListener {
         if (doc.isProxy()) {
             if (eventId.equals(DOCUMENT_PUBLISHED)) {
                 CoreSession session = event.getContext().getCoreSession();
-                UnrestrictedPropertySetter setter = new UnrestrictedPropertySetter(
-                        session, doc.getRef(), "dc:issued", cEventDate);
+                UnrestrictedPropertySetter setter = new UnrestrictedPropertySetter(session, doc.getRef(), "dc:issued",
+                        cEventDate);
                 setter.runUnrestricted();
             }
             if (doc.isImmutable()) {
@@ -120,8 +117,7 @@ public class DublinCoreListener implements EventListener {
             // live proxies may be updated normally
         }
 
-        if (eventId.equals(BEFORE_DOC_UPDATE)
-                || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {
+        if (eventId.equals(BEFORE_DOC_UPDATE) || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);
         } else if (eventId.equals(DOCUMENT_CREATED)) {
@@ -131,8 +127,7 @@ public class DublinCoreListener implements EventListener {
         }
     }
 
-    protected class UnrestrictedPropertySetter extends
-            UnrestrictedSessionRunner {
+    protected class UnrestrictedPropertySetter extends UnrestrictedSessionRunner {
 
         DocumentRef docRef;
 
@@ -140,8 +135,7 @@ public class DublinCoreListener implements EventListener {
 
         Serializable value;
 
-        protected UnrestrictedPropertySetter(CoreSession session,
-                DocumentRef docRef, String xpath, Serializable value) {
+        protected UnrestrictedPropertySetter(CoreSession session, DocumentRef docRef, String xpath, Serializable value) {
             super(session);
             this.docRef = docRef;
             this.xpath = xpath;

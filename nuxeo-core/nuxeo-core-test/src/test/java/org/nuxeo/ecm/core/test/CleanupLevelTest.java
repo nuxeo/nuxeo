@@ -36,8 +36,7 @@ public class CleanupLevelTest {
 
     @Test
     public void firstTestToCreateADoc() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "test",
-                "Domain");
+        DocumentModel doc = session.createDocumentModel("/", "test", "Domain");
         doc.setProperty("dublincore", "title", "test");
         doc = session.createDocument(doc);
         session.saveDocument(doc);

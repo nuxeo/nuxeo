@@ -63,12 +63,9 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
 
         String repo = (String) req.getAttributes().get("repoId");
         String docid = (String) req.getAttributes().get("docId");
-        Integer tileWidth = Integer.decode((String) req.getAttributes().get(
-                "tileWidth"));
-        Integer tileHeight = Integer.decode((String) req.getAttributes().get(
-                "tileHeight"));
-        Integer maxTiles = Integer.decode((String) req.getAttributes().get(
-                "maxTiles"));
+        Integer tileWidth = Integer.decode((String) req.getAttributes().get("tileWidth"));
+        Integer tileHeight = Integer.decode((String) req.getAttributes().get("tileHeight"));
+        Integer maxTiles = Integer.decode((String) req.getAttributes().get("maxTiles"));
 
         Form form = req.getResourceRef().getQueryAsForm();
         String xpath = (String) form.getFirstValue("fieldPath");
@@ -79,8 +76,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         String test = form.getFirstValue("test");
         if (test != null) {
             try {
-                handleSendTest(res, repo, docid, tileWidth, tileHeight,
-                        maxTiles);
+                handleSendTest(res, repo, docid, tileWidth, tileHeight, maxTiles);
                 return;
             } catch (IOException e) {
                 handleError(res, e);
@@ -137,9 +133,8 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         }
     }
 
-    protected void handleSendTest(Response res, String repoId, String docId,
-            Integer tileWidth, Integer tileHeight, Integer maxTiles)
-            throws IOException {
+    protected void handleSendTest(Response res, String repoId, String docId, Integer tileWidth, Integer tileHeight,
+            Integer maxTiles) throws IOException {
         MediaType mt = null;
         mt = MediaType.TEXT_HTML;
 
@@ -155,8 +150,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         res.setEntity(html, mt);
     }
 
-    protected void handleSendInfo(Response res, PictureTiles tiles,
-            String format) {
+    protected void handleSendInfo(Response res, PictureTiles tiles, String format) {
         if (format == null) {
             format = "XML";
         }
@@ -179,8 +173,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         response.setHeader("Pragma", "no-cache");
     }
 
-    protected void handleSendImage(Response res, PictureTiles tiles, Integer x,
-            Integer y) {
+    protected void handleSendImage(Response res, PictureTiles tiles, Integer x, Integer y) {
 
         Blob image;
         try {
@@ -191,8 +184,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         }
 
         try {
-            final File tempfile = File.createTempFile(
-                    "nuxeo-tilingrestlet-tmp", "");
+            final File tempfile = File.createTempFile("nuxeo-tilingrestlet-tmp", "");
             image.transferTo(tempfile);
             res.setEntity(new OutputRepresentation(null) {
                 @Override
@@ -232,12 +224,10 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         response.setHeader("Content-Disposition", "inline");
     }
 
-    protected void updateCache(DocumentModel doc, PictureTilesAdapter adapter,
-            String xpath) throws ClientException {
+    protected void updateCache(DocumentModel doc, PictureTilesAdapter adapter, String xpath) throws ClientException {
 
         Calendar modified = (Calendar) doc.getProperty("dublincore", "modified");
-        PictureTilesCachedEntry entry = new PictureTilesCachedEntry(modified,
-                adapter, xpath);
+        PictureTilesCachedEntry entry = new PictureTilesCachedEntry(modified, adapter, xpath);
         synchronized (cachedAdapters) {
             cachedAdapters.put(doc.getId(), entry);
         }
@@ -264,18 +254,15 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         return Math.abs(t1 - t2) <= 1;
     }
 
-    protected PictureTilesAdapter getFromCache(DocumentModel doc, String xpath)
-            throws ClientException {
+    protected PictureTilesAdapter getFromCache(DocumentModel doc, String xpath) throws ClientException {
         if (cachedAdapters.containsKey(doc.getId())) {
             if (xpath == null) {
                 xpath = "";
             }
-            Calendar modified = (Calendar) doc.getProperty("dublincore",
-                    "modified");
+            Calendar modified = (Calendar) doc.getProperty("dublincore", "modified");
             PictureTilesCachedEntry entry = cachedAdapters.get(doc.getId());
 
-            if ((!isSameDate(entry.getModified(), modified))
-                    || (!xpath.equals(entry.getXpath()))) {
+            if ((!isSameDate(entry.getModified(), modified)) || (!xpath.equals(entry.getXpath()))) {
                 removeFromCache(doc.getId());
                 return null;
             } else {

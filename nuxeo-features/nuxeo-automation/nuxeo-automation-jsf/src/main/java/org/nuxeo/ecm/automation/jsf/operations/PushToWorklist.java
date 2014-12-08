@@ -26,8 +26,7 @@ import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.DEFAULT_
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Operation(id = PushToWorklist.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Worklist",
-        description = "Add the input document(s) to worklist. Returns back the document(s)")
+@Operation(id = PushToWorklist.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Worklist", description = "Add the input document(s) to worklist. Returns back the document(s)")
 public class PushToWorklist {
 
     public static final String ID = "Seam.AddToWorklist";
@@ -38,10 +37,8 @@ public class PushToWorklist {
     @OperationMethod
     public DocumentModel run(DocumentModel doc) {
         if (OperationHelper.isSeamContextAvailable()) {
-            OperationHelper.getDocumentListManager().addToWorkingList(
-                    DEFAULT_WORKING_LIST, doc);
-        }
-        else {
+            OperationHelper.getDocumentListManager().addToWorkingList(DEFAULT_WORKING_LIST, doc);
+        } else {
             DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
             pm.addDocumentToPersistentList(ctx.getPrincipal().getName(), DEFAULT_WORKING_LIST, doc);
         }
@@ -51,8 +48,7 @@ public class PushToWorklist {
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) {
         if (OperationHelper.isSeamContextAvailable()) {
-            OperationHelper.getDocumentListManager().addToWorkingList(
-                    DEFAULT_WORKING_LIST, docs);
+            OperationHelper.getDocumentListManager().addToWorkingList(DEFAULT_WORKING_LIST, docs);
         } else {
             DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
             for (DocumentModel doc : docs) {

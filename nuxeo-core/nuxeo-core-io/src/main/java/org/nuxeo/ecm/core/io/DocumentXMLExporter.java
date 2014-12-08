@@ -38,11 +38,9 @@ public interface DocumentXMLExporter extends Serializable {
      * @param doc the document
      * @param session the core session
      * @return the input stream
-     * @throws ClientException if an error occurs while exporting the document
-     *             to XML
+     * @throws ClientException if an error occurs while exporting the document to XML
      */
-    InputStream exportXML(DocumentModel doc, CoreSession session)
-            throws ClientException;
+    InputStream exportXML(DocumentModel doc, CoreSession session) throws ClientException;
 
     /**
      * Exports a document to XML as an {@link InputSource}.
@@ -50,11 +48,9 @@ public interface DocumentXMLExporter extends Serializable {
      * @param doc the document
      * @param session the core session
      * @return the input source
-     * @throws ClientException if an error occurs while exporting the document
-     *             to XML
+     * @throws ClientException if an error occurs while exporting the document to XML
      */
-    InputSource exportXMLAsInputSource(DocumentModel doc, CoreSession session)
-            throws ClientException;
+    InputSource exportXMLAsInputSource(DocumentModel doc, CoreSession session) throws ClientException;
 
     /**
      * Exports a document to XML as a byte array.
@@ -62,9 +58,7 @@ public interface DocumentXMLExporter extends Serializable {
      * @param doc the document
      * @param session the core session
      * @return the byte array
-     * @throws ClientException if an error occurs while exporting the document
-     *             to XML
+     * @throws ClientException if an error occurs while exporting the document to XML
      */
-    byte[] exportXMLAsByteArray(DocumentModel doc, CoreSession session)
-            throws ClientException;
+    byte[] exportXMLAsByteArray(DocumentModel doc, CoreSession session) throws ClientException;
 }

@@ -28,8 +28,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 import org.w3c.dom.Element;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject
 public class ExtensionPointImpl implements ExtensionPoint, Serializable {
@@ -52,7 +51,6 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
 
     @XParent
     public transient RegistrationInfo ri;
-
 
     @Override
     public Class[] getContributions() {
@@ -78,8 +76,7 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
         return null;
     }
 
-    public Object[] loadContributions(RegistrationInfo owner,
-            Extension extension) {
+    public Object[] loadContributions(RegistrationInfo owner, Extension extension) {
         Object[] contribs = extension.getContributions();
         if (contribs != null) {
             // contributions already computed - this should e an overloaded (extended) extension point
@@ -93,9 +90,7 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
                     xmap.register(contrib);
                 }
             }
-            contribs = xmap.loadAll(
-                    new XMapContext(extension.getContext()),
-                    extension.getElement());
+            contribs = xmap.loadAll(new XMapContext(extension.getContext()), extension.getElement());
             extension.setContributions(contribs);
         }
         return contribs;

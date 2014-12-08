@@ -26,7 +26,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Thierry Delprat
- *
  */
 @XObject("locationManagerPlugin")
 public class LocationManagerPluginExtension implements Serializable {

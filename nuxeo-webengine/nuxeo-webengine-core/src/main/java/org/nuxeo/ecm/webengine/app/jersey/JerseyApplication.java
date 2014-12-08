@@ -32,8 +32,7 @@ import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 
 /**
- * Experimental - Can be used to inject WebContext through {@code @Context} annotation.
- * Do not use it for now.
+ * Experimental - Can be used to inject WebContext through {@code @Context} annotation. Do not use it for now.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

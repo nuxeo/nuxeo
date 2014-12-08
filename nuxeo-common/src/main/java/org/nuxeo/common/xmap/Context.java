@@ -27,15 +27,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Context extends ArrayList<Object> {
 
     private static final long serialVersionUID = 1L;
 
     private final HashMap<String, Object> properties = new HashMap<String, Object>();
-
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         if (className.startsWith("[")) {

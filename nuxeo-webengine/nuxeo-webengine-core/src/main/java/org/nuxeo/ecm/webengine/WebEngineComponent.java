@@ -39,14 +39,12 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * TODO remove old WebEngine references and rename WebEngine2 to WebEngine
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebEngineComponent extends DefaultComponent { // implements
     // ConfigurationChangedListener
     // {
 
-    public static final ComponentName NAME = new ComponentName(
-            WebEngineComponent.class.getName());
+    public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
     public static final String RENDERING_EXTENSION_XP = "rendering-extension";
 
@@ -97,13 +95,11 @@ public class WebEngineComponent extends DefaultComponent { // implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor) contribution;
             try {
-                PermissionService.getInstance().registerGuard(gd.getId(),
-                        gd.getGuard());
+                PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
@@ -115,8 +111,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
                 engine.registerRenderingExtension(fed.name, fed.newInstance());
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeServiceException(
-                        "Deployment Error. Failed to contribute freemarker template extension: "
-                                + fed.name);
+                        "Deployment Error. Failed to contribute freemarker template extension: " + fed.name);
             }
             // TODO
             // } else if (extensionPoint.endsWith(FORM_XP)) {
@@ -129,8 +124,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor) contribution;
             PermissionService.getInstance().unregisterGuard(gd.getId());

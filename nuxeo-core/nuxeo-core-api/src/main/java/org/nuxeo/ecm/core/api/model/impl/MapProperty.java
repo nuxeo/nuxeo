@@ -36,7 +36,6 @@ public class MapProperty extends ComplexProperty {
      */
     protected final Field field;
 
-
     public MapProperty(Property parent, Field field) {
         super(parent);
         this.field = field;

@@ -24,10 +24,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * Simple SQLComplexFilter to handle a different operator than =
- * It may be >, <, >=, <=
- *
- * Nothing is done on the right side part.
+ * Simple SQLComplexFilter to handle a different operator than = It may be >, <, >=, <= Nothing is done on the right
+ * side part.
  *
  * @since 5.7
  */

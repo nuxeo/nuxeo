@@ -24,11 +24,9 @@ import net.sf.json.JSONObject;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 
 /**
- *
  * JSON serializer for PictureTiles structure
  *
  * @author tiry
- *
  */
 public class JSONPictureTilesSerializer implements PictureTilesSerializer {
 

@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class UserAlreadyExistsException extends ClientException {
 

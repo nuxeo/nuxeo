@@ -24,11 +24,9 @@ import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 
 /**
- *
  * Interface for class that can Tile a Picture
  *
  * @author tiry
- *
  */
 public interface PictureTiler {
 
@@ -36,7 +34,6 @@ public interface PictureTiler {
 
     String getName();
 
-    PictureTiles getTilesFromFile(ImageInfo input, String outputDirPath,
-            int tileWidth, int tileHeight, int maxTiles, int xCenter,
-            int yCenter, long lastModificationTime, boolean fullGeneration) throws ClientException;
+    PictureTiles getTilesFromFile(ImageInfo input, String outputDirPath, int tileWidth, int tileHeight, int maxTiles,
+            int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration) throws ClientException;
 }

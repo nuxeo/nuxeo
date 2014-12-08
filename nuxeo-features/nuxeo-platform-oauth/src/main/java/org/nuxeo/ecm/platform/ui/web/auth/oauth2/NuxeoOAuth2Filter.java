@@ -61,8 +61,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         if (!isValid(request)) {
             chain.doFilter(request, response);
@@ -96,13 +96,11 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         }
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        return isAuthorizedRequest(httpRequest)
-                || httpRequest.getRequestURI().contains(OAUTH2_SEGMENT);
+        return isAuthorizedRequest(httpRequest) || httpRequest.getRequestURI().contains(OAUTH2_SEGMENT);
     }
 
-    protected void process(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException,
-            ClientException {
+    protected void process(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException, ClientException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
@@ -127,11 +125,9 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         }
     }
 
-    protected void processAuthentication(HttpServletRequest request,
-            HttpServletResponse response, FilterChain chain)
+    protected void processAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ClientException, IOException, ServletException {
-        String key = URLDecoder.decode(
-                request.getHeader("Authorization").substring(7), "UTF-8").trim();
+        String key = URLDecoder.decode(request.getHeader("Authorization").substring(7), "UTF-8").trim();
         NuxeoOAuth2Token token = getTokenStore().getToken(key);
 
         if (token == null) {
@@ -147,8 +143,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         if (loginContext != null) {
             Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
             try {
-                chain.doFilter(new NuxeoSecuredRequestWrapper(request,
-                        principal), response);
+                chain.doFilter(new NuxeoSecuredRequestWrapper(request, principal), response);
             } finally {
                 try {
                     loginContext.logout();
@@ -159,8 +154,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         }
     }
 
-    protected LoginContext buildLoginContext(NuxeoOAuth2Token token)
-            throws ClientException {
+    protected LoginContext buildLoginContext(NuxeoOAuth2Token token) throws ClientException {
         try {
             return NuxeoAuthenticationFilter.loginAs(token.getNuxeoLogin());
         } catch (LoginException e) {
@@ -174,8 +168,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         return authorization != null && authorization.startsWith("Bearer");
     }
 
-    protected void processAuthorization(HttpServletRequest request,
-            HttpServletResponse response, FilterChain chain)
+    protected void processAuthorization(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ClientException {
         AuthorizationRequest authRequest = AuthorizationRequest.from(request);
         String error = authRequest.checkError();
@@ -186,11 +179,9 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
 
         // Redirect to grant form
         if (request.getMethod().equals("GET")) {
-            request.getSession().setAttribute(AUTHORIZATION_KEY,
-                    authRequest.getAuthorizationKey());
+            request.getSession().setAttribute(AUTHORIZATION_KEY, authRequest.getAuthorizationKey());
             request.getSession().setAttribute("state", authRequest.getState());
-            request.getSession().setAttribute(
-                    CLIENTNAME_KEY,
+            request.getSession().setAttribute(CLIENTNAME_KEY,
                     getClientRegistry().getClient(authRequest.getClientId()).getName());
             String base = VirtualHostHelper.getBaseURL(request);
             sendRedirect(response, base + "oauth2Grant.jsp", null);
@@ -205,8 +196,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         }
 
         // Save username in request object
-        authRequest.setUsername((String) request.getSession().getAttribute(
-                USERNAME_KEY));
+        authRequest.setUsername((String) request.getSession().getAttribute(USERNAME_KEY));
 
         Map<String, String> params = new HashMap<>();
         params.put("code", authRequest.getAuthorizationCode());
@@ -222,8 +212,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         return Framework.getLocalService(ClientRegistry.class);
     }
 
-    protected void processToken(HttpServletRequest request,
-            HttpServletResponse response, FilterChain chain)
+    protected void processToken(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ClientException {
         TokenRequest tokRequest = new TokenRequest(request);
         // Process Authorization code
@@ -239,14 +228,12 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
                 error = ERRORS.access_denied;
             }
             // Validate client secret
-            else if (!getClientRegistry().isValidClient(
-                    tokRequest.getClientId(), tokRequest.getClientSecret())) {
+            else if (!getClientRegistry().isValidClient(tokRequest.getClientId(), tokRequest.getClientSecret())) {
                 error = ERRORS.unauthorized_client;
             }
             // Ensure redirect uris are identical
             else {
-                boolean sameRedirectUri = authRequest.getRedirectUri().equals(
-                        tokRequest.getRedirectUri());
+                boolean sameRedirectUri = authRequest.getRedirectUri().equals(tokRequest.getRedirectUri());
                 if (!(isBlank(authRequest.getRedirectUri()) || sameRedirectUri)) {
                     error = ERRORS.invalid_request;
                 }
@@ -258,8 +245,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
             }
 
             // Store token
-            NuxeoOAuth2Token token = new NuxeoOAuth2Token(3600 * 1000,
-                    authRequest.getClientId());
+            NuxeoOAuth2Token token = new NuxeoOAuth2Token(3600 * 1000, authRequest.getClientId());
             getTokenStore().store(authRequest.getUsername(), token);
 
             handleTokenResponse(token, response);
@@ -267,8 +253,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
             ERRORS error = null;
             if (isBlank(tokRequest.getClientId())) {
                 error = ERRORS.access_denied;
-            } else if (!getClientRegistry().isValidClient(
-                    tokRequest.getClientId(), tokRequest.getClientSecret())) {
+            } else if (!getClientRegistry().isValidClient(tokRequest.getClientId(), tokRequest.getClientSecret())) {
                 error = ERRORS.access_denied;
             }
 
@@ -277,8 +262,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
                 return;
             }
 
-            NuxeoOAuth2Token refreshed = getTokenStore().refresh(
-                    tokRequest.getRefreshToken(), tokRequest.getClientId());
+            NuxeoOAuth2Token refreshed = getTokenStore().refresh(tokRequest.getRefreshToken(), tokRequest.getClientId());
             if (refreshed == null) {
                 handleJsonError(ERRORS.invalid_request, request, response);
             } else {
@@ -289,8 +273,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         }
     }
 
-    protected void handleTokenResponse(NuxeoOAuth2Token token,
-            HttpServletResponse response) throws IOException {
+    protected void handleTokenResponse(NuxeoOAuth2Token token, HttpServletResponse response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
         response.setHeader("Content-Type", "application/json");
@@ -298,13 +281,13 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         mapper.writeValue(response.getWriter(), token.toJsonObject());
     }
 
-    protected void handleError(ERRORS error, HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    protected void handleError(ERRORS error, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         handleError(error.toString(), request, response);
     }
 
-    protected void handleError(String error, HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    protected void handleError(String error, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         Map<String, String> params = new HashMap<>();
         params.put("error", error);
         String state = request.getParameter("state");
@@ -316,8 +299,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         sendRedirect(response, redirectUri, params);
     }
 
-    protected void handleJsonError(ERRORS error, HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    protected void handleJsonError(ERRORS error, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
         response.setHeader("Content-Type", "application/json");
@@ -328,8 +311,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         mapper.writeValue(response.getWriter(), object);
     }
 
-    protected void sendRedirect(HttpServletResponse response, String uri,
-            Map<String, String> params) throws IOException {
+    protected void sendRedirect(HttpServletResponse response, String uri, Map<String, String> params)
+            throws IOException {
         if (uri == null) {
             uri = "http://dummyurl";
         }

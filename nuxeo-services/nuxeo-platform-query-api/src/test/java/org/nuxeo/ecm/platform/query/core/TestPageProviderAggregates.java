@@ -63,19 +63,15 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
     @Override
     protected void deployRepositoryContrib() throws Exception {
         super.deployRepositoryContrib();
-        deployContrib("org.nuxeo.ecm.platform.query.api",
-                "OSGI-INF/pageprovider-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.query.api.test",
-                "test-pageprovider-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.query.api.test",
-                "test-schemas-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-pageprovider-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.query.api.test", "test-schemas-contrib.xml");
     }
 
     @Test
     public void testAggregateDefinitionEmpty() throws Exception {
 
-        PageProviderDefinition ppd = pps
-                .getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN");
+        PageProviderDefinition ppd = pps.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN");
         List<AggregateDefinition> aggs = ppd.getAggregates();
         assertNotNull(aggs);
         assertEquals(0, aggs.size());
@@ -84,8 +80,7 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
 
     @Test
     public void testAggregateDefinition() throws Exception {
-        PageProviderDefinition ppd = pps
-                .getPageProviderDefinition("TEST_AGGREGATES");
+        PageProviderDefinition ppd = pps.getPageProviderDefinition("TEST_AGGREGATES");
         List<AggregateDefinition> aggs = ppd.getAggregates();
         assertNotNull(aggs);
         assertEquals(5, aggs.size());
@@ -111,37 +106,29 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         // range
         assertEquals("size_agg", size_agg.getId());
         assertEquals(3, size_agg.getRanges().size());
-        assertEquals("AggregateRangeDescriptor(small, null, 1024.0)", size_agg
-                .getRanges().get(0).toString());
-        assertEquals("AggregateRangeDescriptor(medium, 1024.0, 4096.0)",
-                size_agg.getRanges().get(1).toString());
-        assertEquals("AggregateRangeDescriptor(big, 4096.0, null)", size_agg
-                .getRanges().get(2).toString());
+        assertEquals("AggregateRangeDescriptor(small, null, 1024.0)", size_agg.getRanges().get(0).toString());
+        assertEquals("AggregateRangeDescriptor(medium, 1024.0, 4096.0)", size_agg.getRanges().get(1).toString());
+        assertEquals("AggregateRangeDescriptor(big, 4096.0, null)", size_agg.getRanges().get(2).toString());
         // date range
         assertEquals("created_agg", created_agg.getId());
         assertEquals(0, created_agg.getRanges().size());
         assertEquals(3, created_agg.getDateRanges().size());
-        assertEquals(
-                "AggregateRangeDateDescriptor(long_time_ago, null, NOW-10M/M)",
+        assertEquals("AggregateRangeDateDescriptor(long_time_ago, null, NOW-10M/M)",
                 created_agg.getDateRanges().get(0).toString());
-        assertEquals(
-                "AggregateRangeDateDescriptor(last_month, NOW-1M/M, null)",
+        assertEquals("AggregateRangeDateDescriptor(last_month, NOW-1M/M, null)",
                 created_agg.getDateRanges().get(2).toString());
     }
 
     @Test
     public void testAggregateSelection() throws Exception {
-        PageProviderDefinition ppd = pps
-                .getPageProviderDefinition("TEST_AGGREGATES");
+        PageProviderDefinition ppd = pps.getPageProviderDefinition("TEST_AGGREGATES");
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (AbstractSession) session);
-        DocumentModel searchDoc = new DocumentModelImpl("/", "doc",
-                "AdvancedSearch");
-        String[] query = {"for search", "you know"};
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (AbstractSession) session);
+        DocumentModel searchDoc = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        String[] query = { "for search", "you know" };
         searchDoc.setPropertyValue("search:source_agg", query);
-        PageProvider<?> pp = pps.getPageProvider("TEST_AGGREGATES", ppd,
-                searchDoc, null, Long.valueOf(1), Long.valueOf(0), null);
+        PageProvider<?> pp = pps.getPageProvider("TEST_AGGREGATES", ppd, searchDoc, null, Long.valueOf(1),
+                Long.valueOf(0), null);
         assertNotNull(pp);
 
         List<AggregateDefinition> aggDefs = pp.getAggregateDefinitions();
@@ -149,13 +136,11 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         for (AggregateDefinition def : aggDefs) {
             AggregateBase agg = new AggregateBase(def, pp.getSearchDocumentModel());
             switch (agg.getId()) {
-                case "source_agg":
-                    assertEquals("Aggregate(source_agg, terms, dc:source, [for search, you know], null)",
-                            agg.toString());
-                    break;
-                case "coverage_agg":
-                    assertEquals("Aggregate(coverage_agg, histogram, dc:coverage, [], null)",
-                            agg.toString());
+            case "source_agg":
+                assertEquals("Aggregate(source_agg, terms, dc:source, [for search, you know], null)", agg.toString());
+                break;
+            case "coverage_agg":
+                assertEquals("Aggregate(coverage_agg, histogram, dc:coverage, [], null)", agg.toString());
             }
         }
     }

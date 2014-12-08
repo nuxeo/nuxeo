@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.relations.api.exceptions.InvalidLiteralException;
  * Literal nodes.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class LiteralImpl extends AbstractNode implements Literal {
 
@@ -38,7 +37,6 @@ public class LiteralImpl extends AbstractNode implements Literal {
     protected String language;
 
     protected String type;
-
 
     public LiteralImpl(String value) {
         // TODO: maybe handle encoding problems here
@@ -60,8 +58,7 @@ public class LiteralImpl extends AbstractNode implements Literal {
 
     public void setLanguage(String language) {
         if (type != null) {
-            throw new InvalidLiteralException(
-                    "Cannot set language, type already set");
+            throw new InvalidLiteralException("Cannot set language, type already set");
         }
         this.language = language;
     }
@@ -72,8 +69,7 @@ public class LiteralImpl extends AbstractNode implements Literal {
 
     public void setType(String type) {
         if (language != null) {
-            throw new InvalidLiteralException(
-                    "Cannot set type, language already set");
+            throw new InvalidLiteralException("Cannot set type, language already set");
         }
         this.type = type;
     }
@@ -90,11 +86,9 @@ public class LiteralImpl extends AbstractNode implements Literal {
     public String toString() {
         String str;
         if (type != null) {
-            str = String.format("%s('%s^^%s')", getClass().getSimpleName(),
-                    value, type);
+            str = String.format("%s('%s^^%s')", getClass().getSimpleName(), value, type);
         } else if (language != null) {
-            str = String.format("%s('%s@%s')", getClass().getSimpleName(),
-                    value, language);
+            str = String.format("%s('%s@%s')", getClass().getSimpleName(), value, language);
         } else {
             str = String.format("%s('%s')", getClass().getSimpleName(), value);
         }
@@ -116,10 +110,8 @@ public class LiteralImpl extends AbstractNode implements Literal {
         // .equals(otherLiteral.getValue())));
         boolean sameLanguage = language == null ? otherLiteral.language == null
                 : language.equals(otherLiteral.language);
-        boolean sameType = type == null ? otherLiteral.type == null
-                : type.equals(otherLiteral.type);
-        boolean sameValue = value == null ? otherLiteral.value == null
-                : value.equals(otherLiteral.value);
+        boolean sameType = type == null ? otherLiteral.type == null : type.equals(otherLiteral.type);
+        boolean sameValue = value == null ? otherLiteral.value == null : value.equals(otherLiteral.value);
         return sameLanguage && sameType && sameValue;
     }
 

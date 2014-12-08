@@ -31,8 +31,8 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Factory method for the DocumentModelAdapter for PictureTiles Contains the
- * logic to choose the correct implementation according to DocumentModel.
+ * Factory method for the DocumentModelAdapter for PictureTiles Contains the logic to choose the correct implementation
+ * according to DocumentModel.
  *
  * @author tiry
  */
@@ -58,10 +58,8 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
             if (doc.hasSchema("file")) {
                 Blob blob = (Blob) doc.getProperty("file", "content");
                 if (blob != null) {
-                    PictureTilesAdapter adapter = new PictureTilesAdapterImpl(
-                            doc, "file:content");
-                    adapter.setFileName((String) doc.getProperty("file",
-                            "filename"));
+                    PictureTilesAdapter adapter = new PictureTilesAdapterImpl(doc, "file:content");
+                    adapter.setFileName((String) doc.getProperty("file", "filename"));
                     return adapter;
                 }
             } else {
@@ -73,8 +71,8 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
         return null;
     }
 
-    private PictureTilesAdapter getPictureTilesAdapterFor(DocumentModel doc,
-            String blobProperty) throws ClientException {
+    private PictureTilesAdapter getPictureTilesAdapterFor(DocumentModel doc, String blobProperty)
+            throws ClientException {
         if (blobProperty != null) {
             try {
                 return getPictureTilesAdapter(doc, blobProperty);
@@ -87,8 +85,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
         return null;
     }
 
-    private PictureTilesAdapter getPictureTilesAdapterForPicture(DocumentModel doc)
-            throws ClientException {
+    private PictureTilesAdapter getPictureTilesAdapterForPicture(DocumentModel doc) throws ClientException {
         if (doc.hasSchema("picture")) {
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
             // try OriginalJpeg view xpath
@@ -103,12 +100,10 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
         return null;
     }
 
-    private PictureTilesAdapter getPictureTilesAdapter(DocumentModel doc, String blobProperty)
-            throws ClientException {
+    private PictureTilesAdapter getPictureTilesAdapter(DocumentModel doc, String blobProperty) throws ClientException {
         Blob blob = (Blob) doc.getPropertyValue(blobProperty);
         if (blob != null) {
-            PictureTilesAdapter adapter = new PictureTilesAdapterImpl(doc,
-                    blobProperty);
+            PictureTilesAdapter adapter = new PictureTilesAdapterImpl(doc, blobProperty);
             adapter.setFileName(blob.getFilename());
             return adapter;
         }

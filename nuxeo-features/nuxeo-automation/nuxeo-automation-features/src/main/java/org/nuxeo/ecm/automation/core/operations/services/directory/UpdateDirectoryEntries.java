@@ -44,8 +44,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
  * <p>
  * Entries to update are sent as a JSON array.
  * <p>
- * Returns the updated entries ids as a JSON array of JSON objects containing
- * all fields
+ * Returns the updated entries ids as a JSON array of JSON objects containing all fields
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
@@ -103,7 +102,6 @@ public class UpdateDirectoryEntries extends AbstractDirectoryOperation {
 
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, ids);
-        return new InputStreamBlob(new ByteArrayInputStream(
-                writer.toString().getBytes("UTF-8")), "application/json");
+        return new InputStreamBlob(new ByteArrayInputStream(writer.toString().getBytes("UTF-8")), "application/json");
     }
 }

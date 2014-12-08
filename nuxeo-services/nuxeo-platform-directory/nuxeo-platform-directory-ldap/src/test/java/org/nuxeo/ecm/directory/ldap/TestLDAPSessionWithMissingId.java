@@ -39,8 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
 
 /**
- * Tests for NXP-2461: Manage LDAP directories with missing entries for
- * identifier field.
+ * Tests for NXP-2461: Manage LDAP directories with missing entries for identifier field.
  *
  * @author Anahide Tchertchian
  */
@@ -55,11 +54,9 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
         super.setUp();
         // override default defs
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            deployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                    EXTERNAL_SERVER_SETUP_OVERRIDE);
+            deployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP_OVERRIDE);
         } else {
-            deployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                    INTERNAL_SERVER_SETUP_OVERRIDE);
+            deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_OVERRIDE);
             getLDAPDirectory("userDirectory").setTestServer(server);
             getLDAPDirectory("groupDirectory").setTestServer(server);
         }
@@ -77,31 +74,25 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
 
             entry = session.getEntry("ogrisel+Administrator@nuxeo.com");
             assertEquals("ogrisel+Administrator@nuxeo.com", entry.getId());
-            assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME,
-                    "username"));
-            assertEquals("Manager", entry.getProperty(USER_SCHEMANAME,
-                    "lastName"));
+            assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME, "username"));
+            assertEquals("Manager", entry.getProperty(USER_SCHEMANAME, "lastName"));
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-                assertEquals(Long.valueOf(1), entry.getProperty(
-                        USER_SCHEMANAME, "intField"));
+                assertEquals(Long.valueOf(1), entry.getProperty(USER_SCHEMANAME, "intField"));
             }
             // assertNull(entry.getProperty(USER_SCHEMANAME, "sn"));
-            assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME,
-                    "firstName"));
+            assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME, "firstName"));
             // assertNull(entry.getProperty(USER_SCHEMANAME, "givenName"));
             // assertNull(entry.getProperty(USER_SCHEMANAME, "cn"));
             assertNull(entry.getProperty(USER_SCHEMANAME, "password"));
             // assertNull(entry.getProperty(USER_SCHEMANAME, "userPassword"));
 
-            List<String> val = (List<String>) entry.getProperty(
-                    USER_SCHEMANAME, "employeeType");
+            List<String> val = (List<String>) entry.getProperty(USER_SCHEMANAME, "employeeType");
             assertTrue(val.isEmpty());
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 // LDAP references do not work with the internal test server
-                List<String> groups = (List<String>) entry.getProperty(
-                        USER_SCHEMANAME, "groups");
+                List<String> groups = (List<String>) entry.getProperty(USER_SCHEMANAME, "groups");
                 assertEquals(2, groups.size());
                 assertTrue(groups.contains("members"));
                 assertTrue(groups.contains("administrators"));
@@ -110,29 +101,23 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             DocumentModel entry2 = session.getEntry("ogrisel+user1@nuxeo.com");
             assertNotNull(entry2);
             assertEquals("ogrisel+user1@nuxeo.com", entry2.getId());
-            assertEquals("user1", entry2.getProperty(USER_SCHEMANAME,
-                    "username"));
+            assertEquals("user1", entry2.getProperty(USER_SCHEMANAME, "username"));
             assertEquals("One", entry2.getProperty(USER_SCHEMANAME, "lastName"));
-            assertEquals("User", entry2.getProperty(USER_SCHEMANAME,
-                    "firstName"));
+            assertEquals("User", entry2.getProperty(USER_SCHEMANAME, "firstName"));
             assertNull(entry2.getProperty(USER_SCHEMANAME, "password"));
             // assertNull(entry2.getProperty(USER_SCHEMANAME, "userPassword"));
-            assertEquals(Arrays.asList("Boss"), entry2.getProperty(
-                    USER_SCHEMANAME, "employeeType"));
+            assertEquals(Arrays.asList("Boss"), entry2.getProperty(USER_SCHEMANAME, "employeeType"));
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 // default value for missing attribute
-                assertEquals(Long.valueOf(0), entry2.getProperty(
-                        USER_SCHEMANAME, "intField"));
+                assertEquals(Long.valueOf(0), entry2.getProperty(USER_SCHEMANAME, "intField"));
 
                 // LDAP references do not work with the internal test server
                 if (HAS_DYNGROUP_SCHEMA) {
-                    assertEquals(Arrays.asList("dyngroup1", "dyngroup2",
-                            "members", "subgroup"), entry2.getProperty(
-                            USER_SCHEMANAME, "groups"));
-                } else {
-                    assertEquals(Arrays.asList("members", "subgroup"),
+                    assertEquals(Arrays.asList("dyngroup1", "dyngroup2", "members", "subgroup"),
                             entry2.getProperty(USER_SCHEMANAME, "groups"));
+                } else {
+                    assertEquals(Arrays.asList("members", "subgroup"), entry2.getProperty(USER_SCHEMANAME, "groups"));
                 }
 
             }
@@ -167,24 +152,20 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             DocumentModel entry = session.getEntry("administrators");
             assertNotNull(entry);
             assertEquals("administrators", entry.getId());
-            assertEquals("administrators", entry.getProperty(GROUP_SCHEMANAME,
-                    "groupname"));
+            assertEquals("administrators", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 // LDAP references do not work with the internal test server
-                List<String> members = (List<String>) entry.getProperty(
-                        GROUP_SCHEMANAME, "members");
+                List<String> members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
                 assertNotNull(members);
                 assertEquals(1, members.size());
                 assertTrue(members.contains("ogrisel+Administrator@nuxeo.com"));
 
-                List<String> subGroups = (List<String>) entry.getProperty(
-                        GROUP_SCHEMANAME, "subGroups");
+                List<String> subGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "subGroups");
                 assertNotNull(subGroups);
                 assertEquals(0, subGroups.size());
 
-                List<String> parentGroups = (List<String>) entry.getProperty(
-                        GROUP_SCHEMANAME, "parentGroups");
+                List<String> parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "parentGroups");
                 assertNotNull(parentGroups);
                 assertEquals(0, parentGroups.size());
             }
@@ -192,46 +173,38 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             entry = session.getEntry("members");
             assertNotNull(entry);
             assertEquals("members", entry.getId());
-            assertEquals("members", entry.getProperty(GROUP_SCHEMANAME,
-                    "groupname"));
+            assertEquals("members", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 // LDAP references do not work with the internal test server
-                List<String> members = (List<String>) entry.getProperty(
-                        GROUP_SCHEMANAME, "members");
+                List<String> members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
                 assertEquals(2, members.size());
                 assertTrue(members.contains("ogrisel+Administrator@nuxeo.com"));
                 assertTrue(members.contains("ogrisel+user1@nuxeo.com"));
 
-                List<String> subGroups = (List<String>) entry.getProperty(
-                        GROUP_SCHEMANAME, "subGroups");
+                List<String> subGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "subGroups");
                 assertEquals(1, subGroups.size());
                 assertTrue(subGroups.contains("submembers"));
 
-                List<String> parentGroups = (List<String>) entry.getProperty(
-                        GROUP_SCHEMANAME, "parentGroups");
+                List<String> parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "parentGroups");
                 assertEquals(0, parentGroups.size());
             }
 
             entry = session.getEntry("submembers");
             assertNotNull(entry);
             assertEquals("submembers", entry.getId());
-            assertEquals("submembers", entry.getProperty(GROUP_SCHEMANAME,
-                    "groupname"));
+            assertEquals("submembers", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 // LDAP references do not work with the internal test server
-                assertEquals(Arrays.asList(), entry.getProperty(
-                        GROUP_SCHEMANAME, "members"));
-                assertEquals(Arrays.asList(), entry.getProperty(
-                        GROUP_SCHEMANAME, "subGroups"));
+                assertEquals(Arrays.asList(), entry.getProperty(GROUP_SCHEMANAME, "members"));
+                assertEquals(Arrays.asList(), entry.getProperty(GROUP_SCHEMANAME, "subGroups"));
 
                 if (HAS_DYNGROUP_SCHEMA) {
                     assertEquals(Arrays.asList("dyngroup1", "members"),
                             entry.getProperty(GROUP_SCHEMANAME, "parentGroups"));
                 } else {
-                    assertEquals(Arrays.asList("members"), entry.getProperty(
-                            GROUP_SCHEMANAME, "parentGroups"));
+                    assertEquals(Arrays.asList("members"), entry.getProperty(GROUP_SCHEMANAME, "parentGroups"));
                 }
             }
 

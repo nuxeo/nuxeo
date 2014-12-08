@@ -31,32 +31,35 @@ import org.nuxeo.runtime.deployment.preprocessor.install.Command;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class UnzipCommand implements Command {
 
     protected final Path src;
+
     protected final Path dst;
+
     protected final PathFilter filter;
+
     protected final String prefix;
 
     public UnzipCommand(Path src, Path dst) {
-        this(src, dst, null,null);
+        this(src, dst, null, null);
     }
 
     public UnzipCommand(Path src, Path dst, PathFilter filter) {
-        this(src, dst, filter,null);
+        this(src, dst, filter, null);
     }
 
     public UnzipCommand(Path src, Path dst, String prefix) {
-        this(src, dst, null ,prefix);
+        this(src, dst, null, prefix);
     }
 
     public UnzipCommand(Path src, Path dst, PathFilter filter, String prefix) {
         this.src = src;
         this.dst = dst;
         this.filter = filter;
-        this.prefix=prefix;
+        this.prefix = prefix;
     }
 
     @Override
@@ -70,9 +73,9 @@ public class UnzipCommand implements Command {
         }
 
         if (srcFile.isDirectory()) {
-            Path p = !StringUtils.isEmpty(prefix) ? new Path("/"+prefix) : new Path("/");
-        	new CopyCommand(src.addTrailingSeparator(), dst.addTrailingSeparator(), p, filter).exec(ctx);
-        	return;
+            Path p = !StringUtils.isEmpty(prefix) ? new Path("/" + prefix) : new Path("/");
+            new CopyCommand(src.addTrailingSeparator(), dst.addTrailingSeparator(), p, filter).exec(ctx);
+            return;
         }
 
         if (dstFile.isFile()) {
@@ -85,13 +88,13 @@ public class UnzipCommand implements Command {
         }
         // unzip srcFile to directory dstFile
         if (filter != null) {
-            if (prefix!=null) {
-                ZipUtils.unzip(prefix,srcFile, dstFile, filter);
+            if (prefix != null) {
+                ZipUtils.unzip(prefix, srcFile, dstFile, filter);
             } else {
                 ZipUtils.unzip(srcFile, dstFile, filter);
             }
         } else {
-            if (prefix!=null) {
+            if (prefix != null) {
                 ZipUtils.unzip(prefix, srcFile, dstFile);
             } else {
                 ZipUtils.unzip(srcFile, dstFile);
@@ -106,8 +109,7 @@ public class UnzipCommand implements Command {
 
     @Override
     public String toString(CommandContext ctx) {
-        return "unzip " + ctx.expandVars(src.toString()) + " > " +
-                ctx.expandVars(dst.toString());
+        return "unzip " + ctx.expandVars(src.toString()) + " > " + ctx.expandVars(dst.toString());
     }
 
 }

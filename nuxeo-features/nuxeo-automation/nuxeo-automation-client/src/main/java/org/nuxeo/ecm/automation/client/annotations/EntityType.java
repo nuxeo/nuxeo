@@ -17,9 +17,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @since 5.7 This annotation, on pojo bean class injected by automation client
- *        operation, lets Nuxeo mapping this object to a Nuxeo document model
- *        adapter
+ * @since 5.7 This annotation, on pojo bean class injected by automation client operation, lets Nuxeo mapping this
+ *        object to a Nuxeo document model adapter
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

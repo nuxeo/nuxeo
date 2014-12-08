@@ -39,7 +39,6 @@ import org.nuxeo.ecm.automation.client.model.OperationRegistry;
 
 /**
  * @author dmetzler
- *
  */
 public class MockedHttpAutomationClient extends AbstractAutomationClient {
 
@@ -55,7 +54,6 @@ public class MockedHttpAutomationClient extends AbstractAutomationClient {
         registry = mock(OperationRegistry.class);
         http = mock(HttpClient.class);
 
-
     }
 
     public void setResponse(String contentType, String responseBody) {
@@ -63,20 +61,17 @@ public class MockedHttpAutomationClient extends AbstractAutomationClient {
         http = mock(HttpClient.class);
 
         try {
-            Mockito.when(
-                    http.execute(any(HttpUriRequest.class),
-                            any(HttpContext.class))).thenReturn(
-                    prepareResponse(200, responseBody,contentType));
+            Mockito.when(http.execute(any(HttpUriRequest.class), any(HttpContext.class))).thenReturn(
+                    prepareResponse(200, responseBody, contentType));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    private HttpResponse prepareResponse(int expectedResponseStatus,
-            String expectedResponseBody, String contentType) {
-        HttpResponse response = new BasicHttpResponse(new BasicStatusLine(
-                new ProtocolVersion("HTTP", 1, 1), expectedResponseStatus, ""));
+    private HttpResponse prepareResponse(int expectedResponseStatus, String expectedResponseBody, String contentType) {
+        HttpResponse response = new BasicHttpResponse(new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1),
+                expectedResponseStatus, ""));
         response.setStatusCode(expectedResponseStatus);
         try {
             StringEntity entity = new StringEntity(expectedResponseBody);
@@ -99,14 +94,14 @@ public class MockedHttpAutomationClient extends AbstractAutomationClient {
         http = null;
     }
 
-    class MockedOperationDocumentation extends OperationDocumentation{
+    class MockedOperationDocumentation extends OperationDocumentation {
 
         /**
          *
          */
         private static final long serialVersionUID = 1L;
 
-        public MockedOperationDocumentation (String operationId) {
+        public MockedOperationDocumentation(String operationId) {
             super(operationId);
         }
 

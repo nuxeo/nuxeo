@@ -17,13 +17,12 @@ import org.nuxeo.ecm.core.api.PathRef;
 
 /**
  * @author matic
- *
  */
 public class DocumentInputResolver implements InputResolver<DocumentRef> {
 
     @Override
     public String getType() {
-       return "doc";
+        return "doc";
     }
 
     @Override
@@ -31,7 +30,7 @@ public class DocumentInputResolver implements InputResolver<DocumentRef> {
         return docRefFromString(content);
     }
 
-     public static DocumentRef docRefFromString(String input) {
+    public static DocumentRef docRefFromString(String input) {
         if (input.startsWith("/")) {
             return new PathRef(input);
         } else {

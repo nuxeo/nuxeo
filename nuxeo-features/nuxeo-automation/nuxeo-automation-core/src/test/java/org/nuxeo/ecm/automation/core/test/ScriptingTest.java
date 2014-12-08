@@ -85,8 +85,7 @@ public class ScriptingTest {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         Assert.assertFalse(src.getTitle().isEmpty());
-        DocumentModel doc = (DocumentModel) ((OperationServiceImpl) service).run(
-                ctx, "testEmptyExpression");
+        DocumentModel doc = (DocumentModel) ((OperationServiceImpl) service).run(ctx, "testEmptyExpression");
         Assert.assertNotNull(doc);
         Assert.assertTrue(doc.getTitle().isEmpty());
     }

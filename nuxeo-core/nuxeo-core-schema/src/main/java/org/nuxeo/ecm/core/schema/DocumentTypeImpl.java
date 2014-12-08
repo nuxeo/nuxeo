@@ -33,11 +33,10 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
     protected PrefetchInfo prefetchInfo;
 
     /**
-     * Constructs a document type. Schemas and facets must include those from
-     * the super type.
+     * Constructs a document type. Schemas and facets must include those from the super type.
      */
-    public DocumentTypeImpl(String name, DocumentType superType,
-            List<Schema> schemas, Collection<String> facets, PrefetchInfo prefetchInfo) {
+    public DocumentTypeImpl(String name, DocumentType superType, List<Schema> schemas, Collection<String> facets,
+            PrefetchInfo prefetchInfo) {
         super(superType, SchemaNames.DOCTYPES, name, schemas);
         if (facets == null) {
             this.facets = Collections.emptySet();
@@ -48,8 +47,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
     }
 
     public DocumentTypeImpl(String name) {
-        this(name, null, Collections.<Schema> emptyList(),
-                Collections.<String> emptySet(), null);
+        this(name, null, Collections.<Schema> emptyList(), Collections.<String> emptySet(), null);
     }
 
     public void setPrefetchInfo(PrefetchInfo prefetchInfo) {

@@ -33,7 +33,7 @@ public class BatchHelper {
     public static BatchInfo getBatchInfo(String sessionId, String dateRange) {
 
         BatchInfo bInfo = pageInfo.get(sessionId);
-        if (bInfo!=null) {
+        if (bInfo != null) {
             if (bInfo.getPageDateRange().equals(dateRange)) {
                 return bInfo;
             }

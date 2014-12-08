@@ -89,12 +89,9 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
     public boolean accept(Action action, ActionContext context) {
         if (log.isDebugEnabled()) {
             if (action == null) {
-                log.debug(String.format("#accept: checking filter '%s'",
-                        getId()));
+                log.debug(String.format("#accept: checking filter '%s'", getId()));
             } else {
-                log.debug(String.format(
-                        "#accept: checking filter '%s' for action '%s'",
-                        getId(), action.getId()));
+                log.debug(String.format("#accept: checking filter '%s' for action '%s'", getId(), action.getId()));
             }
         }
         // no context: reject
@@ -145,8 +142,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
     /**
      * Returns true if all conditions defined in the rule are true.
      * <p>
-     * Since 5.7.3, does not put computed value in context in a cache if the
-     * action context does not allow it.
+     * Since 5.7.3, does not put computed value in context in a cache if the action context does not allow it.
      *
      * @see ActionContext#disableGlobalCaching()
      */
@@ -161,26 +157,19 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
             Map<FilterRule, Boolean> precomputed = (Map<FilterRule, Boolean>) context.getLocalVariable(PRECOMPUTED_KEY);
             if (precomputed != null && precomputed.containsKey(rule)) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "#checkRule: return precomputed result for rule '%s'",
-                            rule));
+                    log.debug(String.format("#checkRule: return precomputed result for rule '%s'", rule));
                 }
                 return Boolean.TRUE.equals(precomputed.get(rule));
             }
         }
         // compute filter result
-        boolean result = (rule.facets == null || rule.facets.length == 0 || checkFacets(
-                context, rule.facets))
-                && (rule.types == null || rule.types.length == 0 || checkTypes(
-                        context, rule.types))
-                && (rule.schemas == null || rule.schemas.length == 0 || checkSchemas(
-                        context, rule.schemas))
-                && (rule.permissions == null || rule.permissions.length == 0 || checkPermissions(
-                        context, rule.permissions))
-                && (rule.groups == null || rule.groups.length == 0 || checkGroups(
-                        context, rule.groups))
-                && (rule.conditions == null || rule.conditions.length == 0 || checkConditions(
-                        context, rule.conditions));
+        boolean result = (rule.facets == null || rule.facets.length == 0 || checkFacets(context, rule.facets))
+                && (rule.types == null || rule.types.length == 0 || checkTypes(context, rule.types))
+                && (rule.schemas == null || rule.schemas.length == 0 || checkSchemas(context, rule.schemas))
+                && (rule.permissions == null || rule.permissions.length == 0 || checkPermissions(context,
+                        rule.permissions))
+                && (rule.groups == null || rule.groups.length == 0 || checkGroups(context, rule.groups))
+                && (rule.conditions == null || rule.conditions.length == 0 || checkConditions(context, rule.conditions));
         if (!disableCache) {
             // put in cache
             Map<FilterRule, Boolean> precomputed = (Map<FilterRule, Boolean>) context.getLocalVariable(PRECOMPUTED_KEY);
@@ -206,8 +195,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         for (String facet : facets) {
             if (doc.hasFacet(facet)) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "#checkFacets: return true for facet '%s'", facet));
+                    log.debug(String.format("#checkFacets: return true for facet '%s'", facet));
                 }
                 return true;
             }
@@ -223,11 +211,9 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * <p>
      * If no document is found, return true only if principal is a manager.
      *
-     * @return true if given document has one of the given permissions, else
-     *         false
+     * @return true if given document has one of the given permissions, else false
      */
-    protected final boolean checkPermissions(ActionContext context,
-            String[] permissions) {
+    protected final boolean checkPermissions(ActionContext context, String[] permissions) {
         DocumentModel doc = context.getCurrentDocument();
         if (doc == null) {
             NuxeoPrincipal principal = context.getCurrentPrincipal();
@@ -257,9 +243,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
             try {
                 if (docMgr.hasPermission(doc.getRef(), permission)) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "#checkPermissions: return true for permission '%s'",
-                                permission));
+                        log.debug(String.format("#checkPermissions: return true for permission '%s'", permission));
                     }
                     return true;
                 }
@@ -284,8 +268,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         for (String group : groups) {
             if (principal.isMemberOf(group)) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "#checkGroups: return true for group '%s'", group));
+                    log.debug(String.format("#checkGroups: return true for group '%s'", group));
                 }
                 return true;
             }
@@ -303,21 +286,17 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      *
      * @return true if one of the conditions is verified, else false.
      */
-    protected final boolean checkConditions(ActionContext context,
-            String[] conditions) {
+    protected final boolean checkConditions(ActionContext context, String[] conditions) {
         for (String condition : conditions) {
             try {
                 if (context.checkCondition(condition)) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "#checkCondition: return true for condition '%s'",
-                                condition));
+                        log.debug(String.format("#checkCondition: return true for condition '%s'", condition));
                     }
                     return true;
                 }
             } catch (ELException e) {
-                log.error("evaluation of condition " + condition
-                        + " failed: returning false", e);
+                log.error("evaluation of condition " + condition + " failed: returning false", e);
                 return false;
             }
         }
@@ -330,8 +309,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
     /**
      * Returns true if document type is one of the given types, else false.
      * <p>
-     * If document is null, consider context is the server and return true if
-     * 'Server' is in the list.
+     * If document is null, consider context is the server and return true if 'Server' is in the list.
      *
      * @return true if document type is one of the given types, else false.
      */
@@ -348,8 +326,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         for (String type : types) {
             if (type.equals(docType)) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "#checkTypes: return true for type '%s'", docType));
+                    log.debug(String.format("#checkTypes: return true for type '%s'", docType));
                 }
                 return true;
             }
@@ -376,9 +353,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         for (String schema : schemas) {
             if (doc.hasSchema(schema)) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "#checkSchemas: return true for schema '%s'",
-                            schema));
+                    log.debug(String.format("#checkSchemas: return true for schema '%s'", schema));
                 }
                 return true;
             }

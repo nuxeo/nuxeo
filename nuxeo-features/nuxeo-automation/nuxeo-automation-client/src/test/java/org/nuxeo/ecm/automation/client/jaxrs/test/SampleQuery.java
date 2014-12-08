@@ -25,15 +25,14 @@ public class SampleQuery {
 
     public static void main(String[] args) throws Exception {
         try {
-            HttpAutomationClient client = new HttpAutomationClient(
-                    "http://localhost:8080/nuxeo/site/automation");
-            Session session = client.getSession("Administrator",
-                    "Administrator");
+            HttpAutomationClient client = new HttpAutomationClient("http://localhost:8080/nuxeo/site/automation");
+            Session session = client.getSession("Administrator", "Administrator");
             DocumentService rs = session.getAdapter(DocumentService.class);
             Documents docs = rs.query("SELECT * from Workspace");
             System.out.println(docs);
             for (Document d : docs) {
-                System.out.println(d.getTitle() + " at " + d.getLastModified() + " facets :" + d.getFacets() + " token:" + d.getChangeToken());
+                System.out.println(d.getTitle() + " at " + d.getLastModified() + " facets :" + d.getFacets()
+                        + " token:" + d.getChangeToken());
             }
             client.shutdown();
         } catch (RemoteException e) {

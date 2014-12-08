@@ -70,8 +70,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebService(name = "NuxeoRemotingInterface", serviceName = "NuxeoRemotingService")
 @SOAPBinding(style = Style.DOCUMENT)
-public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
-        NuxeoRemoting {
+public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoRemoting {
 
     private static final long serialVersionUID = 359922583442116202L;
 
@@ -79,16 +78,15 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     @Override
     @WebMethod
-    public String getRepositoryName(@WebParam(name = "sessionId") String sid)
-            throws ClientException {
+    public String getRepositoryName(@WebParam(name = "sessionId") String sid) throws ClientException {
         WSRemotingSession rs = initSession(sid);
         return rs.getRepository();
     }
 
     @Override
     @WebMethod
-    public WsACE[] getDocumentACL(@WebParam(name = "sessionId") String sid,
-            @WebParam(name = "uuid") String uuid) throws ClientException {
+    public WsACE[] getDocumentACL(@WebParam(name = "sessionId") String sid, @WebParam(name = "uuid") String uuid)
+            throws ClientException {
         WSRemotingSession rs = initSession(sid);
         ACP acp = rs.getDocumentManager().getACP(new IdRef(uuid));
         if (acp != null) {
@@ -101,17 +99,14 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     @Override
     @WebMethod
-    public DocumentSnapshot getDocumentSnapshot(
-            @WebParam(name = "sessionId") String sid,
+    public DocumentSnapshot getDocumentSnapshot(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid) throws ClientException {
         return getDocumentSnapshotExt(sid, uuid, false);
     }
 
     @Override
-    public DocumentSnapshot getDocumentSnapshotExt(
-            @WebParam(name = "sessionId") String sid,
-            @WebParam(name = "uuid") String uuid,
-            @WebParam(name = "useDownloadURL") boolean useDownloadUrl)
+    public DocumentSnapshot getDocumentSnapshotExt(@WebParam(name = "sessionId") String sid,
+            @WebParam(name = "uuid") String uuid, @WebParam(name = "useDownloadURL") boolean useDownloadUrl)
             throws ClientException {
         WSRemotingSession rs = initSession(sid);
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
@@ -126,16 +121,14 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             ACL acl = acp.getMergedACLs("MergedACL");
             resACP = acl.toArray(new ACE[acl.size()]);
         }
-        DocumentSnapshot ds = new DocumentSnapshot(props, blobs,
-                doc.getPathAsString(), WsACE.wrap(resACP));
+        DocumentSnapshot ds = new DocumentSnapshot(props, blobs, doc.getPathAsString(), WsACE.wrap(resACP));
         return ds;
     }
 
     @Override
     @WebMethod
-    public WsACE[] getDocumentLocalACL(
-            @WebParam(name = "sessionId") String sid,
-            @WebParam(name = "uuid") String uuid) throws ClientException {
+    public WsACE[] getDocumentLocalACL(@WebParam(name = "sessionId") String sid, @WebParam(name = "uuid") String uuid)
+            throws ClientException {
         WSRemotingSession rs = initSession(sid);
         ACP acp = rs.getDocumentManager().getACP(new IdRef(uuid));
         if (acp != null) {
@@ -152,10 +145,8 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @Override
-    public boolean hasPermission(@WebParam(name = "sessionId") String sid,
-            @WebParam(name = "uuid") String uuid,
-            @WebParam(name = "permission") String permission)
-            throws ClientException {
+    public boolean hasPermission(@WebParam(name = "sessionId") String sid, @WebParam(name = "uuid") String uuid,
+            @WebParam(name = "permission") String permission) throws ClientException {
         WSRemotingSession rs = initSession(sid);
         CoreSession docMgr = rs.getDocumentManager();
         DocumentModel doc = docMgr.getDocument(new IdRef(uuid));
@@ -167,17 +158,14 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     @Override
     @WebMethod
-    public DocumentBlob[] getDocumentBlobs(
-            @WebParam(name = "sessionId") String sid,
+    public DocumentBlob[] getDocumentBlobs(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid) throws ClientException {
         return getDocumentBlobsExt(sid, uuid, false);
     }
 
     @Override
-    public DocumentBlob[] getDocumentBlobsExt(
-            @WebParam(name = "sessionId") String sid,
-            @WebParam(name = "uuid") String uuid,
-            @WebParam(name = "useDownloadUrl") boolean useDownloadUrl)
+    public DocumentBlob[] getDocumentBlobsExt(@WebParam(name = "sessionId") String sid,
+            @WebParam(name = "uuid") String uuid, @WebParam(name = "useDownloadUrl") boolean useDownloadUrl)
             throws ClientException {
         WSRemotingSession rs = initSession(sid);
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
@@ -188,8 +176,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return getDocumentBlobs(doc, rs, useDownloadUrl);
     }
 
-    protected DocumentBlob[] getDocumentBlobs(DocumentModel doc,
-            WSRemotingSession rs, boolean useDownloadUrl)
+    protected DocumentBlob[] getDocumentBlobs(DocumentModel doc, WSRemotingSession rs, boolean useDownloadUrl)
             throws ClientException {
         List<DocumentBlob> blobs = new ArrayList<DocumentBlob>();
         String[] schemas = doc.getSchemas();
@@ -197,8 +184,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             DataModel dm = doc.getDataModel(schema);
             Map<String, Object> map = dm.getMap();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
-                collectBlobs(doc.getId(), schema, rs, "", map, entry.getKey(),
-                        entry.getValue(), blobs, useDownloadUrl);
+                collectBlobs(doc.getId(), schema, rs, "", map, entry.getKey(), entry.getValue(), blobs, useDownloadUrl);
             }
         }
         return blobs.toArray(new DocumentBlob[blobs.size()]);
@@ -206,8 +192,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     @Override
     @WebMethod
-    public String[] listUsers(@WebParam(name = "sessionId") String sid,
-            @WebParam(name = "startIndex") int from,
+    public String[] listUsers(@WebParam(name = "sessionId") String sid, @WebParam(name = "startIndex") int from,
             @WebParam(name = "endIndex") int to) throws ClientException {
         WSRemotingSession rs = initSession(sid);
         List<String> userIds = rs.getUserManager().getUserIds();
@@ -216,8 +201,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     @Override
     @WebMethod
-    public String[] listGroups(@WebParam(name = "sessionId") String sid,
-            @WebParam(name = "startIndex") int from,
+    public String[] listGroups(@WebParam(name = "sessionId") String sid, @WebParam(name = "startIndex") int from,
             @WebParam(name = "endIndex") int to) throws ClientException {
         WSRemotingSession rs = initSession(sid);
         List<String> groupIds = rs.getUserManager().getGroupIds();
@@ -226,8 +210,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     @Override
     @WebMethod
-    public DocumentProperty[] getDocumentProperties(
-            @WebParam(name = "sessionId") String sid,
+    public DocumentProperty[] getDocumentProperties(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid) throws ClientException {
         WSRemotingSession rs = initSession(sid);
 
@@ -248,8 +231,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     @Override
     @WebMethod
-    public DocumentProperty[] getDocumentNoBlobProperties(
-            @WebParam(name = "sessionId") String sid,
+    public DocumentProperty[] getDocumentNoBlobProperties(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid) throws ClientException {
         WSRemotingSession rs = initSession(sid);
 
@@ -257,8 +239,8 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return getDocumentNoBlobProperties(doc, rs);
     }
 
-    protected DocumentProperty[] getDocumentNoBlobProperties(DocumentModel doc,
-            WSRemotingSession rs) throws ClientException {
+    protected DocumentProperty[] getDocumentNoBlobProperties(DocumentModel doc, WSRemotingSession rs)
+            throws ClientException {
 
         List<DocumentProperty> props = new ArrayList<DocumentProperty>();
         if (doc != null) {
@@ -269,12 +251,10 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @Override
-    public DocumentDescriptor getCurrentVersion(
-            @WebParam(name = "sessionId") String sid,
+    public DocumentDescriptor getCurrentVersion(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid) throws ClientException {
         WSRemotingSession rs = initSession(sid);
-        DocumentModel doc = rs.getDocumentManager().getLastDocumentVersion(
-                new IdRef(uuid));
+        DocumentModel doc = rs.getDocumentManager().getLastDocumentVersion(new IdRef(uuid));
         if (doc != null) {
             return new DocumentDescriptor(doc, doc.getVersionLabel());
         }
@@ -282,8 +262,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @Override
-    public DocumentDescriptor getSourceDocument(
-            @WebParam(name = "sessionId") String sid,
+    public DocumentDescriptor getSourceDocument(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uid) throws ClientException {
         WSRemotingSession rs = initSession(sid);
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uid));
@@ -298,29 +277,24 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @Override
-    public DocumentDescriptor[] getVersions(
-            @WebParam(name = "sessionId") String sid,
+    public DocumentDescriptor[] getVersions(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uid) throws ClientException {
         WSRemotingSession rs = initSession(sid);
-        List<DocumentModel> versions = rs.getDocumentManager().getVersions(
-                new IdRef(uid));
+        List<DocumentModel> versions = rs.getDocumentManager().getVersions(new IdRef(uid));
         if (versions == null) {
             return null;
         }
         DocumentDescriptor[] docs = new DocumentDescriptor[versions.size()];
         int i = 0;
         for (DocumentModel version : versions) {
-            docs[i++] = new DocumentDescriptor(version,
-                    version.getVersionLabel());
+            docs[i++] = new DocumentDescriptor(version, version.getVersionLabel());
         }
         return null;
     }
 
     @Override
     @WebMethod
-    public DocumentDescriptor getRootDocument(
-            @WebParam(name = "sessionId") String sessionId)
-            throws ClientException {
+    public DocumentDescriptor getRootDocument(@WebParam(name = "sessionId") String sessionId) throws ClientException {
         WSRemotingSession rs = initSession(sessionId);
         DocumentModel doc = rs.getDocumentManager().getRootDocument();
         return doc != null ? new DocumentDescriptor(doc) : null;
@@ -328,8 +302,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     @Override
     @WebMethod
-    public DocumentDescriptor getDocument(
-            @WebParam(name = "sessionId") String sessionId,
+    public DocumentDescriptor getDocument(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "uuid") String uuid) throws ClientException {
         WSRemotingSession rs = initSession(sessionId);
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
@@ -338,12 +311,10 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     @Override
     @WebMethod
-    public DocumentDescriptor[] getChildren(
-            @WebParam(name = "sessionId") String sessionId,
+    public DocumentDescriptor[] getChildren(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "uuid") String uuid) throws ClientException {
         WSRemotingSession rs = initSession(sessionId);
-        DocumentModelList docList = rs.getDocumentManager().getChildren(
-                new IdRef(uuid));
+        DocumentModelList docList = rs.getDocumentManager().getChildren(new IdRef(uuid));
         DocumentDescriptor[] docs = new DocumentDescriptor[docList.size()];
         int i = 0;
         for (DocumentModel doc : docList) {
@@ -353,8 +324,8 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @SuppressWarnings("unchecked")
-    protected void collectProperty(String prefix, String name, Object value,
-            List<DocumentProperty> props) throws ClientException {
+    protected void collectProperty(String prefix, String name, Object value, List<DocumentProperty> props)
+            throws ClientException {
         final String STRINGS_LIST_SEP = ";";
         if (value instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) value;
@@ -377,8 +348,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
                         byte[] bytes = ((Blob) value).getByteArray();
                         strValue = Base64.encodeBase64String(bytes);
                     } catch (IOException e) {
-                        throw new ClientException(
-                                "Failed to get blob property value", e);
+                        throw new ClientException("Failed to get blob property value", e);
                     }
                 } else if (value instanceof Calendar) {
                     strValue = ((Calendar) value).getTime().toString();
@@ -408,23 +378,22 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @SuppressWarnings("unchecked")
-    protected void collectBlobs(String docId, String schemaName,
-            WSRemotingSession rs, String prefix, Map<String, Object> container,
-            String name, Object value, List<DocumentBlob> blobs,
-            boolean useDownloadUrl) throws ClientException {
+    protected void collectBlobs(String docId, String schemaName, WSRemotingSession rs, String prefix,
+            Map<String, Object> container, String name, Object value, List<DocumentBlob> blobs, boolean useDownloadUrl)
+            throws ClientException {
         if (value instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) value;
             prefix = prefix + name + '/';
             for (Map.Entry<String, Object> entry : map.entrySet()) {
-                collectBlobs(docId, schemaName, rs, prefix, map,
-                        entry.getKey(), entry.getValue(), blobs, useDownloadUrl);
+                collectBlobs(docId, schemaName, rs, prefix, map, entry.getKey(), entry.getValue(), blobs,
+                        useDownloadUrl);
             }
         } else if (value instanceof List) {
             prefix = prefix + name + '/';
             List<Object> list = (List<Object>) value;
             for (int i = 0, len = list.size(); i < len; i++) {
-                collectBlobs(docId, schemaName, rs, prefix, container,
-                        String.valueOf(i), list.get(i), blobs, useDownloadUrl);
+                collectBlobs(docId, schemaName, rs, prefix, container, String.valueOf(i), list.get(i), blobs,
+                        useDownloadUrl);
             }
         } else if (value instanceof Blob) {
             try {
@@ -437,10 +406,8 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
                 DocumentBlob db = null;
                 if (useDownloadUrl) {
                     String repoName = rs.getDocumentManager().getRepositoryName();
-                    String downloadUrl = getDownloadUrl(repoName, docId,
-                            schemaName, prefix + name, filename);
-                    db = new DocumentBlob(filename, blob.getEncoding(),
-                            blob.getMimeType(), downloadUrl);
+                    String downloadUrl = getDownloadUrl(repoName, docId, schemaName, prefix + name, filename);
+                    db = new DocumentBlob(filename, blob.getEncoding(), blob.getMimeType(), downloadUrl);
                 } else {
                     db = new DocumentBlob(filename, blob);
                 }
@@ -463,8 +430,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return schemaName;
     }
 
-    protected String getDownloadUrl(String repoName, String docId,
-            String schemaName, String xPath, String fileName) {
+    protected String getDownloadUrl(String repoName, String docId, String schemaName, String xPath, String fileName) {
         // String downloadUrl =
         // "/nxbigfile/default/1f4f31c4-9b07-4709-9563-7d60a96f63ed/file:content/preview.pdf";
         schemaName = getSchemaPrefix(schemaName);
@@ -488,8 +454,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     @Override
     @WebMethod
     public String[] getUsers(@WebParam(name = "sessionId") String sid,
-            @WebParam(name = "parentGroup") String parentGroup)
-            throws ClientException {
+            @WebParam(name = "parentGroup") String parentGroup) throws ClientException {
         if (parentGroup == null) {
             return listUsers(sid, 0, Integer.MAX_VALUE);
         }
@@ -505,8 +470,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     @Override
     @WebMethod
     public String[] getGroups(@WebParam(name = "sessionId") String sid,
-            @WebParam(name = "parentGroup") String parentGroup)
-            throws ClientException {
+            @WebParam(name = "parentGroup") String parentGroup) throws ClientException {
         WSRemotingSession rs = initSession(sid);
 
         List<String> groups;
@@ -520,8 +484,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     @Override
     @WebMethod
-    public String getRelativePathAsString(
-            @WebParam(name = "sessionId") String sessionId,
+    public String getRelativePathAsString(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "uuid") String uuid) throws ClientException {
         WSRemotingSession rs = initSession(sessionId);
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
@@ -548,8 +511,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @SuppressWarnings("unchecked")
-    private void createSubMaps(Map<String, Object> map, String[] path,
-            String value, int depth) {
+    private void createSubMaps(Map<String, Object> map, String[] path, String value, int depth) {
         String key = path[depth];
 
         if (depth == path.length - 1) {
@@ -568,10 +530,8 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     @SuppressWarnings("unchecked")
     @WebMethod
     public String uploadDocument(@WebParam(name = "sessionId") String sid,
-            @WebParam(name = "parentUuid") String parentUUID,
-            @WebParam(name = "type") String type,
-            @WebParam(name = "properties") String[] properties)
-            throws ClientException {
+            @WebParam(name = "parentUuid") String parentUUID, @WebParam(name = "type") String type,
+            @WebParam(name = "properties") String[] properties) throws ClientException {
         // TODO Note: This method is intented to be a general method, but now it
         // can only be used by NuxeoCompanionForOffice
         // In the future, a new method (which will set the properties of a
@@ -583,8 +543,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         String name = "file_" + System.currentTimeMillis();
         CoreSession documentManager = rs.getDocumentManager();
         DocumentRef parentRef = new IdRef(parentUUID);
-        DocumentModel document = new DocumentModelImpl(
-                documentManager.getDocument(parentRef).getPathAsString(), name,
+        DocumentModel document = new DocumentModelImpl(documentManager.getDocument(parentRef).getPathAsString(), name,
                 type);
 
         document = documentManager.createDocument(document);
@@ -595,8 +554,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         Map<String, Object> contentMap = (Map<String, Object>) fileMap.get("content");
         Map<String, Object> dublincoreMap = (Map<String, Object>) propertiesMap.get("dublincore");
 
-        document.setProperty("dublincore", "description",
-                dublincoreMap.get("description"));
+        document.setProperty("dublincore", "description", dublincoreMap.get("description"));
         document.setProperty("dublincore", "title", dublincoreMap.get("title"));
         String filname = (String) fileMap.get("filename");
         document.setProperty("file", "filename", filname);
@@ -608,12 +566,9 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
         String mimetype;
         try {
-            mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                    filname, blob, "");
+            mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(filname, blob, "");
         } catch (MimetypeDetectionException e) {
-            log.error(String.format(
-                    "error during mimetype detection for %s: %s", filname,
-                    e.getMessage()));
+            log.error(String.format("error during mimetype detection for %s: %s", filname, e.getMessage()));
             mimetype = "";
         }
 

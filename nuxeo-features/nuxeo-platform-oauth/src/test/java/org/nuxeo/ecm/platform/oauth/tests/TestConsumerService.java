@@ -35,14 +35,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(OAuthFeature.class)
-public class TestConsumerService  {
+public class TestConsumerService {
 
     @Inject
     OAuthConsumerRegistry consumerRegistry = Framework.getLocalService(OAuthConsumerRegistry.class);
 
     @Test
     public void testServiceRW() throws Exception {
-
 
         NuxeoOAuthConsumer consumer = new NuxeoOAuthConsumer(null, "foo", "bar", null);
 
@@ -51,8 +50,8 @@ public class TestConsumerService  {
         NuxeoOAuthConsumer foundConsumer = consumerRegistry.getConsumer("foo");
         assertNotNull(foundConsumer);
 
-        assertEquals("foo",foundConsumer.consumerKey);
-        assertEquals("bar",foundConsumer.consumerSecret);
+        assertEquals("foo", foundConsumer.consumerKey);
+        assertEquals("bar", foundConsumer.consumerSecret);
         assertNull(foundConsumer.callbackURL);
         assertNull(foundConsumer.serviceProvider);
 

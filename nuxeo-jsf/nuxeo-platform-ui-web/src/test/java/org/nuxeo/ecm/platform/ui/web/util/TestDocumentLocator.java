@@ -66,8 +66,7 @@ public class TestDocumentLocator {
         RepositoryLocation rep = new RepositoryLocation("alpha");
         DocumentRef docRef = new IdRef("xxxx-xxx-xxxxx-xxxxxxxxx-xx");
         // XXX AT: no context so server is not found => add info
-        final String result = "http://localhost:8080/nuxeo/"
-                + DocumentLocator.getFullDocumentUrl(rep, docRef);
+        final String result = "http://localhost:8080/nuxeo/" + DocumentLocator.getFullDocumentUrl(rep, docRef);
         log.info("result: " + result);
 
         try {

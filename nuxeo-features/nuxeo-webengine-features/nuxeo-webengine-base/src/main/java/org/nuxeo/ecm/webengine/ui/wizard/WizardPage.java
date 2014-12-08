@@ -22,7 +22,6 @@ import org.nuxeo.ecm.webengine.forms.validation.Form;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WizardPage implements Serializable {
 
@@ -31,19 +30,29 @@ public class WizardPage implements Serializable {
     public static final String NEXT_PAGE = "";
 
     public static final int NEXT = 1;
+
     public static final int BACK = 2;
+
     public static final int CANCEL = 4;
+
     public static final int OK = 8;
 
     public static final int INITIAL = NEXT | CANCEL;
+
     public static final int MIDDLE = INITIAL | BACK;
+
     public static final int LAST = OK | BACK | CANCEL;
 
     protected int index;
+
     protected final String nextPageId;
+
     protected final Class<? extends Form> formType;
+
     protected final String id;
+
     protected final int style;
+
     protected Form form; // the submitted form if any
 
     protected WizardPage prev; // to implement a stack of pages

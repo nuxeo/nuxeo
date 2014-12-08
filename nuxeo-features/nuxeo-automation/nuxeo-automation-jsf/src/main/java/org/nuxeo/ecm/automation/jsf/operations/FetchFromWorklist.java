@@ -40,11 +40,11 @@ public class FetchFromWorklist {
     public DocumentModelList run() {
         List<DocumentModel> res = null;
         if (OperationHelper.isSeamContextAvailable()) {
-            res = OperationHelper.getDocumentListManager().getWorkingList(
-                DocumentsListsManager.DEFAULT_WORKING_LIST);
+            res = OperationHelper.getDocumentListManager().getWorkingList(DocumentsListsManager.DEFAULT_WORKING_LIST);
         } else {
             DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
-            res = pm.loadPersistentDocumentsLists(ctx.getCoreSession(), ctx.getPrincipal().getName(), DocumentsListsManager.DEFAULT_WORKING_LIST);
+            res = pm.loadPersistentDocumentsLists(ctx.getCoreSession(), ctx.getPrincipal().getName(),
+                    DocumentsListsManager.DEFAULT_WORKING_LIST);
         }
         return new DocumentModelListImpl(res);
     }

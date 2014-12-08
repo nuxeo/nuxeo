@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 public class PathComparator implements Comparator<Document>, Serializable {
 
     private static final Log log = LogFactory.getLog(PathComparator.class);
+
     private static final long serialVersionUID = 3598980450344414494L;
 
     @Override

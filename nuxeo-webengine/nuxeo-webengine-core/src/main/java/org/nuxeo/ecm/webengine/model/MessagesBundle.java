@@ -25,20 +25,17 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MessagesBundle extends ResourceBundle {
 
-    protected final Map<String,String> messages;
+    protected final Map<String, String> messages;
 
-    public MessagesBundle(ResourceBundle parent, Map<String,String> messages) {
+    public MessagesBundle(ResourceBundle parent, Map<String, String> messages) {
         this.parent = parent;
         this.messages = messages == null ? new HashMap<String, String>() : messages;
     }
-
 
     @Override
     public Object handleGetObject(String key) {
@@ -54,12 +51,12 @@ public class MessagesBundle extends ResourceBundle {
     @Override
     public Enumeration<String> getKeys() {
         ResourceBundle parent = this.parent;
-        return new Keys(messages.keySet().iterator(),
-                (parent != null) ? parent.getKeys() : null);
+        return new Keys(messages.keySet().iterator(), (parent != null) ? parent.getKeys() : null);
     }
 
     static class Keys implements Enumeration<String> {
         protected final Iterator<String> it;
+
         protected final Enumeration<String> parent;
 
         Keys(Iterator<String> it, Enumeration<String> parent) {

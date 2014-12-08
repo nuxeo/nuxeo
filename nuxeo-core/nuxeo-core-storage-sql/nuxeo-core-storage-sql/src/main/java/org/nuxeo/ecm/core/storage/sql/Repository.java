@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 public interface Repository extends ConnectionFactory, RepositoryManagement {
 
     /**
-     * Gets a new connection by logging in to the repository with default
-     * credentials.
+     * Gets a new connection by logging in to the repository with default credentials.
      *
      * @return the session
      * @throws StorageException
@@ -32,16 +31,14 @@ public interface Repository extends ConnectionFactory, RepositoryManagement {
     Session getConnection() throws StorageException;
 
     /**
-     * Gets a new connection by logging in to the repository with given
-     * connection information (credentials).
+     * Gets a new connection by logging in to the repository with given connection information (credentials).
      *
      * @param connectionSpec the parameters to use to connnect
      * @return the session
      * @throws StorageException
      */
     @Override
-    Session getConnection(ConnectionSpec connectionSpec)
-            throws StorageException;
+    Session getConnection(ConnectionSpec connectionSpec) throws StorageException;
 
     /**
      * Closes the repository and release all resources.

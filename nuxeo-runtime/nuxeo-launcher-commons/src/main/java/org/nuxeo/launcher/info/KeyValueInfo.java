@@ -26,7 +26,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "keyval")
 public class KeyValueInfo {
 
-    public KeyValueInfo() {}
+    public KeyValueInfo() {
+    }
 
     public KeyValueInfo(String k, String v) {
         key = k;

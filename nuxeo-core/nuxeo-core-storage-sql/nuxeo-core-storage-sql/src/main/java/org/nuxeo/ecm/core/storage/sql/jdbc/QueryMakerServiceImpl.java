@@ -26,29 +26,25 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Service for the registration of QueryMaker classes.
  */
-public class QueryMakerServiceImpl extends DefaultComponent implements
-        QueryMakerService {
+public class QueryMakerServiceImpl extends DefaultComponent implements QueryMakerService {
 
     private static final Log log = LogFactory.getLog(QueryMakerServiceImpl.class);
 
     public static final String XP = "queryMaker";
 
-    protected final List<QueryMakerDescriptor> descriptors = new ArrayList<QueryMakerDescriptor>(
-            2);
+    protected final List<QueryMakerDescriptor> descriptors = new ArrayList<QueryMakerDescriptor>(2);
 
     protected List<Class<? extends QueryMaker>> queryMakers;
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP.equals(extensionPoint)) {
             registerQueryMaker((QueryMakerDescriptor) contribution);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP.equals(extensionPoint)) {
             unregisterQueryMaker((QueryMakerDescriptor) contribution);
         }
@@ -57,8 +53,7 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
     @Override
     public void registerQueryMaker(QueryMakerDescriptor descriptor) {
         if (descriptor.enabled) {
-            log.info(String.format("Registering QueryMaker '%s': %s",
-                    descriptor.name, descriptor.queryMaker.getName()));
+            log.info(String.format("Registering QueryMaker '%s': %s", descriptor.name, descriptor.queryMaker.getName()));
         } else {
             log.info(String.format("Disabling QueryMaker '%s'", descriptor.name));
         }
@@ -69,11 +64,10 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
     @Override
     public void unregisterQueryMaker(QueryMakerDescriptor descriptor) {
         if (descriptor.enabled) {
-            log.info(String.format("Unregistering QueryMaker '%s': %s",
-                    descriptor.name, descriptor.queryMaker.getName()));
+            log.info(String.format("Unregistering QueryMaker '%s': %s", descriptor.name,
+                    descriptor.queryMaker.getName()));
         } else {
-            log.info(String.format("Unregistering disabled QueryMaker '%s'",
-                    descriptor.name));
+            log.info(String.format("Unregistering disabled QueryMaker '%s'", descriptor.name));
         }
         descriptors.remove(descriptor);
         queryMakers = null;
@@ -84,8 +78,7 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
         if (queryMakers == null) {
             // recompute queryMakers
             queryMakers = new ArrayList<Class<? extends QueryMaker>>(2);
-            List<QueryMakerDescriptor> qmdl = new ArrayList<QueryMakerDescriptor>(
-                    descriptors);
+            List<QueryMakerDescriptor> qmdl = new ArrayList<QueryMakerDescriptor>(descriptors);
             Collections.reverse(qmdl);
             Set<String> done = new HashSet<String>();
             for (QueryMakerDescriptor descriptor : qmdl) {

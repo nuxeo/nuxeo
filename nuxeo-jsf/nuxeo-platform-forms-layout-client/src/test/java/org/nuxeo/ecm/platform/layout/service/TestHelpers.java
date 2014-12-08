@@ -52,55 +52,40 @@ public class TestHelpers extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
-                "layouts-test-schemas.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-schemas.xml");
     }
 
     @Test
     public void testValueExpressionHelper() {
-        FieldDefinition fieldDef = new FieldDefinitionImpl("dublincore",
-                "title");
-        String expression = ValueExpressionHelper.createExpressionString(
-                "document", fieldDef);
+        FieldDefinition fieldDef = new FieldDefinitionImpl("dublincore", "title");
+        String expression = ValueExpressionHelper.createExpressionString("document", fieldDef);
         assertEquals("#{document['dublincore']['title']}", expression);
         fieldDef = new FieldDefinitionImpl(null, "dc:title");
-        expression = ValueExpressionHelper.createExpressionString("document",
-                fieldDef);
+        expression = ValueExpressionHelper.createExpressionString("document", fieldDef);
         assertEquals("#{document['dc']['title']}", expression);
         fieldDef = new FieldDefinitionImpl(null, "dublincore:title");
-        expression = ValueExpressionHelper.createExpressionString("document",
-                fieldDef);
+        expression = ValueExpressionHelper.createExpressionString("document", fieldDef);
         assertEquals("#{document['dublincore']['title']}", expression);
         fieldDef = new FieldDefinitionImpl(null, "dc:contributors/0/name");
-        expression = ValueExpressionHelper.createExpressionString("document",
-                fieldDef);
+        expression = ValueExpressionHelper.createExpressionString("document", fieldDef);
         assertEquals("#{document['dc']['contributors'][0]['name']}", expression);
         fieldDef = new FieldDefinitionImpl(null, "test-schema:test-field");
-        expression = ValueExpressionHelper.createExpressionString("document",
-                fieldDef);
+        expression = ValueExpressionHelper.createExpressionString("document", fieldDef);
         assertEquals("#{document['test-schema']['test-field']}", expression);
         fieldDef = new FieldDefinitionImpl(null, "data.ref");
-        expression = ValueExpressionHelper.createExpressionString(
-                "pageSelection", fieldDef);
+        expression = ValueExpressionHelper.createExpressionString("pageSelection", fieldDef);
         assertEquals("#{pageSelection.data.ref}", expression);
         fieldDef = new FieldDefinitionImpl("data", "ref");
-        expression = ValueExpressionHelper.createExpressionString(
-                "pageSelection", fieldDef);
+        expression = ValueExpressionHelper.createExpressionString("pageSelection", fieldDef);
         assertEquals("#{pageSelection['data']['ref']}", expression);
 
-        fieldDef = new FieldDefinitionImpl(null,
-                "contextData['request/comment']");
-        expression = ValueExpressionHelper.createExpressionString("document",
-                fieldDef);
+        fieldDef = new FieldDefinitionImpl(null, "contextData['request/comment']");
+        expression = ValueExpressionHelper.createExpressionString("document", fieldDef);
         assertEquals("#{document.contextData['request/comment']}", expression);
 
-        fieldDef = new FieldDefinitionImpl(null,
-                "data.dc.contributors[fn:length(data.dc.contributors)-1]");
-        expression = ValueExpressionHelper.createExpressionString("row",
-                fieldDef);
-        assertEquals(
-                "#{row.data.dc.contributors[fn:length(data.dc.contributors)-1]}",
-                expression);
+        fieldDef = new FieldDefinitionImpl(null, "data.dc.contributors[fn:length(data.dc.contributors)-1]");
+        expression = ValueExpressionHelper.createExpressionString("row", fieldDef);
+        assertEquals("#{row.data.dc.contributors[fn:length(data.dc.contributors)-1]}", expression);
     }
 
     public static String getTestFile(String filePath) {
@@ -134,13 +119,11 @@ public class TestHelpers extends NXRuntimeTestCase {
     @Test
     public void testLayoutAutomaticGeneration() throws Exception {
         SchemaManager sm = Framework.getService(SchemaManager.class);
-        Document doc = LayoutAutomaticGeneration.generateLayoutOutput(sm,
-                "dublincore", false);
+        Document doc = LayoutAutomaticGeneration.generateLayoutOutput(sm, "dublincore", false);
 
         byte[] generated = getGeneratedInputStream(doc);
 
-        InputStream expected = new FileInputStream(
-                getTestFile("layouts-generated-contrib.xml"));
+        InputStream expected = new FileInputStream(getTestFile("layouts-generated-contrib.xml"));
 
         InputStream generatedStream = new ByteArrayInputStream(generated);
 
@@ -151,13 +134,11 @@ public class TestHelpers extends NXRuntimeTestCase {
     @Test
     public void testLayoutAutomaticGenerationWithLabel() throws Exception {
         SchemaManager sm = Framework.getService(SchemaManager.class);
-        Document doc = LayoutAutomaticGeneration.generateLayoutOutput(sm,
-                "dublincore", true);
+        Document doc = LayoutAutomaticGeneration.generateLayoutOutput(sm, "dublincore", true);
 
         byte[] generated = getGeneratedInputStream(doc);
 
-        InputStream expected = new FileInputStream(
-                getTestFile("layouts-generated-with-labels-contrib.xml"));
+        InputStream expected = new FileInputStream(getTestFile("layouts-generated-with-labels-contrib.xml"));
 
         InputStream generatedStream = new ByteArrayInputStream(generated);
 
@@ -173,12 +154,10 @@ public class TestHelpers extends NXRuntimeTestCase {
         String unique_2 = FaceletHandlerHelper.generateUniqueId("foo", counters);
         assertEquals("foo_1", unique_2);
         // ask for a name already incremented
-        String unique_3 = FaceletHandlerHelper.generateUniqueId("foo_1",
-                counters);
+        String unique_3 = FaceletHandlerHelper.generateUniqueId("foo_1", counters);
         assertEquals("foo_2", unique_3);
         // again with several levels
-        String unique_4 = FaceletHandlerHelper.generateUniqueId("foo_1_1",
-                counters);
+        String unique_4 = FaceletHandlerHelper.generateUniqueId("foo_1_1", counters);
         assertEquals("foo_3", unique_4);
     }
 

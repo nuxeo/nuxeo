@@ -8,8 +8,7 @@ public class LocalThemeHelper {
 
     public static LocalThemeConfig getLocalThemeConfig(DocumentModel doc) {
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-        return localConfigurationService.getConfiguration(
-                LocalThemeConfig.class,
+        return localConfigurationService.getConfiguration(LocalThemeConfig.class,
                 LocalThemeConfigConstants.THEME_CONFIGURATION_FACET, doc);
     }
 

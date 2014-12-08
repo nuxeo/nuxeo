@@ -29,9 +29,8 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * A simple filesystem-based binary manager. It stores the binaries according to
- * their digest (hash), which means that no transactional behavior needs to be
- * implemented.
+ * A simple filesystem-based binary manager. It stores the binaries according to their digest (hash), which means that
+ * no transactional behavior needs to be implemented.
  * <p>
  * A garbage collection is needed to purge unused binaries.
  * <p>
@@ -41,9 +40,8 @@ import org.nuxeo.runtime.api.Framework;
  * <li><em>tmp/</em> temporary storage during creation,</li>
  * <li><em>config.xml</em> a file containing the configuration used.</li>
  * </ul>
- *
- * When not using a binary scrambler, you should use
- * {@link DefaultBinaryManager} instead as it includes some optimizations.
+ * When not using a binary scrambler, you should use {@link DefaultBinaryManager} instead as it includes some
+ * optimizations.
  *
  * @author Florent Guillaume
  * @since 5.6
@@ -65,8 +63,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
     protected File tmpDir;
 
     @Override
-    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
-            throws IOException {
+    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
         String path = binaryManagerDescriptor.storePath;
         if (path == null || path.trim().length() == 0) {
             path = DEFAULT_PATH;
@@ -74,8 +71,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         path = Framework.expandVars(path);
         path = path.trim();
         File base;
-        if (path.startsWith("/") || path.startsWith("\\")
-                || path.contains("://") || path.contains(":\\")) {
+        if (path.startsWith("/") || path.startsWith("\\") || path.contains("://") || path.contains(":\\")) {
             // absolute
             base = new File(path);
         } else {
@@ -84,20 +80,15 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             base = new File(home, path);
 
             // Backward compliance with versions before 5.4 (NXP-5370)
-            File oldBase = new File(Framework.getRuntime().getHome().getPath(),
-                    path);
+            File oldBase = new File(Framework.getRuntime().getHome().getPath(), path);
             if (oldBase.exists()) {
-                log.warn("Old binaries path used (NXP-5370). Please move "
-                        + oldBase + " to " + base);
+                log.warn("Old binaries path used (NXP-5370). Please move " + oldBase + " to " + base);
                 base = oldBase;
             }
         }
 
-        log.info("Repository '"
-                + binaryManagerDescriptor.repositoryName
-                + "' using "
-                + (this.getClass().equals(LocalBinaryManager.class) ? ""
-                        : (this.getClass().getSimpleName() + " and "))
+        log.info("Repository '" + binaryManagerDescriptor.repositoryName + "' using "
+                + (this.getClass().equals(LocalBinaryManager.class) ? "" : (this.getClass().getSimpleName() + " and "))
                 + "binary store: " + base);
         storageDir = new File(base, DATA);
         tmpDir = new File(base, TMP);
@@ -129,8 +120,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         /*
          * Now we can build the Binary.
          */
-        return getBinaryScrambler().getUnscrambledBinary(file, digest,
-                repositoryName);
+        return getBinaryScrambler().getUnscrambledBinary(file, digest, repositoryName);
     }
 
     @Override
@@ -141,20 +131,17 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             return null;
         }
         if (!file.exists()) {
-            log.warn("cannot fetch content at " + file.getPath()
-                    + " (file does not exist), check your configuration");
+            log.warn("cannot fetch content at " + file.getPath() + " (file does not exist), check your configuration");
             return null;
         }
-        return getBinaryScrambler().getUnscrambledBinary(file, digest,
-                repositoryName);
+        return getBinaryScrambler().getUnscrambledBinary(file, digest, repositoryName);
     }
 
     /**
      * Gets a file representing the storage for a given digest.
      *
      * @param digest the digest
-     * @param createDir {@code true} if the directory containing the file itself
-     *            must be created
+     * @param createDir {@code true} if the directory containing the file itself must be created
      * @return the file for this digest
      */
     public File getFileForDigest(String digest, boolean createDir) {
@@ -180,8 +167,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         File tmp = File.createTempFile("create_", ".tmp", tmpDir);
         OutputStream out = new FileOutputStream(tmp);
         /*
-         * First, write the input stream to a temporary file, while computing a
-         * digest.
+         * First, write the input stream to a temporary file, while computing a digest.
          */
         try {
             String digest;
@@ -225,8 +211,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             // because it rewrites the destination file so is not atomic.
             // Do a copy through a tmp file on the same filesystem then
             // atomic rename.
-            File tmp = File.createTempFile(dest.getName(), ".tmp",
-                    dest.getParentFile());
+            File tmp = File.createTempFile(dest.getName(), ".tmp", dest.getParentFile());
             try {
                 InputStream in = null;
                 OutputStream out = null;
@@ -259,12 +244,10 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         garbageCollector = new DefaultBinaryGarbageCollector(this);
     }
 
-    public static class DefaultBinaryGarbageCollector implements
-            BinaryGarbageCollector {
+    public static class DefaultBinaryGarbageCollector implements BinaryGarbageCollector {
 
         /**
-         * Windows FAT filesystems have a time resolution of 2s. Other common
-         * filesystems have 1s.
+         * Windows FAT filesystems have a time resolution of 2s. Other common filesystems have 1s.
          */
         public static int TIME_RESOLUTION = 2000;
 
@@ -318,14 +301,12 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             if (startTime == 0) {
                 throw new RuntimeException("Not started");
             }
-            deleteOld(binaryManager.getStorageDir(), startTime
-                    - TIME_RESOLUTION, 0, delete);
+            deleteOld(binaryManager.getStorageDir(), startTime - TIME_RESOLUTION, 0, delete);
             status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
         }
 
-        protected void deleteOld(File file, long minTime, int depth,
-                boolean delete) {
+        protected void deleteOld(File file, long minTime, int depth, boolean delete) {
             if (file.isDirectory()) {
                 for (File f : file.listFiles()) {
                     deleteOld(f, minTime, depth + 1, delete);

@@ -20,8 +20,7 @@ import org.w3c.dom.Element;
 /**
  * This interface is experimental.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface ConfigurationDescriptor extends Serializable {
 

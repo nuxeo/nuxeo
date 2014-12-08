@@ -46,8 +46,7 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (genericType instanceof ParameterizedType) {
             // See EntityListWriter to write Writer of parametrized class
             return false;
@@ -60,29 +59,23 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
     }
 
     @Override
-    public long getSize(T t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public long getSize(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
     @Override
-    public void writeTo(T entity, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
+    public void writeTo(T entity, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
             WebApplicationException {
 
         try {
-            writeEntity(
-                    factory.createJsonGenerator(entityStream, JsonEncoding.UTF8),
-                    entity);
+            writeEntity(factory.createJsonGenerator(entityStream, JsonEncoding.UTF8), entity);
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
     }
 
-    public void writeEntity(JsonGenerator jg, T item) throws IOException,
-            ClientException {
+    public void writeEntity(JsonGenerator jg, T item) throws IOException, ClientException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", getEntityType());
 
@@ -93,18 +86,14 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
     }
 
     /**
-     * Write the body of the entity. The object has already been opened and it
-     * entity-type rendered.
+     * Write the body of the entity. The object has already been opened and it entity-type rendered.
      */
-    abstract protected void writeEntityBody(JsonGenerator jg, T item)
-            throws IOException, ClientException;
+    abstract protected void writeEntityBody(JsonGenerator jg, T item) throws IOException, ClientException;
 
     /**
-     * get the Entity type of the current entity type. It MUST follow camelCase
-     * notation
+     * get the Entity type of the current entity type. It MUST follow camelCase notation
      *
      * @return the string representing the entity-type.
-     *
      */
     abstract protected String getEntityType();
 

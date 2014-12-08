@@ -21,12 +21,9 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 
 /**
- *
- *
  * @since 5.9.2
  */
-@Operation(id = ParamNameWithAliasOperation.ID, aliases = { "aliasOp1",
-        "aliasOp2" })
+@Operation(id = ParamNameWithAliasOperation.ID, aliases = { "aliasOp1", "aliasOp2" })
 public class ParamNameWithAliasOperation {
 
     public static final String ID = "OperationWithParamNameAlias";
@@ -37,7 +34,7 @@ public class ParamNameWithAliasOperation {
 
     public static final String ALIAS2 = "alias2";
 
-    @Param(name = "paramName", alias = {ALIAS1, ALIAS2})
+    @Param(name = "paramName", alias = { ALIAS1, ALIAS2 })
     protected String param;
 
     @OperationMethod

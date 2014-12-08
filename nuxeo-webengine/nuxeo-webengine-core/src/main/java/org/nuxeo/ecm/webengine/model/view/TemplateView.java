@@ -41,8 +41,11 @@ import org.nuxeo.runtime.api.Framework;
 public class TemplateView {
 
     protected URL url;
+
     protected WebContext ctx;
+
     protected Object target;
+
     protected Map<String, Object> bindings;
 
     public static URL findTemplate(Object owner, String name) {
@@ -50,7 +53,7 @@ public class TemplateView {
         if (url == null) {
             url = Framework.getResourceLoader().getResource(name);
             if (url == null) {
-                throw new WebResourceNotFoundException("View not found: "+name+" for object "+owner);
+                throw new WebResourceNotFoundException("View not found: " + name + " for object " + owner);
             }
         }
         return url;
@@ -109,7 +112,7 @@ public class TemplateView {
         Writer writer = new OutputStreamWriter(out);
         try {
             render(writer);
-        } finally{
+        } finally {
             try {
                 writer.flush();
             } catch (IOException e) {

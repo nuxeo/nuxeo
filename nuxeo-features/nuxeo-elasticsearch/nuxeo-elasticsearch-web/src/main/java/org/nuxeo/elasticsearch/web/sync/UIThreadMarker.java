@@ -17,14 +17,14 @@ import org.jboss.seam.web.AbstractFilter;
 import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 
 @Scope(APPLICATION)
-@Filter(within="org.jboss.seam.web.ajax4jsfFilter")
+@Filter(within = "org.jboss.seam.web.ajax4jsfFilter")
 @BypassInterceptors
 @Name("UIThreadMarker")
 public class UIThreadMarker extends AbstractFilter {
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         ElasticSearchInlineListener.useSyncIndexing.set(true);
         try {
             chain.doFilter(request, response);

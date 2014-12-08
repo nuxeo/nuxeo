@@ -30,19 +30,21 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class AbstractBlob implements Blob {
 
     public static final String EMPTY_STRING = "";
+
     public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
     public static final InputStream EMPTY_INPUT_STREAM = new ByteArrayInputStream(EMPTY_BYTE_ARRAY);
+
     public static final Reader EMPTY_READER = new StringReader(EMPTY_STRING);
 
-    protected static final int BUFFER_SIZE = 4096*16;
-    //protected static int BUFFER_SIZE = 16;
+    protected static final int BUFFER_SIZE = 4096 * 16;
 
+    // protected static int BUFFER_SIZE = 16;
 
     public static void copy(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[BUFFER_SIZE];
@@ -119,8 +121,7 @@ public abstract class AbstractBlob implements Blob {
         // therefore mutable
         String digest = getDigest();
         String otherDigest = other.getDigest();
-        if (digest != null && otherDigest != null
-                && !digest.equals(otherDigest)) {
+        if (digest != null && otherDigest != null && !digest.equals(otherDigest)) {
             return false;
         }
         // compare streams

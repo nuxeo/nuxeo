@@ -67,16 +67,14 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     }
 
     @Override
-    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry,
-            boolean anonymous, List<String> groups) throws ClientException {
+    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry, boolean anonymous, List<String> groups)
+            throws ClientException {
 
-        NuxeoPrincipal principal = super.makePrincipal(userEntry, anonymous,
-                groups);
+        NuxeoPrincipal principal = super.makePrincipal(userEntry, anonymous, groups);
         if (activateComputedGroup() && principal instanceof NuxeoPrincipalImpl) {
             NuxeoPrincipalImpl nuxPrincipal = (NuxeoPrincipalImpl) principal;
 
-            List<String> vGroups = getService().computeGroupsForUser(
-                    nuxPrincipal);
+            List<String> vGroups = getService().computeGroupsForUser(nuxPrincipal);
 
             if (vGroups == null) {
                 vGroups = new ArrayList<String>();
@@ -111,8 +109,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     @Override
     public NuxeoGroup getGroup(String groupName) throws ClientException {
         NuxeoGroup grp = super.getGroup(groupName);
-        if (activateComputedGroup()
-                && (grp == null || getService().allowGroupOverride())) {
+        if (activateComputedGroup() && (grp == null || getService().allowGroupOverride())) {
             NuxeoGroup computed = getService().getComputedGroup(groupName);
             if (computed != null) {
                 grp = computed;
@@ -145,14 +142,14 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     }
 
     @Override
-    public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext) throws ClientException {
+    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext)
+            throws ClientException {
         return searchGroups(filter, fulltext, null);
     }
 
     @Override
-    public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext, DocumentModel context) throws ClientException {
+    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context)
+            throws ClientException {
 
         boolean searchInVirtualGroups = activateComputedGroup();
         if (Boolean.FALSE.equals(filter.get(VIRTUAL_GROUP_MARKER))) {
@@ -163,8 +160,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
         DocumentModelList groups = super.searchGroups(filter, fulltext, context);
 
         if (searchInVirtualGroups) {
-            for (String vGroupName : getService().searchComputedGroups(filter,
-                    fulltext)) {
+            for (String vGroupName : getService().searchComputedGroups(filter, fulltext)) {
                 DocumentModel vGroup = getComputedGroupAsDocumentModel(vGroupName);
                 if (vGroup != null) {
                     if (!groups.contains(vGroup)) {
@@ -176,8 +172,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
         return groups;
     }
 
-    protected DocumentModel getComputedGroupAsDocumentModel(String grpName)
-            throws ClientException {
+    protected DocumentModel getComputedGroupAsDocumentModel(String grpName) throws ClientException {
         NuxeoGroup grp = getService().getComputedGroup(grpName);
         if (grp == null) {
             return null;
@@ -185,11 +180,9 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
 
         String schemaName = getGroupSchemaName();
         String id = getGroupIdField();
-        DocumentModel groupDoc = BaseSession.createEntryModel(null, schemaName,
-                grpName, null);
+        DocumentModel groupDoc = BaseSession.createEntryModel(null, schemaName, grpName, null);
 
-        groupDoc.setProperty(schemaName, getGroupMembersField(),
-                grp.getMemberUsers());
+        groupDoc.setProperty(schemaName, getGroupMembersField(), grp.getMemberUsers());
         groupDoc.setProperty(schemaName, id, grp.getName());
         groupDoc.setProperty(schemaName, getGroupIdField(), grp.getName());
 

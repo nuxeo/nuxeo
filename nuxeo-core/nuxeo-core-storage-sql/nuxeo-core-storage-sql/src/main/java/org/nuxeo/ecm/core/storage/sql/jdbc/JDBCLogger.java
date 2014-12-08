@@ -94,8 +94,7 @@ public class JDBCLogger {
         logCount(count);
     }
 
-    public void logResultSet(ResultSet rs, List<Column> columns)
-            throws SQLException {
+    public void logResultSet(ResultSet rs, List<Column> columns) throws SQLException {
         List<String> res = new LinkedList<String>();
         int i = 0;
         for (Column column : columns) {
@@ -114,8 +113,7 @@ public class JDBCLogger {
         log("  -> " + StringUtils.join(res, ", "));
     }
 
-    public void logIds(List<Serializable> ids, boolean countTotal,
-            long totalSize) {
+    public void logIds(List<Serializable> ids, boolean countTotal, long totalSize) {
         List<Serializable> debugIds = ids;
         String end = "";
         if (ids.size() > DEBUG_MAX_ARRAY) {
@@ -140,8 +138,7 @@ public class JDBCLogger {
         logSQL(sql, columns, row, Collections.<String> emptySet());
     }
 
-    public void logSQL(String sql, List<Column> columns, Row row,
-            Set<String> deltas) {
+    public void logSQL(String sql, List<Column> columns, Row row, Set<String> deltas) {
         List<Serializable> values = new ArrayList<Serializable>(columns.size());
         for (Column column : columns) {
             String key = column.getKey();
@@ -189,8 +186,7 @@ public class JDBCLogger {
         if (value instanceof String) {
             String v = (String) value;
             if (v.length() > DEBUG_MAX_STRING) {
-                v = v.substring(0, DEBUG_MAX_STRING) + "...(" + v.length()
-                        + " chars)...";
+                v = v.substring(0, DEBUG_MAX_STRING) + "...(" + v.length() + " chars)...";
             }
             return "'" + v.replace("'", "''") + "'";
         }
@@ -204,9 +200,7 @@ public class JDBCLogger {
             } else {
                 sign = '+';
             }
-            return String.format(
-                    "TIMESTAMP '%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d'",
-                    cal.get(Calendar.YEAR), //
+            return String.format("TIMESTAMP '%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d'", cal.get(Calendar.YEAR), //
                     cal.get(Calendar.MONTH) + 1, //
                     cal.get(Calendar.DAY_OF_MONTH), //
                     cal.get(Calendar.HOUR_OF_DAY), //

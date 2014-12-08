@@ -14,16 +14,17 @@
 package org.nuxeo.runtime.services.event;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Event {
 
     private final String topic;
-    private final String id;
-    private final Object source;
-    private final Object data;
 
+    private final String id;
+
+    private final Object source;
+
+    private final Object data;
 
     public Event(String topic, String id, Object source, Object data) {
         this.topic = topic == null ? "" : topic.intern();
@@ -31,7 +32,6 @@ public class Event {
         this.source = source;
         this.data = data;
     }
-
 
     public String getTopic() {
         return topic;

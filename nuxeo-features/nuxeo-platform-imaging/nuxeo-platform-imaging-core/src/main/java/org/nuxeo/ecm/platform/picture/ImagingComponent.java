@@ -74,8 +74,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class ImagingComponent extends DefaultComponent implements
-        ImagingService {
+public class ImagingComponent extends DefaultComponent implements ImagingService {
 
     private static final Log log = LogFactory.getLog(ImagingComponent.class);
 
@@ -102,8 +101,7 @@ public class ImagingComponent extends DefaultComponent implements
     @Override
     public Blob crop(Blob blob, int x, int y, int width, int height) {
         try {
-            return getLibrarySelectorService().getImageUtils().crop(blob, x, y,
-                    width, height);
+            return getLibrarySelectorService().getImageUtils().crop(blob, x, y, width, height);
         } catch (ClientException e) {
             log.error(e.getMessage(), e);
         }
@@ -111,11 +109,9 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     @Override
-    public Blob resize(Blob blob, String finalFormat, int width, int height,
-            int depth) {
+    public Blob resize(Blob blob, String finalFormat, int width, int height, int depth) {
         try {
-            return getLibrarySelectorService().getImageUtils().resize(blob,
-                    finalFormat, width, height, depth);
+            return getLibrarySelectorService().getImageUtils().resize(blob, finalFormat, width, height, depth);
         } catch (ClientException e) {
             log.error(e.getMessage(), e);
         }
@@ -125,8 +121,7 @@ public class ImagingComponent extends DefaultComponent implements
     @Override
     public Blob rotate(Blob blob, int angle) {
         try {
-            return getLibrarySelectorService().getImageUtils().rotate(blob,
-                    angle);
+            return getLibrarySelectorService().getImageUtils().rotate(blob, angle);
         } catch (ClientException e) {
             log.error(e.getMessage(), e);
         }
@@ -136,8 +131,7 @@ public class ImagingComponent extends DefaultComponent implements
     @Override
     public Map<String, Object> getImageMetadata(Blob blob) {
         try {
-            return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
-                    blob);
+            return getLibrarySelectorService().getMetadataUtils().getImageMetadata(blob);
         } catch (ClientException e) {
             log.error(e.getMessage(), e);
         }
@@ -149,13 +143,12 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
             if (file.getName() != null) {
-                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
-                        file.getName(), new FileBlob(file), "image/jpeg");
+                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(file.getName(), new FileBlob(file),
+                        "image/jpeg");
             } else {
                 return mimetypeRegistry.getMimetypeFromFile(file);
             }
-        } catch (ClientException | MimetypeNotFoundException
-                | MimetypeDetectionException e) {
+        } catch (ClientException | MimetypeNotFoundException | MimetypeDetectionException e) {
             log.error("Unable to retrieve mime type", e);
         }
         return null;
@@ -166,13 +159,12 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
             if (blob.getFilename() != null) {
-                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
-                        blob.getFilename(), blob, "image/jpeg");
+                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob,
+                        "image/jpeg");
             } else {
                 return mimetypeRegistry.getMimetypeFromBlob(blob);
             }
-        } catch (ClientException | MimetypeNotFoundException
-                | MimetypeDetectionException e) {
+        } catch (ClientException | MimetypeNotFoundException | MimetypeDetectionException e) {
             log.error("Unable to retrieve mime type", e);
         }
         return null;
@@ -180,13 +172,11 @@ public class ImagingComponent extends DefaultComponent implements
 
     private LibrarySelector getLibrarySelectorService() throws ClientException {
         if (librarySelector == null) {
-            librarySelector = Framework.getRuntime().getService(
-                    LibrarySelector.class);
+            librarySelector = Framework.getRuntime().getService(LibrarySelector.class);
         }
         if (librarySelector == null) {
             log.error("Unable to get LibrarySelector runtime service");
-            throw new ClientException(
-                    "Unable to get LibrarySelector runtime service");
+            throw new ClientException("Unable to get LibrarySelector runtime service");
         }
         return librarySelector;
     }
@@ -198,18 +188,14 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             File file = BlobHelper.getFileFromBlob(blob);
             if (file == null) {
-                tmpFile = File.createTempFile(
-                        "nuxeoImageInfo",
-                        blob.getFilename() != null ? "."
-                                + FilenameUtils.getExtension(blob.getFilename())
-                                : ".tmp");
+                tmpFile = File.createTempFile("nuxeoImageInfo",
+                        blob.getFilename() != null ? "." + FilenameUtils.getExtension(blob.getFilename()) : ".tmp");
                 blob.transferTo(tmpFile);
                 file = tmpFile;
             }
             imageInfo = ImageIdentifier.getInfo(file.getAbsolutePath());
         } catch (CommandNotAvailable | CommandException e) {
-            log.error("Failed to get ImageInfo for file " + blob.getFilename(),
-                    e);
+            log.error("Failed to get ImageInfo for file " + blob.getFilename(), e);
         } catch (IOException e) {
             log.error("Failed to transfer file " + blob.getFilename(), e);
         } finally {
@@ -221,8 +207,7 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_PARAMETERS_EP.equals(extensionPoint)) {
             ImagingConfigurationDescriptor desc = (ImagingConfigurationDescriptor) contribution;
             configurationParameters.putAll(desc.getParameters());
@@ -232,8 +217,7 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_PARAMETERS_EP.equals(extensionPoint)) {
             ImagingConfigurationDescriptor desc = (ImagingConfigurationDescriptor) contribution;
             for (String configuration : desc.getParameters().keySet()) {
@@ -250,28 +234,24 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     @Override
-    public String getConfigurationValue(String configurationName,
-            String defaultValue) {
+    public String getConfigurationValue(String configurationName, String defaultValue) {
         return configurationParameters.containsKey(configurationName) ? configurationParameters.get(configurationName)
                 : defaultValue;
     }
 
     @Override
-    public void setConfigurationValue(String configurationName,
-            String configurationValue) {
+    public void setConfigurationValue(String configurationName, String configurationValue) {
         configurationParameters.put(configurationName, configurationValue);
     }
 
     @Override
-    public PictureView computeViewFor(Blob blob,
-            PictureConversion pictureConversion, boolean convert)
+    public PictureView computeViewFor(Blob blob, PictureConversion pictureConversion, boolean convert)
             throws IOException, ClientException {
         return computeViewFor(blob, pictureConversion, null, convert);
     }
 
     @Override
-    public PictureView computeViewFor(Blob blob,
-            PictureConversion pictureConversion, ImageInfo imageInfo,
+    public PictureView computeViewFor(Blob blob, PictureConversion pictureConversion, ImageInfo imageInfo,
             boolean convert) throws IOException, ClientException {
         String mimeType = blob.getMimeType();
         if (mimeType == null) {
@@ -285,16 +265,14 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     @Override
-    public List<PictureView> computeViewsFor(Blob blob,
-            List<PictureConversion> pictureConversions, boolean convert)
+    public List<PictureView> computeViewsFor(Blob blob, List<PictureConversion> pictureConversions, boolean convert)
             throws IOException, ClientException {
         return computeViewsFor(blob, pictureConversions, null, convert);
     }
 
     @Override
-    public List<PictureView> computeViewsFor(Blob blob,
-            List<PictureConversion> pictureConversions, ImageInfo imageInfo,
-            boolean convert) throws IOException, ClientException {
+    public List<PictureView> computeViewsFor(Blob blob, List<PictureConversion> pictureConversions,
+            ImageInfo imageInfo, boolean convert) throws IOException, ClientException {
         String mimeType = blob.getMimeType();
         if (mimeType == null) {
             blob.setMimeType(getImageMimeType(blob));
@@ -310,20 +288,17 @@ public class ImagingComponent extends DefaultComponent implements
         return views;
     }
 
-    protected PictureView computeView(Blob blob,
-            PictureConversion pictureConversion, ImageInfo imageInfo,
+    protected PictureView computeView(Blob blob, PictureConversion pictureConversion, ImageInfo imageInfo,
             boolean convert) throws IOException, ClientException {
         return computeView(null, blob, pictureConversion, imageInfo, convert);
     }
 
-    protected PictureView computeView(DocumentModel doc, Blob blob,
-            PictureConversion pictureConversion, ImageInfo imageInfo,
-            boolean convert) throws IOException, ClientException {
+    protected PictureView computeView(DocumentModel doc, Blob blob, PictureConversion pictureConversion,
+            ImageInfo imageInfo, boolean convert) throws IOException, ClientException {
         if (convert) {
             return computeView(doc, blob, pictureConversion, imageInfo);
         } else {
-            return computeViewWithoutConversion(blob, pictureConversion,
-                    imageInfo);
+            return computeViewWithoutConversion(blob, pictureConversion, imageInfo);
         }
     }
 
@@ -335,16 +310,14 @@ public class ImagingComponent extends DefaultComponent implements
      * @deprecated since 7.1
      */
     @Deprecated
-    protected PictureView computeOriginalView(Blob blob,
-            PictureConversion pictureConversion, ImageInfo imageInfo)
+    protected PictureView computeOriginalView(Blob blob, PictureConversion pictureConversion, ImageInfo imageInfo)
             throws IOException {
         String filename = blob.getFilename();
         String title = pictureConversion.getId();
         String viewFilename = title + "_" + filename;
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(PictureView.FIELD_TITLE, pictureConversion.getId());
-        map.put(PictureView.FIELD_DESCRIPTION,
-                pictureConversion.getDescription());
+        map.put(PictureView.FIELD_DESCRIPTION, pictureConversion.getDescription());
         map.put(PictureView.FIELD_FILENAME, viewFilename);
         map.put(PictureView.FIELD_TAG, pictureConversion.getTag());
         map.put(PictureView.FIELD_WIDTH, imageInfo.getWidth());
@@ -376,8 +349,7 @@ public class ImagingComponent extends DefaultComponent implements
      * @deprecated since 7.1
      */
     @Deprecated
-    protected PictureView computeOriginalJpegView(Blob blob,
-            PictureConversion pictureConversion, ImageInfo imageInfo)
+    protected PictureView computeOriginalJpegView(Blob blob, PictureConversion pictureConversion, ImageInfo imageInfo)
             throws ClientException, IOException {
         String filename = blob.getFilename();
         String title = pictureConversion.getId();
@@ -385,8 +357,7 @@ public class ImagingComponent extends DefaultComponent implements
         int height = imageInfo.getHeight();
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(PictureView.FIELD_TITLE, pictureConversion.getId());
-        map.put(PictureView.FIELD_DESCRIPTION,
-                pictureConversion.getDescription());
+        map.put(PictureView.FIELD_DESCRIPTION, pictureConversion.getDescription());
         map.put(PictureView.FIELD_TAG, pictureConversion.getTag());
         map.put(PictureView.FIELD_WIDTH, width);
         map.put(PictureView.FIELD_HEIGHT, height);
@@ -404,8 +375,7 @@ public class ImagingComponent extends DefaultComponent implements
         if (originalJpegBlob == null) {
             originalJpegBlob = wrapBlob(blob);
         }
-        String viewFilename = String.format("%s_%s.%s", title,
-                FilenameUtils.getBaseName(blob.getFilename()),
+        String viewFilename = String.format("%s_%s.%s", title, FilenameUtils.getBaseName(blob.getFilename()),
                 FilenameUtils.getExtension(JPEG_CONVERSATION_FORMAT));
         map.put(PictureView.FIELD_FILENAME, viewFilename);
         originalJpegBlob.setFilename(viewFilename);
@@ -414,8 +384,7 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     /**
-     * @deprecated since 7.1. We now use the original Blob base name + the
-     *             computed Blob filename extension.
+     * @deprecated since 7.1. We now use the original Blob base name + the computed Blob filename extension.
      */
     @Deprecated
     protected String computeViewFilename(String filename, String format) {
@@ -427,22 +396,21 @@ public class ImagingComponent extends DefaultComponent implements
         }
     }
 
-    protected PictureView computeView(DocumentModel doc, Blob blob,
-            PictureConversion pictureConversion, ImageInfo imageInfo) {
+    protected PictureView computeView(DocumentModel doc, Blob blob, PictureConversion pictureConversion,
+            ImageInfo imageInfo) {
 
         String title = pictureConversion.getId();
 
         Map<String, Serializable> pictureViewMap = new HashMap<String, Serializable>();
         pictureViewMap.put(PictureView.FIELD_TITLE, title);
-        pictureViewMap.put(PictureView.FIELD_DESCRIPTION,
-                pictureConversion.getDescription());
+        pictureViewMap.put(PictureView.FIELD_DESCRIPTION, pictureConversion.getDescription());
         pictureViewMap.put(PictureView.FIELD_TAG, pictureConversion.getTag());
 
         Point size = new Point(imageInfo.getWidth(), imageInfo.getHeight());
 
         /*
-         * If the picture template have a max size then use it for the new size
-         * computation, else take the current size will be used.
+         * If the picture template have a max size then use it for the new size computation, else take the current size
+         * will be used.
          */
         if (pictureConversion.getMaxSize() != null) {
             size = getSize(size, pictureConversion.getMaxSize());
@@ -452,14 +420,11 @@ public class ImagingComponent extends DefaultComponent implements
         pictureViewMap.put(PictureView.FIELD_HEIGHT, size.y);
 
         // Use the registered conversion format
-        String conversionFormat = getConfigurationValue(CONVERSION_FORMAT,
-                JPEG_CONVERSATION_FORMAT);
+        String conversionFormat = getConfigurationValue(CONVERSION_FORMAT, JPEG_CONVERSATION_FORMAT);
 
-        Blob viewBlob = callPictureConversionChain(doc, blob,
-                pictureConversion, imageInfo, size, conversionFormat);
+        Blob viewBlob = callPictureConversionChain(doc, blob, pictureConversion, imageInfo, size, conversionFormat);
 
-        String viewFilename = String.format("%s_%s.%s", title,
-                FilenameUtils.getBaseName(blob.getFilename()),
+        String viewFilename = String.format("%s_%s.%s", title, FilenameUtils.getBaseName(blob.getFilename()),
                 FilenameUtils.getExtension(viewBlob.getFilename()));
         viewBlob.setFilename(viewFilename);
         pictureViewMap.put(PictureView.FIELD_FILENAME, viewFilename);
@@ -468,9 +433,8 @@ public class ImagingComponent extends DefaultComponent implements
         return new PictureViewImpl(pictureViewMap);
     }
 
-    protected Blob callPictureConversionChain(DocumentModel doc, Blob blob,
-            PictureConversion pictureConversion, ImageInfo imageInfo,
-            Point size, String conversionFormat) {
+    protected Blob callPictureConversionChain(DocumentModel doc, Blob blob, PictureConversion pictureConversion,
+            ImageInfo imageInfo, Point size, String conversionFormat) {
         String chainId = pictureConversion.getChainId();
 
         // if the chainId is null just use the same blob (wrapped)
@@ -481,8 +445,7 @@ public class ImagingComponent extends DefaultComponent implements
         Properties parameters = new Properties();
         parameters.put(OPTION_RESIZE_WIDTH, String.valueOf(size.x));
         parameters.put(OPTION_RESIZE_HEIGHT, String.valueOf(size.y));
-        parameters.put(OPTION_RESIZE_DEPTH,
-                String.valueOf(imageInfo.getDepth()));
+        parameters.put(OPTION_RESIZE_DEPTH, String.valueOf(imageInfo.getDepth()));
         parameters.put(CONVERSION_FORMAT, conversionFormat);
 
         Map<String, Object> chainParameters = new HashMap<>();
@@ -503,8 +466,7 @@ public class ImagingComponent extends DefaultComponent implements
                 TransactionHelper.commitOrRollbackTransaction();
             }
 
-            Blob viewBlob = (Blob) Framework.getService(AutomationService.class).run(
-                    context, chainId, chainParameters);
+            Blob viewBlob = (Blob) Framework.getService(AutomationService.class).run(context, chainId, chainParameters);
             if (viewBlob == null) {
                 viewBlob = wrapBlob(blob);
             }
@@ -512,24 +474,21 @@ public class ImagingComponent extends DefaultComponent implements
         } catch (OperationException | IOException e) {
             throw new ClientRuntimeException(e);
         } finally {
-            if (txWasActive
-                    && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            if (txWasActive && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
                 TransactionHelper.startTransaction();
             }
         }
     }
 
     @Override
-    public List<PictureView> computeViewFor(DocumentModel doc, Blob blob,
-            boolean convert) throws ClientException, IOException {
+    public List<PictureView> computeViewFor(DocumentModel doc, Blob blob, boolean convert) throws ClientException,
+            IOException {
         List<PictureConversion> pictureConversions = getPictureConversions();
-        List<PictureView> pictureViews = new ArrayList<>(
-                pictureConversions.size());
+        List<PictureView> pictureViews = new ArrayList<>(pictureConversions.size());
 
         for (PictureConversion pictureConversion : pictureConversions) {
             if (canApplyPictureConversion(pictureConversion, doc)) {
-                PictureView pictureView = computeView(doc, blob,
-                        pictureConversion, getImageInfo(blob), convert);
+                PictureView pictureView = computeView(doc, blob, pictureConversion, getImageInfo(blob), convert);
                 pictureViews.add(pictureView);
             }
         }
@@ -537,26 +496,23 @@ public class ImagingComponent extends DefaultComponent implements
         return pictureViews;
     }
 
-    protected boolean canApplyPictureConversion(
-            PictureConversion pictureConversion, DocumentModel doc) {
+    protected boolean canApplyPictureConversion(PictureConversion pictureConversion, DocumentModel doc) {
         if (pictureConversion.isDefault()) {
             return true;
         }
 
         ActionManager actionService = Framework.getService(ActionManager.class);
-        return actionService.checkFilters(pictureConversion.getFilterIds(),
-                createActionContext(doc));
+        return actionService.checkFilters(pictureConversion.getFilterIds(), createActionContext(doc));
     }
 
     protected ActionContext createActionContext(DocumentModel doc) {
-        ActionContext actionContext = new ELActionContext(
-                new ExpressionContext(), new ExpressionFactoryImpl());
+        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
         actionContext.setCurrentDocument(doc);
         return actionContext;
     }
 
-    protected PictureView computeViewWithoutConversion(Blob blob,
-            PictureConversion pictureConversion, ImageInfo imageInfo) {
+    protected PictureView computeViewWithoutConversion(Blob blob, PictureConversion pictureConversion,
+            ImageInfo imageInfo) {
         PictureView view = new PictureViewImpl();
         view.setBlob(blob);
         view.setWidth(imageInfo.getWidth());
@@ -587,20 +543,17 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     @Override
-    public List<List<PictureView>> computeViewsFor(List<Blob> blobs,
-            List<PictureConversion> pictureConversions, boolean convert)
-            throws IOException, ClientException {
+    public List<List<PictureView>> computeViewsFor(List<Blob> blobs, List<PictureConversion> pictureConversions,
+            boolean convert) throws IOException, ClientException {
         return computeViewsFor(blobs, pictureConversions, null, convert);
     }
 
     @Override
-    public List<List<PictureView>> computeViewsFor(List<Blob> blobs,
-            List<PictureConversion> pictureConversions, ImageInfo imageInfo,
-            boolean convert) throws IOException, ClientException {
+    public List<List<PictureView>> computeViewsFor(List<Blob> blobs, List<PictureConversion> pictureConversions,
+            ImageInfo imageInfo, boolean convert) throws IOException, ClientException {
         List<List<PictureView>> allViews = new ArrayList<List<PictureView>>();
         for (Blob blob : blobs) {
-            allViews.add(computeViewsFor(blob, pictureConversions, imageInfo,
-                    convert));
+            allViews.add(computeViewsFor(blob, pictureConversions, imageInfo, convert));
         }
         return allViews;
     }

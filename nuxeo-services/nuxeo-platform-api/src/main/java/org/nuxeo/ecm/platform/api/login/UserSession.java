@@ -26,7 +26,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  * @deprecated use instead {@link Framework#login(String, Object)}
  */
 @Deprecated
@@ -35,6 +34,7 @@ public class UserSession {
     private LoginContext loginContext;
 
     private final String username;
+
     private final String password;
 
     public UserSession(String username) {

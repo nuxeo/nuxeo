@@ -34,7 +34,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class DefaultNuxeoPermissionManager implements PermissionManager {
 
@@ -46,8 +45,7 @@ public class DefaultNuxeoPermissionManager implements PermissionManager {
         service = Framework.getService(AnnotationsRepositoryService.class);
     }
 
-    public boolean check(NuxeoPrincipal user, String permission, URI uri)
-            throws AnnotationException {
+    public boolean check(NuxeoPrincipal user, String permission, URI uri) throws AnnotationException {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         try (CoreSession session = CoreInstance.openCoreSession(null)) {
             DocumentModel model = session.getDocument(view.getDocumentLocation().getDocRef());

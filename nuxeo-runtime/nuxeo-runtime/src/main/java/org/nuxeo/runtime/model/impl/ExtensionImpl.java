@@ -115,8 +115,7 @@ public class ExtensionImpl implements Extension {
     public String getId() {
         if (id == null) {
             if (component != null) {
-                id = component.getName().getName()
-                    + '#' + extensionPoint + '.' + (cnt++);
+                id = component.getName().getName() + '#' + extensionPoint + '.' + (cnt++);
             } else {
                 id = "null#" + extensionPoint + '.' + (cnt++);
             }
@@ -157,8 +156,7 @@ public class ExtensionImpl implements Extension {
         }
     }
 
-    public static ExtensionImpl fromXML(RuntimeContext context, String xml)
-            throws IOException {
+    public static ExtensionImpl fromXML(RuntimeContext context, String xml) throws IOException {
         return reader.read(context, new ByteArrayInputStream(xml.getBytes()));
     }
 

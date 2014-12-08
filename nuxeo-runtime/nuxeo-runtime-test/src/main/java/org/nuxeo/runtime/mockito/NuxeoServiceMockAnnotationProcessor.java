@@ -25,12 +25,9 @@ import org.mockito.internal.configuration.FieldAnnotationProcessor;
 import org.nuxeo.runtime.api.DefaultServiceProvider;
 
 /**
- *
- *
  * @since 5.7.8
  */
-public class NuxeoServiceMockAnnotationProcessor implements
-        FieldAnnotationProcessor<Mock> {
+public class NuxeoServiceMockAnnotationProcessor implements FieldAnnotationProcessor<Mock> {
 
     @Override
     public Object process(Mock annotation, final Field field) {

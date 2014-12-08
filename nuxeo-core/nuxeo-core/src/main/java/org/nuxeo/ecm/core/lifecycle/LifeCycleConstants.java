@@ -15,7 +15,6 @@ package org.nuxeo.ecm.core.lifecycle;
  * @deprecated use {@link org.nuxeo.ecm.core.api.LifeCycleConstants} instead
  */
 @Deprecated
-public interface LifeCycleConstants extends
-        org.nuxeo.ecm.core.api.LifeCycleConstants {
+public interface LifeCycleConstants extends org.nuxeo.ecm.core.api.LifeCycleConstants {
 
 }

@@ -75,8 +75,7 @@ public class MetricSerializer implements MetricSerializerMXBean {
             createTempFile();
         }
         closeOutput();
-        outputStream = new XStream().createObjectOutputStream(new FileWriter(
-                file));
+        outputStream = new XStream().createObjectOutputStream(new FileWriter(file));
         for (String name : SimonManager.simonNames()) {
             SimonManager.getSimon(name).reset();
         }

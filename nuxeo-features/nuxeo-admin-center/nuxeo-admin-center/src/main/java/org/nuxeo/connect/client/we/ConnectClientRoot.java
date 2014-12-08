@@ -70,8 +70,7 @@ public class ConnectClientRoot extends ModuleRoot {
     @Path(value = "restartView")
     public Object restartServerView() {
         if (((NuxeoPrincipal) getContext().getPrincipal()).isAdministrator()) {
-            return getView("serverRestart").arg("nuxeoctl",
-                    new NuxeoCtlManager());
+            return getView("serverRestart").arg("nuxeoctl", new NuxeoCtlManager());
         } else {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -80,8 +79,7 @@ public class ConnectClientRoot extends ModuleRoot {
     @GET
     @Produces("text/html")
     @Path(value = "registerInstanceCallback")
-    public Object registerInstanceCallback(
-            @QueryParam("ConnectRegistrationToken") String token) {
+    public Object registerInstanceCallback(@QueryParam("ConnectRegistrationToken") String token) {
         return getView("registerInstanceCallback").arg("token", token);
     }
 }

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.domsync.core.events;
 
 /**
  * @author Max Stepanov
- *
  */
 public class DOMCharacterDataModifiedEvent extends DOMMutationEvent {
 
@@ -41,8 +40,7 @@ public class DOMCharacterDataModifiedEvent extends DOMMutationEvent {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof DOMCharacterDataModifiedEvent) {
-            return super.equals(obj)
-                    && newValue.equals(((DOMCharacterDataModifiedEvent) obj).newValue);
+            return super.equals(obj) && newValue.equals(((DOMCharacterDataModifiedEvent) obj).newValue);
         }
         return false;
     }

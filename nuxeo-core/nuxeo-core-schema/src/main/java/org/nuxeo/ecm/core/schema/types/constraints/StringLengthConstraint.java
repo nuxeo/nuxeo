@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.schema.types.Constraint;
  * The length constraint is not strict (i.e. >= and <=).
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StringLengthConstraint implements Constraint {
 
@@ -30,7 +29,9 @@ public class StringLengthConstraint implements Constraint {
      *
      */
     private static final long serialVersionUID = 3630463971175189087L;
+
     private final int min;
+
     private final int max;
 
     public StringLengthConstraint(int min, int max) {

@@ -24,21 +24,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A feature is Nuxeo Runner extension that is able to configure the runner
- * from additional annotations and using a specific logic.
+ * A feature is Nuxeo Runner extension that is able to configure the runner from additional annotations and using a
+ * specific logic.
  * <p>
- * Let say you want a test that launches a Nuxeo Core with webengine and webdriver enabled.
- * You can activate these features using the Feature annotation like this:
+ * Let say you want a test that launches a Nuxeo Core with webengine and webdriver enabled. You can activate these
+ * features using the Feature annotation like this:
+ *
  * <pre>
- * @RunWith(NuxeoRunner.class)
- * @Features({CoreFeature.class, WebDriverFeature.class, WebEngineFeature.class})
+ * &#064;RunWith(NuxeoRunner.class)
+ * &#064;Features({ CoreFeature.class, WebDriverFeature.class, WebEngineFeature.class })
  * public class MyTest {
  *
  * }
  * </pre>
  *
- * or use the <code>@Features</code> annotation on an interface or subclass of your test class.
- * All the features presents on the class hierarchy will be collected and used.
+ * or use the <code>@Features</code> annotation on an interface or subclass of your test class. All the features
+ * presents on the class hierarchy will be collected and used.
  * <p>
  * Features must implement RunnerFeature class.
  *

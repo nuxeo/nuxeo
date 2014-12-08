@@ -57,8 +57,7 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
     @Override
     protected void deployRepositoryContrib() throws Exception {
         super.deployRepositoryContrib();
-        desc = Framework.getLocalService(SQLRepositoryService.class).getRepositoryDescriptor(
-                database.repositoryName);
+        desc = Framework.getLocalService(SQLRepositoryService.class).getRepositoryDescriptor(database.repositoryName);
         desc.pool.setMinPoolSize(MIN_POOL_SIZE);
         desc.pool.setMaxPoolSize(MAX_POOL_SIZE);
         desc.pool.setBlockingTimeoutMillis(BLOCKING_TIMEOUT);
@@ -69,7 +68,6 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         cm = (ConnectionManagerWrapper) NuxeoContainer.getConnectionManager(desc.pool.getName());
         assertNotNull("no pooling", cm);
     }
-
 
     @Test
     public void testOpenAllConnections() throws Exception {
@@ -174,10 +172,9 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
     }
 
     /**
-     * Check that for two different repositories we get the connections from two
-     * different pools. If not, TransactionCachingInterceptor will return a
-     * session from the first repository when asked for a new session for the
-     * second repository.
+     * Check that for two different repositories we get the connections from two different pools. If not,
+     * TransactionCachingInterceptor will return a session from the first repository when asked for a new session for
+     * the second repository.
      */
     @Test
     public void testMultipleRepositoriesPerTransaction() throws Exception {
@@ -187,23 +184,19 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         }
         DatabaseH2 db = (DatabaseH2) database;
         db.setUp2();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test",
-                "OSGI-INF/test-pooling-h2-repo2-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test", "OSGI-INF/test-pooling-h2-repo2-contrib.xml");
         // open a second repository
-        try (CoreSession session2 = CoreInstance.openCoreSession(
-                database.repositoryName + "2", SecurityConstants.ADMINISTRATOR)) {
+        try (CoreSession session2 = CoreInstance.openCoreSession(database.repositoryName + "2",
+                SecurityConstants.ADMINISTRATOR)) {
             doTestMultipleRepositoriesPerTransaction(session2);
         }
     }
 
-    protected void doTestMultipleRepositoriesPerTransaction(CoreSession session2)
-            throws Exception {
+    protected void doTestMultipleRepositoriesPerTransaction(CoreSession session2) throws Exception {
         assertEquals(database.repositoryName, session.getRepositoryName());
-        assertEquals(database.repositoryName + "2",
-                session2.getRepositoryName());
+        assertEquals(database.repositoryName + "2", session2.getRepositoryName());
         assertTrue(TransactionHelper.isTransactionActive());
-        assertNotSame("Sessions from two different repos",
-                session.getRootDocument().getId(),
+        assertNotSame("Sessions from two different repos", session.getRootDocument().getId(),
                 session2.getRootDocument().getId());
     }
 
@@ -230,8 +223,6 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         }
         assertEquals(count, threadAllocatedConnectionsCount());
     }
-
-
 
     @Test
     public void doesntReleaseBeforeCommit() throws ClientException {
@@ -263,7 +254,6 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
     }
 
     protected int activeConnectionCount() {
-        return cm.getPooling().getConnectionCount()
-                - cm.getPooling().getIdleConnectionCount();
+        return cm.getPooling().getConnectionCount() - cm.getPooling().getIdleConnectionCount();
     }
 }

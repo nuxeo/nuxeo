@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.annotations.service.AnnotationIDGenerator;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 @XObject("IDGenerator")
 public class AnnotationIDGeneratorDescriptor {

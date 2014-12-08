@@ -55,13 +55,11 @@ public class TestMemRepositoryApplyDiff {
         return stateDiff(values);
     }
 
-    private static void assertEqualsStrict(String message, Serializable a,
-            Serializable b) {
+    private static void assertEqualsStrict(String message, Serializable a, Serializable b) {
         assertTrue(message, StateHelper.equalsStrict(a, b));
     }
 
-    private static void assertApplyDiff(State expected, State state,
-            StateDiff diff) {
+    private static void assertApplyDiff(State expected, State state, StateDiff diff) {
         MemRepository.applyDiff(state, diff);
         assertEqualsStrict(state.toString(), expected, state);
     }

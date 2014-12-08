@@ -24,12 +24,13 @@ import redis.clients.jedis.exceptions.JedisException;
 
 @RunWith(FeaturesRunner.class)
 @Features(RedisFailoverFeature.class)
-@RedisFeature.Config(guessError=RedisEmbeddedGuessConnectionError.OnEveryCall.class )
+@RedisFeature.Config(guessError = RedisEmbeddedGuessConnectionError.OnEveryCall.class)
 public class TestRedisFailover {
 
-    @Inject protected RedisExecutor executor;
+    @Inject
+    protected RedisExecutor executor;
 
-    @Test(expected=JedisConnectionException.class)
+    @Test(expected = JedisConnectionException.class)
     public void cannotRetry() throws JedisException, IOException {
         executor.execute(new RedisCallable<Void>() {
 

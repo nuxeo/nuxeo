@@ -32,11 +32,9 @@ import org.nuxeo.ecm.platform.pictures.tiles.helpers.StringMaker;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * Default implementation for the PictureTiles interface
  *
  * @author tiry
- *
  */
 public class PictureTilesImpl implements PictureTiles, Serializable {
 
@@ -100,10 +98,9 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
     }
 
     public boolean isTileComputed(int x, int y) {
-        long lastModificationTime = Long.parseLong(infoMap.get(
-                PictureTilesImpl.LAST_MODIFICATION_DATE_KEY));
-        String tileFileName = StringMaker.getTileFileName(x, y,
-                infoMap.get(TILES_PREFIX_KEY), infoMap.get(TILES_SUFFIX_KEY), lastModificationTime);
+        long lastModificationTime = Long.parseLong(infoMap.get(PictureTilesImpl.LAST_MODIFICATION_DATE_KEY));
+        String tileFileName = StringMaker.getTileFileName(x, y, infoMap.get(TILES_PREFIX_KEY),
+                infoMap.get(TILES_SUFFIX_KEY), lastModificationTime);
         File imageFile = new File(tilesDirPath + tileFileName);
         return imageFile.exists();
     }
@@ -125,10 +122,9 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
     }
 
     public String getTileFilePath(int x, int y) {
-        long lastModificationTime = Long.parseLong(infoMap.get(
-                PictureTilesImpl.LAST_MODIFICATION_DATE_KEY));
-        String tileFileName = StringMaker.getTileFileName(x, y,
-                infoMap.get(TILES_PREFIX_KEY), infoMap.get(TILES_SUFFIX_KEY), lastModificationTime);
+        long lastModificationTime = Long.parseLong(infoMap.get(PictureTilesImpl.LAST_MODIFICATION_DATE_KEY));
+        String tileFileName = StringMaker.getTileFileName(x, y, infoMap.get(TILES_PREFIX_KEY),
+                infoMap.get(TILES_SUFFIX_KEY), lastModificationTime);
         String imageFilePath = new Path(tilesDirPath).append(tileFileName).toString();
         return imageFilePath;
     }
@@ -183,17 +179,15 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         float tWith = getXTiles() * getTilesWidth();
         float oHeight = originalImageInfo.getHeight();
         float tHeight = getYTiles() * getTilesHeight();
-        return tWith / oWith < tHeight / oHeight ? tWith / oWith : tHeight
-                / oHeight;
+        return tWith / oWith < tHeight / oHeight ? tWith / oWith : tHeight / oHeight;
     }
 
     public void release() {
-        long lastModificationTime = Long.parseLong(infoMap.get(
-                PictureTilesImpl.LAST_MODIFICATION_DATE_KEY));
+        long lastModificationTime = Long.parseLong(infoMap.get(PictureTilesImpl.LAST_MODIFICATION_DATE_KEY));
         for (int x = 0; x < getXTiles(); x++) {
             for (int y = 0; y < getYTiles(); y++) {
-                String tileFileName = StringMaker.getTileFileName(x, y,
-                        infoMap.get(TILES_PREFIX_KEY), infoMap.get(TILES_SUFFIX_KEY), lastModificationTime);
+                String tileFileName = StringMaker.getTileFileName(x, y, infoMap.get(TILES_PREFIX_KEY),
+                        infoMap.get(TILES_SUFFIX_KEY), lastModificationTime);
                 File img = new File(tilesDirPath + tileFileName);
                 if (img.exists())
                     img.delete();
@@ -210,8 +204,7 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
     }
 
     public String getTileFormatCacheKey() {
-        return StringMaker.getTileFormatString(getTilesWidth(),
-                getTilesHeight(), getMaxTiles());
+        return StringMaker.getTileFormatString(getTilesWidth(), getTilesHeight(), getMaxTiles());
     }
 
     public ImageInfo getOriginalImageInfo() {

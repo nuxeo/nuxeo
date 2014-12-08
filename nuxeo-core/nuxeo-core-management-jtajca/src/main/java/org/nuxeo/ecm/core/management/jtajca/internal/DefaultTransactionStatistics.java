@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.management.jtajca.TransactionStatistics;
 
 /**
  * @author matic
- * 
  */
 public class DefaultTransactionStatistics implements TransactionStatistics {
 
@@ -115,17 +114,15 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
     }
 
     public void print(PrintWriter writer) {
-        final String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(
-                new Date(startTimestamp));
+        final String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date(startTimestamp));
         final long duration = getDuration();
         if (duration > 0) {
             writer.write(String.format(
-                    "Transaction has started at %s with a duration of %d ms and was in status %s\n%s",
-                    date, duration, status, getEndCapturedContextMessage()));
+                    "Transaction has started at %s with a duration of %d ms and was in status %s\n%s", date, duration,
+                    status, getEndCapturedContextMessage()));
         } else {
-            writer.write(String.format(
-                    "Transaction has started at %s and was in state %s\n%s",
-                    date, status, getStartCapturedContextMessage()));
+            writer.write(String.format("Transaction has started at %s and was in state %s\n%s", date, status,
+                    getStartCapturedContextMessage()));
         }
         writer.flush();
     }

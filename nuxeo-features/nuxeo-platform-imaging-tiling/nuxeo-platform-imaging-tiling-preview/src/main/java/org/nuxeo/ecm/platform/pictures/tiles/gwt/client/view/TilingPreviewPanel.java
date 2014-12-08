@@ -43,10 +43,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
-public class TilingPreviewPanel extends Composite implements
-        TilingModelListener {
+public class TilingPreviewPanel extends Composite implements TilingModelListener {
 
     private static final String DEFAULT_CLASS_NAME = "tilingPreviewPanel";
 
@@ -60,24 +58,21 @@ public class TilingPreviewPanel extends Composite implements
 
     private final Map<String, Image> images = new HashMap<String, Image>();
 
-    public TilingPreviewPanel(TilingController tilingController,
-            TilingModel tilingModel) {
+    public TilingPreviewPanel(TilingController tilingController, TilingModel tilingModel) {
         controller = tilingController;
         model = tilingModel;
         model.addListener(this);
 
         // create the panel to show the part of the image
         tilingViewPanel = new AbsolutePanel();
-        tilingViewPanel.setPixelSize(model.getViewAreaWidth(),
-                model.getViewAreaHeight());
+        tilingViewPanel.setPixelSize(model.getViewAreaWidth(), model.getViewAreaHeight());
         tilingView = new AbsolutePanel();
         tilingViewPanel.add(tilingView);
 
         tilingViewPanel.addStyleName("tilingViewPanel");
 
         AbsolutePanel rootPanel = new AbsolutePanel();
-        rootPanel.setPixelSize(model.getViewAreaWidth(),
-                model.getViewAreaHeight());
+        rootPanel.setPixelSize(model.getViewAreaWidth(), model.getViewAreaHeight());
         rootPanel.addStyleName("tilingMasterContainer");
         rootPanel.add(tilingViewPanel, 0, 0);
 
@@ -151,8 +146,7 @@ public class TilingPreviewPanel extends Composite implements
         int width = model.getViewAreaWidth();
         int height = model.getViewAreaHeight();
 
-        Rectangle viewableArea = new Rectangle(new Point(left, top), width,
-                height);
+        Rectangle viewableArea = new Rectangle(new Point(left, top), width, height);
 
         tilingView.clear();
         for (int y = 0; y < heightInTiles; ++y) {
@@ -170,8 +164,7 @@ public class TilingPreviewPanel extends Composite implements
                 Point imageBottomLeft = new Point(imageLeft, imageBottom);
                 Point imageBottomRight = new Point(imageRight, imageBottom);
 
-                if (!viewableArea.containsAny(imageTopLeft, imageBottomLeft,
-                        imageTopRight, imageBottomRight)) {
+                if (!viewableArea.containsAny(imageTopLeft, imageBottomLeft, imageTopRight, imageBottomRight)) {
                     // Always draw the first image. It's used to display the
                     // annotations
                     if (!(x == 0 && y == 0)) {

@@ -25,8 +25,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @since 5.7.3
  */
 @XObject("documentMetadataGroupComputer")
-public class DocumentMetadataGroupComputerDescriptor extends
-        GroupComputerDescriptor {
+public class DocumentMetadataGroupComputerDescriptor extends GroupComputerDescriptor {
 
     private static final long serialVersionUID = 1L;
 
@@ -60,8 +59,7 @@ public class DocumentMetadataGroupComputerDescriptor extends
 
     @Override
     public GroupComputer getComputer() throws ClientException {
-        return new DocumentMetadataGroupComputer(whereClause, groupPattern,
-                xpathSelector);
+        return new DocumentMetadataGroupComputer(whereClause, groupPattern, xpathSelector);
     };
 
 }

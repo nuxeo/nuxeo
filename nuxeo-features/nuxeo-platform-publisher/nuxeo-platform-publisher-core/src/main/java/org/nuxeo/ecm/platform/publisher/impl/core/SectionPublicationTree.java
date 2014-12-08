@@ -44,8 +44,7 @@ import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
  *
  * @author tiry
  */
-public class SectionPublicationTree extends AbstractBasePublicationTree
-        implements PublicationTree {
+public class SectionPublicationTree extends AbstractBasePublicationTree implements PublicationTree {
 
     private static final long serialVersionUID = 1L;
 
@@ -60,40 +59,34 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     protected String sessionId;
 
     @Override
-    public void initTree(String sid, CoreSession coreSession,
-            Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName, String title) throws ClientException {
+    public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
+            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
         super.initTree(sid, coreSession, parameters, factory, configName, title);
 
         DocumentRef ref = new PathRef(rootPath);
         boolean exists = coreSession.exists(ref);
         if (!exists) {
-            log.debug("Root section " + rootPath + " doesn't exist. Check " +
-                    "publicationTreeConfig with name " + configName);
+            log.debug("Root section " + rootPath + " doesn't exist. Check " + "publicationTreeConfig with name "
+                    + configName);
         }
         if (exists && coreSession.hasPermission(ref, SecurityConstants.READ)) {
             treeRoot = coreSession.getDocument(new PathRef(rootPath));
-            rootNode = new CoreFolderPublicationNode(treeRoot, getConfigName(),
-                    sid, factory);
+            rootNode = new CoreFolderPublicationNode(treeRoot, getConfigName(), sid, factory);
         } else {
-            rootNode = new VirtualCoreFolderPublicationNode(
-                    coreSession.getSessionId(), rootPath, getConfigName(), sid,
+            rootNode = new VirtualCoreFolderPublicationNode(coreSession.getSessionId(), rootPath, getConfigName(), sid,
                     factory);
             sessionId = coreSession.getSessionId();
         }
     }
 
     protected CoreSession getCoreSession() {
-        String coreSessionId = treeRoot == null ? sessionId
-                : treeRoot.getSessionId();
+        String coreSessionId = treeRoot == null ? sessionId : treeRoot.getSessionId();
         return CoreInstance.getInstance().getSession(coreSessionId);
     }
 
-    public List<PublishedDocument> getExistingPublishedDocument(
-            DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
         List<PublishedDocument> publishedDocs = new ArrayList<PublishedDocument>();
-        DocumentModelList proxies = getCoreSession().getProxies(
-                docLoc.getDocRef(), null);
+        DocumentModelList proxies = getCoreSession().getProxies(docLoc.getDocRef(), null);
         for (DocumentModel proxy : proxies) {
             if (proxy.getPathAsString().startsWith(rootPath)) {
                 publishedDocs.add(factory.wrapDocumentModel(proxy));
@@ -103,28 +96,22 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode) throws ClientException {
-        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(
-                doc, targetNode);
-        PublicationRelationHelper.addPublicationRelation(
-                publishedDocument.getProxy(), this);
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode);
+        PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), this);
         return publishedDocument;
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
-        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(
-                doc, targetNode, params);
-        PublicationRelationHelper.addPublicationRelation(
-                publishedDocument.getProxy(), this);
+        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode,
+                params);
+        PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), this);
         return publishedDocument;
     }
 
-    public void unpublish(DocumentModel doc, PublicationNode targetNode)
-            throws ClientException {
+    public void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
         List<PublishedDocument> publishedDocs = getPublishedDocumentInNode(targetNode);
         for (PublishedDocument pubDoc : publishedDocs) {
             if (pubDoc.getSourceDocumentRef().equals(doc.getRef())) {
@@ -133,8 +120,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
         }
     }
 
-    public void unpublish(PublishedDocument publishedDocument)
-            throws ClientException {
+    public void unpublish(PublishedDocument publishedDocument) throws ClientException {
         if (!accept(publishedDocument)) {
             return;
         }
@@ -147,13 +133,10 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     public PublicationNode getNodeByPath(String path) throws ClientException {
         DocumentRef docRef = new PathRef(path);
         if (coreSession.hasPermission(docRef, SecurityConstants.READ)) {
-            return new CoreFolderPublicationNode(
-                    coreSession.getDocument(new PathRef(path)),
-                    getConfigName(), getSessionId(), factory);
+            return new CoreFolderPublicationNode(coreSession.getDocument(new PathRef(path)), getConfigName(),
+                    getSessionId(), factory);
         } else {
-            return new VirtualCoreFolderPublicationNode(
-                    coreSession.getSessionId(), path, getConfigName(), sid,
-                    factory);
+            return new VirtualCoreFolderPublicationNode(coreSession.getSessionId(), path, getConfigName(), sid, factory);
         }
 
     }
@@ -173,8 +156,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     }
 
     @Override
-    public boolean canPublishTo(PublicationNode publicationNode)
-            throws ClientException {
+    public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
         if (publicationNode == null || publicationNode.getParent() == null) {
             // we can't publish in the root node
             return false;
@@ -184,8 +166,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     }
 
     @Override
-    public boolean canUnpublish(PublishedDocument publishedDocument)
-            throws ClientException {
+    public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
         if (!accept(publishedDocument)) {
             return false;
         }
@@ -194,27 +175,22 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     }
 
     @Override
-    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel)
-            throws ClientException {
+    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
         return factory.wrapDocumentModel(documentModel);
     }
 
     @Override
-    public boolean isPublicationNode(DocumentModel documentModel)
-            throws ClientException {
+    public boolean isPublicationNode(DocumentModel documentModel) throws ClientException {
         return documentModel.getPathAsString().startsWith(rootPath);
     }
 
     @Override
-    public PublicationNode wrapToPublicationNode(DocumentModel documentModel)
-            throws ClientException {
+    public PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException {
         if (!isPublicationNode(documentModel)) {
-            throw new ClientException("Document "
-                    + documentModel.getPathAsString()
+            throw new ClientException("Document " + documentModel.getPathAsString()
                     + " is not a valid publication node.");
         }
-        return new CoreFolderPublicationNode(documentModel, getConfigName(),
-                sid, factory);
+        return new CoreFolderPublicationNode(documentModel, getConfigName(), sid, factory);
     }
 
     @Override

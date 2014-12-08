@@ -59,8 +59,8 @@ public class TestDocumentViewService {
     @Test
     public void testDocumentViewFromUrl() {
         String baseUrl = "http://foo.bar";
-        DocumentView docView = service.getDocumentViewFromUrl("docid",
-                "nxdoc/repo/1234/view_documents?tabId=foo", false, baseUrl);
+        DocumentView docView = service.getDocumentViewFromUrl("docid", "nxdoc/repo/1234/view_documents?tabId=foo",
+                false, baseUrl);
         assertNotNull(docView);
         assertEquals("view_documents", docView.getViewId());
         assertEquals("foo", docView.getParameter("tabId"));
@@ -68,23 +68,17 @@ public class TestDocumentViewService {
 
     @Test
     public void testUrlFromDocumentView() {
-        DocumentView docView = new DocumentViewImpl(new DocumentLocationImpl(
-                "repo", new PathRef("/ws/my/doc")), "view_doc");
-        assertEquals("nxpath/repo/ws/my/doc@view_doc",
-                service.getUrlFromDocumentView(docView, false, null));
+        DocumentView docView = new DocumentViewImpl(new DocumentLocationImpl("repo", new PathRef("/ws/my/doc")),
+                "view_doc");
+        assertEquals("nxpath/repo/ws/my/doc@view_doc", service.getUrlFromDocumentView(docView, false, null));
         assertNull(service.getUrlFromDocumentView("docid", docView, false, null));
-        docView = new DocumentViewImpl(new DocumentLocationImpl("repo",
-                new IdRef("1234")), "view_doc");
-        assertEquals("nxdoc/repo/1234/view_doc",
-                service.getUrlFromDocumentView("docid", docView, false, null));
-        assertEquals("nxdoc/repo/1234/view_doc",
-                service.getUrlFromDocumentView("docid", docView, true, null));
+        docView = new DocumentViewImpl(new DocumentLocationImpl("repo", new IdRef("1234")), "view_doc");
+        assertEquals("nxdoc/repo/1234/view_doc", service.getUrlFromDocumentView("docid", docView, false, null));
+        assertEquals("nxdoc/repo/1234/view_doc", service.getUrlFromDocumentView("docid", docView, true, null));
         assertEquals("http://foo/bar/nxdoc/repo/1234/view_doc",
-                service.getUrlFromDocumentView("docid", docView, true,
-                        "http://foo/bar/"));
+                service.getUrlFromDocumentView("docid", docView, true, "http://foo/bar/"));
         assertEquals("http://foo/bar/nxdoc/repo/1234/view_doc",
-                service.getUrlFromDocumentView("docid", docView, true,
-                        "http://foo/bar"));
+                service.getUrlFromDocumentView("docid", docView, true, "http://foo/bar"));
     }
 
 }

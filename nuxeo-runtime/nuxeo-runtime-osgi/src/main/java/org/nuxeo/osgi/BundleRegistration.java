@@ -25,8 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class BundleRegistration {
 
@@ -34,8 +33,11 @@ public class BundleRegistration {
 
     // XXX: explain why these three variables are lazily instantiated.
     protected final Set<String> dependsOn = new HashSet<String>();
+
     protected final Set<String> dependsOnMe = new HashSet<String>();
+
     protected final Set<String> waitingFor = new HashSet<String>();
+
     protected final Set<String> extendsMe = new HashSet<String>();
 
     public BundleRegistration(BundleImpl bundle) {

@@ -22,13 +22,12 @@ import javax.naming.directory.SearchControls;
  * Helper for translating ldap search scope from string to integer
  *
  * @author Anahide Tchertchian
- *
  */
 public class LdapScope {
 
     /**
-     * Returns the associated integer for scope, comparing lower case. Returns
-     * null if not one of "object", "onelevel" or "subtree".
+     * Returns the associated integer for scope, comparing lower case. Returns null if not one of "object", "onelevel"
+     * or "subtree".
      */
     public static Integer getIntegerScope(String scopeString) {
         if (scopeString != null) {

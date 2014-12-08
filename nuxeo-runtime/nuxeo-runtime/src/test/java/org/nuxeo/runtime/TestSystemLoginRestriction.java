@@ -50,17 +50,20 @@ public class TestSystemLoginRestriction {
         assertFalse(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost"));
 
         srm = new SystemLoginRestrictionManager();
-        Framework.getProperties().put(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP, "RemoteHost");
+        Framework.getProperties().put(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP,
+                "RemoteHost");
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost"));
 
         srm = new SystemLoginRestrictionManager();
-        Framework.getProperties().put(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP, "RemoteHost,RemoteHost2");
+        Framework.getProperties().put(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP,
+                "RemoteHost,RemoteHost2");
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost"));
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost2"));
         assertFalse(srm.isRemoveSystemLoginAllowedForInstance(""));
 
         srm = new SystemLoginRestrictionManager();
-        Framework.getProperties().put(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP, "RemoteHost,RemoteHost2,");
+        Framework.getProperties().put(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP,
+                "RemoteHost,RemoteHost2,");
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost"));
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost2"));
         assertFalse(srm.isRemoveSystemLoginAllowedForInstance(""));

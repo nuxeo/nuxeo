@@ -60,11 +60,10 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
- * This is the action listener that knows to decide if an user has the right to
- * take the lock or release the lock of a document.
+ * This is the action listener that knows to decide if an user has the right to take the lock or release the lock of a
+ * document.
  * <p>
- * Most of the logic of this bean should either be moved into a DocumentModel
- * adapter or directly into the core API.
+ * Most of the logic of this bean should either be moved into a DocumentModel adapter or directly into the core API.
  *
  * @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
  */
@@ -114,15 +113,10 @@ public class LockActionsBean implements LockActions {
                 NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
                 Lock lock = documentManager.getLockInfo(document.getRef());
                 canLock = lock == null
-                        && (userName.isAdministrator()
-                                || isManagerOnDocument(document.getRef()) || documentManager.hasPermission(
-                                document.getRef(), WRITE_PROPERTIES))
-                        && !document.isVersion();
+                        && (userName.isAdministrator() || isManagerOnDocument(document.getRef()) || documentManager.hasPermission(
+                                document.getRef(), WRITE_PROPERTIES)) && !document.isVersion();
             } catch (Exception e) {
-                log.debug("evaluation of document lock "
-                        + document.getName()
-                        + " failed ("
-                        + e.getMessage()
+                log.debug("evaluation of document lock " + document.getName() + " failed (" + e.getMessage()
                         + ": returning false");
                 canLock = false;
             }
@@ -140,7 +134,7 @@ public class LockActionsBean implements LockActions {
         return getCanLockDoc(currentDocument);
     }
 
-    @Observer(value = {EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false)
+    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetEventContext() {
         Context evtCtx = Contexts.getEventContext();
@@ -159,24 +153,17 @@ public class LockActionsBean implements LockActions {
             try {
                 NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
                 Map<String, Serializable> lockDetails = getLockDetails(document);
-                if (lockDetails.isEmpty()
-                        || document.isProxy()) {
+                if (lockDetails.isEmpty() || document.isProxy()) {
                     canUnlock = false;
                 } else {
-                    canUnlock = ((userName.isAdministrator() || documentManager.hasPermission(
-                            document.getRef(),
+                    canUnlock = ((userName.isAdministrator() || documentManager.hasPermission(document.getRef(),
                             EVERYTHING)) ? true
-                            : (userName.getName().equals(
-                                    lockDetails.get(LOCKER)) && documentManager.hasPermission(
-                                    document.getRef(),
-                                    WRITE_PROPERTIES)))
+                            : (userName.getName().equals(lockDetails.get(LOCKER)) && documentManager.hasPermission(
+                                    document.getRef(), WRITE_PROPERTIES)))
                             && !document.isVersion();
                 }
             } catch (Exception e) {
-                log.debug("evaluation of document lock "
-                        + document.getName()
-                        + " failed ("
-                        + e.getMessage()
+                log.debug("evaluation of document lock " + document.getName() + " failed (" + e.getMessage()
                         + ": returning false");
                 canUnlock = false;
             }
@@ -201,16 +188,14 @@ public class LockActionsBean implements LockActions {
         resetEventContext();
         String message = "document.lock.failed";
         DocumentRef ref = document.getRef();
-        if (documentManager.hasPermission(ref, WRITE_PROPERTIES)
-                && documentManager.getLockInfo(ref) == null) {
+        if (documentManager.hasPermission(ref, WRITE_PROPERTIES) && documentManager.getLockInfo(ref) == null) {
             documentManager.setLock(ref);
             documentManager.save();
             message = "document.lock";
             Events.instance().raiseEvent(EventNames.DOCUMENT_LOCKED, document);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, document);
         }
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get(message));
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get(message));
         resetLockState();
         webActions.resetTabList();
         return null;
@@ -251,13 +236,10 @@ public class LockActionsBean implements LockActions {
             message = "document.unlock.done";
         } else {
             NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-            if (userName.isAdministrator()
-                    || documentManager.hasPermission(document.getRef(),
-                            EVERYTHING)
+            if (userName.isAdministrator() || documentManager.hasPermission(document.getRef(), EVERYTHING)
                     || userName.getName().equals(lockDetails.get(LOCKER))) {
 
-                if (!documentManager.hasPermission(document.getRef(),
-                        WRITE_PROPERTIES)) {
+                if (!documentManager.hasPermission(document.getRef(), WRITE_PROPERTIES)) {
 
                     try {
                         // Here administrator should always be able to unlock
@@ -279,16 +261,13 @@ public class LockActionsBean implements LockActions {
                     documentManager.save();
                     message = "document.unlock";
                 }
-                Events.instance().raiseEvent(EventNames.DOCUMENT_UNLOCKED,
-                        document);
-                Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED,
-                        document);
+                Events.instance().raiseEvent(EventNames.DOCUMENT_UNLOCKED, document);
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, document);
             } else {
                 message = "document.unlock.not.permitted";
             }
         }
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get(message));
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get(message));
         resetLockState();
         webActions.resetTabList();
         return null;
@@ -305,8 +284,7 @@ public class LockActionsBean implements LockActions {
     }
 
     @Factory(value = "currentDocumentLockDetails", scope = ScopeType.EVENT)
-    public Map<String, Serializable> getCurrentDocLockDetails()
-            throws ClientException {
+    public Map<String, Serializable> getCurrentDocLockDetails() throws ClientException {
         Map<String, Serializable> details = null;
         if (navigationContext.getCurrentDocument() != null) {
             details = getLockDetails(navigationContext.getCurrentDocument());
@@ -314,8 +292,7 @@ public class LockActionsBean implements LockActions {
         return details;
     }
 
-    public Map<String, Serializable> getLockDetails(DocumentModel document)
-            throws ClientException {
+    public Map<String, Serializable> getLockDetails(DocumentModel document) throws ClientException {
         if (lockDetails == null || !StringUtils.equals(documentId, document.getId())) {
             lockDetails = new HashMap<String, Serializable>();
             documentId = document.getId();
@@ -325,10 +302,8 @@ public class LockActionsBean implements LockActions {
             }
             lockDetails.put(LOCKER, lock.getOwner());
             lockDetails.put(LOCK_CREATED, lock.getCreated());
-            lockDetails.put(
-                    LOCK_TIME,
-                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(
-                            new Date(lock.getCreated().getTimeInMillis())));
+            lockDetails.put(LOCK_TIME,
+                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date(lock.getCreated().getTimeInMillis())));
         }
         return lockDetails;
     }

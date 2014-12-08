@@ -30,14 +30,12 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Versions management component implementation.
  */
-public class VersioningManagerImpl extends DefaultComponent implements
-        VersioningManager {
+public class VersioningManagerImpl extends DefaultComponent implements VersioningManager {
 
     public static final String COMPONENT_ID = "org.nuxeo.ecm.platform.versioning.VersioningManager";
 
     @Override
-    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel doc)
-            throws ClientException {
+    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel doc) throws ClientException {
         VersionIncEditOptions options = new VersionIncEditOptions();
         VersioningService service = Framework.getService(VersioningService.class);
         for (VersioningOption option : service.getSaveOptions(doc)) {
@@ -68,31 +66,24 @@ public class VersioningManagerImpl extends DefaultComponent implements
 
     @Override
     @Deprecated
-    public DocumentModel incrementMajor(DocumentModel doc)
-            throws ClientException {
+    public DocumentModel incrementMajor(DocumentModel doc) throws ClientException {
         setVersion(doc, getValidMajor(doc) + 1, 0);
         return doc;
     }
 
     @Override
     @Deprecated
-    public DocumentModel incrementMinor(DocumentModel doc)
-            throws ClientException {
-        doc.setPropertyValue(VersioningService.MINOR_VERSION_PROP,
-                Long.valueOf(getValidMinor(doc) + 1));
+    public DocumentModel incrementMinor(DocumentModel doc) throws ClientException {
+        doc.setPropertyValue(VersioningService.MINOR_VERSION_PROP, Long.valueOf(getValidMinor(doc) + 1));
         return doc;
     }
 
-    private static void setVersion(DocumentModel doc, long major, long minor)
-            throws ClientException {
-        doc.setPropertyValue(VersioningService.MAJOR_VERSION_PROP,
-                Long.valueOf(major));
-        doc.setPropertyValue(VersioningService.MINOR_VERSION_PROP,
-                Long.valueOf(minor));
+    private static void setVersion(DocumentModel doc, long major, long minor) throws ClientException {
+        doc.setPropertyValue(VersioningService.MAJOR_VERSION_PROP, Long.valueOf(major));
+        doc.setPropertyValue(VersioningService.MINOR_VERSION_PROP, Long.valueOf(minor));
     }
 
-    private static long getValidVersion(DocumentModel doc, String propName)
-            throws ClientException {
+    private static long getValidVersion(DocumentModel doc, String propName) throws ClientException {
         Object propVal = doc.getPropertyValue(propName);
         if (propVal == null || !(propVal instanceof Long)) {
             return 0;

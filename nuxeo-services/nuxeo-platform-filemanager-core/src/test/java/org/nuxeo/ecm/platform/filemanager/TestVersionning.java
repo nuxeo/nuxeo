@@ -39,15 +39,11 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(init=RepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core",
-        "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.filemanager.api",
-        "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.versioning.api",
-        "org.nuxeo.ecm.platform.versioning" })
+@RepositoryConfig(init = RepositoryInit.class)
+@Deploy({ "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core",
+        "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core",
+        "org.nuxeo.ecm.platform.versioning.api", "org.nuxeo.ecm.platform.versioning" })
 @LocalDeploy("org.nuxeo.ecm.platform.filemanager.core:ecm-types-test-contrib.xml")
 public class TestVersionning {
 
@@ -62,11 +58,9 @@ public class TestVersionning {
     protected FileManager fm;
 
     private void createTestDocuments() throws Exception {
-        wsRoot = coreSession.getDocument(new PathRef(
-                "default-domain/workspaces"));
+        wsRoot = coreSession.getDocument(new PathRef("default-domain/workspaces"));
 
-        DocumentModel ws = coreSession.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
+        DocumentModel ws = coreSession.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");
         ws = coreSession.createDocument(ws);
 
@@ -87,33 +81,29 @@ public class TestVersionning {
         Blob blob = new StringBlob("Something");
         blob.setMimeType("something");
         blob.setFilename("mytest.something");
-        DocumentModel doc = fm.createDocumentFromBlob(coreSession, blob,
-                destWS.getPathAsString(), true, "mytest.something");
+        DocumentModel doc = fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true,
+                "mytest.something");
         waitForAsyncCompletion();
         assertEquals("mytest.something", doc.getTitle());
         assertEquals("0.0", doc.getVersionLabel());
 
-        doc = fm.createDocumentFromBlob(coreSession, blob,
-                destWS.getPathAsString(), true, "mytest.something");
+        doc = fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "mytest.something");
         waitForAsyncCompletion();
         assertEquals("0.1+", doc.getVersionLabel());
 
         blob.setFilename("mytest2.something");
-        doc = fm.createDocumentFromBlob(coreSession, blob,
-                destWS.getPathAsString(), true, "mytest2.something");
+        doc = fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "mytest2.something");
         waitForAsyncCompletion();
         assertEquals("0.0", doc.getVersionLabel());
 
         blob.setFilename("mytxt.txt");
         blob.setMimeType("text/plain");
-        doc = fm.createDocumentFromBlob(coreSession, blob,
-                destWS.getPathAsString(), true, "mytxt.txt");
+        doc = fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "mytxt.txt");
         waitForAsyncCompletion();
         assertEquals("Note", doc.getType());
         assertEquals("0.0", doc.getVersionLabel());
 
-        doc = fm.createDocumentFromBlob(coreSession, blob,
-                destWS.getPathAsString(), true, "mytxt.txt");
+        doc = fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "mytxt.txt");
         waitForAsyncCompletion();
         assertEquals("0.1+", doc.getVersionLabel());
     }

@@ -31,7 +31,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class Annotation {
     private String uuid;
@@ -94,8 +93,8 @@ public class Annotation {
     }
 
     private native String getDateFormatPattern() /*-{
-      return top['dateFormatPattern'];
-    }-*/;
+                                                 return top['dateFormatPattern'];
+                                                 }-*/;
 
     public Annotation(XPointer xpointer) {
         this.xpointer = xpointer;
@@ -152,16 +151,13 @@ public class Annotation {
     @SuppressWarnings("deprecation")
     private static Date computeDate(String stringDate) {
         String d = stringDate.substring(0, stringDate.indexOf("T"));
-        String t = stringDate.substring(stringDate.indexOf("T") + 1,
-                stringDate.indexOf("Z"));
+        String t = stringDate.substring(stringDate.indexOf("T") + 1, stringDate.indexOf("Z"));
         String[] ds = d.split("-");
         String[] ts = t.split(":");
         Date now = new Date();
         int second = ts.length == 3 ? Integer.parseInt(ts[2]) : 0;
-        now = new Date(Date.UTC(Integer.parseInt(ds[0]) - 1900,
-                Integer.parseInt(ds[1]) - 1, Integer.parseInt(ds[2]),
-                Integer.parseInt(ts[0]), Integer.parseInt(ts[1]), second)
-                + now.getTimezoneOffset());
+        now = new Date(Date.UTC(Integer.parseInt(ds[0]) - 1900, Integer.parseInt(ds[1]) - 1, Integer.parseInt(ds[2]),
+                Integer.parseInt(ts[0]), Integer.parseInt(ts[1]), second) + now.getTimezoneOffset());
         return now;
     }
 
@@ -204,8 +200,7 @@ public class Annotation {
         }
 
         Annotation annotation = (Annotation) obj;
-        return xpointer.equals(annotation.xpointer)
-                && author.equals(annotation.author);
+        return xpointer.equals(annotation.xpointer) && author.equals(annotation.author);
     }
 
     @Override

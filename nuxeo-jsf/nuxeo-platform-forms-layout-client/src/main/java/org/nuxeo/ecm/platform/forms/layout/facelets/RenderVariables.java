@@ -22,8 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 /**
  * List of render variables.
  * <p>
- * Variables which names will be available in a layout/widget rendering
- * context.
+ * Variables which names will be available in a layout/widget rendering context.
  * <p>
  * This allows to use them in properties definitions.
  *

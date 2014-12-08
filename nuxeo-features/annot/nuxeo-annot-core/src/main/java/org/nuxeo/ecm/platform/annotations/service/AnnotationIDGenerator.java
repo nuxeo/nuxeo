@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.annotations.service;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public interface AnnotationIDGenerator {
 

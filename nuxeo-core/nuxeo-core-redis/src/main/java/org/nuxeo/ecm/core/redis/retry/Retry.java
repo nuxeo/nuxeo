@@ -47,7 +47,8 @@ public class Retry {
     }
 
     public <T> T retry(Block<T> block, Policy policy) throws FailException {
-        FailException causes = new FailException("Cannot execute block, retry policy failed, check supressed exception for more infos");
+        FailException causes = new FailException(
+                "Cannot execute block, retry policy failed, check supressed exception for more infos");
         while (policy.allow()) {
             try {
                 return block.retry();

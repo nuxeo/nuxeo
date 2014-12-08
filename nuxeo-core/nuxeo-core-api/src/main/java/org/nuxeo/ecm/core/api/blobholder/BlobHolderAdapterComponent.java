@@ -30,15 +30,13 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime component to manage the pluggable factory for
- * {@link DocumentAdapterFactory}.
+ * Runtime component to manage the pluggable factory for {@link DocumentAdapterFactory}.
  * <p>
  * Also provides the service interface {@link BlobHolderAdapterService}
  *
  * @author tiry
  */
-public class BlobHolderAdapterComponent extends DefaultComponent implements
-        BlobHolderAdapterService {
+public class BlobHolderAdapterComponent extends DefaultComponent implements BlobHolderAdapterService {
 
     private static final Log log = LogFactory.getLog(BlobHolderAdapterComponent.class);
 
@@ -46,18 +44,14 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
 
     public static final String EXTERNALBLOB_ADAPTER_EP = "ExternalBlobAdapter";
 
-    protected final Map<String, BlobHolderFactory> factories
-            = new HashMap<String, BlobHolderFactory>();
+    protected final Map<String, BlobHolderFactory> factories = new HashMap<String, BlobHolderFactory>();
 
-    protected Map<String, BlobHolderFactory> factoriesByFacets
-                = new HashMap<String, BlobHolderFactory>();
+    protected Map<String, BlobHolderFactory> factoriesByFacets = new HashMap<String, BlobHolderFactory>();
 
-    protected static final Map<String, ExternalBlobAdapter> externalBlobAdapters
-            = new HashMap<String, ExternalBlobAdapter>();
+    protected static final Map<String, ExternalBlobAdapter> externalBlobAdapters = new HashMap<String, ExternalBlobAdapter>();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (BLOBHOLDERFACTORY_EP.equals(extensionPoint)) {
             BlobHolderFactoryDescriptor desc = (BlobHolderFactoryDescriptor) contribution;
@@ -74,30 +68,26 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
             ExternalBlobAdapter adapter = desc.getAdapter();
             String prefix = desc.getPrefix();
             if (externalBlobAdapters.containsKey(prefix)) {
-                log.info(String.format(
-                        "Overriding external blob adapter with prefix '%s'",
-                        prefix));
+                log.info(String.format("Overriding external blob adapter with prefix '%s'", prefix));
                 externalBlobAdapters.remove(prefix);
             }
             adapter.setPrefix(desc.getPrefix());
             adapter.setProperties(desc.getProperties());
             externalBlobAdapters.put(desc.getPrefix(), adapter);
-            log.info(String.format(
-                    "Registered external blob adapter with prefix '%s'", prefix));
+            log.info(String.format("Registered external blob adapter with prefix '%s'", prefix));
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
     /* for test */
 
     public static Set<String> getFactoryNames() {
-        return ((BlobHolderAdapterComponent)Framework.getLocalService(BlobHolderAdapterService.class)).factories.keySet();
+        return ((BlobHolderAdapterComponent) Framework.getLocalService(BlobHolderAdapterService.class)).factories.keySet();
     }
 
     /* Service Interface */
@@ -110,8 +100,7 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
     @Override
     public ExternalBlobAdapter getExternalBlobAdapterForUri(String uri) {
         if (uri != null && uri.contains(ExternalBlobAdapter.PREFIX_SEPARATOR)) {
-            String prefix = uri.substring(0,
-                    uri.indexOf(ExternalBlobAdapter.PREFIX_SEPARATOR));
+            String prefix = uri.substring(0, uri.indexOf(ExternalBlobAdapter.PREFIX_SEPARATOR));
             return getExternalBlobAdapterForPrefix(prefix);
         }
         return null;
@@ -121,8 +110,7 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
     public Blob getExternalBlobForUri(String uri) throws PropertyException {
         ExternalBlobAdapter adapter = getExternalBlobAdapterForUri(uri);
         if (adapter == null) {
-            throw new PropertyException(String.format(
-                    "No external blob adapter found for uri '%s'", uri));
+            throw new PropertyException(String.format("No external blob adapter found for uri '%s'", uri));
         }
         return adapter.getBlob(uri);
     }

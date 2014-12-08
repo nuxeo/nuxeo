@@ -36,37 +36,31 @@ public abstract class AbstractNegotiator implements Negotiator {
 
     public abstract String getTemplateEngineName();
 
-    protected AbstractNegotiator(String strategy, Object context,
-            HttpServletRequest request) {
+    protected AbstractNegotiator(String strategy, Object context, HttpServletRequest request) {
         this.strategy = strategy;
         this.context = context;
         this.request = request;
     }
 
     public final String getSpec() throws NegotiationException {
-        return String.format("%s/%s/%s/%s/%s/%s/%s", SPEC_PREFIX,
-                negotiate("engine"), negotiate("mode"),
-                getTemplateEngineName(), negotiate("theme"),
-                negotiate("perspective"), negotiate("collection"));
+        return String.format("%s/%s/%s/%s/%s/%s/%s", SPEC_PREFIX, negotiate("engine"), negotiate("mode"),
+                getTemplateEngineName(), negotiate("theme"), negotiate("perspective"), negotiate("collection"));
     }
 
-    public final synchronized String negotiate(String object)
-            throws NegotiationException {
+    public final synchronized String negotiate(String object) throws NegotiationException {
         if (strategy == null) {
             throw new NegotiationException("No negotiation strategy is set.");
         }
-        NegotiationType negotiation = (NegotiationType) Manager.getTypeRegistry().lookup(
-                TypeFamily.NEGOTIATION,
+        NegotiationType negotiation = (NegotiationType) Manager.getTypeRegistry().lookup(TypeFamily.NEGOTIATION,
                 String.format("%s/%s", strategy, object));
         // Try with the 'default' strategy
         if (negotiation == null) {
-            negotiation = (NegotiationType) Manager.getTypeRegistry().lookup(
-                    TypeFamily.NEGOTIATION,
+            negotiation = (NegotiationType) Manager.getTypeRegistry().lookup(TypeFamily.NEGOTIATION,
                     String.format("%s/%s", DEFAULT_NEGOTIATION_STRATEGY, object));
         }
         if (negotiation == null) {
-            throw new NegotiationException("Could not obtain negotiation for: "
-                    + strategy + " (strategy) " + object + " (object)");
+            throw new NegotiationException("Could not obtain negotiation for: " + strategy + " (strategy) " + object
+                    + " (object)");
         }
         final List<Scheme> schemes = negotiation.getSchemes();
 
@@ -80,9 +74,8 @@ public abstract class AbstractNegotiator implements Negotiator {
             }
         }
         if (outcome == null) {
-            throw new NegotiationException(
-                    "No negotiation outcome found for:  " + strategy
-                            + " (strategy) " + object + " (object)");
+            throw new NegotiationException("No negotiation outcome found for:  " + strategy + " (strategy) " + object
+                    + " (object)");
         } else {
             // add result to the request
             request.setAttribute(NEGOTIATION_RESULT_PREFIX + object, outcome);

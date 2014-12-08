@@ -27,8 +27,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ActionContributionHandler extends
-        ContributionFragmentRegistry<Action> {
+public class ActionContributionHandler extends ContributionFragmentRegistry<Action> {
 
     protected ActionRegistry actionReg;
 
@@ -65,8 +64,7 @@ public class ActionContributionHandler extends
     }
 
     @Override
-    public void contributionUpdated(String actionId, Action action,
-            Action origAction) {
+    public void contributionUpdated(String actionId, Action action, Action origAction) {
         // given action is already merged, just retrieve its inner filters to
         // register them to the filter registry
         List<String> newFilterIds = new ArrayList<String>();
@@ -116,10 +114,8 @@ public class ActionContributionHandler extends
         }
 
         // Merge categories without duplicates
-        Set<String> mergedCategories = new HashSet<String>(
-                Arrays.asList(dest.getCategories()));
-        mergedCategories.addAll(new HashSet<String>(
-                Arrays.asList(source.getCategories())));
+        Set<String> mergedCategories = new HashSet<String>(Arrays.asList(dest.getCategories()));
+        mergedCategories.addAll(new HashSet<String>(Arrays.asList(source.getCategories())));
         dest.setCategories(mergedCategories.toArray(new String[mergedCategories.size()]));
 
         // label
@@ -136,8 +132,7 @@ public class ActionContributionHandler extends
 
         // confirm
         String newConfirm = source.getConfirm();
-        if (newConfirm != null && !"".equals(newConfirm)
-                && !newConfirm.equals(dest.getConfirm())) {
+        if (newConfirm != null && !"".equals(newConfirm) && !newConfirm.equals(dest.getConfirm())) {
             dest.setConfirm(newConfirm);
         }
 

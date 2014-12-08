@@ -19,8 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A flat representation of a document properties. Dates are in
- * YYYY-MM-DDThh:mm:ssZ (UTC) format
+ * A flat representation of a document properties. Dates are in YYYY-MM-DDThh:mm:ssZ (UTC) format
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -119,8 +118,7 @@ public class PropertyMap implements Serializable {
     }
 
     /**
-     * @deprecated since 5.7. Use {@link Document#set(String, String)} to inject
-     *             data.
+     * @deprecated since 5.7. Use {@link Document#set(String, String)} to inject data.
      */
     @Deprecated
     public void set(String key, String value) {
@@ -131,8 +129,7 @@ public class PropertyMap implements Serializable {
     }
 
     /**
-     * @deprecated since 5.7. Use {@link Document#set(String, Boolean)} to
-     *             inject data.
+     * @deprecated since 5.7. Use {@link Document#set(String, Boolean)} to inject data.
      */
     @Deprecated
     public void set(String key, Boolean value) {
@@ -143,8 +140,7 @@ public class PropertyMap implements Serializable {
     }
 
     /**
-     * @deprecated since 5.7. Use {@link Document#set(String, Long)} to inject
-     *             data.
+     * @deprecated since 5.7. Use {@link Document#set(String, Long)} to inject data.
      */
     @Deprecated
     public void set(String key, Long value) {
@@ -155,8 +151,7 @@ public class PropertyMap implements Serializable {
     }
 
     /**
-     * @deprecated since 5.7. Use {@link Document#set(String, Double)} to inject
-     *             data.
+     * @deprecated since 5.7. Use {@link Document#set(String, Double)} to inject data.
      */
     @Deprecated
     public void set(String key, Double value) {
@@ -167,8 +162,7 @@ public class PropertyMap implements Serializable {
     }
 
     /**
-     * @deprecated since 5.7. Use {@link Document#set(String, java.util.Date)}
-     *             to inject data.
+     * @deprecated since 5.7. Use {@link Document#set(String, java.util.Date)} to inject data.
      */
     @Deprecated
     public void set(String key, Date value) {
@@ -179,8 +173,7 @@ public class PropertyMap implements Serializable {
     }
 
     /**
-     * @deprecated since 5.7. Use {@link Document#set(String, PropertyList)} to
-     *             inject data.
+     * @deprecated since 5.7. Use {@link Document#set(String, PropertyList)} to inject data.
      */
     @Deprecated
     public void set(String key, PropertyList value) {
@@ -191,8 +184,7 @@ public class PropertyMap implements Serializable {
     }
 
     /**
-     * @deprecated since 5.7. Use {@link Document#set(String, PropertyMap)} to
-     *             inject data.
+     * @deprecated since 5.7. Use {@link Document#set(String, PropertyMap)} to inject data.
      */
     @Deprecated
     public void set(String key, PropertyMap value) {
@@ -213,9 +205,8 @@ public class PropertyMap implements Serializable {
             Object v = entry.getValue();
             if (v != null) {
                 if (v.getClass() == String.class) {
-                    buf.append(entry.getKey()).append("=").append(
-                            entry.getValue()).append("\n"); // TODO escape \n
-                                                            // in value
+                    buf.append(entry.getKey()).append("=").append(entry.getValue()).append("\n"); // TODO escape \n
+                                                                                                  // in value
                 } else {
                     // TODO - use full xpath
                     // buf.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");

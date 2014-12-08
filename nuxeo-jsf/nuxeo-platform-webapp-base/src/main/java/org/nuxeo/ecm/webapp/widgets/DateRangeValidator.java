@@ -36,11 +36,11 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 
 /**
- * Compares two dates in a date range widget and throws a validation error if
- * the second date is not superior to the first date.
+ * Compares two dates in a date range widget and throws a validation error if the second date is not superior to the
+ * first date.
  * <p>
- * Looks up component ids by reytrieving attributes on the validated component,
- * named "startDateComponentId" and "endDateComponentId".
+ * Looks up component ids by reytrieving attributes on the validated component, named "startDateComponentId" and
+ * "endDateComponentId".
  *
  * @since 5.7
  */
@@ -55,8 +55,7 @@ public class DateRangeValidator implements Serializable {
 
     private static final Log log = LogFactory.getLog(DateRangeValidator.class);
 
-    public void validateDateRange(FacesContext context, UIComponent component,
-            Object value) {
+    public void validateDateRange(FacesContext context, UIComponent component, Object value) {
         Map<String, Object> attributes = component.getAttributes();
         String startDateComponentId = (String) attributes.get("startDateComponentId");
         String endDateComponentId = (String) attributes.get("endDateComponentId");
@@ -78,13 +77,9 @@ public class DateRangeValidator implements Serializable {
         Date stratDate = (Date) startDateComp.getLocalValue();
         Date endDate = (Date) endDateComp.getLocalValue();
 
-        if (stratDate != null && endDate != null
-                && endDate.compareTo(stratDate) < 0) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    String.format(
-                            messages.get("error.dateRangeValidator.invalidDateRange"),
-                            stratDate, endDate), null);
+        if (stratDate != null && endDate != null && endDate.compareTo(stratDate) < 0) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, String.format(
+                    messages.get("error.dateRangeValidator.invalidDateRange"), stratDate, endDate), null);
             throw new ValidatorException(message);
         }
     }

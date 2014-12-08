@@ -32,7 +32,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class GwtTestXPathUtil extends AbstractDocumentGWTTest {
     private final XPathUtil xPathUtil = new XPathUtil();
@@ -40,8 +39,7 @@ public class GwtTestXPathUtil extends AbstractDocumentGWTTest {
     @SuppressWarnings("static-access")
     public void testGetGetXPath() {
         createDocument();
-        NodeList<Element> el = RootPanel.get().getBodyElement().getElementsByTagName(
-                "span");
+        NodeList<Element> el = RootPanel.get().getBodyElement().getElementsByTagName("span");
         assertNotNull(el);
         Node node = el.getItem(0);
         assertNotNull(node);
@@ -52,15 +50,14 @@ public class GwtTestXPathUtil extends AbstractDocumentGWTTest {
 
     public void testGetNode() {
         createDocument();
-        Node node = xPathUtil.getNode("/html[0]/body[0]/div[0]/div[0]/div[0]/nobr[0]",
-                Document.get()).get(0);
+        Node node = xPathUtil.getNode("/html[0]/body[0]/div[0]/div[0]/div[0]/nobr[0]", Document.get()).get(0);
         assertNotNull(node);
         assertEquals(node.getNodeName().toLowerCase(), "nobr");
         List<Node> nodes = xPathUtil.getNode("//img", Document.get());
         assertEquals(1, nodes.size());
     }
 
-    //test fail in mvn, succeed in eclipse ...
+    // test fail in mvn, succeed in eclipse ...
     public void _testGetXPathDecoratedDocument() {
         createDocument();
         List<Node> nodes = xPathUtil.getNode("/html[0]/body[0]/div[0]/b[0]/span[1]", Document.get());
@@ -73,11 +70,14 @@ public class GwtTestXPathUtil extends AbstractDocumentGWTTest {
         String xpath = xPathUtil.getXPath(node);
         assertEquals(xpath.toLowerCase(), "/html[0]/body[0]/div[0]/b[0]/span[1]");
     }
+
     public void testGetShortLength() {
         assertEquals(xPathUtil.getShortLength("a\nb\n\nc"), 3);
     }
+
     @Override
     public String getInnerHtml() {
-        return super.getInnerHtml() + "<b><span class=\"decorate decorate1\">a</span><span>b</span><span id=\"myspan\">c</span></b>";
+        return super.getInnerHtml()
+                + "<b><span class=\"decorate decorate1\">a</span><span>b</span><span id=\"myspan\">c</span></b>";
     }
 }

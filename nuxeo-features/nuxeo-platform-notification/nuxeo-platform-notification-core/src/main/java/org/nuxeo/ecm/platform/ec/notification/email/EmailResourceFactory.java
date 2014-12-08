@@ -31,13 +31,11 @@ import javax.naming.spi.ObjectFactory;
 
 /**
  * @author matic
- *
  */
 public class EmailResourceFactory implements ObjectFactory {
 
     @Override
-    public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-            Hashtable<?, ?> environment) {
+    public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) {
         final Reference ref = (Reference) obj;
         if (!ref.getClassName().equals("javax.mail.Session"))
             return (null);

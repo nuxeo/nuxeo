@@ -42,8 +42,7 @@ public class PresetManager {
 
     private static final Pattern customPresetNamePattern = Pattern.compile("^\"(.*?)\"$");
 
-    public static String extractPresetName(final String themeName,
-            final String str) {
+    public static String extractPresetName(final String themeName, final String str) {
         String s = str.trim();
         final Matcher globalPresetNameMatcher = globalPresetNamePattern.matcher(s);
         if (globalPresetNameMatcher.find()) {
@@ -54,24 +53,21 @@ public class PresetManager {
         } else if (themeName != null) {
             final Matcher customPresetNameMatcher = customPresetNamePattern.matcher(s);
             if (customPresetNameMatcher.find()) {
-                return String.format("%s/%s", themeName,
-                        customPresetNameMatcher.group(1));
+                return String.format("%s/%s", themeName, customPresetNameMatcher.group(1));
             }
         }
         return null;
     }
 
     public static PresetType getPresetByName(final String name) {
-        return (PresetType) Manager.getTypeRegistry().lookup(TypeFamily.PRESET,
-                name);
+        return (PresetType) Manager.getTypeRegistry().lookup(TypeFamily.PRESET, name);
     }
 
     public static List<Type> getAllPresets() {
         return Manager.getTypeRegistry().getTypes(TypeFamily.PRESET);
     }
 
-    public static List<PresetType> getGlobalPresets(final String group,
-            final String category) {
+    public static List<PresetType> getGlobalPresets(final String group, final String category) {
         List<PresetType> presets = new ArrayList<PresetType>();
         for (Type type : getAllPresets()) {
             PresetType preset = (PresetType) type;
@@ -89,8 +85,7 @@ public class PresetManager {
         return presets;
     }
 
-    public static PresetType getCustomPreset(final String themeName,
-            final String presetName) {
+    public static PresetType getCustomPreset(final String themeName, final String presetName) {
         return getPresetByName(String.format("%s/%s", themeName, presetName));
     }
 
@@ -98,8 +93,7 @@ public class PresetManager {
         return getCustomPresets(themeName, null);
     }
 
-    public static List<PresetType> getCustomPresets(final String themeName,
-            final String category) {
+    public static List<PresetType> getCustomPresets(final String themeName, final String category) {
         List<PresetType> presets = new ArrayList<PresetType>();
         for (Type type : getAllPresets()) {
             PresetType preset = (PresetType) type;
@@ -117,8 +111,7 @@ public class PresetManager {
         return presets;
     }
 
-    public static String resolvePresets(final String themeName,
-            String propertyValue) {
+    public static String resolvePresets(final String themeName, String propertyValue) {
         // first-pass
         propertyValue = resolveVariables(themeName, propertyValue);
         // second-pass
@@ -126,8 +119,7 @@ public class PresetManager {
         return propertyValue;
     }
 
-    private static String resolveVariables(final String themeName,
-            final String str) {
+    private static String resolveVariables(final String themeName, final String str) {
         Matcher m = manyPresetNamePattern.matcher(str);
         StringBuilder sb = new StringBuilder();
         int end = 0;
@@ -142,9 +134,7 @@ public class PresetManager {
             }
             PresetType preset = getPresetByName(presetName);
             if (preset == null) {
-                log.warn(String.format(
-                        "Preset '%s' could not be resolved in theme '%s'",
-                        presetName, themeName));
+                log.warn(String.format("Preset '%s' could not be resolved in theme '%s'", presetName, themeName));
                 sb.append(presetStr);
                 continue;
             }
@@ -154,27 +144,23 @@ public class PresetManager {
         return sb.toString();
     }
 
-    public static void createCustomPreset(String themeName, String presetName,
-            String category, String value, String label, String description) {
-        CustomPresetType preset = new CustomPresetType(presetName, value,
-                themeName, category, label, description);
+    public static void createCustomPreset(String themeName, String presetName, String category, String value,
+            String label, String description) {
+        CustomPresetType preset = new CustomPresetType(presetName, value, themeName, category, label, description);
         Manager.getTypeRegistry().register(preset);
     }
 
-    public static void editPreset(String themeName, String presetName,
-            String value) {
+    public static void editPreset(String themeName, String presetName, String value) {
         PresetType preset = getCustomPreset(themeName, presetName);
         preset.setValue(value);
     }
 
-    public static void setPresetCategory(String themeName, String presetName,
-            String category) {
+    public static void setPresetCategory(String themeName, String presetName, String category) {
         PresetType preset = getCustomPreset(themeName, presetName);
         preset.setCategory(category);
     }
 
-    public static void renamePreset(String themeName, String oldName,
-            String newName) throws ThemeException {
+    public static void renamePreset(String themeName, String oldName, String newName) throws ThemeException {
         if (newName.equals("")) {
             throw new ThemeException("Preset name cannot be empty");
         }
@@ -187,8 +173,7 @@ public class PresetManager {
         Manager.getTypeRegistry().register(preset);
     }
 
-    public static void deletePreset(String themeName, String presetName)
-            throws ThemeException {
+    public static void deletePreset(String themeName, String presetName) throws ThemeException {
         PresetType preset = getCustomPreset(themeName, presetName);
         if (getCustomPreset(themeName, presetName) == null) {
             throw new ThemeException("Preset unknown: " + presetName);

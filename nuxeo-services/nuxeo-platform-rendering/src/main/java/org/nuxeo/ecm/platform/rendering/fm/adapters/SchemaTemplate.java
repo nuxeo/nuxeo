@@ -20,11 +20,9 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
 /**
- * A template for a document's schema, that can still take advantage of the
- * document's prefetched values.
+ * A template for a document's schema, that can still take advantage of the document's prefetched values.
  */
-public class SchemaTemplate extends PropertyWrapper implements
-        TemplateHashModel {
+public class SchemaTemplate extends PropertyWrapper implements TemplateHashModel {
 
     private final DocumentModel doc;
 

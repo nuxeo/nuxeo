@@ -31,18 +31,15 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.SchemaTemplate;
 
 /**
- * Base class to build views for Document oriented contexts (contexts that are
- * bound to a document).
+ * Base class to build views for Document oriented contexts (contexts that are bound to a document).
  * <p>
- * Note that this class cannot be used with contexts for which the
- * {@link RenderingContext#getDocument()} method is returning null.
+ * Note that this class cannot be used with contexts for which the {@link RenderingContext#getDocument()} method is
+ * returning null.
  * <p>
- * This implementation ensure that the context argument is never used so it can
- * be used outside the scope of a rendering context to get a view over the
- * document.
+ * This implementation ensure that the context argument is never used so it can be used outside the scope of a rendering
+ * context to get a view over the document.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultDocumentView implements DocumentView {
 
@@ -457,11 +454,9 @@ public class DefaultDocumentView implements DocumentView {
     };
 
     /**
-     * The singleton instance that should be used by clients. Warn that this
-     * static field must be defined at the end of the class after any other
-     * field class since it will try to register these fields (otherwise fields
-     * will not be defined yet at the time of the initialization of that static
-     * member
+     * The singleton instance that should be used by clients. Warn that this static field must be defined at the end of
+     * the class after any other field class since it will try to register these fields (otherwise fields will not be
+     * defined yet at the time of the initialization of that static member
      */
     public static final DefaultDocumentView DEFAULT = new DefaultDocumentView();
 

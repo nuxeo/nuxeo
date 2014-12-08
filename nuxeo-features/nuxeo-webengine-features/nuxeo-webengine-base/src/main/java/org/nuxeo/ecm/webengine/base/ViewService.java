@@ -30,16 +30,15 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@WebAdapter(name="views", type="ViewService")
+@WebAdapter(name = "views", type = "ViewService")
 @Produces("text/html; charset=UTF-8")
 public class ViewService extends DefaultAdapter {
 
     @GET
     public Object doGet() {
-        //TODO: display a list of templates
-        //ctx.getModule().getFiles();
+        // TODO: display a list of templates
+        // ctx.getModule().getFiles();
         return "View Service: TODO - display the list of existing views";
     }
 

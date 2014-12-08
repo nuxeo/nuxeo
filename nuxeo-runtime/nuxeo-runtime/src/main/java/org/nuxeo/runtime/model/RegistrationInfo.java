@@ -24,12 +24,11 @@ import org.nuxeo.runtime.Version;
 /**
  * The component registration info.
  * <p>
- * A registration info object is keeping all the information needed to deploy a
- * component, like the component implementation, properties, dependencies and
- * also the defined extension points and contributed extensions.
+ * A registration info object is keeping all the information needed to deploy a component, like the component
+ * implementation, properties, dependencies and also the defined extension points and contributed extensions.
  * <p>
- * When a component is activated the registration info is creating a component
- * instance using the current runtime context.
+ * When a component is activated the registration info is creating a component instance using the current runtime
+ * context.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -53,8 +52,7 @@ public interface RegistrationInfo extends Serializable {
     Version getVersion();
 
     /**
-     * Get the owner bundle symbolic name of that component. If null the default
-     * owner is used.
+     * Get the owner bundle symbolic name of that component. If null the default owner is used.
      *
      * @return
      */
@@ -115,16 +113,14 @@ public interface RegistrationInfo extends Serializable {
     ComponentName getName();
 
     /**
-     * Whether this component is disabled. For now this is used only for
-     * persistent components.
+     * Whether this component is disabled. For now this is used only for persistent components.
      *
      * @return
      */
     boolean isDisabled();
 
     /**
-     * Gets the component instance or null if the component was not yet
-     * activated.
+     * Gets the component instance or null if the component was not yet activated.
      *
      * @return the component instance
      */
@@ -152,8 +148,7 @@ public interface RegistrationInfo extends Serializable {
     boolean isActivated();
 
     /**
-     * Checks whether this component is resolved (i&dot;e&dot; all its
-     * dependencies are satisfied).
+     * Checks whether this component is resolved (i&dot;e&dot; all its dependencies are satisfied).
      *
      * @return true if the component is resolved, false otherwise
      */
@@ -162,14 +157,12 @@ public interface RegistrationInfo extends Serializable {
     /**
      * Gets the list of provided services or null if no service is provided.
      *
-     * @return an array containing the service class names or null if no service
-     *         are provided
+     * @return an array containing the service class names or null if no service are provided
      */
     String[] getProvidedServiceNames();
 
     /**
-     * Whether or not this registration is persisted by the user (not part of a
-     * real bundle).
+     * Whether or not this registration is persisted by the user (not part of a real bundle).
      *
      * @return true if persisted, false otherwise
      */
@@ -183,8 +176,7 @@ public interface RegistrationInfo extends Serializable {
     void setPersistent(boolean isPersistent);
 
     /**
-     * Give the class name for the component implementation if this is a java
-     * component
+     * Give the class name for the component implementation if this is a java component
      *
      * @return class name
      */
@@ -201,7 +193,6 @@ public interface RegistrationInfo extends Serializable {
      * The component notification order for {@link #notifyApplicationStarted}.
      *
      * @return the order, 1000 by default
-     *
      * @since 5.6
      */
     int getApplicationStartedOrder();

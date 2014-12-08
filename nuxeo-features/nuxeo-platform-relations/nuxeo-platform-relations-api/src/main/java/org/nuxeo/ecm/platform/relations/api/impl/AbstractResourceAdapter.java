@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public abstract class AbstractResourceAdapter implements ResourceAdapter {
 
@@ -49,14 +48,12 @@ public abstract class AbstractResourceAdapter implements ResourceAdapter {
     }
 
     @Override
-    public Resource getResource(Serializable object,
-            Map<String, Object> context) {
+    public Resource getResource(Serializable object, Map<String, Object> context) {
         return null;
     }
 
     @Override
-    public Serializable getResourceRepresentation(Resource resource,
-            Map<String, Object> context) {
+    public Serializable getResourceRepresentation(Resource resource, Map<String, Object> context) {
         return null;
     }
 

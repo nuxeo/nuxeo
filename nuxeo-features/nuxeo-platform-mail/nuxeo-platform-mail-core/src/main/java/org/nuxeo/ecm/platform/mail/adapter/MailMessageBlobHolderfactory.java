@@ -36,8 +36,7 @@ public class MailMessageBlobHolderfactory implements BlobHolderFactory {
         BlobHolder blobHolder;
 
         if (docType.equals(MailCoreConstants.MAIL_MESSAGE_TYPE)) {
-            blobHolder = new MailMessageBlobHolder(doc,
-                    MailCoreConstants.HTML_TEXT_PROPERTY_NAME, "body.html");
+            blobHolder = new MailMessageBlobHolder(doc, MailCoreConstants.HTML_TEXT_PROPERTY_NAME, "body.html");
         } else {
             blobHolder = null;
         }

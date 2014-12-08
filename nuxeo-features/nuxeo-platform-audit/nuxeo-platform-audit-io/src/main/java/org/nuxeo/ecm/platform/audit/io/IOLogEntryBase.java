@@ -51,8 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Audit log entry importer/exporter.
  * <p>
- * Could be overridden to externalize additional information of a redefined
- * LogEntry.
+ * Could be overridden to externalize additional information of a redefined LogEntry.
  *
  * @author DM
  */
@@ -65,9 +64,7 @@ public class IOLogEntryBase {
 
     public static final String LOGENTRY_TAG = "logEntry";
 
-
-    public static void write(List<LogEntry> logEntries, OutputStream out)
-            throws IOException {
+    public static void write(List<LogEntry> logEntries, OutputStream out) throws IOException {
         Document jdoc = writeDocument(logEntries);
         writeXML(jdoc, out);
     }
@@ -100,8 +97,7 @@ public class IOLogEntryBase {
         String creationDate = getDateFormat().format(logEntry.getEventDate());
         logEntryElement.addAttribute("creationDate", creationDate);
         logEntryElement.addAttribute("eventId", logEntry.getEventId());
-        logEntryElement.addAttribute("principalName",
-                logEntry.getPrincipalName());
+        logEntryElement.addAttribute("principalName", logEntry.getPrincipalName());
     }
 
     public static List<LogEntry> read(InputStream in) throws IOException {
@@ -112,7 +108,7 @@ public class IOLogEntryBase {
     /**
      * Will translate from a jdoc to a list of LogEntry objects.
      */
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     protected static List<LogEntry> readDocument(Document doc) {
         List<LogEntry> logEntries = new ArrayList<LogEntry>();
 
@@ -147,8 +143,7 @@ public class IOLogEntryBase {
         logEntry.setRepositoryId(logEntryElement.attributeValue("repoId"));
 
         try {
-            Date creationDate = getDateFormat().parse(
-                    logEntryElement.attributeValue("creationDate"));
+            Date creationDate = getDateFormat().parse(logEntryElement.attributeValue("creationDate"));
             logEntry.setEventDate(creationDate);
         } catch (ParseException e) {
             log.error(e, e);
@@ -178,11 +173,9 @@ public class IOLogEntryBase {
             // content somewhere
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             FileUtils.copy(in, baos);
-            return new SAXReader().read(new ByteArrayInputStream(
-                    baos.toByteArray()));
+            return new SAXReader().read(new ByteArrayInputStream(baos.toByteArray()));
         } catch (DocumentException e) {
-            IOException ioe = new IOException("Failed to read log entry "
-                    + ": " + e.getMessage());
+            IOException ioe = new IOException("Failed to read log entry " + ": " + e.getMessage());
             ioe.setStackTrace(e.getStackTrace());
             throw ioe;
         }
@@ -203,7 +196,7 @@ public class IOLogEntryBase {
     private static LogEntry translate(LogEntry logEntry, DocumentRef newRef) {
         LogEntry newLogEntry;
         try {
-            newLogEntry = (LogEntry)BeanUtils.cloneBean(logEntry);
+            newLogEntry = (LogEntry) BeanUtils.cloneBean(logEntry);
         } catch (ReflectiveOperationException e) {
             throw new AuditRuntimeException("cannot clone bean " + logEntry, e);
         }

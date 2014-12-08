@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = GetDocumentParent.ID, category = Constants.CAT_DOCUMENT, label = "Get Parent", description = "Get the parent document of the input document. The parent document will become the input for the next operation. You can use the 'type' parameter to specify which parent to select from the document ancestors")
@@ -36,7 +35,7 @@ public class GetDocumentParent {
     @Param(name = "type", required = false)
     protected String type;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef doc) {
         if (type == null) {
             return session.getParentDocument(doc);

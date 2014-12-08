@@ -35,51 +35,42 @@ public class VisibleCollectionTest extends CollectionTestCase {
     @Test
     public void testGetVisibleCollection() throws Exception {
         // Create a test doc and add it to 2 collections
-        DocumentModel testFile = session.createDocumentModel("/",
-                TEST_FILE_NAME, "File");
+        DocumentModel testFile = session.createDocumentModel("/", TEST_FILE_NAME, "File");
         testFile = session.createDocument(testFile);
-        collectionManager.addToNewCollection(COLLECTION_NAME,
-                COLLECTION_DESCRIPTION, testFile, session);
-        collectionManager.addToNewCollection(COLLECTION_NAME_2,
-                COLLECTION_DESCRIPTION, testFile, session);
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, testFile, session);
+        collectionManager.addToNewCollection(COLLECTION_NAME_2, COLLECTION_DESCRIPTION, testFile, session);
 
         // Check visible collections limited to 1
         testFile = session.getDocument(testFile.getRef());
-        List<DocumentModel> collections = collectionManager.getVisibleCollection(
-                testFile, 1, session);
+        List<DocumentModel> collections = collectionManager.getVisibleCollection(testFile, 1, session);
         assertEquals(1, collections.size());
-        DocumentModel testCollection = session.getDocument(new PathRef(
-                COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME));
+        DocumentModel testCollection = session.getDocument(new PathRef(COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME));
         assertEquals(testCollection.getId(), collections.get(0).getId());
 
         // Check visible collections limited to 2
-        collections = collectionManager.getVisibleCollection(testFile, 2,
-                session);
+        collections = collectionManager.getVisibleCollection(testFile, 2, session);
         assertEquals(2, collections.size());
-        DocumentModel testCollection2 = session.getDocument(new PathRef(
-                COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME_2));
+        DocumentModel testCollection2 = session.getDocument(new PathRef(COLLECTION_FOLDER_PATH + "/"
+                + COLLECTION_NAME_2));
         assertEquals(testCollection.getId(), collections.get(0).getId());
         assertEquals(testCollection2.getId(), collections.get(1).getId());
 
         // Send one collection to the trash
         testCollection.followTransition(LifeCycleConstants.DELETE_TRANSITION);
-        collections = collectionManager.getVisibleCollection(testFile, 2,
-                session);
+        collections = collectionManager.getVisibleCollection(testFile, 2, session);
         assertEquals(1, collections.size());
         assertEquals(testCollection2.getId(), collections.get(0).getId());
 
         // Restore collection from the trash
         testCollection.followTransition(LifeCycleConstants.UNDELETE_TRANSITION);
-        collections = collectionManager.getVisibleCollection(testFile, 2,
-                session);
+        collections = collectionManager.getVisibleCollection(testFile, 2, session);
         assertEquals(2, collections.size());
         assertEquals(testCollection.getId(), collections.get(0).getId());
         assertEquals(testCollection2.getId(), collections.get(1).getId());
 
         // Delete one collection permanently
         session.removeDocument(testCollection.getRef());
-        collections = collectionManager.getVisibleCollection(testFile, 1,
-                session);
+        collections = collectionManager.getVisibleCollection(testFile, 1, session);
         assertEquals(1, collections.size());
         assertEquals(testCollection2.getId(), collections.get(0).getId());
     }

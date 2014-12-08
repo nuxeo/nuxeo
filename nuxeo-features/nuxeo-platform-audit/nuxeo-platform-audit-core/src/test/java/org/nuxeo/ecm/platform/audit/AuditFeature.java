@@ -30,8 +30,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @Features({ TransactionalFeature.class, PlatformFeature.class })
-@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.persistence",
-        "org.nuxeo.ecm.platform.audit" })
+@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit" })
 @LocalDeploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
 public class AuditFeature extends SimpleFeature {
 
@@ -41,8 +40,7 @@ public class AuditFeature extends SimpleFeature {
     }
 
     protected void clear() {
-        boolean started = TransactionHelper.isTransactionActive() == false
-                && TransactionHelper.startTransaction();
+        boolean started = TransactionHelper.isTransactionActive() == false && TransactionHelper.startTransaction();
         try {
             doClear();
         } finally {
@@ -53,14 +51,10 @@ public class AuditFeature extends SimpleFeature {
     }
 
     public void doClear() {
-        EntityManager em = Framework
-            .getService(PersistenceProviderFactory.class)
-            .newProvider("nxaudit-logs").acquireEntityManager();
+        EntityManager em = Framework.getService(PersistenceProviderFactory.class).newProvider("nxaudit-logs").acquireEntityManager();
         try {
-            em.createNativeQuery("delete from nxp_logs_mapextinfos")
-                .executeUpdate();
-            em.createNativeQuery("delete from nxp_logs_extinfo")
-                .executeUpdate();
+            em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
+            em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
             em.createNativeQuery("delete from nxp_logs").executeUpdate();
         } finally {
             em.close();

@@ -8,7 +8,9 @@ import com.google.inject.Binder;
 public class MDCFeature implements RunnerFeature {
 
     protected static final String F_TEST = "fTest";
+
     protected static final String F_SUITE = "fSuite";
+
     protected static final String F_STATE = "fState";
 
     @Override
@@ -60,15 +62,13 @@ public class MDCFeature implements RunnerFeature {
     }
 
     @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         MDC.put(F_STATE, "beforeMethodRun");
         MDC.put(F_TEST, method.getMethod().getName());
     }
 
     @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         MDC.put(F_STATE, "afterMethodRun");
         MDC.remove(F_TEST);
     }

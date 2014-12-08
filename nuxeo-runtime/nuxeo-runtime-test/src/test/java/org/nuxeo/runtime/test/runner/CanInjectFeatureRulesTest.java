@@ -61,8 +61,7 @@ public class CanInjectFeatureRulesTest {
         }
 
         @Override
-        public Statement apply(Statement base, FrameworkMethod method,
-                Object target) {
+        public Statement apply(Statement base, FrameworkMethod method, Object target) {
             methodRule = this;
             return base;
         }

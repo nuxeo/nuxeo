@@ -40,13 +40,13 @@ import org.nuxeo.runtime.api.Framework;
 public class FullTextConverter implements Converter {
 
     private static final String TEXT_PLAIN_MT = "text/plain";
+
     private static final Log log = LogFactory.getLog(FullTextConverter.class);
 
     protected ConverterDescriptor descriptor;
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         String srcMT;
         try {

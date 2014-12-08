@@ -25,8 +25,8 @@ public class AdminApp extends WebEngineModule {
 
     @Override
     public Class<?>[] getWebTypes() {
-        return new Class<?>[] { Main.class, User.class, Group.class,
-                UserService.class, EngineService.class, Shell.class };
+        return new Class<?>[] { Main.class, User.class, Group.class, UserService.class, EngineService.class,
+                Shell.class };
     }
 
 }

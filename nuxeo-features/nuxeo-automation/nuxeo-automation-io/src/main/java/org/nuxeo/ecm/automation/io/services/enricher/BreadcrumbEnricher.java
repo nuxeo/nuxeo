@@ -27,20 +27,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
- *
- *
  * @since 5.7.3
  */
 public class BreadcrumbEnricher extends AbstractContentEnricher {
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec)
-            throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
         DocumentModel doc = ec.getDocumentModel();
         CoreSession session = doc.getCoreSession();
         List<DocumentModel> parentDocuments = session.getParentDocuments(doc.getRef());
-        JsonDocumentListWriter.writeDocuments(jg, new DocumentModelListImpl(
-                parentDocuments), new String[] {}, ec.getRequest());
+        JsonDocumentListWriter.writeDocuments(jg, new DocumentModelListImpl(parentDocuments), new String[] {},
+                ec.getRequest());
     }
 
 }

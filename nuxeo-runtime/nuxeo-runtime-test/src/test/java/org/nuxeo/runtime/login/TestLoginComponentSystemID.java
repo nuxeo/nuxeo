@@ -35,10 +35,8 @@ public class TestLoginComponentSystemID extends NXRuntimeTestCase {
 
     @Test
     public void testSystemIDEquals() {
-        Principal user1 = new LoginComponent.SystemID(
-                LoginComponent.SYSTEM_USERNAME);
-        Principal user2 = new LoginComponent.SystemID(
-                LoginComponent.SYSTEM_USERNAME);
+        Principal user1 = new LoginComponent.SystemID(LoginComponent.SYSTEM_USERNAME);
+        Principal user2 = new LoginComponent.SystemID(LoginComponent.SYSTEM_USERNAME);
         assertNotNull(user1);
         assertEquals(user1, user2);
 

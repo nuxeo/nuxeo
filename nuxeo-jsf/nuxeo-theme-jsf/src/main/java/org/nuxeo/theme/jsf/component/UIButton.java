@@ -33,13 +33,12 @@ public class UIButton extends UIOutput {
     private String switchTo;
 
     private String link;
-    
+
     private String menu;
 
     private String label;
-    
-    private String icon;
 
+    private String icon;
 
     private String classNames;
 
@@ -90,7 +89,7 @@ public class UIButton extends UIOutput {
     public void setLink(final String link) {
         this.link = link;
     }
-    
+
     public String getMenu() {
         return menu;
     }

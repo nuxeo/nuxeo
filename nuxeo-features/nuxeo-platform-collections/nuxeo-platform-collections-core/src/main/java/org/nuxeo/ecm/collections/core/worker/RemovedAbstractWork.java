@@ -69,36 +69,30 @@ public abstract class RemovedAbstractWork extends AbstractWork {
                 setStatus("Rescheduling next work");
                 RemovedAbstractWork nextWork;
                 try {
-                    Constructor<? extends RemovedAbstractWork> c = this.getClass().getDeclaredConstructor(
-                            long.class);
-                    nextWork = c.newInstance(offset
-                            + CollectionAsynchrnonousQuery.MAX_RESULT);
+                    Constructor<? extends RemovedAbstractWork> c = this.getClass().getDeclaredConstructor(long.class);
+                    nextWork = c.newInstance(offset + CollectionAsynchrnonousQuery.MAX_RESULT);
                 } catch (ReflectiveOperationException e) {
                     throw new RuntimeException(e);
                 }
                 nextWork.setDocument(repositoryName, docId);
                 WorkManager workManager = Framework.getLocalService(WorkManager.class);
-                workManager.schedule(nextWork, WorkManager.Scheduling.IF_NOT_SCHEDULED,
-                        true);
+                workManager.schedule(nextWork, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
                 setStatus("Rescheduling Done");
             }
         }
         setStatus("Updating Done");
     }
 
-    protected abstract void updateDocument(final DocumentModel d)
-            throws ClientException;
+    protected abstract void updateDocument(final DocumentModel d) throws ClientException;
 
     private List<DocumentModel> getNextResults() throws ClientException {
         List<DocumentModel> results;
         Object[] parameters = new Object[1];
         parameters[0] = docId;
 
-        String query = NXQLQueryBuilder.getQuery(getQuery(), parameters, true,
-                false, null);
+        String query = NXQLQueryBuilder.getQuery(getQuery(), parameters, true, false, null);
 
-        results = session.query(query, null,
-                CollectionAsynchrnonousQuery.MAX_RESULT, 0,
+        results = session.query(query, null, CollectionAsynchrnonousQuery.MAX_RESULT, 0,
                 CollectionAsynchrnonousQuery.MAX_RESULT);
         return results;
     }

@@ -17,16 +17,14 @@
 package org.nuxeo.ecm.platform.ui.web.component;
 
 /**
- * Interface for components keeping cached values, and may need to be reset on
- * some ajax actions.
+ * Interface for components keeping cached values, and may need to be reset on some ajax actions.
  *
  * @since 5.7
  */
 public interface ResettableComponent {
 
     /**
-     * Resets the cached model, usually value attributes set locally on the
-     * component.
+     * Resets the cached model, usually value attributes set locally on the component.
      */
     void resetCachedModel();
 

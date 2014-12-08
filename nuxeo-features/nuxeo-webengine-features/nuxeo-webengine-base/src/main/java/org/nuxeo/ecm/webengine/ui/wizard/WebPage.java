@@ -20,14 +20,13 @@ import org.nuxeo.ecm.webengine.forms.validation.Form;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebPage extends WizardPage {
 
     private static final long serialVersionUID = 1L;
 
     public WebPage(Class<? extends Form> formType) {
-        super ("index", formType, OK | CANCEL);
+        super("index", formType, OK | CANCEL);
     }
 
     public WebPage(String id, Class<? extends Form> formType, int style) {

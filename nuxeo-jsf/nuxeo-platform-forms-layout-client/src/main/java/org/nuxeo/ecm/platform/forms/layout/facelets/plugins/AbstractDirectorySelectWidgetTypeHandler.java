@@ -33,8 +33,7 @@ import org.nuxeo.ecm.platform.ui.web.directory.UIDirectorySelectItems;
  *
  * @since 5.4.2
  */
-public abstract class AbstractDirectorySelectWidgetTypeHandler extends
-        AbstractSelectWidgetTypeHandler {
+public abstract class AbstractDirectorySelectWidgetTypeHandler extends AbstractSelectWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -64,10 +63,9 @@ public abstract class AbstractDirectorySelectWidgetTypeHandler extends
         return true;
     }
 
-    protected Map<String, Serializable> getOptionProperties(FaceletContext ctx,
-            Widget widget, WidgetSelectOption selectOption) {
-        Map<String, Serializable> props = super.getOptionProperties(ctx,
-                widget, selectOption);
+    protected Map<String, Serializable> getOptionProperties(FaceletContext ctx, Widget widget,
+            WidgetSelectOption selectOption) {
+        Map<String, Serializable> props = super.getOptionProperties(ctx, widget, selectOption);
         for (DirectoryPropertyMappings mapping : DirectoryPropertyMappings.values()) {
             if (widget.getProperties().containsKey(mapping.name())) {
                 props.put(mapping.name(), widget.getProperty(mapping.name()));
@@ -78,8 +76,7 @@ public abstract class AbstractDirectorySelectWidgetTypeHandler extends
         // items
         if (props.containsKey(SelectPropertyMappings.selectOptions.name())
                 && !props.containsKey(DirectoryPropertyMappings.displayAll.name())) {
-            props.put(DirectoryPropertyMappings.displayAll.name(),
-                    Boolean.FALSE);
+            props.put(DirectoryPropertyMappings.displayAll.name(), Boolean.FALSE);
         }
         return props;
     }

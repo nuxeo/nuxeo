@@ -79,8 +79,7 @@ public class NXAuditEventsService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(EVENT_EXT_POINT)) {
             doRegisterEvent((EventDescriptor) contribution);
         } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
@@ -88,7 +87,7 @@ public class NXAuditEventsService extends DefaultComponent {
         } else if (extensionPoint.equals(ADAPTER_POINT)) {
             doRegisterAdapter((AdapterDescriptor) contribution);
         } else if (extensionPoint.equals(BACKEND_EXT_POINT)) {
-            doRegisterBackend((AuditBackendDescriptor)contribution);
+            doRegisterBackend((AuditBackendDescriptor) contribution);
         }
     }
 
@@ -128,8 +127,7 @@ public class NXAuditEventsService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(EVENT_EXT_POINT)) {
             doUnregisterEvent((EventDescriptor) contribution);
         } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
@@ -168,11 +166,10 @@ public class NXAuditEventsService extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.getCanonicalName().equals(
-                DocumentHistoryReader.class.getCanonicalName())) {
+        if (adapter.getCanonicalName().equals(DocumentHistoryReader.class.getCanonicalName())) {
             return adapter.cast(new DocumentHistoryReaderImpl());
         } else {
-            if (backend!=null) {
+            if (backend != null) {
                 return adapter.cast(backend);
             } else {
                 log.error("Can not provide service " + adapter.getCanonicalName() + " since backend is undefined");

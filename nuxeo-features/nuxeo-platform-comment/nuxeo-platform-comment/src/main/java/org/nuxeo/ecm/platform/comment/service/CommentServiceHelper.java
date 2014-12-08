@@ -23,16 +23,15 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public final class CommentServiceHelper {
 
     // This is a utility class.
-    private CommentServiceHelper() {}
+    private CommentServiceHelper() {
+    }
 
     public static CommentService getCommentService() {
-        return (CommentService) Framework.getRuntime().getComponent(
-                CommentService.ID);
+        return (CommentService) Framework.getRuntime().getComponent(CommentService.ID);
     }
 
 }

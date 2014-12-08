@@ -33,18 +33,25 @@ import com.google.gwt.user.client.ui.Widget;
 public class SelectedArea {
 
     private static final String FULL_MOVING_AREA_CSS_CLASS = "thumbnailMovingSelectedArea";
+
     private static final String INNER_MOVING_AREA_CSS_CLASS = "thumbnailInnerMovingSelectedArea";
+
     private static final String FULL_AREA_CSS_CLASS = "thumbnailSelectedArea";
+
     private static final String INNER_AREA_CSS_CLASS = "thumbnailInnerSelectedArea";
 
     private int maxWidth;
+
     private int maxHeight;
 
     private Rectangle area;
 
     private final SimplePanel fullMovingArea = new SimplePanel();
+
     private final SimplePanel innerMovingArea = new SimplePanel();
+
     private final SimplePanel fullArea = new SimplePanel();
+
     private final SimplePanel innerArea = new SimplePanel();
 
     public SelectedArea(int maxWidth, int maxHeight, Panel parent) {
@@ -100,10 +107,10 @@ public class SelectedArea {
     }
 
     public void putArea() {
-        updateAreaStyles(fullArea, area.getTopLeft().getX(),
-                area.getTopLeft().getY(), area.getWidth(), area.getHeight());
-        updateAreaStyles(innerArea, area.getTopLeft().getX(),
-                area.getTopLeft().getY(), area.getWidth(), area.getHeight());
+        updateAreaStyles(fullArea, area.getTopLeft().getX(), area.getTopLeft().getY(), area.getWidth(),
+                area.getHeight());
+        updateAreaStyles(innerArea, area.getTopLeft().getX(), area.getTopLeft().getY(), area.getWidth(),
+                area.getHeight());
     }
 
     private void ensureValidArea() {
@@ -124,14 +131,13 @@ public class SelectedArea {
     }
 
     private void drawArea() {
-        updateAreaStyles(fullMovingArea, area.getTopLeft().getX(),
-                area.getTopLeft().getY(), area.getWidth(), area.getHeight());
-        updateAreaStyles(innerMovingArea, area.getTopLeft().getX(),
-                area.getTopLeft().getY(), area.getWidth(), area.getHeight());
+        updateAreaStyles(fullMovingArea, area.getTopLeft().getX(), area.getTopLeft().getY(), area.getWidth(),
+                area.getHeight());
+        updateAreaStyles(innerMovingArea, area.getTopLeft().getX(), area.getTopLeft().getY(), area.getWidth(),
+                area.getHeight());
     }
 
-    private static void updateAreaStyles(Widget w, int left, int top, int width,
-            int height) {
+    private static void updateAreaStyles(Widget w, int left, int top, int width, int height) {
         Element element = w.getElement();
         DOM.setStyleAttribute(element, "left", "" + left + "px");
         DOM.setStyleAttribute(element, "top", "" + top + "px");

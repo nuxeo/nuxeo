@@ -78,14 +78,12 @@ public interface CommentManagerActions {
      *
      * @return list of ThreadEntry for given Document.
      */
-    List<ThreadEntry> getCommentsAsThread(DocumentModel commentedDoc)
-            throws ClientException;
+    List<ThreadEntry> getCommentsAsThread(DocumentModel commentedDoc) throws ClientException;
 
     /**
      * @return list of ThreadEntry for given Document.
      */
-    List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc)
-            throws ClientException;
+    List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc) throws ClientException;
 
     String beginComment();
 
@@ -99,8 +97,7 @@ public interface CommentManagerActions {
     String addComment() throws ClientException;
 
     /**
-     * Same as addComment() method but using the given document instead of
-     * currentDocument.
+     * Same as addComment() method but using the given document instead of currentDocument.
      *
      * @return null to avoid navigation
      */
@@ -144,8 +141,7 @@ public interface CommentManagerActions {
      *
      * @param commentNumber the number of comment to fetch
      */
-    List<UIComment> getLastCommentsByDate(String commentNumber)
-            throws ClientException;
+    List<UIComment> getLastCommentsByDate(String commentNumber) throws ClientException;
 
     /***
      * Retrieves a given number of comments from the given Document.
@@ -153,6 +149,5 @@ public interface CommentManagerActions {
      * @param commentNumber the number of comment to fetch
      * @param commentedDoc
      */
-    List<UIComment> getLastCommentsByDate(String commentNumber,
-            DocumentModel commentedDoc) throws ClientException;
+    List<UIComment> getLastCommentsByDate(String commentNumber, DocumentModel commentedDoc) throws ClientException;
 }

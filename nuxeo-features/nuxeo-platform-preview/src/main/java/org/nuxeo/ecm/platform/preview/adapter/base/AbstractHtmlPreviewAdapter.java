@@ -43,8 +43,7 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
     private static final String TITLE_REGEXP = "<title>(.*?)</title>";
 
     // private static final String TITLE_REGEXP = "<title[^>]*>[^<]*</title>";
-    private static final Pattern TITLE_PATTERN = Pattern.compile(TITLE_REGEXP,
-            Pattern.CASE_INSENSITIVE);
+    private static final Pattern TITLE_PATTERN = Pattern.compile(TITLE_REGEXP, Pattern.CASE_INSENSITIVE);
 
     protected DocumentModel adaptedDoc;
 
@@ -72,22 +71,19 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
         return PreviewHelper.getPreviewURL(adaptedDoc, xpath);
     }
 
-    protected String updateTitleInHtml(String htmlContent)
-            throws ClientException {
+    protected String updateTitleInHtml(String htmlContent) throws ClientException {
         Matcher m = TITLE_PATTERN.matcher(htmlContent);
         // if (m.matches())
         // return m.replaceFirst("<title>" + getPreviewTitle() + "</title>");
         if (m.find()) {
             String found = m.group();
-            htmlContent = htmlContent.replaceFirst(found, "<title>"
-                    + getPreviewTitle() + "</title>");
+            htmlContent = htmlContent.replaceFirst(found, "<title>" + getPreviewTitle() + "</title>");
         }
 
         return htmlContent;
     }
 
-    protected void updateTitleInHtml(File file) throws IOException,
-            ClientException {
+    protected void updateTitleInHtml(File file) throws IOException, ClientException {
         String htmlContent = FileUtils.readFile(file);
         htmlContent = updateTitleInHtml(htmlContent);
         FileUtils.writeFile(file, htmlContent);
@@ -118,8 +114,7 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
     }
 
     @Override
-    public List<Blob> getFilePreviewBlobs(boolean postProcess)
-            throws PreviewException {
+    public List<Blob> getFilePreviewBlobs(boolean postProcess) throws PreviewException {
         List<Blob> blobs = getPreviewBlobs();
         if (postProcess) {
             blobs = postProcessBlobs(blobs);
@@ -130,8 +125,7 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
     protected abstract List<Blob> getPreviewBlobs() throws PreviewException;
 
     @Override
-    public List<Blob> getFilePreviewBlobs(String xpath, boolean postProcess)
-            throws PreviewException {
+    public List<Blob> getFilePreviewBlobs(String xpath, boolean postProcess) throws PreviewException {
         List<Blob> blobs = getPreviewBlobs(xpath);
         if (postProcess) {
             blobs = postProcessBlobs(blobs);
@@ -139,11 +133,9 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
         return blobs;
     }
 
-    protected abstract List<Blob> getPreviewBlobs(String xpath)
-            throws PreviewException;
+    protected abstract List<Blob> getPreviewBlobs(String xpath) throws PreviewException;
 
-    protected List<Blob> postProcessBlobs(List<Blob> blobs)
-            throws PreviewException {
+    protected List<Blob> postProcessBlobs(List<Blob> blobs) throws PreviewException {
         List<Blob> processedBlobs = new ArrayList<Blob>();
         for (Blob blob : blobs) {
             for (BlobPostProcessor processor : getPreviewManager().getBlobPostProcessors()) {

@@ -37,8 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Paginable WebObject.
  * <p>
- * To be extended by WebObject returning paginable entries based on a
- * {@link PageProvider}.
+ * To be extended by WebObject returning paginable entries based on a {@link PageProvider}.
  *
  * @since 5.8
  */
@@ -79,20 +78,17 @@ public abstract class PaginableObject<T> extends DefaultObject {
 
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) ctx.getCoreSession());
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
 
-        return getPaginableEntries((PageProvider<T>) pps.getPageProvider("",
-                ppDefinition, getSearchDocument(), null, pageSize,
-                currentPageIndex, props, getParams()));
+        return getPaginableEntries((PageProvider<T>) pps.getPageProvider("", ppDefinition, getSearchDocument(), null,
+                pageSize, currentPageIndex, props, getParams()));
     }
 
     protected Paginable<T> getPaginableEntries(PageProvider<T> pageProvider) {
         return new PaginablePageProvider<>(pageProvider);
     }
 
-    protected Long extractLongParam(HttpServletRequest request,
-            String paramName, Long defaultValue) {
+    protected Long extractLongParam(HttpServletRequest request, String paramName, Long defaultValue) {
         String strParam = request.getParameter(paramName);
         return strParam == null ? defaultValue : Long.parseLong(strParam);
     }

@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 
-
 public class OOoMimetypeSniffer implements MagicDetector {
 
     private static final Log log = LogFactory.getLog(OOoMimetypeSniffer.class);
@@ -42,24 +41,17 @@ public class OOoMimetypeSniffer implements MagicDetector {
     }
 
     public String[] getHandledExtensions() {
-        return new String[] { "ods", "ots", "odt", "ott", "odp", "otp", "odg",
-                "otg", "otm", "oth", "odi", "oti", "odf", "otf", "odc", "otc",
-                "sxw", "stw", "sxg", "sxc", "stc", "sxi", "sti", "sxd", "std",
-                "sxm", };
+        return new String[] { "ods", "ots", "odt", "ott", "odp", "otp", "odg", "otg", "otm", "oth", "odi", "oti",
+                "odf", "otf", "odc", "otc", "sxw", "stw", "sxg", "sxc", "stc", "sxi", "sti", "sxd", "std", "sxm", };
     }
 
     public String[] getHandledTypes() {
-        return new String[] {
-                "application/vnd.oasis.opendocument.spreadsheet",
-                "application/vnd.oasis.opendocument.spreadsheet-template",
-                "application/vnd.oasis.opendocument.text",
-                "application/vnd.oasis.opendocument.text-template",
-                "application/vnd.oasis.opendocument.presentation",
+        return new String[] { "application/vnd.oasis.opendocument.spreadsheet",
+                "application/vnd.oasis.opendocument.spreadsheet-template", "application/vnd.oasis.opendocument.text",
+                "application/vnd.oasis.opendocument.text-template", "application/vnd.oasis.opendocument.presentation",
                 "application/vnd.oasis.opendocument.presentation-template",
-                "application/vnd.oasis.opendocument.graphics",
-                "application/vnd.oasis.opendocument.graphics-template",
-                "application/vnd.oasis.opendocument.text-master",
-                "application/vnd.oasis.opendocument.text-web",
+                "application/vnd.oasis.opendocument.graphics", "application/vnd.oasis.opendocument.graphics-template",
+                "application/vnd.oasis.opendocument.text-master", "application/vnd.oasis.opendocument.text-web",
                 "application/vnd.oasis.opendocument.image",
                 "application/vnd.oasis.opendocument.image-template",
                 "application/vnd.oasis.opendocument.formula",
@@ -67,16 +59,11 @@ public class OOoMimetypeSniffer implements MagicDetector {
                 "application/vnd.oasis.opendocument.chart",
                 "application/vnd.oasis.opendocument.chart-template",
                 // OOo 1.x file format
-                "application/vnd.sun.xml.writer",
-                "application/vnd.sun.xml.writer.template",
-                "application/vnd.sun.xml.writer.global",
-                "application/vnd.sun.xml.calc",
-                "application/vnd.sun.xml.calc.template",
-                "application/vnd.sun.xml.impress",
-                "application/vnd.sun.xml.impress.template",
-                "application/vnd.sun.xml.draw",
-                "application/vnd.sun.xml.draw.template",
-                "application/vnd.sun.xml.math", };
+                "application/vnd.sun.xml.writer", "application/vnd.sun.xml.writer.template",
+                "application/vnd.sun.xml.writer.global", "application/vnd.sun.xml.calc",
+                "application/vnd.sun.xml.calc.template", "application/vnd.sun.xml.impress",
+                "application/vnd.sun.xml.impress.template", "application/vnd.sun.xml.draw",
+                "application/vnd.sun.xml.draw.template", "application/vnd.sun.xml.math", };
     }
 
     public String getName() {
@@ -87,8 +74,8 @@ public class OOoMimetypeSniffer implements MagicDetector {
         return "0.2";
     }
 
-    public String[] process(byte[] data, int offset, int length, long bitmask,
-            char comparator, String mimeType, Map params) {
+    public String[] process(byte[] data, int offset, int length, long bitmask, char comparator, String mimeType,
+            Map params) {
         String[] mimetypes = {};
         File file = null;
         try {
@@ -105,8 +92,8 @@ public class OOoMimetypeSniffer implements MagicDetector {
         return mimetypes;
     }
 
-    public String[] process(File file, int offset, int length, long bitmask,
-            char comparator, String mimeType, Map params) {
+    public String[] process(File file, int offset, int length, long bitmask, char comparator, String mimeType,
+            Map params) {
         return guessOOo(file);
     }
 
@@ -122,7 +109,7 @@ public class OOoMimetypeSniffer implements MagicDetector {
             if (entry != null) {
                 // we have an opendocument so lets unzip
 
-                //unzip file to process xml content
+                // unzip file to process xml content
                 tempFile = File.createTempFile("nxMimeTypeDetector_", ".dir");
                 tempFile.delete(); // to be able to create a dir under this name
                 if (!tempFile.isDirectory()) {

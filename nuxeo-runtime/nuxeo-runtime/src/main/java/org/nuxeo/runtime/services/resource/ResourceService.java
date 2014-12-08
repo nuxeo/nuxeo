@@ -60,16 +60,14 @@ public class ResourceService extends ReloadableComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_RESOURCES.equals(extensionPoint)) {
             addResource((ResourceDescriptor) contribution);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_RESOURCES.equals(extensionPoint)) {
             ResourceDescriptor rd = (ResourceDescriptor) contribution;
             ResourceDescriptor last = findLastContributedResource(rd.getName());

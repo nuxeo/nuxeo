@@ -54,8 +54,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
     }
 
     /**
-     * Test that connection sharing allows use of several sessions at the same
-     * time.
+     * Test that connection sharing allows use of several sessions at the same time.
      */
     @Test
     public void testSessionSharing() throws Exception {
@@ -131,8 +130,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
         /*
          * (non-Javadoc)
-         * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.
-         * LoggingEvent)
+         * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi. LoggingEvent)
          */
         @Override
         protected void append(LoggingEvent event) {
@@ -165,9 +163,8 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
     }
 
     /**
-     * Testing that if 2 modifications are done at the same time on the same
-     * document on 2 separate transactions, one is rejected
-     * (TransactionRuntimeException)
+     * Testing that if 2 modifications are done at the same time on the same document on 2 separate transactions, one is
+     * rejected (TransactionRuntimeException)
      */
     // not working as is
     @Ignore
@@ -221,8 +218,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
     @Test
     public void testAsyncListenerRetry() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test",
-                "OSGI-INF/test-listeners-async-retry-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test", "OSGI-INF/test-listeners-async-retry-contrib.xml");
 
         DummyAsyncRetryListener.clear();
 
@@ -298,8 +294,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
     }
 
     /**
-     * DocumentModel.getCoreSession cannot reconnect through a sid that does
-     * not exist anymore.
+     * DocumentModel.getCoreSession cannot reconnect through a sid that does not exist anymore.
      */
     @Test
     public void testReconnectAfterCloseThroughSessionId() throws Exception {

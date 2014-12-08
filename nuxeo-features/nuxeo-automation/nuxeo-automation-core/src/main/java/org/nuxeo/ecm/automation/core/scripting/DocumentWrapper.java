@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.DocumentType;
 
 /**
- * Wrap a {@link DocumentModel} to expose in a pretty way more information to
- * mvel scripts.
+ * Wrap a {@link DocumentModel} to expose in a pretty way more information to mvel scripts.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -215,8 +214,7 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
     }
 
     /**
-     * The behavior of this method was changed -> it is checking if an xpath has
-     * a value attached.
+     * The behavior of this method was changed -> it is checking if an xpath has a value attached.
      */
     @Override
     public boolean containsValue(Object value) {

@@ -32,7 +32,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
  * Directory ui descriptor
  *
  * @author Anahide Tchertchian
- *
  */
 @XObject("deleteConstraint")
 public class DirectoryUIDeleteConstraintDescriptor implements Serializable {
@@ -53,8 +52,7 @@ public class DirectoryUIDeleteConstraintDescriptor implements Serializable {
         return properties;
     }
 
-    public DirectoryUIDeleteConstraint getDeleteConstraint()
-            throws DirectoryException {
+    public DirectoryUIDeleteConstraint getDeleteConstraint() throws DirectoryException {
         try {
             DirectoryUIDeleteConstraint instance = klass.newInstance();
             if (properties != null) {

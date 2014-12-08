@@ -73,8 +73,7 @@ public class DigestComputer implements EventListener {
             try {
                 blobProp = doc.getProperty(xpathField);
             } catch (PropertyException e) {
-                log.debug("Property " + xpathField
-                        + " not found on doc, skipping");
+                log.debug("Property " + xpathField + " not found on doc, skipping");
             } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
             }

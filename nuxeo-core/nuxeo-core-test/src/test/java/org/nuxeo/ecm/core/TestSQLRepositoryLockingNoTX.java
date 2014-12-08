@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core;
 
-
 public class TestSQLRepositoryLockingNoTX extends TestSQLRepositoryLocking {
 
     @Override

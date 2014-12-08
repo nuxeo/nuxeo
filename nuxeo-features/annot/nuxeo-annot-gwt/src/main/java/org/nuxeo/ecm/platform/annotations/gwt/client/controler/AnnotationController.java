@@ -41,7 +41,6 @@ import com.google.gwt.user.client.Window;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationController {
 
@@ -92,19 +91,19 @@ public class AnnotationController {
     }
 
     private native void registerOnFrameMethods() /*-{
-        top['addNewAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::addNewAnnotation();
-        top['showAnnotations'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::showAnnotations();
-        top['hideAnnotations'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::hideAnnotations();
-        top['updateSelectedAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::updateSelectedAnnotation(I);
-        top['cancelNewAnnotationPopup'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::cancelNewAnnotationPopup();
-        top['loadAnnotationsOnFrame'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::loadAnnotations();
-        top['isAnnotationsVisible'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::isAnnotationsVisible();
-        top['deleteAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::deleteAnnotationOnFrame(I);
-    }-*/;
+                                                 top['addNewAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::addNewAnnotation();
+                                                 top['showAnnotations'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::showAnnotations();
+                                                 top['hideAnnotations'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::hideAnnotations();
+                                                 top['updateSelectedAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::updateSelectedAnnotation(I);
+                                                 top['cancelNewAnnotationPopup'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::cancelNewAnnotationPopup();
+                                                 top['loadAnnotationsOnFrame'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::loadAnnotations();
+                                                 top['isAnnotationsVisible'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::isAnnotationsVisible();
+                                                 top['deleteAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::deleteAnnotationOnFrame(I);
+                                                 }-*/;
 
     private native void registerMainModuleMethods() /*-{
-        top['loadAnnotationsOnMainModule'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::loadAnnotations();
-    }-*/;
+                                                    top['loadAnnotationsOnMainModule'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::loadAnnotations();
+                                                    }-*/;
 
     public void addNewAnnotation() {
         NewAnnotationPopup popup = getNewAnnotationPopup();
@@ -177,8 +176,8 @@ public class AnnotationController {
     }
 
     private native void setSelectedAnnotationIndex(int index) /*-{
-        top['selectedAnnotationIndex'] = index;
-    }-*/;
+                                                              top['selectedAnnotationIndex'] = index;
+                                                              }-*/;
 
     public void reloadAnnotations() {
         if (onFrame) {
@@ -189,12 +188,12 @@ public class AnnotationController {
     }
 
     private native void reloadAnnotationsOnMainModule() /*-{
-        top['loadAnnotationsOnMainModule']();
-    }-*/;
+                                                        top['loadAnnotationsOnMainModule']();
+                                                        }-*/;
 
     private native void reloadAnnotationsOnFrame() /*-{
-        top['loadAnnotationsOnFrame']();
-    }-*/;
+                                                   top['loadAnnotationsOnFrame']();
+                                                   }-*/;
 
     public void cancelNewAnnotation() {
         model.setNewAnnotation(null);
@@ -209,10 +208,8 @@ public class AnnotationController {
     public void createNewAnnotation(String pointer) {
         String href = getDocumentUrl();
         // Hardcoded url codec....
-        String xpointerURI = href.substring(0, href.lastIndexOf("@") + 1)
-                + pointer;
-        Annotation newAnnotation = new Annotation(
-                XPointerFactory.getXPointer(xpointerURI));
+        String xpointerURI = href.substring(0, href.lastIndexOf("@") + 1) + pointer;
+        Annotation newAnnotation = new Annotation(XPointerFactory.getXPointer(xpointerURI));
         model.setNewAnnotation(newAnnotation);
     }
 
@@ -221,8 +218,8 @@ public class AnnotationController {
     }
 
     public native String getAnnoteaServerUrl() /*-{
-        return top['annoteaServerUrl'];
-    }-*/;
+                                               return top['annoteaServerUrl'];
+                                               }-*/;
 
     public Annotation getNewAnnotation() {
         return model.getNewAnnotation();
@@ -238,8 +235,8 @@ public class AnnotationController {
     }
 
     public native String getDocumentUrl() /*-{
-        return top['docUrl'];
-    }-*/;
+                                          return top['docUrl'];
+                                          }-*/;
 
     public void decorateDocument() {
         Log.debug("decorate document");
@@ -277,28 +274,25 @@ public class AnnotationController {
         return this.multiImage;
     }
 
-    public String filterXPointer(ImageElement image, String xpath, int i,
-            int j, int k, int l) {
+    public String filterXPointer(ImageElement image, String xpath, int i, int j, int k, int l) {
         if (xPointerFilter != null) {
             return filter(xPointerFilter, image, xpath, i, j, k, l);
         }
-        return "#xpointer(image-range(" + xpath + ",[" + i + "," + j + "],["
-                + k + "," + l + "]))";
+        return "#xpointer(image-range(" + xpath + ",[" + i + "," + j + "],[" + k + "," + l + "]))";
     }
 
-    public native String filter(String xPointerFilter, ImageElement image,
-            String xpath, int i, int j, int k, int l) /*-{
-        if(xPointerFilter && top[xPointerFilter]) {
-            return top[xPointerFilter](image, xpath, i, j, k, l);
-        }
-    }-*/;
+    public native String filter(String xPointerFilter, ImageElement image, String xpath, int i, int j, int k, int l) /*-{
+                                                                                                                     if(xPointerFilter && top[xPointerFilter]) {
+                                                                                                                     return top[xPointerFilter](image, xpath, i, j, k, l);
+                                                                                                                     }
+                                                                                                                     }-*/;
 
     public Point[] filterAnnotation(Point topLeft, Point bottomRight) {
         if (pointerAdapter == null) {
             return new Point[] { topLeft, bottomRight };
         }
-        String result = filterPoint(pointerAdapter, topLeft.getX(),
-                topLeft.getY(), bottomRight.getX(), bottomRight.getY());
+        String result = filterPoint(pointerAdapter, topLeft.getX(), topLeft.getY(), bottomRight.getX(),
+                bottomRight.getY());
         if (result.equals("")) {
             return null;
         }
@@ -306,12 +300,11 @@ public class AnnotationController {
         return new Point[] { new Point(points[0]), new Point(points[1]) };
     }
 
-    private native String filterPoint(String pointerAdapter, int x, int y,
-            int x2, int y2) /*-{
-        if(pointerAdapter && top[pointerAdapter]) {
-            return top[pointerAdapter](x, y, x2, y2);
-        }
-    }-*/;
+    private native String filterPoint(String pointerAdapter, int x, int y, int x2, int y2) /*-{
+                                                                                           if(pointerAdapter && top[pointerAdapter]) {
+                                                                                           return top[pointerAdapter](x, y, x2, y2);
+                                                                                           }
+                                                                                           }-*/;
 
     public static void updateAnnotation(boolean forceDecorate) {
         CURRENT_INSTANCE.updateAnnotations(forceDecorate);
@@ -325,10 +318,9 @@ public class AnnotationController {
         annotatedDocument.update(forceDecorate);
     }
 
-    public native void setAnnotationDecoratorFunction(
-            String annotationDecoratorFunction) /*-{
-        top[annotationDecoratorFunction] = @org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::updateAnnotation(Z);
-    }-*/;
+    public native void setAnnotationDecoratorFunction(String annotationDecoratorFunction) /*-{
+                                                                                          top[annotationDecoratorFunction] = @org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::updateAnnotation(Z);
+                                                                                          }-*/;
 
     public void setNewAnnotationPopup(NewAnnotationPopup popup) {
         newAnnotationPopup = popup;
@@ -360,13 +352,11 @@ public class AnnotationController {
         }
     }
 
-    public void registerAnnotationPopupListener(
-            AnnotationPopupEventListener listener) {
+    public void registerAnnotationPopupListener(AnnotationPopupEventListener listener) {
         annotationPopupListeners.add(listener);
     }
 
-    public void removeAnnotationPopupListener(
-            AnnotationPopupEventListener listener) {
+    public void removeAnnotationPopupListener(AnnotationPopupEventListener listener) {
         annotationPopupListeners.remove(listener);
     }
 
@@ -379,8 +369,8 @@ public class AnnotationController {
     }
 
     public native void deleteAnnotation(int index) /*-{
-        top['deleteAnnotation'](index);
-    }-*/;
+                                                   top['deleteAnnotation'](index);
+                                                   }-*/;
 
     @SuppressWarnings("unused")
     private void deleteAnnotationOnFrame(int index) {
@@ -388,12 +378,12 @@ public class AnnotationController {
     }
 
     public native boolean isAnnotationsVisible() /*-{
-        if (typeof top['annotationsShown'] != "undefined") {
-            return top['annotationsShown'];
-        } else {
-            return true;
-        }
-    }-*/;
+                                                 if (typeof top['annotationsShown'] != "undefined") {
+                                                 return top['annotationsShown'];
+                                                 } else {
+                                                 return true;
+                                                 }
+                                                 }-*/;
 
     public void removeSelectedTextDecoration() {
         annotatedDocument.removeSelectedTextDecoration(getNewAnnotation());

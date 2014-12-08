@@ -23,7 +23,6 @@ import org.nuxeo.ecm.platform.domsync.core.events.DOMMutationEvent;
 
 /**
  * @author Max Stepanov
- *
  */
 public interface IDOMMutationListener {
 

@@ -91,16 +91,14 @@ public final class Connection extends URLConnection {
             // no such element found in the theme definitions: throws
             // IOException since it is the most semantically suited Exception
             // declared in the java.net.URLConnection based class
-            throw new IOException(String.format("Error while rendering %s",
-                    ThemeManager.getUrlDescription(url)));
+            throw new IOException(String.format("Error while rendering %s", ThemeManager.getUrlDescription(url)));
         }
 
         final RenderingInfo info = new RenderingInfo(rendered, url);
         final String content = ElementRenderer.render(info, cache).getMarkup();
         if (host.equals("theme")) {
             if (log.isTraceEnabled()) {
-                log.trace(String.format("NXThemes output for %s: \n%s\n",
-                        url.toString(), content));
+                log.trace(String.format("NXThemes output for %s: \n%s\n", url.toString(), content));
             }
         }
         return new ByteArrayInputStream(content.getBytes());

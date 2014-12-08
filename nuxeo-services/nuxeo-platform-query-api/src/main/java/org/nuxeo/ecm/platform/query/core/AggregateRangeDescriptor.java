@@ -26,8 +26,7 @@ import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
  * @since 6.0
  */
 @XObject("range")
-public class AggregateRangeDescriptor implements AggregateRangeDefinition,
-        Serializable {
+public class AggregateRangeDescriptor implements AggregateRangeDefinition, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -76,8 +75,7 @@ public class AggregateRangeDescriptor implements AggregateRangeDefinition,
 
     @Override
     public String toString() {
-        return String.format("AggregateRangeDescriptor(%s, %s, %s)", key, from,
-                to);
+        return String.format("AggregateRangeDescriptor(%s, %s, %s)", key, from, to);
     }
 
     @Override

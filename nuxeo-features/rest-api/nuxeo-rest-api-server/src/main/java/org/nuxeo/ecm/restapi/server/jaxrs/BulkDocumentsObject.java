@@ -71,8 +71,7 @@ public class BulkDocumentsObject extends DefaultObject {
     }
 
     @PUT
-    public DocumentModelList doUpdate(DocumentModel updateDoc)
-            throws ClientException {
+    public DocumentModelList doUpdate(DocumentModel updateDoc) throws ClientException {
         CoreSession session = getContext().getCoreSession();
 
         for (DocumentModel doc : docs) {
@@ -91,8 +90,7 @@ public class BulkDocumentsObject extends DefaultObject {
      * @throws ClientException
      * @since 5.7.3
      */
-    private void updateDirtyFields(DocumentModel srcDoc, DocumentModel dstDoc)
-            throws ClientException {
+    private void updateDirtyFields(DocumentModel srcDoc, DocumentModel dstDoc) throws ClientException {
         for (Entry<String, DataModel> entry : srcDoc.getDataModels().entrySet()) {
             String schemaName = entry.getKey();
             for (String field : entry.getValue().getDirtyFields()) {

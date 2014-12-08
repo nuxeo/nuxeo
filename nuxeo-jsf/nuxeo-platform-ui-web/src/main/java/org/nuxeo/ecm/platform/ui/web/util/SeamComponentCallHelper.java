@@ -29,26 +29,21 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.util.EJB;
 
 /**
- *
  * This class provides helper methods for accessing a Seam Component
  * <p>
  * Why this class?
  * <p>
- * At startup time, Seam generates CGLib Wrappers around each Seam component.
- * This wrapper holds all interceptors that are used for bijection.
- * Because of that, accessing a Seam component by its reference will lead
- * to call a disinjected instance (all @In member variables are null).
+ * At startup time, Seam generates CGLib Wrappers around each Seam component. This wrapper holds all interceptors that
+ * are used for bijection. Because of that, accessing a Seam component by its reference will lead to call a disinjected
+ * instance (all @In member variables are null).
  * <p>
- * Seam components are usually accessed via EL or via injected references,
- * in this cases, Seam takes care of everything and you get a functional instance.
- * But in some cases, you need to access a Seam component:
+ * Seam components are usually accessed via EL or via injected references, in this cases, Seam takes care of everything
+ * and you get a functional instance. But in some cases, you need to access a Seam component:
  * <ul>
  * <li>from an object that has no direct access to Seam (ie: can't use injection),
  * <li>from an object that stored a call-back reference (storing the 'this' of the Seam component).
  * </ul>
- * In these cases, this helper class is useful.
- *
- * This class provides helper functions for :
+ * In these cases, this helper class is useful. This class provides helper functions for :
  * <ul>
  * <li>getting a Wrapped Seam component via its name or its reference,
  * <li>executing a method via a method name on a Seam component.
@@ -59,13 +54,13 @@ import org.jboss.seam.util.EJB;
 public final class SeamComponentCallHelper {
 
     // This is an utility class.
-    private SeamComponentCallHelper() { }
+    private SeamComponentCallHelper() {
+    }
 
     /**
      * Gets the CGLib-wrapped Seam component from its name.
      *
-     * @param seamName
-     *            the name of the Seam component
+     * @param seamName the name of the Seam component
      * @return the Wrapped Seam component
      */
     public static Object getSeamComponentByName(String seamName) {
@@ -85,8 +80,7 @@ public final class SeamComponentCallHelper {
     /**
      * Gets the CGLib-wrapped Seam component from a reference.
      *
-     * @param seamRef
-     *            reference of the object behind the Seam component
+     * @param seamRef reference of the object behind the Seam component
      * @return the Wrapped Seam component
      */
     public static Object getSeamComponentByRef(Object seamRef) {
@@ -100,25 +94,19 @@ public final class SeamComponentCallHelper {
     /**
      * Calls a Seam component by name.
      *
-     * @param seamName
-     *            the name of the Seam component
-     * @param methodName
-     *            the method name (for ejb3 method must be exposed in the local
-     *            interface)
-     * @param params
-     *            parameters as Object[]
+     * @param seamName the name of the Seam component
+     * @param methodName the method name (for ejb3 method must be exposed in the local interface)
+     * @param params parameters as Object[]
      * @return the result of the call
      * @throws RuntimeException
      */
-    public static Object callSeamComponentByName(String seamName,
-            String methodName, Object[] params) {
+    public static Object callSeamComponentByName(String seamName, String methodName, Object[] params) {
 
         Object seamComponent = getSeamComponentByName(seamName);
         Component component = Component.forName(seamName);
 
         Class type = null;
-        if (component.getType().isSessionBean()
-                && !component.getBusinessInterfaces().isEmpty()) {
+        if (component.getType().isSessionBean() && !component.getBusinessInterfaces().isEmpty()) {
             for (Class c : component.getBusinessInterfaces()) {
                 if (c.isAnnotationPresent(EJB.LOCAL)) {
                     type = component.getBusinessInterfaces().iterator().next();
@@ -127,10 +115,8 @@ public final class SeamComponentCallHelper {
             }
 
             if (type == null) {
-                throw new RuntimeException(String.format(
-                        "Type cannot be determined for component [%s]. "
-                                + "Please ensure that it has a "
-                                + "local interface.", component));
+                throw new RuntimeException(String.format("Type cannot be determined for component [%s]. "
+                        + "Please ensure that it has a " + "local interface.", component));
             }
         }
 
@@ -159,18 +145,13 @@ public final class SeamComponentCallHelper {
     /**
      * Calls a Seam component by reference.
      *
-     * @param seamRef
-     *            the reference on the object behind the Seam component
-     * @param methodName
-     *            the method name (for ejb3 method must be exposed in the local
-     *            interface)
-     * @param params
-     *            parameters as Object[]
+     * @param seamRef the reference on the object behind the Seam component
+     * @param methodName the method name (for ejb3 method must be exposed in the local interface)
+     * @param params parameters as Object[]
      * @return the result of the call
      * @throws RuntimeException
      */
-    public static Object callSeamComponentByRef(Object seamRef,
-            String methodName, Object[] params) {
+    public static Object callSeamComponentByRef(Object seamRef, String methodName, Object[] params) {
         String seamName = getSeamComponentName(seamRef);
         return callSeamComponentByName(seamName, methodName, params);
     }
@@ -178,18 +159,13 @@ public final class SeamComponentCallHelper {
     /**
      * Calls a Seam component by reference.
      *
-     * @param seamRef
-     *            the reference on the object behind the Seam component
-     * @param methodName
-     *            the method name (for ejb3 method must be exposed in the local
-     *            interface)
-     * @param param
-     *            parameter as Object
+     * @param seamRef the reference on the object behind the Seam component
+     * @param methodName the method name (for ejb3 method must be exposed in the local interface)
+     * @param param parameter as Object
      * @return the result of the call
      * @throws RuntimeException
      */
-    public static Object callSeamComponentByRef(Object seamRef,
-            String methodName, Object param) {
+    public static Object callSeamComponentByRef(Object seamRef, String methodName, Object param) {
         List<Object> params = new ArrayList<Object>();
         params.add(param);
         return callSeamComponentByRef(seamRef, methodName, params.toArray());
@@ -198,18 +174,13 @@ public final class SeamComponentCallHelper {
     /**
      * Calls a Seam component by name.
      *
-     * @param seamName
-     *            the name of the Seam component
-     * @param methodName
-     *            the method name (for ejb3 method must be exposed in the local
-     *            interface)
-     * @param param
-     *            parameters as Object[]
+     * @param seamName the name of the Seam component
+     * @param methodName the method name (for ejb3 method must be exposed in the local interface)
+     * @param param parameters as Object[]
      * @return the result of the call
      * @throws RuntimeException
      */
-    public static Object callSeamComponentByName(String seamName,
-            String methodName, Object param) {
+    public static Object callSeamComponentByName(String seamName, String methodName, Object param) {
         List<Object> params = new ArrayList<Object>();
         params.add(param);
         return callSeamComponentByName(seamName, methodName, params.toArray());
@@ -239,8 +210,7 @@ public final class SeamComponentCallHelper {
         // for (Method m : cls.getDeclaredMethods()) {
         for (Method method : cls.getMethods()) {
 
-            if (name.equals(method.getName())
-                    && method.getParameterTypes().length == params.length) {
+            if (name.equals(method.getName()) && method.getParameterTypes().length == params.length) {
                 int score = 0;
                 // XXX should do better check !!!
                 candidates.put(method, score);

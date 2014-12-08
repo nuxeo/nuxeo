@@ -86,8 +86,7 @@ public class Tag implements Serializable {
 
     protected static class TagWeightComparator implements Comparator<Tag> {
         public int compare(Tag t1, Tag t2) {
-            return t2.weight < t1.weight ? -1
-                    : (t2.weight == t1.weight ? 0 : 1);
+            return t2.weight < t1.weight ? -1 : (t2.weight == t1.weight ? 0 : 1);
         }
     }
 

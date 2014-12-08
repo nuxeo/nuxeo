@@ -23,19 +23,19 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ValidationException extends Exception {
 
     private static final long serialVersionUID = 531665422854150881L;
 
     public static final String IS_REQUIRED_MSG = "is required";
+
     public static final String IS_INVALID_MSG = "is invalid";
 
     protected Map<String, String> invalidFields;
+
     protected Map<String, String> requiredFields;
 
     protected transient Form form; // the form that has errors - should be set by the caller
@@ -63,13 +63,13 @@ public class ValidationException extends Exception {
         if (message == null) {
             StringBuilder buf = new StringBuilder();
             if (hasRequiredFields()) {
-                for (Map.Entry<String,String> entry : requiredFields.entrySet()) {
+                for (Map.Entry<String, String> entry : requiredFields.entrySet()) {
                     String msg = entry.getValue();
                     buf.append(entry.getKey()).append(": ").append(msg == null ? IS_REQUIRED_MSG : msg).append("\n");
                 }
             }
             if (hasInvalidFields()) {
-                for (Map.Entry<String,String> entry : invalidFields.entrySet()) {
+                for (Map.Entry<String, String> entry : invalidFields.entrySet()) {
                     String msg = entry.getValue();
                     buf.append(entry.getKey()).append(": ").append(msg == null ? IS_INVALID_MSG : msg).append("\n");
                 }
@@ -84,13 +84,13 @@ public class ValidationException extends Exception {
         if (message == null) {
             StringBuilder buf = new StringBuilder();
             if (hasRequiredFields()) {
-                for (Map.Entry<String,String> entry : requiredFields.entrySet()) {
+                for (Map.Entry<String, String> entry : requiredFields.entrySet()) {
                     String msg = entry.getValue();
                     buf.append("<li>").append(entry.getKey()).append(": ").append(msg == null ? IS_REQUIRED_MSG : msg);
                 }
             }
             if (hasInvalidFields()) {
-                for (Map.Entry<String,String> entry : invalidFields.entrySet()) {
+                for (Map.Entry<String, String> entry : invalidFields.entrySet()) {
                     String msg = entry.getValue();
                     buf.append("<li>").append(entry.getKey()).append(": ").append(msg == null ? IS_INVALID_MSG : msg);
                 }
@@ -99,7 +99,6 @@ public class ValidationException extends Exception {
         }
         return message;
     }
-
 
     public ValidationException addRequiredField(String key) {
         requiredFields.put(key, null);

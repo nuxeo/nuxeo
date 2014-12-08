@@ -17,12 +17,10 @@ import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- *
- * Alternative to the default {@link DocumentPipe} that handles Transactions
- * demarcation aligned with the Pipe batch size
+ * Alternative to the default {@link DocumentPipe} that handles Transactions demarcation aligned with the Pipe batch
+ * size
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class TransactionBatchingDocumentPipeImpl extends DocumentPipeImpl {
 
@@ -36,4 +34,3 @@ public class TransactionBatchingDocumentPipeImpl extends DocumentPipeImpl {
         TransactionHelper.startTransaction();
     }
 }
-

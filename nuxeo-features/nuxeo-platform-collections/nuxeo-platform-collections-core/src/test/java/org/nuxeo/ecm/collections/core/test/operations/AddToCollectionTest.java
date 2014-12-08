@@ -54,14 +54,13 @@ public class AddToCollectionTest extends CollectionOperationsTestCase {
 
     @Before
     public void setUp() throws ClientException {
-        testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         // Create test documents
         listDocs = createTestFiles(session, 5);
         // Create a collection
-        collection = collectionManager.createCollection(session,
-                COLLECTION_NAME, COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
+        collection = collectionManager.createCollection(session, COLLECTION_NAME, COLLECTION_DESCRIPTION,
+                testWorkspace.getPathAsString());
     }
 
     @Test
@@ -105,8 +104,8 @@ public class AddToCollectionTest extends CollectionOperationsTestCase {
     @Test
     public void testOperationWithNonCollectableDocument() throws Exception {
         // Create a second collection for the test
-        DocumentModel collection2 = collectionManager.createCollection(session,
-                COLLECTION_NAME, COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
+        DocumentModel collection2 = collectionManager.createCollection(session, COLLECTION_NAME,
+                COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
 
         chain = new OperationChain("test-chain");
         chain.add(AddToCollectionOperation.ID).set("collection", collection);
@@ -118,7 +117,7 @@ public class AddToCollectionTest extends CollectionOperationsTestCase {
             service.run(ctx, chain);
             // Should fail before
             fail("File is not a proper file");
-        } catch(TraceException e) {
+        } catch (TraceException e) {
             return;
         } finally {
             TransactionHelper.commitOrRollbackTransaction();

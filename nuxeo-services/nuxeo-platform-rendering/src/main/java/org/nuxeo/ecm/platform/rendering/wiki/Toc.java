@@ -24,6 +24,7 @@ package org.nuxeo.ecm.platform.rendering.wiki;
 public class Toc {
 
     protected final Entry head;
+
     protected Entry tail;
 
     public Toc() {
@@ -47,7 +48,7 @@ public class Toc {
         if (level == tail.level) { // same level
             tail.next = entry;
             entry.parent = tail.parent;
-            entry.index = tail.index+1;
+            entry.index = tail.index + 1;
         } else if (level > tail.level) {
             entry.parent = tail;
             tail.firstChild = entry;
@@ -64,12 +65,12 @@ public class Toc {
             }
             prev.next = entry;
             entry.parent = prev.parent;
-            entry.index = prev.index+1;
+            entry.index = prev.index + 1;
         }
         if (entry.parent.id != null) {
-            entry.id = entry.parent.id+"."+entry.index;
+            entry.id = entry.parent.id + "." + entry.index;
         } else {
-            entry.id = ""+entry.index;
+            entry.id = "" + entry.index;
         }
         tail = entry;
         return entry.id;
@@ -77,11 +78,17 @@ public class Toc {
 
     public static class Entry {
         public Entry parent;
+
         public Entry next;
+
         public Entry firstChild;
+
         public String id;
+
         public String title;
+
         public int level;
+
         public int index;
     }
 

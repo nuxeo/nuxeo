@@ -25,10 +25,12 @@ public class LinkedDocument implements Serializable {
     private static final long serialVersionUID = 1565438769754L;
 
     protected DocumentRef documentRef;
-    protected RepositoryLocation repository;
-    protected transient DocumentModel document;
-    protected boolean brokenDocument = true;
 
+    protected RepositoryLocation repository;
+
+    protected transient DocumentModel document;
+
+    protected boolean brokenDocument = true;
 
     public boolean isBrokenDocument() {
         return brokenDocument;

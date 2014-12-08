@@ -35,6 +35,7 @@ public class ConfigurationDeployer implements FileChangeListener {
     private static final Log log = LogFactory.getLog(ConfigurationDeployer.class);
 
     protected final Map<String, Entry> urls;
+
     protected final FileChangeNotifier notifier;
 
     protected final ListenerList listeners = new ListenerList();
@@ -92,15 +93,16 @@ public class ConfigurationDeployer implements FileChangeListener {
         }
     }
 
-    public  void deploy(RuntimeContext ctx, File file, boolean trackChanges) throws IOException {
+    public void deploy(RuntimeContext ctx, File file, boolean trackChanges) throws IOException {
         _deploy(ctx, file.getCanonicalFile().toURI().toURL(), file, trackChanges);
     }
 
     public void undeploy(File file) throws IOException {
-       undeploy(file.getCanonicalFile().toURI().toURL());
+        undeploy(file.getCanonicalFile().toURI().toURL());
     }
 
-    protected synchronized void _deploy(RuntimeContext ctx, URL url, File watchFile, boolean trackChanges) throws IOException {
+    protected synchronized void _deploy(RuntimeContext ctx, URL url, File watchFile, boolean trackChanges)
+            throws IOException {
         String id = url.toExternalForm();
         Entry entry = new Entry(ctx, url, watchFile);
         ctx.deploy(url);
@@ -125,25 +127,25 @@ public class ConfigurationDeployer implements FileChangeListener {
         }
     }
 
-    public void addConfigurationChangedListener(
-            ConfigurationChangedListener listener) {
+    public void addConfigurationChangedListener(ConfigurationChangedListener listener) {
         listeners.add(listener);
     }
 
-    public void removeConfigurationChangedListener(
-            ConfigurationChangedListener listener) {
+    public void removeConfigurationChangedListener(ConfigurationChangedListener listener) {
         listeners.remove(listener);
     }
 
     public void fireConfigurationChanged(Entry entry) {
         for (Object obj : listeners.getListenersCopy()) {
-            ((ConfigurationChangedListener)obj).configurationChanged(entry);
+            ((ConfigurationChangedListener) obj).configurationChanged(entry);
         }
     }
 
     public static class Entry {
         final RuntimeContext ctx;
+
         final URL url;
+
         File watchFile;
 
         Entry(RuntimeContext ctx, URL config, File watchFile) throws IOException {

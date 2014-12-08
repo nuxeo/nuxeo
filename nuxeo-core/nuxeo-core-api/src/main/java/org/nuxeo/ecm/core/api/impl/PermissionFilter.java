@@ -32,8 +32,7 @@ import org.nuxeo.ecm.core.api.Filter;
 /**
  * A filter based on permissions.
  * <p>
- * If one of the permission check throws an Exception, the {@link #accept}
- * method returns false.
+ * If one of the permission check throws an Exception, the {@link #accept} method returns false.
  *
  * @since 5.7.2
  */
@@ -73,26 +72,21 @@ public class PermissionFilter implements Filter {
     @Override
     public boolean accept(DocumentModel docModel) {
         CoreSession session = docModel.getCoreSession();
-        return session != null
-                && hasPermission(session, docModel, excluded, false)
+        return session != null && hasPermission(session, docModel, excluded, false)
                 && hasPermission(session, docModel, required, true);
 
     }
 
-    protected boolean hasPermission(CoreSession session, DocumentModel doc,
-            Set<String> permissions, boolean required) {
+    protected boolean hasPermission(CoreSession session, DocumentModel doc, Set<String> permissions, boolean required) {
         for (String permission : permissions) {
             try {
-                if ((required && !session.hasPermission(doc.getRef(),
-                        permission))
-                        || (!required && session.hasPermission(doc.getRef(),
-                                permission))) {
+                if ((required && !session.hasPermission(doc.getRef(), permission))
+                        || (!required && session.hasPermission(doc.getRef(), permission))) {
                     return false;
                 }
             } catch (ClientException e) {
-                String message = String.format(
-                        "Unable to check '%s' permission for document '%s': %s",
-                        permission, doc.getPathAsString(), e.getMessage());
+                String message = String.format("Unable to check '%s' permission for document '%s': %s", permission,
+                        doc.getPathAsString(), e.getMessage());
                 log.warn(message);
                 log.debug(message, e);
                 return false;

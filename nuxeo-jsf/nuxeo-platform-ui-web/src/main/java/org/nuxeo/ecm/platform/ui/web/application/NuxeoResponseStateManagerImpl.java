@@ -57,27 +57,25 @@ import com.sun.faces.renderkit.ResponseStateManagerImpl;
 import com.sun.faces.renderkit.StateHelper;
 import com.sun.faces.util.RequestStateManager;
 
-
 /**
  * @since 6.0
  */
 public class NuxeoResponseStateManagerImpl extends ResponseStateManagerImpl {
 
     public static final String MULTIPART_SIZE_ERROR_FLAG = "NX_MULTIPART_SIZE_ERROR";
+
     public static final Object MULTIPART_SIZE_ERROR_COMPONENT_ID = "NX_MULTIPART_SIZE_COMPONENTID";
+
     private final StateHelper helper;
 
     public NuxeoResponseStateManagerImpl() {
 
         WebConfiguration webConfig = WebConfiguration.getInstance();
-        String stateMode =
-              webConfig.getOptionValue(StateSavingMethod);
-        helper = ((StateManager.STATE_SAVING_METHOD_CLIENT.equalsIgnoreCase(stateMode)
-                   ? new ClientSideStateHelper()
-                   : new NuxeoServerSideStateHelper()));
+        String stateMode = webConfig.getOptionValue(StateSavingMethod);
+        helper = ((StateManager.STATE_SAVING_METHOD_CLIENT.equalsIgnoreCase(stateMode) ? new ClientSideStateHelper()
+                : new NuxeoServerSideStateHelper()));
 
     }
-
 
     // --------------------------------------- Methods from ResponseStateManager
 
@@ -92,15 +90,12 @@ public class NuxeoResponseStateManagerImpl extends ResponseStateManagerImpl {
     @Override
     public Object getState(FacesContext context, String viewId) {
 
-        Object state =
-              RequestStateManager.get(context, RequestStateManager.FACES_VIEW_STATE);
+        Object state = RequestStateManager.get(context, RequestStateManager.FACES_VIEW_STATE);
         if (state == null) {
             try {
                 state = helper.getState(context, viewId);
                 if (state != null) {
-                    RequestStateManager.set(context,
-                                            RequestStateManager.FACES_VIEW_STATE,
-                                            state);
+                    RequestStateManager.set(context, RequestStateManager.FACES_VIEW_STATE, state);
                 }
             } catch (IOException e) {
                 throw new FacesException(e);
@@ -110,18 +105,15 @@ public class NuxeoResponseStateManagerImpl extends ResponseStateManagerImpl {
 
     }
 
-
     /**
      * @see ResponseStateManager#writeState(javax.faces.context.FacesContext, java.lang.Object)
      */
     @Override
-    public void writeState(FacesContext context, Object state)
-          throws IOException {
+    public void writeState(FacesContext context, Object state) throws IOException {
 
         helper.writeState(context, state, null);
 
     }
-
 
     /**
      * @see ResponseStateManager#getViewState(javax.faces.context.FacesContext, java.lang.Object)
@@ -158,7 +150,7 @@ public class NuxeoResponseStateManagerImpl extends ResponseStateManagerImpl {
         boolean result = super.isPostback(context);
         if (!result) {
             HttpServletRequest req = (HttpServletRequest) context.getExternalContext().getRequest();
-            final String contentType =req.getContentType();
+            final String contentType = req.getContentType();
             if (contentType != null && contentType.contains("multipart/form-data")) {
                 try {
                     req.getParts();
@@ -191,7 +183,7 @@ public class NuxeoResponseStateManagerImpl extends ResponseStateManagerImpl {
             if (split != null && split.length > 0) {
                 result += split[0].substring(split[0].lastIndexOf(" ") + 1);
                 for (int i = 1; i < split.length - 1; ++i) {
-                    result +=  sep + split[i];
+                    result += sep + split[i];
                 }
                 result += sep + split[split.length - 1].substring(0, split[split.length - 1].indexOf(' '));
             }

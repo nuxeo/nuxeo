@@ -20,13 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Simple contribution registry, keeping up to date contributions in a map, and
- * not handling merge.
+ * Simple contribution registry, keeping up to date contributions in a map, and not handling merge.
  *
  * @since 5.6
  */
-public abstract class SimpleContributionRegistry<T> extends
-        ContributionFragmentRegistry<T> {
+public abstract class SimpleContributionRegistry<T> extends ContributionFragmentRegistry<T> {
 
     protected Map<String, T> currentContribs = new HashMap<String, T>();
 

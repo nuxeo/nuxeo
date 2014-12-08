@@ -29,18 +29,15 @@ import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
  */
 public class TestMBeanInfoFactory {
 
-    protected final ModelMBeanInfoFactory factoryUnderTest =
-            new ModelMBeanInfoFactory();
+    protected final ModelMBeanInfoFactory factoryUnderTest = new ModelMBeanInfoFactory();
 
     @Test
     public void testInterfaceProperty() {
-        ModelMBeanInfo ifaceInfo =
-                factoryUnderTest.getModelMBeanInfo(DummyMBean.class);
+        ModelMBeanInfo ifaceInfo = factoryUnderTest.getModelMBeanInfo(DummyMBean.class);
         MBeanAttributeInfo ifaceAttribute = ifaceInfo.getAttributes()[0];
         assertEquals("managedMessage", ifaceAttribute.getName());
 
-        ModelMBeanInfo classInfo =
-                factoryUnderTest.getModelMBeanInfo(DummyService.class);
+        ModelMBeanInfo classInfo = factoryUnderTest.getModelMBeanInfo(DummyService.class);
         MBeanAttributeInfo classAttribute = classInfo.getAttributes()[0];
         assertEquals("managedMessage", classAttribute.getName());
     }

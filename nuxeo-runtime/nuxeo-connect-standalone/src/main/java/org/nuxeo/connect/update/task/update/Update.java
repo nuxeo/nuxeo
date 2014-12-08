@@ -134,8 +134,7 @@ public class Update extends AbstractCommand {
     }
 
     @Override
-    protected void doValidate(Task task, ValidationStatus status)
-            throws PackageException {
+    protected void doValidate(Task task, ValidationStatus status) throws PackageException {
         if (file == null || todir == null) {
             status.addError("Cannot execute command in installer."
                     + " Invalid update syntax: file or todir was not specified.");
@@ -152,14 +151,12 @@ public class Update extends AbstractCommand {
                         + file.getName());
             }
         } else if (!file.isDirectory()) {
-            status.addWarning("Ignored command in installer."
-                    + " Source file not found! " + file.getName());
+            status.addWarning("Ignored command in installer." + " Source file not found! " + file.getName());
         }
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         if (!file.exists()) {
             log.warn("Can't update using " + file + ". File is missing.");
             return null;
@@ -181,8 +178,7 @@ public class Update extends AbstractCommand {
         return rollback;
     }
 
-    protected CompositeCommand updateDirectory(Task task, File dir,
-            UpdateManager mgr) throws PackageException {
+    protected CompositeCommand updateDirectory(Task task, File dir, UpdateManager mgr) throws PackageException {
         CompositeCommand cmd = new CompositeCommand();
         File[] files = dir.listFiles();
         if (files != null) {
@@ -193,10 +189,8 @@ public class Update extends AbstractCommand {
         return cmd;
     }
 
-    protected Rollback updateFile(Task task, File fileToUpdate,
-            UpdateManager mgr) throws PackageException {
-        UpdateOptions opt = UpdateOptions.newInstance(
-                task.getPackage().getId(), fileToUpdate, todir);
+    protected Rollback updateFile(Task task, File fileToUpdate, UpdateManager mgr) throws PackageException {
+        UpdateOptions opt = UpdateOptions.newInstance(task.getPackage().getId(), fileToUpdate, todir);
         if (opt == null) {
             return null;
         }
@@ -214,13 +208,11 @@ public class Update extends AbstractCommand {
     }
 
     /**
-     * Method to be overridden by subclasses to provide a deploy command for hot
-     * reload
+     * Method to be overridden by subclasses to provide a deploy command for hot reload
      *
      * @since 5.6
      */
-    protected Command getDeployCommand(UpdateManager updateManager,
-            Command rollbackCommand) {
+    protected Command getDeployCommand(UpdateManager updateManager, Command rollbackCommand) {
         return new DeployPlaceholder(file);
     }
 

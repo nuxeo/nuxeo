@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.relations.api.Subject;
  * Statement representation for easier display.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface StatementInfo extends Serializable {
 

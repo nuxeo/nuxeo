@@ -31,8 +31,7 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
- * Listener validating that the selected default type is part of the allowed
- * type on the document.
+ * Listener validating that the selected default type is part of the allowed type on the document.
  * <p>
  * If not, the default type is reset.
  * 
@@ -49,17 +48,14 @@ public class UITypesConfigurationListener implements EventListener {
         EventContext eventContext = event.getContext();
         if (eventContext instanceof DocumentEventContext) {
             DocumentModel doc = ((DocumentEventContext) eventContext).getSourceDocument();
-            UITypesConfiguration uiTypesConfiguration = doc.getAdapter(
-                    UITypesConfiguration.class, true);
+            UITypesConfiguration uiTypesConfiguration = doc.getAdapter(UITypesConfiguration.class, true);
             if (uiTypesConfiguration != null) {
-                List<String> allowedTypes = new ArrayList<>(
-                        uiTypesConfiguration.getAllowedTypes());
+                List<String> allowedTypes = new ArrayList<>(uiTypesConfiguration.getAllowedTypes());
                 if (!allowedTypes.isEmpty()) {
                     String defaultType = uiTypesConfiguration.getDefaultType();
                     if (!allowedTypes.contains(defaultType)) {
                         // the selected default type is not allowed, reset it
-                        doc.setPropertyValue(
-                                UI_TYPES_CONFIGURATION_DEFAULT_TYPE, "");
+                        doc.setPropertyValue(UI_TYPES_CONFIGURATION_DEFAULT_TYPE, "");
                     }
                 }
             }

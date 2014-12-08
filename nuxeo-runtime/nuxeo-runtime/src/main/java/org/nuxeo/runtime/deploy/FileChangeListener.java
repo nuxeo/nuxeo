@@ -17,16 +17,19 @@ package org.nuxeo.runtime.deploy;
 // FIXME: interface has changed and this example is no more appropriate.
 /**
  * An example of listener implementation:
+ *
  * <pre>
  * public class MyListener implements FileChangeListener {
- *   long lastNotif = 0;
- *   public void fileChanged(File file, long since, long now) {
- *     if (now == lastNotifFlush) return;
- *     if (isIntersetedInFile(file)) {
- *       lastNotif = now;
- *       flushCache(); // flush internal cache because file on disk changed
+ *     long lastNotif = 0;
+ *
+ *     public void fileChanged(File file, long since, long now) {
+ *         if (now == lastNotifFlush)
+ *             return;
+ *         if (isIntersetedInFile(file)) {
+ *             lastNotif = now;
+ *             flushCache(); // flush internal cache because file on disk changed
+ *         }
  *     }
- *   }
  * }
  * </pre>
  *
@@ -38,9 +41,8 @@ public interface FileChangeListener {
      * Notifies that the given file changed.
      *
      * @param entry
-     * @param now the time stamp when the change was detected.
-     *      This value can be used as a notification ID by listeners to avoid
-     *      multiple processing for notification that will send multiple events
+     * @param now the time stamp when the change was detected. This value can be used as a notification ID by listeners
+     *            to avoid multiple processing for notification that will send multiple events
      */
     void fileChanged(FileChangeNotifier.FileEntry entry, long now);
 

@@ -36,14 +36,12 @@ public class PreviewContentEnricher extends AbstractContentEnricher {
     public static final String PREVIEW_CONTENT_ID = "preview";
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec)
-            throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
         DocumentModel doc = ec.getDocumentModel();
         String relativeUrl = PreviewHelper.getPreviewURL(doc);
         jg.writeStartObject();
         if (relativeUrl != null && !relativeUrl.isEmpty()) {
-            String url = Framework.getProperty("nuxeo.url") + "/"
-                    + PreviewHelper.getPreviewURL(doc);
+            String url = Framework.getProperty("nuxeo.url") + "/" + PreviewHelper.getPreviewURL(doc);
             jg.writeStringField(PREVIEW_URL_LABEL, url);
         } else {
             writeEmptyURL(jg);

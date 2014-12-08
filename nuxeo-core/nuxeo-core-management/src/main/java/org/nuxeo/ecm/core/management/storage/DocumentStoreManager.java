@@ -54,8 +54,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
 
     public void registerHandler(DocumentStoreHandlerDescriptor desc) {
         if (desc.handler == null) {
-            throw new RuntimeException(
-                    "Class wasn't resolved or new instance failed, check logs");
+            throw new RuntimeException("Class wasn't resolved or new instance failed, check logs");
         }
         handlers.put(desc.id, desc);
     }
@@ -76,8 +75,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
     protected DocumentRef rootletRef;
 
     @Override
-    public void doInitializeRepository(CoreSession session)
-            throws ClientException {
+    public void doInitializeRepository(CoreSession session) throws ClientException {
         if (defaultRepositoryName == null) {
             RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
             defaultRepositoryName = mgr.getDefaultRepositoryName();
@@ -104,10 +102,8 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         }
     }
 
-    protected DocumentModel createRootlet(CoreSession session)
-            throws ClientException {
-        DocumentModel rootlet = session.createDocumentModel("/", MANAGEMENT_ROOT_NAME,
-                MANAGEMENT_ROOT_TYPE);
+    protected DocumentModel createRootlet(CoreSession session) throws ClientException {
+        DocumentModel rootlet = session.createDocumentModel("/", MANAGEMENT_ROOT_NAME, MANAGEMENT_ROOT_TYPE);
         rootlet = session.createDocument(rootlet);
 
         ACP acp = rootlet.getACP();
@@ -118,8 +114,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         }
 
         acl.add(new ACE(config.groupName, SecurityConstants.EVERYTHING, true));
-        acl.add(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
         rootlet.setACP(acp, true);
 
         session.save();
@@ -127,8 +122,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         return rootlet;
     }
 
-    protected DocumentRef setupRootlet(CoreSession session)
-            throws ClientException {
+    protected DocumentRef setupRootlet(CoreSession session) throws ClientException {
         DocumentModel rootlet;
         if (!session.exists(new PathRef(MANAGEMENT_ROOT_PATH))) {
             rootlet = createRootlet(session);

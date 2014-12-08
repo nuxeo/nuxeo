@@ -46,8 +46,7 @@ public class UnloadJar extends UnloadJarPlaceholder {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         log.warn("UnloadJar command is deprecated and does nothing right now");
         return new LoadJar(file);
     }

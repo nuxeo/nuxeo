@@ -20,14 +20,17 @@ import com.google.gwt.dom.client.Node;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class Range {
 
     private String selectedText;
+
     private Node startContainer;
+
     private int startOffset;
+
     private Node endContainer;
+
     private int endOffset;
 
     public Range(String selectedText, Node startContainer, int startOffset, Node endContainer, int endOfsset) {

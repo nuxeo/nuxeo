@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BinaryProperty extends ScalarProperty {
 
@@ -44,26 +43,24 @@ public class BinaryProperty extends ScalarProperty {
     }
 
     @Override
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
-            //TODO if input stream is not serializable? do we convert to a serializable input stream?
-            return (Serializable)value;
+            // TODO if input stream is not serializable? do we convert to a serializable input stream?
+            return (Serializable) value;
         }
         throw new PropertyConversionException(value.getClass(), InputStream.class);
-        //TODO byte array is not serializable
-//        if (value.getClass() == String.class) {
-//            return new ByteArrayInputStream(((String)value).getBytes());
-//        }
-//        if (value.getClass() == byte[].class) {
-//            return new ByteArrayInputStream((byte[])value.);
-//        }
+        // TODO byte array is not serializable
+        // if (value.getClass() == String.class) {
+        // return new ByteArrayInputStream(((String)value).getBytes());
+        // }
+        // if (value.getClass() == byte[].class) {
+        // return new ByteArrayInputStream((byte[])value.);
+        // }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType)
-            throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
         if (value == null) {
             return null;
         }
@@ -74,16 +71,14 @@ public class BinaryProperty extends ScalarProperty {
             try {
                 return (T) FileUtils.read((InputStream) value);
             } catch (IOException e) {
-                throw new PropertyRuntimeException(
-                        "Failed to read given input stream", e);
+                throw new PropertyRuntimeException("Failed to read given input stream", e);
             }
         }
         if (toType == byte[].class) {
             try {
                 return (T) FileUtils.readBytes((InputStream) value);
             } catch (IOException e) {
-                throw new PropertyRuntimeException(
-                        "Failed to read given input stream", e);
+                throw new PropertyRuntimeException("Failed to read given input stream", e);
             }
         }
         throw new PropertyConversionException(value.getClass(), toType);

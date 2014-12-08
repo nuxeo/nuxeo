@@ -22,12 +22,13 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.ecm.platform.rendering.RenderingEngine;
 
 /**
- * Rendering Engine Descriptor objects instantiated with configuration from
- * contributions like:
+ * Rendering Engine Descriptor objects instantiated with configuration from contributions like:
  *
  * <pre>
  *  &lt;engine name=”the_format_name” class=”rendering_engine_impl_class”/&gt;
- * </pre>. Also instantiate rendering engine as defined in contribution.
+ * </pre>
+ *
+ * . Also instantiate rendering engine as defined in contribution.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
@@ -51,8 +52,7 @@ public class RenderingEngineDescriptor {
         return klass;
     }
 
-    public RenderingEngine newInstance()
-            throws InstantiationException, IllegalAccessException {
+    public RenderingEngine newInstance() throws InstantiationException, IllegalAccessException {
         return klass.newInstance();
     }
 

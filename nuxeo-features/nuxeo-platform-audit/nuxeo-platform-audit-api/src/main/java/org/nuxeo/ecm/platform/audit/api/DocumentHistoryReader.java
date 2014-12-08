@@ -25,26 +25,22 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 public interface DocumentHistoryReader {
 
     /**
-     * Retrieve a page of {@link LogEntry} for the history of the input
-     * {@link DocumentModel}
+     * Retrieve a page of {@link LogEntry} for the history of the input {@link DocumentModel}
      *
      * @param doc
      * @param pageIndex
      * @param pageSize
      * @return
      */
-    List<LogEntry> getDocumentHistory(DocumentModel doc, long pageIndex,
-            long pageSize);
+    List<LogEntry> getDocumentHistory(DocumentModel doc, long pageIndex, long pageSize);
 
     /**
-     * Retrieve the {@link PageProvider} of {@link LogEntry} for the history of
-     * the input {@link DocumentModel}
+     * Retrieve the {@link PageProvider} of {@link LogEntry} for the history of the input {@link DocumentModel}
      *
      * @param doc
      * @param pageIndex
      * @param pageSize
      * @return
      */
-    PageProvider<LogEntry> getPageProvider(DocumentModel doc, long pageIndex,
-            long pageSize);
+    PageProvider<LogEntry> getPageProvider(DocumentModel doc, long pageIndex, long pageSize);
 }

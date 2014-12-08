@@ -155,8 +155,7 @@ public class CommandInfo {
         }
         for (PackageInfo packageInfo : packages) {
             sb.append("\n\t"
-                    + new ReflectionToStringBuilder(packageInfo,
-                            ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames(
+                    + new ReflectionToStringBuilder(packageInfo, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames(
                             new String[] { "description" }).toString());
         }
         if (exitCode != 0 || debug) {

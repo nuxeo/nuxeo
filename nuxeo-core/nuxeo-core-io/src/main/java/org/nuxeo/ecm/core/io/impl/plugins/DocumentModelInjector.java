@@ -33,27 +33,24 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
  */
 // TODO: improve it ->
 // modify core session to add a batch create method and use it
-@SuppressWarnings({"ThrowableInstanceNeverThrown"})
+@SuppressWarnings({ "ThrowableInstanceNeverThrown" })
 public class DocumentModelInjector extends AbstractDocumentModelWriter {
 
     private static final Log log = LogFactory.getLog(DocumentModelInjector.class);
 
-   /**
-    *
-    * @param session the session to the repository where to write
-    * @param parentPath where to write the tree. this document will be used as
-    *            the parent of all top level documents passed as input. Note
-    *            that you may have
-    */
-   public DocumentModelInjector(CoreSession session, String parentPath) {
-       super(session, parentPath);
+    /**
+     * @param session the session to the repository where to write
+     * @param parentPath where to write the tree. this document will be used as the parent of all top level documents
+     *            passed as input. Note that you may have
+     */
+    public DocumentModelInjector(CoreSession session, String parentPath) {
+        super(session, parentPath);
 
-   }
+    }
 
-   public DocumentModelInjector(CoreSession session, String parentPath,
-           int saveInterval) {
-       super(session, parentPath, saveInterval);
-   }
+    public DocumentModelInjector(CoreSession session, String parentPath, int saveInterval) {
+        super(session, parentPath, saveInterval);
+    }
 
     @Override
     public DocumentTranslationMap write(ExportedDocument xdoc) throws IOException {
@@ -66,14 +63,11 @@ public class DocumentModelInjector extends AbstractDocumentModelWriter {
         try {
             DocumentModel doc = createDocument(xdoc, path);
             DocumentLocation source = xdoc.getSourceLocation();
-            DocumentTranslationMap map = new DocumentTranslationMapImpl(
-                    source.getServerName(), doc.getRepositoryName());
+            DocumentTranslationMap map = new DocumentTranslationMapImpl(source.getServerName(), doc.getRepositoryName());
             map.put(source.getDocRef(), doc.getRef());
             return map;
         } catch (ClientException e) {
-            IOException ioe = new IOException(
-                    "Failed to import document in repository: "
-                            + e.getMessage());
+            IOException ioe = new IOException("Failed to import document in repository: " + e.getMessage());
             ioe.setStackTrace(e.getStackTrace());
             log.error(e, e);
             return null;

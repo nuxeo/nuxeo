@@ -50,12 +50,9 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core",
-        "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.picture.convert" })
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.mimetype.api",
+        "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.platform.picture.api",
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.picture.convert" })
 public class TestImagingAdapter {
 
     private static final String JPEG_IMAGE = "iptc_sample.jpg";
@@ -66,16 +63,13 @@ public class TestImagingAdapter {
     @Test
     public void testAdapter() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder = session.createDocumentModel(
-                root.getPathAsString(), "document", "Folder");
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "document", "Folder");
         folder.setProperty("dublincore", "description", "toto");
         folder = session.createDocument(folder);
 
-        DocumentModel child = session.createDocumentModel(
-                folder.getPathAsString(), "fils" + 1, "Picture");
+        DocumentModel child = session.createDocumentModel(folder.getPathAsString(), "fils" + 1, "Picture");
         child = session.createDocument(child);
-        child.setProperty("dublincore", "description", "fils" + 1
-                + " description");
+        child.setProperty("dublincore", "description", "fils" + 1 + " description");
         child.setProperty("dublincore", "valid", Calendar.getInstance());
 
         PictureResourceAdapter adapter = child.getAdapter(PictureResourceAdapter.class);
@@ -83,8 +77,7 @@ public class TestImagingAdapter {
 
         for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = new FileBlob(
-                    ImagingResourcesHelper.getFileFromPath(path));
+            Blob blob = new FileBlob(ImagingResourcesHelper.getFileFromPath(path));
             assertNotNull(blob);
 
             blob.setFilename(filename);
@@ -96,8 +89,7 @@ public class TestImagingAdapter {
             session.save();
 
             adapter = child.getAdapter(PictureResourceAdapter.class);
-            DocumentModel documentModel = session.getChildren(folder.getRef()).get(
-                    0);
+            DocumentModel documentModel = session.getChildren(folder.getRef()).get(0);
 
             MultiviewPicture multiview = documentModel.getAdapter(MultiviewPicture.class);
             assertEquals(child.getRef(), documentModel.getRef());
@@ -112,18 +104,13 @@ public class TestImagingAdapter {
 
             PictureView pictureView = adaptedChild.getView("Thumbnail");
             assertNotNull(pictureView);
-            String computedFilename = FilenameUtils.getBaseName(filename) + "."
-                    + getConversionFormat();
-            assertEquals("Thumbnail_" + computedFilename,
-                    pictureView.getFilename());
-            assertEquals("Thumbnail_" + computedFilename,
-                    pictureView.getBlob().getFilename());
+            String computedFilename = FilenameUtils.getBaseName(filename) + "." + getConversionFormat();
+            assertEquals("Thumbnail_" + computedFilename, pictureView.getFilename());
+            assertEquals("Thumbnail_" + computedFilename, pictureView.getBlob().getFilename());
 
             pictureView = multiview.getView("Thumbnail");
-            assertEquals("Thumbnail_" + computedFilename,
-                    pictureView.getFilename());
-            assertEquals("Thumbnail_" + computedFilename,
-                    pictureView.getBlob().getFilename());
+            assertEquals("Thumbnail_" + computedFilename, pictureView.getFilename());
+            assertEquals("Thumbnail_" + computedFilename, pictureView.getBlob().getFilename());
 
             /*
              * Test original
@@ -132,13 +119,11 @@ public class TestImagingAdapter {
             pictureView = adaptedChild.getView("Original");
             assertNotNull(pictureView);
             assertEquals("Original_" + filename, pictureView.getFilename());
-            assertEquals("Original_" + filename,
-                    pictureView.getBlob().getFilename());
+            assertEquals("Original_" + filename, pictureView.getBlob().getFilename());
 
             pictureView = multiview.getView("Original");
             assertEquals("Original_" + filename, pictureView.getFilename());
-            assertEquals("Original_" + filename,
-                    pictureView.getBlob().getFilename());
+            assertEquals("Original_" + filename, pictureView.getBlob().getFilename());
             assertNotNull(pictureView);
         }
     }
@@ -154,8 +139,7 @@ public class TestImagingAdapter {
         String filename = JPEG_IMAGE;
         String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
 
-        FileInputStream in = new FileInputStream(
-                ImagingResourcesHelper.getFileFromPath(path));
+        FileInputStream in = new FileInputStream(ImagingResourcesHelper.getFileFromPath(path));
         try {
             // blob that can be read only once, like HttpServletRequest streams
             Blob blob = new InputStreamBlob(in);
@@ -171,7 +155,6 @@ public class TestImagingAdapter {
     }
 
     protected String getConversionFormat() {
-        return Framework.getLocalService(ImagingService.class).getConfigurationValue(
-                "conversionFormat", "jpg");
+        return Framework.getLocalService(ImagingService.class).getConfigurationValue("conversionFormat", "jpg");
     }
 }

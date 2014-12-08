@@ -69,21 +69,17 @@ public class Select2DirectoryActionsBean implements Serializable {
         this.directoryName = directoryName;
     }
 
-    public DocumentModel getCreationDirectoryEntry(String directoryName)
-            throws ClientException {
-        if (newDirectoryEntry == null
-                || (directoryName != null && !directoryName.equals(getDirectoryName()))) {
+    public DocumentModel getCreationDirectoryEntry(String directoryName) throws ClientException {
+        if (newDirectoryEntry == null || (directoryName != null && !directoryName.equals(getDirectoryName()))) {
             setDirectoryName(directoryName);
             DirectoryService dirService = DirectoryHelper.getDirectoryService();
             String schema = dirService.getDirectorySchema(directoryName);
-            newDirectoryEntry = BaseSession.createEntryModel(null, schema,
-                    null, null);
+            newDirectoryEntry = BaseSession.createEntryModel(null, schema, null, null);
         }
         return newDirectoryEntry;
     }
 
-    public String getCreationDirectoryEntryLayout(String directoryName)
-            throws ClientException {
+    public String getCreationDirectoryEntryLayout(String directoryName) throws ClientException {
         DirectoryUI currentDirectoryInfo = directoryUIManager.getDirectoryInfo(directoryName);
         if (currentDirectoryInfo != null) {
             return currentDirectoryInfo.getLayout();
@@ -102,9 +98,7 @@ public class Select2DirectoryActionsBean implements Serializable {
             Object id = newDirectoryEntry.getProperty(schema, idField);
             dirSession = dirService.open(dirName);
             if (id instanceof String && dirSession.hasEntry((String) id)) {
-                facesMessages.addToControl(
-                        "suggestAddNewDirectoryEntry",
-                        StatusMessage.Severity.ERROR,
+                facesMessages.addToControl("suggestAddNewDirectoryEntry", StatusMessage.Severity.ERROR,
                         messages.get("vocabulary.entry.identifier.already.exists"));
                 return;
             }
@@ -113,8 +107,7 @@ public class Select2DirectoryActionsBean implements Serializable {
             reset();
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get("vocabulary.entry.added"));
+            facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.added"));
         } catch (DirectoryException e) {
             throw new ClientException(e);
         } finally {

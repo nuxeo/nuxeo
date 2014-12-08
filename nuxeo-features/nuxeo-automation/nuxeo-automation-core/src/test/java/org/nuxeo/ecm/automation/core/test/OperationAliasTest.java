@@ -60,9 +60,8 @@ public class OperationAliasTest {
     AutomationService service;
 
     /**
-     * Call an operation which has a parameter with an alias. Don't give the
-     * name of the parameter but its alias and check it is resolved thanks its
-     * alias.
+     * Call an operation which has a parameter with an alias. Don't give the name of the parameter but its alias and
+     * check it is resolved thanks its alias.
      *
      * @since 5.9.2
      */
@@ -99,8 +98,7 @@ public class OperationAliasTest {
         OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("paramName", HELLO_WORLD);
-        Object result = service.run(ctx, ParamNameWithAliasOperation
-                .ALIAS_OP, params);
+        Object result = service.run(ctx, ParamNameWithAliasOperation.ALIAS_OP, params);
         assertNotNull(result);
     }
 

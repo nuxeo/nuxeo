@@ -39,11 +39,9 @@ public interface TrashService {
      * Is at least one doc deletable according to its container?
      *
      * @param docs the documents
-     * @return {@code true} if one doc is in a folder that allows its children
-     *         to be deleted
+     * @return {@code true} if one doc is in a folder that allows its children to be deleted
      */
-    boolean checkDeletePermOnParents(List<DocumentModel> docs)
-            throws ClientException;
+    boolean checkDeletePermOnParents(List<DocumentModel> docs) throws ClientException;
 
     /**
      * Is at least one doc deletable?
@@ -53,21 +51,19 @@ public interface TrashService {
      * @param checkProxies {@code true} to count proxies as non-deletable
      * @return {@code true} if at least one doc is deletable
      */
-    boolean canDelete(List<DocumentModel> docs, Principal principal,
-            boolean checkProxies) throws ClientException;
+    boolean canDelete(List<DocumentModel> docs, Principal principal, boolean checkProxies) throws ClientException;
 
     /**
      * Are all documents purgeable/undeletable?
      * <p>
-     * Documents need to be in the deleted lifecycle state for this to be true,
-     * in addition to the standard permission checks.
+     * Documents need to be in the deleted lifecycle state for this to be true, in addition to the standard permission
+     * checks.
      *
      * @param docs the documents
      * @param principal the current user (to check locks)
      * @return {@code true} if the documents are purgeable/undeletable
      */
-    boolean canPurgeOrUndelete(List<DocumentModel> docs, Principal principal)
-            throws ClientException;
+    boolean canPurgeOrUndelete(List<DocumentModel> docs, Principal principal) throws ClientException;
 
     /**
      * Gets the trash info for a list of documents.
@@ -75,29 +71,26 @@ public interface TrashService {
      * @param docs the documents
      * @param principal the current user (to check locks)
      * @param checkProxies {@code true} to count proxies as non-deletable
-     * @param checkDeleted {@code true} if documents have to be in the deleted
-     *            state to be considered (otherwise forbidden)
+     * @param checkDeleted {@code true} if documents have to be in the deleted state to be considered (otherwise
+     *            forbidden)
      * @return the trash info
      */
-    TrashInfo getTrashInfo(List<DocumentModel> docs, Principal principal,
-            boolean checkProxies, boolean checkDeleted) throws ClientException;
+    TrashInfo getTrashInfo(List<DocumentModel> docs, Principal principal, boolean checkProxies, boolean checkDeleted)
+            throws ClientException;
 
     /**
      * Gets the closest document's ancestor above all the paths.
      * <p>
-     * This is used to find what safe document to redirect to when deleting
-     * some.
+     * This is used to find what safe document to redirect to when deleting some.
      *
      * @param doc the document
      * @param paths the paths
      * @return the closer document above doc and above all the paths
      */
-    DocumentModel getAboveDocument(DocumentModel doc, Set<Path> paths)
-            throws ClientException;
+    DocumentModel getAboveDocument(DocumentModel doc, Set<Path> paths) throws ClientException;
 
     /**
-     * Moves documents to the trash, or directly deletes them if their lifecycle
-     * does not allow trash use.
+     * Moves documents to the trash, or directly deletes them if their lifecycle does not allow trash use.
      *
      * @param docs the documents to trash
      */
@@ -109,8 +102,7 @@ public interface TrashService {
      * @param session the session
      * @param docRefs the documents to purge
      */
-    void purgeDocuments(CoreSession session, List<DocumentRef> docRefs)
-            throws ClientException;
+    void purgeDocuments(CoreSession session, List<DocumentRef> docRefs) throws ClientException;
 
     /**
      * Undeletes documents (and ancestors if needed to make them visible).
@@ -118,14 +110,13 @@ public interface TrashService {
      * Also fires async events to undelete the children.
      *
      * @param docs the documents to undelete
-     * @return the set of ancestors whose children have been undeleted (for UI
-     *         notification)
+     * @return the set of ancestors whose children have been undeleted (for UI notification)
      */
-    Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs)
-            throws ClientException;
+    Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs) throws ClientException;
 
     /**
      * Get all documents from the trash of the current document.
+     *
      * @since 7.1
      * @param currentDoc The current/parent document of trash document.
      * @return All documents in the trash of the current document.

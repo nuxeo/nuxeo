@@ -51,23 +51,19 @@ import org.xml.sax.SAXException;
  * <p>
  * Contexts are registered like this:
  * <p>
- * First, if there is a {@code jetty.xml} config file, the contexts defined
- * there are registered first; if there is no {@code jetty.xml}, a log context
- * will be create programatically and registered first.
+ * First, if there is a {@code jetty.xml} config file, the contexts defined there are registered first; if there is no
+ * {@code jetty.xml}, a log context will be create programatically and registered first.
  * <p>
- * Second an empty collection context is registered. Here will be registered all
- * regular war contexts.
+ * Second an empty collection context is registered. Here will be registered all regular war contexts.
  * <p>
- * Third, the root collection is registered. This way all requests not handled
- * by regular wars are directed to the root war, which usually is the webengine
- * war in a nxserver application.
+ * Third, the root collection is registered. This way all requests not handled by regular wars are directed to the root
+ * war, which usually is the webengine war in a nxserver application.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JettyComponent extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.runtime.server");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.server");
 
     public static final String XP_WEB_APP = "webapp";
 
@@ -126,8 +122,7 @@ public class JettyComponent extends DefaultComponent {
                 }
             }
         } else {
-            File file = new File(Environment.getDefault().getConfig(),
-                    "jetty.xml");
+            File file = new File(Environment.getDefault().getConfig(), "jetty.xml");
             if (file.isFile()) {
                 try {
                     cfg = file.toURI().toURL();
@@ -171,8 +166,7 @@ public class JettyComponent extends DefaultComponent {
             File logDir = Environment.getDefault().getLog();
             logDir.mkdirs();
             File logFile = new File(logDir, "jetty.log");
-            NCSARequestLog requestLog = new NCSARequestLog(
-                    logFile.getAbsolutePath());
+            NCSARequestLog requestLog = new NCSARequestLog(logFile.getAbsolutePath());
             requestLogHandler.setRequestLog(requestLog);
             // handlers = new Handler[] {contexts, new DefaultHandler(),
             // requestLogHandler};
@@ -220,8 +214,7 @@ public class JettyComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_WEB_APP.equals(extensionPoint)) {
             File home = Environment.getDefault().getHome();
             WebApplication app = (WebApplication) contribution;
@@ -248,8 +241,7 @@ public class JettyComponent extends DefaultComponent {
                 File file = new File(home, root);
                 ctx.setDescriptor(file.getAbsolutePath());
             }
-            File defWebXml = new File(Environment.getDefault().getConfig(),
-                    "default-web.xml");
+            File defWebXml = new File(Environment.getDefault().getConfig(), "default-web.xml");
             if (defWebXml.isFile()) {
                 ctx.setDefaultsDescriptor(defWebXml.getAbsolutePath());
             }
@@ -283,8 +275,7 @@ public class JettyComponent extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_WEB_APP.equals(extensionPoint)) {
 
         } else if (XP_FILTER.equals(extensionPoint)) {
@@ -359,11 +350,8 @@ public class JettyComponent extends DefaultComponent {
                     name = name.substring(0, name.length() - 4);
                     boolean isRoot = "root".equals(name);
                     String ctxPath = isRoot ? "/" : basePath + "/" + name;
-                    WebAppContext ctx = new WebAppContext(
-                            root.getAbsolutePath(), ctxPath);
-                    ctx.setConfigurations(new Configuration[] {
-                            new WebInfConfiguration(),
-                            new WebXmlConfiguration() });
+                    WebAppContext ctx = new WebAppContext(root.getAbsolutePath(), ctxPath);
+                    ctx.setConfigurations(new Configuration[] { new WebInfConfiguration(), new WebXmlConfiguration() });
                     if (isRoot) {
                         server.addHandler(ctx);
                     } else {

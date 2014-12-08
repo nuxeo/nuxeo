@@ -147,8 +147,8 @@ public class AnnotationPopupEventListener implements EventListener {
         }
     };
 
-    public static AnnotationPopupEventListener getAnnotationPopupEventListener(
-            Annotation annotation, AnnotationController controller) {
+    public static AnnotationPopupEventListener getAnnotationPopupEventListener(Annotation annotation,
+            AnnotationController controller) {
         AnnotationPopupEventListener listener = LISTENERS.get(annotation);
         if (listener == null) {
             listener = new AnnotationPopupEventListener(annotation, controller);
@@ -158,8 +158,7 @@ public class AnnotationPopupEventListener implements EventListener {
         return listener;
     }
 
-    private AnnotationPopupEventListener(Annotation annotation,
-            AnnotationController controller) {
+    private AnnotationPopupEventListener(Annotation annotation, AnnotationController controller) {
         this.annotation = annotation;
         this.controller = controller;
         annotationPopup = new AnnotationPopup();
@@ -168,14 +167,12 @@ public class AnnotationPopupEventListener implements EventListener {
 
     private void onEvent(Event event) {
         if (annotation == null || controller == null || !enabled) {
-            AnnotationFrameApplication.getMainEventListener().onBrowserEvent(
-                    event);
+            AnnotationFrameApplication.getMainEventListener().onBrowserEvent(event);
             return;
         }
         if (event.getTypeInt() == Event.ONMOUSEOVER) {
             if (!annotationPopup.isShown()) {
-                annotationPopup.setPopupPosition(event.getClientX()
-                        + Window.getScrollLeft(), event.getClientY()
+                annotationPopup.setPopupPosition(event.getClientX() + Window.getScrollLeft(), event.getClientY()
                         + Window.getScrollTop());
                 annotationPopup.show();
             }

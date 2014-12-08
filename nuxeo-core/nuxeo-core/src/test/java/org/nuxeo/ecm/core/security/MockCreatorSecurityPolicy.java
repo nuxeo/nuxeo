@@ -22,17 +22,14 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
- * Security policy used for tests that grants every permission to the author of
- * the document.
+ * Security policy used for tests that grants every permission to the author of the document.
  *
  * @author Anahide Tchertchian
- *
  */
 public class MockCreatorSecurityPolicy extends AbstractSecurityPolicy {
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp,
-            Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
         String creator = null;

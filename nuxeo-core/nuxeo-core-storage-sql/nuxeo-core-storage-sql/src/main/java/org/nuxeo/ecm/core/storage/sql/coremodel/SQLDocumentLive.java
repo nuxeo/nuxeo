@@ -61,8 +61,7 @@ public class SQLDocumentLive implements SQLDocument {
      */
     protected boolean readonly;
 
-    protected SQLDocumentLive(Node node, ComplexType type, SQLSession session,
-            boolean readonly) {
+    protected SQLDocumentLive(Node node, ComplexType type, SQLSession session, boolean readonly) {
         this.node = node;
         this.type = type;
         this.session = session;
@@ -151,8 +150,7 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     /**
-     * Reads into the {@link DocumentPart} the values from this
-     * {@link SQLDocument}.
+     * Reads into the {@link DocumentPart} the values from this {@link SQLDocument}.
      */
     @Override
     public void readDocumentPart(DocumentPart dp) throws PropertyException {
@@ -160,14 +158,12 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
-    public Map<String, Serializable> readPrefetch(ComplexType complexType,
-            Set<String> xpaths) throws PropertyException {
+    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) throws PropertyException {
         return session.readPrefetch(getNode(), complexType, xpaths);
     }
 
     /**
-     * Writes into this {@link SQLDocument} the values from the
-     * {@link DocumentPart}.
+     * Writes into this {@link SQLDocument} the values from the {@link DocumentPart}.
      */
     @Override
     public void writeDocumentPart(DocumentPart dp) throws PropertyException {
@@ -194,8 +190,7 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
-    public void setPropertyValue(String name, Serializable value)
-            throws DocumentException {
+    public void setPropertyValue(String name, Serializable value) throws DocumentException {
         try {
             getNode().setSimpleProperty(name, value);
         } catch (StorageException e) {
@@ -207,20 +202,16 @@ public class SQLDocumentLive implements SQLDocument {
 
     static {
         systemPropNameMap = new HashMap<String, String>();
-        systemPropNameMap.put(FULLTEXT_JOBID_SYS_PROP,
-                Model.FULLTEXT_JOBID_PROP);
+        systemPropNameMap.put(FULLTEXT_JOBID_SYS_PROP, Model.FULLTEXT_JOBID_PROP);
     }
 
     @Override
-    public void setSystemProp(String name, Serializable value)
-            throws DocumentException {
+    public void setSystemProp(String name, Serializable value) throws DocumentException {
         String propertyName;
         if (name.startsWith(SIMPLE_TEXT_SYS_PROP)) {
-            propertyName = name.replace(SIMPLE_TEXT_SYS_PROP,
-                    Model.FULLTEXT_SIMPLETEXT_PROP);
+            propertyName = name.replace(SIMPLE_TEXT_SYS_PROP, Model.FULLTEXT_SIMPLETEXT_PROP);
         } else if (name.startsWith(BINARY_TEXT_SYS_PROP)) {
-            propertyName = name.replace(BINARY_TEXT_SYS_PROP,
-                    Model.FULLTEXT_BINARYTEXT_PROP);
+            propertyName = name.replace(BINARY_TEXT_SYS_PROP, Model.FULLTEXT_BINARYTEXT_PROP);
         } else {
             propertyName = systemPropNameMap.get(name);
         }
@@ -232,8 +223,7 @@ public class SQLDocumentLive implements SQLDocument {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends Serializable> T getSystemProp(String name, Class<T> type)
-            throws DocumentException {
+    public <T extends Serializable> T getSystemProp(String name, Class<T> type) throws DocumentException {
         String propertyName = systemPropNameMap.get(name);
         if (propertyName == null) {
             throw new DocumentException("Unknown system property: " + name);
@@ -281,8 +271,7 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
-    public void setCurrentLifeCycleState(String state)
-            throws LifeCycleException {
+    public void setCurrentLifeCycleState(String state) throws LifeCycleException {
         try {
             setPropertyValue(Model.MISC_LIFECYCLE_STATE_PROP, state);
         } catch (DocumentException e) {
@@ -291,8 +280,7 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
-    public void followTransition(String transition)
-            throws LifeCycleException {
+    public void followTransition(String transition) throws LifeCycleException {
         LifeCycleService service = NXCore.getLifeCycleService();
         if (service == null) {
             throw new LifeCycleException("LifeCycleService not available");
@@ -301,8 +289,7 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
-    public Collection<String> getAllowedStateTransitions()
-            throws LifeCycleException {
+    public Collection<String> getAllowedStateTransitions() throws LifeCycleException {
         LifeCycleService service = NXCore.getLifeCycleService();
         if (service == null) {
             throw new LifeCycleException("LifeCycleService not available");
@@ -366,8 +353,7 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
-    public Document checkIn(String label, String checkinComment)
-            throws DocumentException {
+    public Document checkIn(String label, String checkinComment) throws DocumentException {
         return session.checkIn(getNode(), label, checkinComment);
     }
 
@@ -424,8 +410,7 @@ public class SQLDocumentLive implements SQLDocument {
     @Override
     public void restore(Document version) throws DocumentException {
         if (!version.isVersion()) {
-            throw new DocumentException("Cannot restore a non-version: "
-                    + version);
+            throw new DocumentException("Cannot restore a non-version: " + version);
         }
         session.restore(getNode(), ((SQLDocument) version).getNode());
     }
@@ -504,8 +489,7 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
-    public Document addChild(String name, String typeName)
-            throws DocumentException {
+    public Document addChild(String name, String typeName) throws DocumentException {
         if (!isFolder()) {
             throw new IllegalArgumentException("Not a folder");
         }
@@ -516,8 +500,7 @@ public class SQLDocumentLive implements SQLDocument {
     public void orderBefore(String src, String dest) throws DocumentException {
         SQLDocument srcDoc = (SQLDocument) getChild(src);
         if (srcDoc == null) {
-            throw new DocumentException("Document " + this + " has no child: "
-                    + src);
+            throw new DocumentException("Document " + this + " has no child: " + src);
         }
         SQLDocument destDoc;
         if (dest == null) {
@@ -525,12 +508,10 @@ public class SQLDocumentLive implements SQLDocument {
         } else {
             destDoc = (SQLDocument) getChild(dest);
             if (destDoc == null) {
-                throw new DocumentException("Document " + this
-                        + " has no child: " + dest);
+                throw new DocumentException("Document " + this + " has no child: " + dest);
             }
         }
-        session.orderBefore(getNode(), srcDoc.getNode(), destDoc == null ? null
-                : destDoc.getNode());
+        session.orderBefore(getNode(), srcDoc.getNode(), destDoc == null ? null : destDoc.getNode());
     }
 
     @Override
@@ -568,8 +549,7 @@ public class SQLDocumentLive implements SQLDocument {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + getName() + ',' + getUUID()
-                + ')';
+        return getClass().getSimpleName() + '(' + getName() + ',' + getUUID() + ')';
     }
 
     @Override

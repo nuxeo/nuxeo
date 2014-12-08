@@ -70,8 +70,7 @@ public class TestBlobHolderPersistence {
             if (file.getName().startsWith("index.html")) {
                 mainFileFound = true;
             } else {
-                assertTrue(new FileBlob(file).getString().startsWith(
-                        "FileContent_"));
+                assertTrue(new FileBlob(file).getString().startsWith("FileContent_"));
             }
 
         }

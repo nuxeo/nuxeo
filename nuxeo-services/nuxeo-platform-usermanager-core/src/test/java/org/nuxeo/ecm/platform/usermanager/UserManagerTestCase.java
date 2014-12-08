@@ -19,8 +19,7 @@ package org.nuxeo.ecm.platform.usermanager;
 
 import org.nuxeo.ecm.platform.usermanager.local.configuration.UserManagerMultiTenantTestCase;
 
-public abstract class UserManagerTestCase extends
-        UserManagerMultiTenantTestCase {
+public abstract class UserManagerTestCase extends UserManagerMultiTenantTestCase {
 
     @Override
     public void setUp() throws Exception {
@@ -28,9 +27,6 @@ public abstract class UserManagerTestCase extends
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
 
-        
-        
-        
     }
 
     @Override

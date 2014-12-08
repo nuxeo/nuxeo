@@ -130,24 +130,19 @@ public interface DBSRepository extends Repository {
      * @param key the key
      * @param value the value
      * @param ids the set which receives the documents ids
-     * @param proxyTargets returns a map of proxy to target among the documents
-     *            found
-     * @param targetProxies returns a map of target to proxies among the
-     *            document found
+     * @param proxyTargets returns a map of proxy to target among the documents found
+     * @param targetProxies returns a map of target to proxies among the document found
      */
-    void queryKeyValueArray(String key, Object value, Set<String> ids,
-            Map<String, String> proxyTargets,
+    void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies);
 
     /**
-     * Queries the repository to check if there are documents having key =
-     * value.
+     * Queries the repository to check if there are documents having key = value.
      *
      * @param key the key
      * @param value the value
      * @param ignored a set of document ids that should not be considered
-     * @return {@code true} if the query matches at least one document,
-     *         {@code false} if the query matches nothing
+     * @return {@code true} if the query matches at least one document, {@code false} if the query matches nothing
      */
     boolean queryKeyValuePresence(String key, String value, Set<String> ignored);
 
@@ -159,21 +154,15 @@ public interface DBSRepository extends Repository {
      * @param orderByClause an ORDER BY clause
      * @param limit the limit on the number of documents to return
      * @param offset the offset in the list of documents to return
-     * @param countUpTo if {@code -1}, count the total size without
-     *            offset/limit.<br>
-     *            If {@code 0}, don't count the total size, set it to {@code -1}
-     *            .<br>
-     *            If {@code n}, count the total number if there are less than n
-     *            documents otherwise set the total size to {@code -2}.
+     * @param countUpTo if {@code -1}, count the total size without offset/limit.<br>
+     *            If {@code 0}, don't count the total size, set it to {@code -1} .<br>
+     *            If {@code n}, count the total number if there are less than n documents otherwise set the total size
+     *            to {@code -2}.
      * @param deepCopy whether returned state should be a copy
-     * @param fulltextScore whether returned state should include the fulltext
-     *            score
-     * @return a partial list containing the limited documents required, and the
-     *         total size according to countUpTo
+     * @param fulltextScore whether returned state should include the fulltext score
+     * @return a partial list containing the limited documents required, and the total size according to countUpTo
      */
-    PartialList<State> queryAndFetch(Expression expression,
-            DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, boolean deepCopy,
-            boolean fulltextScore);
+    PartialList<State> queryAndFetch(Expression expression, DBSExpressionEvaluator evaluator,
+            OrderByClause orderByClause, int limit, int offset, int countUpTo, boolean deepCopy, boolean fulltextScore);
 
 }

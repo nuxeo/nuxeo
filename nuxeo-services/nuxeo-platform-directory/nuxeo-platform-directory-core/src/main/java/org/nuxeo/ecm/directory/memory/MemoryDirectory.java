@@ -34,7 +34,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Florent Guillaume
- *
  */
 public class MemoryDirectory extends AbstractDirectory {
 
@@ -52,8 +51,7 @@ public class MemoryDirectory extends AbstractDirectory {
 
     protected boolean isReadOnly = false;
 
-    public MemoryDirectory(String name, String schema, String idField,
-            String passwordField) throws DirectoryException {
+    public MemoryDirectory(String name, String schema, String idField, String passwordField) throws DirectoryException {
         this(name, schema, new HashSet<String>(), idField, passwordField);
 
         SchemaManager sm = getSchemaManager();
@@ -75,8 +73,7 @@ public class MemoryDirectory extends AbstractDirectory {
         return sm;
     }
 
-    public MemoryDirectory(String name, String schemaName, Set<String> schemaSet,
-            String idField, String passwordField) {
+    public MemoryDirectory(String name, String schemaName, Set<String> schemaSet, String idField, String passwordField) {
         super(name);
         this.schemaName = schemaName;
         this.schemaSet = schemaSet;
@@ -125,7 +122,7 @@ public class MemoryDirectory extends AbstractDirectory {
     }
 
     public boolean isReadOnly() {
-        return isReadOnly ;
+        return isReadOnly;
     }
 
     public void setReadOnly(boolean isReadOnly) {

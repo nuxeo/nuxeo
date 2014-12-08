@@ -48,12 +48,12 @@ public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
 
     protected Long id;
 
-    public NuxeoOAuthServiceProvider(String requestTokenURL,
-            String userAuthorizationURL, String accessTokenURL) {
+    public NuxeoOAuthServiceProvider(String requestTokenURL, String userAuthorizationURL, String accessTokenURL) {
         super(requestTokenURL, userAuthorizationURL, accessTokenURL);
     }
 
-    public NuxeoOAuthServiceProvider(Long id, String gadgetUrl, String serviceName, String consumerKey, String consumerSecret, String publicKey) {
+    public NuxeoOAuthServiceProvider(Long id, String gadgetUrl, String serviceName, String consumerKey,
+            String consumerSecret, String publicKey) {
         super(null, null, null);
         this.id = id;
         this.gadgetUrl = gadgetUrl;
@@ -70,7 +70,8 @@ public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
         String userAuthorizationURL = (String) entry.getProperty(SCHEMA, "userAuthorizationURL");
         String accessTokenURL = (String) entry.getProperty(SCHEMA, "accessTokenURL");
 
-        NuxeoOAuthServiceProvider provider = new NuxeoOAuthServiceProvider(requestTokenURL, userAuthorizationURL, accessTokenURL);
+        NuxeoOAuthServiceProvider provider = new NuxeoOAuthServiceProvider(requestTokenURL, userAuthorizationURL,
+                accessTokenURL);
 
         provider.consumerKey = (String) entry.getProperty(SCHEMA, "consumerKey");
         provider.consumerSecret = (String) entry.getProperty(SCHEMA, "consumerSecret");

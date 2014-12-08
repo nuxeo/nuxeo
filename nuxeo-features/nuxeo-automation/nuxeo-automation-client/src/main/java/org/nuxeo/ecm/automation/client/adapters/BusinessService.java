@@ -18,9 +18,8 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
 
 /**
- * This automation client business service provides access to Business
- * operations @{link BusinessCreateOperation} and @{link
- * BusinessUpdateOperation}
+ * This automation client business service provides access to Business operations @{link BusinessCreateOperation} and
+ * @{link BusinessUpdateOperation}
  *
  * @since 5.7
  */
@@ -58,8 +57,8 @@ public class BusinessService<T> {
     @SuppressWarnings("unchecked")
     public T create(T o, String name, String parentPath) throws IOException {
         checkMarshaller(o);
-        return (T) session.newRequest("Business.BusinessCreateOperation").setInput(
-                o).set("name", name).set("parentPath", parentPath).execute();
+        return (T) session.newRequest("Business.BusinessCreateOperation").setInput(o).set("name", name).set(
+                "parentPath", parentPath).execute();
     }
 
     /**
@@ -70,8 +69,7 @@ public class BusinessService<T> {
      */
     public T update(T o) throws IOException {
         checkMarshaller(o);
-        return (T) session.newRequest("Business.BusinessUpdateOperation").setInput(
-                o).execute();
+        return (T) session.newRequest("Business.BusinessUpdateOperation").setInput(o).execute();
     }
 
     /**
@@ -81,7 +79,6 @@ public class BusinessService<T> {
      * @return the pojo returned by the server
      */
     public T fetch(T o) throws IOException {
-        return (T) session.newRequest("Business.BusinessFetchOperation").setInput(
-                o).execute();
+        return (T) session.newRequest("Business.BusinessFetchOperation").setInput(o).execute();
     }
 }

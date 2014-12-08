@@ -49,8 +49,7 @@ public class SQLDirectoryDescriptor {
 
     protected static final char DEFAULT_CHARACTER_SEPARATOR = ',';
 
-    private static final String[] SCRIPT_POLICIES = { "never",
-            "on_missing_columns", "always", };
+    private static final String[] SCRIPT_POLICIES = { "never", "on_missing_columns", "always", };
 
     private static final String DEFAULT_POLICY = "never";
 
@@ -120,7 +119,7 @@ public class SQLDirectoryDescriptor {
 
     @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
     public PermissionDescriptor[] permissions = null;
-    
+
     @XNode("@remove")
     private boolean remove = false;
 
@@ -207,17 +206,14 @@ public class SQLDirectoryDescriptor {
     }
 
     public char getDataFileCharacterSeparator() {
-        if (dataFileCharacterSeparator == null
-                || dataFileCharacterSeparator.length() == 0) {
-            log.info("Character separator not well set will "
-                    + "take the default value, \""
+        if (dataFileCharacterSeparator == null || dataFileCharacterSeparator.length() == 0) {
+            log.info("Character separator not well set will " + "take the default value, \""
                     + DEFAULT_CHARACTER_SEPARATOR + "\"");
             return DEFAULT_CHARACTER_SEPARATOR;
         }
 
         if (dataFileCharacterSeparator.length() > 1) {
-            log.warn("More than one character found for character separator, "
-                    + "will take the first one \""
+            log.warn("More than one character found for character separator, " + "will take the first one \""
                     + dataFileCharacterSeparator.charAt(0) + "\"");
         }
 
@@ -241,8 +237,7 @@ public class SQLDirectoryDescriptor {
     }
 
     @XNode("createTablePolicy")
-    public void setCreateTablePolicy(String createTablePolicy)
-            throws DirectoryException {
+    public void setCreateTablePolicy(String createTablePolicy) throws DirectoryException {
         if (createTablePolicy == null) {
             this.createTablePolicy = DEFAULT_POLICY;
             return;
@@ -256,10 +251,8 @@ public class SQLDirectoryDescriptor {
             }
         }
         if (!validPolicy) {
-            throw new DirectoryException(
-                    "invalid value for createTablePolicy: " + createTablePolicy
-                            + ". It should be one of 'never', "
-                            + "'on_missing_columns',  or 'always'.");
+            throw new DirectoryException("invalid value for createTablePolicy: " + createTablePolicy
+                    + ". It should be one of 'never', " + "'on_missing_columns',  or 'always'.");
         }
         this.createTablePolicy = createTablePolicy;
     }
@@ -268,8 +261,7 @@ public class SQLDirectoryDescriptor {
     public void setSubstringMatchType(String substringMatchType) {
         if (substringMatchType != null) {
             try {
-                this.substringMatchType = Enum.valueOf(
-                        SubstringMatchType.class, substringMatchType);
+                this.substringMatchType = Enum.valueOf(SubstringMatchType.class, substringMatchType);
             } catch (IllegalArgumentException iae) {
                 log.error("Invalid substring match type: " + substringMatchType
                         + ". Valid options: subinitial, subfinal, subany");
@@ -295,8 +287,7 @@ public class SQLDirectoryDescriptor {
     }
 
     public boolean isAutoincrementIdField() {
-        return autoincrementIdField == null ? AUTO_INCREMENT_ID_FIELD_DEFAULT
-                : autoincrementIdField.booleanValue();
+        return autoincrementIdField == null ? AUTO_INCREMENT_ID_FIELD_DEFAULT : autoincrementIdField.booleanValue();
     }
 
     public void setAutoincrementIdField(boolean autoincrementIdField) {
@@ -332,8 +323,7 @@ public class SQLDirectoryDescriptor {
     }
 
     public int getQuerySizeLimit() {
-        return querySizeLimit == null ? QUERY_SIZE_LIMIT_DEFAULT
-                : querySizeLimit.intValue();
+        return querySizeLimit == null ? QUERY_SIZE_LIMIT_DEFAULT : querySizeLimit.intValue();
     }
 
     public void setQuerySizeLimit(int querySizeLimit) {
@@ -349,8 +339,7 @@ public class SQLDirectoryDescriptor {
     }
 
     public SubstringMatchType getSubstringMatchType() {
-        return substringMatchType == null ? SubstringMatchType.subinitial
-                : substringMatchType;
+        return substringMatchType == null ? SubstringMatchType.subinitial : substringMatchType;
     }
 
     public void setSubstringMatchType(SubstringMatchType substringMatchType) {
@@ -365,9 +354,8 @@ public class SQLDirectoryDescriptor {
     }
 
     /**
-     * Returns {@code true} if a multi tenant id should be computed for this
-     * directory, if the directory has support for multi tenancy, {@code false}
-     * otherwise.
+     * Returns {@code true} if a multi tenant id should be computed for this directory, if the directory has support for
+     * multi tenancy, {@code false} otherwise.
      *
      * @since 5.6
      */
@@ -376,8 +364,7 @@ public class SQLDirectoryDescriptor {
     }
 
     /**
-     * Merge re-written since 5.6 to comply to hot reload needs, omitting to
-     * merge properties initialized by xmap)
+     * Merge re-written since 5.6 to comply to hot reload needs, omitting to merge properties initialized by xmap)
      */
     public void merge(SQLDirectoryDescriptor other) {
         merge(other, false);
@@ -408,8 +395,7 @@ public class SQLDirectoryDescriptor {
         if (other.parentDirectory != null || overwite) {
             parentDirectory = other.parentDirectory;
         }
-        if ((other.initDependencies != null && other.initDependencies.size() != 0)
-                || overwite) {
+        if ((other.initDependencies != null && other.initDependencies.size() != 0) || overwite) {
             initDependencies = other.initDependencies;
         }
         if (other.idField != null || overwite) {
@@ -443,16 +429,13 @@ public class SQLDirectoryDescriptor {
             querySizeLimit = other.querySizeLimit;
         }
 
-        if ((other.inverseReferences != null && other.inverseReferences.length != 0)
-                || overwite) {
+        if ((other.inverseReferences != null && other.inverseReferences.length != 0) || overwite) {
             inverseReferences = other.inverseReferences;
         }
-        if ((other.tableReferences != null && other.tableReferences.length != 0)
-                || overwite) {
+        if ((other.tableReferences != null && other.tableReferences.length != 0) || overwite) {
             tableReferences = other.tableReferences;
         }
-        if ((other.permissions != null && other.permissions.length != 0)
-                || overwite) {
+        if ((other.permissions != null && other.permissions.length != 0) || overwite) {
             permissions = other.permissions;
         }
 
@@ -464,8 +447,7 @@ public class SQLDirectoryDescriptor {
         if (other.cacheEntryWithoutReferencesName != null || overwite) {
             cacheEntryWithoutReferencesName = other.cacheEntryWithoutReferencesName;
         }
-        if ((other.staticFilters != null && other.staticFilters.length != 0)
-                || overwite) {
+        if ((other.staticFilters != null && other.staticFilters.length != 0) || overwite) {
             staticFilters = other.staticFilters;
         }
         if (other.nativeCase != null || overwite) {

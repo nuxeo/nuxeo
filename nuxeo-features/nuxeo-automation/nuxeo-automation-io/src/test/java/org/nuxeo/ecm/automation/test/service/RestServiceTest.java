@@ -62,8 +62,7 @@ public class RestServiceTest extends BaseRestTest {
 
     @Before
     public void doBefore() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "folder1",
-                "Folder");
+        DocumentModel doc = session.createDocumentModel("/", "folder1", "Folder");
         doc = session.createDocument(doc);
         for (int i = 0; i < 3; i++) {
             doc = session.createDocumentModel("/folder1", "doc" + i, "Note");
@@ -136,8 +135,7 @@ public class RestServiceTest extends BaseRestTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = getJsonGenerator(out);
         DocumentModel folder = session.getDocument(new PathRef("/folder1"));
-        RestEvaluationContext ec = new HeaderDocEvaluationContext(folder,
-                getFakeHeaders(), null);
+        RestEvaluationContext ec = new HeaderDocEvaluationContext(folder, getFakeHeaders(), null);
 
         // When the service write to the context
         jg.writeStartObject();
@@ -148,8 +146,7 @@ public class RestServiceTest extends BaseRestTest {
         // Then it is filled with children enricher
         String jsonFolder = out.toString();
         JsonNode node = parseJson(jsonFolder);
-        assertEquals("documents",
-                node.get("children").get("entity-type").getValueAsText());
+        assertEquals("documents", node.get("children").get("entity-type").getValueAsText());
 
     }
 
@@ -161,8 +158,7 @@ public class RestServiceTest extends BaseRestTest {
         JsonGenerator jg = getJsonGenerator(out);
 
         // When it is written as Json with appropriate headers
-        JsonDocumentWriter.writeDocument(jg, folder, NO_SCHEMA,
-                new HashMap<String, String>(), getFakeHeaders(), null);
+        JsonDocumentWriter.writeDocument(jg, folder, NO_SCHEMA, new HashMap<String, String>(), getFakeHeaders(), null);
         jg.flush();
 
         // Then it contains contextParameters with contributor
@@ -172,8 +168,7 @@ public class RestServiceTest extends BaseRestTest {
         // When it is written as Json with empty headers
         out = new ByteArrayOutputStream();
         jg = getJsonGenerator(out);
-        JsonDocumentWriter.writeDocument(jg, folder, NO_SCHEMA,
-                new HashMap<String, String>(), null, null);
+        JsonDocumentWriter.writeDocument(jg, folder, NO_SCHEMA, new HashMap<String, String>(), null, null);
         jg.flush();
 
         // Then it contains contextParameters with contributor
@@ -191,17 +186,13 @@ public class RestServiceTest extends BaseRestTest {
         String jsonFolder = getDocumentAsJson(folder, "breadcrumb");
         // Then it contains the breadcrumb in contextParameters
         JsonNode node = parseJson(jsonFolder);
-        JsonNode breadCrumbEntries = node.get("contextParameters").get(
-                "breadcrumb").get("entries");
-        assertEquals("/folder1",
-                breadCrumbEntries.get(0).get("path").getValueAsText());
-        assertEquals("/folder1/doc0",
-                breadCrumbEntries.get(1).get("path").getValueAsText());
+        JsonNode breadCrumbEntries = node.get("contextParameters").get("breadcrumb").get("entries");
+        assertEquals("/folder1", breadCrumbEntries.get(0).get("path").getValueAsText());
+        assertEquals("/folder1/doc0", breadCrumbEntries.get(1).get("path").getValueAsText());
     }
 
     @Test
-    public void itCanContributeWithBreadcrumbWhenExpectingAListOfDocs()
-            throws Exception {
+    public void itCanContributeWithBreadcrumbWhenExpectingAListOfDocs() throws Exception {
         // Given a list of docs
         DocumentModelList docs = session.query("SELECT * FROM Note ORDER BY ecm:name ASC");
         // When are written as Json with breadcrumb context category
@@ -211,12 +202,9 @@ public class RestServiceTest extends BaseRestTest {
         ArrayNode nodes = (ArrayNode) jsonDocs.get("entries");
         int i = 0;
         for (JsonNode node : nodes) {
-            JsonNode breadCrumbEntries = node.get("contextParameters").get(
-                    "breadcrumb").get("entries");
-            assertEquals("/folder1",
-                    breadCrumbEntries.get(0).get("path").getValueAsText());
-            assertEquals("/folder1/doc" + i,
-                    breadCrumbEntries.get(1).get("path").getValueAsText());
+            JsonNode breadCrumbEntries = node.get("contextParameters").get("breadcrumb").get("entries");
+            assertEquals("/folder1", breadCrumbEntries.get(0).get("path").getValueAsText());
+            assertEquals("/folder1/doc" + i, breadCrumbEntries.get(1).get("path").getValueAsText());
             i++;
         }
     }

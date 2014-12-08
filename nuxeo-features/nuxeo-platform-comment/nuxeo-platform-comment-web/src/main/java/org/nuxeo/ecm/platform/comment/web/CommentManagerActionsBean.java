@@ -36,12 +36,10 @@ import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 @Name("commentManagerActions")
 @Scope(CONVERSATION)
-public class CommentManagerActionsBean extends
-        AbstractCommentManagerActionsBean implements Serializable {
+public class CommentManagerActionsBean extends AbstractCommentManagerActionsBean implements Serializable {
 
     private static final Log log = LogFactory.getLog(CommentManagerActionsBean.class);
 
@@ -60,9 +58,8 @@ public class CommentManagerActionsBean extends
     }
 
     /**
-     * Retrieves the list of comment trees associated with a document and
-     * constructs a flat list of comments associated with their depth (to easily
-     * display them with indentation).
+     * Retrieves the list of comment trees associated with a document and constructs a flat list of comments associated
+     * with their depth (to easily display them with indentation).
      */
     @Factory(value = "documentThreadedComments", scope = EVENT)
     public List<ThreadEntry> getCommentsAsThread() throws ClientException {

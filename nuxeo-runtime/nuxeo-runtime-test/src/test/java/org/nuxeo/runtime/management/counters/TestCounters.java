@@ -42,7 +42,7 @@ public class TestCounters {
         public void run() {
             int idx = new Random(System.currentTimeMillis()).nextInt(9);
             CounterManager cm = Framework.getLocalService(CounterManager.class);
-            if (idx%2==0) {
+            if (idx % 2 == 0) {
                 cm.increaseCounter("org.nuxeo.counter" + idx);
             } else {
                 cm.decreaseCounter("org.nuxeo.counter" + idx);
@@ -51,19 +51,19 @@ public class TestCounters {
     }
 
     protected void doRandomCounters() throws InterruptedException {
-        ThreadPoolExecutor tpe = new ThreadPoolExecutor(5,5,0,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(10000));
-        for (int i =0; i< 10000; i++) {
+        ThreadPoolExecutor tpe = new ThreadPoolExecutor(5, 5, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(
+                10000));
+        for (int i = 0; i < 10000; i++) {
             tpe.execute(new CounterCaller());
         }
         tpe.shutdown();
         tpe.awaitTermination(120, TimeUnit.SECONDS);
     }
 
-
     protected String getCountersSnapshot() {
         StringBuffer sb = new StringBuffer();
         CounterManager cm = Framework.getLocalService(CounterManager.class);
-        for (int i = 0; i<9; i++) {
+        for (int i = 0; i < 9; i++) {
             String snapshot = cm.getCounterHistory("org.nuxeo.counter" + i).toString();
             sb.append(snapshot);
         }
@@ -77,8 +77,8 @@ public class TestCounters {
 
         doRandomCounters();
 
-        for (int i = 0; i<9; i++) {
-            //System.out.print(cm.getCounterHistory("org.nuxeo.counter" + i));
+        for (int i = 0; i < 9; i++) {
+            // System.out.print(cm.getCounterHistory("org.nuxeo.counter" + i));
         }
 
         String snapshot = getCountersSnapshot();
@@ -101,23 +101,22 @@ public class TestCounters {
 
     }
 
-
     @Test
     public void verifyHistory() throws InterruptedException {
 
         CounterManager cm = Framework.getLocalService(CounterManager.class);
 
-        String myCounter="org.nuxeo.testMe";
+        String myCounter = "org.nuxeo.testMe";
 
-        CounterHelper.increaseCounter(myCounter); //1
-        CounterHelper.increaseCounter(myCounter); //2
-        CounterHelper.increaseCounter(myCounter); //3
-        CounterHelper.decreaseCounter(myCounter); //2
-        CounterHelper.increaseCounter(myCounter); //3
-        CounterHelper.decreaseCounter(myCounter); //2
-        CounterHelper.decreaseCounter(myCounter); //1
-        CounterHelper.increaseCounter(myCounter); //2
-        CounterHelper.increaseCounter(myCounter); //3
+        CounterHelper.increaseCounter(myCounter); // 1
+        CounterHelper.increaseCounter(myCounter); // 2
+        CounterHelper.increaseCounter(myCounter); // 3
+        CounterHelper.decreaseCounter(myCounter); // 2
+        CounterHelper.increaseCounter(myCounter); // 3
+        CounterHelper.decreaseCounter(myCounter); // 2
+        CounterHelper.decreaseCounter(myCounter); // 1
+        CounterHelper.increaseCounter(myCounter); // 2
+        CounterHelper.increaseCounter(myCounter); // 3
 
         CounterHistoryStack history = cm.getCounterHistory(myCounter);
         assertNotNull(history);
@@ -127,8 +126,8 @@ public class TestCounters {
         assertEquals(2, history.get(5)[1]);
         assertEquals(1, history.get(8)[1]);
 
-        CounterHelper.setCounterValue(myCounter,0);
-        for (int i= 0; i< 60; i++) {
+        CounterHelper.setCounterValue(myCounter, 0);
+        for (int i = 0; i < 60; i++) {
             CounterHelper.increaseCounter(myCounter);
         }
 
@@ -136,7 +135,7 @@ public class TestCounters {
         assertEquals(60, history.get(0)[1]);
         assertEquals(11, history.get(49)[1]);
 
-        //System.out.println(history.toString());
+        // System.out.println(history.toString());
 
     }
 }

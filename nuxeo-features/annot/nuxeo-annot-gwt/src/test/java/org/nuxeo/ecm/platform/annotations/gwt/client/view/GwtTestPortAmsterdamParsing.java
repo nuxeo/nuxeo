@@ -26,17 +26,14 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class GwtTestPortAmsterdamParsing extends AbstractDocumentGWTTest {
     private AnnotatedDocument annotatedDocument = new AnnotatedDocument(null);
 
     public void testParse() {
         createDocument();
-        for (Annotation annotation : getAnnotations(new String[] {
-                "/HTML[0]/BODY[0]/DIV[0]/P[0]/SPAN[0],\"\",55,47",
-                "/HTML[0]/BODY[0]/DIV[0]/P[0]/SPAN[0],\"\",321,92",
-                "/HTML[0]/BODY[0]/DIV[0]/P[0]/SPAN[0],\"\",15,9" })) {
+        for (Annotation annotation : getAnnotations(new String[] { "/HTML[0]/BODY[0]/DIV[0]/P[0]/SPAN[0],\"\",55,47",
+                "/HTML[0]/BODY[0]/DIV[0]/P[0]/SPAN[0],\"\",321,92", "/HTML[0]/BODY[0]/DIV[0]/P[0]/SPAN[0],\"\",15,9" })) {
             annotatedDocument.decorate(annotation);
         }
         String resultInnerHtml = RootPanel.get("insidediv").getElement().getInnerHTML();
@@ -47,8 +44,7 @@ public class GwtTestPortAmsterdamParsing extends AbstractDocumentGWTTest {
     }
 
     public String getInnerHtml() {
-        return new StringBuilder(
-                "<p class=\"MsoNormal\"><span>Dans le port d&#39;Amsterdam <br />").append(
+        return new StringBuilder("<p class=\"MsoNormal\"><span>Dans le port d&#39;Amsterdam <br />").append(
                 " Y a des marins qui chantent<br /> Les r&ecirc;ves qui les hantent<br />").append(
                 " Au large d&#39;Amsterdam<br /> Dans le port d&#39;Amsterdam<br /> Y a des marins qui dorment<br />").append(
                 " Comme des oriflammes<br /> Le long des berges mornes<br /> Dans le port d&#39;Amsterdam<br /> Y a des marins qui meurent<br />").append(

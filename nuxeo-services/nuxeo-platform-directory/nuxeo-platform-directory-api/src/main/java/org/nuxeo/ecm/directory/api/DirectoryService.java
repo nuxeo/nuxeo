@@ -31,12 +31,10 @@ import org.nuxeo.runtime.model.ComponentName;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public interface DirectoryService {
 
-    ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.directory.DirectoryServiceImpl");
+    ComponentName NAME = new ComponentName("org.nuxeo.ecm.directory.DirectoryServiceImpl");
 
     List<String> getDirectoryNames() throws ClientException;
 
@@ -54,12 +52,10 @@ public interface DirectoryService {
     Session open(String directoryName) throws DirectoryException;
 
     /**
-     * Opens a session on the directory for the specified context. The context
-     * is given by the document. The document service will try to find the
-     * directory local configuration of the document that will specify the
-     * suffix. the directory will fetch the directoryName + suffix found. If no
-     * local configuration is found the service will return the directoryName
-     * directory.
+     * Opens a session on the directory for the specified context. The context is given by the document. The document
+     * service will try to find the directory local configuration of the document that will specify the suffix. the
+     * directory will fetch the directoryName + suffix found. If no local configuration is found the service will return
+     * the directoryName directory.
      * <p>
      * This method prefers to throw rather than returning null.
      *
@@ -68,27 +64,22 @@ public interface DirectoryService {
      * @return the session
      * @throws DirectoryException in case the session cannot be created
      */
-    Session open(String directoryName, DocumentModel documentContext)
-            throws DirectoryException;
+    Session open(String directoryName, DocumentModel documentContext) throws DirectoryException;
 
     /**
-     * Return the directory for the specified context. The
-     * context is given by the document. The document service will try to find
-     * the directory local configuration of the document that will specify the
-     * suffix. The directory service will fetch the directoryName + suffix
-     * found. If no local configuration is found the service will return the
+     * Return the directory for the specified context. The context is given by the document. The document service will
+     * try to find the directory local configuration of the document that will specify the suffix. The directory service
+     * will fetch the directoryName + suffix found. If no local configuration is found the service will return the
      * directoryName directory.
      * <p>
      * If the directoryName is null, return null.
      *
      * @param directoryName
      * @param documentContext
-     * @return the directory, if the factory of the directory or the directory
-     *         itself is not found return null
+     * @return the directory, if the factory of the directory or the directory itself is not found return null
      * @throws DirectoryException
      */
-    Directory getDirectory(String directoryName, DocumentModel documentContext)
-            throws DirectoryException;
+    Directory getDirectory(String directoryName, DocumentModel documentContext) throws DirectoryException;
 
     /**
      * Return the directory with the name directoryName.
@@ -96,8 +87,7 @@ public interface DirectoryService {
      * If the directoryName is null, return null.
      *
      * @param directoryName
-     * @return the directory, if the factory of the directory or the directory
-     *         itself is not found return null
+     * @return the directory, if the factory of the directory or the directory itself is not found return null
      * @throws DirectoryException
      */
     Directory getDirectory(String directoryName) throws DirectoryException;
@@ -116,18 +106,15 @@ public interface DirectoryService {
 
     String getDirectoryIdField(String directoryName) throws DirectoryException;
 
-    String getDirectoryPasswordField(String directoryName)
-            throws DirectoryException;
+    String getDirectoryPasswordField(String directoryName) throws DirectoryException;
 
     /**
-     * Returns the name of the parent directory of specified directory, if
-     * applicable.
+     * Returns the name of the parent directory of specified directory, if applicable.
      *
      * @param directoryName
      * @return the name, or null
      * @throws DirectoryException
      */
-    String getParentDirectoryName(String directoryName)
-            throws DirectoryException;
+    String getParentDirectoryName(String directoryName) throws DirectoryException;
 
 }

@@ -43,11 +43,11 @@ public class EndAction extends AbstractMailAction {
             // VDU it could be nice to have a field in schema 'protocol' that says
             // messages stay in server or not. This only work with IMAP* protocols, as POP3*
             // protocols does not support flags other than DELETED.
-            //            message.setFlag(Flag.FLAGGED, false);
+            // message.setFlag(Flag.FLAGGED, false);
             boolean leaveOnServer = (Boolean) context.getInitialContext().get(LEAVE_ON_SERVER_KEY);
             String protocolType = (String) context.getInitialContext().get(PROTOCOL_TYPE_KEY);
-//            log.debug(PROTOCOL_TYPE_KEY + ": " + protocolType);
-//            log.debug(LEAVE_ON_SERVER_KEY + ": " + leaveOnServer);
+            // log.debug(PROTOCOL_TYPE_KEY + ": " + protocolType);
+            // log.debug(LEAVE_ON_SERVER_KEY + ": " + leaveOnServer);
             if ((IMAP.equals(protocolType) || IMAPS.equals(protocolType)) && leaveOnServer) {
                 message.setFlag(Flag.SEEN, true);
 

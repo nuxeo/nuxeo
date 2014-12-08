@@ -24,12 +24,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Page provider listing users.
  * <p>
- * This page provider requires two parameters: the first one to be filled with
- * the search string, and the second one to be filled with the selected letter
- * when using the {@code tabbed} listing mode.
+ * This page provider requires two parameters: the first one to be filled with the search string, and the second one to
+ * be filled with the selected letter when using the {@code tabbed} listing mode.
  * <p>
- * This page provider requires the property {@link #USERS_LISTING_MODE_PROPERTY}
- * to be filled with a the listing mode to use.
+ * This page provider requires the property {@link #USERS_LISTING_MODE_PROPERTY} to be filled with a the listing mode to
+ * use.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.2

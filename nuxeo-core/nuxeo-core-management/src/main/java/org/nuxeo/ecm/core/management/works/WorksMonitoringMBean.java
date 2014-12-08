@@ -17,10 +17,8 @@ package org.nuxeo.ecm.core.management.works;
  *
  * @since 5.8
  * @author Stephane Lacoin at Nuxeo (aka matic)
- *
  */
 public interface WorksMonitoringMBean {
-
 
     /**
      * Enable/disable work schedule stack capture

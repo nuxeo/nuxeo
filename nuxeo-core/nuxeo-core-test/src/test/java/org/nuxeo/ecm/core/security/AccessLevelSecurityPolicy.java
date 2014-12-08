@@ -28,22 +28,19 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
- * Security policy used for tests that grants permissions depending on the user
- * access level and confidentiality set on the document.
+ * Security policy used for tests that grants permissions depending on the user access level and confidentiality set on
+ * the document.
  *
  * @author Anahide Tchertchian
- *
  */
 public class AccessLevelSecurityPolicy extends AbstractSecurityPolicy {
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp,
-            Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
         try {
-            if ("Folder".equals(doc.getType().getName())
-                    && principal instanceof NuxeoPrincipal) {
+            if ("Folder".equals(doc.getType().getName()) && principal instanceof NuxeoPrincipal) {
                 DocumentModel userModel = ((NuxeoPrincipal) principal).getModel();
                 if (userModel != null) {
                     Long accessLevel = (Long) userModel.getPropertyValue("user:accessLevel");

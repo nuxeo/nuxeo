@@ -40,6 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 public class StoreMessageAction implements MessageAction {
 
     public static final String MAIL_MESSAGE = "MailMessage";
+
     private static final Log log = LogFactory.getLog(StoreMessageAction.class);
 
     protected final String parentPath;
@@ -59,8 +60,7 @@ public class StoreMessageAction implements MessageAction {
         Thread.currentThread().setContextClassLoader(Framework.class.getClassLoader());
         try (CoreSession session = CoreInstance.openCoreSessionSystem(null)) {
             DocumentModel doc = session.createDocumentModel(getMailDocumentType());
-            doc.setProperty("dublincore", "title",
-                    title + System.currentTimeMillis());
+            doc.setProperty("dublincore", "title", title + System.currentTimeMillis());
             doc.setPathInfo(parentPath, pss.generatePathSegment(doc));
             doc.setProperty("dublincore", "title", title);
             doc = session.createDocument(doc);
@@ -86,7 +86,7 @@ public class StoreMessageAction implements MessageAction {
     }
 
     public void reset(ExecutionContext context) {
-        //do nothing
+        // do nothing
     }
 
 }

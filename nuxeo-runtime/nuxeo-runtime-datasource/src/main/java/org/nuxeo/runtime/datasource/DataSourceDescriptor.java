@@ -47,10 +47,8 @@ import org.w3c.dom.Node;
  * The attributes of a {@code <datasource>} element are:
  * <ul>
  * <li><b>name</b>: the JNDI name (for instance {@code jdbc/foo})</li>
- * <li><b>driverClassName</b>: the JDBC driver class name (only for a non-XA
- * datasource)</li>
- * <li><b>xaDataSource</b>: the XA datasource class name (only for a XA
- * datasource)</li>
+ * <li><b>driverClassName</b>: the JDBC driver class name (only for a non-XA datasource)</li>
+ * <li><b>xaDataSource</b>: the XA datasource class name (only for a XA datasource)</li>
  * </ul>
  * <p>
  * To configure the characteristics of the pool:
@@ -58,14 +56,12 @@ import org.w3c.dom.Node;
  * <li><b>maxActive</b>: the maximum number of active connections</li>
  * <li><b>minIdle</b>: the minimum number of idle connections</li>
  * <li><b>maxIdle</b>: the maximum number of idle connections</li>
- * <li><b>maxWait</b>: the maximum number of milliseconds to wait for a
- * connection to be available, or -1 (the default) to wait indefinitely</li>
- * <li>... see {@link org.apache.commons.dbcp.BasicDataSource BasicDataSource}
- * setters for more</li>
+ * <li><b>maxWait</b>: the maximum number of milliseconds to wait for a connection to be available, or -1 (the default)
+ * to wait indefinitely</li>
+ * <li>... see {@link org.apache.commons.dbcp.BasicDataSource BasicDataSource} setters for more</li>
  * </ul>
  * <p>
- * To configure the datasource connections, individual {@code <property>}
- * sub-elements are used.
+ * To configure the datasource connections, individual {@code <property>} sub-elements are used.
  * <p>
  * For a non-XA datasource, you must specify at least a <b>url</b>:
  *
@@ -81,9 +77,8 @@ import org.w3c.dom.Node;
 public class DataSourceDescriptor {
 
     /*
-     * It is not possible to expand the variables in the setters because in
-     * tests, values are not available in context. A clean up needs to be done
-     * to have the values during startup.
+     * It is not possible to expand the variables in the setters because in tests, values are not available in context.
+     * A clean up needs to be done to have the values during startup.
      */
 
     @XNode("@name")
@@ -96,14 +91,12 @@ public class DataSourceDescriptor {
     @XNode("@xaDataSource")
     protected String xaDataSource;
 
-
     public String getXaDataSource() {
         return Framework.expandVars(xaDataSource);
     }
 
     @XNode("@dataSource")
     protected String dataSource;
-
 
     public String getDataSource() {
         return Framework.expandVars(dataSource);
@@ -126,70 +119,44 @@ public class DataSourceDescriptor {
 
     protected Reference xaReference;
 
-    public static class PoolFactory
-            implements ObjectFactory {
+    public static class PoolFactory implements ObjectFactory {
 
         @Override
-        public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-                Hashtable<?, ?> env) {
-            return Framework.getService(PooledDataSourceRegistry.class).getOrCreatePool(
-                    obj, name, nameCtx, env);
+        public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> env) {
+            return Framework.getService(PooledDataSourceRegistry.class).getOrCreatePool(obj, name, nameCtx, env);
         }
 
     }
 
-    public void bindSelf(
-            Context naming)
-            throws NamingException {
+    public void bindSelf(Context naming) throws NamingException {
         if (xaDataSource != null) {
-            String xaName = DataSourceHelper.relativize(getName()
-                    + "-xa");
-            poolReference = new Reference(
-                    XADataSource.class.getName(),
-                    PoolFactory.class.getName(),
-                    null);
-            poolReference.add(new StringRefAddr(
-                    "dataSourceJNDI",
-                    xaName));
-            xaReference = new Reference(
-                    Framework.expandVars(xaDataSource),
-                    GenericNamingResourcesFactory.class.getName(),
-                    null);
+            String xaName = DataSourceHelper.relativize(getName() + "-xa");
+            poolReference = new Reference(XADataSource.class.getName(), PoolFactory.class.getName(), null);
+            poolReference.add(new StringRefAddr("dataSourceJNDI", xaName));
+            xaReference = new Reference(Framework.expandVars(xaDataSource),
+                    GenericNamingResourcesFactory.class.getName(), null);
             for (Entry<String, String> e : properties.entrySet()) {
                 String key = e.getKey();
                 String value = Framework.expandVars(e.getValue());
-                StringRefAddr addr = new StringRefAddr(
-                        key, value);
+                StringRefAddr addr = new StringRefAddr(key, value);
                 xaReference.add(addr);
             }
-            naming.bind(
-                    DataSourceHelper.getDataSourceJNDIName(xaName),
-                    xaReference);
+            naming.bind(DataSourceHelper.getDataSourceJNDIName(xaName), xaReference);
         } else if (dataSource != null) {
-            poolReference = new Reference(
-                    DataSource.class.getName(),
-                    PoolFactory.class.getName(),
-                    null);
+            poolReference = new Reference(DataSource.class.getName(), PoolFactory.class.getName(), null);
             final String name = Framework.expandVars(dataSource);
-            poolReference.add(new StringRefAddr("dataSourceJNDI",
-                    DataSourceHelper.getDataSourceJNDIName(name)));
+            poolReference.add(new StringRefAddr("dataSourceJNDI", DataSourceHelper.getDataSourceJNDIName(name)));
         } else if (driverClasssName != null) {
-            poolReference = new Reference(
-                    DataSource.class.getName(),
-                    PoolFactory.class.getName(),
-                    null);
+            poolReference = new Reference(DataSource.class.getName(), PoolFactory.class.getName(), null);
         } else {
-            throw new RuntimeException(
-                    "Datasource "
-                            + getName()
-                            + " should have xaDataSource or driverClassName attribute");
+            throw new RuntimeException("Datasource " + getName()
+                    + " should have xaDataSource or driverClassName attribute");
         }
 
         for (Entry<String, String> e : properties.entrySet()) {
             String key = e.getKey();
             String value = Framework.expandVars(e.getValue());
-            StringRefAddr addr = new StringRefAddr(
-                    key, value);
+            StringRefAddr addr = new StringRefAddr(key, value);
             poolReference.add(addr);
         }
 
@@ -198,16 +165,13 @@ public class DataSourceDescriptor {
             Node attr = attrs.item(i);
             String attrName = attr.getNodeName();
             String value = Framework.expandVars(attr.getNodeValue());
-            StringRefAddr addr = new StringRefAddr(
-                    attrName, value);
+            StringRefAddr addr = new StringRefAddr(attrName, value);
             poolReference.add(addr);
         }
 
         LogFactory.getLog(DataSourceDescriptor.class).info("binding " + getName());
         String jndiName = DataSourceHelper.getDataSourceJNDIName(getName());
-        naming.bind(
-                jndiName,
-                poolReference);
+        naming.bind(jndiName, poolReference);
         // create pooled
         naming.lookup(jndiName);
     }
@@ -221,8 +185,7 @@ public class DataSourceDescriptor {
         } finally {
             try {
                 if (xaReference != null) {
-                    naming.unbind(DataSourceHelper.getDataSourceJNDIName(getName()
-                            + "-xa"));
+                    naming.unbind(DataSourceHelper.getDataSourceJNDIName(getName() + "-xa"));
                 }
             } finally {
                 naming.unbind(DataSourceHelper.getDataSourceJNDIName(getName()));

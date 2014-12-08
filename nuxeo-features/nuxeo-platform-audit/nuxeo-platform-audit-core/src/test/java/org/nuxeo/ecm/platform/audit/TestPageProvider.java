@@ -42,8 +42,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.audit:test-pageprovider-contrib.xml" })
 public class TestPageProvider {
 
-    protected static final List<String> entriesIdx = Arrays
-        .asList(new String[] { "3", "7", "7", "8", "1", "8", "7", "9" });
+    protected static final List<String> entriesIdx = Arrays.asList(new String[] { "3", "7", "7", "8", "1", "8", "7",
+            "9" });
 
     protected static final Calendar testDate = Calendar.getInstance();
 
@@ -80,8 +80,7 @@ public class TestPageProvider {
 
         logger.addLogEntries(entries);
 
-        List<?> res = reader.nativeQuery(
-                "select count(log.eventId) from LogEntry log", 1, 20);
+        List<?> res = reader.nativeQuery("select count(log.eventId) from LogEntry log", 1, 20);
         int count = ((Long) res.get(0)).intValue();
         assertEquals(entries.size(), count);
 
@@ -91,20 +90,16 @@ public class TestPageProvider {
     @Test
     public void testSimpleProvider() throws Exception {
 
-        PageProviderService pps = Framework
-            .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps
-            .getPageProviderDefinition("GetAllEntries");
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("GetAllEntries");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef
-            .getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntries", null,
-                Long.valueOf(5), Long.valueOf(0),
+        PageProvider<?> pp = pps.getPageProvider("GetAllEntries", null, Long.valueOf(5), Long.valueOf(0),
                 new HashMap<String, Serializable>());
 
         assertNotNull(pp);
@@ -113,12 +108,9 @@ public class TestPageProvider {
 
         assertNotNull(entries);
         assertEquals(5, entries.size());
-        assertEquals("category" + entriesIdx.get(0), entries.get(0)
-            .getCategory());
-        assertEquals("category" + entriesIdx.get(3), entries.get(3)
-            .getCategory());
-        assertEquals("category" + entriesIdx.get(4), entries.get(4)
-            .getCategory());
+        assertEquals("category" + entriesIdx.get(0), entries.get(0).getCategory());
+        assertEquals("category" + entriesIdx.get(3), entries.get(3).getCategory());
+        assertEquals("category" + entriesIdx.get(4), entries.get(4).getCategory());
 
         long nbPages = pp.getNumberOfPages();
 
@@ -128,10 +120,8 @@ public class TestPageProvider {
         entries = (List<LogEntry>) pp.getCurrentPage();
 
         assertEquals(3, entries.size());
-        assertEquals("category" + entriesIdx.get(0 + 5), entries.get(0)
-            .getCategory());
-        assertEquals("category" + entriesIdx.get(2 + 5), entries.get(2)
-            .getCategory());
+        assertEquals("category" + entriesIdx.get(0 + 5), entries.get(0).getCategory());
+        assertEquals("category" + entriesIdx.get(2 + 5), entries.get(2).getCategory());
 
     }
 
@@ -139,20 +129,16 @@ public class TestPageProvider {
     @Test
     public void testProviderWithParams() throws Exception {
 
-        PageProviderService pps = Framework
-            .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps
-            .getPageProviderDefinition("GetAllEntriesInCategory");
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("GetAllEntriesInCategory");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef
-            .getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesInCategory",
-                null, Long.valueOf(2), Long.valueOf(0),
+        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesInCategory", null, Long.valueOf(2), Long.valueOf(0),
                 new HashMap<String, Serializable>(), "category7");
 
         assertNotNull(pp);
@@ -182,22 +168,17 @@ public class TestPageProvider {
     @Test
     public void testProviderWithWhereClause() throws Exception {
 
-        PageProviderService pps = Framework
-            .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps
-            .getPageProviderDefinition("GetAllEntriesForDocumentInCategory");
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("GetAllEntriesForDocumentInCategory");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef
-            .getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider(
-                "GetAllEntriesForDocumentInCategory", (DocumentModel) null,
-                null, Long.valueOf(2), Long.valueOf(0),
-                new HashMap<String, Serializable>(), "uuid");
+        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesForDocumentInCategory", (DocumentModel) null, null,
+                Long.valueOf(2), Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
 
         DocumentModel searchDoc = session.createDocumentModel("File");
         searchDoc.setPathInfo("/", "dummy");
@@ -233,20 +214,16 @@ public class TestPageProvider {
     @Test
     public void testProviderWithWhereClause2() throws Exception {
 
-        PageProviderService pps = Framework
-            .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps
-            .getPageProviderDefinition("GetAllEntriesForDocumentInCategories");
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("GetAllEntriesForDocumentInCategories");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef
-            .getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider(
-                "GetAllEntriesForDocumentInCategories", null, Long.valueOf(2),
+        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesForDocumentInCategories", null, Long.valueOf(2),
                 Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
 
         DocumentModel searchDoc = session.createDocumentModel("File");
@@ -280,20 +257,16 @@ public class TestPageProvider {
     @Test
     public void testProviderWithBetweenDates() throws Exception {
 
-        PageProviderService pps = Framework
-            .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps
-            .getPageProviderDefinition("GetAllEntriesBetween2Dates");
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("GetAllEntriesBetween2Dates");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef
-            .getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesBetween2Dates",
-                null, Long.valueOf(6), Long.valueOf(0),
+        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesBetween2Dates", null, Long.valueOf(6), Long.valueOf(0),
                 new HashMap<String, Serializable>(), "uuid");
 
         DocumentModel searchDoc = session.createDocumentModel("File");
@@ -381,24 +354,19 @@ public class TestPageProvider {
     @Test
     public void testDocumentHistoryPageProvider() throws Exception {
 
-        PageProviderService pps = Framework
-            .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps
-            .getPageProviderDefinition("DOCUMENT_HISTORY_PROVIDER");
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("DOCUMENT_HISTORY_PROVIDER");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(DocumentHistoryPageProvider.class.getSimpleName(), gppdef
-            .getPageProviderClass().getSimpleName());
+        assertEquals(DocumentHistoryPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER",
-                null, Long.valueOf(6), Long.valueOf(0),
+        PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(6), Long.valueOf(0),
                 new HashMap<String, Serializable>(), "uuid");
 
-        DocumentModel searchDoc = session
-            .createDocumentModel("BasicAuditSearch");
+        DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
 
         Calendar startDate = (Calendar) testDate.clone();

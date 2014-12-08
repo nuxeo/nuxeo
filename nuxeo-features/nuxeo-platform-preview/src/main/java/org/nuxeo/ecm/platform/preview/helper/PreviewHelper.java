@@ -91,11 +91,9 @@ public class PreviewHelper {
     /**
      * @param document
      * @throws PreviewException
-     *
      * @since 5.7.3
      */
-    public static boolean docHasBlobToPreview(DocumentModel document)
-            throws PreviewException {
+    public static boolean docHasBlobToPreview(DocumentModel document) throws PreviewException {
         HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
         return adapter == null ? false : adapter.hasBlobToPreview();
     }

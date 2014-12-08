@@ -42,8 +42,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      *
      * @return the root document
      */
-    DocumentDescriptor getRootDocument(String sessionId)
-            throws ClientException;
+    DocumentDescriptor getRootDocument(String sessionId) throws ClientException;
 
     /**
      * Gets the doc descriptor given the doc UUID.
@@ -52,8 +51,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @param uuid the doc uuid
      * @return the descriptor
      */
-    DocumentDescriptor getDocument(String sessionId, String uuid)
-            throws ClientException;
+    DocumentDescriptor getDocument(String sessionId, String uuid) throws ClientException;
 
     /**
      * Gets the children of the given document.
@@ -62,8 +60,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @param uuid the doc uuid
      * @return the children descriptors
      */
-    DocumentDescriptor[] getChildren(String sessionId, String uuid)
-            throws ClientException;
+    DocumentDescriptor[] getChildren(String sessionId, String uuid) throws ClientException;
 
     /**
      * Returns the relative path as a displayable path with parent titles.
@@ -75,8 +72,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @return a relative path
      * @throws ClientException
      */
-    String getRelativePathAsString(String sessionId, String uuid)
-            throws ClientException;
+    String getRelativePathAsString(String sessionId, String uuid) throws ClientException;
 
     /**
      * Lists all document uuids.
@@ -89,8 +85,8 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @param to pagination stop
      * @param currentVersionOnly do we want only the current version ?
      * @param whereClause NXQL where clause :XXX: has to be defined.
-     * @return a map from uuid to version labels. If no versions for the givne
-     *         uuid we need to add a default label for current version
+     * @return a map from uuid to version labels. If no versions for the givne uuid we need to add a default label for
+     *         current version
      * @throws ClientException
      */
     // public Map<String, String> listAllDocumentUUIDsAndVersions(String sid,
@@ -104,8 +100,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @param uid
      * @return
      */
-    DocumentDescriptor[] getVersions(String sid, String uid)
-            throws ClientException;
+    DocumentDescriptor[] getVersions(String sid, String uid) throws ClientException;
 
     /**
      * Gets the current version of the given document.
@@ -113,8 +108,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @param sid
      * @return
      */
-    DocumentDescriptor getCurrentVersion(String sid, String uid)
-            throws ClientException;
+    DocumentDescriptor getCurrentVersion(String sid, String uid) throws ClientException;
 
     /**
      * Gets the document that created the version specified by the given uid.
@@ -123,14 +117,12 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @param uid
      * @return
      */
-    DocumentDescriptor getSourceDocument(String sid, String uid)
-            throws ClientException;
+    DocumentDescriptor getSourceDocument(String sid, String uid) throws ClientException;
 
     /**
      * Returns the document properties.
      * <p>
-     * All property are returned even blobs. All values are converted to
-     * strings.
+     * All property are returned even blobs. All values are converted to strings.
      * <p>
      * It includes the perm link of the document.
      * <p>
@@ -140,20 +132,17 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @return a map from name of the property to its value
      * @throws ClientException
      */
-    DocumentProperty[] getDocumentProperties(String sid, String uuid)
-            throws ClientException;
+    DocumentProperty[] getDocumentProperties(String sid, String uuid) throws ClientException;
 
     /**
-     * Same as {@link #getDocumentProperties(String, String)} but skips
-     * blobs.
+     * Same as {@link #getDocumentProperties(String, String)} but skips blobs.
      *
      * @param sid
      * @param uuid
      * @return
      * @throws ClientException
      */
-    DocumentProperty[] getDocumentNoBlobProperties(String sid,
-            String uuid) throws ClientException;
+    DocumentProperty[] getDocumentNoBlobProperties(String sid, String uuid) throws ClientException;
 
     /**
      * Returns the document blobs only using byte[] format
@@ -162,8 +151,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @return an array of document blob instances.
      * @throws ClientException
      */
-    DocumentBlob[] getDocumentBlobs(String sid, String uuid)
-            throws ClientException;
+    DocumentBlob[] getDocumentBlobs(String sid, String uuid) throws ClientException;
 
     /**
      * Returns the document blobs only.
@@ -173,12 +161,10 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @return an array of document blob instances.
      * @throws ClientException
      */
-    DocumentBlob[] getDocumentBlobsExt(String sid, String uuid, boolean useDownloadUrl)
-    throws ClientException;
+    DocumentBlob[] getDocumentBlobsExt(String sid, String uuid, boolean useDownloadUrl) throws ClientException;
 
     /**
-     * Returns the merged ACL of the document (contains all ACEs defined on the
-     * document and its parents).
+     * Returns the merged ACL of the document (contains all ACEs defined on the document and its parents).
      * <p>
      * It includes all ACLs for each ACP.
      *
@@ -189,8 +175,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
     WsACE[] getDocumentACL(String sid, String uuid) throws ClientException;
 
     /**
-     * Returns the merged ACL of the document (contains all ACEs defined on the
-     * document, filtering the inherited ones).
+     * Returns the merged ACL of the document (contains all ACEs defined on the document, filtering the inherited ones).
      * <p>
      * It includes all ACLs for each ACP.
      *
@@ -198,7 +183,8 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @return the ordered list of ACLs
      * @throws ClientException
      */
-     WsACE[] getDocumentLocalACL(String sid, String uuid) throws ClientException;
+    WsACE[] getDocumentLocalACL(String sid, String uuid) throws ClientException;
+
     /**
      * Checks the given permission for the current user on the given document.
      *
@@ -207,8 +193,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @param permission
      * @return
      */
-    boolean hasPermission(String sid, String uuid, String permission)
-            throws ClientException;
+    boolean hasPermission(String sid, String uuid, String permission) throws ClientException;
 
     /**
      * Returns the list of all users.
@@ -222,8 +207,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @return an array of principal names
      * @throws ClientException
      */
-    String[] listUsers(String sid, int from, int to)
-            throws ClientException;
+    String[] listUsers(String sid, int from, int to) throws ClientException;
 
     /**
      * Return the list of all groups.
@@ -237,39 +221,32 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @return an array of group names
      * @throws ClientException
      */
-    String[] listGroups(String sid, int from, int to)
-            throws ClientException;
+    String[] listGroups(String sid, int from, int to) throws ClientException;
 
     /**
-     * Get all users inside the given group. If the group is null then return
-     * all users in the system.
+     * Get all users inside the given group. If the group is null then return all users in the system.
      *
      * @param sid the session id
      * @param parentGroup the parent group
      * @throws ClientException if any error occurs
      */
-    String[] getUsers(String sid, String parentGroup)
-            throws ClientException;
+    String[] getUsers(String sid, String parentGroup) throws ClientException;
 
     /**
-     * Gets all sub-groups inside the given group. If the parent group is null
-     * returns all top level groups.
+     * Gets all sub-groups inside the given group. If the parent group is null returns all top level groups.
      *
      * @param sid the session id
      * @param parentGroup the parent group
      * @return
      * @throws ClientException
      */
-    String[] getGroups(String sid, String parentGroup)
-            throws ClientException;
+    String[] getGroups(String sid, String parentGroup) throws ClientException;
 
-    String uploadDocument(String sid, String path, String type,
-            String[] properties) throws ClientException;
-
+    String uploadDocument(String sid, String path, String type, String[] properties) throws ClientException;
 
     /**
-     * Gets all properties and ACLs from a document
-     * uses byte[] format to export blob
+     * Gets all properties and ACLs from a document uses byte[] format to export blob
+     *
      * @param sid the session id
      * @param uuid the doc uuid
      * @return
@@ -279,6 +256,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
 
     /**
      * Gets all properties and ACLs from a document
+     *
      * @param sid the session id
      * @param uuid the doc uuid
      * @param useDownloadUrl define blob export format

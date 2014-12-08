@@ -26,10 +26,9 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 public interface LayoutDefinitionConverter {
 
     /**
-     * Returns the original layout definition, or a clone if it needs to be
-     * changed. Can also return null if layout should be removed.
+     * Returns the original layout definition, or a clone if it needs to be changed. Can also return null if layout
+     * should be removed.
      */
-    LayoutDefinition getLayoutDefinition(LayoutDefinition orig,
-            LayoutConversionContext ctx);
+    LayoutDefinition getLayoutDefinition(LayoutDefinition orig, LayoutConversionContext ctx);
 
 }

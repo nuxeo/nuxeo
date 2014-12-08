@@ -48,8 +48,7 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         String termsAndConditions = "You have to be crazy to use this package";
 
         PackageBuilder builder = new PackageBuilder();
-        builder.name("nuxeo-automation").version("5.3.2").type(
-                PackageType.ADDON);
+        builder.name("nuxeo-automation").version("5.3.2").type(PackageType.ADDON);
         builder.platform("dm-5.3.2");
         builder.platform("dam-5.3.2");
         builder.dependency("nuxeo-core:5.3.1:5.3.2");
@@ -65,10 +64,8 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         Framework.trackFile(file, builder);
         File tofile = File.createTempFile("nxinstall-tofile-", ".tmp");
         Framework.trackFile(tofile, builder);
-        builder.addInstallScript("<install>\n  <copy file=\""
-                + file.getAbsolutePath() + "\" tofile=\""
-                + tofile.getAbsolutePath()
-                + "\" overwrite=\"true\"/>\n</install>\n");
+        builder.addInstallScript("<install>\n  <copy file=\"" + file.getAbsolutePath() + "\" tofile=\""
+                + tofile.getAbsolutePath() + "\" overwrite=\"true\"/>\n</install>\n");
 
         builder.addTermsAndConditions(termsAndConditions);
         builder.hotReloadSupport(true);
@@ -85,23 +82,19 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         PackageDefinitionImpl packageDef = (PackageDefinitionImpl) xmap.load(xmlIn);
         assertEquals("nuxeo-automation", packageDef.getName());
         assertEquals("Nuxeo", packageDef.getVendor());
-        assertEquals(NuxeoValidationState.INPROCESS,
-                packageDef.getValidationState());
-        assertEquals(ProductionState.PRODUCTION_READY,
-                packageDef.getProductionState());
+        assertEquals(NuxeoValidationState.INPROCESS, packageDef.getValidationState());
+        assertEquals(ProductionState.PRODUCTION_READY, packageDef.getProductionState());
         assertTrue(packageDef.requireTermsAndConditionsAcceptance());
         assertTrue(packageDef.isSupported());
         assertTrue(packageDef.supportsHotReload());
 
         // test on real unziped package
         File zipFile = builder.build();
-        String tmpDirPath = System.getProperty("java.io.tmpdir") + "/TestPkg"
-                + System.currentTimeMillis();
+        String tmpDirPath = System.getProperty("java.io.tmpdir") + "/TestPkg" + System.currentTimeMillis();
         File tmpDir = new File(tmpDirPath);
         tmpDir.mkdirs();
         ZipUtils.unzip(zipFile, tmpDir);
-        LocalPackage pkg = new LocalPackageImpl(tmpDir, PackageState.REMOTE,
-                service);
+        LocalPackage pkg = new LocalPackageImpl(tmpDir, PackageState.REMOTE, service);
         Framework.trackFile(tmpDir, pkg);
         assertEquals(termsAndConditions, pkg.getTermsAndConditionsContent());
         assertEquals("nuxeo-automation", pkg.getName());

@@ -36,7 +36,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 public class TestExternalBlob extends NXRuntimeTestCase {
 
@@ -48,10 +47,8 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
-        deployContrib("org.nuxeo.ecm.core.api.tests",
-                "OSGI-INF/test-externalblob-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.api.tests",
-                "OSGI-INF/test-externalblob-adapters-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-externalblob-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-externalblob-adapters-contrib.xml");
 
         // set container to temp directory here in case that depends on the OS
         // or machine configuration and add funny characters to avoid problems
@@ -60,14 +57,13 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         assertNotNull(service);
         ExternalBlobAdapter adapter = service.getExternalBlobAdapterForPrefix("fs");
         Map<String, String> props = new HashMap<>();
-        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n"
-                + System.getProperty("java.io.tmpdir") + " ");
+        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n" + System.getProperty("java.io.tmpdir")
+                + " ");
         adapter.setProperties(props);
     }
 
     protected File createTempFile() throws Exception {
-        File tempDir = new File(System.getProperty("java.io.tmpdir"),
-                TEMP_DIRECTORY_NAME);
+        File tempDir = new File(System.getProperty("java.io.tmpdir"), TEMP_DIRECTORY_NAME);
         if (!tempDir.exists()) {
             tempDir.mkdir();
             Framework.trackFile(tempDir, this);
@@ -82,8 +78,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
     }
 
     protected String getTempFileUri(File tempFile) {
-        return String.format("fs:%s%s%s", TEMP_DIRECTORY_NAME, File.separator,
-                tempFile.getName());
+        return String.format("fs:%s%s%s", TEMP_DIRECTORY_NAME, File.separator, tempFile.getName());
     }
 
     @Test
@@ -94,8 +89,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         assertNotNull(adapter);
         assertEquals("fs", adapter.getPrefix());
         assertTrue(adapter instanceof FileSystemExternalBlobAdapter);
-        assertEquals(
-                System.getProperty("java.io.tmpdir"),
+        assertEquals(System.getProperty("java.io.tmpdir"),
                 adapter.getProperty(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME));
 
         File file = createTempFile();
@@ -182,8 +176,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         assertEquals("Hello External Blob", blob.getString());
         assertEquals(file.getName(), blob.getFilename());
         // filename now set on property
-        assertEquals(file.getName(),
-                doc.getPropertyValue("extfile:content/name"));
+        assertEquals(file.getName(), doc.getPropertyValue("extfile:content/name"));
         assertEquals(uri, doc.getPropertyValue("extfile:content/uri"));
         assertEquals("text", doc.getPropertyValue("extfile:content/mime-type"));
     }

@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
-public class ShallowFilterPostCommitEventListener implements
-        PostCommitFilteringEventListener {
+public class ShallowFilterPostCommitEventListener implements PostCommitFilteringEventListener {
 
     public static volatile int handledCount;
 
@@ -45,8 +44,7 @@ public class ShallowFilterPostCommitEventListener implements
             }
             return doc.getCurrentLifeCycleState().equals("undefined");
         } catch (ClientException e) {
-            throw new ClientRuntimeException(
-                    "Cannot access to shallowed property");
+            throw new ClientRuntimeException("Cannot access to shallowed property");
         }
     }
 

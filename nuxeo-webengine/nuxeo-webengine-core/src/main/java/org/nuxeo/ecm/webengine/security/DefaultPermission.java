@@ -23,13 +23,12 @@ import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultPermission implements Permission {
 
     protected final String name;
-    protected final Guard guard;
 
+    protected final Guard guard;
 
     public DefaultPermission(String name, Guard guard) {
         this.name = name;

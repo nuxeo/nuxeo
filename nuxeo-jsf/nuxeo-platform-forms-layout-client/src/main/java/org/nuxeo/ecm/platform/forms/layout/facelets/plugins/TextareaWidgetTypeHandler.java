@@ -58,9 +58,8 @@ public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
     public static String WRAP_WORD_STYLE = "white-space: -moz-pre-wrap !important; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;";
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
@@ -75,42 +74,32 @@ public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
             // Make text fields automatically switch to right-to-left if
             // not told otherwise
             if (widget.getProperty(FaceletHandlerHelper.DIR_PROPERTY) == null) {
-                TagAttribute dir = helper.createAttribute(
-                        FaceletHandlerHelper.DIR_PROPERTY,
+                TagAttribute dir = helper.createAttribute(FaceletHandlerHelper.DIR_PROPERTY,
                         FaceletHandlerHelper.DIR_AUTO);
-                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                        dir);
+                attributes = FaceletHandlerHelper.addTagAttribute(attributes, dir);
             }
         }
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
-                subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+            ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlInputTextarea.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(
-                    widgetTagConfigId, msgId, widgetId, null);
+            ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
             // add styling for end of line characters to be displayed
-            if (!BuiltinWidgetModes.EDIT.equals(mode)
-                    && !BuiltinWidgetModes.isLikePlainMode(mode)
+            if (!BuiltinWidgetModes.EDIT.equals(mode) && !BuiltinWidgetModes.isLikePlainMode(mode)
                     && widget.getProperty("style") == null) {
-                TagAttribute escape = helper.createAttribute("style",
-                        WRAP_WORD_STYLE);
-                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                        escape);
+                TagAttribute escape = helper.createAttribute("style", WRAP_WORD_STYLE);
+                attributes = FaceletHandlerHelper.addTagAttribute(attributes, escape);
             }
-            ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+            ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributesImpl(new TagAttribute[0]), output,
-                        UIHtmlText.class.getName(), null);
+                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
+                        output, UIHtmlText.class.getName(), null);
             } else {
                 return output;
             }

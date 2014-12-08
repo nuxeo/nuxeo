@@ -25,16 +25,11 @@ import org.nuxeo.runtime.trackers.concurrent.ThreadEventHandler;
 import org.nuxeo.runtime.trackers.concurrent.ThreadEventListener;
 
 /**
- * Files event tracker which delete files once the runtime leave the threads or
- * at least once the associated marker object is garbaged.
- *
- * Note: for being backward compatible you may disable the thread events
- * tracking by black-listing the default configuration component
- * "org.nuxeo.runtime.trackers.files.threadstracking.config" in the runtime.
- *
- * This could be achieved by editing the "blacklist" file in your
- * 'config' directory or using the @{link BlacklistComponent} annotation
- * on your test class.
+ * Files event tracker which delete files once the runtime leave the threads or at least once the associated marker
+ * object is garbaged. Note: for being backward compatible you may disable the thread events tracking by black-listing
+ * the default configuration component "org.nuxeo.runtime.trackers.files.threadstracking.config" in the runtime. This
+ * could be achieved by editing the "blacklist" file in your 'config' directory or using the @{link BlacklistComponent}
+ * annotation on your test class.
  *
  * @author Stephane Lacoin at Nuxeo (aka matic)
  * @since 6.0
@@ -87,29 +82,27 @@ public class FileEventTracker extends DefaultComponent {
 
     protected final ThreadLocal<ThreadDelegate> threads = new ThreadLocal<>();
 
-    protected final ThreadEventListener threadsListener = new ThreadEventListener(
-            new ThreadEventHandler() {
+    protected final ThreadEventListener threadsListener = new ThreadEventListener(new ThreadEventHandler() {
 
-                @Override
-                public void onEnter(boolean isLongRunning) {
-                    setThreadDelegate(isLongRunning);
-                }
+        @Override
+        public void onEnter(boolean isLongRunning) {
+            setThreadDelegate(isLongRunning);
+        }
 
-                @Override
-                public void onLeave() {
-                    resetThreadDelegate();
-                }
+        @Override
+        public void onLeave() {
+            resetThreadDelegate();
+        }
 
-            });
+    });
 
-    protected final FileEventListener filesListener = new FileEventListener(
-            new FileEventHandler() {
+    protected final FileEventListener filesListener = new FileEventListener(new FileEventHandler() {
 
-                @Override
-                public void onFile(File file, Object marker) {
-                    onContext().onFile(file, marker);
-                }
-            });
+        @Override
+        public void onFile(File file, Object marker) {
+            onContext().onFile(file, marker);
+        }
+    });
 
     @Override
     public void activate(ComponentContext context) {
@@ -121,7 +114,7 @@ public class FileEventTracker extends DefaultComponent {
 
     @Override
     public int getApplicationStartedOrder() {
-    	return Integer.MAX_VALUE;
+        return Integer.MAX_VALUE;
     }
 
     @Override
@@ -129,20 +122,20 @@ public class FileEventTracker extends DefaultComponent {
         resetThreadDelegate();
         Framework.addListener(new RuntimeServiceListener() {
 
-			@Override
-			public void handleEvent(RuntimeServiceEvent event) {
-				if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
-					return;
-				}
-				Framework.removeListener(this);
-				setThreadDelegate(false);
-			}
-		});
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
+                    return;
+                }
+                Framework.removeListener(this);
+                setThreadDelegate(false);
+            }
+        });
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-    	resetThreadDelegate();
+        resetThreadDelegate();
         if (Framework.getService(EventService.class) != null) {
             if (threadsListener.isInstalled()) {
                 threadsListener.uninstall();
@@ -154,13 +147,11 @@ public class FileEventTracker extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof EnableThreadsTracking) {
             threadsListener.install();
         } else {
-            super.registerContribution(contribution, extensionPoint,
-                    contributor);
+            super.registerContribution(contribution, extensionPoint, contributor);
         }
 
     }

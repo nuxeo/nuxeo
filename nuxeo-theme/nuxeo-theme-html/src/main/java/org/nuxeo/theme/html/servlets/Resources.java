@@ -55,19 +55,16 @@ public final class Resources extends HttpServlet implements Serializable {
     private static final Pattern pathPattern = Pattern.compile("/([^/]+)");
 
     @Override
-    protected void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws IOException {
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 
     @Override
-    protected void doPost(final HttpServletRequest request,
-            final HttpServletResponse response) throws IOException {
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         doProcess(request, response);
     }
 
-    protected void doProcess(final HttpServletRequest request,
-            final HttpServletResponse response) throws IOException {
+    protected void doProcess(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 
         final String pathInfo = request.getPathInfo();
         if (pathInfo == null) {
@@ -99,15 +96,12 @@ public final class Resources extends HttpServlet implements Serializable {
             }
 
             if (contentType == null) {
-                log.error("Resource names must end with .js, .css or .json: "
-                        + pathInfo);
+                log.error("Resource names must end with .js, .css or .json: " + pathInfo);
                 return;
             }
 
-            if (previousContentType != null
-                    && !contentType.equals(previousContentType)) {
-                log.error("Combined resources must be of the same type: "
-                        + pathInfo);
+            if (previousContentType != null && !contentType.equals(previousContentType)) {
+                log.error("Combined resources must be of the same type: " + pathInfo);
                 return;
             }
         }
@@ -116,11 +110,10 @@ public final class Resources extends HttpServlet implements Serializable {
         // cache control
         final String applicationPath = request.getParameter("path");
         if (applicationPath != null) {
-            ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
-                    TypeFamily.APPLICATION, applicationPath);
+            ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(TypeFamily.APPLICATION,
+                    applicationPath);
             if (application != null) {
-                Utils.setCacheHeaders(response,
-                        application.getResourceCaching());
+                Utils.setCacheHeaders(response, application.getResourceCaching());
             }
         }
 
@@ -137,11 +130,9 @@ public final class Resources extends HttpServlet implements Serializable {
             final OutputStream out = new ByteArrayOutputStream();
             String source = themeManager.getResource(resourceName);
             if (source == null) {
-                ResourceType resource = (ResourceType) typeRegistry.lookup(
-                        TypeFamily.RESOURCE, resourceName);
+                ResourceType resource = (ResourceType) typeRegistry.lookup(TypeFamily.RESOURCE, resourceName);
                 if (resource == null) {
-                    log.error(String.format("Resource not registered %s.",
-                            resourceName));
+                    log.error(String.format("Resource not registered %s.", resourceName));
                     continue;
                 }
                 writeResource(resource, out);
@@ -153,37 +144,30 @@ public final class Resources extends HttpServlet implements Serializable {
                         try {
                             source = JSUtils.compressSource(source);
                         } catch (ThemeException e) {
-                            log.warn("failed to compress javascript source: "
-                                    + resourceName);
+                            log.warn("failed to compress javascript source: " + resourceName);
                         }
                     }
                 } else if (resourceName.endsWith(".css")) {
                     // fix CSS url(...) declarations;
                     String cssContextPath = resource.getContextPath();
                     if (cssContextPath != null) {
-                        source = CSSUtils.expandPartialUrls(source,
-                                cssContextPath);
+                        source = CSSUtils.expandPartialUrls(source, cssContextPath);
                     }
 
                     // expands system variables
                     source = Framework.expandVars(source);
 
                     // expand ${basePath}
-                    source = source.replaceAll("\\$\\{basePath\\}",
-                            Matcher.quoteReplacement(basePath));
+                    source = source.replaceAll("\\$\\{basePath\\}", Matcher.quoteReplacement(basePath));
                     // also expand ${org.nuxeo.ecm.contextPath}
-                    source = source.replaceAll(
-                            "\\$\\{org.nuxeo.ecm.contextPath\\}",
-                            Matcher.quoteReplacement(basePath));
-
+                    source = source.replaceAll("\\$\\{org.nuxeo.ecm.contextPath\\}", Matcher.quoteReplacement(basePath));
 
                     // do not shrink the CSS when Dev mode is enabled
                     if (resource.isShrinkable() && !Framework.isDevModeSet()) {
                         try {
                             source = CSSUtils.compressSource(source);
                         } catch (ThemeException e) {
-                            log.warn("failed to compress CSS source: "
-                                    + resourceName);
+                            log.warn("failed to compress CSS source: " + resourceName);
                         }
                     }
                 }
@@ -220,12 +204,10 @@ public final class Resources extends HttpServlet implements Serializable {
             }
         }
 
-        log.debug(String.format("Served resource(s): %s %s", pathInfo,
-                supportsGzip ? "with gzip compression" : ""));
+        log.debug(String.format("Served resource(s): %s %s", pathInfo, supportsGzip ? "with gzip compression" : ""));
     }
 
-    private static void writeResource(final ResourceType resource,
-            final OutputStream out) {
+    private static void writeResource(final ResourceType resource, final OutputStream out) {
         InputStream in = null;
         try {
             String path = resource.getPath();
@@ -241,8 +223,7 @@ public final class Resources extends HttpServlet implements Serializable {
                 }
                 out.close();
             } else {
-                log.error(String.format("Resource not found %s.",
-                        resource.getName()));
+                log.error(String.format("Resource not found %s.", resource.getName()));
             }
         } catch (IOException e) {
             log.error(e, e);

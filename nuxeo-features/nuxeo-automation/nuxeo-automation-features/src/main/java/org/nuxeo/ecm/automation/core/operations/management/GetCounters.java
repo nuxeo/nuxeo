@@ -41,8 +41,8 @@ import org.nuxeo.runtime.management.counters.CounterHistoryStack;
 import org.nuxeo.runtime.management.counters.CounterManager;
 
 /**
- * Return the data collected by one or more Counters For each counter 3 series
- * are returned , bare values, delta and speed
+ * Return the data collected by one or more Counters For each counter 3 series are returned , bare values, delta and
+ * speed
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
@@ -73,8 +73,7 @@ public class GetCounters {
                     CounterHistoryStack stack = cm.getCounterHistory(counterName);
 
                     // copy and reverse the list
-                    List<long[]> valueList = new ArrayList<long[]>(
-                            stack.getAsList());
+                    List<long[]> valueList = new ArrayList<long[]>(stack.getAsList());
                     Collections.reverse(valueList);
 
                     JSONObject counter = new JSONObject();
@@ -134,8 +133,7 @@ public class GetCounters {
         }
 
         try {
-            return new ByteArrayBlob(collection.toString().getBytes("UTF-8"),
-                    "application/json");
+            return new ByteArrayBlob(collection.toString().getBytes("UTF-8"), "application/json");
         } catch (UnsupportedEncodingException e) {
             // cannot happen
             throw new RuntimeException(e);

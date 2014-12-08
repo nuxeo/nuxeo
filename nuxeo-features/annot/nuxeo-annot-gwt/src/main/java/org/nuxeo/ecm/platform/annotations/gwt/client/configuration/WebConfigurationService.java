@@ -24,7 +24,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 @RemoteServiceRelativePath("webConfiguration")
 public interface WebConfigurationService extends RemoteService {

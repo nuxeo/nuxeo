@@ -33,17 +33,15 @@ import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * ConnectionProvider for Hibernate that looks up the connection in a
- * thread-local location, in order to share all connections to the database and
- * to avoid the need for XA datasources.
+ * ConnectionProvider for Hibernate that looks up the connection in a thread-local location, in order to share all
+ * connections to the database and to avoid the need for XA datasources.
  *
  * @since 5.7
  */
 public class NuxeoConnectionProvider implements ConnectionProvider {
 
     /**
-     * Delegate to do a standard Hibernate ConnectionProvider when no Nuxeo
-     * connection is available.
+     * Delegate to do a standard Hibernate ConnectionProvider when no Nuxeo connection is available.
      */
     protected DatasourceConnectionProvider dscp;
 
@@ -53,8 +51,7 @@ public class NuxeoConnectionProvider implements ConnectionProvider {
     protected String dataSourceName;
 
     /**
-     * Whether we have switched the connection autoCommit=false and must commit
-     * it on release.
+     * Whether we have switched the connection autoCommit=false and must commit it on release.
      */
     protected boolean began;
 
@@ -87,8 +84,7 @@ public class NuxeoConnectionProvider implements ConnectionProvider {
     }
 
     /**
-     * If there is a transaction active, make the connection use it by switching
-     * to autoCommit=false
+     * If there is a transaction active, make the connection use it by switching to autoCommit=false
      */
     private void begin(Connection connection) throws SQLException {
         began = false;
@@ -100,8 +96,7 @@ public class NuxeoConnectionProvider implements ConnectionProvider {
         }
         try {
             Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
-            if (transaction != null
-                    && transaction.getStatus() == Status.STATUS_ACTIVE) {
+            if (transaction != null && transaction.getStatus() == Status.STATUS_ACTIVE) {
                 connection.setAutoCommit(false);
                 began = true;
             }
@@ -113,8 +108,7 @@ public class NuxeoConnectionProvider implements ConnectionProvider {
     }
 
     /**
-     * If we previously switched to autoCommit=false, then now is the time to
-     * commit.
+     * If we previously switched to autoCommit=false, then now is the time to commit.
      */
     private void commit(Connection connection) throws SQLException {
         if (began) {

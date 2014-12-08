@@ -32,27 +32,23 @@ public class PerspectiveManager implements Registrable {
 
     private static final String PREDICATE_NAME = "_ is visible in perspective _";
 
-    private static final Predicate predicate = new DefaultPredicate(
-            PREDICATE_NAME);
+    private static final Predicate predicate = new DefaultPredicate(PREDICATE_NAME);
 
     private final RelationStorage relationStorage = Manager.getRelationStorage();
 
     public static PerspectiveType getPerspectiveByName(String name) {
-        return (PerspectiveType) Manager.getTypeRegistry().lookup(
-                TypeFamily.PERSPECTIVE, name);
+        return (PerspectiveType) Manager.getTypeRegistry().lookup(TypeFamily.PERSPECTIVE, name);
     }
 
     public static boolean hasPerspective(String perspectiveName) {
-        List<String> perspectiveNames = Manager.getTypeRegistry().getTypeNames(
-                TypeFamily.PERSPECTIVE);
+        List<String> perspectiveNames = Manager.getTypeRegistry().getTypeNames(TypeFamily.PERSPECTIVE);
         if (perspectiveNames == null) {
             return false;
         }
         return perspectiveNames.contains(perspectiveName);
     }
 
-    public boolean isVisibleInPerspective(Element element,
-            PerspectiveType perspective) {
+    public boolean isVisibleInPerspective(Element element, PerspectiveType perspective) {
         // the fragment is not in relation with any specific perspective: it is
         // always visible.
         if (relationStorage.search(predicate, element, null).isEmpty()) {
@@ -61,10 +57,8 @@ public class PerspectiveManager implements Registrable {
         return !relationStorage.search(predicate, element, perspective).isEmpty();
     }
 
-    public static void setVisibleInPerspective(Element element,
-            PerspectiveType perspective) {
-        Manager.getRelationStorage().add(
-                new DyadicRelation(predicate, element, perspective));
+    public static void setVisibleInPerspective(Element element, PerspectiveType perspective) {
+        Manager.getRelationStorage().add(new DyadicRelation(predicate, element, perspective));
     }
 
     public void setVisibleInAllPerspectives(Element element) {
@@ -72,20 +66,17 @@ public class PerspectiveManager implements Registrable {
         removeRelationsFrom(element);
         // create new relations
         for (PerspectiveType perspective : listPerspectives()) {
-            Manager.getRelationStorage().add(
-                    new DyadicRelation(predicate, element, perspective));
+            Manager.getRelationStorage().add(new DyadicRelation(predicate, element, perspective));
         }
     }
 
-    public void setVisibleInPerspectives(Element element,
-            List<String> perspectiveNames) {
+    public void setVisibleInPerspectives(Element element, List<String> perspectiveNames) {
         // remove existing relations
         removeRelationsFrom(element);
         // create new relations
         for (String perspectiveName : perspectiveNames) {
             PerspectiveType perspective = getPerspectiveByName(perspectiveName);
-            Manager.getRelationStorage().add(
-                    new DyadicRelation(predicate, element, perspective));
+            Manager.getRelationStorage().add(new DyadicRelation(predicate, element, perspective));
         }
     }
 
@@ -99,8 +90,7 @@ public class PerspectiveManager implements Registrable {
 
     public List<PerspectiveType> getPerspectivesFor(Element element) {
         List<PerspectiveType> perspectives = new ArrayList<PerspectiveType>();
-        for (Relation relation : relationStorage.search(predicate, element,
-                null)) {
+        for (Relation relation : relationStorage.search(predicate, element, null)) {
             PerspectiveType perspective = (PerspectiveType) relation.getRelate(2);
             perspectives.add(perspective);
         }
@@ -109,16 +99,14 @@ public class PerspectiveManager implements Registrable {
 
     public static List<PerspectiveType> listPerspectives() {
         List<PerspectiveType> perspectives = new ArrayList<PerspectiveType>();
-        for (Type perspective : Manager.getTypeRegistry().getTypes(
-                TypeFamily.PERSPECTIVE)) {
+        for (Type perspective : Manager.getTypeRegistry().getTypes(TypeFamily.PERSPECTIVE)) {
             perspectives.add((PerspectiveType) perspective);
         }
         return perspectives;
     }
 
     private void removeRelationsFrom(Element element) {
-        for (Relation relation : relationStorage.search(predicate, element,
-                null)) {
+        for (Relation relation : relationStorage.search(predicate, element, null)) {
             relationStorage.remove(relation);
         }
     }

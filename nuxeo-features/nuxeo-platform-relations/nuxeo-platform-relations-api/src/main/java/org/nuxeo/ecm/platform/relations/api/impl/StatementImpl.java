@@ -52,7 +52,6 @@ public class StatementImpl implements Statement {
 
     protected Map<Resource, Node[]> properties = new HashMap<Resource, Node[]>();
 
-
     /**
      * Constructor for NULL statement.
      */
@@ -196,8 +195,7 @@ public class StatementImpl implements Statement {
     }
 
     public void deleteProperties(Resource property, Node[] values) {
-        if (properties.containsKey(property) && values != null
-                && values.length > 0) {
+        if (properties.containsKey(property) && values != null && values.length > 0) {
             List<Node> valuesList = new ArrayList<Node>();
             valuesList.addAll(Arrays.asList(properties.get(property)));
             valuesList.removeAll(Arrays.asList(values));
@@ -257,8 +255,7 @@ public class StatementImpl implements Statement {
 
     @Override
     public String toString() {
-        return String.format("%s(%s, %s, %s)", getClass().getSimpleName(),
-                subject, predicate, object);
+        return String.format("%s(%s, %s, %s)", getClass().getSimpleName(), subject, predicate, object);
     }
 
     @Override
@@ -270,8 +267,7 @@ public class StatementImpl implements Statement {
             return false;
         }
         StatementImpl otherStatement = (StatementImpl) other;
-        return subject.equals(otherStatement.subject)
-                && predicate.equals(otherStatement.predicate)
+        return subject.equals(otherStatement.subject) && predicate.equals(otherStatement.predicate)
                 && object.equals(otherStatement.object);
     }
 

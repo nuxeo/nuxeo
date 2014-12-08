@@ -53,7 +53,7 @@ public class MultiDirectoryDescriptor implements Cloneable {
 
     @XNodeList(value = "source", type = SourceDescriptor[].class, componentType = SourceDescriptor.class)
     protected SourceDescriptor[] sources;
-    
+
     @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
     public PermissionDescriptor[] permissions = null;
 
@@ -81,16 +81,13 @@ public class MultiDirectoryDescriptor implements Cloneable {
             if (sources == null) {
                 sources = other.sources;
             } else {
-                SourceDescriptor[] s = new SourceDescriptor[sources.length
-                        + other.sources.length];
+                SourceDescriptor[] s = new SourceDescriptor[sources.length + other.sources.length];
                 System.arraycopy(sources, 0, s, 0, sources.length);
-                System.arraycopy(other.sources, 0, s, sources.length,
-                        other.sources.length);
+                System.arraycopy(other.sources, 0, s, sources.length, other.sources.length);
                 sources = s;
             }
         }
-        if ((other.permissions != null && other.permissions.length != 0)
-                || overwrite) {
+        if ((other.permissions != null && other.permissions.length != 0) || overwrite) {
             permissions = other.permissions;
         }
     }

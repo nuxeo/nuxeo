@@ -46,11 +46,9 @@ public class TypedExportedDocumentRepositoryInit extends DefaultRepositoryInit {
      * @return the document model
      * @throws ClientException the client exception
      */
-    protected final DocumentModel createTestDoc(CoreSession session)
-            throws ClientException {
+    protected final DocumentModel createTestDoc(CoreSession session) throws ClientException {
 
-        DocumentModel doc = session.createDocumentModel("/", TEST_DOC_NAME,
-                "File");
+        DocumentModel doc = session.createDocumentModel("/", TEST_DOC_NAME, "File");
 
         // -----------------------
         // dublincore
@@ -60,10 +58,8 @@ public class TypedExportedDocumentRepositoryInit extends DefaultRepositoryInit {
         doc.setProperty("dublincore", "creator", "Administrator");
         doc.setProperty("dublincore", "modified", "2011-12-29T11:24:25Z");
         doc.setProperty("dublincore", "lastContributor", "Administrator");
-        doc.setProperty("dublincore", "contributors", new String[] {
-                "Administrator", "Joe" });
-        doc.setProperty("dublincore", "subjects", new String[] { "Art",
-                "Architecture" });
+        doc.setProperty("dublincore", "contributors", new String[] { "Administrator", "Joe" });
+        doc.setProperty("dublincore", "subjects", new String[] { "Art", "Architecture" });
 
         // -----------------------
         // file

@@ -27,7 +27,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("media-type")
 public class MediaTypeRef {
@@ -45,7 +44,7 @@ public class MediaTypeRef {
         int p = mimeType.indexOf('/');
         if (p > -1) {
             type = mimeType.substring(0, p);
-            subtype = mimeType.substring(p+1);
+            subtype = mimeType.substring(p + 1);
             if (subtype.length() == 0 || subtype.equals("*")) {
                 subtype = "*";
             }

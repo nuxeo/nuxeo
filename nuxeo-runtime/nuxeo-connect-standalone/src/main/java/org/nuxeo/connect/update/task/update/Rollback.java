@@ -100,21 +100,17 @@ public class Rollback extends AbstractCommand {
     }
 
     @Override
-    protected void doValidate(Task task, ValidationStatus status)
-            throws PackageException {
+    protected void doValidate(Task task, ValidationStatus status) throws PackageException {
         // allow null version for Studio snapshot jar
         if (key == null) {
-            status.addError("Cannot execute command in installer."
-                    + " Invalid rollback syntax: key was not specified.");
+            status.addError("Cannot execute command in installer." + " Invalid rollback syntax: key was not specified.");
         }
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         UpdateManager mgr = ((AbstractTask) task).getUpdateManager();
-        RollbackOptions opt = new RollbackOptions(task.getPackage().getId(),
-                key, version);
+        RollbackOptions opt = new RollbackOptions(task.getPackage().getId(), key, version);
         File rollbackTarget = mgr.getRollbackTarget(opt);
         if (rollbackTarget != null) {
             Command undeploy = getUndeployCommand(rollbackTarget);
@@ -132,8 +128,7 @@ public class Rollback extends AbstractCommand {
     }
 
     /**
-     * Method to be overridden by subclasses to provide a undeploy command for
-     * hot reload
+     * Method to be overridden by subclasses to provide a undeploy command for hot reload
      *
      * @since 5.6
      */

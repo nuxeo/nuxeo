@@ -40,8 +40,7 @@ public interface FileStorage {
      *
      * @param key the file key
      * @param file the file to use to store the fetched data
-     * @return {@code true} if the file was fetched, {@code false} if the file
-     *         was not found
+     * @return {@code true} if the file was fetched, {@code false} if the file was not found
      * @throws IOException if a storage error occurred
      */
     boolean fetchFile(String key, File file) throws IOException;

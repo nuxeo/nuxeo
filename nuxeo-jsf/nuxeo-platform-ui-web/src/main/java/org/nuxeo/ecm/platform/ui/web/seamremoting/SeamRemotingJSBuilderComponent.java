@@ -38,8 +38,7 @@ public class SeamRemotingJSBuilderComponent extends DefaultComponent implements 
     protected static final List<String> beanNames = new ArrayList<String>();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (extensionPoint.equals(EP_REMOTABLE_SEAMBEANS)) {
             RemotableSeamBeansDescriptor descriptor = (RemotableSeamBeansDescriptor) contribution;
@@ -51,7 +50,7 @@ public class SeamRemotingJSBuilderComponent extends DefaultComponent implements 
         return beanNames;
     }
 
-    @Factory(value="SeamRemotingBeanNames", scope=ScopeType.APPLICATION)
+    @Factory(value = "SeamRemotingBeanNames", scope = ScopeType.APPLICATION)
     public String getSeamRemotingJavaScriptURLParameters() {
 
         StringBuilder sb = new StringBuilder();

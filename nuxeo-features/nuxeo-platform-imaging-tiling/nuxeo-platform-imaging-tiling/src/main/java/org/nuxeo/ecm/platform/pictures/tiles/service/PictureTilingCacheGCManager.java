@@ -30,11 +30,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
  * Manage GC processing to clean up disk cache
  *
  * @author tiry
- *
  */
 public class PictureTilingCacheGCManager {
 
@@ -49,8 +47,7 @@ public class PictureTilingCacheGCManager {
     private static int gcCalls = 0;
 
     protected static long getMaxDiskSpaceUsageKB() {
-        String maxStr = PictureTilingComponent.getEnvValue(
-                MAX_DISK_SPACE_USAGE_KEY,
+        String maxStr = PictureTilingComponent.getEnvValue(MAX_DISK_SPACE_USAGE_KEY,
                 Long.toString(MAX_DISK_SPACE_USAGE_KB));
         return Long.parseLong(maxStr);
     }

@@ -33,7 +33,6 @@ import org.mortbay.jetty.webapp.WebAppContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ContextManager {
 
@@ -59,8 +58,7 @@ public class ContextManager {
         String path = descriptor.getContext();
         Context ctx = contexts.get(path);
         if (ctx == null) {
-            ctx = new Context(server, path, Context.SESSIONS
-                    | Context.NO_SECURITY);
+            ctx = new Context(server, path, Context.SESSIONS | Context.NO_SECURITY);
             contexts.put(path, ctx);
         }
         FilterHolder holder = new FilterHolder(descriptor.getClazz());
@@ -76,16 +74,14 @@ public class ContextManager {
         if (params != null) {
             holder.setInitParameters(params);
         }
-        ctx.addFilter(holder, descriptor.getPath(),
-                org.mortbay.jetty.Handler.DEFAULT);
+        ctx.addFilter(holder, descriptor.getPath(), org.mortbay.jetty.Handler.DEFAULT);
     }
 
     public synchronized void addServlet(ServletDescriptor descriptor) {
         String path = descriptor.getContext();
         Context ctx = contexts.get(path);
         if (ctx == null) {
-            ctx = new Context(server, path, Context.SESSIONS
-                    | Context.NO_SECURITY);
+            ctx = new Context(server, path, Context.SESSIONS | Context.NO_SECURITY);
             contexts.put(path, ctx);
         }
         ServletHolder holder = new ServletHolder(descriptor.getClazz());
@@ -122,7 +118,7 @@ public class ContextManager {
 
     public void applyLifecycleListeners() {
         HandlerCollection hc = (HandlerCollection) server.getHandler();
-        Handler[] handlers =  hc.getChildHandlersByClass(WebAppContext.class);
+        Handler[] handlers = hc.getChildHandlersByClass(WebAppContext.class);
         for (ServletContextListenerDescriptor desc : listeners.values()) {
             ServletContextListener listener;
             try {
@@ -132,7 +128,7 @@ public class ContextManager {
                 continue;
             }
             for (Handler handler : handlers) {
-                WebAppContext context = (WebAppContext)handler;
+                WebAppContext context = (WebAppContext) handler;
                 if (context.getContextPath().matches(desc.context)) {
                     context.addEventListener(listener);
                 }

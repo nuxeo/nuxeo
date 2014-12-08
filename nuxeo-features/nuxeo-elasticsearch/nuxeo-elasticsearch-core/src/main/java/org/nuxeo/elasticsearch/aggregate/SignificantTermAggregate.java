@@ -39,16 +39,14 @@ import org.nuxeo.ecm.platform.query.core.BucketTerm;
  */
 public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
 
-    public SignificantTermAggregate(AggregateDefinition definition,
-            DocumentModel searchDocument) {
+    public SignificantTermAggregate(AggregateDefinition definition, DocumentModel searchDocument) {
         super(definition, searchDocument);
     }
 
     @JsonIgnore
     @Override
     public SignificantTermsBuilder getEsAggregate() {
-        SignificantTermsBuilder ret = AggregationBuilders.significantTerms(
-                getId()).field(getField());
+        SignificantTermsBuilder ret = AggregationBuilders.significantTerms(getId()).field(getField());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_SIZE_PROP)) {
             ret.size(Integer.parseInt(props.get(AGG_SIZE_PROP)));
@@ -70,12 +68,10 @@ public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
 
     @JsonIgnore
     @Override
-    public void parseEsBuckets(
-            Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
+    public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
         List<BucketTerm> nxBuckets = new ArrayList<BucketTerm>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
-            nxBuckets
-                    .add(new BucketTerm(bucket.getKey(), bucket.getDocCount()));
+            nxBuckets.add(new BucketTerm(bucket.getKey(), bucket.getDocCount()));
         }
         this.buckets = nxBuckets;
     }

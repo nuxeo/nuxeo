@@ -24,8 +24,6 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 /**
- *
- *
  * @since 5.7.2
  */
 public class TestContentDisposition {
@@ -35,24 +33,19 @@ public class TestContentDisposition {
         for (boolean useAttribute : new Boolean[] { true, false }) {
 
             HttpServletRequest req = getRequest(useAttribute, "true", "MSIE");
-            assertEquals("inline; filename=myfile.txt",
-                    ServletHelper.getRFC2231ContentDisposition(req,
-                            "myfile.txt"));
+            assertEquals("inline; filename=myfile.txt", ServletHelper.getRFC2231ContentDisposition(req, "myfile.txt"));
 
             req = getRequest(useAttribute, "false", "MSIE");
             assertEquals("attachment; filename=myfile.txt",
-                    ServletHelper.getRFC2231ContentDisposition(req,
-                            "myfile.txt"));
+                    ServletHelper.getRFC2231ContentDisposition(req, "myfile.txt"));
 
             req = getRequest(useAttribute, null, "MSIE");
             assertEquals("attachment; filename=myfile.txt",
-                    ServletHelper.getRFC2231ContentDisposition(req,
-                            "myfile.txt"));
+                    ServletHelper.getRFC2231ContentDisposition(req, "myfile.txt"));
         }
     }
 
-    private HttpServletRequest getRequest(boolean useAttribute, String inline,
-            String userAgent) {
+    private HttpServletRequest getRequest(boolean useAttribute, String inline, String userAgent) {
         HttpServletRequest req = mock(HttpServletRequest.class);
         if (useAttribute) {
             when(req.getAttribute("inline")).thenReturn(inline);

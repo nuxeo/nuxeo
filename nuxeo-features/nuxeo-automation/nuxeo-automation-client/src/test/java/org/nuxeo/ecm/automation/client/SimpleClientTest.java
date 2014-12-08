@@ -23,14 +23,12 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 
 /**
  * @author dmetzler
- *
  */
 public class SimpleClientTest {
 
     public static final String AUTOMATION_URL = "http://localhost:8080/nuxeo/site/automation";
 
     private MockedHttpAutomationClient client;
-
 
     @Before
     public void doBefore() throws Exception {
@@ -40,26 +38,23 @@ public class SimpleClientTest {
 
     @Test
     public void callingAutomationSendsAnHttpRequest() throws Exception {
-         client.setResponse("application/json+nxentity", HttpResponses.DOC_WORKSPACE);
+        client.setResponse("application/json+nxentity", HttpResponses.DOC_WORKSPACE);
 
-         Session session = client.getSession("Administrator", "Administrator");
-         Documents docs = (Documents) session.newRequest("Document.Query").set(
-                "query", "SELECT * FROM Document").execute();
-         assertTrue(docs.size()> 0);
+        Session session = client.getSession("Administrator", "Administrator");
+        Documents docs = (Documents) session.newRequest("Document.Query").set("query", "SELECT * FROM Document").execute();
+        assertTrue(docs.size() > 0);
 
-         client.shutdown();
+        client.shutdown();
     }
-
 
     @Test
     public void returningADocWitNoPathShouldNotThrowError() throws Exception {
-        //NXP-6777
+        // NXP-6777
         client.setResponse("application/json+nxentity", HttpResponses.DOC_NOPATH);
 
         Session session = client.getSession("Administrator", "Administrator");
-        Documents docs = (Documents) session.newRequest("Document.Query").set(
-               "query", "SELECT * FROM Document").execute();
-        assertTrue(docs.size()> 0);
+        Documents docs = (Documents) session.newRequest("Document.Query").set("query", "SELECT * FROM Document").execute();
+        assertTrue(docs.size() > 0);
 
         client.shutdown();
 

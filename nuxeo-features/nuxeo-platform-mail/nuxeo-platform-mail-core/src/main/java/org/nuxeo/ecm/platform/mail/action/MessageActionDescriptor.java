@@ -37,7 +37,7 @@ public class MessageActionDescriptor {
 
     @XNode("@chain")
     private String chain;
-    
+
     @XNode
     Class<? extends MessageAction> action;
 
@@ -58,13 +58,12 @@ public class MessageActionDescriptor {
 
     public MessageAction getAction() {
         try {
-            if (action==null || chain!=null) {
+            if (action == null || chain != null) {
                 return new CreateDocumentsFromAutomationChainAction(chain);
             }
             return action.newInstance();
         } catch (InstantiationException e) {
-            throw new RuntimeException(
-                    "Could not get MessageAction new Instance", e);
+            throw new RuntimeException("Could not get MessageAction new Instance", e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

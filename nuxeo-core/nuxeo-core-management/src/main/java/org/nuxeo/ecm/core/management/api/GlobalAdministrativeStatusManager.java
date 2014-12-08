@@ -29,16 +29,14 @@ public interface GlobalAdministrativeStatusManager {
     List<String> listInstanceIds();
 
     /**
-     * Retrieve the {@link AdministrativeStatusManager} for a given Nuxeo
-     * instance.
+     * Retrieve the {@link AdministrativeStatusManager} for a given Nuxeo instance.
      */
     AdministrativeStatusManager getStatusManager(String instanceIdentifier);
 
     /**
      * Updates the status of a service for all registered Nuxeo instances.
      */
-    void setStatus(String serviceIdentifier, String state, String message,
-            String login);
+    void setStatus(String serviceIdentifier, String state, String message, String login);
 
     /**
      * Lists services that are declared to be administrable.
@@ -48,8 +46,7 @@ public interface GlobalAdministrativeStatusManager {
     /**
      * Gets the XMAP descriptor for one service.
      */
-    AdministrableServiceDescriptor getServiceDescriptor(
-            String serviceIdentifier);
+    AdministrableServiceDescriptor getServiceDescriptor(String serviceIdentifier);
 
     /**
      * Registers a service given its descriptor.

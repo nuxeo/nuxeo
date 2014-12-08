@@ -29,8 +29,7 @@ import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestEventService extends NXRuntimeTestCase {
 

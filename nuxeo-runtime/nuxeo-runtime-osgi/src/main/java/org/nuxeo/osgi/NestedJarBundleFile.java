@@ -25,10 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarFile;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NestedJarBundleFile extends JarBundleFile {
 

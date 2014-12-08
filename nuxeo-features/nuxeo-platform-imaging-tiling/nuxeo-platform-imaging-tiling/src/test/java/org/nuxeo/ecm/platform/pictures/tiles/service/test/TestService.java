@@ -57,12 +57,10 @@ public class TestService extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-                "OSGI-INF/pictures-tiles-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.pictures.tiles", "OSGI-INF/pictures-tiles-framework.xml");
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
 
-        deployContrib("org.nuxeo.ecm.platform.picture.core",
-        "OSGI-INF/commandline-imagemagick-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.picture.core", "OSGI-INF/commandline-imagemagick-contrib.xml");
         PictureTilingComponent.getCache().clear();
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         PictureTilingComponent.endGC();
@@ -95,8 +93,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testAdapter() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-                "OSGI-INF/pictures-tiles-adapter-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.pictures.tiles", "OSGI-INF/pictures-tiles-adapter-contrib.xml");
 
     }
 
@@ -110,8 +107,7 @@ public class TestService extends NXRuntimeTestCase {
 
         GimpExecutor.setUseQuickExec(false);
         image.setFilename("slow.jpg");
-        PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0,
-                false);
+        PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0, false);
         assertNotNull(tiles);
         assertFalse(tiles.getZoomfactor() == 0);
         // System.out.println("ExecTime="
@@ -119,8 +115,7 @@ public class TestService extends NXRuntimeTestCase {
 
         GimpExecutor.setUseQuickExec(true);
         image.setFilename("quick.jpg");
-        PictureTiles tiles2 = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0,
-                false);
+        PictureTiles tiles2 = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0, false);
         assertNotNull(tiles2);
         assertFalse(tiles2.getZoomfactor() == 0);
         // System.out.println("ExecTime="
@@ -143,8 +138,7 @@ public class TestService extends NXRuntimeTestCase {
         Blob image = new FileBlob(file);
 
         image.setFilename("test.jpg");
-        PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0,
-                false);
+        PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0, false);
 
         assertNotNull(tiles);
 
@@ -190,16 +184,11 @@ public class TestService extends NXRuntimeTestCase {
         assertFalse(tiles.getZoomfactor() == 0);
     }
 
-    /*  @Test
-        public void testTilingBench() throws Exception {
-
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
-        assertNotNull(pts);
-
-        benchTiler(pts, new GimpTiler());
-        benchTiler(pts, new MagickTiler());
-
-    }*/
+    /*
+     * @Test public void testTilingBench() throws Exception { PictureTilingService pts =
+     * Framework.getLocalService(PictureTilingService.class); assertNotNull(pts); benchTiler(pts, new GimpTiler());
+     * benchTiler(pts, new MagickTiler()); }
+     */
 
     @Test
     public void testMagick() throws Exception {
@@ -232,8 +221,7 @@ public class TestService extends NXRuntimeTestCase {
     @Test
     @Ignore
     public void testBig() throws Exception {
-        PictureTilingService pts =
-                Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = new File("/home/tiry/photos/orion.jpg");
@@ -244,14 +232,12 @@ public class TestService extends NXRuntimeTestCase {
         assertNotNull(tiles);
         long t1 = System.currentTimeMillis();
 
-        System.out.println("Big picture " +
-            tiles.getOriginalImageInfo().getWidth() + "x" +
-            tiles.getOriginalImageInfo().getHeight() + " at zoom " +
-            tiles.getZoomfactor() + " generated in " + (t1-t0) + "ms");
+        System.out.println("Big picture " + tiles.getOriginalImageInfo().getWidth() + "x"
+                + tiles.getOriginalImageInfo().getHeight() + " at zoom " + tiles.getZoomfactor() + " generated in "
+                + (t1 - t0) + "ms");
     }
 
-    protected void benchTiler(PictureTilingService pts, PictureTiler tiler)
-            throws Exception {
+    protected void benchTiler(PictureTilingService pts, PictureTiler tiler) throws Exception {
 
         PictureTilingComponent.setDefaultTiler(tiler);
         File file = FileUtils.getResourceFileFromContext("test.jpg");
@@ -331,11 +317,9 @@ public class TestService extends NXRuntimeTestCase {
         int gcCalls = PictureTilingCacheGCManager.getGCCalls();
         PictureTilingComponent.endGC();
 
-        String maxStr = PictureTilingComponent.getEnvValue(
-                PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
+        String maxStr = PictureTilingComponent.getEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
                 Long.toString(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KB));
-        PictureTilingComponent.setEnvValue(
-                PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
+        PictureTilingComponent.setEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
                 Integer.toString(reduceSize));
 
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
@@ -378,17 +362,15 @@ public class TestService extends NXRuntimeTestCase {
         // + "KB");
         assertTrue(cacheSize - newCacheSize > reduceSize);
 
-        PictureTilingComponent.setEnvValue(
-                PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY, maxStr);
+        PictureTilingComponent.setEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY, maxStr);
     }
 
     @Test
     public void testParametersContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-                "OSGI-INF/pictures-tiles-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.pictures.tiles", "OSGI-INF/pictures-tiles-contrib.xml");
 
-        String cacheSize = PictureTilingComponent.getEnvValue(
-                PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY, "ERROR");
+        String cacheSize = PictureTilingComponent.getEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
+                "ERROR");
 
         assertEquals("50000", cacheSize);
     }

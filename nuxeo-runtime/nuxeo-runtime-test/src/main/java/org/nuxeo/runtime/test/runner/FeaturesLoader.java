@@ -41,8 +41,7 @@ class FeaturesLoader {
 
         protected RunnerFeature feature;
 
-        Holder(Class<? extends RunnerFeature> aType)
-                throws InstantiationException, IllegalAccessException {
+        Holder(Class<? extends RunnerFeature> aType) throws InstantiationException, IllegalAccessException {
             type = aType;
             testClass = new TestClass(aType);
             feature = aType.newInstance();
@@ -94,8 +93,7 @@ class FeaturesLoader {
     }
 
     protected void apply(Direction direction, Callable callable) {
-        apply(direction == Direction.FORWARD ? holders : reversed(holders),
-                callable);
+        apply(direction == Direction.FORWARD ? holders : reversed(holders), callable);
     }
 
     protected <T> List<T> reversed(List<T> list) {
@@ -105,8 +103,7 @@ class FeaturesLoader {
     }
 
     protected void apply(Iterable<Holder> holders, Callable callable) {
-        AssertionError errors = new AssertionError("invoke on features error "
-                + holders);
+        AssertionError errors = new AssertionError("invoke on features error " + holders);
         for (Holder each : holders) {
             try {
                 callable.call(each);
@@ -128,8 +125,7 @@ class FeaturesLoader {
     public void loadFeatures(Class<?> classToRun) throws Exception {
         FeaturesRunner.scanner.scan(classToRun);
         // load required features from annotation
-        List<Features> annos = FeaturesRunner.scanner.getAnnotations(
-                classToRun, Features.class);
+        List<Features> annos = FeaturesRunner.scanner.getAnnotations(classToRun, Features.class);
         if (annos != null) {
             for (Features anno : annos) {
                 for (Class<? extends RunnerFeature> cl : anno.value()) {
@@ -139,20 +135,17 @@ class FeaturesLoader {
         }
     }
 
-    protected void loadFeature(HashSet<Class<?>> cycles,
-            Class<? extends RunnerFeature> clazz) throws Exception {
+    protected void loadFeature(HashSet<Class<?>> cycles, Class<? extends RunnerFeature> clazz) throws Exception {
         if (index.containsKey(clazz)) {
             return;
         }
         if (cycles.contains(clazz)) {
-            throw new IllegalStateException(
-                    "Cycle detected in features dependencies of " + clazz);
+            throw new IllegalStateException("Cycle detected in features dependencies of " + clazz);
         }
         cycles.add(clazz);
         FeaturesRunner.scanner.scan(clazz);
         // load required features from annotation
-        List<Features> annos = FeaturesRunner.scanner.getAnnotations(clazz,
-                Features.class);
+        List<Features> annos = FeaturesRunner.scanner.getAnnotations(clazz, Features.class);
         if (annos != null) {
             for (Features anno : annos) {
                 for (Class<? extends RunnerFeature> cl : anno.value()) {
@@ -177,8 +170,7 @@ class FeaturesLoader {
             public void configure(Binder aBinder) {
                 for (Holder each : holders) {
                     each.feature.configure(runner, aBinder);
-                    aBinder.bind((Class) each.feature.getClass()).toInstance(
-                            each.feature);
+                    aBinder.bind((Class) each.feature.getClass()).toInstance(each.feature);
                     aBinder.requestInjection(each.feature);
                 }
             }

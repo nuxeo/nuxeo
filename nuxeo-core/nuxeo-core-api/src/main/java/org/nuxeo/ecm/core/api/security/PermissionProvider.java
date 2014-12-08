@@ -32,29 +32,24 @@ public interface PermissionProvider {
     String[] getPermissions();
 
     /**
-     * @param perm the name of a registered permissions that belongs to
-     *            permission groups (aka compound permissions)
-     * @return an array of a all compound permissions 'perm' is a sub-permission
-     *         of, directly or not ; returns null if 'perm' is not registered or
-     *         if 'perm' does not belong to any compound permission
+     * @param perm the name of a registered permissions that belongs to permission groups (aka compound permissions)
+     * @return an array of a all compound permissions 'perm' is a sub-permission of, directly or not ; returns null if
+     *         'perm' is not registered or if 'perm' does not belong to any compound permission
      */
     String[] getPermissionGroups(String perm);
 
     /**
-     * @return get the sorted list of UserVisiblePermission objects to be used in the
-     *         permission management screen of the UI (be it web based, a rich
-     *         client or any-thing else)
+     * @return get the sorted list of UserVisiblePermission objects to be used in the permission management screen of
+     *         the UI (be it web based, a rich client or any-thing else)
      * @throws ClientException
      */
     List<UserVisiblePermission> getUserVisiblePermissionDescriptors() throws ClientException;
 
     /**
-     * @param typeName the name of a Core type of the document whose ACP is to
-     *            be edited by the user
-     * @return get the sorted list of UserVisiblePermission objects to be used in the
-     *         permission management screen of the UI (be it web based, a rich
-     *         client or any-thing else) ; if no specific permissions are
-     *         registered for typeName, the default list is returned
+     * @param typeName the name of a Core type of the document whose ACP is to be edited by the user
+     * @return get the sorted list of UserVisiblePermission objects to be used in the permission management screen of
+     *         the UI (be it web based, a rich client or any-thing else) ; if no specific permissions are registered for
+     *         typeName, the default list is returned
      * @throws ClientException
      */
     List<UserVisiblePermission> getUserVisiblePermissionDescriptors(String typeName) throws ClientException;
@@ -72,7 +67,5 @@ public interface PermissionProvider {
      * @throws ClientException if 'perm' is not a registered permission
      */
     String[] getAliasPermissions(String perm) throws ClientException;
-
-
 
 }

@@ -40,8 +40,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class OOoManagerComponent extends DefaultComponent implements
-        OOoManagerService {
+public class OOoManagerComponent extends DefaultComponent implements OOoManagerService {
 
     protected static final Log log = LogFactory.getLog(OOoManagerComponent.class);
 
@@ -78,8 +77,7 @@ public class OOoManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIG_EP.equals(extensionPoint)) {
             OOoManagerDescriptor desc = (OOoManagerDescriptor) contribution;
             descriptor = desc;
@@ -129,18 +127,15 @@ public class OOoManagerComponent extends DefaultComponent implements
             // Properties configuration
             String connectionProtocol = Framework.getProperty(CONNECTION_PROTOCOL_PROPERTY_KEY);
             if (connectionProtocol != null && !"".equals(connectionProtocol)) {
-                if (OfficeConnectionProtocol.PIPE.toString().equals(
-                        connectionProtocol)) {
+                if (OfficeConnectionProtocol.PIPE.toString().equals(connectionProtocol)) {
                     ConfigBuilderHelper.hackClassLoader();
                     configuration.setConnectionProtocol(OfficeConnectionProtocol.PIPE);
-                } else if (OfficeConnectionProtocol.SOCKET.toString().equals(
-                        connectionProtocol)) {
+                } else if (OfficeConnectionProtocol.SOCKET.toString().equals(connectionProtocol)) {
                     configuration.setConnectionProtocol(OfficeConnectionProtocol.SOCKET);
                 }
             }
             String maxTasksPerProcessProperty = Framework.getProperty(MAX_TASKS_PER_PROCESS_PROPERTY_KEY);
-            if (maxTasksPerProcessProperty != null
-                    && !"".equals(maxTasksPerProcessProperty)) {
+            if (maxTasksPerProcessProperty != null && !"".equals(maxTasksPerProcessProperty)) {
                 Integer maxTasksPerProcess = Integer.valueOf(maxTasksPerProcessProperty);
                 configuration.setMaxTasksPerProcess(maxTasksPerProcess);
             }
@@ -150,14 +145,12 @@ public class OOoManagerComponent extends DefaultComponent implements
             }
 
             String taskExecutionTimeoutProperty = Framework.getProperty(TASK_EXECUTION_TIMEOUT_PROPERTY_KEY);
-            if (taskExecutionTimeoutProperty != null
-                    && !"".equals(taskExecutionTimeoutProperty)) {
+            if (taskExecutionTimeoutProperty != null && !"".equals(taskExecutionTimeoutProperty)) {
                 Long taskExecutionTimeout = Long.valueOf(taskExecutionTimeoutProperty);
                 configuration.setTaskExecutionTimeout(taskExecutionTimeout);
             }
             String taskQueueTimeoutProperty = Framework.getProperty(TASK_QUEUE_TIMEOUT_PROPERTY_KEY);
-            if (taskQueueTimeoutProperty != null
-                    && !"".equals(taskQueueTimeoutProperty)) {
+            if (taskQueueTimeoutProperty != null && !"".equals(taskQueueTimeoutProperty)) {
                 Long taskQueueTimeout = Long.valueOf(taskQueueTimeoutProperty);
                 configuration.setTaskQueueTimeout(taskQueueTimeout);
             }
@@ -168,8 +161,7 @@ public class OOoManagerComponent extends DefaultComponent implements
                     try {
                         FileUtils.forceMkdir(templateDirectory);
                     } catch (IOException e) {
-                        throw new RuntimeException(
-                                "I/O Error: could not create JOD templateDirectory");
+                        throw new RuntimeException("I/O Error: could not create JOD templateDirectory");
                     }
                 }
                 configuration.setTemplateProfileDir(templateDirectory);
@@ -204,8 +196,7 @@ public class OOoManagerComponent extends DefaultComponent implements
                     try {
                         portList.add(Integer.parseInt(portStrings[i].trim()));
                     } catch (NumberFormatException e) {
-                        log.error("Ignoring malformed port number: "
-                                + portStrings[i]);
+                        log.error("Ignoring malformed port number: " + portStrings[i]);
                     }
                 }
                 portNumbers = ArrayUtils.toPrimitive(portList.toArray(new Integer[0]));
@@ -223,8 +214,7 @@ public class OOoManagerComponent extends DefaultComponent implements
             } catch (IllegalStateException | OfficeException e) {
                 started = false;
                 Throwable t = unwrapException(e);
-                log.warn("OpenOffice was not found, JOD Converter "
-                        + "won't be available: " + t.getMessage());
+                log.warn("OpenOffice was not found, JOD Converter " + "won't be available: " + t.getMessage());
             }
         } finally {
             starting = false;

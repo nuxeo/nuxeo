@@ -30,7 +30,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @since 7.1
- *
  * @author Vincent Vergnolle
  */
 @RunWith(FeaturesRunner.class)
@@ -40,8 +39,7 @@ public class TestCropPictureConverter {
 
     @Test
     public void iShouldHaveCropPictureConverterRegistered() {
-        ConverterCheckResult check = Framework.getService(
-                ConversionService.class).isConverterAvailable(
+        ConverterCheckResult check = Framework.getService(ConversionService.class).isConverterAvailable(
                 ImagingConvertConstants.OPERATION_CROP);
 
         Assert.assertTrue(check.isAvailable());

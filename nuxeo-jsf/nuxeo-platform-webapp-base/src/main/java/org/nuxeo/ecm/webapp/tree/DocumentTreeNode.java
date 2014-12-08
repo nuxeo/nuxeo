@@ -38,17 +38,15 @@ public interface DocumentTreeNode extends Serializable {
     String getPath();
 
     /**
-     * Returns the {@link QuotaStats} adapter for the underlying document of
-     * this {@code DocumentTreeNode}.
+     * Returns the {@link QuotaStats} adapter for the underlying document of this {@code DocumentTreeNode}.
      *
      * @since 5.5
      */
     QuotaStats getQuotaStats();
 
     /**
-     * Returns true if node represents current document, or if it's the direct
-     * parent of a non-folderish document that is not be represented in the
-     * tree.
+     * Returns true if node represents current document, or if it's the direct parent of a non-folderish document that
+     * is not be represented in the tree.
      *
      * @since 5.7
      * @param currentDocument

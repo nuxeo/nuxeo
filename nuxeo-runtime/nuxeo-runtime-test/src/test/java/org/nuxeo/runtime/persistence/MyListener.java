@@ -25,7 +25,6 @@ import org.nuxeo.runtime.services.event.EventListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MyListener implements EventListener {
 

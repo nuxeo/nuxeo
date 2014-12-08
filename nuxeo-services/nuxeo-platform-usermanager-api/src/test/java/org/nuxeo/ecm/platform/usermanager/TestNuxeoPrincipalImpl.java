@@ -28,7 +28,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Florent Guillaume
- *
  */
 public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
 
@@ -42,7 +41,7 @@ public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
     }
 
-    @SuppressWarnings({"SimplifiableJUnitAssertion", "ObjectEqualsNull"})
+    @SuppressWarnings({ "SimplifiableJUnitAssertion", "ObjectEqualsNull" })
     @Test
     public void testEquals() throws ClientException {
         NuxeoPrincipalImpl a = new NuxeoPrincipalImpl("foo");

@@ -32,22 +32,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Enable remote hot deploy and getting configuration from remote Nuxeo SDK
- * servers
+ * Enable remote hot deploy and getting configuration from remote Nuxeo SDK servers
  * <p>
- * This valve is enabled only in SDK profile (i.e. dev mode). It will intercept
- * any call to '/sdk' under the context path (i.e. /nuxeo/sdk)
+ * This valve is enabled only in SDK profile (i.e. dev mode). It will intercept any call to '/sdk' under the context
+ * path (i.e. /nuxeo/sdk)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DevValve extends ValveBase {
 
     Log log = LogFactory.getLog(DevValve.class);
 
     @Override
-    public void invoke(Request req, Response resp) throws IOException,
-            ServletException {
+    public void invoke(Request req, Response resp) throws IOException, ServletException {
 
         String path = req.getServletPath();
         if (path != null && path.startsWith("/sdk/")) {

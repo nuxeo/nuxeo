@@ -62,15 +62,14 @@ public class PlatformVersionHelper {
      *             {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(org.nuxeo.connect.update.Package, String)}
      */
     @Deprecated
-    public static boolean isCompatible(final String[] targetPlatforms2,
-            String currentPlatform) {
-        return TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(
-                new FakeDownloadablePackage("wrapper", Version.ZERO) {
-                    @Override
-                    public String[] getTargetPlatforms() {
-                        return targetPlatforms2;
-                    }
-                }, currentPlatform);
+    public static boolean isCompatible(final String[] targetPlatforms2, String currentPlatform) {
+        return TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(new FakeDownloadablePackage("wrapper",
+                Version.ZERO) {
+            @Override
+            public String[] getTargetPlatforms() {
+                return targetPlatforms2;
+            }
+        }, currentPlatform);
     }
 
     @Deprecated

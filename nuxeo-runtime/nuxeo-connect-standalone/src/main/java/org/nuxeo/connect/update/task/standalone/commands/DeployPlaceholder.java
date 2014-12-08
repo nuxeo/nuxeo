@@ -27,8 +27,7 @@ import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
- * Install bundle, flush any application cache and perform Nuxeo preprocessing
- * on the bundle.
+ * Install bundle, flush any application cache and perform Nuxeo preprocessing on the bundle.
  * <p>
  * The inverse of this command is Undeploy.
  *
@@ -50,14 +49,12 @@ public class DeployPlaceholder extends AbstractCommand {
     }
 
     @Override
-    protected void doValidate(Task task, ValidationStatus status)
-            throws PackageException {
+    protected void doValidate(Task task, ValidationStatus status) throws PackageException {
         // nothing to do
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         if (!file.isFile()) {
             // avoid throwing errors - this may happen at uninstall for broken
             // packages

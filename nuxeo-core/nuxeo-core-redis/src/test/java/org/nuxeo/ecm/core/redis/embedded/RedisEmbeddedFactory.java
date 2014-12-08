@@ -27,21 +27,18 @@ import com.lordofthejars.nosqlunit.redis.embedded.NoArgsJedis;
 
 public class RedisEmbeddedFactory implements PooledObjectFactory<Jedis> {
 
-    protected final RedisEmbeddedConnection connection = new RedisEmbeddedConnection(
-            this);
+    protected final RedisEmbeddedConnection connection = new RedisEmbeddedConnection(this);
 
     protected RedisEmbeddedGuessConnectionError error = new RedisEmbeddedGuessConnectionError.NoError();
 
     public Jedis createProxy() {
-        return Jedis.class.cast(Enhancer.create(NoArgsJedis.class,
-                new TryFailoverMethod()));
+        return Jedis.class.cast(Enhancer.create(NoArgsJedis.class, new TryFailoverMethod()));
     }
 
     public class TryFailoverMethod implements MethodInterceptor {
 
         @Override
-        public Object intercept(Object object, Method method,
-                Object[] arguments, MethodProxy proxy) throws Throwable {
+        public Object intercept(Object object, Method method, Object[] arguments, MethodProxy proxy) throws Throwable {
             if (!method.getDeclaringClass().equals(Object.class)) {
                 error.guessError();
             }
@@ -50,8 +47,7 @@ public class RedisEmbeddedFactory implements PooledObjectFactory<Jedis> {
 
     }
 
-    protected final RedisEmbeddedLuaEngine lua = new RedisEmbeddedLuaEngine(
-            connection);
+    protected final RedisEmbeddedLuaEngine lua = new RedisEmbeddedLuaEngine(connection);
 
     @Override
     public PooledObject<Jedis> makeObject() throws Exception {

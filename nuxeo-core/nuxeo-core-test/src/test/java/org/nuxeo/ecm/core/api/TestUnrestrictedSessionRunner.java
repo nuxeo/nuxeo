@@ -71,34 +71,27 @@ public class TestUnrestrictedSessionRunner {
      */
 
     /**
-     * An unrestricted session creates a doc then the calling session tries to
-     * access it.
+     * An unrestricted session creates a doc then the calling session tries to access it.
      */
-    public static void seeDocCreatedByUnrestricted(CoreSession session)
-            throws Exception {
-        UnrestrictedPropertySetter setter = new UnrestrictedPropertySetter(
-                session);
+    public static void seeDocCreatedByUnrestricted(CoreSession session) throws Exception {
+        UnrestrictedPropertySetter setter = new UnrestrictedPropertySetter(session);
         setter.runUnrestricted();
         DocumentModel doc = session.getDocument(setter.docRef);
         assertEquals(doc.getPropertyValue(DC_TITLE), NEW_TITLE);
     }
 
     /**
-     * A session creates a doc, then calls an unrestricted session that modifies
-     * it.
+     * A session creates a doc, then calls an unrestricted session that modifies it.
      */
-    public static void unrestrictedSeesDocCreatedBefore(CoreSession session)
-            throws Exception {
+    public static void unrestrictedSeesDocCreatedBefore(CoreSession session) throws Exception {
         DocumentModel doc = session.createDocumentModel("/", DOC_NAME, "File");
         doc = session.createDocument(doc);
-        UnrestrictedDocumentReader reader = new UnrestrictedDocumentReader(
-                session, doc.getRef());
+        UnrestrictedDocumentReader reader = new UnrestrictedDocumentReader(session, doc.getRef());
         reader.runUnrestricted();
         assertEquals(DOC_NAME, reader.getName());
     }
 
-    protected static class UnrestrictedPropertySetter extends
-            UnrestrictedSessionRunner {
+    protected static class UnrestrictedPropertySetter extends UnrestrictedSessionRunner {
 
         public DocumentRef docRef;
 
@@ -113,16 +106,14 @@ public class TestUnrestrictedSessionRunner {
             ACL acl = acp.getOrCreateACL("LOCAL");
             acl.add(new ACE("bob", SecurityConstants.READ_WRITE, true));
             session.setACP(rootRef, acp, true);
-            DocumentModel doc = session.createDocumentModel("/", DOC_NAME,
-                    "File");
+            DocumentModel doc = session.createDocumentModel("/", DOC_NAME, "File");
             doc.setPropertyValue(DC_TITLE, NEW_TITLE);
             doc = session.createDocument(doc);
             docRef = doc.getRef();
         }
     }
 
-    protected static class UnrestrictedDocumentReader extends
-            UnrestrictedSessionRunner {
+    protected static class UnrestrictedDocumentReader extends UnrestrictedSessionRunner {
         private DocumentRef ref;
 
         private String name;

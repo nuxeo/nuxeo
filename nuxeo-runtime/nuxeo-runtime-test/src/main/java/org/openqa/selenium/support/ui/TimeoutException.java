@@ -21,23 +21,22 @@ package org.openqa.selenium.support.ui;
 import org.openqa.selenium.WebDriverException;
 
 /**
- * A simple exception that is thrown if an {@link ExpectedCondition} is not met
- * met by a {@link Wait}. See the documentation in {@link WebDriverWait} for
- * more information.
+ * A simple exception that is thrown if an {@link ExpectedCondition} is not met met by a {@link Wait}. See the
+ * documentation in {@link WebDriverWait} for more information.
  */
 @SuppressWarnings("serial")
 public class TimeoutException extends WebDriverException {
-  /**
-   * Time out a test, indicating why the timeout occurred.
-   */
-  public TimeoutException(String message) {
-    super(message);
-  }
+    /**
+     * Time out a test, indicating why the timeout occurred.
+     */
+    public TimeoutException(String message) {
+        super(message);
+    }
 
-  /**
-   * Time out a test, indicating why the timeout occurred and giving a cause.
-   */
-  public TimeoutException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    /**
+     * Time out a test, indicating why the timeout occurred and giving a cause.
+     */
+    public TimeoutException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

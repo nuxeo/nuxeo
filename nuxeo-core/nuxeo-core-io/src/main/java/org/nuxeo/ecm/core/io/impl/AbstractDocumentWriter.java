@@ -27,18 +27,15 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractDocumentWriter implements DocumentWriter {
 
     // this abstract method is needed
     @Override
-    public abstract DocumentTranslationMap write(ExportedDocument doc)
-            throws IOException;
+    public abstract DocumentTranslationMap write(ExportedDocument doc) throws IOException;
 
     @Override
-    public DocumentTranslationMap write(ExportedDocument[] docs)
-            throws IOException {
+    public DocumentTranslationMap write(ExportedDocument[] docs) throws IOException {
         if (docs == null || docs.length == 0) {
             return null;
         }
@@ -62,8 +59,7 @@ public abstract class AbstractDocumentWriter implements DocumentWriter {
     }
 
     @Override
-    public DocumentTranslationMap write(Collection<ExportedDocument> docs)
-            throws IOException {
+    public DocumentTranslationMap write(Collection<ExportedDocument> docs) throws IOException {
         if (docs == null || docs.isEmpty()) {
             return null;
         }

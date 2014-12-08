@@ -18,8 +18,7 @@
 package org.nuxeo.ecm.core.api.quota;
 
 /**
- * Adapter giving statistics about a given
- * {@link org.nuxeo.ecm.core.api.DocumentModel}.
+ * Adapter giving statistics about a given {@link org.nuxeo.ecm.core.api.DocumentModel}.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
@@ -32,14 +31,13 @@ public interface QuotaStats {
     long getIntrinsic();
 
     /**
-     * Returns the cardinal value of all the children of the underlying
-     * document.
+     * Returns the cardinal value of all the children of the underlying document.
      */
     long getChildren();
 
     /**
-     * Returns the cardinal value of all the descendants of the underlying
-     * document. plus the value of {@link #getIntrinsic()}.
+     * Returns the cardinal value of all the descendants of the underlying document. plus the value of
+     * {@link #getIntrinsic()}.
      */
     long getTotal();
 

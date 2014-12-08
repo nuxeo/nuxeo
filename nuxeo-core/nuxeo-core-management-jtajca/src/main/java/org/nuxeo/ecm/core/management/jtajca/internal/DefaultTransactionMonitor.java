@@ -46,10 +46,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author matic
- *
  */
-public class DefaultTransactionMonitor implements TransactionManagerMonitor,
-        TransactionMonitor, Synchronization {
+public class DefaultTransactionMonitor implements TransactionManagerMonitor, TransactionMonitor, Synchronization {
 
     protected static final Log log = LogFactory.getLog(DefaultTransactionMonitor.class);
 
@@ -68,7 +66,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
     }
 
     @Override
-    public void uninstall()  {
+    public void uninstall() {
         if (tm == null) {
             return;
         }
@@ -101,7 +99,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         if (!(tm instanceof TransactionManagerImpl)) {
             return null;
         }
-        return (TransactionManagerImpl)tm;
+        return (TransactionManagerImpl) tm;
     }
 
     protected TransactionStatistics lastCommittedStatistics;
@@ -133,8 +131,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         MDC.put("tx", id(key));
         Stopwatch sw = SimonManager.getStopwatch("tx");
         final Thread thread = Thread.currentThread();
-        DefaultTransactionStatistics info = new DefaultTransactionStatistics(
-                key);
+        DefaultTransactionStatistics info = new DefaultTransactionStatistics(key);
         info.split = sw.start();
         info.threadName = thread.getName();
         info.status = TransactionStatistics.Status.fromTx(tx);
@@ -179,12 +176,10 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
 
     @Override
     public List<TransactionStatistics> getActiveStatistics() {
-        List<TransactionStatistics> l = new ArrayList<TransactionStatistics>(
-                activeStatistics.values());
+        List<TransactionStatistics> l = new ArrayList<TransactionStatistics>(activeStatistics.values());
         Collections.sort(l, new Comparator<TransactionStatistics>() {
             @Override
-            public int compare(TransactionStatistics o1,
-                    TransactionStatistics o2) {
+            public int compare(TransactionStatistics o1, TransactionStatistics o2) {
                 return o1.getStartDate().compareTo(o2.getEndDate());
             }
         });

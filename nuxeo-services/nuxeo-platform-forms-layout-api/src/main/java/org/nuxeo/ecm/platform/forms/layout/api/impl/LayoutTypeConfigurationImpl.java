@@ -157,13 +157,11 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         return propertyLayouts;
     }
 
-    public List<LayoutDefinition> getPropertyLayouts(String mode,
-            String additionalMode) {
+    public List<LayoutDefinition> getPropertyLayouts(String mode, String additionalMode) {
         return getLayouts(propertyLayouts, mode, additionalMode);
     }
 
-    public void setPropertyLayouts(
-            Map<String, List<LayoutDefinition>> propertyLayouts) {
+    public void setPropertyLayouts(Map<String, List<LayoutDefinition>> propertyLayouts) {
         this.propertyLayouts = propertyLayouts;
     }
 
@@ -187,13 +185,11 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         return null;
     }
 
-    public void setDefaultPropertyValues(
-            Map<String, Map<String, Serializable>> defaultPropertyValues) {
+    public void setDefaultPropertyValues(Map<String, Map<String, Serializable>> defaultPropertyValues) {
         this.defaultPropertyValues = defaultPropertyValues;
     }
 
-    protected List<LayoutDefinition> getLayouts(
-            Map<String, List<LayoutDefinition>> allLayouts, String mode,
+    protected List<LayoutDefinition> getLayouts(Map<String, List<LayoutDefinition>> allLayouts, String mode,
             String additionalMode) {
         if (allLayouts != null) {
             List<LayoutDefinition> res = new ArrayList<LayoutDefinition>();

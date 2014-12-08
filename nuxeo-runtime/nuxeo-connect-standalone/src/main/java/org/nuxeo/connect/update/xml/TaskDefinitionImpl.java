@@ -25,7 +25,6 @@ import org.nuxeo.connect.update.task.Task;
  * Describe an install / uninstall task
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject
 public class TaskDefinitionImpl implements TaskDefinition {

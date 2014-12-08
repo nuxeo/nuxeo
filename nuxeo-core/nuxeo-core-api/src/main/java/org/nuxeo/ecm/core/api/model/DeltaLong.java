@@ -14,8 +14,7 @@ package org.nuxeo.ecm.core.api.model;
 /**
  * Value holding a base {@link Long} value and a delta.
  * <p>
- * This is used when the actual intent of the value is to be an incremental
- * update to an existing value.
+ * This is used when the actual intent of the value is to be an incremental update to an existing value.
  *
  * @since 6.0
  */
@@ -36,12 +35,11 @@ public class DeltaLong extends Delta {
     }
 
     /**
-     * Constructs a {@link DeltaLong} from the given base number and delta, or a
-     * {@link Long} if the base is {@code null}.
+     * Constructs a {@link DeltaLong} from the given base number and delta, or a {@link Long} if the base is
+     * {@code null}.
      * <p>
-     * The base number may be a {@link Long} or a {@link DeltaLong}. If it is a
-     * {@link DeltaLong} then the returned value will keep its base and just add
-     * deltas.
+     * The base number may be a {@link Long} or a {@link DeltaLong}. If it is a {@link DeltaLong} then the returned
+     * value will keep its base and just add deltas.
      *
      * @param base the base number
      * @param delta the delta
@@ -67,8 +65,7 @@ public class DeltaLong extends Delta {
     @Override
     public Delta add(Delta other) {
         if (!(other instanceof DeltaLong)) {
-            throw new IllegalArgumentException("Cannot add "
-                    + getClass().getSimpleName() + " and "
+            throw new IllegalArgumentException("Cannot add " + getClass().getSimpleName() + " and "
                     + other.getClass().getSimpleName());
         }
         return new DeltaLong(base, delta + ((DeltaLong) other).delta);
@@ -77,8 +74,7 @@ public class DeltaLong extends Delta {
     @Override
     public Number add(Number other) {
         if (!(other instanceof Long)) {
-            throw new IllegalArgumentException("Cannot add "
-                    + getClass().getSimpleName() + " and "
+            throw new IllegalArgumentException("Cannot add " + getClass().getSimpleName() + " and "
                     + other.getClass().getSimpleName());
         }
         return Long.valueOf(((Long) other).longValue() + delta);

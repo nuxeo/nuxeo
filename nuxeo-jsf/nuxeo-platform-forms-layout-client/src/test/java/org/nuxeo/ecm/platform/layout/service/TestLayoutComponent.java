@@ -55,10 +55,8 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client",
-                "OSGI-INF/layouts-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
-                "layouts-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client", "OSGI-INF/layouts-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
         service = Framework.getService(WebLayoutManager.class);
         assertNotNull(service);
     }
@@ -70,12 +68,10 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals("dublincore", dublincore.getName());
 
         // test templates
-        assertEquals("default_template",
-                dublincore.getTemplate(BuiltinModes.ANY));
+        assertEquals("default_template", dublincore.getTemplate(BuiltinModes.ANY));
         assertEquals("view_template", dublincore.getTemplate(BuiltinModes.VIEW));
         assertEquals("edit_template", dublincore.getTemplate(BuiltinModes.EDIT));
-        assertEquals("create_template",
-                dublincore.getTemplate(BuiltinModes.CREATE));
+        assertEquals("create_template", dublincore.getTemplate(BuiltinModes.CREATE));
         assertEquals("default_template", dublincore.getTemplate("lalal"));
 
         // test rows
@@ -106,13 +102,11 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertNull(fieldDefs[0].getSchemaName());
         assertEquals("dc:title", fieldDefs[0].getFieldName());
         // props
-        Map<String, Serializable> anyProps = title.getProperties(
-                BuiltinModes.ANY, BuiltinModes.ANY);
+        Map<String, Serializable> anyProps = title.getProperties(BuiltinModes.ANY, BuiltinModes.ANY);
         assertEquals(2, anyProps.size());
         assertEquals("styleClass", anyProps.get("styleClass"));
         assertEquals("#{!currentUser.administrator}", anyProps.get("required"));
-        Map<String, Serializable> editProps = title.getProperties(
-                BuiltinModes.EDIT, BuiltinModes.VIEW);
+        Map<String, Serializable> editProps = title.getProperties(BuiltinModes.EDIT, BuiltinModes.VIEW);
         assertEquals(3, editProps.size());
         assertEquals("styleClass", editProps.get("styleClass"));
         assertEquals("#{!currentUser.administrator}", editProps.get("required"));
@@ -213,8 +207,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals("test", type.getName());
         WidgetTypeHandler handler = service.getWidgetTypeHandler("test");
         assertNotNull(handler);
-        assertEquals(DummyWidgetTypeHandler.class.getName(),
-                handler.getClass().getName());
+        assertEquals(DummyWidgetTypeHandler.class.getName(), handler.getClass().getName());
         assertEquals("bar1", handler.getProperty("foo1"));
         assertEquals("bar2", handler.getProperty("foo2"));
         assertNull(handler.getProperty("foo"));
@@ -227,16 +220,14 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals("layoutPropertiesTest", layoutDef.getName());
 
         assertNotNull(layoutDef.getProperties("any"));
-        assertEquals("layoutPropValue",
-                layoutDef.getProperties("any").get("layoutPropName"));
+        assertEquals("layoutPropValue", layoutDef.getProperties("any").get("layoutPropName"));
 
         LayoutRowDefinition[] layoutRows = layoutDef.getRows();
         assertNotNull(layoutRows);
         assertEquals(1, layoutRows.length);
         LayoutRowDefinition layoutRow = layoutRows[0];
         assertNotNull(layoutRow.getProperties("any"));
-        assertEquals("layoutRowPropValue",
-                layoutRow.getProperties("any").get("layoutRowPropName"));
+        assertEquals("layoutRowPropValue", layoutRow.getProperties("any").get("layoutRowPropName"));
     }
 
     @Test
@@ -250,8 +241,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals(1, layoutColumns.length);
         LayoutRowDefinition layoutRow = layoutColumns[0];
         assertNotNull(layoutRow.getProperties("any"));
-        assertEquals("layoutColumnPropValue",
-                layoutRow.getProperties("any").get("layoutColumnPropName"));
+        assertEquals("layoutColumnPropValue", layoutRow.getProperties("any").get("layoutColumnPropName"));
     }
 
 }

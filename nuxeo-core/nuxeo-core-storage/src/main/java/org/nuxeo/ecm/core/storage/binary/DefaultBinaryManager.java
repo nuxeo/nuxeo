@@ -21,9 +21,8 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
- * A simple filesystem-based binary manager. It stores the binaries according to
- * their digest (hash), which means that no transactional behavior needs to be
- * implemented.
+ * A simple filesystem-based binary manager. It stores the binaries according to their digest (hash), which means that
+ * no transactional behavior needs to be implemented.
  * <p>
  * A garbage collection is needed to purge unused binaries.
  * <p>
@@ -33,21 +32,17 @@ import org.nuxeo.runtime.services.streaming.FileSource;
  * <li><em>tmp/</em> temporary storage during creation,</li>
  * <li><em>config.xml</em> a file containing the configuration used.</li>
  * </ul>
- *
- * This class includes optimizations that make it unsuitable for use with a
- * binary scrambler. Extend {@link LocalBinaryManager} instead to make use of a
- * scrambler.
+ * This class includes optimizations that make it unsuitable for use with a binary scrambler. Extend
+ * {@link LocalBinaryManager} instead to make use of a scrambler.
  *
  * @author Florent Guillaume
  */
-public class DefaultBinaryManager extends LocalBinaryManager implements
-        BinaryManagerStreamSupport {
+public class DefaultBinaryManager extends LocalBinaryManager implements BinaryManagerStreamSupport {
 
     public DefaultBinaryManager() {
         super();
         if (!(getBinaryScrambler() instanceof NullBinaryScrambler)) {
-            throw new IllegalStateException(
-                    "DefaultBinaryManager cannot be used with a binary scrambler");
+            throw new IllegalStateException("DefaultBinaryManager cannot be used with a binary scrambler");
         }
     }
 
@@ -58,8 +53,7 @@ public class DefaultBinaryManager extends LocalBinaryManager implements
         /*
          * Now we can build the Binary.
          */
-        return getBinaryScrambler().getUnscrambledBinary(file, digest,
-                repositoryName);
+        return getBinaryScrambler().getUnscrambledBinary(file, digest, repositoryName);
     }
 
     protected String storeAndDigest(FileSource source) throws IOException {

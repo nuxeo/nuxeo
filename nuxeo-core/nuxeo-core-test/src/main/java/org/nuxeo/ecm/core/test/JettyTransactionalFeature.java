@@ -5,6 +5,6 @@ import org.nuxeo.runtime.test.runner.JettyFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features({ TransactionalFeature.class, JettyFeature.class })
-public class JettyTransactionalFeature extends SimpleFeature  {
+public class JettyTransactionalFeature extends SimpleFeature {
 
 }

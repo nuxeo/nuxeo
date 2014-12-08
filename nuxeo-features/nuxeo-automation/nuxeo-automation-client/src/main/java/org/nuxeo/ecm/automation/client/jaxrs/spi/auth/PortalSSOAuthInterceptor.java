@@ -30,9 +30,7 @@ import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
- *
  * @author matic
- *
  */
 public class PortalSSOAuthInterceptor extends RequestInterceptor {
 
@@ -55,14 +53,12 @@ public class PortalSSOAuthInterceptor extends RequestInterceptor {
         long ts = new Date().getTime();
         long random = new Random(ts).nextInt();
 
-        String clearToken = String.format("%d:%d:%s:%s", ts, random, secret,
-                username);
+        String clearToken = String.format("%d:%d:%s:%s", ts, random, secret, username);
 
         byte[] hashedToken;
 
         try {
-            hashedToken = MessageDigest.getInstance("MD5").digest(
-                    clearToken.getBytes());
+            hashedToken = MessageDigest.getInstance("MD5").digest(clearToken.getBytes());
         } catch (NoSuchAlgorithmException e) {
             throw new Error("Cannot compute token", e);
         }
@@ -77,8 +73,7 @@ public class PortalSSOAuthInterceptor extends RequestInterceptor {
     }
 
     @Override
-    public ClientResponse handle(ClientRequest cr)
-            throws ClientHandlerException {
+    public ClientResponse handle(ClientRequest cr) throws ClientHandlerException {
         Map<String, String> computedHeaders = computeHeaders();
         MultivaluedMap<String, Object> headers = cr.getHeaders();
         for (Map.Entry<String, String> entry : computedHeaders.entrySet()) {

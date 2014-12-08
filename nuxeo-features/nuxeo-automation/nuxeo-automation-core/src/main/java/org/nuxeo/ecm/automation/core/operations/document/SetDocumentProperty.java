@@ -51,14 +51,12 @@ public class SetDocumentProperty {
         Property p = doc.getProperty(xpath);
         Type type = p.getField().getType();
         if (!type.isSimpleType()) {
-            throw new OperationException(
-                    "Only scalar types can be set using update operation");
+            throw new OperationException("Only scalar types can be set using update operation");
         }
         if (value == null) {
             p.setValue(null);
         } else if (value.getClass() == String.class) {
-            p.setValue(((SimpleType) type).getPrimitiveType().decode(
-                    (String) value));
+            p.setValue(((SimpleType) type).getPrimitiveType().decode((String) value));
         } else {
             p.setValue(value);
         }

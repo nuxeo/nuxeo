@@ -29,17 +29,15 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
- * EasySelectItems from
- * http://jsf-comp.sourceforge.net/components/easysi/index.html, adapted to
- * work with jboss seam ListDataModel instances.
+ * EasySelectItems from http://jsf-comp.sourceforge.net/components/easysi/index.html, adapted to work with jboss seam
+ * ListDataModel instances.
  * <p>
  * Adapted to handle ordering and disabling of select items.
  *
  * @author Cagatay-Mert
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class UISelectItems extends javax.faces.component.UISelectItems
-        implements ResettableComponent {
+public class UISelectItems extends javax.faces.component.UISelectItems implements ResettableComponent {
 
     public static final String COMPONENT_TYPE = UISelectItems.class.getName();
 
@@ -77,8 +75,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems
 
     @SuppressWarnings("unchecked")
     public Map<String, String> getItemLabels() {
-        return (Map<String, String>) getStateHelper().eval(
-                PropertyKeys.itemLabels);
+        return (Map<String, String>) getStateHelper().eval(PropertyKeys.itemLabels);
     }
 
     public void setItemLabels(Map<String, String> itemLabels) {
@@ -94,13 +91,11 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     }
 
     public String getItemLabelPrefixSeparator() {
-        return (String) getStateHelper().eval(
-                PropertyKeys.itemLabelPrefixSeparator, " ");
+        return (String) getStateHelper().eval(PropertyKeys.itemLabelPrefixSeparator, " ");
     }
 
     public void setItemLabelPrefixSeparator(String itemLabelPrefix) {
-        getStateHelper().put(PropertyKeys.itemLabelPrefixSeparator,
-                itemLabelPrefix);
+        getStateHelper().put(PropertyKeys.itemLabelPrefixSeparator, itemLabelPrefix);
     }
 
     public String getItemLabelSuffix() {
@@ -112,13 +107,11 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     }
 
     public String getItemLabelSuffixSeparator() {
-        return (String) getStateHelper().eval(
-                PropertyKeys.itemLabelSuffixSeparator, " ");
+        return (String) getStateHelper().eval(PropertyKeys.itemLabelSuffixSeparator, " ");
     }
 
     public void setItemLabelSuffixSeparator(String itemLabelSuffix) {
-        getStateHelper().put(PropertyKeys.itemLabelSuffixSeparator,
-                itemLabelSuffix);
+        getStateHelper().put(PropertyKeys.itemLabelSuffixSeparator, itemLabelSuffix);
     }
 
     public Object getItemValue() {
@@ -130,8 +123,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     }
 
     public boolean isItemDisabled() {
-        return Boolean.TRUE.equals(getStateHelper().eval(
-                PropertyKeys.itemDisabled, Boolean.FALSE));
+        return Boolean.TRUE.equals(getStateHelper().eval(PropertyKeys.itemDisabled, Boolean.FALSE));
     }
 
     @SuppressWarnings("boxing")
@@ -140,19 +132,16 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     }
 
     public boolean isResolveItemLabelTwice() {
-        return Boolean.TRUE.equals(getStateHelper().eval(
-                PropertyKeys.resolveItemLabelTwice, Boolean.FALSE));
+        return Boolean.TRUE.equals(getStateHelper().eval(PropertyKeys.resolveItemLabelTwice, Boolean.FALSE));
     }
 
     @SuppressWarnings("boxing")
     public void setResolveItemLabelTwice(boolean resolveItemLabelTwice) {
-        getStateHelper().put(PropertyKeys.resolveItemLabelTwice,
-                resolveItemLabelTwice);
+        getStateHelper().put(PropertyKeys.resolveItemLabelTwice, resolveItemLabelTwice);
     }
 
     public boolean isItemRendered() {
-        return Boolean.TRUE.equals(getStateHelper().eval(
-                PropertyKeys.itemRendered, Boolean.TRUE));
+        return Boolean.TRUE.equals(getStateHelper().eval(PropertyKeys.itemRendered, Boolean.TRUE));
     }
 
     @SuppressWarnings("boxing")
@@ -161,8 +150,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     }
 
     public boolean isItemEscaped() {
-        return Boolean.TRUE.equals(getStateHelper().eval(
-                PropertyKeys.itemEscaped, Boolean.FALSE));
+        return Boolean.TRUE.equals(getStateHelper().eval(PropertyKeys.itemEscaped, Boolean.FALSE));
     }
 
     @SuppressWarnings("boxing")
@@ -179,8 +167,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     }
 
     public boolean isCaseSensitive() {
-        return Boolean.TRUE.equals(getStateHelper().eval(
-                PropertyKeys.caseSensitive));
+        return Boolean.TRUE.equals(getStateHelper().eval(PropertyKeys.caseSensitive));
     }
 
     @SuppressWarnings("boxing")
@@ -189,8 +176,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     }
 
     public boolean isDisplayIdAndLabel() {
-        return Boolean.TRUE.equals(getStateHelper().eval(
-                PropertyKeys.displayIdAndLabel));
+        return Boolean.TRUE.equals(getStateHelper().eval(PropertyKeys.displayIdAndLabel));
     }
 
     @SuppressWarnings("boxing")
@@ -199,19 +185,16 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     }
 
     public String getDisplayIdAndLabelSeparator() {
-        return (String) getStateHelper().eval(
-                PropertyKeys.displayIdAndLabelSeparator, " ");
+        return (String) getStateHelper().eval(PropertyKeys.displayIdAndLabelSeparator, " ");
     }
 
     public void setDisplayIdAndLabelSeparator(String idAndLabelSeparator) {
-        getStateHelper().put(PropertyKeys.displayIdAndLabelSeparator,
-                idAndLabelSeparator);
+        getStateHelper().put(PropertyKeys.displayIdAndLabelSeparator, idAndLabelSeparator);
     }
 
     @SuppressWarnings("boxing")
     public boolean isLocalize() {
-        return (Boolean) getStateHelper().eval(PropertyKeys.localize,
-                Boolean.FALSE);
+        return (Boolean) getStateHelper().eval(PropertyKeys.localize, Boolean.FALSE);
     }
 
     @SuppressWarnings("boxing")
@@ -221,8 +204,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems
 
     @SuppressWarnings("boxing")
     public boolean isdbl10n() {
-        return (Boolean) getStateHelper().eval(PropertyKeys.dbl10n,
-                Boolean.FALSE);
+        return (Boolean) getStateHelper().eval(PropertyKeys.dbl10n, Boolean.FALSE);
     }
 
     @SuppressWarnings("boxing")
@@ -249,10 +231,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems
         String ordering = getOrdering();
         boolean caseSensitive = isCaseSensitive();
         if (!StringUtils.isBlank(ordering)) {
-            Collections.sort(
-                    items,
-                    new SelectItemComparator(ordering,
-                            Boolean.valueOf(caseSensitive)));
+            Collections.sort(items, new SelectItemComparator(ordering, Boolean.valueOf(caseSensitive)));
         }
         return items.toArray(new SelectItem[0]);
     }
@@ -285,10 +264,9 @@ public class UISelectItems extends javax.faces.component.UISelectItems
             Object labelObject = getItemLabel();
             label = labelObject != null ? labelObject.toString() : null;
         }
-        if (isResolveItemLabelTwice()
-                && ComponentTagUtils.isValueReference(label)) {
-            ValueExpression ve = ctx.getApplication().getExpressionFactory().createValueExpression(
-                    ctx.getELContext(), label, Object.class);
+        if (isResolveItemLabelTwice() && ComponentTagUtils.isValueReference(label)) {
+            ValueExpression ve = ctx.getApplication().getExpressionFactory().createValueExpression(ctx.getELContext(),
+                    label, Object.class);
             if (ve != null) {
                 Object newLabel = ve.getValue(ctx.getELContext());
                 if (newLabel instanceof String) {
@@ -323,13 +301,11 @@ public class UISelectItems extends javax.faces.component.UISelectItems
         if (!StringUtils.isBlank(labelSuffix)) {
             label = label + getItemLabelSuffixSeparator() + labelSuffix;
         }
-        return new SelectItem(value, label, null, isItemDisabled(),
-                isItemEscaped());
+        return new SelectItem(value, label, null, isItemDisabled(), isItemEscaped());
     }
 
     /**
-     * Reset the local value set, useful to reset cache on ajax action when
-     * using a shuttle widget for instance.
+     * Reset the local value set, useful to reset cache on ajax action when using a shuttle widget for instance.
      *
      * @since 5.7
      */

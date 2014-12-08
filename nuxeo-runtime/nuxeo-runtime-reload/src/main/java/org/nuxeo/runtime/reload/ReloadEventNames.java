@@ -17,8 +17,7 @@
 package org.nuxeo.runtime.reload;
 
 /**
- * Copy of event names as triggered by the ReloadService, to make them
- * available on the web layer.
+ * Copy of event names as triggered by the ReloadService, to make them available on the web layer.
  *
  * @since 5.6
  */

@@ -43,8 +43,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 // anything
 public class SecurityService extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.core.security.SecurityService");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.security.SecurityService");
 
     public static final String PERMISSIONS_EXTENSION_POINT = "permissions";
 
@@ -75,31 +74,25 @@ public class SecurityService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
-        if (PERMISSIONS_EXTENSION_POINT.equals(extensionPoint)
-                && contribution instanceof PermissionDescriptor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (PERMISSIONS_EXTENSION_POINT.equals(extensionPoint) && contribution instanceof PermissionDescriptor) {
             permissionProvider.registerDescriptor((PermissionDescriptor) contribution);
         } else if (PERMISSIONS_VISIBILITY_EXTENSION_POINT.equals(extensionPoint)
                 && contribution instanceof PermissionVisibilityDescriptor) {
             permissionProvider.registerDescriptor((PermissionVisibilityDescriptor) contribution);
-        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint)
-                && contribution instanceof SecurityPolicyDescriptor) {
+        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint) && contribution instanceof SecurityPolicyDescriptor) {
             securityPolicyService.registerDescriptor((SecurityPolicyDescriptor) contribution);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
-        if (PERMISSIONS_EXTENSION_POINT.equals(extensionPoint)
-                && contribution instanceof PermissionDescriptor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (PERMISSIONS_EXTENSION_POINT.equals(extensionPoint) && contribution instanceof PermissionDescriptor) {
             permissionProvider.unregisterDescriptor((PermissionDescriptor) contribution);
         } else if (PERMISSIONS_VISIBILITY_EXTENSION_POINT.equals(extensionPoint)
                 && contribution instanceof PermissionVisibilityDescriptor) {
             permissionProvider.unregisterDescriptor((PermissionVisibilityDescriptor) contribution);
-        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint)
-                && contribution instanceof SecurityPolicyDescriptor) {
+        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint) && contribution instanceof SecurityPolicyDescriptor) {
             securityPolicyService.unregisterDescriptor((SecurityPolicyDescriptor) contribution);
         }
     }
@@ -116,13 +109,11 @@ public class SecurityService extends DefaultComponent {
         return securityPolicyService.arePoliciesExpressibleInQuery(repositoryName);
     }
 
-    public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers(
-            String repositoryName) {
+    public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers(String repositoryName) {
         return securityPolicyService.getPoliciesQueryTransformers(repositoryName);
     }
 
-    public boolean checkPermission(Document doc, Principal principal,
-            String permission) throws SecurityException {
+    public boolean checkPermission(Document doc, Principal principal, String permission) throws SecurityException {
         String username = principal.getName();
 
         // system bypass
@@ -131,8 +122,7 @@ public class SecurityService extends DefaultComponent {
             return true;
         }
 
-        if (principal instanceof NuxeoPrincipal
-                && ((NuxeoPrincipal) principal).isAdministrator()) {
+        if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator()) {
             return true;
         }
 
@@ -144,8 +134,7 @@ public class SecurityService extends DefaultComponent {
         ACP acp = doc.getSession().getMergedACP(doc);
 
         // check pluggable policies
-        Access access = securityPolicyService.checkPermission(doc, acp,
-                principal, permission, resolvedPermissions,
+        Access access = securityPolicyService.checkPermission(doc, acp, principal, permission, resolvedPermissions,
                 additionalPrincipals);
         if (access != null && !Access.UNKNOWN.equals(access)) {
             return access.toBoolean();
@@ -160,8 +149,7 @@ public class SecurityService extends DefaultComponent {
     }
 
     /**
-     * Provides the full list of all permissions or groups of permissions that
-     * contain the given one (inclusive).
+     * Provides the full list of all permissions or groups of permissions that contain the given one (inclusive).
      * <p>
      * It is exposed remotely through {@link CoreSession#getPermissionsToCheck}.
      *
@@ -187,8 +175,7 @@ public class SecurityService extends DefaultComponent {
             userGroups = ((NuxeoPrincipal) principal).getAllGroups();
         }
         if (userGroups == null) {
-            return new String[] { principal.getName(),
-                    SecurityConstants.EVERYONE };
+            return new String[] { principal.getName(), SecurityConstants.EVERYONE };
         } else {
             int size = userGroups.size();
             String[] groups = new String[size + 2];

@@ -29,18 +29,15 @@ public class OperationHelper {
     }
 
     public static NavigationContext getNavigationContext() {
-        return (NavigationContext) Contexts.getConversationContext().get(
-                "navigationContext");
+        return (NavigationContext) Contexts.getConversationContext().get("navigationContext");
     }
 
     public static DocumentsListsManager getDocumentListManager() {
-        return (DocumentsListsManager) Contexts.getSessionContext().get(
-                "documentsListsManager");
+        return (DocumentsListsManager) Contexts.getSessionContext().get("documentsListsManager");
     }
 
     public static ContentViewActions getContentViewActions() {
-        return (ContentViewActions) Contexts.getConversationContext().get(
-                "contentViewActions");
+        return (ContentViewActions) Contexts.getConversationContext().get("contentViewActions");
     }
 
     public static WebActions getWebActions() {

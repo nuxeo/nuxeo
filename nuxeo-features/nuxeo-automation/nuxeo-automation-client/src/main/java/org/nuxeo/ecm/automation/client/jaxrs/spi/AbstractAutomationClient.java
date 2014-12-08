@@ -65,8 +65,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
     }
 
     /**
-     * Can be used for intercepting requests before they are being sent to the
-     * server.
+     * Can be used for intercepting requests before they are being sent to the server.
      */
     @Override
     public void setRequestInterceptor(RequestInterceptor interceptor) {
@@ -121,8 +120,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
             } else {
                 synchronized (SHARED_REGISTRY_SYNCHRONIZER) {
                     // duplicate the test to avoid reentrance
-                    if (System.currentTimeMillis()
-                            - sharedRegistryUpdateTimestamp < sharedRegistryExpirationDelay) {
+                    if (System.currentTimeMillis() - sharedRegistryUpdateTimestamp < sharedRegistryExpirationDelay) {
                         registry = sharedRegistry;
                     } else {
                         // retrieve the registry
@@ -136,8 +134,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         return login(connector);
     }
 
-    public Session getSession(final String username, final String password)
-            throws IOException {
+    public Session getSession(final String username, final String password) throws IOException {
         return getSession(new BasicAuthInterceptor(username, password));
     }
 
@@ -145,8 +142,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         return getSession(new TokenAuthInterceptor(token));
     }
 
-    protected Session getSession(RequestInterceptor interceptor)
-            throws IOException {
+    protected Session getSession(RequestInterceptor interceptor) throws IOException {
         setRequestInterceptor(interceptor);
         return getSession();
     }
@@ -166,17 +162,14 @@ public abstract class AbstractAutomationClient implements AutomationClient {
     }
 
     protected Session login(Connector connector) throws IOException {
-        Request request = new Request(Request.POST, url
-                + getRegistry().getPath("login"));
+        Request request = new Request(Request.POST, url + getRegistry().getPath("login"));
         request.put("Accept", CTYPE_ENTITY);
         LoginInfo login = (LoginInfo) connector.execute(request);
         return createSession(connector, login);
     }
 
-    protected Session createSession(final Connector connector,
-            final LoginInfo login) {
-        return new DefaultSession(this, connector,
-                login == null ? LoginInfo.ANONYNMOUS : login);
+    protected Session createSession(final Connector connector, final LoginInfo login) {
+        return new DefaultSession(this, connector, login == null ? LoginInfo.ANONYNMOUS : login);
     }
 
     public void asyncExec(Runnable runnable) {

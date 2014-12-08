@@ -49,8 +49,7 @@ public class DefaultUriResolverTest {
 
     @Test
     public void testTranslateFromGraphUri() throws Exception {
-        URI result = resolver.translateFromGraphURI(new URI(annotationUrn),
-                baseUrl);
+        URI result = resolver.translateFromGraphURI(new URI(annotationUrn), baseUrl);
         assertEquals(annotationUrl, result.toString());
     }
 

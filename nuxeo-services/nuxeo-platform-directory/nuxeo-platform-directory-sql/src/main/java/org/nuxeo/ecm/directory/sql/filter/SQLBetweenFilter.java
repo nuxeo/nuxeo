@@ -42,8 +42,7 @@ public class SQLBetweenFilter extends SQLComplexFilter {
     }
 
     @Override
-    public int doSetFieldValue(PreparedStatement ps, int index, Column column)
-            throws SQLException {
+    public int doSetFieldValue(PreparedStatement ps, int index, Column column) throws SQLException {
         column.setToPreparedStatement(ps, index, from);
         column.setToPreparedStatement(ps, index + 1, to);
         return index + 2;

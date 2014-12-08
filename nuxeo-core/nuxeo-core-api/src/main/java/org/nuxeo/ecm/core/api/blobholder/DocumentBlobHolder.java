@@ -25,8 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 
 /**
- * {@link BlobHolder} implementation based on a {@link DocumentModel} and a
- * XPath.
+ * {@link BlobHolder} implementation based on a {@link DocumentModel} and a XPath.
  * 
  * @author tiry
  */
@@ -41,11 +40,9 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
     protected List<Blob> blobList = null;
 
     /**
-     * Constructor with filename property for compatibility (when filename was
-     * not stored on blob object)
+     * Constructor with filename property for compatibility (when filename was not stored on blob object)
      */
-    public DocumentBlobHolder(DocumentModel doc, String xPath,
-            String xPathFilename) {
+    public DocumentBlobHolder(DocumentModel doc, String xPath, String xPathFilename) {
         this.doc = doc;
         this.xPath = xPath;
         this.xPathFilename = xPathFilename;

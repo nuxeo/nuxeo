@@ -56,13 +56,11 @@ public class RelationHelper {
     /**
      * Returns the relation node corresponding to a document model.
      */
-    public static QNameResource getDocumentResource(DocumentModel document)
-            throws ClientException {
+    public static QNameResource getDocumentResource(DocumentModel document) throws ClientException {
         QNameResource documentResource = null;
         RelationManager rm = getRelationManager();
         if (document != null && rm != null) {
-            documentResource = (QNameResource) rm.getResource(
-                    RelationConstants.DOCUMENT_NAMESPACE, document, null);
+            documentResource = (QNameResource) rm.getResource(RelationConstants.DOCUMENT_NAMESPACE, document, null);
         }
         return documentResource;
     }
@@ -70,14 +68,12 @@ public class RelationHelper {
     /**
      * Returns the document model corresponding to a relation node.
      */
-    public static DocumentModel getDocumentModel(Node node, CoreSession session)
-            throws ClientException {
+    public static DocumentModel getDocumentModel(Node node, CoreSession session) throws ClientException {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
             Map<String, Object> context = Collections.<String, Object> singletonMap(
                     ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
-            Object o = getRelationManager().getResourceRepresentation(
-                    resource.getNamespace(), resource, context);
+            Object o = getRelationManager().getResourceRepresentation(resource.getNamespace(), resource, context);
             if (o instanceof DocumentModel) {
                 return (DocumentModel) o;
             }
@@ -85,23 +81,20 @@ public class RelationHelper {
         return null;
     }
 
-    public static DocumentModelList getSubjectDocuments(Resource predicat,
-            String stringObject, CoreSession session) {
-        return getSubjectDocuments(RelationConstants.GRAPH_NAME, predicat,
-                stringObject, session);
+    public static DocumentModelList getSubjectDocuments(Resource predicat, String stringObject, CoreSession session) {
+        return getSubjectDocuments(RelationConstants.GRAPH_NAME, predicat, stringObject, session);
     }
 
-    public static DocumentModelList getSubjectDocuments(String graphName, Resource predicat,
-            String stringObject, CoreSession session) {
+    public static DocumentModelList getSubjectDocuments(String graphName, Resource predicat, String stringObject,
+            CoreSession session) {
         try {
             Literal literal = new LiteralImpl(stringObject);
-            List<Statement> stmts = getRelationManager().getGraphByName(
-                    graphName).getStatements(null, predicat, literal);
+            List<Statement> stmts = getRelationManager().getGraphByName(graphName).getStatements(null, predicat,
+                    literal);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
-                    DocumentModel d = getDocumentModel(stmt.getSubject(),
-                            session);
+                    DocumentModel d = getDocumentModel(stmt.getSubject(), session);
                     if (d != null) {
                         docs.add(d);
                     }
@@ -114,8 +107,7 @@ public class RelationHelper {
         return null;
     }
 
-    public static DocumentModelList getSubjectDocuments(Resource predicat,
-            DocumentModel objectDocument) {
+    public static DocumentModelList getSubjectDocuments(Resource predicat, DocumentModel objectDocument) {
         return getSubjectDocuments(RelationConstants.GRAPH_NAME, predicat, objectDocument);
     }
 
@@ -123,13 +115,12 @@ public class RelationHelper {
             DocumentModel objectDocument) {
         try {
             QNameResource docResource = getDocumentResource(objectDocument);
-            List<Statement> stmts = getRelationManager().getGraphByName(
-                    graphName).getStatements(null, predicat, docResource);
+            List<Statement> stmts = getRelationManager().getGraphByName(graphName).getStatements(null, predicat,
+                    docResource);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
-                    DocumentModel d = getDocumentModel(stmt.getSubject(),
-                            objectDocument.getCoreSession());
+                    DocumentModel d = getDocumentModel(stmt.getSubject(), objectDocument.getCoreSession());
                     if (d != null) {
                         docs.add(d);
                     }
@@ -142,8 +133,7 @@ public class RelationHelper {
         return null;
     }
 
-    public static DocumentModelList getSubjectDocumentsOut(Resource predicat,
-            DocumentModel objectDocument) {
+    public static DocumentModelList getSubjectDocumentsOut(Resource predicat, DocumentModel objectDocument) {
         return getSubjectDocumentsOut(RelationConstants.GRAPH_NAME, predicat, objectDocument);
     }
 
@@ -151,13 +141,12 @@ public class RelationHelper {
             DocumentModel objectDocument) {
         try {
             QNameResource docResource = getDocumentResource(objectDocument);
-            List<Statement> stmts = getRelationManager().getGraphByName(
-                    graphName).getStatements(docResource, predicat, null);
+            List<Statement> stmts = getRelationManager().getGraphByName(graphName).getStatements(docResource, predicat,
+                    null);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
-                    DocumentModel d = getDocumentModel(stmt.getObject(),
-                            objectDocument.getCoreSession());
+                    DocumentModel d = getDocumentModel(stmt.getObject(), objectDocument.getCoreSession());
                     if (d != null) {
                         docs.add(d);
                     }
@@ -170,20 +159,17 @@ public class RelationHelper {
         return null;
     }
 
-    public static DocumentModelList getObjectDocuments(
-            DocumentModel subjectDoc, Resource predicat) {
+    public static DocumentModelList getObjectDocuments(DocumentModel subjectDoc, Resource predicat) {
         return getObjectDocuments(RelationConstants.GRAPH_NAME, subjectDoc, predicat);
     }
 
-    public static DocumentModelList getObjectDocuments(String graphName,
-            DocumentModel subjectDoc, Resource predicat) {
+    public static DocumentModelList getObjectDocuments(String graphName, DocumentModel subjectDoc, Resource predicat) {
         try {
             List<Statement> stmts = getStatements(graphName, subjectDoc, predicat);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
-                    DocumentModel d = getDocumentModel(stmt.getObject(),
-                            subjectDoc.getCoreSession());
+                    DocumentModel d = getDocumentModel(stmt.getObject(), subjectDoc.getCoreSession());
                     if (d != null) {
                         docs.add(d);
                     }
@@ -196,30 +182,26 @@ public class RelationHelper {
         return null;
     }
 
-    public static List<Statement> getStatements(DocumentModel subjectDoc,
-            Resource predicat) {
+    public static List<Statement> getStatements(DocumentModel subjectDoc, Resource predicat) {
         return getStatements(RelationConstants.GRAPH_NAME, subjectDoc, predicat);
     }
 
-    public static List<Statement> getStatements(String graphName, DocumentModel subjectDoc,
-            Resource predicat) {
+    public static List<Statement> getStatements(String graphName, DocumentModel subjectDoc, Resource predicat) {
         try {
             QNameResource docResource = getDocumentResource(subjectDoc);
-            return getRelationManager().getGraphByName(graphName).getStatements(
-                    docResource, predicat, null);
+            return getRelationManager().getGraphByName(graphName).getStatements(docResource, predicat, null);
         } catch (ClientException e) {
             log.error(e, e);
         }
         return null;
     }
 
-    public static void removeRelation(DocumentModel subjectDoc,
-            Resource predicat, DocumentModel objectDoc) {
+    public static void removeRelation(DocumentModel subjectDoc, Resource predicat, DocumentModel objectDoc) {
         removeRelation(RelationConstants.GRAPH_NAME, subjectDoc, predicat, objectDoc);
     }
 
-    public static void removeRelation(String graphName, DocumentModel subjectDoc,
-            Resource predicat, DocumentModel objectDoc) {
+    public static void removeRelation(String graphName, DocumentModel subjectDoc, Resource predicat,
+            DocumentModel objectDoc) {
         try {
             QNameResource subject = getDocumentResource(subjectDoc);
             QNameResource object = getDocumentResource(objectDoc);

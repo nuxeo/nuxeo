@@ -44,8 +44,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class LoginComponent extends DefaultComponent implements LoginService {
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.runtime.LoginComponent");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.LoginComponent");
 
     public static final String SYSTEM_LOGIN = "nuxeo-system-login";
 
@@ -83,8 +82,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("domains")) {
             SecurityDomain domain = (SecurityDomain) contribution;
             addSecurityDomain(domain);
@@ -92,8 +90,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("domains")) {
             SecurityDomain domain = (SecurityDomain) contribution;
             removeSecurityDomain(domain.getName());
@@ -159,10 +156,8 @@ public class LoginComponent extends DefaultComponent implements LoginService {
             Set<Principal> principals = new HashSet<Principal>();
             SystemID sysId = new SystemID(username);
             principals.add(sysId);
-            Subject subject = new Subject(false, principals,
-                    new HashSet<String>(), new HashSet<String>());
-            return systemLogin.login(subject, new CredentialsCallbackHandler(
-                    sysId.getName(), sysId));
+            Subject subject = new Subject(false, principals, new HashSet<String>(), new HashSet<String>());
+            return systemLogin.login(subject, new CredentialsCallbackHandler(sysId.getName(), sysId));
         }
         return null;
     }
@@ -192,8 +187,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
     }
 
     @Override
-    public LoginContext login(String username, Object credentials)
-            throws LoginException {
+    public LoginContext login(String username, Object credentials) throws LoginException {
         if (clientLogin != null) {
             return clientLogin.login(username, credentials);
         }
@@ -229,13 +223,11 @@ public class LoginComponent extends DefaultComponent implements LoginService {
                     } else {
                         if (systemLoginManager.isRemoveSystemLoginAllowedForInstance(sourceInstanceId)) {
                             if (log.isTraceEnabled()) {
-                                log.trace("Remote SystemLogin from instance "
-                                        + sourceInstanceId + " accepted");
+                                log.trace("Remote SystemLogin from instance " + sourceInstanceId + " accepted");
                             }
                             return true;
                         } else {
-                            log.warn("Remote SystemLogin attempt from instance "
-                                    + sourceInstanceId + " was denied");
+                            log.warn("Remote SystemLogin attempt from instance " + sourceInstanceId + " was denied");
                             return false;
                         }
                     }
@@ -280,8 +272,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
                 } else if (!userName.equals(oName)) {
                     return false;
                 }
-                if (systemLoginManager.isRemoteSystemLoginRestricted()
-                        && (other instanceof LoginComponent.SystemID)) {
+                if (systemLoginManager.isRemoteSystemLoginRestricted() && (other instanceof LoginComponent.SystemID)) {
                     // compare sourceInstanceId
                     String oSysId = ((LoginComponent.SystemID) other).sourceInstanceId;
                     if (sourceInstanceId == null) {
@@ -301,8 +292,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
             if (!systemLoginManager.isRemoteSystemLoginRestricted()) {
                 return userName == null ? 0 : userName.hashCode();
             } else {
-                return userName == null ? 0 : userName.hashCode()
-                        + sourceInstanceId.hashCode();
+                return userName == null ? 0 : userName.hashCode() + sourceInstanceId.hashCode();
             }
         }
 

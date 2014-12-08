@@ -24,10 +24,8 @@ import org.nuxeo.runtime.model.persistence.fs.FileSystemStorage;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class ContributionPersistenceComponent extends DefaultComponent
-        implements ContributionPersistenceManager {
+public class ContributionPersistenceComponent extends DefaultComponent implements ContributionPersistenceManager {
 
     public static final String STORAGE_XP = "storage";
 
@@ -54,8 +52,7 @@ public class ContributionPersistenceComponent extends DefaultComponent
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         // This extension point is a singleton. It supports only one
         // contribution!
         // I am not using a runtime property to specify the implementation class
@@ -70,8 +67,7 @@ public class ContributionPersistenceComponent extends DefaultComponent
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         storage = null;
     }
 

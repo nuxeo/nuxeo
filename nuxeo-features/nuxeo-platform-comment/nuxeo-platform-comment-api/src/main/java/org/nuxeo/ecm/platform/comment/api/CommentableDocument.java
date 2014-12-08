@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public interface CommentableDocument extends Serializable {
 

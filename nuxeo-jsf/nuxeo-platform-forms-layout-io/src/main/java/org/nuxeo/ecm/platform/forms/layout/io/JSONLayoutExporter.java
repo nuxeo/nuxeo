@@ -78,16 +78,13 @@ public class JSONLayoutExporter {
 
     public static final String ENCODED_VALUES_ENCODING = "UTF-8";
 
-    public static String encode(JSONObject jsonObject)
-            throws UnsupportedEncodingException {
+    public static String encode(JSONObject jsonObject) throws UnsupportedEncodingException {
         String json = jsonObject.toString();
-        String encodedValues = Base64.encodeBytes(json.getBytes(), Base64.GZIP
-                | Base64.DONT_BREAK_LINES);
+        String encodedValues = Base64.encodeBytes(json.getBytes(), Base64.GZIP | Base64.DONT_BREAK_LINES);
         return URLEncoder.encode(encodedValues, ENCODED_VALUES_ENCODING);
     }
 
-    public static JSONObject decode(String json)
-            throws UnsupportedEncodingException {
+    public static JSONObject decode(String json) throws UnsupportedEncodingException {
         String decodedValues = URLDecoder.decode(json, ENCODED_VALUES_ENCODING);
         json = new String(Base64.decode(decodedValues));
         return JSONObject.fromObject(json);
@@ -97,23 +94,18 @@ public class JSONLayoutExporter {
      * @since 5.5
      * @throws IOException
      */
-    public static void export(String category, LayoutDefinition layoutDef,
-            LayoutConversionContext ctx,
-            List<WidgetDefinitionConverter> widgetConverters, OutputStream out)
-            throws IOException {
-        JSONObject res = exportToJson(category, layoutDef, ctx,
-                widgetConverters);
+    public static void export(String category, LayoutDefinition layoutDef, LayoutConversionContext ctx,
+            List<WidgetDefinitionConverter> widgetConverters, OutputStream out) throws IOException {
+        JSONObject res = exportToJson(category, layoutDef, ctx, widgetConverters);
         out.write(res.toString(2).getBytes(ENCODED_VALUES_ENCODING));
     }
 
-    public static void export(WidgetTypeDefinition def, OutputStream out)
-            throws IOException {
+    public static void export(WidgetTypeDefinition def, OutputStream out) throws IOException {
         JSONObject res = exportToJson(def);
         out.write(res.toString(2).getBytes(ENCODED_VALUES_ENCODING));
     }
 
-    public static void export(List<WidgetTypeDefinition> defs, OutputStream out)
-            throws IOException {
+    public static void export(List<WidgetTypeDefinition> defs, OutputStream out) throws IOException {
         JSONObject res = new JSONObject();
         if (defs != null) {
             // sort so that order is deterministic
@@ -128,8 +120,7 @@ public class JSONLayoutExporter {
     /**
      * @since 6.0
      */
-    public static void exportLayoutType(LayoutTypeDefinition def,
-            OutputStream out) throws IOException {
+    public static void exportLayoutType(LayoutTypeDefinition def, OutputStream out) throws IOException {
         JSONObject res = exportToJson(def);
         out.write(res.toString(2).getBytes(ENCODED_VALUES_ENCODING));
     }
@@ -137,8 +128,7 @@ public class JSONLayoutExporter {
     /**
      * @since 6.0
      */
-    public static void exportLayoutTypes(List<LayoutTypeDefinition> defs,
-            OutputStream out) throws IOException {
+    public static void exportLayoutTypes(List<LayoutTypeDefinition> defs, OutputStream out) throws IOException {
         JSONObject res = new JSONObject();
         if (defs != null) {
             // sort so that order is deterministic
@@ -174,8 +164,7 @@ public class JSONLayoutExporter {
     }
 
     @SuppressWarnings("unchecked")
-    public static WidgetTypeDefinition importWidgetTypeDefinition(
-            JSONObject jsonDef) {
+    public static WidgetTypeDefinition importWidgetTypeDefinition(JSONObject jsonDef) {
         String name = jsonDef.optString("name");
         String handlerClass = jsonDef.optString("handlerClassName");
         Map<String, String> properties = importStringProps(jsonDef.optJSONObject("properties"));
@@ -185,8 +174,7 @@ public class JSONLayoutExporter {
         if (jaliases != null) {
             aliases.addAll(jaliases);
         }
-        WidgetTypeDefinitionImpl res = new WidgetTypeDefinitionImpl(name,
-                handlerClass, properties, conf);
+        WidgetTypeDefinitionImpl res = new WidgetTypeDefinitionImpl(name, handlerClass, properties, conf);
         res.setAliases(aliases);
         return res;
     }
@@ -322,8 +310,7 @@ public class JSONLayoutExporter {
 
         Map<String, Map<String, Serializable>> defaultPropValues = conf.getDefaultPropertyValues();
         if (defaultPropValues != null && !defaultPropValues.isEmpty()) {
-            json.element("defaultPropertyValues",
-                    exportPropsByModeToJson(defaultPropValues));
+            json.element("defaultPropertyValues", exportPropsByModeToJson(defaultPropValues));
         }
 
         if (!props.isEmpty()) {
@@ -332,16 +319,14 @@ public class JSONLayoutExporter {
 
         Map<String, Map<String, Serializable>> defaultControlValues = conf.getDefaultControlValues();
         if (defaultControlValues != null && !defaultControlValues.isEmpty()) {
-            json.element("defaultControlValues",
-                    exportPropsByModeToJson(defaultControlValues));
+            json.element("defaultControlValues", exportPropsByModeToJson(defaultControlValues));
         }
 
         return json;
     }
 
     @SuppressWarnings("unchecked")
-    public static WidgetTypeConfiguration importWidgetTypeConfiguration(
-            JSONObject conf) {
+    public static WidgetTypeConfiguration importWidgetTypeConfiguration(JSONObject conf) {
         WidgetTypeConfigurationImpl res = new WidgetTypeConfigurationImpl();
         if (conf == null) {
             return res;
@@ -497,8 +482,7 @@ public class JSONLayoutExporter {
      * @since 6.0
      */
     @SuppressWarnings("unchecked")
-    public static LayoutTypeDefinition importLayoutTypeDefinition(
-            JSONObject jsonDef) {
+    public static LayoutTypeDefinition importLayoutTypeDefinition(JSONObject jsonDef) {
         String name = jsonDef.optString("name");
         Map<String, String> templates = importStringProps(jsonDef.optJSONObject("templates"));
         LayoutTypeConfiguration conf = importLayoutTypeConfiguration(jsonDef.optJSONObject("configuration"));
@@ -507,8 +491,7 @@ public class JSONLayoutExporter {
         if (jaliases != null) {
             aliases.addAll(jaliases);
         }
-        LayoutTypeDefinitionImpl res = new LayoutTypeDefinitionImpl(name,
-                templates, conf);
+        LayoutTypeDefinitionImpl res = new LayoutTypeDefinitionImpl(name, templates, conf);
         res.setAliases(aliases);
         return res;
     }
@@ -587,8 +570,7 @@ public class JSONLayoutExporter {
 
         Map<String, Map<String, Serializable>> defaultPropValues = conf.getDefaultPropertyValues();
         if (defaultPropValues != null && !defaultPropValues.isEmpty()) {
-            json.element("defaultPropertyValues",
-                    exportPropsByModeToJson(defaultPropValues));
+            json.element("defaultPropertyValues", exportPropsByModeToJson(defaultPropValues));
         }
 
         if (!props.isEmpty()) {
@@ -603,8 +585,7 @@ public class JSONLayoutExporter {
      * @since 6.0
      */
     @SuppressWarnings("unchecked")
-    public static LayoutTypeConfiguration importLayoutTypeConfiguration(
-            JSONObject conf) {
+    public static LayoutTypeConfiguration importLayoutTypeConfiguration(JSONObject conf) {
         LayoutTypeConfigurationImpl res = new LayoutTypeConfigurationImpl();
         if (conf == null) {
             return res;
@@ -675,8 +656,7 @@ public class JSONLayoutExporter {
         return res;
     }
 
-    public static JSONObject exportToJson(String category,
-            LayoutDefinition layoutDef) {
+    public static JSONObject exportToJson(String category, LayoutDefinition layoutDef) {
         return exportToJson(category, layoutDef, null, null);
     }
 
@@ -684,16 +664,13 @@ public class JSONLayoutExporter {
      * Returns the JSON export of this layout definition
      *
      * @since 5.5
-     * @param category the category of the layout, needed for retrieval of
-     *            referenced global widgets.
+     * @param category the category of the layout, needed for retrieval of referenced global widgets.
      * @param layoutDef the layout definition
      * @param ctx the widget conversion context
-     * @param widgetConverters the list of ordered widget converters to use
-     *            before export
+     * @param widgetConverters the list of ordered widget converters to use before export
      * @return
      */
-    public static JSONObject exportToJson(String category,
-            LayoutDefinition layoutDef, LayoutConversionContext ctx,
+    public static JSONObject exportToJson(String category, LayoutDefinition layoutDef, LayoutConversionContext ctx,
             List<WidgetDefinitionConverter> widgetConverters) {
         JSONObject json = new JSONObject();
         json.element("name", layoutDef.getName());
@@ -725,8 +702,7 @@ public class JSONLayoutExporter {
             int rowIndex = -1;
             for (LayoutRowDefinition layoutRowDef : defRows) {
                 rowIndex++;
-                rows.add(exportToJson(layoutRowDef,
-                        layoutRowDef.getDefaultName(rowIndex)));
+                rows.add(exportToJson(layoutRowDef, layoutRowDef.getDefaultName(rowIndex)));
                 WidgetReference[] widgets = layoutRowDef.getWidgetReferences();
                 if (widgets != null) {
                     for (WidgetReference widget : widgets) {
@@ -742,8 +718,7 @@ public class JSONLayoutExporter {
         LayoutStore webLayoutManager = Framework.getLocalService(LayoutStore.class);
         JSONArray widgets = new JSONArray();
         for (WidgetReference widgetRef : widgetsToExport) {
-            WidgetDefinition widgetDef = exportWidgetReference(widgetRef,
-                    category, layoutDef, ctx, webLayoutManager,
+            WidgetDefinition widgetDef = exportWidgetReference(widgetRef, category, layoutDef, ctx, webLayoutManager,
                     widgetConverters);
             if (widgetDef != null) {
                 widgets.add(exportToJson(widgetDef, ctx, widgetConverters));
@@ -752,12 +727,10 @@ public class JSONLayoutExporter {
                 WidgetReference[] subwidgetRefs = widgetDef.getSubWidgetReferences();
                 if (subwidgetRefs != null) {
                     for (WidgetReference subwidgetRef : subwidgetRefs) {
-                        WidgetDefinition subwidgetDef = exportWidgetReference(
-                                subwidgetRef, category, layoutDef, ctx,
+                        WidgetDefinition subwidgetDef = exportWidgetReference(subwidgetRef, category, layoutDef, ctx,
                                 webLayoutManager, widgetConverters);
                         if (subwidgetDef != null) {
-                            widgets.add(exportToJson(subwidgetDef, ctx,
-                                    widgetConverters));
+                            widgets.add(exportToJson(subwidgetDef, ctx, widgetConverters));
                         }
                     }
                 }
@@ -784,10 +757,8 @@ public class JSONLayoutExporter {
         return json;
     }
 
-    protected static WidgetDefinition exportWidgetReference(
-            WidgetReference widgetRef, String category,
-            LayoutDefinition layoutDef, LayoutConversionContext ctx,
-            LayoutStore webLayoutManager,
+    protected static WidgetDefinition exportWidgetReference(WidgetReference widgetRef, String category,
+            LayoutDefinition layoutDef, LayoutConversionContext ctx, LayoutStore webLayoutManager,
             List<WidgetDefinitionConverter> widgetConverters) {
         String widgetName = widgetRef.getName();
         WidgetDefinition widgetDef = layoutDef.getWidgetDefinition(widgetName);
@@ -799,10 +770,8 @@ public class JSONLayoutExporter {
             widgetDef = webLayoutManager.getWidgetDefinition(cat, widgetName);
         }
         if (widgetDef == null) {
-            log.error(String.format(
-                    "No definition found for widget '%s' in layout '%s' "
-                            + "=> cannot export", widgetName,
-                    layoutDef.getName()));
+            log.error(String.format("No definition found for widget '%s' in layout '%s' " + "=> cannot export",
+                    widgetName, layoutDef.getName()));
         } else {
             if (widgetConverters != null) {
                 for (WidgetDefinitionConverter conv : widgetConverters) {
@@ -845,8 +814,7 @@ public class JSONLayoutExporter {
             aliases.addAll(jaliases);
         }
 
-        LayoutDefinitionImpl res = new LayoutDefinitionImpl(name, properties,
-                templates, rows, widgets);
+        LayoutDefinitionImpl res = new LayoutDefinitionImpl(name, properties, templates, rows, widgets);
         res.setRenderingInfos(renderingInfos);
         res.setType(type);
         res.setTypeCategory(typeCat);
@@ -857,8 +825,7 @@ public class JSONLayoutExporter {
     /**
      * @since 6.0
      */
-    public static JSONObject exportToJson(LayoutRowDefinition layoutRowDef,
-            String defaultRowName) {
+    public static JSONObject exportToJson(LayoutRowDefinition layoutRowDef, String defaultRowName) {
         JSONObject json = new JSONObject();
         String name = layoutRowDef.getName();
         if (name != null) {
@@ -896,14 +863,11 @@ public class JSONLayoutExporter {
         return exportToJson(layoutRowDef, null);
     }
 
-    public static LayoutRowDefinition importLayoutRowDefinition(
-            JSONObject layoutRowDef) {
+    public static LayoutRowDefinition importLayoutRowDefinition(JSONObject layoutRowDef) {
         String name = layoutRowDef.optString("name", null);
 
-        boolean alwaysSelected = layoutRowDef.optBoolean("alwaysSelected",
-                false);
-        boolean selectedByDefault = layoutRowDef.optBoolean(
-                "selectedByDefault", true);
+        boolean alwaysSelected = layoutRowDef.optBoolean("alwaysSelected", false);
+        boolean selectedByDefault = layoutRowDef.optBoolean("selectedByDefault", true);
 
         Map<String, Map<String, Serializable>> properties = importPropsByMode(layoutRowDef.optJSONObject("properties"));
 
@@ -919,8 +883,7 @@ public class JSONLayoutExporter {
                 }
             }
         }
-        return new LayoutRowDefinitionImpl(name, properties, widgets,
-                alwaysSelected, selectedByDefault);
+        return new LayoutRowDefinitionImpl(name, properties, widgets, alwaysSelected, selectedByDefault);
     }
 
     /**
@@ -931,8 +894,7 @@ public class JSONLayoutExporter {
      * @return
      */
     @SuppressWarnings("deprecation")
-    public static JSONObject exportToJson(WidgetDefinition widgetDef,
-            LayoutConversionContext ctx,
+    public static JSONObject exportToJson(WidgetDefinition widgetDef, LayoutConversionContext ctx,
             List<WidgetDefinitionConverter> widgetConverters) {
         JSONObject json = new JSONObject();
         json.element("name", widgetDef.getName());
@@ -1084,12 +1046,9 @@ public class JSONLayoutExporter {
             aliases.addAll(jaliases);
         }
 
-        WidgetDefinitionImpl res = new WidgetDefinitionImpl(name, type, labels,
-                helpLabels, translated, modes,
-                fieldDefinitions.toArray(new FieldDefinition[] {}), properties,
-                widgetModeProperties,
-                subWidgets.toArray(new WidgetDefinition[] {}),
-                selectOptions.toArray(new WidgetSelectOption[] {}));
+        WidgetDefinitionImpl res = new WidgetDefinitionImpl(name, type, labels, helpLabels, translated, modes,
+                fieldDefinitions.toArray(new FieldDefinition[] {}), properties, widgetModeProperties,
+                subWidgets.toArray(new WidgetDefinition[] {}), selectOptions.toArray(new WidgetSelectOption[] {}));
         res.setRenderingInfos(renderingInfos);
         res.setSubWidgetReferences(subWidgetRefs.toArray(new WidgetReference[] {}));
         res.setHandlingLabels(handlingLabels);
@@ -1109,8 +1068,8 @@ public class JSONLayoutExporter {
 
     public static FieldDefinition importFieldDefinition(JSONObject fieldDef) {
         // ignore property name: it can be deduced from schema and field name
-        FieldDefinition res = new FieldDefinitionImpl(fieldDef.optString(
-                "schemaName", null), fieldDef.getString("fieldName"));
+        FieldDefinition res = new FieldDefinitionImpl(fieldDef.optString("schemaName", null),
+                fieldDef.getString("fieldName"));
         return res;
     }
 
@@ -1122,9 +1081,8 @@ public class JSONLayoutExporter {
     }
 
     public static WidgetReference importWidgetReference(JSONObject widgetRef) {
-        WidgetReference res = new WidgetReferenceImpl(
-                widgetRef.optString("category"), widgetRef.optString("name",
-                        null));
+        WidgetReference res = new WidgetReferenceImpl(widgetRef.optString("category"),
+                widgetRef.optString("name", null));
         return res;
     }
 
@@ -1183,8 +1141,7 @@ public class JSONLayoutExporter {
     }
 
     @SuppressWarnings("unchecked")
-    public static WidgetSelectOption importWidgetSelectionOption(
-            JSONObject selectOption) {
+    public static WidgetSelectOption importWidgetSelectionOption(JSONObject selectOption) {
         boolean isMulti = selectOption.getBoolean("multiple");
         Serializable value = selectOption.optString("value", null);
         String var = selectOption.optString("var", null);
@@ -1203,56 +1160,49 @@ public class JSONLayoutExporter {
             String ordering = selectOption.optString("ordering", null);
             Boolean caseSensitive = null;
             if (selectOption.has("caseSensitive")) {
-                caseSensitive = new Boolean(
-                        selectOption.getBoolean("caseSensitive"));
+                caseSensitive = new Boolean(selectOption.getBoolean("caseSensitive"));
             }
-            WidgetSelectOptionsImpl res = new WidgetSelectOptionsImpl(value,
-                    var, itemLabel, itemValue, itemDisabled, itemRendered,
-                    ordering, caseSensitive);
+            WidgetSelectOptionsImpl res = new WidgetSelectOptionsImpl(value, var, itemLabel, itemValue, itemDisabled,
+                    itemRendered, ordering, caseSensitive);
             res.setItemLabels(labels);
             return res;
         } else {
-            WidgetSelectOptionImpl res = new WidgetSelectOptionImpl(value, var,
-                    itemLabel, itemValue, itemDisabled, itemRendered);
+            WidgetSelectOptionImpl res = new WidgetSelectOptionImpl(value, var, itemLabel, itemValue, itemDisabled,
+                    itemRendered);
             res.setItemLabels(labels);
             return res;
         }
     }
 
-    public static JSONObject exportPropsByModeToJson(
-            Map<String, Map<String, Serializable>> propsByMode) {
+    public static JSONObject exportPropsByModeToJson(Map<String, Map<String, Serializable>> propsByMode) {
         JSONObject props = new JSONObject();
         if (propsByMode != null) {
             List<String> defModes = new ArrayList<String>(propsByMode.keySet());
             // sort so that order is deterministic
             Collections.sort(defModes);
             for (String defMode : defModes) {
-                props.element(defMode,
-                        exportPropsToJson(propsByMode.get(defMode)));
+                props.element(defMode, exportPropsToJson(propsByMode.get(defMode)));
             }
         }
         return props;
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, Map<String, Serializable>> importPropsByMode(
-            JSONObject propsByMode) {
+    public static Map<String, Map<String, Serializable>> importPropsByMode(JSONObject propsByMode) {
         Map<String, Map<String, Serializable>> props = new HashMap<String, Map<String, Serializable>>();
         if (propsByMode != null && !propsByMode.isNullObject()) {
             List<String> defModes = new ArrayList<String>(propsByMode.keySet());
             // sort so that order is deterministic
             Collections.sort(defModes);
             for (String defMode : defModes) {
-                props.put(defMode,
-                        importProps(propsByMode.getJSONObject(defMode)));
+                props.put(defMode, importProps(propsByMode.getJSONObject(defMode)));
             }
         }
         return props;
     }
 
     @SuppressWarnings({ "rawtypes" })
-    public static JSONObject exportPropsToJson(
-            Map<String, Serializable> defProps) {
+    public static JSONObject exportPropsToJson(Map<String, Serializable> defProps) {
         JSONObject props = new JSONObject();
         if (defProps != null) {
             List<String> defPropNames = new ArrayList<String>(defProps.keySet());
@@ -1298,8 +1248,7 @@ public class JSONLayoutExporter {
         return props;
     }
 
-    public static JSONObject exportStringPropsToJson(
-            Map<String, String> defProps) {
+    public static JSONObject exportStringPropsToJson(Map<String, String> defProps) {
         JSONObject props = new JSONObject();
         if (defProps != null) {
             List<String> defPropNames = new ArrayList<String>(defProps.keySet());
@@ -1323,32 +1272,28 @@ public class JSONLayoutExporter {
         return props;
     }
 
-    public static JSONObject exportRenderingInfosByModeToJson(
-            Map<String, List<RenderingInfo>> infosByMode) {
+    public static JSONObject exportRenderingInfosByModeToJson(Map<String, List<RenderingInfo>> infosByMode) {
         JSONObject props = new JSONObject();
         if (infosByMode != null) {
             List<String> defModes = new ArrayList<String>(infosByMode.keySet());
             // sort so that order is deterministic
             Collections.sort(defModes);
             for (String defMode : defModes) {
-                props.element(defMode,
-                        exportRenderingInfosToJson(infosByMode.get(defMode)));
+                props.element(defMode, exportRenderingInfosToJson(infosByMode.get(defMode)));
             }
         }
         return props;
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, List<RenderingInfo>> importRenderingInfosByMode(
-            JSONObject infosByMode) {
+    public static Map<String, List<RenderingInfo>> importRenderingInfosByMode(JSONObject infosByMode) {
         Map<String, List<RenderingInfo>> props = new HashMap<String, List<RenderingInfo>>();
         if (infosByMode != null && !infosByMode.isNullObject()) {
             List<String> defModes = new ArrayList<String>(infosByMode.keySet());
             // sort so that order is deterministic
             Collections.sort(defModes);
             for (String defMode : defModes) {
-                props.put(defMode,
-                        importRenderingInfos(infosByMode.getJSONArray(defMode)));
+                props.put(defMode, importRenderingInfos(infosByMode.getJSONArray(defMode)));
             }
         }
         return props;
@@ -1383,9 +1328,8 @@ public class JSONLayoutExporter {
     }
 
     public static RenderingInfo importRenderingInfo(JSONObject fieldDef) {
-        RenderingInfo res = new RenderingInfoImpl(fieldDef.optString("level",
-                ""), fieldDef.optString("message"), fieldDef.optBoolean(
-                "translated", false));
+        RenderingInfo res = new RenderingInfoImpl(fieldDef.optString("level", ""), fieldDef.optString("message"),
+                fieldDef.optBoolean("translated", false));
         return res;
     }
 

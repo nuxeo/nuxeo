@@ -46,8 +46,7 @@ public class LockManagerService extends DefaultComponent {
 
     protected Map<String, LockManager> lockManagers = new ConcurrentHashMap<>();
 
-    protected static class LockManagerDescriptorRegistry extends
-            SimpleContributionRegistry<LockManagerDescriptor> {
+    protected static class LockManagerDescriptorRegistry extends SimpleContributionRegistry<LockManagerDescriptor> {
 
         @Override
         public String getContributionId(LockManagerDescriptor contrib) {
@@ -89,8 +88,7 @@ public class LockManagerService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) {
+    public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_LOCKMANAGER.equals(xpoint)) {
             addContribution((LockManagerDescriptor) contrib);
         } else {
@@ -99,8 +97,7 @@ public class LockManagerService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) {
+    public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_LOCKMANAGER.equals(xpoint)) {
             removeContribution((LockManagerDescriptor) contrib);
         } else {
@@ -137,8 +134,7 @@ public class LockManagerService extends DefaultComponent {
             try {
                 Constructor<? extends LockManager> ctor = descriptor.klass.getConstructor(String.class);
                 lockManager = ctor.newInstance(name);
-            } catch (NoSuchMethodException | InstantiationException
-                    | IllegalAccessException | IllegalArgumentException
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | IllegalArgumentException
                     | InvocationTargetException e) {
                 throw new NuxeoException(e);
             }

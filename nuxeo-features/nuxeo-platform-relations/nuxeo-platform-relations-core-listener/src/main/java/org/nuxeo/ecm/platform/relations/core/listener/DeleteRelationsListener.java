@@ -34,9 +34,8 @@ import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Core Event listener that cleans relation on deleted documents; it should be
- * executed after PublishRelationsListener so as to be able to copy relations
- * from the deleted proxies.
+ * Core Event listener that cleans relation on deleted documents; it should be executed after PublishRelationsListener
+ * so as to be able to copy relations from the deleted proxies.
  *
  * @author mcedica
  */
@@ -52,14 +51,12 @@ public class DeleteRelationsListener implements EventListener {
             relationManager = getRelationManager();
 
             // create resource from the document being deleted
-            Resource sourceResource = relationManager.getResource(
-                    RelationConstants.DOCUMENT_NAMESPACE, doc, null);
+            Resource sourceResource = relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE, doc, null);
 
             // remove all the relations from the default graf in which this
             // document is an object in the statement
             Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
-            List<Statement> statementList = graph.getStatements(null, null,
-                    sourceResource);
+            List<Statement> statementList = graph.getStatements(null, null, sourceResource);
             graph.remove(statementList);
 
             // remove all the relations in which this document is a subject in

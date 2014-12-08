@@ -27,10 +27,8 @@ import java.util.Date;
  * Statement info comparator to sort relations.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
-public class StatementInfoComparator implements Comparator<StatementInfo>,
-        Serializable {
+public class StatementInfoComparator implements Comparator<StatementInfo>, Serializable {
 
     private static final long serialVersionUID = -5117909579284277595L;
 

@@ -20,7 +20,6 @@ import org.codehaus.jackson.JsonParser;
  * Plugs in automation client new input/output marshalling logic.
  *
  * @author matic
- *
  * @param <T>
  */
 public interface JsonMarshaller<T> {

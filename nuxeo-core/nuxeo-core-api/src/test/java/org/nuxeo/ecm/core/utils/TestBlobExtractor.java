@@ -40,8 +40,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.core.api.tests",
-        "OSGI-INF/test-propmodel-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-propmodel-types-contrib.xml");
     }
 
     @Test
@@ -75,8 +74,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
     public void testGetBlobsFromDocumentModelNoBlob() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
-        DocumentModel noBlob = new DocumentModelImpl("/",
-                "testNoBlob", "NoBlobDocument");
+        DocumentModel noBlob = new DocumentModelImpl("/", "testNoBlob", "NoBlobDocument");
         noBlob.setProperty("dublincore", "title", "NoBlobDocument");
 
         List<Property> blobProperties = bec.getBlobsProperties(noBlob);
@@ -87,12 +85,9 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
     public void testGetBlobsFromDocumentModelSimpleBlob() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
-        DocumentModel simpleBlob = new DocumentModelImpl("/",
-                "testSimpleBlob", "SimpleBlobDocument");
+        DocumentModel simpleBlob = new DocumentModelImpl("/", "testSimpleBlob", "SimpleBlobDocument");
         simpleBlob.setProperty("dublincore", "title", "SimpleBlobDocument");
-        simpleBlob.setProperty("simpleblob", "blob", createTestBlob(false,
-                "test.pdf"));
-
+        simpleBlob.setProperty("simpleblob", "blob", createTestBlob(false, "test.pdf"));
 
         // END INITIALIZATION
 
@@ -106,11 +101,9 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
     public void testGetBlobsFromDocumentModelSimpleBlobWithoutPrefix() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
-        DocumentModel simpleBlob = new DocumentModelImpl("/",
-                "testSimpleBlob", "WithoutPrefixDocument");
+        DocumentModel simpleBlob = new DocumentModelImpl("/", "testSimpleBlob", "WithoutPrefixDocument");
         simpleBlob.setProperty("dublincore", "title", "WithoutPrefixDocument");
-        simpleBlob.setProperty("wihtoutpref", "blob", createTestBlob(false,
-                "test.pdf"));
+        simpleBlob.setProperty("wihtoutpref", "blob", createTestBlob(false, "test.pdf"));
 
         // END INITIALIZATION
 
@@ -124,13 +117,10 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
     public void testGetBlobsFromBlobInList() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
-        DocumentModel blobInListEmpty = new DocumentModelImpl(
-                "/", "testBlobInListDocumentEmpty", "BlobInListDocument");
+        DocumentModel blobInListEmpty = new DocumentModelImpl("/", "testBlobInListDocumentEmpty", "BlobInListDocument");
 
-        DocumentModel blobInListWithBlobs = new DocumentModelImpl(
-                "/", "testBlobInListDocument1", "BlobInListDocument");
-        blobInListWithBlobs.setProperty("dublincore", "title",
-                "BlobInListDocument");
+        DocumentModel blobInListWithBlobs = new DocumentModelImpl("/", "testBlobInListDocument1", "BlobInListDocument");
+        blobInListWithBlobs.setProperty("dublincore", "title", "BlobInListDocument");
         List<Map<String, Object>> files = new ArrayList<Map<String, Object>>();
 
         Map<String, Object> blob1Map = new HashMap<String, Object>();
@@ -164,15 +154,11 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
     public void testGetBlobsFromTwoSchemas() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
-        DocumentModel doc = new DocumentModelImpl(
-                "/", "testDoc", "BlobWithTwoSchemasContainingBlob");
+        DocumentModel doc = new DocumentModelImpl("/", "testDoc", "BlobWithTwoSchemasContainingBlob");
 
-        doc.setProperty("dublincore", "title",
-                "doc");
-        doc.setProperty("simpleblob", "blob", createTestBlob(false,
-                "test1.pdf"));
-        doc.setProperty("simpleblob2", "blob", createTestBlob(false,
-                "test2.pdf"));
+        doc.setProperty("dublincore", "title", "doc");
+        doc.setProperty("simpleblob", "blob", createTestBlob(false, "test1.pdf"));
+        doc.setProperty("simpleblob2", "blob", createTestBlob(false, "test2.pdf"));
 
         List<Property> blobs = bec.getBlobsProperties(doc);
         assertEquals(2, blobs.size());
@@ -195,15 +181,11 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
     public void testGetTwoBlobsFromOneSchema() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
-        DocumentModel doc = new DocumentModelImpl(
-                "/", "testDoc", "BlobWithOneSchemaContainingTwoBlobs");
+        DocumentModel doc = new DocumentModelImpl("/", "testDoc", "BlobWithOneSchemaContainingTwoBlobs");
 
-        doc.setProperty("dublincore", "title",
-                "doc");
-        doc.setProperty("simpleblob3", "blob", createTestBlob(false,
-                "test1.pdf"));
-        doc.setProperty("simpleblob3", "blob2", createTestBlob(false,
-                "test2.pdf"));
+        doc.setProperty("dublincore", "title", "doc");
+        doc.setProperty("simpleblob3", "blob", createTestBlob(false, "test1.pdf"));
+        doc.setProperty("simpleblob3", "blob2", createTestBlob(false, "test2.pdf"));
 
         List<Property> blobs = bec.getBlobsProperties(doc);
         assertEquals(2, blobs.size());

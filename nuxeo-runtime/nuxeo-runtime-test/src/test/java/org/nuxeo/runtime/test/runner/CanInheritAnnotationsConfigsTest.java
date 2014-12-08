@@ -23,32 +23,35 @@ public class CanInheritAnnotationsConfigsTest {
     @Target(ElementType.TYPE)
     public @interface Annotation {
         String noDefault();
+
         String withDefault() default "default";
     }
 
-    @Annotation(noDefault="base", withDefault="base")
+    @Annotation(noDefault = "base", withDefault = "base")
     public static class Base {
 
     }
 
-    @Annotation(noDefault="specialized")
+    @Annotation(noDefault = "specialized")
     public static class Specialized extends Base {
 
     }
 
-    @Annotation(noDefault="another")
+    @Annotation(noDefault = "another")
     public static class Another {
 
     }
 
-    @Test public void inheritsDefaultsFromBase() {
+    @Test
+    public void inheritsDefaultsFromBase() {
         AnnotationScanner scanner = new AnnotationScanner();
         Annotation annotation = scanner.getAnnotation(Specialized.class, Annotation.class);
         Assert.assertThat("no default", annotation.noDefault(), Matchers.is("specialized"));
         Assert.assertThat("with default", annotation.withDefault(), Matchers.is("base"));
     }
 
-    @Test public void inheritsFromMultiple() {
+    @Test
+    public void inheritsFromMultiple() {
         AnnotationScanner scanner = new AnnotationScanner();
         Annotation base = scanner.getAnnotation(Base.class, Annotation.class);
         Annotation another = scanner.getAnnotation(Another.class, Annotation.class);

@@ -24,19 +24,15 @@ import org.nuxeo.ecm.webengine.util.PathMatcher;
 /**
  * Configure how a given path is handled by the WebEngine filter.
  * <p>
- * If <b>autoTx</b> is true (which is the default) then a transaction will be
- * started each time a path matching the given path specification is requested.
- * (the transaction is started in a filter before the JAX-RS resource is called
- * and closed after the response is sent to the output stream). If false then no
- * transaction handling is done. The default is to start a transaction for any
- * path but: [^/]+/skin/.*
+ * If <b>autoTx</b> is true (which is the default) then a transaction will be started each time a path matching the
+ * given path specification is requested. (the transaction is started in a filter before the JAX-RS resource is called
+ * and closed after the response is sent to the output stream). If false then no transaction handling is done. The
+ * default is to start a transaction for any path but: [^/]+/skin/.*
  * <p>
- * The <b>value</b> attribute is required and must be used to specify the path
- * pattern. The path pattern is either a prefix or a regular expression. If the
- * <b>regex</b> parameter is true (the default is false) then the value will be
- * expected to be a regular expression. A prefix denotes a path starting with
- * 'prefix'. Paths are relative to the webengine servlet (i.e. they correspond
- * to the servlet path info in the JAX-RS servlet) - and always begin with a
+ * The <b>value</b> attribute is required and must be used to specify the path pattern. The path pattern is either a
+ * prefix or a regular expression. If the <b>regex</b> parameter is true (the default is false) then the value will be
+ * expected to be a regular expression. A prefix denotes a path starting with 'prefix'. Paths are relative to the
+ * webengine servlet (i.e. they correspond to the servlet path info in the JAX-RS servlet) - and always begin with a
  * '/'.
  */
 @XObject("path")
@@ -77,8 +73,7 @@ public class PathDescriptor implements Comparable<PathDescriptor> {
             if (!value.startsWith("/")) {
                 value = "/" + value;
             }
-            matcher = regex ? PathMatcher.getRegexMatcher(value)
-                    : PathMatcher.getPrefixMatcher(value);
+            matcher = regex ? PathMatcher.getRegexMatcher(value) : PathMatcher.getPrefixMatcher(value);
         } else {
             throw new IllegalArgumentException("Path value is required");
         }

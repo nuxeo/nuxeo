@@ -16,6 +16,7 @@ import java.util.Map;
 
 /**
  * Copied from last version of wikimodel
+ *
  * @author kotelnikov
  */
 public class WikiEntityUtil {
@@ -130,8 +131,7 @@ public class WikiEntityUtil {
     /**
      * Returns an HTML code corresponding to the specified HTML entity.
      *
-     * @param htmlEntity the HTML entity to transform to the corresponding HTML
-     *        code
+     * @param htmlEntity the HTML entity to transform to the corresponding HTML code
      * @return an HTML code corresponding to the specified HTML entity
      */
     public static int getHtmlCodeByHtmlEntity(String htmlEntity) {
@@ -142,8 +142,7 @@ public class WikiEntityUtil {
     /**
      * Returns an HTML code corresponding to the specified wiki entity.
      *
-     * @param wikiEntity the wiki entity to transform to the corresponding HTML
-     *        entity
+     * @param wikiEntity the wiki entity to transform to the corresponding HTML entity
      * @return an HTML code corresponding to the specified wiki entity
      */
     public static int getHtmlCodeByWikiSymbol(String wikiEntity) {
@@ -152,8 +151,7 @@ public class WikiEntityUtil {
     }
 
     /**
-     * @param ch for this character the corresponding html entity will be
-     *        returned
+     * @param ch for this character the corresponding html entity will be returned
      * @return an html entity corresponding to the given character
      */
     public static String getHtmlSymbol(char ch) {
@@ -162,8 +160,7 @@ public class WikiEntityUtil {
     }
 
     /**
-     * @param wikiEntity for this wiki entity the corresponding html entity will
-     *        be returned
+     * @param wikiEntity for this wiki entity the corresponding html entity will be returned
      * @return an html entity corresponding to the given wiki symbol
      */
     public static String getHtmlSymbol(String wikiEntity) {
@@ -172,8 +169,7 @@ public class WikiEntityUtil {
     }
 
     /**
-     * @param ch for this character the corresponding wiki entity will be
-     *        returned
+     * @param ch for this character the corresponding wiki entity will be returned
      * @return an wiki entity corresponding to the given character
      */
     public static String getWikiSymbol(char ch) {
@@ -182,8 +178,7 @@ public class WikiEntityUtil {
     }
 
     /**
-     * @param htmlEntity for this html entity the corresponding wiki entity will
-     *        be returned
+     * @param htmlEntity for this html entity the corresponding wiki entity will be returned
      * @return an wiki entity corresponding to the given html symbol
      */
     public static String getWikiSymbol(String htmlEntity) {

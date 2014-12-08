@@ -24,10 +24,9 @@ import java.io.Serializable;
 
 import org.nuxeo.runtime.model.Adaptable;
 
-
 /**
- * A rendering result is an object that wraps a rendering result and give several methods
- * to retrieve the rendering outcome.
+ * A rendering result is an object that wraps a rendering result and give several methods to retrieve the rendering
+ * outcome.
  * <p>
  * The default one is to expose the rendering outcome as a stream.
  * <p>
@@ -39,9 +38,8 @@ import org.nuxeo.runtime.model.Adaptable;
 public interface RenderingResult extends Adaptable, Serializable {
 
     /**
-     * Gets the format name of the result. This can be use to identify the
-     * type of the result. The format name can be a mime type or any
-     * application-defined format.
+     * Gets the format name of the result. This can be use to identify the type of the result. The format name can be a
+     * mime type or any application-defined format.
      *
      * @return the format name
      */

@@ -24,9 +24,8 @@ import java.io.InputStream;
 
 import javax.mail.internet.SharedInputStream;
 
-public class SharedFileInputStream extends InputStream implements
-        SharedInputStream {
-    
+public class SharedFileInputStream extends InputStream implements SharedInputStream {
+
     protected final InputStream in;
 
     protected final SharedFileInputStream parent;
@@ -36,7 +35,7 @@ public class SharedFileInputStream extends InputStream implements
     protected final long length;
 
     protected final long start;
-    
+
     protected long current;
 
     protected long marked;
@@ -50,8 +49,7 @@ public class SharedFileInputStream extends InputStream implements
         this.in.skip(start);
     }
 
-    protected SharedFileInputStream(SharedFileInputStream parent, long start,
-            long len) throws IOException {
+    protected SharedFileInputStream(SharedFileInputStream parent, long start, long len) throws IOException {
         this.in = new BufferedInputStream(new FileInputStream(parent.file));
         this.parent = parent;
         this.file = parent.file;
@@ -72,10 +70,9 @@ public class SharedFileInputStream extends InputStream implements
             } else {
                 length = end - start;
             }
-           return new SharedFileInputStream(this, this.start + start, length);                
+            return new SharedFileInputStream(this, this.start + start, length);
         } catch (IOException localIOException) {
-            throw new IllegalStateException("unable to create shared stream: "
-                    + localIOException);
+            throw new IllegalStateException("unable to create shared stream: " + localIOException);
         }
     }
 

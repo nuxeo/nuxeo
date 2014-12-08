@@ -39,10 +39,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
-public class TilingPreviewControllerPanel extends FocusPanel implements
-        TilingModelListener {
+public class TilingPreviewControllerPanel extends FocusPanel implements TilingModelListener {
 
     private static final String DEFAULT_CLASS_NAME = "tilingPreviewControllerPanel";
 
@@ -79,8 +77,7 @@ public class TilingPreviewControllerPanel extends FocusPanel implements
                 mouseDown = false;
                 moveArea(x - this.x, y - this.y);
                 updateModel();
-                DOM.setStyleAttribute(imagesPanel.getElement(), "cursor",
-                        "default");
+                DOM.setStyleAttribute(imagesPanel.getElement(), "cursor", "default");
                 cancelEvent(Event.getCurrentEvent());
             }
         }
@@ -146,17 +143,14 @@ public class TilingPreviewControllerPanel extends FocusPanel implements
 
     private final ControllerBlockAllEventsListener blockAllEventsListener = new ControllerBlockAllEventsListener();
 
-    public TilingPreviewControllerPanel(TilingInfo sourceTilingInfo,
-            TilingModel model) {
+    public TilingPreviewControllerPanel(TilingInfo sourceTilingInfo, TilingModel model) {
         this.sourceTilingInfo = sourceTilingInfo;
         this.model = model;
         model.addListener(this);
 
         imagesPanel = new AbsolutePanel();
-        totalWidth = (int) Math.round(sourceTilingInfo.getOriginalImageWidth()
-                * sourceTilingInfo.getZoom());
-        totalHeight = (int) Math.round(sourceTilingInfo.getOriginalImageHeight()
-                * sourceTilingInfo.getZoom());
+        totalWidth = (int) Math.round(sourceTilingInfo.getOriginalImageWidth() * sourceTilingInfo.getZoom());
+        totalHeight = (int) Math.round(sourceTilingInfo.getOriginalImageHeight() * sourceTilingInfo.getZoom());
         imagesPanel.setPixelSize(totalWidth, totalHeight);
         setWidget(imagesPanel);
 
@@ -179,7 +173,6 @@ public class TilingPreviewControllerPanel extends FocusPanel implements
             for (int x = 0; x < widthInTiles; ++x) {
                 String imageUrl = sourceTilingInfo.getBaseUrl() + "?x=" + x + "&y=" + y;
                 imageUrl += "&date=" + sourceTilingInfo.getLastModificationDate();
-
 
                 Image image = new Image(imageUrl) {
                     @Override
@@ -208,10 +201,8 @@ public class TilingPreviewControllerPanel extends FocusPanel implements
         int w = (int) Math.round(model.getViewAreaWidth() / factor);
         int h = (int) Math.round(model.getViewAreaHeight() / factor);
 
-        int maxW = (int) Math.round(sourceTilingInfo.getOriginalImageWidth()
-                * sourceTilingInfo.getZoom());
-        int maxH = (int) Math.round(sourceTilingInfo.getOriginalImageHeight()
-                * sourceTilingInfo.getZoom());
+        int maxW = (int) Math.round(sourceTilingInfo.getOriginalImageWidth() * sourceTilingInfo.getZoom());
+        int maxH = (int) Math.round(sourceTilingInfo.getOriginalImageHeight() * sourceTilingInfo.getZoom());
         Log.debug("w: " + w + " maxW: " + maxW + " h: " + h + " maxH: " + maxH);
         if (w > maxW) {
             w = maxW;

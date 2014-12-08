@@ -39,12 +39,9 @@ public class TestDomainsFinder extends SQLRepositoryTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.query.api");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-pageprovider-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.publisher.test",
-                "OSGI-INF/publisher-lifecycle-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.publisher.test",
-                "OSGI-INF/core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.core", "OSGI-INF/publisher-pageprovider-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.test", "OSGI-INF/publisher-lifecycle-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.test", "OSGI-INF/core-types-contrib.xml");
 
         fireFrameworkStarted();
 
@@ -64,14 +61,11 @@ public class TestDomainsFinder extends SQLRepositoryTestCase {
         result = domainFinder.getDomainsFiltered();
         assertEquals(0, result.size());
 
-        DocumentModel domain1 = session.createDocumentModel("/", "dom1",
-                "Domain");
+        DocumentModel domain1 = session.createDocumentModel("/", "dom1", "Domain");
         domain1 = session.createDocument(domain1);
-        DocumentModel domain2 = session.createDocumentModel("/", "dom1",
-                "Domain");
+        DocumentModel domain2 = session.createDocumentModel("/", "dom1", "Domain");
         domain2 = session.createDocument(domain2);
-        DocumentModel socialdomain1 = session.createDocumentModel("/", "social",
-                "SocialDomain");
+        DocumentModel socialdomain1 = session.createDocumentModel("/", "social", "SocialDomain");
         socialdomain1 = session.createDocument(socialdomain1);
         session.save();
         result = domainFinder.getDomainsFiltered();

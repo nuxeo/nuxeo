@@ -21,18 +21,18 @@ import org.osgi.framework.Bundle;
 import org.osgi.service.http.HttpContext;
 
 /**
- * A HttpContext that delegates resource lookup to contributed {@link ResourcesDescriptor}
- * in the inverse order of the contribution (preserving the ordering imposed by extension mechanism)
+ * A HttpContext that delegates resource lookup to contributed {@link ResourcesDescriptor} in the inverse order of the
+ * contribution (preserving the ordering imposed by extension mechanism)
  * <p>
- * A BundleHttpContext is created for every declated servlet when it is registered against to HttpService.
- * The context is removed when the servlet is unregistered.
+ * A BundleHttpContext is created for every declated servlet when it is registered against to HttpService. The context
+ * is removed when the servlet is unregistered.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BundleHttpContext implements HttpContext {
 
     protected Bundle bundle;
+
     protected ResourceResolver resolver;
 
     protected volatile ResourcesDescriptor[] resources;
@@ -61,7 +61,7 @@ public class BundleHttpContext implements HttpContext {
     public URL getResource(String name) {
         ResourcesDescriptor[] _resources = resources;
         if (_resources != null) {
-            for (int i=_resources.length-1; i>=0; i--) {
+            for (int i = _resources.length - 1; i >= 0; i--) {
                 URL url = _resources[i].getResource(name);
                 if (url != null) {
                     return url;
@@ -75,8 +75,7 @@ public class BundleHttpContext implements HttpContext {
     }
 
     @Override
-    public boolean handleSecurity(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // default behaviour assumes the container has already performed authentication
         return true;
     }

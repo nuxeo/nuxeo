@@ -52,13 +52,16 @@ public abstract class Wizard extends DefaultObject {
     public static final String[] EMPTY = new String[0];
 
     protected WizardSession session;
+
     protected WizardPage page; // current wizard page
+
     protected ValidationException error;
-    protected Map<String,String[]> initialFields;
+
+    protected Map<String, String[]> initialFields;
 
     protected abstract WizardPage[] createPages();
 
-    protected Map<String,String[]> createInitialFields() {
+    protected Map<String, String[]> createInitialFields() {
         return null;
     }
 
@@ -67,7 +70,7 @@ public abstract class Wizard extends DefaultObject {
         super.initialize(args);
         HttpSession httpSession = ctx.getRequest().getSession(true);
         String key = createSessionId();
-        session = (WizardSession)httpSession.getAttribute(key);
+        session = (WizardSession) httpSession.getAttribute(key);
         if (session == null) {
             session = new WizardSession(key, createPages());
             httpSession.setAttribute(key, session);
@@ -87,7 +90,7 @@ public abstract class Wizard extends DefaultObject {
     }
 
     protected String createSessionId() {
-        return "wizard:"+getClass();
+        return "wizard:" + getClass();
     }
 
     public WizardSession getSession() {
@@ -119,7 +122,7 @@ public abstract class Wizard extends DefaultObject {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String,String[]> getFormFields() {
+    public Map<String, String[]> getFormFields() {
         Form form = session.getPage().getForm();
         if (form != null) {
             return form.fields();
@@ -188,8 +191,8 @@ public abstract class Wizard extends DefaultObject {
 
     protected Object handleError(Throwable e) {
         // set the error and redisplay the current page
-        log.error("Processing failed in wizard page: "+session.getPage().getId(), e);
-        session.setError(new ValidationException("Processing failed: "+e.getMessage(), e));
+        log.error("Processing failed in wizard page: " + session.getPage().getId(), e);
+        session.setError(new ValidationException("Processing failed: " + e.getMessage(), e));
         return redirect(getPath());
     }
 
@@ -198,7 +201,7 @@ public abstract class Wizard extends DefaultObject {
         try {
             Form form = ctx.getForm().validate(page.getFormType());
             page.setForm(form);
-            return (T)form;
+            return (T) form;
         } catch (ValidationException e) {
             page.setForm(e.getForm());
             throw e;
@@ -210,10 +213,10 @@ public abstract class Wizard extends DefaultObject {
     public Object handleNext() {
         String pageId = null;
         try {
-            //process page
+            // process page
             pageId = page.getNextPage(this, validate(page));
             if (pageId == WizardPage.NEXT_PAGE) {
-                pageId = session.getPageAt(page.getIndex()+1);
+                pageId = session.getPageAt(page.getIndex() + 1);
             }
             if (pageId == null) { // finish the wizard
                 performOk();

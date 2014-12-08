@@ -29,16 +29,13 @@ import org.tranql.connector.jdbc.LocalDataSourceWrapper;
 import org.tranql.connector.jdbc.TranqlDataSource;
 import org.tranql.connector.jdbc.XADataSourceWrapper;
 
-public class PooledDataSourceFactory implements
-        PooledDataSourceRegistry.Factory {
+public class PooledDataSourceFactory implements PooledDataSourceRegistry.Factory {
 
-    protected static class DataSource extends TranqlDataSource implements
-            PooledDataSource {
+    protected static class DataSource extends TranqlDataSource implements PooledDataSource {
 
         protected ConnectionManagerWrapper wrapper;
 
-        public DataSource(ManagedConnectionFactory mcf,
-                ConnectionManagerWrapper wrapper) {
+        public DataSource(ManagedConnectionFactory mcf, ConnectionManagerWrapper wrapper) {
             super(mcf, wrapper);
             this.wrapper = wrapper;
         }
@@ -68,8 +65,7 @@ public class PooledDataSourceFactory implements
     }
 
     @Override
-    public Object getObjectInstance(Object obj, Name name, Context ctx,
-            Hashtable<?, ?> environment) {
+    public Object getObjectInstance(Object obj, Name name, Context ctx, Hashtable<?, ?> environment) {
         Reference ref = (Reference) obj;
         ManagedConnectionFactory mcf;
         ConnectionManagerWrapper cm;
@@ -82,16 +78,15 @@ public class PooledDataSourceFactory implements
         return new DataSource(mcf, cm);
     }
 
-    protected ConnectionManagerWrapper createManager(Reference ref, Context ctx)
-            throws ResourceException {
+    protected ConnectionManagerWrapper createManager(Reference ref, Context ctx) throws ResourceException {
         NuxeoConnectionManagerConfiguration config = NuxeoConnectionManagerFactory.getConfig(ref);
         String className = ref.getClassName();
         config.setXAMode(XADataSource.class.getName().equals(className));
         return NuxeoContainer.initConnectionManager(config);
     }
 
-    protected ManagedConnectionFactory createFactory(Reference ref, Context ctx)
-            throws NamingException, InvalidPropertyException {
+    protected ManagedConnectionFactory createFactory(Reference ref, Context ctx) throws NamingException,
+            InvalidPropertyException {
         String className = ref.getClassName();
         if (XADataSource.class.getName().equals(className)) {
             String user = refAttribute(ref, "User", "");
@@ -125,8 +120,7 @@ public class PooledDataSourceFactory implements
             String url = refAttribute(ref, "url", null);
             String sqlExceptionSorter = refAttribute(ref, "sqlExceptionSorter",
                     NoExceptionsAreFatalSorter.class.getName());
-            boolean commitBeforeAutocommit = Boolean.valueOf(
-                    refAttribute(ref, "commitBeforeAutocommit", "true")).booleanValue();
+            boolean commitBeforeAutocommit = Boolean.valueOf(refAttribute(ref, "commitBeforeAutocommit", "true")).booleanValue();
             JDBCDriverMCF factory = new JDBCDriverMCF();
             factory.setDriver(name);
             factory.setUserName(user);
@@ -143,8 +137,7 @@ public class PooledDataSourceFactory implements
         RefAddr addr = ref.get(key);
         if (addr == null) {
             if (defvalue == null) {
-                throw new IllegalArgumentException(key
-                        + " address is mandatory");
+                throw new IllegalArgumentException(key + " address is mandatory");
             }
             return defvalue;
         }

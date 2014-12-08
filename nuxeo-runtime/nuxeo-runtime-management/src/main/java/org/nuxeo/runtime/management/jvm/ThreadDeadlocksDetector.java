@@ -47,8 +47,7 @@ public class ThreadDeadlocksDetector {
 
         void print(final StringBuilder sb, final ThreadInfo thread);
 
-        void printMonitors(final StringBuilder sb,
-                final MonitorInfo[] monitors, final int index);
+        void printMonitors(final StringBuilder sb, final MonitorInfo[] monitors, final int index);
 
         void printLock(StringBuilder sb, LockInfo lock);
 
@@ -90,8 +89,7 @@ public class ThreadDeadlocksDetector {
                         } else {
                             sb.append("\t- waiting to lock "); // NOI18N
                             printLock(sb, lock);
-                            sb.append(" owned by \"" + lockOwner + "\" t@"
-                                    + thread.getLockOwnerId() + "\n"); // NOI18N
+                            sb.append(" owned by \"" + lockOwner + "\" t@" + thread.getLockOwnerId() + "\n"); // NOI18N
                         }
                     }
                 }
@@ -120,8 +118,7 @@ public class ThreadDeadlocksDetector {
         }
 
         @Override
-        public void printMonitors(final StringBuilder sb,
-                final MonitorInfo[] monitors, final int index) {
+        public void printMonitors(final StringBuilder sb, final MonitorInfo[] monitors, final int index) {
             if (monitors != null) {
                 for (MonitorInfo mi : monitors) {
                     if (mi.getLockedStackDepth() == index) {
@@ -172,9 +169,8 @@ public class ThreadDeadlocksDetector {
             StringBuilder sb = new StringBuilder();
             sb.append("Locked threads: ");
 
-
-            String comma="";
-            for(long lockedId:lockedIds) {
+            String comma = "";
+            for (long lockedId : lockedIds) {
                 sb.append(comma).append(lockedId);
                 comma = ",";
             }

@@ -32,12 +32,11 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Audit Service - manage document versions
- * TODO not yet implemented
+ * Audit Service - manage document versions TODO not yet implemented
  * <p>
  * Accepts the following methods:
  * <ul>
- * <li> GET - get audit records
+ * <li>GET - get audit records
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

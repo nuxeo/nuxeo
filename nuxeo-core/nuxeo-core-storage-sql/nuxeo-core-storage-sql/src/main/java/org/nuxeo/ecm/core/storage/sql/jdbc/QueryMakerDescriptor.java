@@ -26,7 +26,7 @@ public class QueryMakerDescriptor {
     @XNode("@enabled")
     public boolean enabled = true;
 
-    @XNode(value="", trim=true)
+    @XNode(value = "", trim = true)
     public Class<? extends QueryMaker> queryMaker;
 
 }

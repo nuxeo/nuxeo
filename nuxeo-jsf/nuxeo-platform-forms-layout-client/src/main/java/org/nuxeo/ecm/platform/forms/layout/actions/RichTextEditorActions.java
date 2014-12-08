@@ -56,13 +56,11 @@ public class RichTextEditorActions implements Serializable {
     private static final Log log = LogFactory.getLog(RichTextEditorActions.class);
 
     public String convertToHtml(String text, String mimeType) {
-        BlobHolder bh = new SimpleBlobHolder(new StringBlob(text, mimeType,
-                "UTF-8"));
+        BlobHolder bh = new SimpleBlobHolder(new StringBlob(text, mimeType, "UTF-8"));
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
         parameters.put("bodyContentOnly", Boolean.TRUE);
         try {
-            bh = Framework.getService(ConversionService.class).convertToMimeType(
-                    "text/html", bh, parameters);
+            bh = Framework.getService(ConversionService.class).convertToMimeType("text/html", bh, parameters);
             text = bh.getBlob().getString();
         } catch (ClientException | IOException e) {
             log.error("Failed to convert to HTML.", e);

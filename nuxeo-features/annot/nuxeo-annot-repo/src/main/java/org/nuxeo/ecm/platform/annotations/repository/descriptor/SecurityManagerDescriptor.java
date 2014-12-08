@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.annotations.repository.service.SecurityManager;
 
 /**
  * @author Alexandre Russel
- *
  */
 @XObject("securityManager")
 public class SecurityManagerDescriptor {

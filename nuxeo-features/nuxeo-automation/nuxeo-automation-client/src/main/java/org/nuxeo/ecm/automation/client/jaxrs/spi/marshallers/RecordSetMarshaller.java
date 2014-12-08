@@ -72,8 +72,7 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
         return record;
     }
@@ -92,8 +91,7 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
         return record;
     }
 
-    protected void readRecordEntries(JsonParser jp, RecordSet record)
-            throws IOException {
+    protected void readRecordEntries(JsonParser jp, RecordSet record) throws IOException {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
             @SuppressWarnings("unchecked")

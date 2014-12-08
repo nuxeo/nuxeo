@@ -30,13 +30,13 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ApplicationManager implements BundleTrackerCustomizer {
 
     private static final Log log = LogFactory.getLog(ApplicationManager.class);
 
     public final static String HOST_ATTR = "host";
+
     public final static String DEFAULT_HOST = "default";
 
     private final static ApplicationManager instance = new ApplicationManager();
@@ -48,7 +48,6 @@ public class ApplicationManager implements BundleTrackerCustomizer {
     protected BundleTracker tracker;
 
     protected Map<String, ApplicationHost> apps;
-
 
     public ApplicationManager() {
     }
@@ -83,10 +82,9 @@ public class ApplicationManager implements BundleTrackerCustomizer {
         return apps.get(host);
     }
 
-
     @Override
     public Object addingBundle(Bundle bundle, BundleEvent event) {
-        String v = (String)bundle.getHeaders().get("Nuxeo-WebModule");
+        String v = (String) bundle.getHeaders().get("Nuxeo-WebModule");
         if (v != null) {
             String classRef = null;
             Map<String, String> vars = new HashMap<String, String>();
@@ -94,15 +92,14 @@ public class ApplicationManager implements BundleTrackerCustomizer {
             int i = v.indexOf(';');
             if (i > -1) {
                 classRef = v.substring(0, i).trim();
-                varsStr = v.substring(i+1).trim();
+                varsStr = v.substring(i + 1).trim();
             } else {
                 classRef = v.trim();
             }
             if (varsStr != null) {
                 vars = parseAttrs(varsStr);
             }
-            ApplicationFragment fragment = new ApplicationFragment(bundle,
-                    classRef, vars);
+            ApplicationFragment fragment = new ApplicationFragment(bundle, classRef, vars);
             ApplicationHost app = getOrCreateApplication(fragment.getHostName());
             app.add(fragment);
             app.reload();
@@ -113,9 +110,9 @@ public class ApplicationManager implements BundleTrackerCustomizer {
 
     @Override
     public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
-        //TODO not yet impl.
+        // TODO not yet impl.
         if (event.getType() == BundleEvent.UPDATED) {
-            ApplicationFragment fragment = (ApplicationFragment)object;
+            ApplicationFragment fragment = (ApplicationFragment) object;
             if (fragment != null) {
                 ApplicationHost app = getApplication(fragment);
                 if (app != null) {
@@ -127,7 +124,7 @@ public class ApplicationManager implements BundleTrackerCustomizer {
 
     @Override
     public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
-        ApplicationFragment fragment = (ApplicationFragment)object;
+        ApplicationFragment fragment = (ApplicationFragment) object;
         if (fragment != null) {
             ApplicationHost app = getApplication(fragment);
             if (app != null) {
@@ -137,7 +134,7 @@ public class ApplicationManager implements BundleTrackerCustomizer {
         }
     }
 
-    protected Map<String,String> parseAttrs(String expr) {
+    protected Map<String, String> parseAttrs(String expr) {
         Map<String, String> map = new HashMap<String, String>();
         String[] ar = StringUtils.split(expr, ';', true);
         for (String a : ar) {
@@ -146,9 +143,9 @@ public class ApplicationManager implements BundleTrackerCustomizer {
                 map.put(a, null);
             } else {
                 String key = a.substring(0, i).trim();
-                String val = a.substring(i+1).trim();
+                String val = a.substring(i + 1).trim();
                 if (key.endsWith(":")) {
-                    key = key.substring(0, key.length()-1).trim();
+                    key = key.substring(0, key.length() - 1).trim();
                 }
                 map.put(key, val);
             }

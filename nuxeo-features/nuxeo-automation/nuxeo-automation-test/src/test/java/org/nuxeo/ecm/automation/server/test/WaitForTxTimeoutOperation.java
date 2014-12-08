@@ -30,12 +30,12 @@ public class WaitForTxTimeoutOperation {
 
     public static final String ID = "WaitForTxTimeout";
 
-
-    @Context protected OperationContext context;
+    @Context
+    protected OperationContext context;
 
     @OperationMethod
     public void run() throws Exception {
-        HttpServletRequest req = (HttpServletRequest)context.get("request");
+        HttpServletRequest req = (HttpServletRequest) context.get("request");
         String delay = req.getHeader(ServletHelper.TX_TIMEOUT_HEADER_KEY);
         if (delay == null) {
             return;

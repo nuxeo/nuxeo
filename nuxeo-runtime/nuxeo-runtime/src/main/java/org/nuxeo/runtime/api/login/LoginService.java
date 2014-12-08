@@ -22,27 +22,24 @@ import javax.security.auth.login.LoginException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface LoginService {
 
     /**
-     * System login, using a private principal that has all privileges. This
-     * principal is not stored in any database and cannot be accessed by user.
+     * System login, using a private principal that has all privileges. This principal is not stored in any database and
+     * cannot be accessed by user.
      * <p>
-     * The method requires the caller to have the {@link SystemLoginPermission}
-     * permission.
+     * The method requires the caller to have the {@link SystemLoginPermission} permission.
      *
      * @return the login context
      */
     LoginContext login() throws LoginException;
 
     /**
-     * System login, using a private principal that has all privileges. This
-     * principal is not stored in any database and cannot be accessed by user.
+     * System login, using a private principal that has all privileges. This principal is not stored in any database and
+     * cannot be accessed by user.
      * <p>
-     * The method requires the caller to have the {@link SystemLoginPermission}
-     * permission.
+     * The method requires the caller to have the {@link SystemLoginPermission} permission.
      *
      * @param username the username that originated the system login
      * @return the login context

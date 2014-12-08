@@ -14,13 +14,10 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
-
-
 /**
  * Predicates are boolean expressions.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Predicate extends Expression {
 

@@ -53,21 +53,17 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
         super();
     }
 
-    public WidgetSelectOptionsImpl(Serializable value, String var,
-            String itemLabel, String itemValue) {
+    public WidgetSelectOptionsImpl(Serializable value, String var, String itemLabel, String itemValue) {
         this(value, var, itemLabel, itemValue, null, null);
     }
 
-    public WidgetSelectOptionsImpl(Serializable value, String var,
-            String itemLabel, String itemValue, Serializable itemDisabled,
-            Serializable itemRendered) {
-        this(value, var, itemLabel, itemValue, itemDisabled, itemRendered,
-                null, null);
+    public WidgetSelectOptionsImpl(Serializable value, String var, String itemLabel, String itemValue,
+            Serializable itemDisabled, Serializable itemRendered) {
+        this(value, var, itemLabel, itemValue, itemDisabled, itemRendered, null, null);
     }
 
-    public WidgetSelectOptionsImpl(Serializable value, String var,
-            String itemLabel, String itemValue, Serializable itemDisabled,
-            Serializable itemRendered, String ordering, Boolean caseSensitive) {
+    public WidgetSelectOptionsImpl(Serializable value, String var, String itemLabel, String itemValue,
+            Serializable itemDisabled, Serializable itemRendered, String ordering, Boolean caseSensitive) {
         super();
         this.value = value;
         this.var = var;
@@ -153,9 +149,8 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
 
     @Override
     public WidgetSelectOptions clone() {
-        WidgetSelectOptionsImpl clone = new WidgetSelectOptionsImpl(value, var,
-                itemLabel, itemValue, itemDisabled, itemRendered, ordering,
-                caseSensitive);
+        WidgetSelectOptionsImpl clone = new WidgetSelectOptionsImpl(value, var, itemLabel, itemValue, itemDisabled,
+                itemRendered, ordering, caseSensitive);
         if (labels != null) {
             clone.setItemLabels(new HashMap<String, String>(labels));
         }

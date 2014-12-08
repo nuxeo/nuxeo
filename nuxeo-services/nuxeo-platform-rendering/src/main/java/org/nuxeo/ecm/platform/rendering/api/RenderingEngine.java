@@ -19,7 +19,6 @@ import java.util.ResourceBundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface RenderingEngine {
 
@@ -38,8 +37,7 @@ public interface RenderingEngine {
      *
      * @throws RenderingException
      */
-    void render(String template, Object input, Writer writer)
-    throws RenderingException;
+    void render(String template, Object input, Writer writer) throws RenderingException;
 
     public View getView(String path);
 

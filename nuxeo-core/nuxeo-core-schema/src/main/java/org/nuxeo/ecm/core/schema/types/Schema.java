@@ -15,8 +15,7 @@ package org.nuxeo.ecm.core.schema.types;
 /**
  * A marker interface for schemas.
  * <p>
- * A schema is a complex type that can be used used to create composite types -
- * such as document types.
+ * A schema is a complex type that can be used used to create composite types - such as document types.
  * <p>
  * Schemas have no super types and must not be used as field types.
  */

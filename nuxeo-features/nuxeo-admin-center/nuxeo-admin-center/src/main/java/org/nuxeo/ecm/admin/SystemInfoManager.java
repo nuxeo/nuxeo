@@ -125,8 +125,7 @@ public class SystemInfoManager implements Serializable {
         sb.append(Runtime.getRuntime().totalMemory() / (1024 * 1024));
         sb.append(" MB");
         sb.append("\n  Used       : ");
-        sb.append((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())
-                / (1024 * 1024));
+        sb.append((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024));
         sb.append(" MB");
         sb.append("\n  Free       : ");
         sb.append(Runtime.getRuntime().freeMemory() / (1024 * 1024));
@@ -283,8 +282,7 @@ public class SystemInfoManager implements Serializable {
     public String restartServer() {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
-                Boolean.TRUE);
+        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
         String restartUrl = BaseURL.getBaseURL(request) + RESTART_PATH;
         try {
             context.getExternalContext().redirect(restartUrl);

@@ -25,7 +25,9 @@ import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 public class ExtendedInfoContext extends ExpressionContext {
 
     private final EventContext eventContext;
+
     private final DocumentModel model;
+
     private final NuxeoPrincipal principal;
 
     ExtendedInfoContext(EventContext eventContext, DocumentModel model, NuxeoPrincipal principal) {

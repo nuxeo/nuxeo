@@ -30,7 +30,8 @@ import org.nuxeo.ecm.platform.relations.api.Resource;
 public final class NodeFactory {
 
     // Utility class.
-    private NodeFactory() { }
+    private NodeFactory() {
+    }
 
     public static LiteralImpl createLiteral(String value) {
         return new LiteralImpl(value);
@@ -60,8 +61,7 @@ public final class NodeFactory {
         return new ResourceImpl(uri);
     }
 
-    public static QNameResource createQNameResource(String namespace,
-            String localName) {
+    public static QNameResource createQNameResource(String namespace, String localName) {
         return new QNameResourceImpl(namespace, localName);
     }
 }

@@ -38,8 +38,7 @@ public interface Widget extends Serializable {
     String getId();
 
     /**
-     * Returns the unique identifier of this widget to be used in tag
-     * configuration.
+     * Returns the unique identifier of this widget to be used in tag configuration.
      *
      * @since 5.4.2
      * @see {@link Layout#getTagConfigId()}.
@@ -113,9 +112,8 @@ public interface Widget extends Serializable {
     boolean isTranslated();
 
     /**
-     * Returns true if the widget is handling his own labels display (usual
-     * label and help label). This can be checked by the layout template to
-     * render the widget using both label and widget usual places.
+     * Returns true if the widget is handling his own labels display (usual label and help label). This can be checked
+     * by the layout template to render the widget using both label and widget usual places.
      * <p>
      * Defaults to false.
      *
@@ -126,8 +124,7 @@ public interface Widget extends Serializable {
     /**
      * Get properties to use in this mode.
      * <p>
-     * The way that properties will be mapped to rendered components is managed
-     * by the widget type.
+     * The way that properties will be mapped to rendered components is managed by the widget type.
      */
     Map<String, Serializable> getProperties();
 
@@ -140,8 +137,8 @@ public interface Widget extends Serializable {
     Serializable getProperty(String name);
 
     /**
-     * Sets property with given name on the layout. If there is already a
-     * property with this name on the widget, it will be overridden.
+     * Sets property with given name on the layout. If there is already a property with this name on the widget, it will
+     * be overridden.
      *
      * @param name the property name.
      * @param value the property value or null if not found.
@@ -176,8 +173,8 @@ public interface Widget extends Serializable {
     /**
      * Returns true if the widget is required.
      * <p>
-     * This is a short link for the "required" property, already evaluated from
-     * an EL expression (if needed). Defaults to false.
+     * This is a short link for the "required" property, already evaluated from an EL expression (if needed). Defaults
+     * to false.
      */
     boolean isRequired();
 
@@ -189,8 +186,7 @@ public interface Widget extends Serializable {
     /**
      * Returns the widget level in the widget hierarchy.
      * <p>
-     * For instance a standard widget will have a level of 0, and its potential
-     * subwidgets will have a level of 1.
+     * For instance a standard widget will have a level of 0, and its potential subwidgets will have a level of 1.
      */
     int getLevel();
 
@@ -204,25 +200,23 @@ public interface Widget extends Serializable {
     /**
      * Returns the list of rendering information.
      * <p>
-     * Useful for preview management where some configuration needs to be
-     * changed: what's changed can be set as rendering information here to be
-     * displayed.
+     * Useful for preview management where some configuration needs to be changed: what's changed can be set as
+     * rendering information here to be displayed.
      *
      * @since 5.5
      */
     List<RenderingInfo> getRenderingInfos();
 
     /**
-     * Returns true if the widget is defined globally (as opposed to being held
-     * by a layout definition).
+     * Returns true if the widget is defined globally (as opposed to being held by a layout definition).
      *
      * @since 6.0
      */
     boolean isGlobal();
 
     /**
-     * Returns true if this widget was generated from configuration on a
-     * service, and not generated on-the-fly using dynamic behaviors.
+     * Returns true if this widget was generated from configuration on a service, and not generated on-the-fly using
+     * dynamic behaviors.
      *
      * @since 6.0
      */

@@ -47,14 +47,11 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.test",
-        "org.nuxeo.ecm.webengine.core" })
+@Deploy({ "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.test", "org.nuxeo.ecm.webengine.core" })
 @LocalDeploy("org.nuxeo.ecm.automation.test:test-directory-contrib.xml")
 public class DirectoryEntryIOTest {
 
@@ -100,8 +97,7 @@ public class DirectoryEntryIOTest {
 
         JsonNode node = mapper.readTree(out.toString());
 
-        assertEquals(DirectoryEntryWriter.ENTITY_TYPE,
-                node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryEntryWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         assertEquals(TESTDIRNAME, node.get("directoryName").getValueAsText());
         assertEquals(docEntry.getPropertyValue("vocabulary:label"),
                 node.get("properties").get("label").getValueAsText());
@@ -127,8 +123,7 @@ public class DirectoryEntryIOTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(out.toString());
 
-        assertEquals(DirectoryEntriesWriter.ENTITY_TYPE,
-                node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryEntriesWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         ArrayNode jsonEntries = (ArrayNode) node.get("entries");
         assertEquals(entries.size(), jsonEntries.size());
 

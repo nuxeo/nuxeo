@@ -14,10 +14,8 @@
 
 package org.nuxeo.runtime.model;
 
-
 /**
  * @author Bogdan Stefanescu
- *
  */
 public interface ComponentContext {
 

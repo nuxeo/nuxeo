@@ -26,13 +26,11 @@ import com.google.inject.Scope;
 
 /**
  * @author matic
- *
  */
 public class CoreScope implements Scope {
 
-    protected final ThreadLocal<Map<Key<?>, Object>> values =
-            new ThreadLocal<Map<Key<?>, Object>>() {
-        protected java.util.Map<Key<?>,Object> initialValue() {
+    protected final ThreadLocal<Map<Key<?>, Object>> values = new ThreadLocal<Map<Key<?>, Object>>() {
+        protected java.util.Map<Key<?>, Object> initialValue() {
             return new HashMap<Key<?>, Object>();
         };
     };
@@ -42,6 +40,7 @@ public class CoreScope implements Scope {
     protected CoreScope() {
 
     }
+
     public void enter() {
         values.get();
     }
@@ -57,7 +56,7 @@ public class CoreScope implements Scope {
             @Override
             public T get() {
                 Map<Key<?>, Object> scopedMap = getScopedObjectMap(key);
-                T current = (T)scopedMap.get(key);
+                T current = (T) scopedMap.get(key);
                 if (current == null && !scopedMap.containsKey(key)) {
                     current = unscoped.get();
                     scopedMap.put(key, current);
@@ -71,9 +70,8 @@ public class CoreScope implements Scope {
     private <T> Map<Key<?>, Object> getScopedObjectMap(Key<T> key) {
         Map<Key<?>, Object> scopedObjects = values.get();
         if (scopedObjects == null) {
-          throw new OutOfScopeException("Cannot access " + key
-              + " outside of a scoping block");
+            throw new OutOfScopeException("Cannot access " + key + " outside of a scoping block");
         }
         return scopedObjects;
-      }
+    }
 }

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.api;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 public class Constants {
 

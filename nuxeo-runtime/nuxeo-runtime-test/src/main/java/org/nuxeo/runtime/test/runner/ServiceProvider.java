@@ -26,7 +26,6 @@ import com.google.inject.Scopes;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ServiceProvider<T> implements Provider<T> {
 
@@ -45,7 +44,7 @@ public class ServiceProvider<T> implements Provider<T> {
         try {
             return clazz.cast(Framework.getService(clazz));
         } catch (Exception e) {
-            throw new RuntimeException("Failed to get service: "+clazz, e);
+            throw new RuntimeException("Failed to get service: " + clazz, e);
         }
     }
 

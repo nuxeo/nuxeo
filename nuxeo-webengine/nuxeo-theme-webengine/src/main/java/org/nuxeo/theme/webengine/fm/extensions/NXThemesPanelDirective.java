@@ -36,17 +36,15 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- *
  */
 public class NXThemesPanelDirective implements TemplateDirectiveModel {
 
     @SuppressWarnings("unchecked")
-    public void execute(Environment env, Map params, TemplateModel[] loopVars,
-            TemplateDirectiveBody body) throws TemplateException, IOException {
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+            throws TemplateException, IOException {
 
         if (loopVars.length != 0) {
-            throw new TemplateModelException(
-                    "This directive doesn't allow loop variables.");
+            throw new TemplateModelException("This directive doesn't allow loop variables.");
         }
         if (body != null) {
             throw new TemplateModelException("Didn't expect a body");
@@ -56,15 +54,13 @@ public class NXThemesPanelDirective implements TemplateDirectiveModel {
         WebContext context = WebEngine.getActiveContext();
 
         Map<String, String> attributes = Utils.getTemplateDirectiveParameters(params);
-        String applicationPath = context.getRequest().getParameter(
-                "org.nuxeo.theme.application.path");
+        String applicationPath = context.getRequest().getParameter("org.nuxeo.theme.application.path");
         if (applicationPath == null) {
             applicationPath = context.getModulePath();
         }
         attributes.put("org.nuxeo.theme.application.path", applicationPath);
 
-        String applicationName = context.getRequest().getParameter(
-                "org.nuxeo.theme.application.name");
+        String applicationName = context.getRequest().getParameter("org.nuxeo.theme.application.name");
         if (applicationName == null) {
             applicationName = context.getModule().getName();
         }

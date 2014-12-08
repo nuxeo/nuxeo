@@ -28,11 +28,10 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 
 /**
- * Work task that inserts the fulltext (extracted manually by the session at
- * save time, or through FulltextExtractorWork) into the fulltext table.
+ * Work task that inserts the fulltext (extracted manually by the session at save time, or through
+ * FulltextExtractorWork) into the fulltext table.
  * <p>
- * This is done single-threaded through the use of a {@link WorkManager} queue
- * with only one thread.
+ * This is done single-threaded through the use of a {@link WorkManager} queue with only one thread.
  */
 public class FulltextUpdaterWork extends AbstractWork {
 
@@ -74,8 +73,7 @@ public class FulltextUpdaterWork extends AbstractWork {
         }
     }
 
-    public FulltextUpdaterWork(String repositoryName, String docId,
-            boolean isSimpleText, boolean isJob,
+    public FulltextUpdaterWork(String repositoryName, String docId, boolean isSimpleText, boolean isJob,
             List<IndexAndText> indexesAndText) {
         super(); // random id, for unique job
         setDocument(repositoryName, docId);
@@ -119,8 +117,7 @@ public class FulltextUpdaterWork extends AbstractWork {
     protected void update() throws ClientException {
         Collection<DocumentModel> docs;
         if (isJob) {
-            String query = String.format(
-                    "SELECT * FROM Document WHERE ecm:fulltextJobId = '%s' AND ecm:isProxy = 0",
+            String query = String.format("SELECT * FROM Document WHERE ecm:fulltextJobId = '%s' AND ecm:isProxy = 0",
                     docId);
             docs = session.query(query);
         } else {
@@ -140,8 +137,7 @@ public class FulltextUpdaterWork extends AbstractWork {
         for (DocumentModel doc : docs) {
             for (IndexAndText indexAndText : indexesAndText) {
                 try {
-                    session.setDocumentSystemProp(doc.getRef(),
-                            getFulltextPropertyName(indexAndText.indexName),
+                    session.setDocumentSystemProp(doc.getRef(), getFulltextPropertyName(indexAndText.indexName),
                             indexAndText.text);
                 } catch (DocumentException e) {
                     log.error("Could not set fulltext on: " + doc.getId(), e);
@@ -153,8 +149,7 @@ public class FulltextUpdaterWork extends AbstractWork {
             // reset job id
             for (DocumentModel doc : docs) {
                 try {
-                    session.setDocumentSystemProp(doc.getRef(),
-                            SYSPROP_FULLTEXT_JOBID, null);
+                    session.setDocumentSystemProp(doc.getRef(), SYSPROP_FULLTEXT_JOBID, null);
                 } catch (DocumentException e) {
                     log.error("Could not set fulltext on: " + doc.getId(), e);
                     continue;
@@ -164,8 +159,7 @@ public class FulltextUpdaterWork extends AbstractWork {
     }
 
     protected String getFulltextPropertyName(String indexName) {
-        String name = isSimpleText ? SYSPROP_FULLTEXT_SIMPLE
-                : SYSPROP_FULLTEXT_BINARY;
+        String name = isSimpleText ? SYSPROP_FULLTEXT_SIMPLE : SYSPROP_FULLTEXT_BINARY;
         if (!FULLTEXT_DEFAULT_INDEX.equals(indexName)) {
             name += '_' + indexName;
         }

@@ -30,8 +30,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 /**
  * @since 5.6
  */
-public class MultiDirectoryRegistry extends
-        ContributionFragmentRegistry<MultiDirectoryDescriptor> {
+public class MultiDirectoryRegistry extends ContributionFragmentRegistry<MultiDirectoryDescriptor> {
 
     private static final Log log = LogFactory.getLog(MultiDirectoryRegistry.class);
 
@@ -46,8 +45,7 @@ public class MultiDirectoryRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            MultiDirectoryDescriptor descriptor,
+    public void contributionUpdated(String id, MultiDirectoryDescriptor descriptor,
             MultiDirectoryDescriptor newOrigContrib) {
         String name = descriptor.name;
         if (descriptor.remove) {
@@ -65,16 +63,14 @@ public class MultiDirectoryRegistry extends
     }
 
     @Override
-    public void contributionRemoved(String id,
-            MultiDirectoryDescriptor origContrib) {
+    public void contributionRemoved(String id, MultiDirectoryDescriptor origContrib) {
         descriptors.remove(id);
         Directory dir = directories.remove(id);
         if (dir != null) {
             try {
                 dir.shutdown();
             } catch (DirectoryException e) {
-                log.error(String.format(
-                        "Error while shutting down directory '%s'", id), e);
+                log.error(String.format("Error while shutting down directory '%s'", id), e);
             }
         }
         log.info("Directory removed: " + id);

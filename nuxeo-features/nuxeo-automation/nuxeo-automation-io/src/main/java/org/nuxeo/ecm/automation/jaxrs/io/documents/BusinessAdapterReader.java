@@ -47,9 +47,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.2
  */
 @Provider
-@Consumes({"application/json+nxentity","application/json"})
-public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter>{
-
+@Consumes({ "application/json+nxentity", "application/json" })
+public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter> {
 
     @Context
     protected HttpServletRequest request;
@@ -62,21 +61,18 @@ public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter>
     }
 
     @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return BusinessAdapter.class.isAssignableFrom(type);
     }
 
     @Override
-    public BusinessAdapter readFrom(Class<BusinessAdapter> arg0, Type arg1,
-            Annotation[] arg2, MediaType arg3,
-            MultivaluedMap<String, String> headers, InputStream in)
-            throws IOException, WebApplicationException {
-            return readRequest(in,headers);
+    public BusinessAdapter readFrom(Class<BusinessAdapter> arg0, Type arg1, Annotation[] arg2, MediaType arg3,
+            MultivaluedMap<String, String> headers, InputStream in) throws IOException, WebApplicationException {
+        return readRequest(in, headers);
     }
 
-    public BusinessAdapter readRequest(InputStream in,
-            MultivaluedMap<String, String> headers) throws IOException, WebApplicationException {
+    public BusinessAdapter readRequest(InputStream in, MultivaluedMap<String, String> headers) throws IOException,
+            WebApplicationException {
         // As stated in http://tools.ietf.org/html/rfc4627.html UTF-8 is the
         // default encoding for JSON content
         // TODO: add introspection on the first bytes to detect other admissible
@@ -88,7 +84,8 @@ public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter>
         return readRequest(content, headers);
     }
 
-    public BusinessAdapter readRequest(String content, MultivaluedMap<String, String> headers) throws WebApplicationException {
+    public BusinessAdapter readRequest(String content, MultivaluedMap<String, String> headers)
+            throws WebApplicationException {
         try {
             return readRequest0(content, headers);
         } catch (WebApplicationException e) {
@@ -98,14 +95,13 @@ public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter>
         }
     }
 
-    public BusinessAdapter readRequest0(String content,
-            MultivaluedMap<String, String> headers) throws IOException {
+    public BusinessAdapter readRequest0(String content, MultivaluedMap<String, String> headers) throws IOException {
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
 
         JsonParser jp = factory.createJsonParser(content);
         JsonNode inputNode = jp.readValueAsTree();
 
-        return  (BusinessAdapter) codecService.readNode(inputNode, getCoreSession());
+        return (BusinessAdapter) codecService.readNode(inputNode, getCoreSession());
 
     }
 

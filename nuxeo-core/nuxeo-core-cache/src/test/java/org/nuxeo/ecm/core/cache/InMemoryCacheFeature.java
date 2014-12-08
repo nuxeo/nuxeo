@@ -41,17 +41,14 @@ public class InMemoryCacheFeature extends SimpleFeature {
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        binder.bind(Cache.class).annotatedWith(
-                Names.named(MAXSIZE_TEST_CACHE_NAME)).toProvider(
-                new Provider<Cache>() {
+        binder.bind(Cache.class).annotatedWith(Names.named(MAXSIZE_TEST_CACHE_NAME)).toProvider(new Provider<Cache>() {
 
-                    @Override
-                    public Cache get() {
-                        return Framework.getService(CacheService.class).getCache(
-                                MAXSIZE_TEST_CACHE_NAME);
-                    }
+            @Override
+            public Cache get() {
+                return Framework.getService(CacheService.class).getCache(MAXSIZE_TEST_CACHE_NAME);
+            }
 
-                });
+        });
     }
 
 }

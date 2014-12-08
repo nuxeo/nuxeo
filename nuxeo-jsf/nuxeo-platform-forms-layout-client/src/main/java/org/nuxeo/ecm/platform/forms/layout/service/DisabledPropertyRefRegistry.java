@@ -28,13 +28,12 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * <p>
  * Only supports merging of contributions on "enabled" information.
  * <p>
- * Stores contribution in the registration order, in case some conflicting
- * criteria are found, the first one matching will apply.
+ * Stores contribution in the registration order, in case some conflicting criteria are found, the first one matching
+ * will apply.
  *
  * @since 5.6
  */
-public class DisabledPropertyRefRegistry extends
-        ContributionFragmentRegistry<DisabledPropertyRefDescriptor> {
+public class DisabledPropertyRefRegistry extends ContributionFragmentRegistry<DisabledPropertyRefDescriptor> {
 
     protected final Map<String, DisabledPropertyRefDescriptor> refs;
 
@@ -50,15 +49,13 @@ public class DisabledPropertyRefRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            DisabledPropertyRefDescriptor contrib,
+    public void contributionUpdated(String id, DisabledPropertyRefDescriptor contrib,
             DisabledPropertyRefDescriptor newOrigContrib) {
         refs.put(id, contrib);
     }
 
     @Override
-    public void contributionRemoved(String id,
-            DisabledPropertyRefDescriptor origContrib) {
+    public void contributionRemoved(String id, DisabledPropertyRefDescriptor origContrib) {
         refs.remove(id);
     }
 
@@ -68,14 +65,12 @@ public class DisabledPropertyRefRegistry extends
     }
 
     @Override
-    public DisabledPropertyRefDescriptor clone(
-            DisabledPropertyRefDescriptor orig) {
+    public DisabledPropertyRefDescriptor clone(DisabledPropertyRefDescriptor orig) {
         return orig.clone();
     }
 
     @Override
-    public void merge(DisabledPropertyRefDescriptor source,
-            DisabledPropertyRefDescriptor dest) {
+    public void merge(DisabledPropertyRefDescriptor source, DisabledPropertyRefDescriptor dest) {
         if (source.getEnabled() != dest.getEnabled()) {
             dest.setEnabled(source.getEnabled());
         }

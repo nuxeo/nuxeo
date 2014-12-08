@@ -65,13 +65,12 @@ import com.sun.faces.util.FacesLogger;
  * <p>
  * Overrides the default facelet cache for the following reasons:
  * <ul>
- * <li>fix a bug in the refresh cache, incrementing next refresh time too much
- * (and then breaking the refresh mechanism)</li>
+ * <li>fix a bug in the refresh cache, incrementing next refresh time too much (and then breaking the refresh mechanism)
+ * </li>
  * </ul>
  *
- * @since 6.0: copy/paste of default implementation because constructor is
- *        package private, and changing private DefaultFacelet implementation
- *        references to {@link Facelet}, and for bufix/adapt.
+ * @since 6.0: copy/paste of default implementation because constructor is package private, and changing private
+ *        DefaultFacelet implementation references to {@link Facelet}, and for bufix/adapt.
  */
 final class DefaultFaceletCache extends FaceletCache<Facelet> {
 
@@ -80,8 +79,8 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
     /**
      * Constructor
      *
-     * @param refreshPeriod cache refresh period (in seconds). 0 means 'always
-     *            refresh', negative value means 'never refresh'
+     * @param refreshPeriod cache refresh period (in seconds). 0 means 'always refresh', negative value means 'never
+     *            refresh'
      */
     DefaultFaceletCache(final long refreshPeriod) {
 
@@ -97,8 +96,8 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
                 // Make sure that the expensive timestamp retrieval is not done
                 // if no expiry check is going to be performed
                 long lastModified = checkExpiry ? Util.getLastModified(key) : 0;
-                return new Record(System.currentTimeMillis(), lastModified,
-                        getMemberFactory().newInstance(key), refreshPeriod);
+                return new Record(System.currentTimeMillis(), lastModified, getMemberFactory().newInstance(key),
+                        refreshPeriod);
             }
         };
 
@@ -108,8 +107,7 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
                 // if no expiry check is going to be performed
                 long lastModified = checkExpiry ? Util.getLastModified(key) : 0;
                 return new Record(System.currentTimeMillis(), lastModified,
-                        getMetadataMemberFactory().newInstance(key),
-                        refreshPeriod);
+                        getMetadataMemberFactory().newInstance(key), refreshPeriod);
             }
         };
 
@@ -120,10 +118,8 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
         } else {
             ExpiringConcurrentCache.ExpiryChecker<URL, Record> checker = (refreshPeriod > 0) ? new ExpiryChecker()
                     : new NeverExpired();
-            _faceletCache = new ExpiringConcurrentCache<URL, Record>(
-                    faceletFactory, checker);
-            _metadataFaceletCache = new ExpiringConcurrentCache<URL, Record>(
-                    metadataFaceletFactory, checker);
+            _faceletCache = new ExpiringConcurrentCache<URL, Record>(faceletFactory, checker);
+            _metadataFaceletCache = new ExpiringConcurrentCache<URL, Record>(metadataFaceletFactory, checker);
         }
     }
 
@@ -152,14 +148,12 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
     }
 
     /**
-     * Build error facelet, taking into account the fact that depending on
-     * resource inclusion (absolute or relative), an error might happen when
-     * checking the last modified information.
+     * Build error facelet, taking into account the fact that depending on resource inclusion (absolute or relative), an
+     * error might happen when checking the last modified information.
      *
      * @since 6.0
      */
-    protected Facelet getErrorFacelet(URL url, ExecutionException origError)
-            throws IOException {
+    protected Facelet getErrorFacelet(URL url, ExecutionException origError) throws IOException {
         FacesContext ctx = FacesContext.getCurrentInstance();
         if (ctx == null) {
             if (origError != null) {
@@ -171,8 +165,7 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
         boolean errorShouldBeCaught = origError != null;
         if (errorShouldBeCaught) {
             String errorMessage = origError.getMessage();
-            if (errorMessage != null
-                    && errorMessage.contains(Util.LAST_MODIFIED_ERROR)) {
+            if (errorMessage != null && errorMessage.contains(Util.LAST_MODIFIED_ERROR)) {
                 errorShouldBeCaught = false;
             }
             Throwable t = origError.getCause();
@@ -194,8 +187,7 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
             } else {
                 lookupPath = NuxeoUnknownResource.MARKER + path;
             }
-            ViewResource res = ctx.getApplication().getResourceHandler().createViewResource(
-                    ctx, lookupPath);
+            ViewResource res = ctx.getApplication().getResourceHandler().createViewResource(ctx, lookupPath);
             if (res != null) {
                 return _faceletCache.get(res.getURL()).getFacelet();
             }
@@ -253,13 +245,11 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
     private final ConcurrentCache<URL, Record> _metadataFaceletCache;
 
     /**
-     * This class holds the Facelet instance and its original URL's last
-     * modified time. It also produces the time when the next expiry check
-     * should be performed
+     * This class holds the Facelet instance and its original URL's last modified time. It also produces the time when
+     * the next expiry check should be performed
      */
     private static class Record {
-        Record(long creationTime, long lastModified, Facelet facelet,
-                long refreshInterval) {
+        Record(long creationTime, long lastModified, Facelet facelet, long refreshInterval) {
             _facelet = facelet;
             _creationTime = creationTime;
             _lastModified = lastModified;
@@ -267,8 +257,7 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
 
             // There is no point in calculaing the next refresh time if we are
             // refreshing always/never
-            _nextRefreshTime = (_refreshInterval > 0) ? new AtomicLong(
-                    creationTime + refreshInterval) : null;
+            _nextRefreshTime = (_refreshInterval > 0) ? new AtomicLong(creationTime + refreshInterval) : null;
         }
 
         Facelet getFacelet() {
@@ -299,8 +288,7 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
         private final Facelet _facelet;
     }
 
-    private static class ExpiryChecker implements
-            ExpiringConcurrentCache.ExpiryChecker<URL, Record> {
+    private static class ExpiryChecker implements ExpiringConcurrentCache.ExpiryChecker<URL, Record> {
 
         public boolean isExpired(URL url, Record record) {
             // getNextRefreshTime() increments the next refresh time
@@ -318,16 +306,14 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
         }
     }
 
-    private static class NeverExpired implements
-            ExpiringConcurrentCache.ExpiryChecker<URL, Record> {
+    private static class NeverExpired implements ExpiringConcurrentCache.ExpiryChecker<URL, Record> {
         public boolean isExpired(URL key, Record value) {
             return false;
         }
     }
 
     /**
-     * ConcurrentCache implementation that does no caching (always creates new
-     * instances)
+     * ConcurrentCache implementation that does no caching (always creates new instances)
      */
     private static class NoCache extends ConcurrentCache<URL, Record> {
         public NoCache(ConcurrentCache.Factory<URL, Record> f) {

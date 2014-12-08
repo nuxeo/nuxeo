@@ -84,8 +84,7 @@ public class WidgetTypeConfigurationDescriptor {
     boolean handlingLabels = false;
 
     /**
-     * List of supported controls (controls checked on subwidgets
-     * configuration).
+     * List of supported controls (controls checked on subwidgets configuration).
      *
      * @since 5.9.1
      */
@@ -234,9 +233,7 @@ public class WidgetTypeConfigurationDescriptor {
         properties = propsDesc.getProperties();
     }
 
-    protected List<LayoutDefinition> getLayouts(
-            Map<String, LayoutDescriptors> descs, String mode,
-            String additionalMode) {
+    protected List<LayoutDefinition> getLayouts(Map<String, LayoutDescriptors> descs, String mode, String additionalMode) {
         if (descs != null) {
             List<LayoutDefinition> res = new ArrayList<LayoutDefinition>();
             if (additionalMode != null) {
@@ -260,8 +257,7 @@ public class WidgetTypeConfigurationDescriptor {
         return null;
     }
 
-    protected Map<String, List<LayoutDefinition>> getLayouts(
-            Map<String, LayoutDescriptors> descs) {
+    protected Map<String, List<LayoutDefinition>> getLayouts(Map<String, LayoutDescriptors> descs) {
         if (descs != null) {
             Map<String, List<LayoutDefinition>> res = new HashMap<String, List<LayoutDefinition>>();
             for (Map.Entry<String, LayoutDescriptors> entry : descs.entrySet()) {
@@ -272,8 +268,7 @@ public class WidgetTypeConfigurationDescriptor {
         return null;
     }
 
-    public List<LayoutDefinition> getPropertyLayouts(String mode,
-            String additionalMode) {
+    public List<LayoutDefinition> getPropertyLayouts(String mode, String additionalMode) {
         return getLayouts(propertyLayouts, mode, additionalMode);
     }
 
@@ -281,8 +276,7 @@ public class WidgetTypeConfigurationDescriptor {
         return getLayouts(propertyLayouts);
     }
 
-    public List<LayoutDefinition> getFieldLayouts(String mode,
-            String additionalMode) {
+    public List<LayoutDefinition> getFieldLayouts(String mode, String additionalMode) {
         return getLayouts(fieldLayouts, mode, additionalMode);
     }
 

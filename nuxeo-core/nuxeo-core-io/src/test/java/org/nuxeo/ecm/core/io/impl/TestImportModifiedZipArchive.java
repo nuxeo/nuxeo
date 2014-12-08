@@ -81,12 +81,10 @@ public class TestImportModifiedZipArchive {
         assertEquals("dummyBlob.txt", blob.getFilename());
         assertEquals("SomeDummyContent", blob.getString());
 
-        byte[] expected = MessageDigest.getInstance("MD5").digest(
-                "SomeDummyContent".getBytes());
+        byte[] expected = MessageDigest.getInstance("MD5").digest("SomeDummyContent".getBytes());
         String source = Base64.encodeBytes(expected);
 
-        byte[] actual = MessageDigest.getInstance("MD5").digest(
-                FileUtils.readBytes(blob.getStream()));
+        byte[] actual = MessageDigest.getInstance("MD5").digest(FileUtils.readBytes(blob.getStream()));
         String result = Base64.encodeBytes(actual);
 
         assertEquals(source, result);
@@ -185,8 +183,7 @@ public class TestImportModifiedZipArchive {
         StringBuffer sb = new StringBuffer();
         DocumentModelList docs = session.query("select * from Document order by ecm:path");
         for (DocumentModel doc : docs) {
-            sb.append(doc.getPathAsString() + " - " + doc.getType() + " -- "
-                    + doc.getTitle());
+            sb.append(doc.getPathAsString() + " - " + doc.getType() + " -- " + doc.getTitle());
             sb.append("\n");
         }
 

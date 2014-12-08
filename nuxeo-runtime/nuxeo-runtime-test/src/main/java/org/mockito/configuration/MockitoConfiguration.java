@@ -18,14 +18,10 @@ package org.mockito.configuration;
 
 import org.nuxeo.runtime.mockito.NuxeoInjectingAnnotationEngine;
 
-
 /**
- *
- *
  * @since 5.7.8
  */
 public class MockitoConfiguration extends DefaultMockitoConfiguration {
-
 
     @Override
     public AnnotationEngine getAnnotationEngine() {

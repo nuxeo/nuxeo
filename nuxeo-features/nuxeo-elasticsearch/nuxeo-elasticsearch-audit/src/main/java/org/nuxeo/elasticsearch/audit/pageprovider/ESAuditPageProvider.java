@@ -37,8 +37,7 @@ import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.runtime.api.Framework;
 
-public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>
-        implements PageProvider<LogEntry> {
+public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implements PageProvider<LogEntry> {
 
     private static final long serialVersionUID = 1L;
 
@@ -60,14 +59,10 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>
     protected void preprocessCommentsIfNeeded(List<LogEntry> entries) {
         Serializable preprocess = getProperties().get(UICOMMENTS_PROPERTY);
 
-        if (preprocess != null
-                && "true".equalsIgnoreCase(preprocess.toString())) {
-            Object session = (CoreSession) getProperties().get(
-                    CORE_SESSION_PROPERTY);
-            if (session != null
-                    && CoreSession.class.isAssignableFrom(session.getClass())) {
-                CommentProcessorHelper cph = new CommentProcessorHelper(
-                        (CoreSession) session);
+        if (preprocess != null && "true".equalsIgnoreCase(preprocess.toString())) {
+            Object session = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
+            if (session != null && CoreSession.class.isAssignableFrom(session.getClass())) {
+                CommentProcessorHelper cph = new CommentProcessorHelper((CoreSession) session);
                 cph.processComments(entries);
             }
         }
@@ -81,9 +76,8 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>
         searchBuilder.setSize((int) getMinMaxPageSize());
 
         for (SortInfo sortInfo : getSortInfos()) {
-            searchBuilder.addSort(sortInfo.getSortColumn(),
-                    sortInfo.getSortAscending() ? SortOrder.ASC
-                            : SortOrder.DESC);
+            searchBuilder.addSort(sortInfo.getSortColumn(), sortInfo.getSortAscending() ? SortOrder.ASC
+                    : SortOrder.DESC);
         }
 
         SearchResponse searchResponse = searchBuilder.execute().actionGet();
@@ -161,18 +155,14 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>
             // Simple Pattern
 
             if (!allowSimplePattern()) {
-                throw new UnsupportedOperationException(
-                        "This page provider requires a explicit Where Clause");
+                throw new UnsupportedOperationException("This page provider requires a explicit Where Clause");
             }
-            String baseQuery = getESBackend().expandQueryVariables(
-                    def.getPattern(), params);
+            String baseQuery = getESBackend().expandQueryVariables(def.getPattern(), params);
             searchBuilder = getESBackend().buildQuery(baseQuery, null);
         } else {
             // Where clause based on DocumentModel
-            String baseQuery = getESBackend().expandQueryVariables(
-                    getFixedPart(), params);
-            searchBuilder = getESBackend().buildSearchQuery(baseQuery,
-                    def.getWhereClause().getPredicates(),
+            String baseQuery = getESBackend().expandQueryVariables(getFixedPart(), params);
+            searchBuilder = getESBackend().buildSearchQuery(baseQuery, def.getWhereClause().getPredicates(),
                     getSearchDocumentModel());
         }
     }

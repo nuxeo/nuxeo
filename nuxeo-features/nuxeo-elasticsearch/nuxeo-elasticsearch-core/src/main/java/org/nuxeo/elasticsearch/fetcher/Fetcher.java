@@ -28,11 +28,12 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 public abstract class Fetcher {
 
     private final CoreSession session;
+
     private final SearchResponse response;
+
     private final Map<String, String> repoNames;
 
-    public Fetcher(CoreSession session, SearchResponse response,
-            Map<String, String> repoNames) {
+    public Fetcher(CoreSession session, SearchResponse response, Map<String, String> repoNames) {
         this.session = session;
         this.response = response;
         this.repoNames = repoNames;

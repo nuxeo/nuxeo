@@ -28,11 +28,9 @@ import java.util.ArrayList;
  */
 
 /**
- * 
  * Bundle descriptor for hot deployment
  * 
  * @since 5.5
- *
  */
 public class DevBundle implements Serializable {
 
@@ -44,10 +42,8 @@ public class DevBundle implements Serializable {
 
     protected final String path;
 
-    public static DevBundle[] parseDevBundleLines(InputStream is)
-            throws IOException {
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is));
+    public static DevBundle[] parseDevBundleLines(InputStream is) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         try {
             ArrayList<DevBundle> bundles = new ArrayList<DevBundle>();
             String line = reader.readLine();
@@ -64,14 +60,12 @@ public class DevBundle implements Serializable {
         }
     }
 
-    public static DevBundle parseDevBundleLine(String line)
-            throws MalformedURLException {
+    public static DevBundle parseDevBundleLine(String line) throws MalformedURLException {
         int index = line.indexOf(':');
         String typename = line.substring(0, index);
-        typename = typename.substring(0,1).toUpperCase() + typename.substring(1);
+        typename = typename.substring(0, 1).toUpperCase() + typename.substring(1);
         String path = line.substring(index + 1);
-        return new DevBundle(path,
-                DevBundleType.valueOf(typename));
+        return new DevBundle(path, DevBundleType.valueOf(typename));
     }
 
     public DevBundle(String path, DevBundleType devBundleType) {

@@ -90,8 +90,7 @@ public class CreateDirectoryEntries extends AbstractDirectoryOperation {
 
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, ids);
-        return new InputStreamBlob(new ByteArrayInputStream(
-                writer.toString().getBytes("UTF-8")), "application/json");
+        return new InputStreamBlob(new ByteArrayInputStream(writer.toString().getBytes("UTF-8")), "application/json");
     }
 
 }

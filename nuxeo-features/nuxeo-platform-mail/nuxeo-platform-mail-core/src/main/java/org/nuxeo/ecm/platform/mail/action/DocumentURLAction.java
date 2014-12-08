@@ -30,8 +30,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Computes the URL of a document.
  * <p>
- * It expects the document to be in the context under the key "document"
- *  and the baseUrl at baseUrl. It puts the URL at key "url".
+ * It expects the document to be in the context under the key "document" and the baseUrl at baseUrl. It puts the URL at
+ * key "url".
  *
  * @author Alexandre Russel
  */
@@ -40,6 +40,7 @@ public class DocumentURLAction implements MessageAction {
     private static final Log log = LogFactory.getLog(DocumentURLAction.class);
 
     protected DocumentViewCodecManager documentViewCodecManager;
+
     protected final String baseUrl;
 
     public DocumentURLAction(String baseUrl) {
@@ -59,7 +60,7 @@ public class DocumentURLAction implements MessageAction {
     }
 
     public void reset(ExecutionContext context) {
-        //do nothing
+        // do nothing
     }
 
 }

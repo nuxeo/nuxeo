@@ -30,7 +30,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Descriptor for configuration contribution
  *
  * @author tiry
- *
  */
 
 @XObject(value = "environment")

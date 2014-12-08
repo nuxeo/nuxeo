@@ -32,8 +32,7 @@ public class BankUtils {
         Arrays.sort(files, new Comparator() {
             @Override
             public int compare(final Object o1, final Object o2) {
-                return new Long(((File) o1).lastModified()).compareTo(new Long(
-                        ((File) o2).lastModified()));
+                return new Long(((File) o1).lastModified()).compareTo(new Long(((File) o2).lastModified()));
             }
         });
         return files;

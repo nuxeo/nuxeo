@@ -23,7 +23,6 @@ import com.google.gwt.junit.client.GWTTestCase;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class GwtTestImageRangeXPointer extends GWTTestCase {
 
@@ -36,8 +35,7 @@ public class GwtTestImageRangeXPointer extends GWTTestCase {
         ImageRangeXPointer xpointer = new ImageRangeXPointer(
                 "http://serv1.example.com/some/page.html#xpointer(image-range(/html[1]/body[0]/img[0],[79,133],[123,159]))");
         assertNotNull(xpointer);
-        assertEquals("http://serv1.example.com/some/page.html",
-                xpointer.getUrl());
+        assertEquals("http://serv1.example.com/some/page.html", xpointer.getUrl());
         assertEquals("/html[1]/body[0]/img[0]", xpointer.getXPath());
         assertEquals(79, xpointer.getTopLeft().getX());
         assertEquals(133, xpointer.getTopLeft().getY());

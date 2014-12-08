@@ -31,11 +31,9 @@ import org.nuxeo.ecm.platform.relations.jena.JenaGraph;
 /**
  * Relation graph importer/exporter.
  * <p>
- * relies on Jena memory graphs to perform serialization and deserialization of
- * memory graphs.
+ * relies on Jena memory graphs to perform serialization and deserialization of memory graphs.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class IORelationGraphHelper {
 
@@ -43,8 +41,7 @@ public class IORelationGraphHelper {
 
     protected List<Statement> statements;
 
-    public IORelationGraphHelper(Map<String, String> namespaces,
-            List<Statement> statements) {
+    public IORelationGraphHelper(Map<String, String> namespaces, List<Statement> statements) {
         this.namespaces = namespaces;
         this.statements = statements;
     }

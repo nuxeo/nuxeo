@@ -40,8 +40,8 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  * </ul>
  * The default one is INFO.
  * <p>
- * Message parameters, if any, are extracted form the {@link OperationContext}
- * using the {@code AddMessage#MESSAGE_PARAMS_KEY} key.
+ * Message parameters, if any, are extracted form the {@link OperationContext} using the
+ * {@code AddMessage#MESSAGE_PARAMS_KEY} key.
  * <p>
  * Requires an active Seam context.
  *
@@ -66,8 +66,7 @@ public class AddMessage {
     @OperationMethod
     public void run() {
         StatusMessage.Severity severity = StatusMessage.Severity.valueOf(severityStr);
-        FacesMessages facesMessages = (FacesMessages) Contexts.getConversationContext().get(
-                FacesMessages.class);
+        FacesMessages facesMessages = (FacesMessages) Contexts.getConversationContext().get(FacesMessages.class);
         Object[] params = (Object[]) ctx.get(MESSAGE_PARAMS_KEY);
         if (params == null) {
             params = new Object[0];

@@ -65,13 +65,11 @@ public class ConnectStatusHolder {
         // check freshness
         Calendar oldestStatusDate = Calendar.getInstance();
         oldestStatusDate.add(Calendar.MINUTE, -REFRESH_PERIOD_MINUTES);
-        if (lastStatus == null
-                || lastStatus.refreshDate.before(oldestStatusDate)) {
+        if (lastStatus == null || lastStatus.refreshDate.before(oldestStatusDate)) {
             // try to refresh
             SubscriptionStatusWrapper refreshStatus = getStatus(true);
             // keep last success status in case of error
-            if ((refreshStatus == null || refreshStatus.isError())
-                    && lastStatus != null && !lastStatus.isError()) {
+            if ((refreshStatus == null || refreshStatus.isError()) && lastStatus != null && !lastStatus.isError()) {
                 instanceStatus = lastStatus;
                 instanceStatus.refreshDate = Calendar.getInstance();
             }
@@ -88,27 +86,23 @@ public class ConnectStatusHolder {
         if (instanceStatus == null || forceRefresh) {
             if (isRegistred()) {
                 try {
-                    instanceStatus = new SubscriptionStatusWrapper(
-                            getService().getConnector().getConnectStatus());
+                    instanceStatus = new SubscriptionStatusWrapper(getService().getConnector().getConnectStatus());
                 } catch (CanNotReachConnectServer e) {
                     log.warn("can not reach connect server", e);
-                    instanceStatus = new SubscriptionStatusWrapper(
-                            "Nuxeo Connect Server is not reachable");
+                    instanceStatus = new SubscriptionStatusWrapper("Nuxeo Connect Server is not reachable");
                     instanceStatus.canNotReachConnectServer = true;
                 } catch (ConnectClientVersionMismatchError e) {
                     log.warn(
                             "Connect Client does not have the required version to communicate with Nuxeo Connect Server",
                             e);
-                    instanceStatus = new SubscriptionStatusWrapper(
-                            e.getMessage());
+                    instanceStatus = new SubscriptionStatusWrapper(e.getMessage());
                     instanceStatus.versionMismatch = true;
                 } catch (ConnectSecurityError e) {
                     log.warn("Can not authenticated against Connect Server", e);
                     instanceStatus = new SubscriptionStatusWrapper(e);
                 } catch (ConnectServerError e) {
                     log.error("Error while calling connect server", e);
-                    instanceStatus = new SubscriptionStatusWrapper(
-                            e.getMessage());
+                    instanceStatus = new SubscriptionStatusWrapper(e.getMessage());
                 }
             } else {
                 instanceStatus = new UnresgistedSubscriptionStatusWrapper();

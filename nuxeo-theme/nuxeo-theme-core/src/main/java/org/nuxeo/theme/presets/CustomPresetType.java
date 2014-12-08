@@ -16,8 +16,7 @@ package org.nuxeo.theme.presets;
 
 public class CustomPresetType extends PresetType {
 
-    public CustomPresetType(String name, String value, String group,
-            String category, String label, String description) {
+    public CustomPresetType(String name, String value, String group, String category, String label, String description) {
         super(name, value, group, category, label, description);
     }
 

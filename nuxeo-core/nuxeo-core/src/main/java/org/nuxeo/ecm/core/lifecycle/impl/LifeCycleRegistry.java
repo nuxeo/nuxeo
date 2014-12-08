@@ -33,8 +33,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  *
  * @since 5.6
  */
-public class LifeCycleRegistry extends
-        ContributionFragmentRegistry<LifeCycleDescriptor> {
+public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDescriptor> {
 
     private static final Log log = LogFactory.getLog(LifeCycleRegistry.class);
 
@@ -46,15 +45,13 @@ public class LifeCycleRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, LifeCycleDescriptor contrib,
-            LifeCycleDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, LifeCycleDescriptor contrib, LifeCycleDescriptor newOrigContrib) {
         log.info("Registering lifecycle: " + contrib.getName());
         lifeCycles.put(contrib.getName(), getLifeCycle(contrib));
     }
 
     @Override
-    public void contributionRemoved(String id,
-            LifeCycleDescriptor lifeCycleDescriptor) {
+    public void contributionRemoved(String id, LifeCycleDescriptor lifeCycleDescriptor) {
         log.info("Unregistering lifecycle: " + lifeCycleDescriptor.getName());
         lifeCycles.remove(lifeCycleDescriptor.getName());
     }
@@ -95,8 +92,8 @@ public class LifeCycleRegistry extends
             defaultInitialStateName = initialStateName;
             log.warn(String.format("Lifecycle registration of default initial"
                     + " state has changed, change initial=\"%s\" to "
-                    + "defaultInitial=\"%s\" in lifecyle '%s' definition",
-                    defaultInitialStateName, defaultInitialStateName, name));
+                    + "defaultInitial=\"%s\" in lifecyle '%s' definition", defaultInitialStateName,
+                    defaultInitialStateName, name));
         }
         boolean defaultInitialStateFound = false;
         Collection<String> initialStateNames = new HashSet<String>();
@@ -112,12 +109,9 @@ public class LifeCycleRegistry extends
             }
         }
         if (!defaultInitialStateFound) {
-            log.error(String.format(
-                    "Default initial state %s not found on lifecycle %s",
-                    defaultInitialStateName, name));
+            log.error(String.format("Default initial state %s not found on lifecycle %s", defaultInitialStateName, name));
         }
-        return new LifeCycleImpl(name, defaultInitialStateName,
-                initialStateNames, states, desc.getTransitions());
+        return new LifeCycleImpl(name, defaultInitialStateName, initialStateNames, states, desc.getTransitions());
     }
 
 }

@@ -25,7 +25,6 @@ import com.google.gwt.dom.client.ImageElement;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class ImageRangeXPointer implements XPointer {
 

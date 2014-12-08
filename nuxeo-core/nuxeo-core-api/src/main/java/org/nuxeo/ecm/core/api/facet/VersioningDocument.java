@@ -17,8 +17,7 @@ package org.nuxeo.ecm.core.api.facet;
 import org.nuxeo.ecm.core.api.DocumentException;
 
 /**
- * Declares constants and methods used to control document versions mostly when
- * a document is saved.
+ * Declares constants and methods used to control document versions mostly when a document is saved.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
@@ -37,16 +36,15 @@ public interface VersioningDocument {
     String KEY_FOR_INC_OPTION = "VersioningOption";
 
     /**
-     * Key used in options map to send current versions to versioning listener
-     * so it will know what version the document had before restoring.
+     * Key used in options map to send current versions to versioning listener so it will know what version the document
+     * had before restoring.
      */
     String CURRENT_DOCUMENT_MINOR_VERSION_KEY = "CURRENT_DOCUMENT_MINOR_VERSION";
 
     String CURRENT_DOCUMENT_MAJOR_VERSION_KEY = "CURRENT_DOCUMENT_MAJOR_VERSION";
 
     /**
-     * Key used in options map to send the UUID of the version being restored to
-     * the listeners.
+     * Key used in options map to send the UUID of the version being restored to the listeners.
      */
     String RESTORED_VERSION_UUID_KEY = "RESTORED_VERSION_UUID";
 

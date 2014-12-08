@@ -25,12 +25,10 @@ public interface NuxeoAuthenticationPluginLogoutExtension {
     /**
      * Handles logout operation.
      * <p>
-     * Generic logout (killing session and Seam objects) is done by LogoutActionBean
-     * This interface must be implemented by auth plugin when the target auth system
-     * needs a specific logout procedure.
+     * Generic logout (killing session and Seam objects) is done by LogoutActionBean This interface must be implemented
+     * by auth plugin when the target auth system needs a specific logout procedure.
      *
-     * @return true if caller must stop execution (ie: logout generated a redirect),
-     *      false otherwise
+     * @return true if caller must stop execution (ie: logout generated a redirect), false otherwise
      */
     Boolean handleLogout(HttpServletRequest httpRequest, HttpServletResponse httpResponse);
 

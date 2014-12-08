@@ -59,12 +59,10 @@ public final class ResourceManager implements Registrable {
         } else {
             log.debug("Added theme resource: " + name);
         }
-        ResourceType resourceType = (ResourceType) typeRegistry.lookup(
-                TypeFamily.RESOURCE, name);
+        ResourceType resourceType = (ResourceType) typeRegistry.lookup(TypeFamily.RESOURCE, name);
         if (resourceType != null) {
             for (String dependency : resourceType.getDependencies()) {
-                log.debug("  Subresource dependency: " + name + " -> "
-                        + dependency);
+                log.debug("  Subresource dependency: " + name + " -> " + dependency);
                 addResource(dependency, themeUrl, local);
             }
             List<String> scripts;
@@ -115,8 +113,8 @@ public final class ResourceManager implements Registrable {
             // hook to notify potential listeners that the resources for given
             // theme url need to be built
             EventService eventService = Framework.getLocalService(EventService.class);
-            eventService.sendEvent(new Event(ThemeManager.THEME_TOPIC,
-                    GLOBAL_RESOURCES_REGISTERED_EVENT, this, themeUrl));
+            eventService.sendEvent(new Event(ThemeManager.THEME_TOPIC, GLOBAL_RESOURCES_REGISTERED_EVENT, this,
+                    themeUrl));
         }
         return globalCache.get(themeUrl);
     }
@@ -135,28 +133,22 @@ public final class ResourceManager implements Registrable {
         }
     }
 
-    public static byte[] getBinaryBankResource(String resourceBankName,
-            String collectionName, String typeName, String resourceName)
-            throws ThemeException {
+    public static byte[] getBinaryBankResource(String resourceBankName, String collectionName, String typeName,
+            String resourceName) throws ThemeException {
         byte[] data = null;
         ResourceBank resourceBank = ThemeManager.getResourceBank(resourceBankName);
-        data = resourceBank.getResourceContent(collectionName, typeName,
-                resourceName);
+        data = resourceBank.getResourceContent(collectionName, typeName, resourceName);
         if (data == null) {
-            throw new ThemeException(
-                    "Resource bank content could not be read: " + resourceName);
+            throw new ThemeException("Resource bank content could not be read: " + resourceName);
         }
         return data;
     }
 
-    public static String getBankResource(String resourceBankName,
-            String collectionName, String typeName, String resourceName)
-            throws ThemeException {
-        byte[] data = getBinaryBankResource(resourceBankName, collectionName,
-                typeName, resourceName);
+    public static String getBankResource(String resourceBankName, String collectionName, String typeName,
+            String resourceName) throws ThemeException {
+        byte[] data = getBinaryBankResource(resourceBankName, collectionName, typeName, resourceName);
         if (data == null) {
-            throw new ThemeException("Could not get bank resource: "
-                    + resourceName);
+            throw new ThemeException("Could not get bank resource: " + resourceName);
         }
         return new String(data);
     }

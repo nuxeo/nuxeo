@@ -23,11 +23,11 @@ package org.nuxeo.osgi.application;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 class RootClassLoader extends ClassLoader {
 
     private final Class<?> loaderClass;
+
     private final String loaderName;
 
     RootClassLoader(ClassLoader parent, Class<?> loaderClass) {

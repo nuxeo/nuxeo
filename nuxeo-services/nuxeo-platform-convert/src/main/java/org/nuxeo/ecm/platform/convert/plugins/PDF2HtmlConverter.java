@@ -43,8 +43,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 public class PDF2HtmlConverter extends CommandLineBasedConverter {
 
     @Override
-    protected BlobHolder buildResult(List<String> cmdOutput,
-            CmdParameters cmdParams) {
+    protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) {
         String outputPath = cmdParams.getParameters().get("outDirPath");
         File outputDir = new File(outputPath);
         File[] files = outputDir.listFiles();
@@ -64,8 +63,8 @@ public class PDF2HtmlConverter extends CommandLineBasedConverter {
     }
 
     @Override
-    protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException {
 
         Map<String, Blob> cmdBlobParams = new HashMap<String, Blob>();
         try {
@@ -77,20 +76,18 @@ public class PDF2HtmlConverter extends CommandLineBasedConverter {
     }
 
     @Override
-    protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException {
 
         Map<String, String> cmdStringParams = new HashMap<String, String>();
 
         String baseDir = getTmpDirectory(parameters);
-        Path tmpPath = new Path(baseDir).append("pdf2html_"
-                + System.currentTimeMillis());
+        Path tmpPath = new Path(baseDir).append("pdf2html_" + System.currentTimeMillis());
 
         File outDir = new File(tmpPath.toString());
         boolean dirCreated = outDir.mkdir();
         if (!dirCreated) {
-            throw new ConversionException(
-                    "Unable to create tmp dir for transformer output");
+            throw new ConversionException("Unable to create tmp dir for transformer output");
         }
         cmdStringParams.put("outDirPath", outDir.getAbsolutePath());
         return cmdStringParams;

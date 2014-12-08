@@ -32,9 +32,7 @@ import org.nuxeo.ecm.platform.picture.ExifHelper;
 import org.nuxeo.ecm.platform.picture.core.mistral.MistralMetadataUtils;
 
 /**
- *
  * @author btatar
- *
  */
 public class TestExifHelper {
 

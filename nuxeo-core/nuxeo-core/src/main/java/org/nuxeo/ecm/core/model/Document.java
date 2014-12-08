@@ -90,8 +90,7 @@ public interface Document {
      * @param name the name of the property to set
      * @param value the value to set
      */
-    void setPropertyValue(String name, Serializable value)
-            throws DocumentException;
+    void setPropertyValue(String name, Serializable value) throws DocumentException;
 
     /**
      * Gets a property value.
@@ -188,20 +187,17 @@ public interface Document {
     /**
      * Sets a system property.
      */
-    void setSystemProp(String name, Serializable value)
-            throws DocumentException;
+    void setSystemProp(String name, Serializable value) throws DocumentException;
 
     /**
      * Gets a system property.
      */
-    <T extends Serializable> T getSystemProp(String name, Class<T> type)
-            throws DocumentException;
+    <T extends Serializable> T getSystemProp(String name, Class<T> type) throws DocumentException;
 
     /**
      * Loads a {@link DocumentPart} from storage.
      * <p>
-     * Reading data is done by {@link DocumentPart} because of per-proxy
-     * schemas.
+     * Reading data is done by {@link DocumentPart} because of per-proxy schemas.
      */
     void readDocumentPart(DocumentPart dp) throws PropertyException;
 
@@ -212,20 +208,17 @@ public interface Document {
      *
      * @since 5.9.4
      */
-    Map<String, Serializable> readPrefetch(ComplexType complexType,
-            Set<String> xpaths) throws PropertyException;
+    Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) throws PropertyException;
 
     /**
      * Writes a {@link DocumentPart} to storage.
      * <p>
-     * Writing data is done by {@link DocumentPart} because of per-proxy
-     * schemas.
+     * Writing data is done by {@link DocumentPart} because of per-proxy schemas.
      */
     void writeDocumentPart(DocumentPart dp) throws PropertyException;
 
     /**
-     * Gets the facets available on this document (from the type and the
-     * instance facets).
+     * Gets the facets available on this document (from the type and the instance facets).
      *
      * @return the facets
      * @since 5.4.2
@@ -233,8 +226,7 @@ public interface Document {
     Set<String> getAllFacets();
 
     /**
-     * Gets the facets defined on this document instance. The type facets are
-     * not returned.
+     * Gets the facets defined on this document instance. The type facets are not returned.
      *
      * @return the facets
      * @since 5.4.2
@@ -242,12 +234,10 @@ public interface Document {
     String[] getFacets();
 
     /**
-     * Checks whether this document has a given facet, either from its type or
-     * added on the instance.
+     * Checks whether this document has a given facet, either from its type or added on the instance.
      *
      * @param facet the facet name
      * @return {@code true} if the document has the facet
-     *
      * @since 5.4.2
      */
     boolean hasFacet(String facet);
@@ -258,10 +248,8 @@ public interface Document {
      * Does nothing if the facet was already present on the document.
      *
      * @param facet the facet name
-     * @return {@code true} if the facet was added, or {@code false} if it is
-     *         already present
+     * @return {@code true} if the facet was added, or {@code false} if it is already present
      * @throws DocumentException if the facet does not exist
-     *
      * @since 5.4.2
      */
     boolean addFacet(String facet) throws DocumentException;
@@ -272,9 +260,8 @@ public interface Document {
      * It's not possible to remove a facet coming from the document type.
      *
      * @param facet the facet name
-     * @return {@code true} if the facet was removed, or {@code false} if it
-     *         isn't present or is present on the type or does not exit
-     *
+     * @return {@code true} if the facet was removed, or {@code false} if it isn't present or is present on the type or
+     *         does not exit
      * @since 5.4.2
      */
     boolean removeFacet(String facet) throws DocumentException;
@@ -283,8 +270,7 @@ public interface Document {
      * Sets a lock on this document.
      *
      * @param lock the lock to set
-     * @return {@code null} if locking succeeded, or the existing lock if
-     *         locking failed
+     * @return {@code null} if locking succeeded, or the existing lock if locking failed
      */
     Lock setLock(Lock lock) throws DocumentException;
 
@@ -292,8 +278,8 @@ public interface Document {
      * Removes a lock from this document.
      *
      * @param the owner to check, or {@code null} for no check
-     * @return {@code null} if there was no lock or if removal succeeded, or a
-     *         lock if it blocks removal due to owner mismatch
+     * @return {@code null} if there was no lock or if removal succeeded, or a lock if it blocks removal due to owner
+     *         mismatch
      */
     Lock removeLock(String owner) throws DocumentException;
 
@@ -307,8 +293,7 @@ public interface Document {
     /**
      * Gets a child document given its name.
      * <p>
-     * Throws {@link NoSuchDocumentException} if the document could not be
-     * found.
+     * Throws {@link NoSuchDocumentException} if the document could not be found.
      *
      * @param name the name of the child to retrieve
      * @return the child if exists
@@ -350,8 +335,7 @@ public interface Document {
      * <p>
      * Returns {@code false} for non-folder documents.
      *
-     * @return {@code true} if the document has children, {@code false}
-     *         otherwise
+     * @return {@code true} if the document has children, {@code false} otherwise
      */
     boolean hasChildren() throws DocumentException;
 
@@ -369,10 +353,9 @@ public interface Document {
     /**
      * Orders the given source child before the destination child.
      * <p>
-     * Both source and destination must be names that point to child documents
-     * of this document. The source document will be placed before the
-     * destination one. If destination is {@code null}, the source document will
-     * be appended at the end of the children list.
+     * Both source and destination must be names that point to child documents of this document. The source document
+     * will be placed before the destination one. If destination is {@code null}, the source document will be appended
+     * at the end of the children list.
      *
      * @param src the document to move
      * @param dest the document before which to place the source document
@@ -387,8 +370,7 @@ public interface Document {
      * @param checkinComment the checkin comment
      * @return the created version
      */
-    Document checkIn(String label, String checkinComment)
-            throws DocumentException;
+    Document checkIn(String label, String checkinComment) throws DocumentException;
 
     void checkOut() throws DocumentException;
 
@@ -403,8 +385,7 @@ public interface Document {
     /**
      * Gets the versions for this document.
      *
-     * @return the versions of the document, or an empty list if there are no
-     *         versions
+     * @return the versions of the document, or an empty list if there are no versions
      */
     List<Document> getVersions() throws DocumentException;
 
@@ -462,26 +443,21 @@ public interface Document {
     /**
      * Checks whether this document is checked out.
      *
-     * @return {@code true} if the document is checked out, or {@code false}
-     *         otherwise
+     * @return {@code true} if the document is checked out, or {@code false} otherwise
      */
     boolean isCheckedOut() throws DocumentException;
 
     /**
-     * Gets the version creation date of this document if it's a version or a
-     * proxy.
+     * Gets the version creation date of this document if it's a version or a proxy.
      *
-     * @return the version creation date, or {@code null} if it's not a version
-     *         or a proxy
+     * @return the version creation date, or {@code null} if it's not a version or a proxy
      */
     Calendar getVersionCreationDate() throws DocumentException;
 
     /**
-     * Gets the version check in comment of this document if it's a version or a
-     * proxy.
+     * Gets the version check in comment of this document if it's a version or a proxy.
      *
-     * @return the check in comment, or {@code null} if it's not a version or a
-     *         proxy
+     * @return the check in comment, or {@code null} if it's not a version or a proxy
      */
     String getCheckinComment() throws DocumentException;
 
@@ -502,30 +478,26 @@ public interface Document {
     /**
      * Checks whether this document is the latest version.
      *
-     * @return {@code true} if this is the latest version, or {@code false}
-     *         otherwise
+     * @return {@code true} if this is the latest version, or {@code false} otherwise
      */
     boolean isLatestVersion() throws DocumentException;
 
     /**
      * Checks whether this document is a major version.
      *
-     * @return {@code true} if this is a major version, or {@code false}
-     *         otherwise
+     * @return {@code true} if this is a major version, or {@code false} otherwise
      */
     boolean isMajorVersion() throws DocumentException;
 
     /**
      * Checks whether this document is the latest major version.
      *
-     * @return {@code true} if this is the latest major version, or
-     *         {@code false} otherwise
+     * @return {@code true} if this is the latest major version, or {@code false} otherwise
      */
     boolean isLatestMajorVersion() throws DocumentException;
 
     /**
-     * Checks if there is a checked out working copy for the version series of
-     * this document.
+     * Checks if there is a checked out working copy for the version series of this document.
      *
      * @return {@code true} if there is a checked out working copy
      */

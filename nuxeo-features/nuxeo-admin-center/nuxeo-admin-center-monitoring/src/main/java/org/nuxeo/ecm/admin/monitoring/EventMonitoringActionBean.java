@@ -31,8 +31,7 @@ import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.management.events.EventMonitoring;
 
 /**
- * Simple Seam Bean that wraps {@link EventMonitoring} to expose it to JSF/Seam
- * layer
+ * Simple Seam Bean that wraps {@link EventMonitoring} to expose it to JSF/Seam layer
  *
  * @author tiry
  */

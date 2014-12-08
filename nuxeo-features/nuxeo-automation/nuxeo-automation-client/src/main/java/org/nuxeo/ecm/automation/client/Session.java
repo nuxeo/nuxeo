@@ -46,12 +46,10 @@ public interface Session {
     OperationRequest newRequest(String id);
 
     /**
-     * Create a new operation request given an operation ID and an operation
-     * context map.
+     * Create a new operation request given an operation ID and an operation context map.
      *
      * @param id the operation id
-     * @param ctx the context map to be used when executing the operation on
-     *            the server.
+     * @param ctx the context map to be used when executing the operation on the server.
      * @return the operation request
      */
     OperationRequest newRequest(String id, Map<String, Object> ctx);
@@ -67,8 +65,7 @@ public interface Session {
     Blob getFile(String path) throws IOException;
 
     /**
-     * Get a collection of files from the server given the path identifying the
-     * collection.
+     * Get a collection of files from the server given the path identifying the collection.
      *
      * @param path the file path
      * @return a collection of files represented as blobs.
@@ -80,11 +77,10 @@ public interface Session {
     Map<String, OperationDocumentation> getOperations();
 
     /**
-     * Get an adapter of the current session. Adapters can be used to define
-     * custom API over a Nuxeo Automation Session.
+     * Get an adapter of the current session. Adapters can be used to define custom API over a Nuxeo Automation Session.
      * <p>
-     * Optional operation. Environments that cannot support this method (like
-     * GWT) must throw {@link UnsupportedOperationException}
+     * Optional operation. Environments that cannot support this method (like GWT) must throw
+     * {@link UnsupportedOperationException}
      *
      * @see AutomationClient#getAdapter(Object, Class)
      */
@@ -97,11 +93,9 @@ public interface Session {
      * <p>
      * default value is null (let the server decide what to send)
      * <p>
-     * when Automation server convert the Documents to JSON, it will use this
-     * list to select what properties should be sent. You can explicitly set
-     * the X-NXDocumentProperties header at request level. If defaultSchemas,
-     * the request that don't already have the header set will inherit the
-     * default value.
+     * when Automation server convert the Documents to JSON, it will use this list to select what properties should be
+     * sent. You can explicitly set the X-NXDocumentProperties header at request level. If defaultSchemas, the request
+     * that don't already have the header set will inherit the default value.
      *
      * @since 5.7
      */
@@ -112,11 +106,9 @@ public interface Session {
      * <p>
      * This is a comma separated String (ex: dublincore,file)
      * <p>
-     * when Automation server convert the Documents to JSON, it will use this
-     * list to select what properties should be sent. You can explicitly set
-     * the X-NXDocumentProperties header at request level. If defaultSchemas,
-     * the request that don't already have the header set will inherit the
-     * default value.
+     * when Automation server convert the Documents to JSON, it will use this list to select what properties should be
+     * sent. You can explicitly set the X-NXDocumentProperties header at request level. If defaultSchemas, the request
+     * that don't already have the header set will inherit the default value.
      *
      * @param defaultSchemas list of schemas as a comma separated string
      * @since 5.7
@@ -124,8 +116,7 @@ public interface Session {
     void setDefaultSchemas(String defaultSchemas);
 
     /**
-     * Remove any resources held by this session. The session will no more be
-     * used again.
+     * Remove any resources held by this session. The session will no more be used again.
      */
     void close();
 }

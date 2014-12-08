@@ -34,8 +34,7 @@ public class AdministrativeStatusProbe implements Probe {
 
         Map<String, String> infos = new HashMap<String, String>();
         infos.put("server", status.getInstanceIdentifier());
-        infos.put("host", Framework.getProperty(
-                "org.nuxeo.runtime.server.host", "localhost"));
+        infos.put("host", Framework.getProperty("org.nuxeo.runtime.server.host", "localhost"));
         infos.put("status", status.getState());
         if (!status.isActive()) {
             return ProbeStatus.newFailure(infos);

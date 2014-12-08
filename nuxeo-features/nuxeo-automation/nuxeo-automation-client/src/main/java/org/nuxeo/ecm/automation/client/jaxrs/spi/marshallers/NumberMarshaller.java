@@ -18,8 +18,7 @@ import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
 
 /**
- * Marshaller for the default ObjectCodec for the java Number abstract class
- * instances.
+ * Marshaller for the default ObjectCodec for the java Number abstract class instances.
  *
  * @author ogrisel
  * @since 5.7

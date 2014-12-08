@@ -55,14 +55,12 @@ public class GetDocumentsFromSelectionList {
 
         List<DocumentModel> res = null;
         if (OperationHelper.isSeamContextAvailable()) {
-            res = OperationHelper.getDocumentListManager().getWorkingList(
-                    workingListName);
+            res = OperationHelper.getDocumentListManager().getWorkingList(workingListName);
         } else {
-            if (OperationHelper.getDocumentListManager().getWorkingListDescriptor(
-                    workingListName).getPersistent()) {
+            if (OperationHelper.getDocumentListManager().getWorkingListDescriptor(workingListName).getPersistent()) {
                 DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
-                res = pm.loadPersistentDocumentsLists(ctx.getCoreSession(),
-                        ctx.getPrincipal().getName(), workingListName);
+                res = pm.loadPersistentDocumentsLists(ctx.getCoreSession(), ctx.getPrincipal().getName(),
+                        workingListName);
             } else {
                 throw new OperationException(
                         String.format(

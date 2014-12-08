@@ -51,8 +51,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
  *
  * @since 5.4.2
  */
-public abstract class AbstractSelectWidgetTypeHandler extends
-        AbstractWidgetTypeHandler {
+public abstract class AbstractSelectWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -70,8 +69,8 @@ public abstract class AbstractSelectWidgetTypeHandler extends
 
     // ease up override of behavior without impacting default options
     // management
-    protected Map<String, Serializable> getOptionProperties(FaceletContext ctx,
-            Widget widget, WidgetSelectOption selectOption) {
+    protected Map<String, Serializable> getOptionProperties(FaceletContext ctx, Widget widget,
+            WidgetSelectOption selectOption) {
         Map<String, Serializable> props = new HashMap<>();
         for (SelectPropertyMappings mapping : SelectPropertyMappings.values()) {
             if (widget.getProperties().containsKey(mapping.name())) {
@@ -89,34 +88,27 @@ public abstract class AbstractSelectWidgetTypeHandler extends
         }
     }
 
-    protected FaceletHandler getOptionFaceletHandler(FaceletContext ctx,
-            FaceletHandlerHelper helper, Widget widget,
+    protected FaceletHandler getOptionFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
             WidgetSelectOption selectOption, FaceletHandler nextHandler) {
         String componentType = getOptionComponentType(selectOption);
-        TagAttributes attrs = helper.getTagAttributes(selectOption,
-                getOptionProperties(ctx, widget, selectOption));
-        return helper.getHtmlComponentHandler(widget.getTagConfigId(), attrs,
-                nextHandler, componentType, null);
+        TagAttributes attrs = helper.getTagAttributes(selectOption, getOptionProperties(ctx, widget, selectOption));
+        return helper.getHtmlComponentHandler(widget.getTagConfigId(), attrs, nextHandler, componentType, null);
     }
 
     // not impacted by custom behaviour by default
-    protected FaceletHandler getBareOptionFaceletHandler(FaceletContext ctx,
-            FaceletHandlerHelper helper, Widget widget,
-            WidgetSelectOption selectOption, FaceletHandler nextHandler) {
+    protected FaceletHandler getBareOptionFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper,
+            Widget widget, WidgetSelectOption selectOption, FaceletHandler nextHandler) {
         String componentType = getOptionComponentType(selectOption);
         TagAttributes attrs = helper.getTagAttributes(selectOption);
-        return helper.getHtmlComponentHandler(widget.getTagConfigId(), attrs,
-                nextHandler, componentType, null);
+        return helper.getHtmlComponentHandler(widget.getTagConfigId(), attrs, nextHandler, componentType, null);
     }
 
     /**
-     * Adds a default disabled "select a value" option if widget is not
-     * required.
+     * Adds a default disabled "select a value" option if widget is not required.
      *
      * @since 6.0
      */
-    protected FaceletHandler getFirstHandler(FaceletContext ctx,
-            FaceletHandlerHelper helper, Widget widget,
+    protected FaceletHandler getFirstHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
             FaceletHandler nextHandler) {
         Object doNotDisplay = widget.getProperty(SelectPropertyMappings.notDisplayDefaultOption.name());
         if (doNotDisplay != null) {
@@ -124,8 +116,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends
                 return null;
             }
             if (doNotDisplay instanceof String) {
-                Object res = ComponentTagUtils.resolveElExpression(ctx,
-                        (String) doNotDisplay);
+                Object res = ComponentTagUtils.resolveElExpression(ctx, (String) doNotDisplay);
                 if ((res instanceof Boolean && Boolean.TRUE.equals(res))
                         || (res instanceof String && Boolean.parseBoolean((String) res))) {
                     return null;
@@ -133,26 +124,21 @@ public abstract class AbstractSelectWidgetTypeHandler extends
             }
         }
         String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
-        String localizedExpression = String.format("#{%s['%s']}", bundleName,
-                "label.vocabulary.selectValue");
-        WidgetSelectOption selectOption = new WidgetSelectOptionImpl("", "",
-                localizedExpression, "", Boolean.FALSE, Boolean.TRUE);
-        return getBareOptionFaceletHandler(ctx, helper, widget, selectOption,
-                nextHandler);
+        String localizedExpression = String.format("#{%s['%s']}", bundleName, "label.vocabulary.selectValue");
+        WidgetSelectOption selectOption = new WidgetSelectOptionImpl("", "", localizedExpression, "", Boolean.FALSE,
+                Boolean.TRUE);
+        return getBareOptionFaceletHandler(ctx, helper, widget, selectOption, nextHandler);
     }
 
     /**
-     * Returns true if widget properties should generate a default tag handler
-     * for select options.
+     * Returns true if widget properties should generate a default tag handler for select options.
      * <p>
-     * This default implementation requires the selectOptions widget property
-     * to be filled.
+     * This default implementation requires the selectOptions widget property to be filled.
      *
      * @since 6.0
      */
     protected boolean shouldAddWidgetPropsHandler(Widget widget) {
-        if (widget.getProperties().containsKey(
-                SelectPropertyMappings.selectOptions.name())) {
+        if (widget.getProperties().containsKey(SelectPropertyMappings.selectOptions.name())) {
             return true;
         }
         return false;
@@ -163,8 +149,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends
      *
      * @since 6.0
      */
-    protected FaceletHandler getWidgetPropsHandler(FaceletContext ctx,
-            FaceletHandlerHelper helper, Widget widget,
+    protected FaceletHandler getWidgetPropsHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
             FaceletHandler nextHandler) {
         if (shouldAddWidgetPropsHandler(widget)) {
             WidgetSelectOptionsImpl selectOption = new WidgetSelectOptionsImpl(
@@ -174,14 +159,12 @@ public abstract class AbstractSelectWidgetTypeHandler extends
                     (String) widget.getProperty(SelectPropertyMappings.itemValue.name()),
                     widget.getProperty(SelectPropertyMappings.itemDisabled.name()),
                     widget.getProperty(SelectPropertyMappings.itemRendered.name()));
-            return getOptionFaceletHandler(ctx, helper, widget, selectOption,
-                    nextHandler);
+            return getOptionFaceletHandler(ctx, helper, widget, selectOption, nextHandler);
         }
         return null;
     }
 
-    protected FaceletHandler getOptionsFaceletHandler(FaceletContext ctx,
-            FaceletHandlerHelper helper, Widget widget,
+    protected FaceletHandler getOptionsFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
             WidgetSelectOption[] selectOptions) {
         FaceletHandler leaf = new LeafFaceletHandler();
         List<FaceletHandler> selectItems = new ArrayList<FaceletHandler>();
@@ -189,8 +172,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends
         if (firstItem != null) {
             selectItems.add(firstItem);
         }
-        FaceletHandler widgetPropsHandler = getWidgetPropsHandler(ctx, helper,
-                widget, leaf);
+        FaceletHandler widgetPropsHandler = getWidgetPropsHandler(ctx, helper, widget, leaf);
         if (widgetPropsHandler != null) {
             selectItems.add(widgetPropsHandler);
         }
@@ -199,26 +181,21 @@ public abstract class AbstractSelectWidgetTypeHandler extends
                 if (selectOption == null) {
                     continue;
                 }
-                FaceletHandler h = getBareOptionFaceletHandler(ctx, helper,
-                        widget, selectOption, leaf);
+                FaceletHandler h = getBareOptionFaceletHandler(ctx, helper, widget, selectOption, leaf);
                 if (h != null) {
                     selectItems.add(h);
                 }
             }
         }
-        return new CompositeFaceletHandler(
-                selectItems.toArray(new FaceletHandler[0]));
+        return new CompositeFaceletHandler(selectItems.toArray(new FaceletHandler[0]));
     }
 
-    protected FaceletHandler getOptionsFaceletHandler(FaceletContext ctx,
-            FaceletHandlerHelper helper, Widget widget) {
-        return getOptionsFaceletHandler(ctx, helper, widget,
-                widget.getSelectOptions());
+    protected FaceletHandler getOptionsFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget) {
+        return getOptionsFaceletHandler(ctx, helper, widget, widget.getSelectOptions());
     }
 
     /**
-     * Returns properties useful for select items, not to be reported on the
-     * select component.
+     * Returns properties useful for select items, not to be reported on the select component.
      */
     protected List<String> getExcludedProperties() {
         List<String> excludedProps = new ArrayList<>();
@@ -231,59 +208,45 @@ public abstract class AbstractSelectWidgetTypeHandler extends
         return excludedProps;
     }
 
-    protected FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
-            String componentType) throws WidgetException {
-        return getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                componentType, null);
+    protected FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers, String componentType) throws WidgetException {
+        return getFaceletHandler(ctx, tagConfig, widget, subHandlers, componentType, null);
     }
 
-    protected FaceletHandler getComponentFaceletHandler(FaceletContext ctx,
-            FaceletHandlerHelper helper, Widget widget,
+    protected FaceletHandler getComponentFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
             FaceletHandler componentHandler) {
         return componentHandler;
     }
 
-    protected FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
-            String componentType, String rendererType) throws WidgetException {
+    protected FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers, String componentType, String rendererType) throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
         List<String> excludedProps = getExcludedProperties();
-        TagAttributes attributes = helper.getTagAttributes(widget,
-                excludedProps, true);
+        TagAttributes attributes = helper.getTagAttributes(widget, excludedProps, true);
         // BBB for CSS style classes on directory select components
         if (widget.getProperty("cssStyle") != null) {
-            attributes = FaceletHandlerHelper.addTagAttribute(
-                    attributes,
-                    helper.createAttribute("style",
-                            (String) widget.getProperty("cssStyle")));
+            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                    helper.createAttribute("style", (String) widget.getProperty("cssStyle")));
         }
         if (widget.getProperty("cssStyleClass") != null) {
-            attributes = FaceletHandlerHelper.addTagAttribute(
-                    attributes,
-                    helper.createAttribute("styleClass",
-                            (String) widget.getProperty("cssStyleClass")));
+            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                    helper.createAttribute("styleClass", (String) widget.getProperty("cssStyleClass")));
         }
         if (!BuiltinWidgetModes.isLikePlainMode(mode)) {
-            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                    helper.createAttribute("id", widgetId));
+            attributes = FaceletHandlerHelper.addTagAttribute(attributes, helper.createAttribute("id", widgetId));
         }
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            FaceletHandler optionsHandler = getOptionsFaceletHandler(ctx,
-                    helper, widget);
+            FaceletHandler optionsHandler = getOptionsFaceletHandler(ctx, helper, widget);
             FaceletHandler[] nextHandlers = new FaceletHandler[] {};
-            nextHandlers = (FaceletHandler[]) ArrayUtils.add(nextHandlers,
-                    optionsHandler);
+            nextHandlers = (FaceletHandler[]) ArrayUtils.add(nextHandlers, optionsHandler);
             if (subHandlers != null) {
-                nextHandlers = (FaceletHandler[]) ArrayUtils.addAll(
-                        nextHandlers, subHandlers);
+                nextHandlers = (FaceletHandler[]) ArrayUtils.addAll(nextHandlers, subHandlers);
             }
-            FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
-                    nextHandlers, helper, true);
+            FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, nextHandlers, helper, true);
             // maybe add convert handler for easier integration of select2
             // widgets handling multiple values
             if (HtmlSelectManyListbox.COMPONENT_TYPE.equals(componentType)
@@ -291,19 +254,14 @@ public abstract class AbstractSelectWidgetTypeHandler extends
                     || HtmlSelectManyMenu.COMPONENT_TYPE.equals(componentType)) {
                 // add hint for value conversion to collection
                 attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                        helper.createAttribute("collectionType",
-                                ArrayList.class.getName()));
+                        helper.createAttribute("collectionType", ArrayList.class.getName()));
             }
 
-            ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf, componentType,
+            ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf, componentType,
                     rendererType);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(
-                    widgetTagConfigId, msgId, widgetId, null);
-            FaceletHandler[] handlers = {
-                    getComponentFaceletHandler(ctx, helper, widget, input),
-                    message };
+            ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
+            FaceletHandler[] handlers = { getComponentFaceletHandler(ctx, helper, widget, input), message };
             return new CompositeFaceletHandler(handlers);
         } else {
             // TODO

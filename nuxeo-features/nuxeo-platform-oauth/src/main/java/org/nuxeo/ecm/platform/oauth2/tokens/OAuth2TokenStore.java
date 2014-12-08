@@ -60,8 +60,7 @@ public class OAuth2TokenStore implements CredentialStore {
         }
     }
 
-    public NuxeoOAuth2Token refresh(String refreshToken, String clientId)
-            throws ClientException {
+    public NuxeoOAuth2Token refresh(String refreshToken, String clientId) throws ClientException {
         Map<String, Serializable> filter = new HashMap<>();
         filter.put("clientId", clientId);
         filter.put("refreshToken", refreshToken);
@@ -141,8 +140,7 @@ public class OAuth2TokenStore implements CredentialStore {
         }
     }
 
-    protected NuxeoOAuth2Token getToken(Map<String, Serializable> filter)
-            throws ClientException {
+    protected NuxeoOAuth2Token getToken(Map<String, Serializable> filter) throws ClientException {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
         Session session = null;
         try {
@@ -162,8 +160,7 @@ public class OAuth2TokenStore implements CredentialStore {
         }
     }
 
-    public NuxeoOAuth2Token getToken(String serviceName, String nuxeoLogin)
-            throws ClientException {
+    public NuxeoOAuth2Token getToken(String serviceName, String nuxeoLogin) throws ClientException {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         filter.put("serviceName", serviceName);
         filter.put("nuxeoLogin", nuxeoLogin);
@@ -171,13 +168,11 @@ public class OAuth2TokenStore implements CredentialStore {
         return getToken(filter);
     }
 
-    protected NuxeoOAuth2Token getTokenFromDirectoryEntry(DocumentModel entry)
-            throws ClientException {
+    protected NuxeoOAuth2Token getTokenFromDirectoryEntry(DocumentModel entry) throws ClientException {
         return new NuxeoOAuth2Token(entry);
     }
 
-    protected NuxeoOAuth2Token storeTokenAsDirectoryEntry(
-            NuxeoOAuth2Token aToken) throws ClientException {
+    protected NuxeoOAuth2Token storeTokenAsDirectoryEntry(NuxeoOAuth2Token aToken) throws ClientException {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
         Session session = null;
         try {

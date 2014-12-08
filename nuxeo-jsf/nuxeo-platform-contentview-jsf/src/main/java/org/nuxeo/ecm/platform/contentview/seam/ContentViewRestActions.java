@@ -48,8 +48,7 @@ public class ContentViewRestActions implements Serializable {
     @In(create = true)
     protected ContentViewService contentViewService;
 
-    public String getContentViewState(ContentView contentView)
-            throws UnsupportedEncodingException, ClientException {
+    public String getContentViewState(ContentView contentView) throws UnsupportedEncodingException, ClientException {
         ContentViewState state = contentViewService.saveContentView(contentView);
         if (state != null) {
             return JSONContentViewState.toJSON(state, true);
@@ -57,13 +56,10 @@ public class ContentViewRestActions implements Serializable {
         return null;
     }
 
-    public ContentView restoreContentView(String contentViewName,
-            Long currentPage, Long pageSize, List<SortInfo> sortInfos,
-            String jsonContentViewState) throws UnsupportedEncodingException,
-            ClientException {
+    public ContentView restoreContentView(String contentViewName, Long currentPage, Long pageSize,
+            List<SortInfo> sortInfos, String jsonContentViewState) throws UnsupportedEncodingException, ClientException {
         ContentViewState state = null;
-        if (jsonContentViewState != null
-                && jsonContentViewState.trim().length() != 0) {
+        if (jsonContentViewState != null && jsonContentViewState.trim().length() != 0) {
             state = JSONContentViewState.fromJSON(jsonContentViewState, true);
         } else if (contentViewName != null) {
             // restore only from name

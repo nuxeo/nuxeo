@@ -31,8 +31,8 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
  */
 public class ImageRotater extends MagickExecutor {
 
-    public static void rotate(String inputFile, String outputFile, int angle)
-            throws CommandNotAvailable, CommandException {
+    public static void rotate(String inputFile, String outputFile, int angle) throws CommandNotAvailable,
+            CommandException {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("angle", String.valueOf(angle));
         params.addNamedParameter("inputFilePath", inputFile);

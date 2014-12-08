@@ -60,8 +60,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
         this.zipBlob = zipBlob;
     }
 
-    public Blob getBlob(String path) throws IOException,
-            MimetypeNotFoundException, MimetypeDetectionException,
+    public Blob getBlob(String path) throws IOException, MimetypeNotFoundException, MimetypeDetectionException,
             ConversionException {
         String filePath = key + path;
         File file = new File(filePath);
@@ -103,8 +102,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
             orderIndexPageFirst(blobs);
         } catch (ConversionException e) {
-            throw new RuntimeException("Blob loading from cache failed",
-                    e.getCause());
+            throw new RuntimeException("Blob loading from cache failed", e.getCause());
         }
     }
 
@@ -134,7 +132,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
         return key;
     }
 
-    public String getMimeType(File file) throws ConversionException{
+    public String getMimeType(File file) throws ConversionException {
         try {
             return getMimeTypeService().getMimetypeFromFile(file);
         } catch (ConversionException e) {

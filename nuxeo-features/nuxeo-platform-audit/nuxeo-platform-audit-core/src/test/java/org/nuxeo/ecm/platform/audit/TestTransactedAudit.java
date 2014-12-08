@@ -49,11 +49,13 @@ public class TestTransactedAudit {
 
     protected @Inject CoreSession repo;
 
-    @Before public void isInjected() {
+    @Before
+    public void isInjected() {
         assertThat(repo, notNullValue());
     }
 
-    @Test public void canLogMultipleLifecycleTransitionsInSameTx() throws ClientException {
+    @Test
+    public void canLogMultipleLifecycleTransitionsInSameTx() throws ClientException {
         // generate events
         DocumentModel doc = repo.createDocumentModel("/", "a-file", "File");
         doc = repo.createDocument(doc);
@@ -76,7 +78,7 @@ public class TestTransactedAudit {
         boolean seenDocDeleted = false;
         boolean seenDocUndeleted = false;
 
-        for (LogEntry entry:trail) {
+        for (LogEntry entry : trail) {
             String lifeCycle = entry.getDocLifeCycle();
             String id = entry.getEventId();
             if (DocumentEventTypes.DOCUMENT_CREATED.equals(id)) {
@@ -129,7 +131,7 @@ public class TestTransactedAudit {
             String id = entry.getEventId();
             if (DocumentEventTypes.DOCUMENT_CREATED.equals(id)) {
                 eventDate = entry.getEventDate();
-                 logDate = entry.getLogDate();
+                logDate = entry.getLogDate();
             }
         }
         assertNotNull(eventDate);

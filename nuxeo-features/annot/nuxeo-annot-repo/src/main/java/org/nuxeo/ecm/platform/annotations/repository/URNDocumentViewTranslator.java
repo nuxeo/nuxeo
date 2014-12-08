@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class URNDocumentViewTranslator {
 

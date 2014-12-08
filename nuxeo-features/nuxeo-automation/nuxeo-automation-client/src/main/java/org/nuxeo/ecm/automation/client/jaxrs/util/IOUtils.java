@@ -45,8 +45,7 @@ public class IOUtils {
         return new byte[preferredSize];
     }
 
-    public static void copy(InputStream in, OutputStream out)
-            throws IOException {
+    public static void copy(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = createBuffer(in.available());
         int read;
         while ((read = in.read(buffer)) != -1) {
@@ -60,8 +59,7 @@ public class IOUtils {
         return file;
     }
 
-    public static File copyToTempFile(InputStream in, boolean closeIn)
-            throws IOException {
+    public static File copyToTempFile(InputStream in, boolean closeIn) throws IOException {
         File file = File.createTempFile("nxautomation-", ".tmp");
         copyToFile(in, file, closeIn);
         return file;
@@ -71,8 +69,7 @@ public class IOUtils {
         copyToFile(in, file, true);
     }
 
-    public static void copyToFile(InputStream in, File file, boolean closeIn)
-            throws IOException {
+    public static void copyToFile(InputStream in, File file, boolean closeIn) throws IOException {
         FileOutputStream out = new FileOutputStream(file);
         try {
             copy(in, out);
@@ -84,8 +81,7 @@ public class IOUtils {
         }
     }
 
-    public static void writeToFile(String content, File file)
-            throws IOException {
+    public static void writeToFile(String content, File file) throws IOException {
         FileOutputStream out = new FileOutputStream(file);
         try {
             write(content, out);
@@ -94,8 +90,7 @@ public class IOUtils {
         }
     }
 
-    public static void write(String content, OutputStream out)
-            throws IOException {
+    public static void write(String content, OutputStream out) throws IOException {
         out.write(content.getBytes());
     }
 

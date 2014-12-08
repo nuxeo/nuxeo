@@ -74,10 +74,9 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
 
         CyclicBarrier barrier = new CyclicBarrier(2);
         CountDownLatch firstReady = new CountDownLatch(1);
-        PrepareUserReadAclsJob r1 = new PrepareUserReadAclsJob(name, username,
-                database.repositoryName, firstReady, barrier);
-        PrepareUserReadAclsJob r2 = new PrepareUserReadAclsJob(name, username,
-                database.repositoryName, null, barrier);
+        PrepareUserReadAclsJob r1 = new PrepareUserReadAclsJob(name, username, database.repositoryName, firstReady,
+                barrier);
+        PrepareUserReadAclsJob r2 = new PrepareUserReadAclsJob(name, username, database.repositoryName, null, barrier);
         Thread t1 = null;
         Thread t2 = null;
         try {
@@ -120,12 +119,9 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
         openSession();
     }
 
-    protected static void checkOneDoc(CoreSession session, String name)
-            throws ClientException {
-        String query = "SELECT * FROM File WHERE ecm:isProxy = 0 AND ecm:name = '"
-                + name + "'";
-        DocumentModelList res = session.query(query, NXQL.NXQL, null, 0, 0,
-                false);
+    protected static void checkOneDoc(CoreSession session, String name) throws ClientException {
+        String query = "SELECT * FROM File WHERE ecm:isProxy = 0 AND ecm:name = '" + name + "'";
+        DocumentModelList res = session.query(query, NXQL.NXQL, null, 0, 0, false);
         assertEquals(1, res.size());
     }
 
@@ -143,8 +139,7 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
 
         public Throwable throwable;
 
-        public PrepareUserReadAclsJob(String name, String username,
-                String repositoryName, CountDownLatch ready,
+        public PrepareUserReadAclsJob(String name, String username, String repositoryName, CountDownLatch ready,
                 CyclicBarrier barrier) {
             this.name = name;
             this.username = username;
@@ -156,8 +151,7 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
         @Override
         public void run() {
             TransactionHelper.startTransaction();
-            try (CoreSession session = CoreInstance.openCoreSession(
-                    repositoryName, username)) {
+            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, username)) {
                 if (ready != null) {
                     ready.countDown();
                     ready = null;

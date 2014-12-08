@@ -28,8 +28,7 @@ import org.restlet.data.Response;
 /**
  * Small restlet logging in the commons logging log.
  * <p>
- * Very useful when running functional tests for instance, to separate cleanly
- * what happens in the logs.
+ * Very useful when running functional tests for instance, to separate cleanly what happens in the logs.
  */
 public class SystemLogRestlet extends BaseStatelessNuxeoRestlet {
 
@@ -55,8 +54,7 @@ public class SystemLogRestlet extends BaseStatelessNuxeoRestlet {
         String token = form.getFirstValue(TOKEN);
         String tokenProp = Framework.getProperty(TOKEN_PROP);
         if (tokenProp == null || !tokenProp.equals(token)) {
-            log.debug(String.format("Provided token '%s' does not match %s",
-                    token, TOKEN_PROP));
+            log.debug(String.format("Provided token '%s' does not match %s", token, TOKEN_PROP));
         } else if ("error".equalsIgnoreCase(level)) {
             log.error(message);
         } else if ("warn".equalsIgnoreCase(level)) {

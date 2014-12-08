@@ -22,13 +22,11 @@ package org.nuxeo.ecm.platform.filemanager.service.extension;
 import java.util.Arrays;
 
 /**
- * Helper class to contribute CreationContainerListProvider implementation to
- * the FileManagerService.
+ * Helper class to contribute CreationContainerListProvider implementation to the FileManagerService.
  *
  * @author Olivier Grisel (ogrisel@nuxeo.com)
  */
-public abstract class AbstractCreationContainerListProvider implements
-        CreationContainerListProvider {
+public abstract class AbstractCreationContainerListProvider implements CreationContainerListProvider {
 
     private String name = "";
 

@@ -37,27 +37,21 @@ public class RelationConstants {
 
     // statement metadata
 
-    public static final Resource TITLE = new ResourceImpl(METADATA_NAMESPACE
-            + "title");
+    public static final Resource TITLE = new ResourceImpl(METADATA_NAMESPACE + "title");
 
-    public static final Resource UUID = new ResourceImpl(METADATA_NAMESPACE
-            + "uuid");
+    public static final Resource UUID = new ResourceImpl(METADATA_NAMESPACE + "uuid");
 
-    public static final Resource CREATION_DATE = new ResourceImpl(
-            METADATA_NAMESPACE + "CreationDate");
+    public static final Resource CREATION_DATE = new ResourceImpl(METADATA_NAMESPACE + "CreationDate");
 
-    public static final Resource MODIFICATION_DATE = new ResourceImpl(
-            METADATA_NAMESPACE + "ModificationDate");
+    public static final Resource MODIFICATION_DATE = new ResourceImpl(METADATA_NAMESPACE + "ModificationDate");
 
-    public static final Resource AUTHOR = new ResourceImpl(METADATA_NAMESPACE
-            + "Author");
+    public static final Resource AUTHOR = new ResourceImpl(METADATA_NAMESPACE + "Author");
 
     // XXX AT: for BBB, use a different namespace for comment
-    public static final Resource COMMENT = new ResourceImpl(
-            "http://www.nuxeo.org/comment");
+    public static final Resource COMMENT = new ResourceImpl("http://www.nuxeo.org/comment");
 
-    public static final Resource COPY_FROM_WORK_VERSION = new ResourceImpl(
-            METADATA_NAMESPACE + "copy-from-work-version");
+    public static final Resource COPY_FROM_WORK_VERSION = new ResourceImpl(METADATA_NAMESPACE
+            + "copy-from-work-version");
 
     // Constant utility class
     private RelationConstants() {

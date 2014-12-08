@@ -29,13 +29,11 @@ public class OperationNotAllowedException extends RecoverableClientException {
 
     private static final long serialVersionUID = -1L;
 
-    public OperationNotAllowedException(String message, String localizedMessage,
-                                        String[] params) {
+    public OperationNotAllowedException(String message, String localizedMessage, String[] params) {
         super(message, localizedMessage, params);
     }
 
-    public OperationNotAllowedException(String message, String localizedMessage,
-                                        String[] params, Throwable cause) {
+    public OperationNotAllowedException(String message, String localizedMessage, String[] params, Throwable cause) {
         super(message, localizedMessage, params, cause);
     }
 

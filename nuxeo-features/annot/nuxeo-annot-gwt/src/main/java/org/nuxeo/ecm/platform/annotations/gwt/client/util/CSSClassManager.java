@@ -23,29 +23,31 @@ import com.google.gwt.dom.client.Element;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class CSSClassManager {
     private Element element;
+
     public CSSClassManager(Element element) {
         this.element = element;
     }
+
     /**
      * remove the class from the specified element.
+     *
      * @return true if the class was removed, false if the class was not found.
      */
     public boolean removeClass(String name) {
         String className = element.getClassName();
-        if(isClassPresent(name)) {
-            element.setClassName(className.replaceAll("\\b" + name + "\\b\\s*",
-                    ""));
+        if (isClassPresent(name)) {
+            element.setClassName(className.replaceAll("\\b" + name + "\\b\\s*", ""));
             return true;
         }
         return false;
     }
+
     public boolean isClassPresent(String name) {
         String cssClass = element.getClassName();
-        if(cssClass == null) {
+        if (cssClass == null) {
             return false;
         }
         return cssClass.matches(".*\\b" + name + "\\b.*");
@@ -53,11 +55,12 @@ public class CSSClassManager {
 
     /**
      * Add the class to the element.
+     *
      * @return true if the class was add, false if the class was already present.
      */
     public boolean addClass(String name) {
         String className = element.getClassName();
-        if(!isClassPresent(name)) {
+        if (!isClassPresent(name)) {
             element.setClassName(className + " " + name);
             return true;
         }

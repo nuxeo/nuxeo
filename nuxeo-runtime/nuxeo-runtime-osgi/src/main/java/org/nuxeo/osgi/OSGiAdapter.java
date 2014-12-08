@@ -47,9 +47,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class OSGiAdapter {
 
@@ -80,9 +78,9 @@ public class OSGiAdapter {
     protected JarFileCloser uRLJarFileCloser;
 
     public OSGiAdapter(File workingDir) {
-        this(workingDir, new File(System.getProperty(
-                Environment.NUXEO_DATA_DIR, workingDir + File.separator
-                        + "data")), new Properties());
+        this(workingDir,
+                new File(System.getProperty(Environment.NUXEO_DATA_DIR, workingDir + File.separator + "data")),
+                new Properties());
     }
 
     public OSGiAdapter(File workingDir, File dataDir, Properties properties) {
@@ -112,8 +110,7 @@ public class OSGiAdapter {
         properties.put(Constants.FRAMEWORK_VERSION, "1.0.0");
     }
 
-    public void setSystemBundle(SystemBundle systemBundle)
-            throws BundleException {
+    public void setSystemBundle(SystemBundle systemBundle) throws BundleException {
         if (this.systemBundle != null) {
             throw new IllegalStateException("Cannot set system bundle");
         }
@@ -121,8 +118,7 @@ public class OSGiAdapter {
         registry.addBundleAlias("system.bundle", systemBundle.getSymbolicName());
         this.systemBundle = systemBundle;
 
-        systemBundle.getBundleContext().registerService(
-                PackageAdmin.class.getName(), new PackageAdminImpl(this), null);
+        systemBundle.getBundleContext().registerService(PackageAdmin.class.getName(), new PackageAdminImpl(this), null);
     }
 
     public BundleRegistry getRegistry() {
@@ -209,8 +205,7 @@ public class OSGiAdapter {
 
     public void addServiceListener(ServiceListener listener, String filter) {
         // TODO?
-        throw new UnsupportedOperationException(
-                "This method is not implemented");
+        throw new UnsupportedOperationException("This method is not implemented");
     }
 
     public void removeServiceListener(ServiceListener listener) {
@@ -226,8 +221,7 @@ public class OSGiAdapter {
     }
 
     public void fireFrameworkEvent(FrameworkEvent event) {
-        log.debug("Firing FrameworkEvent on " + frameworkListeners.size()
-                + " listeners");
+        log.debug("Firing FrameworkEvent on " + frameworkListeners.size() + " listeners");
         if (event.getType() == FrameworkEvent.STARTED) {
             uRLJarFileCloser = newJarFileCloser();
         }
@@ -236,11 +230,9 @@ public class OSGiAdapter {
             log.debug("Start execution of " + listener.getClass() + " listener");
             try {
                 ((FrameworkListener) listener).frameworkEvent(event);
-                log.debug("End execution of " + listener.getClass()
-                        + " listener");
+                log.debug("End execution of " + listener.getClass() + " listener");
             } catch (RuntimeException e) {
-                log.error("Error during Framework Listener execution : "
-                        + listener.getClass(), e);
+                log.error("Error during Framework Listener execution : " + listener.getClass(), e);
             }
         }
     }
@@ -275,6 +267,7 @@ public class OSGiAdapter {
 
     /**
      * helper for closing jar files during bundle uninstall
+     *
      * @since 5.6
      */
     public JarFileCloser getURLJarFileCloser() {

@@ -23,19 +23,17 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Interface to implement for contributions to the FileManagerService
- * creationContainerListProvider extension point.
+ * Interface to implement for contributions to the FileManagerService creationContainerListProvider extension point.
  * <p>
- * The provider should tell for a given (handled) document type the list of
- * candidate container the user can create new document in.
+ * The provider should tell for a given (handled) document type the list of candidate container the user can create new
+ * document in.
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
 public interface CreationContainerListProvider {
 
     /**
-     * Unique name of the CreationContainerListProvider. The name of a provider
-     * should be used for the equals.
+     * Unique name of the CreationContainerListProvider. The name of a provider should be used for the equals.
      *
      * @return the name
      */
@@ -44,8 +42,7 @@ public interface CreationContainerListProvider {
     void setName(String name);
 
     /**
-     * Arrays of the document types accepted by the
-     * CreationContainerListProvider instance. null or empty array mean any
+     * Arrays of the document types accepted by the CreationContainerListProvider instance. null or empty array mean any
      * document type is accepted.
      *
      * @return arrays of document types
@@ -63,14 +60,12 @@ public interface CreationContainerListProvider {
     boolean accept(String docType);
 
     /**
-     * Build the list of candidate containers for the given document type and
-     * session.
+     * Build the list of candidate containers for the given document type and session.
      *
      * @param documentManager the current session context
      * @param docType the type of document to create
      * @return the list of candidate containers
      */
-    DocumentModelList getCreationContainerList(CoreSession documentManager,
-            String docType);
+    DocumentModelList getCreationContainerList(CoreSession documentManager, String docType);
 
 }

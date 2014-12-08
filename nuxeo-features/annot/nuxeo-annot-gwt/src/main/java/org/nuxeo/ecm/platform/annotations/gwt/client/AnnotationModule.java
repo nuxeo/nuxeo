@@ -31,7 +31,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class AnnotationModule implements EntryPoint {
 
@@ -43,21 +42,19 @@ public class AnnotationModule implements EntryPoint {
         fixXMLHttpRequest();
         webConfigurationService = GWT.create(WebConfigurationService.class);
         String url = Window.Location.getHref();
-        webConfigurationService.getWebConfiguration(url,
-                new AsyncCallback<WebConfiguration>() {
-                    public void onFailure(Throwable throwable) {
-                        Log.debug("onFailure: " + throwable);
-                        webConfiguration = WebConfiguration.DEFAULT_WEB_CONFIGURATION;
-                        initModule();
-                    }
+        webConfigurationService.getWebConfiguration(url, new AsyncCallback<WebConfiguration>() {
+            public void onFailure(Throwable throwable) {
+                Log.debug("onFailure: " + throwable);
+                webConfiguration = WebConfiguration.DEFAULT_WEB_CONFIGURATION;
+                initModule();
+            }
 
-                    public void onSuccess(WebConfiguration result) {
-                        webConfiguration = result == null ? WebConfiguration.DEFAULT_WEB_CONFIGURATION
-                                : result;
-                        initModule();
-                        Log.debug("Module initialization finished.");
-                    }
-                });
+            public void onSuccess(WebConfiguration result) {
+                webConfiguration = result == null ? WebConfiguration.DEFAULT_WEB_CONFIGURATION : result;
+                initModule();
+                Log.debug("Module initialization finished.");
+            }
+        });
     }
 
     private void initModule() {
@@ -68,9 +65,9 @@ public class AnnotationModule implements EntryPoint {
     // XMLHttpRequest is defined in $wnd, but not in window (due to sarrisa
     // librairy use in ajax4jsf) so GWT can't instantiate a XMLHttpRequest object.
     private native void fixXMLHttpRequest() /*-{
-        if ($wnd.XMLHttpRequest && !window.XMLHttpRequest) {
-            window.XMLHttpRequest = $wnd.XMLHttpRequest;
-        }
-    }-*/;
+                                            if ($wnd.XMLHttpRequest && !window.XMLHttpRequest) {
+                                            window.XMLHttpRequest = $wnd.XMLHttpRequest;
+                                            }
+                                            }-*/;
 
 }

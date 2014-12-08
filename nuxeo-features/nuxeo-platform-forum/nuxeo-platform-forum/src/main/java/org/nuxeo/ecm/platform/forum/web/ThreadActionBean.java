@@ -113,8 +113,7 @@ public class ThreadActionBean implements ThreadAction {
         documentManager.save();
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                currentDocument);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
         clean();
         return navigationContext.navigateToDocument(docThread, "after-create");
     }
@@ -147,25 +146,19 @@ public class ThreadActionBean implements ThreadAction {
             List<String> selectedModerators = getSelectedModerators();
 
             // The current user should have the right to moderate
-            if (!selectedModerators.contains(NuxeoPrincipal.PREFIX
-                    + currentUser.getName())) {
-                selectedModerators.add(NuxeoPrincipal.PREFIX
-                        + currentUser.getName());
+            if (!selectedModerators.contains(NuxeoPrincipal.PREFIX + currentUser.getName())) {
+                selectedModerators.add(NuxeoPrincipal.PREFIX + currentUser.getName());
             }
 
             // XXX: hack, administrators should have the right to moderate
             // without being in this list
             // We automatically add administrators (with prefix) as moderators
-            if (!selectedModerators.contains(NuxeoGroup.PREFIX
-                    + SecurityConstants.ADMINISTRATORS)) {
-                selectedModerators.add(NuxeoGroup.PREFIX
-                        + SecurityConstants.ADMINISTRATORS);
+            if (!selectedModerators.contains(NuxeoGroup.PREFIX + SecurityConstants.ADMINISTRATORS)) {
+                selectedModerators.add(NuxeoGroup.PREFIX + SecurityConstants.ADMINISTRATORS);
             }
             // We can also remove Administrator since his group is added
-            if (selectedModerators.contains(NuxeoPrincipal.PREFIX
-                    + SecurityConstants.ADMINISTRATOR)) {
-                selectedModerators.remove(NuxeoPrincipal.PREFIX
-                        + SecurityConstants.ADMINISTRATOR);
+            if (selectedModerators.contains(NuxeoPrincipal.PREFIX + SecurityConstants.ADMINISTRATOR)) {
+                selectedModerators.remove(NuxeoPrincipal.PREFIX + SecurityConstants.ADMINISTRATOR);
             }
 
             docThread.setProperty(schema, "moderators", selectedModerators);
@@ -180,8 +173,7 @@ public class ThreadActionBean implements ThreadAction {
     public List<String> getModerators() {
         DocumentModel currentThread = navigationContext.getCurrentDocument();
         try {
-            return (List<String>) currentThread.getProperty("thread",
-                    "moderators");
+            return (List<String>) currentThread.getProperty("thread", "moderators");
         } catch (ClientException ce) {
             throw new ClientRuntimeException(ce);
         }
@@ -192,10 +184,8 @@ public class ThreadActionBean implements ThreadAction {
         List<String> moderators = getModerators();
 
         boolean moderator = false;
-        if (isPrincipalGroupModerator()
-                || moderators != null
-                && moderators.contains(NuxeoPrincipal.PREFIX
-                        + principal.getName())) {
+        if (isPrincipalGroupModerator() || moderators != null
+                && moderators.contains(NuxeoPrincipal.PREFIX + principal.getName())) {
             moderator = true;
         }
         return moderator;
@@ -207,8 +197,7 @@ public class ThreadActionBean implements ThreadAction {
         List<String> principalGroups = principal.getAllGroups();
 
         for (String principalGroup : principalGroups) {
-            if (moderators != null
-                    && moderators.contains(NuxeoGroup.PREFIX + principalGroup)) {
+            if (moderators != null && moderators.contains(NuxeoGroup.PREFIX + principalGroup)) {
                 return true;
             }
         }
@@ -237,15 +226,13 @@ public class ThreadActionBean implements ThreadAction {
                 // we remove it
                 DocumentModel dm = threadEntry.getComment();
 
-                String[] contributorsArray = (String[]) dm.getProperty(
-                        "dublincore", "contributors");
+                String[] contributorsArray = (String[]) dm.getProperty("dublincore", "contributors");
                 if (contributorsArray == null) {
                     contributorsArray = new String[0];
                 }
                 List<String> cs = Arrays.asList(contributorsArray);
 
-                if (postAction.isPostPublished(threadEntry.getComment())
-                        || isPrincipalModerator()
+                if (postAction.isPostPublished(threadEntry.getComment()) || isPrincipalModerator()
                         || cs.contains(currentUser.getName())) {
                     basicCommentList.add(threadEntry);
                 }
@@ -260,8 +247,7 @@ public class ThreadActionBean implements ThreadAction {
         if (thread == null) {
             return null;
         }
-        if (adapter != null
-                && adapter.getThreadDoc().getRef().equals(thread.getRef())) {
+        if (adapter != null && adapter.getThreadDoc().getRef().equals(thread.getRef())) {
             return adapter;
         }
         if (thread.getSessionId() == null) {
@@ -275,8 +261,7 @@ public class ThreadActionBean implements ThreadAction {
         return adapter;
     }
 
-    public List<DocumentModel> getAllPosts(DocumentModel thread, String state)
-            throws ClientException {
+    public List<DocumentModel> getAllPosts(DocumentModel thread, String state) throws ClientException {
 
         thread = getDocumentThreadModel(thread.getRef());
         List<DocumentModel> allPosts = Collections.emptyList();
@@ -288,8 +273,7 @@ public class ThreadActionBean implements ThreadAction {
         if (allThreadEntry != null && !allThreadEntry.isEmpty()) {
             allPosts = new ArrayList<DocumentModel>();
             for (ThreadEntry entry : allThreadEntry) {
-                if (!"".equals(state)
-                        && state.equals(entry.getComment().getCurrentLifeCycleState())) {
+                if (!"".equals(state) && state.equals(entry.getComment().getCurrentLifeCycleState())) {
                     allPosts.add(entry.getComment());
                 } else if ("".equals(state)) {
                     allPosts.add(entry.getComment());
@@ -301,13 +285,11 @@ public class ThreadActionBean implements ThreadAction {
         return allPosts;
     }
 
-    public List<DocumentModel> getPostsPublished(DocumentModel thread)
-            throws ClientException {
+    public List<DocumentModel> getPostsPublished(DocumentModel thread) throws ClientException {
         return getAllPosts(thread, ForumConstants.PUBLISHED_STATE);
     }
 
-    public List<DocumentModel> getPostsPending(DocumentModel thread)
-            throws ClientException {
+    public List<DocumentModel> getPostsPending(DocumentModel thread) throws ClientException {
         return getAllPosts(thread, ForumConstants.PENDING_STATE);
     }
 
@@ -351,8 +333,7 @@ public class ThreadActionBean implements ThreadAction {
         this.moderated = moderated;
     }
 
-    public DocumentModel getLastPostPublished(DocumentModel thread)
-            throws ClientException {
+    public DocumentModel getLastPostPublished(DocumentModel thread) throws ClientException {
 
         thread = getDocumentThreadModel(thread.getRef());
         List<DocumentModel> posts = getPostsPublished(thread);
@@ -360,10 +341,8 @@ public class ThreadActionBean implements ThreadAction {
         if (!posts.isEmpty()) {
             lastPost = posts.get(0);
             for (DocumentModel post : posts) {
-                GregorianCalendar lastPostDate = (GregorianCalendar) lastPost.getProperty(
-                        "post", "creationDate");
-                GregorianCalendar postDate = (GregorianCalendar) post.getProperty(
-                        "post", "creationDate");
+                GregorianCalendar lastPostDate = (GregorianCalendar) lastPost.getProperty("post", "creationDate");
+                GregorianCalendar postDate = (GregorianCalendar) post.getProperty("post", "creationDate");
                 if (postDate != null && postDate.after(lastPostDate)) {
                     lastPost = post;
                 }
@@ -373,23 +352,18 @@ public class ThreadActionBean implements ThreadAction {
         return lastPost;
     }
 
-    public String getModerationAsString(DocumentModel thread)
-            throws ClientException {
+    public String getModerationAsString(DocumentModel thread) throws ClientException {
         if (isThreadModerated(thread)) {
-            return resourcesAccessor.getMessages().get(
-                    "label.forum.thread.moderated.yes");
+            return resourcesAccessor.getMessages().get("label.forum.thread.moderated.yes");
         }
-        return resourcesAccessor.getMessages().get(
-                "label.forum.thread.moderated.no");
+        return resourcesAccessor.getMessages().get("label.forum.thread.moderated.no");
     }
 
-    public boolean isThreadModerated(DocumentModel thread)
-            throws ClientException {
+    public boolean isThreadModerated(DocumentModel thread) throws ClientException {
         if (thread != null) {
             thread = getDocumentThreadModel(thread.getRef());
             if (thread != null) {
-                Boolean moderation = (Boolean) thread.getProperty("thread",
-                        "moderated");
+                Boolean moderation = (Boolean) thread.getProperty("thread", "moderated");
                 if (moderation != null) {
                     return moderation;
                 }
@@ -426,8 +400,7 @@ public class ThreadActionBean implements ThreadAction {
     /**
      * Gets the thread for a given document reference.
      */
-    protected DocumentModel getDocumentThreadModel(DocumentRef threadRef)
-            throws ClientException {
+    protected DocumentModel getDocumentThreadModel(DocumentRef threadRef) throws ClientException {
         DocumentModel thread = null;
         if (threadRef != null) {
             thread = documentManager.getDocument(threadRef);

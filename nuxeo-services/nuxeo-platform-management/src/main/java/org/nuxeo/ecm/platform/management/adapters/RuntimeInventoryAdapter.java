@@ -29,7 +29,6 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
 public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
 

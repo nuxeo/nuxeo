@@ -86,10 +86,8 @@ public class TestMultiDirectorySecurity {
         Map<String, Object> e;
 
         // dir 1
-        Set<String> schema1Set = new HashSet<String>(
-                Arrays.asList("uid", "foo"));
-        memdir1 = new MemoryDirectory("dir1", "schema1", schema1Set, "uid",
-                "foo");
+        Set<String> schema1Set = new HashSet<String>(Arrays.asList("uid", "foo"));
+        memdir1 = new MemoryDirectory("dir1", "schema1", schema1Set, "uid", "foo");
         memoryDirectoryFactory.registerDirectory(memdir1);
 
         Session dir1 = memdir1.getSession();
@@ -118,10 +116,8 @@ public class TestMultiDirectorySecurity {
         dir2.createEntry(e);
 
         // dir 3
-        Set<String> schema3Set = new HashSet<String>(Arrays.asList("uid",
-                "thefoo", "thebar"));
-        memdir3 = new MemoryDirectory("dir3", "schema3", schema3Set, "uid",
-                "thefoo");
+        Set<String> schema3Set = new HashSet<String>(Arrays.asList("uid", "thefoo", "thebar"));
+        memdir3 = new MemoryDirectory("dir3", "schema3", schema3Set, "uid", "thefoo");
         memoryDirectoryFactory.registerDirectory(memdir3);
 
         Session dir3 = memdir3.getSession();
@@ -279,20 +275,20 @@ public class TestMultiDirectorySecurity {
 
     @Test
     public void everyoneUserCanCreateAndGet() throws Exception {
-        // Given a user in the everyone group 
-        //(default in dummy login any user is member of everyone)
+        // Given a user in the everyone group
+        // (default in dummy login any user is member of everyone)
         dummyLogin.loginAs("anEveryoneUser");
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("uid", "5");
         map.put("thefoo", "foo5");
         map.put("thebar", "bar5");
-        
-        //When I call the multi-group dir
+
+        // When I call the multi-group dir
         DocumentModel entry = dirGroup.createEntry(map);
         assertNotNull(entry);
 
-        //I can create and then get entry
+        // I can create and then get entry
         entry = dirGroup.getEntry("5");
         assertNotNull(entry);
 

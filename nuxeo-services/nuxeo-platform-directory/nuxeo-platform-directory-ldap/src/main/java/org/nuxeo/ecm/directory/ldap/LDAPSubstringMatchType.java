@@ -23,7 +23,6 @@ package org.nuxeo.ecm.directory.ldap;
  * Substring match types: one of subany, subinitial ot subfinal.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class LDAPSubstringMatchType {
 

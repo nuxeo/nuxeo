@@ -36,8 +36,8 @@ import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.ImageRenderer;
 
 /**
- * Renderer that does not display an empty "img" tag as well as empty width and
- * height attributes (as it's an issue for IE)
+ * Renderer that does not display an empty "img" tag as well as empty width and height attributes (as it's an issue for
+ * IE)
  *
  * @since 5.6
  */
@@ -60,11 +60,11 @@ public class NXImageRenderer extends ImageRenderer {
             attr("onclick", "click"),
             attr("ondblclick", "dblclick"),
             //
-            attr("onkeydown", "keydown"), attr("onkeypress", "keypress"),
-            attr("onkeyup", "keyup"), attr("onmousedown", "mousedown"),
+            attr("onkeydown", "keydown"), attr("onkeypress", "keypress"), attr("onkeyup", "keyup"),
+            attr("onmousedown", "mousedown"),
             //
-            attr("onmousemove", "mousemove"), attr("onmouseout", "mouseout"),
-            attr("onmouseover", "mouseover"), attr("onmouseup", "mouseup"),
+            attr("onmousemove", "mousemove"), attr("onmouseout", "mouseout"), attr("onmouseover", "mouseover"),
+            attr("onmouseup", "mouseup"),
             //
             attr("role"), attr("style"), attr("title"), attr("usemap")
     //
@@ -74,8 +74,7 @@ public class NXImageRenderer extends ImageRenderer {
     public static final String RENDERER_TYPE = "javax.faces.NXImage";
 
     @Override
-    public void encodeEnd(FacesContext context, UIComponent component)
-            throws IOException {
+    public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
 
         rendererParamsNotNull(context, component);
 
@@ -90,8 +89,7 @@ public class NXImageRenderer extends ImageRenderer {
         if (StringUtils.isBlank(src)) {
             if (logger.isLoggable(Level.FINER)) {
                 logger.log(Level.FINER,
-                        "Do not render empty img tag with empty src value for component "
-                                + component.getId());
+                        "Do not render empty img tag with empty src value for component " + component.getId());
             }
         } else {
 
@@ -102,14 +100,12 @@ public class NXImageRenderer extends ImageRenderer {
             Map<String, Object> attrs = component.getAttributes();
 
             // if we're writing XHTML and we have a null alt attribute
-            if (writer.getContentType().equals(RIConstants.XHTML_CONTENT_TYPE)
-                    && null == attrs.get("alt")) {
+            if (writer.getContentType().equals(RIConstants.XHTML_CONTENT_TYPE) && null == attrs.get("alt")) {
                 // write out an empty alt
                 writer.writeAttribute("alt", "", "alt");
             }
 
-            RenderKitUtils.renderPassThruAttributes(context, writer, component,
-                    ATTRIBUTES);
+            RenderKitUtils.renderPassThruAttributes(context, writer, component, ATTRIBUTES);
             // add back height and width attributes if any
             String width = (String) attrs.get("width");
             String height = (String) attrs.get("height");
@@ -131,8 +127,7 @@ public class NXImageRenderer extends ImageRenderer {
         }
 
         if (logger.isLoggable(Level.FINER)) {
-            logger.log(Level.FINER,
-                    "End encoding component " + component.getId());
+            logger.log(Level.FINER, "End encoding component " + component.getId());
         }
 
     }
@@ -142,8 +137,7 @@ public class NXImageRenderer extends ImageRenderer {
         if (value == null) {
             return "";
         }
-        value = context.getApplication().getViewHandler().getResourceURL(
-                context, value);
+        value = context.getApplication().getViewHandler().getResourceURL(context, value);
         return (context.getExternalContext().encodeResourceURL(value));
     }
 

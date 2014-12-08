@@ -39,29 +39,23 @@ public class TestServiceWithMultipleDomains extends PublisherTestCase {
     protected DocumentModel doc2Publish;
 
     protected void createInitialDocs(String domainPath) throws Exception {
-        DocumentModel wsRoot = session.getDocument(new PathRef(
-                domainPath + "/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef(domainPath + "/workspaces"));
 
-        DocumentModel ws = session.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
+        DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");
         ws = session.createDocument(ws);
 
-        DocumentModel sectionsRoot = session.getDocument(new PathRef(
-                domainPath + "/sections"));
+        DocumentModel sectionsRoot = session.getDocument(new PathRef(domainPath + "/sections"));
 
-        DocumentModel section1 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), "section1", "Section");
+        DocumentModel section1 = session.createDocumentModel(sectionsRoot.getPathAsString(), "section1", "Section");
         section1.setProperty("dublincore", "title", "section1");
         section1 = session.createDocument(section1);
 
-        DocumentModel section2 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), "section2", "Section");
+        DocumentModel section2 = session.createDocumentModel(sectionsRoot.getPathAsString(), "section2", "Section");
         section2.setProperty("dublincore", "title", "section2");
         section2 = session.createDocument(section2);
 
-        DocumentModel section11 = session.createDocumentModel(
-                section1.getPathAsString(), "section11", "Section");
+        DocumentModel section11 = session.createDocumentModel(section1.getPathAsString(), "section11", "Section");
         section11.setProperty("dublincore", "title", "section11");
         section11 = session.createDocument(section11);
 

@@ -29,8 +29,7 @@ public class TestRendererConfiguration {
         XMap xmap = new XMap();
         xmap.register(RendererType.class);
 
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                "renderer-xmap.xml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("renderer-xmap.xml");
 
         RendererType renderer = (RendererType) xmap.load(url);
         assertEquals("theme", renderer.getTypeName());

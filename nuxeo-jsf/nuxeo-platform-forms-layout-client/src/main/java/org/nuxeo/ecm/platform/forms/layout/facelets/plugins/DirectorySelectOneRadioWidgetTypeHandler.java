@@ -26,8 +26,7 @@ import javax.faces.component.html.HtmlSelectOneRadio;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class DirectorySelectOneRadioWidgetTypeHandler extends
-        DirectorySelectOneWidgetTypeHandler {
+public class DirectorySelectOneRadioWidgetTypeHandler extends DirectorySelectOneWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 

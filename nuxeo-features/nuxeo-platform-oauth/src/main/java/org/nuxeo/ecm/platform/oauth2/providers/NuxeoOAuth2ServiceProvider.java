@@ -53,9 +53,8 @@ public class NuxeoOAuth2ServiceProvider {
 
     private List<String> scopes;
 
-    public NuxeoOAuth2ServiceProvider(Long id, String serviceName,
-            String tokenServerURL, String authorizationServerURL,
-            String clientId, String clientSecret, List<String> scopes) {
+    public NuxeoOAuth2ServiceProvider(Long id, String serviceName, String tokenServerURL,
+            String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
         this.id = id;
         this.serviceName = serviceName;
         this.tokenServerURL = tokenServerURL;
@@ -65,30 +64,24 @@ public class NuxeoOAuth2ServiceProvider {
         this.scopes = scopes;
     }
 
-    public static NuxeoOAuth2ServiceProvider createFromDirectoryEntry(
-            DocumentModel entry) throws ClientException {
+    public static NuxeoOAuth2ServiceProvider createFromDirectoryEntry(DocumentModel entry) throws ClientException {
 
-        String authorizationServerURL = (String) entry.getProperty(SCHEMA,
-                "authorizationServerURL");
-        String tokenServerURL = (String) entry.getProperty(SCHEMA,
-                "tokenServerURL");
+        String authorizationServerURL = (String) entry.getProperty(SCHEMA, "authorizationServerURL");
+        String tokenServerURL = (String) entry.getProperty(SCHEMA, "tokenServerURL");
         Long id = (Long) entry.getProperty(SCHEMA, "id");
         String serviceName = (String) entry.getProperty(SCHEMA, "serviceName");
         String clientId = (String) entry.getProperty(SCHEMA, "clientId");
         String clientSecret = (String) entry.getProperty(SCHEMA, "clientSecret");
         String scopes = (String) entry.getProperty(SCHEMA, "scopes");
 
-        return new NuxeoOAuth2ServiceProvider(id, serviceName, tokenServerURL,
-                authorizationServerURL, clientId, clientSecret,
-                (List<String>) Arrays.asList(scopes.split(",")));
+        return new NuxeoOAuth2ServiceProvider(id, serviceName, tokenServerURL, authorizationServerURL, clientId,
+                clientSecret, (List<String>) Arrays.asList(scopes.split(",")));
     }
 
-    protected DocumentModel asDocumentModel(DocumentModel entry)
-            throws ClientException {
+    protected DocumentModel asDocumentModel(DocumentModel entry) throws ClientException {
 
         entry.setProperty(SCHEMA, "serviceName", serviceName);
-        entry.setProperty(SCHEMA, "authorizationServerURL",
-                authorizationServerURL);
+        entry.setProperty(SCHEMA, "authorizationServerURL", authorizationServerURL);
         entry.setProperty(SCHEMA, "tokenServerURL", tokenServerURL);
         entry.setProperty(SCHEMA, "clientId", clientId);
         entry.setProperty(SCHEMA, "clientSecret", clientSecret);
@@ -97,18 +90,15 @@ public class NuxeoOAuth2ServiceProvider {
         return entry;
     }
 
-    public AuthorizationCodeFlow getAuthorizationCodeFlow(
-            HttpTransport transport, JsonFactory jsonFactory) {
+    public AuthorizationCodeFlow getAuthorizationCodeFlow(HttpTransport transport, JsonFactory jsonFactory) {
 
         Credential.AccessMethod method = BearerToken.authorizationHeaderAccessMethod();
         GenericUrl tokenServerUrl = new GenericUrl(tokenServerURL);
-        HttpExecuteInterceptor clientAuthentication = new ClientParametersAuthentication(
-                clientId, clientSecret);
+        HttpExecuteInterceptor clientAuthentication = new ClientParametersAuthentication(clientId, clientSecret);
         String authorizationServerUrl = authorizationServerURL;
 
-        AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(method,
-                transport, jsonFactory, tokenServerUrl, clientAuthentication,
-                clientId, authorizationServerUrl).setScopes(scopes).setCredentialStore(
+        AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(method, transport, jsonFactory, tokenServerUrl,
+                clientAuthentication, clientId, authorizationServerUrl).setScopes(scopes).setCredentialStore(
                 getCredentialStore()).build();
 
         return flow;

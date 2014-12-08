@@ -81,18 +81,15 @@ public class NuxeoApp {
         return env;
     }
 
-    public void deployBundles(String bundlePath) throws BundleException,
-            IOException {
+    public void deployBundles(String bundlePath) throws BundleException, IOException {
         deployBundles(getBundleFiles(new File("."), bundlePath, ":"));
     }
 
-    public void deployBundles(File baseDir, String bundlePath)
-            throws BundleException, IOException {
+    public void deployBundles(File baseDir, String bundlePath) throws BundleException, IOException {
         deployBundles(getBundleFiles(baseDir, bundlePath, ":"));
     }
 
-    public synchronized void deployBundles(Collection<File> files)
-            throws BundleException, IOException {
+    public synchronized void deployBundles(Collection<File> files) throws BundleException, IOException {
         if (!isStarted()) {
             throw new IllegalStateException("Framework not started");
         }
@@ -101,16 +98,14 @@ public class NuxeoApp {
         }
     }
 
-    public synchronized void deployBundle(File file) throws BundleException,
-            IOException {
+    public synchronized void deployBundle(File file) throws BundleException, IOException {
         if (!isStarted()) {
             throw new IllegalStateException("Framework not started");
         }
         if (!file.getPath().endsWith(".jar")) {
             return; // not a valid bundle
         }
-        BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file)
-                : new JarBundleFile(file);
+        BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file) : new JarBundleFile(file);
         try {
             BundleImpl bundle = new BundleImpl(osgi, bf, loader);
             if (bundle.getSymbolicName() != null) {
@@ -126,8 +121,7 @@ public class NuxeoApp {
         if (osgi != null) {
             throw new IllegalStateException("Nuxeo Runtime already started");
         }
-        osgi = new OSGiAdapter(env.getHome(), env.getData(),
-                env.getProperties());
+        osgi = new OSGiAdapter(env.getHome(), env.getData(), env.getProperties());
     }
 
     public synchronized boolean isStarted() {
@@ -146,11 +140,9 @@ public class NuxeoApp {
         osgi = null;
     }
 
-    public static Collection<File> getBundleFiles(File baseDir, String bundles,
-            String delim) throws IOException {
+    public static Collection<File> getBundleFiles(File baseDir, String bundles, String delim) throws IOException {
         Collection<File> result = new LinkedHashSet<File>();
-        StringTokenizer tokenizer = new StringTokenizer(bundles,
-                delim == null ? " \t\n\r\f" : delim);
+        StringTokenizer tokenizer = new StringTokenizer(bundles, delim == null ? " \t\n\r\f" : delim);
         while (tokenizer.hasMoreTokens()) {
             String tok = tokenizer.nextToken();
             List<File> files = expandFiles(baseDir, tok);
@@ -233,8 +225,7 @@ public class NuxeoApp {
             }
             osgi.setSystemBundle(new SystemBundle(osgi, file, loader));
         }
-        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
-                osgi.getSystemBundle(), null));
+        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, osgi.getSystemBundle(), null));
     }
 
 }

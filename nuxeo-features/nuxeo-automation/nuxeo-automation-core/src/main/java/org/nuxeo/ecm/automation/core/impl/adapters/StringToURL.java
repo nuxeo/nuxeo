@@ -23,8 +23,7 @@ import org.nuxeo.ecm.automation.TypeAdapter;
  */
 public class StringToURL implements TypeAdapter {
 
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
-            throws TypeAdaptException {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         try {
             String content = (String) objectToAdapt;
             return new URL(content);

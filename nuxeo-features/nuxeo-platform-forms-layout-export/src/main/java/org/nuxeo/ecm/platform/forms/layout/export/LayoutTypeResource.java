@@ -56,19 +56,14 @@ public class LayoutTypeResource {
 
     @GET
     @Path("layoutTypes")
-    public Object getLayoutTypeDefinitions(@Context
-    HttpServletRequest request, @QueryParam("all")
-    Boolean all) {
+    public Object getLayoutTypeDefinitions(@Context HttpServletRequest request, @QueryParam("all") Boolean all) {
         return new LayoutTypeDefinitions(layoutTypes);
     }
 
     @GET
     @Path("layoutType/{name}")
-    public Object getLayoutTypeDefinition(@Context
-    HttpServletRequest request, @PathParam("name")
-    String name) {
-        LayoutTypeDefinition def = service.getLayoutTypeDefinition(category,
-                name);
+    public Object getLayoutTypeDefinition(@Context HttpServletRequest request, @PathParam("name") String name) {
+        LayoutTypeDefinition def = service.getLayoutTypeDefinition(category, name);
         if (def != null) {
             return def;
         } else {
@@ -76,8 +71,7 @@ public class LayoutTypeResource {
         }
     }
 
-    public TemplateView getTemplate(@Context
-    UriInfo uriInfo) {
+    public TemplateView getTemplate(@Context UriInfo uriInfo) {
         return getTemplate("layout-types.ftl", uriInfo);
     }
 
@@ -94,17 +88,13 @@ public class LayoutTypeResource {
     }
 
     @GET
-    public Object doGet(@QueryParam("layoutType")
-    String layoutTypeName, @Context
-    UriInfo uriInfo) {
+    public Object doGet(@QueryParam("layoutType") String layoutTypeName, @Context UriInfo uriInfo) {
         if (layoutTypeName == null) {
             return getTemplate(uriInfo);
         } else {
-            LayoutTypeDefinition wType = service.getLayoutTypeDefinition(
-                    category, layoutTypeName);
+            LayoutTypeDefinition wType = service.getLayoutTypeDefinition(category, layoutTypeName);
             if (wType == null) {
-                throw new WebResourceNotFoundException(
-                        "No layout type found with name: " + layoutTypeName);
+                throw new WebResourceNotFoundException("No layout type found with name: " + layoutTypeName);
             }
             TemplateView tpl = getTemplate(uriInfo);
             tpl.arg("layoutType", wType);

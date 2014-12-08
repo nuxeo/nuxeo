@@ -36,10 +36,9 @@ public class Assert {
     }
 
     /**
-     * Asserts that two strings are equal even if their EOL are different. If
-     * they are not, an {@link AssertionError} is thrown with the given message.
-     * If <code>expected</code> and <code>actual</code> are <code>null</code>,
-     * they are considered equal.
+     * Asserts that two strings are equal even if their EOL are different. If they are not, an {@link AssertionError} is
+     * thrown with the given message. If <code>expected</code> and <code>actual</code> are <code>null</code>, they are
+     * considered equal.
      *
      * @param expected expected String with Windows or Unix like EOL
      * @param actual actual String with Windows or Unix like EOL
@@ -50,20 +49,16 @@ public class Assert {
     }
 
     /**
-     * Asserts that two strings are equal even if their EOL are different. If
-     * they are not, an {@link AssertionError} is thrown with the given message.
-     * If <code>expected</code> and <code>actual</code> are <code>null</code>,
-     * they are considered equal.
+     * Asserts that two strings are equal even if their EOL are different. If they are not, an {@link AssertionError} is
+     * thrown with the given message. If <code>expected</code> and <code>actual</code> are <code>null</code>, they are
+     * considered equal.
      *
-     * @param message
-     *            the identifying message for the {@link AssertionError} (
-     *            <code>null</code> okay)
+     * @param message the identifying message for the {@link AssertionError} ( <code>null</code> okay)
      * @param expected expected String with Windows or Unix like EOL
      * @param actual actual String with Windows or Unix like EOL
      * @see FileUtils#areFilesContentEquals(String, String)
      */
-    static public void assertFilesContentEquals(String message,
-            String expected, String actual) {
+    static public void assertFilesContentEquals(String message, String expected, String actual) {
         if (FileUtils.areFilesContentEquals(expected, actual)) {
             return;
         } else {

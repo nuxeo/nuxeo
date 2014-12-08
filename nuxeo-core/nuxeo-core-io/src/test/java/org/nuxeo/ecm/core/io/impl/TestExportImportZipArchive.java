@@ -65,13 +65,11 @@ public class TestExportImportZipArchive {
 
     private void createDocs() throws Exception {
         rootDocument = session.getRootDocument();
-        workspace = session.createDocumentModel(rootDocument.getPathAsString(),
-                "ws1", "Workspace");
+        workspace = session.createDocumentModel(rootDocument.getPathAsString(), "ws1", "Workspace");
         workspace.setProperty("dublincore", "title", "test WS");
         workspace = session.createDocument(workspace);
 
-        docToExport = session.createDocumentModel(workspace.getPathAsString(),
-                "file", "File");
+        docToExport = session.createDocumentModel(workspace.getPathAsString(), "file", "File");
         docToExport.setProperty("dublincore", "title", "MyDoc");
 
         docToExport.setProperty("dublincore", "description", XML_DATA);
@@ -129,8 +127,7 @@ public class TestExportImportZipArchive {
         Framework.getService(EventService.class).waitForAsyncCompletion();
         session.removeDocument(workspace.getRef());
         session.save();
-        assertEquals(0,
-                session.getChildren(session.getRootDocument().getRef()).size());
+        assertEquals(0, session.getChildren(session.getRootDocument().getRef()).size());
 
         // reimport
         reader = new NuxeoArchiveReader(archive);
@@ -155,8 +152,7 @@ public class TestExportImportZipArchive {
         assertEquals("dummyBlob.txt", blob.getFilename());
         // check attributes
         assertEquals("MyDoc", importedDocument.getPropertyValue("dc:title"));
-        assertEquals(XML_DATA,
-                importedDocument.getPropertyValue("dc:description"));
+        assertEquals(XML_DATA, importedDocument.getPropertyValue("dc:description"));
 
         // check that facets have been reimported
         assertTrue(importedDocument.hasFacet("HiddenInNavigation"));

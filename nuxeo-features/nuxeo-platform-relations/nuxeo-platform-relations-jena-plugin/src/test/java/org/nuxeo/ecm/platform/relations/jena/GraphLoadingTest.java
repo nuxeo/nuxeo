@@ -37,7 +37,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class GraphLoadingTest extends NXRuntimeTestCase {
 
@@ -54,8 +53,7 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
-        deployContrib("org.nuxeo.ecm.relations.jena.tests",
-                "jena-test-bundle.xml");
+        deployContrib("org.nuxeo.ecm.relations.jena.tests", "jena-test-bundle.xml");
         service = Framework.getService(RelationManager.class);
         assertNotNull(service);
         graph = service.getTransientGraph("jena");
@@ -83,8 +81,7 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
 
     @Test
     public void testGetAllStatementWithURN() {
-        InputStream is = getClass().getResourceAsStream(
-                "/post-rdf-with-about.xml");
+        InputStream is = getClass().getResourceAsStream("/post-rdf-with-about.xml");
         assertNotNull(is);
         graph.clear();
         assertTrue(graph.getStatements().isEmpty());
@@ -96,8 +93,7 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
 
     @Test
     public void testGetAllStatementWithURL() {
-        InputStream is = getClass().getResourceAsStream(
-                "/post-rdf-with-about-with-url.xml");
+        InputStream is = getClass().getResourceAsStream("/post-rdf-with-about-with-url.xml");
         assertNotNull(is);
         graph.clear();
         assertTrue(graph.getStatements().isEmpty());

@@ -55,8 +55,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <p>
  * It handles a registry of graph instances through extension points.
  */
-public class RelationService extends DefaultComponent implements
-        RelationManager {
+public class RelationService extends DefaultComponent implements RelationManager {
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.relations.services.RelationService");
@@ -89,8 +88,7 @@ public class RelationService extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("graphtypes")) {
             registerGraphType(contribution);
         } else if (extensionPoint.equals("graphs")) {
@@ -98,15 +96,12 @@ public class RelationService extends DefaultComponent implements
         } else if (extensionPoint.equals("resourceadapters")) {
             registerResourceAdapter(contribution);
         } else {
-            log.error(String.format(
-                    "Unknown extension point %s, can't register !",
-                    extensionPoint));
+            log.error(String.format("Unknown extension point %s, can't register !", extensionPoint));
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("graphtypes")) {
             unregisterGraphType(contribution);
         } else if (extensionPoint.equals("graphs")) {
@@ -114,9 +109,7 @@ public class RelationService extends DefaultComponent implements
         } else if (extensionPoint.equals("resourceadapters")) {
             unregisterResourceAdapter(contribution);
         } else {
-            log.error(String.format(
-                    "Unknown extension point %s, can't unregister !",
-                    extensionPoint));
+            log.error(String.format("Unknown extension point %s, can't unregister !", extensionPoint));
         }
     }
 
@@ -144,27 +137,21 @@ public class RelationService extends DefaultComponent implements
         String className = graphTypeDescriptor.getClassName();
 
         if (graphTypes.containsKey(graphType)) {
-            log.error(String.format(
-                    "Graph type %s already registered using %s", graphType,
-                    graphTypes.get(graphType)));
+            log.error(String.format("Graph type %s already registered using %s", graphType, graphTypes.get(graphType)));
             return;
         }
         Class<?> klass;
         try {
             klass = getClass().getClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(String.format(
-                    "Cannot register unknown class for graph type %s: %s",
-                    graphType, className), e);
+            throw new RuntimeException(String.format("Cannot register unknown class for graph type %s: %s", graphType,
+                    className), e);
         }
-        if (!Graph.class.isAssignableFrom(klass)
-                && !GraphFactory.class.isAssignableFrom(klass)) {
-            throw new RuntimeException("Invalid graph class/factory type: "
-                    + className);
+        if (!Graph.class.isAssignableFrom(klass) && !GraphFactory.class.isAssignableFrom(klass)) {
+            throw new RuntimeException("Invalid graph class/factory type: " + className);
         }
         graphTypes.put(graphType, klass);
-        log.info(String.format("Registered graph type: %s (%s)", graphType,
-                className));
+        log.info(String.format("Registered graph type: %s (%s)", graphType, className));
     }
 
     /**
@@ -173,8 +160,7 @@ public class RelationService extends DefaultComponent implements
     private void unregisterGraphType(Object contrib) {
         GraphTypeDescriptor graphTypeExtension = (GraphTypeDescriptor) contrib;
         String graphType = graphTypeExtension.getName();
-        List<GraphDescription> list = new ArrayList<GraphDescription>(
-                graphDescriptions.values()); // copy
+        List<GraphDescription> list = new ArrayList<GraphDescription>(graphDescriptions.values()); // copy
         for (GraphDescription graphDescription : list) {
             if (graphType.equals(graphDescription.getGraphType())) {
                 String name = graphDescription.getName();
@@ -199,8 +185,7 @@ public class RelationService extends DefaultComponent implements
     /**
      * Registers a graph instance.
      * <p>
-     * The graph has to be declared as using a type already registered in the
-     * graph type registry.
+     * The graph has to be declared as using a type already registered in the graph type registry.
      */
     protected void registerGraph(Object contribution) {
         GraphDescription graphDescription = (GraphDescription) contribution;
@@ -240,8 +225,7 @@ public class RelationService extends DefaultComponent implements
             log.info("Overriding resource adapter config for namespace " + ns);
         }
         resourceAdapterRegistry.put(ns, adapterClassName);
-        log.info(String.format("%s namespace registered using adapter %s", ns,
-                adapterClassName));
+        log.info(String.format("%s namespace registered using adapter %s", ns, adapterClassName));
     }
 
     private void unregisterResourceAdapter(Object contribution) {
@@ -252,20 +236,17 @@ public class RelationService extends DefaultComponent implements
         if (registered == null) {
             log.error(String.format("Namespace %s not found", ns));
         } else if (!registered.equals(adapterClassName)) {
-            log.error(String.format("Namespace %s: wrong class %s", ns,
-                    registered));
+            log.error(String.format("Namespace %s: wrong class %s", ns, registered));
         } else {
             resourceAdapterRegistry.remove(ns);
-            log.info(String.format("%s unregistered, was using %s", ns,
-                    adapterClassName));
+            log.info(String.format("%s unregistered, was using %s", ns, adapterClassName));
         }
     }
 
     private ResourceAdapter getResourceAdapterForNamespace(String namespace) {
         String adapterClassName = resourceAdapterRegistry.get(namespace);
         if (adapterClassName == null) {
-            log.error(String.format("Cannot find adapter for namespace: %s",
-                    namespace));
+            log.error(String.format("Cannot find adapter for namespace: %s", namespace));
             return null;
         } else {
             try {
@@ -275,9 +256,7 @@ public class RelationService extends DefaultComponent implements
                 adapter.setNamespace(namespace);
                 return adapter;
             } catch (ReflectiveOperationException e) {
-                String msg = String.format(
-                        "Cannot instantiate generator with namespace '%s': %s",
-                        namespace, e);
+                String msg = String.format("Cannot instantiate generator with namespace '%s': %s", namespace, e);
                 log.error(msg);
                 return null;
             }
@@ -328,8 +307,7 @@ public class RelationService extends DefaultComponent implements
     }
 
     /** Gets the graph from the registries. */
-    protected Graph getGraphFromRegistries(GraphDescription graphDescription,
-            CoreSession session) {
+    protected Graph getGraphFromRegistries(GraphDescription graphDescription, CoreSession session) {
         String name = graphDescription.getName();
         // check instances
         Graph graph = graphRegistry.get(name);
@@ -370,8 +348,8 @@ public class RelationService extends DefaultComponent implements
     }
 
     @Override
-    public Resource getResource(String namespace, Serializable object,
-            Map<String, Object> context) throws ClientException {
+    public Resource getResource(String namespace, Serializable object, Map<String, Object> context)
+            throws ClientException {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
             log.error("Cannot find adapter for namespace: " + namespace);
@@ -382,8 +360,7 @@ public class RelationService extends DefaultComponent implements
     }
 
     @Override
-    public Set<Resource> getAllResources(Serializable object,
-            Map<String, Object> context) throws ClientException {
+    public Set<Resource> getAllResources(Serializable object, Map<String, Object> context) throws ClientException {
         // TODO OPTIM implement reverse map in registerContribution
         Set<Resource> res = new HashSet<Resource>();
         for (String ns : resourceAdapterRegistry.keySet()) {
@@ -403,8 +380,7 @@ public class RelationService extends DefaultComponent implements
     }
 
     @Override
-    public Serializable getResourceRepresentation(String namespace,
-            Resource resource, Map<String, Object> context)
+    public Serializable getResourceRepresentation(String namespace, Resource resource, Map<String, Object> context)
             throws ClientException {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
@@ -417,8 +393,7 @@ public class RelationService extends DefaultComponent implements
 
     @Override
     @Deprecated
-    public void add(String graphName, List<Statement> statements)
-            throws ClientException {
+    public void add(String graphName, List<Statement> statements) throws ClientException {
         getGraphByName(graphName).add(statements);
     }
 
@@ -430,71 +405,62 @@ public class RelationService extends DefaultComponent implements
 
     @Override
     @Deprecated
-    public List<Node> getObjects(String graphName, Node subject, Node predicate)
-            throws ClientException {
+    public List<Node> getObjects(String graphName, Node subject, Node predicate) throws ClientException {
         return getGraphByName(graphName).getObjects(subject, predicate);
     }
 
     @Override
     @Deprecated
-    public List<Node> getPredicates(String graphName, Node subject, Node object)
-            throws ClientException {
+    public List<Node> getPredicates(String graphName, Node subject, Node object) throws ClientException {
         return getGraphByName(graphName).getPredicates(subject, object);
     }
 
     @Override
     @Deprecated
-    public List<Statement> getStatements(String graphName, Statement statement)
-            throws ClientException {
+    public List<Statement> getStatements(String graphName, Statement statement) throws ClientException {
         return getGraphByName(graphName).getStatements(statement);
     }
 
     @Override
     @Deprecated
-    public List<Statement> getStatements(String graphName)
-            throws ClientException {
+    public List<Statement> getStatements(String graphName) throws ClientException {
         return getGraphByName(graphName).getStatements();
     }
 
     @Override
     @Deprecated
-    public List<Node> getSubjects(String graphName, Node predicate, Node object)
-            throws ClientException {
+    public List<Node> getSubjects(String graphName, Node predicate, Node object) throws ClientException {
         return getGraphByName(graphName).getSubjects(predicate, object);
     }
 
     @Override
     @Deprecated
-    public boolean hasResource(String graphName, Resource resource)
-            throws ClientException {
+    public boolean hasResource(String graphName, Resource resource) throws ClientException {
         return getGraphByName(graphName).hasResource(resource);
     }
 
     @Override
     @Deprecated
-    public boolean hasStatement(String graphName, Statement statement)
-            throws ClientException {
+    public boolean hasStatement(String graphName, Statement statement) throws ClientException {
         return getGraphByName(graphName).hasStatement(statement);
     }
 
     @Override
     @Deprecated
-    public QueryResult query(String graphName, String queryString,
-            String language, String baseURI) throws ClientException {
+    public QueryResult query(String graphName, String queryString, String language, String baseURI)
+            throws ClientException {
         return getGraphByName(graphName).query(queryString, language, baseURI);
     }
 
     @Override
     @Deprecated
-    public boolean read(String graphName, InputStream in, String lang,
-            String base) throws ClientException {
+    public boolean read(String graphName, InputStream in, String lang, String base) throws ClientException {
         return getGraphByName(graphName).read(in, lang, base);
     }
 
     @Override
     @Deprecated
-    public void remove(String graphName, List<Statement> statements)
-            throws ClientException {
+    public void remove(String graphName, List<Statement> statements) throws ClientException {
         getGraphByName(graphName).remove(statements);
     }
 
@@ -506,8 +472,7 @@ public class RelationService extends DefaultComponent implements
 
     @Override
     @Deprecated
-    public boolean write(String graphName, OutputStream out, String lang,
-            String base) throws ClientException {
+    public boolean write(String graphName, OutputStream out, String lang, String base) throws ClientException {
         return getGraphByName(graphName).write(out, lang, base);
     }
 
@@ -521,8 +486,7 @@ public class RelationService extends DefaultComponent implements
         Thread t = new Thread("relation-service-init") {
             @Override
             public void run() {
-                Thread.currentThread().setContextClassLoader(
-                        RelationService.class.getClassLoader());
+                Thread.currentThread().setContextClassLoader(RelationService.class.getClassLoader());
                 log.info("Relation Service initialization");
 
                 // init jena Graph outside of Tx
@@ -534,8 +498,7 @@ public class RelationService extends DefaultComponent implements
                             Graph graph = getGraphByName(graphName);
                             graph.size();
                         } catch (ClientException e) {
-                            log.error("Error while initializing graph "
-                                    + graphName, e);
+                            log.error("Error while initializing graph " + graphName, e);
                         }
                     }
                 }
@@ -551,8 +514,7 @@ public class RelationService extends DefaultComponent implements
                                 Graph graph = getGraphByName(graphName);
                                 graph.size();
                             } catch (ClientException e) {
-                                log.error("Error while initializing graph "
-                                        + graphName, e);
+                                log.error("Error while initializing graph " + graphName, e);
                                 TransactionHelper.setTransactionRollbackOnly();
                             }
                         }

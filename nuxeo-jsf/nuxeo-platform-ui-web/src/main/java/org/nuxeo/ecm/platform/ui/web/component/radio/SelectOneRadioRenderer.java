@@ -27,8 +27,8 @@ import javax.faces.context.ResponseWriter;
 import org.richfaces.renderkit.InputRendererBase;
 
 /**
- * Renderer for a specific radio component, skipping the original rendering,
- * that will be handled by related {@link UIRadio} component(s).
+ * Renderer for a specific radio component, skipping the original rendering, that will be handled by related
+ * {@link UIRadio} component(s).
  *
  * @since 6.0
  */
@@ -37,8 +37,7 @@ public class SelectOneRadioRenderer extends InputRendererBase {
     public static final String RENDERER_TYPE = SelectOneRadioRenderer.class.getName();
 
     @Override
-    protected void doEncodeEnd(ResponseWriter writer, FacesContext context,
-            UIComponent component) throws IOException {
+    protected void doEncodeEnd(ResponseWriter writer, FacesContext context, UIComponent component) throws IOException {
         // do nothing
     }
 
@@ -46,8 +45,7 @@ public class SelectOneRadioRenderer extends InputRendererBase {
     protected void doDecode(FacesContext context, UIComponent component) {
         if (component instanceof HtmlSelectOneRadio) {
             HtmlSelectOneRadio select = (HtmlSelectOneRadio) component;
-            if (select.isDisabled() || select.isReadonly()
-                    || !select.isRendered()) {
+            if (select.isDisabled() || select.isReadonly() || !select.isRendered()) {
                 return;
             }
         } else if (!component.isRendered()) {

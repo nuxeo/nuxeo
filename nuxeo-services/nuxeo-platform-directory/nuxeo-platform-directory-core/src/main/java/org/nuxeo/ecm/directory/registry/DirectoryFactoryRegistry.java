@@ -28,8 +28,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  *
  * @since 5.6
  */
-public class DirectoryFactoryRegistry extends
-        SimpleContributionRegistry<DirectoryFactory> {
+public class DirectoryFactoryRegistry extends SimpleContributionRegistry<DirectoryFactory> {
 
     @Override
     public String getContributionId(DirectoryFactory contrib) {

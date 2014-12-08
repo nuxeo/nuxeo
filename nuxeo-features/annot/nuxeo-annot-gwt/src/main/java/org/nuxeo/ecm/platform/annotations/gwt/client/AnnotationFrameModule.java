@@ -62,33 +62,31 @@ public class AnnotationFrameModule implements EntryPoint {
     private void loadModule() {
         webConfigurationService = GWT.create(WebConfigurationService.class);
         String url = getParentWindowUrl();
-        webConfigurationService.getWebConfiguration(url,
-                new AsyncCallback<WebConfiguration>() {
-                    public void onFailure(Throwable throwable) {
-                        Log.debug("onFailure: " + throwable);
-                        webConfiguration = WebConfiguration.DEFAULT_WEB_CONFIGURATION;
-                        initModule();
-                    }
+        webConfigurationService.getWebConfiguration(url, new AsyncCallback<WebConfiguration>() {
+            public void onFailure(Throwable throwable) {
+                Log.debug("onFailure: " + throwable);
+                webConfiguration = WebConfiguration.DEFAULT_WEB_CONFIGURATION;
+                initModule();
+            }
 
-                    public void onSuccess(WebConfiguration result) {
-                        webConfiguration = result == null ? WebConfiguration.DEFAULT_WEB_CONFIGURATION
-                                : result;
-                        initModule();
-                        Log.debug("Module initialization finished.");
-                    }
-                });
+            public void onSuccess(WebConfiguration result) {
+                webConfiguration = result == null ? WebConfiguration.DEFAULT_WEB_CONFIGURATION : result;
+                initModule();
+                Log.debug("Module initialization finished.");
+            }
+        });
     }
 
     private native boolean isAnnoteaServerUrlRegistered() /*-{
-        if (top['annoteaServerUrlRegistered']) {
-            return top['annoteaServerUrlRegistered'];
-        }
-        return false;
-    }-*/;
+                                                          if (top['annoteaServerUrlRegistered']) {
+                                                          return top['annoteaServerUrlRegistered'];
+                                                          }
+                                                          return false;
+                                                          }-*/;
 
     private native String getParentWindowUrl() /*-{
-        return $wnd.parent.location.href;
-    }-*/;
+                                               return $wnd.parent.location.href;
+                                               }-*/;
 
     private void initModule() {
         AnnotationFrameApplication.build(webConfiguration);

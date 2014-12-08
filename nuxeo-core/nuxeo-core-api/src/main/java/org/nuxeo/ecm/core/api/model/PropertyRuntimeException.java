@@ -14,10 +14,8 @@
 
 package org.nuxeo.ecm.core.api.model;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PropertyRuntimeException extends RuntimeException {
 

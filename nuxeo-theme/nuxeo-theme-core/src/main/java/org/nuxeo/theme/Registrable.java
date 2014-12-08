@@ -22,8 +22,7 @@ package org.nuxeo.theme;
 public interface Registrable {
 
     /**
-     * This method is called when the object is unregistered. Clean up local
-     * variables here.
+     * This method is called when the object is unregistered. Clean up local variables here.
      */
     void clear();
 

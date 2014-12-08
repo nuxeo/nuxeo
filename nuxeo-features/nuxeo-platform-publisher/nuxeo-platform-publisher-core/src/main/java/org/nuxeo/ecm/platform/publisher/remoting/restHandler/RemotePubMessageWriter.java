@@ -33,25 +33,20 @@ import javax.ws.rs.ext.Provider;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 
 @Provider
-public class RemotePubMessageWriter implements
-        MessageBodyWriter<RemotePubResult> {
+public class RemotePubMessageWriter implements MessageBodyWriter<RemotePubResult> {
 
     protected static final int BUFFER_SIZE = 4096 * 16;
 
-    public long getSize(RemotePubResult arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(RemotePubResult arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
         return RemotePubResult.class.isAssignableFrom(arg0);
     }
 
-    public void writeTo(RemotePubResult result, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream stream)
-            throws IOException, WebApplicationException {
+    public void writeTo(RemotePubResult result, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
+            MultivaluedMap<String, Object> arg5, OutputStream stream) throws IOException, WebApplicationException {
 
         try {
             String xmlString = result.asXML();
@@ -62,8 +57,7 @@ public class RemotePubMessageWriter implements
                 stream.write(buffer, 0, read);
             }
         } catch (PublishingMarshalingException e) {
-            throw new IOException("Error while marshaling result:"
-                    + e.getMessage());
+            throw new IOException("Error while marshaling result:" + e.getMessage());
         }
     }
 

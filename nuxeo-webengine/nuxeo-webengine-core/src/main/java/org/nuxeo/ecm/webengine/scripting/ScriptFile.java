@@ -32,18 +32,16 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class ScriptFile {
 
-    public static final String ROOT_PATH = Framework.getLocalService(WebEngine.class)
-            .getRootDirectory().getAbsolutePath();
+    public static final String ROOT_PATH = Framework.getLocalService(WebEngine.class).getRootDirectory().getAbsolutePath();
 
     File file;
+
     String ext = "";
 
-
-    //TODO should remove the typed file name
+    // TODO should remove the typed file name
     public ScriptFile(File file) throws IOException {
         String name = file.getName();
         int p = name.lastIndexOf('.');

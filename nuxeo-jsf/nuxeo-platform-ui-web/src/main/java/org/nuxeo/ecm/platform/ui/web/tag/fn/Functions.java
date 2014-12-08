@@ -77,14 +77,11 @@ public final class Functions {
 
     public enum BytePrefix {
 
-        SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" },
-                new String[] { "", "kilo", "mega", "giga", "tera", "peta",
-                        "exa", "zetta", "yotta" }), IEC(1024, new String[] {
-                "", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi" },
-                new String[] { "", "kibi", "mebi", "gibi", "tebi", "pebi",
-                        "exbi", "zebi", "yobi" }), JEDEC(1024, new String[] {
-                "", "K", "M", "G" },
-                new String[] { "", "kilo", "mega", "giga" });
+        SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" }, new String[] { "", "kilo", "mega",
+                "giga", "tera", "peta", "exa", "zetta", "yotta" }), IEC(1024, new String[] { "", "Ki", "Mi", "Gi",
+                "Ti", "Pi", "Ei", "Zi", "Yi" }, new String[] { "", "kibi", "mebi", "gibi", "tebi", "pebi", "exbi",
+                "zebi", "yobi" }), JEDEC(1024, new String[] { "", "K", "M", "G" }, new String[] { "", "kilo", "mega",
+                "giga" });
 
         private final int base;
 
@@ -119,14 +116,12 @@ public final class Functions {
     /**
      * Key in the session holding a map caching user full names.
      */
-    private static final String FULLNAMES_MAP_KEY = Functions.class.getName()
-            + ".FULLNAMES_MAP";
+    private static final String FULLNAMES_MAP_KEY = Functions.class.getName() + ".FULLNAMES_MAP";
 
     static final Map<String, String> mapOfDateLength = new HashMap<String, String>() {
         {
             put("short", String.valueOf(DateFormat.SHORT));
-            put("shortWithCentury".toLowerCase(),
-                    "shortWithCentury".toLowerCase());
+            put("shortWithCentury".toLowerCase(), "shortWithCentury".toLowerCase());
             put("medium", String.valueOf(DateFormat.MEDIUM));
             put("long", String.valueOf(DateFormat.LONG));
             put("full", String.valueOf(DateFormat.FULL));
@@ -147,8 +142,7 @@ public final class Functions {
         return StringUtils.join(list, separator);
     }
 
-    public static String joinCollection(Collection<Object> collection,
-            String separator) {
+    public static String joinCollection(Collection<Object> collection, String separator) {
         if (collection == null) {
             return null;
         }
@@ -160,8 +154,7 @@ public final class Functions {
     }
 
     /**
-     * Escapes a given string to be used in a JavaScript function (escaping
-     * single quote characters for instance).
+     * Escapes a given string to be used in a JavaScript function (escaping single quote characters for instance).
      *
      * @since 5.4.2
      */
@@ -173,18 +166,15 @@ public final class Functions {
     }
 
     /**
-     * Can be used in order to produce something like that "Julien, Alain ,
-     * Thierry et Marc-Aurele" where ' , ' and ' et ' is the final one.
+     * Can be used in order to produce something like that "Julien, Alain , Thierry et Marc-Aurele" where ' , ' and ' et
+     * ' is the final one.
      */
-    public static String joinCollectionWithFinalDelimiter(
-            Collection<Object> collection, String separator,
+    public static String joinCollectionWithFinalDelimiter(Collection<Object> collection, String separator,
             String finalSeparator) {
-        return joinArrayWithFinalDelimiter(collection.toArray(), separator,
-                finalSeparator);
+        return joinArrayWithFinalDelimiter(collection.toArray(), separator, finalSeparator);
     }
 
-    public static String joinArrayWithFinalDelimiter(Object[] collection,
-            String separator, String finalSeparator) {
+    public static String joinArrayWithFinalDelimiter(Object[] collection, String separator, String finalSeparator) {
         if (collection == null) {
             return null;
         }
@@ -239,8 +229,7 @@ public final class Functions {
     /**
      * Returns the full name of a user, or its username if user if not found.
      * <p>
-     * Since 5.5, returns null if given username is null (instead of returning
-     * the current user full name).
+     * Since 5.5, returns null if given username is null (instead of returning the current user full name).
      */
     @SuppressWarnings("unchecked")
     public static String userFullName(String username) {
@@ -325,8 +314,8 @@ public final class Functions {
     }
 
     /**
-     * Return, from the id, the id its-self if neither last name nor name are
-     * found or the full name plus the email if this one exists
+     * Return, from the id, the id its-self if neither last name nor name are found or the full name plus the email if
+     * this one exists
      *
      * @param id id of the user
      * @param first first name of the user
@@ -335,8 +324,7 @@ public final class Functions {
      * @return id or full name with email if exists
      * @since 5.5
      */
-    public static String userDisplayNameAndEmail(String id, String first,
-            String last, String email) {
+    public static String userDisplayNameAndEmail(String id, String first, String last, String email) {
         String userDisplayedName = userDisplayName(id, first, last);
         if (userDisplayedName.equals(id)) {
             return userDisplayedName;
@@ -368,8 +356,7 @@ public final class Functions {
     }
 
     /**
-     * Return the date format to handle date taking the user's locale into
-     * account.
+     * Return the date format to handle date taking the user's locale into account.
      *
      * @since 5.9.1
      */
@@ -411,8 +398,8 @@ public final class Functions {
     }
 
     /**
-     * Return the date format to handle date taking the user's locale into
-     * account. Uses the pseudo "shortWithCentury" format.
+     * Return the date format to handle date taking the user's locale into account. Uses the pseudo "shortWithCentury"
+     * format.
      *
      * @since 5.9.1
      */
@@ -421,8 +408,7 @@ public final class Functions {
     }
 
     /**
-     * @deprecated since 5.9.1, use {@link #dateAndTimeFormatter(String)}
-     *             instead.
+     * @deprecated since 5.9.1, use {@link #dateAndTimeFormatter(String)} instead.
      */
     @Deprecated
     public static String dateAndTimeFormater(String formatLength) {
@@ -430,8 +416,7 @@ public final class Functions {
     }
 
     /**
-     * Return the date format to handle date and time taking the user's locale
-     * into account.
+     * Return the date format to handle date and time taking the user's locale into account.
      *
      * @since 5.9.1
      */
@@ -451,8 +436,7 @@ public final class Functions {
             style = Integer.parseInt(styleString);
         }
 
-        DateFormat aDateFormat = DateFormat.getDateTimeInstance(style, style,
-                locale);
+        DateFormat aDateFormat = DateFormat.getDateTimeInstance(style, style, locale);
 
         // Cast to SimpleDateFormat to make "toPattern" method available
         SimpleDateFormat format = (SimpleDateFormat) aDateFormat;
@@ -468,8 +452,7 @@ public final class Functions {
     }
 
     /**
-     * @deprecated since 5.9.1, use {@link #basicDateAndTimeFormatter()}
-     *             instead.
+     * @deprecated since 5.9.1, use {@link #basicDateAndTimeFormatter()} instead.
      */
     @Deprecated
     public static String basicDateAndTimeFormater() {
@@ -477,8 +460,8 @@ public final class Functions {
     }
 
     /**
-     * Return the date format to handle date and time taking the user's locale
-     * into account. Uses the pseudo "shortWithCentury" format.
+     * Return the date format to handle date and time taking the user's locale into account. Uses the pseudo
+     * "shortWithCentury" format.
      *
      * @since 5.9.1
      */
@@ -490,14 +473,11 @@ public final class Functions {
         return printFormatedFileSize(size, "SI", true);
     }
 
-    public static String printFormatedFileSize(String sizeS, String format,
-            Boolean isShort) {
-        long size = (sizeS == null || "".equals(sizeS)) ? 0
-                : Long.parseLong(sizeS);
+    public static String printFormatedFileSize(String sizeS, String format, Boolean isShort) {
+        long size = (sizeS == null || "".equals(sizeS)) ? 0 : Long.parseLong(sizeS);
         BytePrefix prefix = Enum.valueOf(BytePrefix.class, format);
         int base = prefix.getBase();
-        String[] suffix = isShort ? prefix.getShortSuffixes()
-                : prefix.getLongSuffixes();
+        String[] suffix = isShort ? prefix.getShortSuffixes() : prefix.getLongSuffixes();
         int ex = 0;
         while (size > base - 1 || ex > suffix.length) {
             ex++;
@@ -509,8 +489,7 @@ public final class Functions {
         if (context != null) {
             String bundleName = context.getApplication().getMessageBundle();
             Locale locale = context.getViewRoot().getLocale();
-            msg = I18NUtils.getMessageString(bundleName, "label.bytes.suffix",
-                    null, locale);
+            msg = I18NUtils.getMessageString(bundleName, "label.bytes.suffix", null, locale);
             if ("label.bytes.suffix".equals(msg)) {
                 // Set default value if no message entry found
                 msg = "B";
@@ -528,8 +507,8 @@ public final class Functions {
     }
 
     /**
-     * Format the duration of a media in a string of two consecutive units to
-     * best express the duration of a media, e.g.:
+     * Format the duration of a media in a string of two consecutive units to best express the duration of a media,
+     * e.g.:
      * <ul>
      * <li>1 hr 42 min</li>
      * <li>2 min 25 sec</li>
@@ -537,14 +516,11 @@ public final class Functions {
      * <li>0 sec</li>
      * </ul>
      *
-     * @param durationObj a Float, Double, Integer, Long or String instance
-     *            representing a duration in seconds
-     * @param i18nLabels a map to translate the days, hours, minutes and
-     *            seconds labels
+     * @param durationObj a Float, Double, Integer, Long or String instance representing a duration in seconds
+     * @param i18nLabels a map to translate the days, hours, minutes and seconds labels
      * @return the formatted string
      */
-    public static String printFormattedDuration(Object durationObj,
-            Map<String, String> i18nLabels) {
+    public static String printFormattedDuration(Object durationObj, Map<String, String> i18nLabels) {
 
         if (i18nLabels == null) {
             i18nLabels = new HashMap<String, String>();
@@ -564,10 +540,8 @@ public final class Functions {
 
         int days = (int) Math.floor(duration / (24 * 60 * 60));
         int hours = (int) Math.floor(duration / (60 * 60)) - days * 24;
-        int minutes = (int) Math.floor(duration / 60) - days * 24 * 60 - hours
-                * 60;
-        int seconds = (int) Math.floor(duration) - days * 24 * 3600 - hours
-                * 3600 - minutes * 60;
+        int minutes = (int) Math.floor(duration / 60) - days * 24 * 60 - hours * 60;
+        int seconds = (int) Math.floor(duration) - days * 24 * 3600 - hours * 3600 - minutes * 60;
 
         int[] components = { days, hours, minutes, seconds };
         String[] units = { "days", "hours", "minutes", "seconds" };
@@ -576,21 +550,17 @@ public final class Functions {
         String representation = null;
         for (int i = 0; i < components.length; i++) {
             if (components[i] != 0 || i == components.length - 1) {
-                String i18nLabel = i18nLabels.get(I18N_DURATION_PREFIX
-                        + units[i]);
+                String i18nLabel = i18nLabels.get(I18N_DURATION_PREFIX + units[i]);
                 if (i18nLabel == null) {
                     i18nLabel = defaultLabels[i];
                 }
-                representation = String.format("%d %s", components[i],
-                        i18nLabel);
+                representation = String.format("%d %s", components[i], i18nLabel);
                 if (i < components.length - 1) {
-                    i18nLabel = i18nLabels.get(I18N_DURATION_PREFIX
-                            + units[i + 1]);
+                    i18nLabel = i18nLabels.get(I18N_DURATION_PREFIX + units[i + 1]);
                     if (i18nLabel == null) {
                         i18nLabel = defaultLabels[i + 1];
                     }
-                    representation += String.format(" %d %s",
-                            components[i + 1], i18nLabel);
+                    representation += String.format(" %d %s", components[i + 1], i18nLabel);
                 }
                 break;
             }
@@ -603,22 +573,18 @@ public final class Functions {
     }
 
     public static final String translate(String messageId, Object... params) {
-        return ComponentUtils.translate(FacesContext.getCurrentInstance(),
-                messageId, params);
+        return ComponentUtils.translate(FacesContext.getCurrentInstance(), messageId, params);
     }
 
     /**
-     * @return the big file size limit defined with the property
-     *         org.nuxeo.big.file.size.limit
+     * @return the big file size limit defined with the property org.nuxeo.big.file.size.limit
      */
     public static long getBigFileSizeLimit() {
-        return getFileSize(Framework.getProperty(BIG_FILE_SIZE_LIMIT_PROPERTY,
-                ""));
+        return getFileSize(Framework.getProperty(BIG_FILE_SIZE_LIMIT_PROPERTY, ""));
     }
 
     public static long getFileSize(String value) {
-        Pattern pattern = Pattern.compile("([1-9][0-9]*)([kmgi]*)",
-                Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("([1-9][0-9]*)([kmgi]*)", Pattern.CASE_INSENSITIVE);
         Matcher m = pattern.matcher(value.trim());
         long number;
         String multiplier;
@@ -659,15 +625,12 @@ public final class Functions {
     }
 
     /**
-     * Returns true if the faces context holds messages for given JSF component
-     * id, usually the form id.
+     * Returns true if the faces context holds messages for given JSF component id, usually the form id.
      * <p>
-     * Id given id is null, returns true if there is at least one client id
-     * with messages.
+     * Id given id is null, returns true if there is at least one client id with messages.
      * <p>
-     * Since the form id might be prefixed with a container id in some cases,
-     * the method returns true if one of client ids with messages stats with
-     * given id, or if given id is contained in it.
+     * Since the form id might be prefixed with a container id in some cases, the method returns true if one of client
+     * ids with messages stats with given id, or if given id is contained in it.
      *
      * @since 5.4.2
      */
@@ -679,9 +642,7 @@ public final class Functions {
             while (it.hasNext()) {
                 String id = it.next();
                 if (id != null
-                        && (id.startsWith(clientId + ":")
-                                || id.contains(":" + clientId + ":")
-                                || id.equals(clientId) || id.endsWith(":"
+                        && (id.startsWith(clientId + ":") || id.contains(":" + clientId + ":") || id.equals(clientId) || id.endsWith(":"
                                 + clientId))) {
                     return true;
                 }
@@ -690,13 +651,12 @@ public final class Functions {
         return false;
     }
 
-    public static String userUrl(String patternName, String username,
-            String viewId, boolean newConversation) {
+    public static String userUrl(String patternName, String username, String viewId, boolean newConversation) {
         return userUrl(patternName, username, viewId, newConversation, null);
     }
 
-    public static String userUrl(String patternName, String username,
-            String viewId, boolean newConversation, HttpServletRequest req) {
+    public static String userUrl(String patternName, String username, String viewId, boolean newConversation,
+            HttpServletRequest req) {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("username", username);
         DocumentView docView = new DocumentViewImpl(null, viewId, parameters);
@@ -714,8 +674,7 @@ public final class Functions {
             baseURL = BaseURL.getBaseURL(req);
         }
 
-        String url = service.getUrlFromDocumentView(patternName, docView,
-                baseURL);
+        String url = service.getUrlFromDocumentView(patternName, docView, baseURL);
 
         // pass conversation info if needed
         if (!newConversation && url != null) {
@@ -734,15 +693,13 @@ public final class Functions {
     }
 
     /**
-     * Helper that escapes a string used as a JSF tag id: this is useful to
-     * replace characters that are not handled correctly in JSF context.
+     * Helper that escapes a string used as a JSF tag id: this is useful to replace characters that are not handled
+     * correctly in JSF context.
      * <p>
-     * This method currently removes ASCII characters from the given string,
-     * and replaces "-" characters by "_" because the dash is an issue for
-     * forms rendered in ajax (see NXP-10793).
+     * This method currently removes ASCII characters from the given string, and replaces "-" characters by "_" because
+     * the dash is an issue for forms rendered in ajax (see NXP-10793).
      * <p>
-     * Also starting digits are replaced by the "_" character because a tag id
-     * cannot start with a digit.
+     * Also starting digits are replaced by the "_" character because a tag id cannot start with a digit.
      *
      * @since 5.7
      * @return the escaped string
@@ -762,8 +719,7 @@ public final class Functions {
                     res.append(c);
                 }
             } else {
-                if (!Character.isLetter(c) && !Character.isDigit(c)
-                        && (c != '_')) {
+                if (!Character.isLetter(c) && !Character.isDigit(c) && (c != '_')) {
                     res.append("_");
                 } else {
                     res.append(c);
@@ -818,17 +774,13 @@ public final class Functions {
     }
 
     /**
-     * Returns the target component absolute id given an anchor in the tree and
-     * a local id.
+     * Returns the target component absolute id given an anchor in the tree and a local id.
      * <p>
-     * If given targetId parameter contains spaces, consider several ids should
-     * be resolved and split them.
+     * If given targetId parameter contains spaces, consider several ids should be resolved and split them.
      *
      * @since 6.0
-     * @param anchor the component anchor, used a localization for the target
-     *            component in the tree.
-     * @param targetId the component to look for locally so as to return its
-     *            absolute client id.
+     * @param anchor the component anchor, used a localization for the target component in the tree.
+     * @param targetId the component to look for locally so as to return its absolute client id.
      */
     public static String componentAbsoluteId(UIComponent anchor, String targetId) {
         // handle case where several target ids could be given as input
@@ -838,10 +790,7 @@ public final class Functions {
         if (targetId.contains(" ")) {
             String res = "";
             for (String t : targetId.split(" ")) {
-                res = joinRender(
-                        res,
-                        ComponentRenderUtils.getComponentAbsoluteId(anchor,
-                                t.trim()));
+                res = joinRender(res, ComponentRenderUtils.getComponentAbsoluteId(anchor, t.trim()));
             }
             return res;
         } else {

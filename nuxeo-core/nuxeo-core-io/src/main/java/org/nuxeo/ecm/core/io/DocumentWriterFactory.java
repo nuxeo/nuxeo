@@ -17,9 +17,8 @@ package org.nuxeo.ecm.core.io;
 import java.util.Map;
 
 /**
- * Interface for a factory that will provide a custom DocumentWriter implementation.
- * The params are used by specific factories to properly instantiate the custom
- * DocumentWriter.
+ * Interface for a factory that will provide a custom DocumentWriter implementation. The params are used by specific
+ * factories to properly instantiate the custom DocumentWriter.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */

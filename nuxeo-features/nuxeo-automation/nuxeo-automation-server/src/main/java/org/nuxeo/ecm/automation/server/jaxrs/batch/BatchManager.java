@@ -28,8 +28,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * Service interface to collect inputs (Blobs) for an operation or operation
- * chain
+ * Service interface to collect inputs (Blobs) for an operation or operation chain
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @author Antoine Taillefer
@@ -38,9 +37,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 public interface BatchManager {
 
     /**
-     * Add an inputStream in a batch Will create a new {@link Batch} if needed
-     *
-     * Streams are persisted as temporary files
+     * Add an inputStream in a batch Will create a new {@link Batch} if needed Streams are persisted as temporary files
      *
      * @param batchId
      * @param idx
@@ -49,20 +46,17 @@ public interface BatchManager {
      * @param mime
      * @throws IOException
      */
-    void addStream(String batchId, String idx, InputStream is, String name,
-            String mime) throws IOException;
+    void addStream(String batchId, String idx, InputStream is, String name, String mime) throws IOException;
 
     /**
-     * Returns true if there is a batch for the given {@code batchId}, false
-     * otherwise.
+     * Returns true if there is a batch for the given {@code batchId}, false otherwise.
      *
      * @since 5.7.2
      */
     boolean hasBatch(String batchId);
 
     /**
-     * Get Blobs associated to a given batch. Returns null if batch does not
-     * exist
+     * Get Blobs associated to a given batch. Returns null if batch does not exist
      *
      * @param batchId
      * @return
@@ -70,13 +64,9 @@ public interface BatchManager {
     List<Blob> getBlobs(String batchId);
 
     /**
-     * Get Blobs associated to a given batch. Returns null if batch does not
-     * exist
-     *
-     * Wait for upload in progress if needed
+     * Get Blobs associated to a given batch. Returns null if batch does not exist Wait for upload in progress if needed
      *
      * @since 5.7
-     *
      * @param batchId
      * @return
      */
@@ -94,8 +84,8 @@ public interface BatchManager {
     void clean(String batchId);
 
     /**
-     * Initialize a batch with a given batchId and Context Name If batchId is
-     * not provided, it will be automatically generated
+     * Initialize a batch with a given batchId and Context Name If batchId is not provided, it will be automatically
+     * generated
      *
      * @param batchId
      * @param contextName
@@ -104,42 +94,33 @@ public interface BatchManager {
     String initBatch(String batchId, String contextName);
 
     /**
-     * Executes the chain or operation on the {@code Blobs} from the given
-     * {@code batchId}.
+     * Executes the chain or operation on the {@code Blobs} from the given {@code batchId}.
      * <p>
-     * This method does not clean the temporary storage associated to the
-     * {@code batchId}.
+     * This method does not clean the temporary storage associated to the {@code batchId}.
      *
      * @since 5.7
      */
-    Object execute(String batchId, String chainOrOperationId,
-            CoreSession session, Map<String, Object> contextParams,
+    Object execute(String batchId, String chainOrOperationId, CoreSession session, Map<String, Object> contextParams,
             Map<String, Object> operationParams) throws ClientException;
 
     /**
-     * Executes the chain or operation on the {@code Blob} from the given
-     * {@code batchId} and {@code fileIdx}.
+     * Executes the chain or operation on the {@code Blob} from the given {@code batchId} and {@code fileIdx}.
      * <p>
-     * This method does not clean the temporary storage associated to the
-     * {@code batchId}.
+     * This method does not clean the temporary storage associated to the {@code batchId}.
      *
      * @since 5.7.2
      */
-    Object execute(String batchId, String fileIdx, String chainOrOperationId,
-            CoreSession session, Map<String, Object> contextParams,
-            Map<String, Object> operationParams) throws ClientException;
+    Object execute(String batchId, String fileIdx, String chainOrOperationId, CoreSession session,
+            Map<String, Object> contextParams, Map<String, Object> operationParams) throws ClientException;
 
     /**
-     * Executes the chain or operation on the {@code Blobs} from the given
-     * {@code batchId}.
+     * Executes the chain or operation on the {@code Blobs} from the given {@code batchId}.
      * <p>
-     * This method clean the temporary storage associated to the {@code batchId}
-     * after the execution.
+     * This method clean the temporary storage associated to the {@code batchId} after the execution.
      *
      * @since 5.7
      */
-    Object executeAndClean(String batchId, String chainOrOperationId,
-            CoreSession session, Map<String, Object> contextParams,
-            Map<String, Object> operationParams) throws ClientException;
+    Object executeAndClean(String batchId, String chainOrOperationId, CoreSession session,
+            Map<String, Object> contextParams, Map<String, Object> operationParams) throws ClientException;
 
 }

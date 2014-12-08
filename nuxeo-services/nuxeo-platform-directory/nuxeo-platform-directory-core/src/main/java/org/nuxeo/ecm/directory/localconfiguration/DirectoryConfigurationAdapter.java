@@ -31,8 +31,7 @@ import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
  * @author <a href="mailto:qlamerand@nuxeo.com">Benjamin JALON</a>
  * @since 5.4.2
  */
-public class DirectoryConfigurationAdapter extends
-        AbstractLocalConfiguration<DirectoryConfiguration> implements
+public class DirectoryConfigurationAdapter extends AbstractLocalConfiguration<DirectoryConfiguration> implements
         DirectoryConfiguration {
 
     private static final Log log = LogFactory.getLog(DirectoryConfigurationAdapter.class);
@@ -65,8 +64,7 @@ public class DirectoryConfigurationAdapter extends
 
     @Override
     public DirectoryConfiguration merge(DirectoryConfiguration other) {
-        throw new UnsupportedOperationException(
-                "Directory configurations can't be merged");
+        throw new UnsupportedOperationException("Directory configurations can't be merged");
     }
 
     @Override

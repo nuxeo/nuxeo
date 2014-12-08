@@ -68,8 +68,7 @@ public class TestRuntime extends AbstractRuntimeService {
     private static synchronized String generateId() {
         long stamp = System.currentTimeMillis();
         counter++;
-        return Long.toHexString(stamp) + '-'
-                + System.identityHashCode(System.class) + '.' + counter;
+        return Long.toHexString(stamp) + '-' + System.identityHashCode(System.class) + '.' + counter;
     }
 
     public void deploy(URL url) throws Exception {

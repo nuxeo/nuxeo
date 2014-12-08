@@ -18,16 +18,15 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public interface DataModelMap extends Map<String, DataModel>{
+public interface DataModelMap extends Map<String, DataModel> {
 
-//    public Collection<DataModel> getDirtyModels();
-//
-//    public Map<String, Object> getDirtyFields();
-//
-//    public Collection<DataModel> getDataModels();
-//
-//    public DataModel getDataModel(String schema);
+    // public Collection<DataModel> getDirtyModels();
+    //
+    // public Map<String, Object> getDirtyFields();
+    //
+    // public Collection<DataModel> getDataModels();
+    //
+    // public DataModel getDataModel(String schema);
 
 }

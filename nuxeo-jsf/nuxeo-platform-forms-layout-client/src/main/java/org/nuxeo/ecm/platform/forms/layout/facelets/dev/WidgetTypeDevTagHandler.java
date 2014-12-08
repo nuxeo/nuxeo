@@ -37,15 +37,12 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import com.sun.faces.facelets.tag.ui.DecorateHandler;
 
 /**
- * Dev tag handler for widgets, retrieving the template to use on the widget
- * properties (preferably on the widget type properties) using key
- * {@link AbstractWidgetTypeHandler#DEV_TEMPLATE_PROPERTY_NAME}.
+ * Dev tag handler for widgets, retrieving the template to use on the widget properties (preferably on the widget type
+ * properties) using key {@link AbstractWidgetTypeHandler#DEV_TEMPLATE_PROPERTY_NAME}.
  * <p>
- * When the property
- * {@link AbstractWidgetTypeHandler#DISABLE_DEV_PROPERTY_NAME} is not defined,
- * a default template is used for the widget dev mode. If this property
- * (resolved on the widget or the widget type properties) resolves to false,
- * this handler is skipped.
+ * When the property {@link AbstractWidgetTypeHandler#DISABLE_DEV_PROPERTY_NAME} is not defined, a default template is
+ * used for the widget dev mode. If this property (resolved on the widget or the widget type properties) resolves to
+ * false, this handler is skipped.
  *
  * @since 6.0
  */
@@ -67,20 +64,18 @@ public class WidgetTypeDevTagHandler extends TagHandler {
     }
 
     @Override
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
+            ELException {
         Widget widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
         String templateValue = template != null ? template.getValue(ctx) : null;
         if (StringUtils.isBlank(templateValue)) {
             templateValue = DEFAULT_TEMPLATE;
         }
-        TagAttribute templateAttr = helper.createAttribute("template",
-                templateValue);
+        TagAttribute templateAttr = helper.createAttribute("template", templateValue);
         TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(templateAttr);
         String widgetTagConfigId = widgetInstance.getTagConfigId();
-        TagConfig config = TagConfigFactory.createTagConfig(this.config,
-                widgetTagConfigId, attributes, nextHandler);
+        TagConfig config = TagConfigFactory.createTagConfig(this.config, widgetTagConfigId, attributes, nextHandler);
         DecorateHandler includeHandler = new DecorateHandler(config);
         includeHandler.apply(ctx, parent);
     }

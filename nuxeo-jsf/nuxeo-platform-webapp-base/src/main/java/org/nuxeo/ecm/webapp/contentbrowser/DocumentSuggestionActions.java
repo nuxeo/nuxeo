@@ -75,10 +75,8 @@ public class DocumentSuggestionActions implements Serializable {
 
     protected List<DocumentModel> cachedSuggestions;
 
-    public List<DocumentModel> getDocSuggestions(Object input)
-            throws ClientException {
-        if (equals(cachedPageProviderName, pageProviderName)
-                && equals(cachedInput, input)) {
+    public List<DocumentModel> getDocSuggestions(Object input) throws ClientException {
+        if (equals(cachedPageProviderName, pageProviderName) && equals(cachedInput, input)) {
             return cachedSuggestions;
         }
 
@@ -93,26 +91,23 @@ public class DocumentSuggestionActions implements Serializable {
     /**
      * Returns suggestion documents matching given pattern.
      * <p>
-     * Search is performed using the page provider referenced in the widget
-     * definition (defaults to {@link #DEFAULT_PAGE_PROVIDER_NAME}).
+     * Search is performed using the page provider referenced in the widget definition (defaults to
+     * {@link #DEFAULT_PAGE_PROVIDER_NAME}).
      * <p>
-     * Since 5.7, if the page provider defines parameters, they're added to the
-     * implicit parameter (the pattern) that stays the first one to be
-     * referenced in the search query.
+     * Since 5.7, if the page provider defines parameters, they're added to the implicit parameter (the pattern) that
+     * stays the first one to be referenced in the search query.
      *
      * @param pattern: the input as typed by user in suggestion box
      */
     @SuppressWarnings("unchecked")
-    protected PageProvider<DocumentModel> getPageProvider(String pattern)
-            throws ClientException {
+    protected PageProvider<DocumentModel> getPageProvider(String pattern) throws ClientException {
         String ppName = DEFAULT_PAGE_PROVIDER_NAME;
         if (pageProviderName != null && !StringUtils.isEmpty(pageProviderName)) {
             ppName = pageProviderName;
         }
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) documentManager);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
         // resolve additional parameters
         PageProviderDefinition ppDef = ppService.getPageProviderDefinition(ppName);
         String[] params = ppDef.getQueryParameters();
@@ -128,35 +123,30 @@ public class DocumentSuggestionActions implements Serializable {
 
         resolvedParams[0] = pattern;
         for (int i = 0; i < params.length; i++) {
-            resolvedParams[i + 1] = ComponentTagUtils.resolveElExpression(
-                    context, params[i]);
+            resolvedParams[i + 1] = ComponentTagUtils.resolveElExpression(context, params[i]);
         }
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                ppName, null, null, null, props, resolvedParams);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(ppName, null, null,
+                null, props, resolvedParams);
         if (pp == null) {
             throw new ClientException("Page provider not found: " + ppName);
         }
         return pp;
     }
 
-    public boolean getDocumentExistsAndIsVisibleWithId(String id)
-            throws ClientException {
+    public boolean getDocumentExistsAndIsVisibleWithId(String id) throws ClientException {
         if (StringUtils.isEmpty(id)) {
             return false;
         }
         IdRef ref = new IdRef(id);
-        return documentManager.exists(ref)
-                && documentManager.hasPermission(ref, SecurityConstants.READ);
+        return documentManager.exists(ref) && documentManager.hasPermission(ref, SecurityConstants.READ);
     }
 
-    public boolean getDocumentExistsAndIsVisibleWithPath(String path)
-            throws ClientException {
+    public boolean getDocumentExistsAndIsVisibleWithPath(String path) throws ClientException {
         if (StringUtils.isEmpty(path)) {
             return false;
         }
         PathRef ref = new PathRef(path);
-        return documentManager.exists(ref)
-                && documentManager.hasPermission(ref, SecurityConstants.READ);
+        return documentManager.exists(ref) && documentManager.hasPermission(ref, SecurityConstants.READ);
     }
 
     public DocumentModel getDocumentWithId(String id) throws ClientException {
@@ -166,8 +156,7 @@ public class DocumentSuggestionActions implements Serializable {
         return documentManager.getDocument(new IdRef(id));
     }
 
-    public DocumentModel getDocumentWithPath(String path)
-            throws ClientException {
+    public DocumentModel getDocumentWithPath(String path) throws ClientException {
         if (StringUtils.isEmpty(path)) {
             return null;
         }

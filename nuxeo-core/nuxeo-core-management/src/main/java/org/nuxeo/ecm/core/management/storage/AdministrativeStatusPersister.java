@@ -34,8 +34,7 @@ public interface AdministrativeStatusPersister {
     AdministrativeStatus getStatus(String instanceId, String serviceIdentifier);
 
     /**
-     * Retrieves the {@link AdministrativeStatus} for all services of a given
-     * instance
+     * Retrieves the {@link AdministrativeStatus} for all services of a given instance
      */
     List<AdministrativeStatus> getAllStatuses(String instanceId);
 

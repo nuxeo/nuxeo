@@ -20,13 +20,11 @@ import java.util.List;
 /**
  * Marks a class as being an operation.
  * <p>
- * An operation may provide an ID as the annotation value. If no id is
- * specified the class name will be used as the ID.
+ * An operation may provide an ID as the annotation value. If no id is specified the class name will be used as the ID.
  * <p>
  * The ID is the key used to register the operation.
  * <p>
- * Make sure you choose a proper ID name to avoid collisions (using the
- * default: ID the class name can be a solution).
+ * Make sure you choose a proper ID name to avoid collisions (using the default: ID the class name can be a solution).
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -44,25 +42,21 @@ public @interface Operation {
     /**
      * The operation category (optional), useful for documentation.
      * <p>
-     * Provide a category to be used by the UI to classify the operations (on
-     * the documentation page or in Studio).
+     * Provide a category to be used by the UI to classify the operations (on the documentation page or in Studio).
      */
     String category() default "Others";
 
     /**
      * The operation label (optional), useful for documentation.
      * <p>
-     * Provide a label for the operation to be used in UI (should not contain
-     * any HTML code).
+     * Provide a label for the operation to be used in UI (should not contain any HTML code).
      */
     String label() default "";
 
     /**
-     * Name of the context requires by this operation (optional), useful for
-     * documentation.
+     * Name of the context requires by this operation (optional), useful for documentation.
      * <p>
-     * Provide the name of the context required by this operation. Example:
-     * event, ui, wf, etc..
+     * Provide the name of the context required by this operation. Example: event, ui, wf, etc..
      */
     String requires() default "";
 
@@ -74,28 +68,23 @@ public @interface Operation {
     String description() default "";
 
     /**
-     * Nuxeo version from which this operation is available (optional), useful
-     * for documentation.
+     * Nuxeo version from which this operation is available (optional), useful for documentation.
      * <p>
-     * The default value is the null string "" which means no specific version
-     * is required. Examples: "5.4", "5.9.1".
+     * The default value is the null string "" which means no specific version is required. Examples: "5.4", "5.9.1".
      */
     String since() default "";
 
     /**
-     * Nuxeo version from which this operation is deprecated (optional), useful
-     * for documentation.
+     * Nuxeo version from which this operation is deprecated (optional), useful for documentation.
      * <p>
-     * The default value is the null string "" which means no specific version.
-     * Examples: "5.4", "5.9.1".
+     * The default value is the null string "" which means no specific version. Examples: "5.4", "5.9.1".
      *
      * @since 5.9.1
      */
     String deprecatedSince() default "";
 
     /**
-     * Boolean indicating if this operation should be exposed in Studio
-     * (optional), defaults to true.
+     * Boolean indicating if this operation should be exposed in Studio (optional), defaults to true.
      * <p>
      * This is convenient helper for Studio operations export.
      *
@@ -108,6 +97,6 @@ public @interface Operation {
      *
      * @since 7.1
      */
-    String[] aliases() default { };
+    String[] aliases() default {};
 
 }

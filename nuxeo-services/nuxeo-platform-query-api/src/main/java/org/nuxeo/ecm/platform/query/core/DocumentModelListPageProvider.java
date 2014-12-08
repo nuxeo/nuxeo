@@ -25,17 +25,14 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 
 /**
- * Wraps a {@link DocumentModelList} inside a
- * {@link org.nuxeo.ecm.platform.query.api.PageProvider}.
+ * Wraps a {@link DocumentModelList} inside a {@link org.nuxeo.ecm.platform.query.api.PageProvider}.
  * <p>
- * This page provider does not handle pagination at all, there is only one page
- * with all the documents.
+ * This page provider does not handle pagination at all, there is only one page with all the documents.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
-public class DocumentModelListPageProvider extends
-        AbstractPageProvider<DocumentModel> {
+public class DocumentModelListPageProvider extends AbstractPageProvider<DocumentModel> {
 
     private static final long serialVersionUID = 1L;
 

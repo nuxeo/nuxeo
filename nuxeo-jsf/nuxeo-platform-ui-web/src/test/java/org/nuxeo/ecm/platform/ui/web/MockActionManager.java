@@ -51,8 +51,7 @@ public class MockActionManager implements ActionManager {
     }
 
     @Override
-    public List<Action> getActions(String category, ActionContext context,
-            boolean hideUnavailableActions) {
+    public List<Action> getActions(String category, ActionContext context, boolean hideUnavailableActions) {
         throw new NotImplementedException();
     }
 
@@ -87,8 +86,7 @@ public class MockActionManager implements ActionManager {
     }
 
     @Override
-    public Action getAction(String actionId, ActionContext context,
-            boolean hideUnavailableActions) {
+    public Action getAction(String actionId, ActionContext context, boolean hideUnavailableActions) {
         throw new NotImplementedException();
     }
 

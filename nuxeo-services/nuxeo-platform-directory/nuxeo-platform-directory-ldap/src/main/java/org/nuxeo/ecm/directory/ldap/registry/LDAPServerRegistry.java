@@ -27,8 +27,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  *
  * @since 5.6
  */
-public class LDAPServerRegistry extends
-        SimpleContributionRegistry<LDAPServerDescriptor> {
+public class LDAPServerRegistry extends SimpleContributionRegistry<LDAPServerDescriptor> {
 
     public static final Log log = LogFactory.getLog(LDAPServerRegistry.class);
 
@@ -38,8 +37,7 @@ public class LDAPServerRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, LDAPServerDescriptor contrib,
-            LDAPServerDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, LDAPServerDescriptor contrib, LDAPServerDescriptor newOrigContrib) {
         super.contributionUpdated(id, contrib, newOrigContrib);
         log.info("server registered: " + contrib.getName());
     }

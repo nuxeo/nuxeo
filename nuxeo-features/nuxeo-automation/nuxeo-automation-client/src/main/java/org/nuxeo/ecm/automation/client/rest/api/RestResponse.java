@@ -31,8 +31,8 @@ import com.sun.jersey.api.client.ClientResponse;
 /**
  * A Rest response from Nuxeo REST API.
  * <p>
- * Wraps a {@link ClientResponse} response and provides utility methods to get
- * back the result as a {@link Map} or as a {@link JsonNode}.
+ * Wraps a {@link ClientResponse} response and provides utility methods to get back the result as a {@link Map} or as a
+ * {@link JsonNode}.
  *
  * @since 5.8
  */

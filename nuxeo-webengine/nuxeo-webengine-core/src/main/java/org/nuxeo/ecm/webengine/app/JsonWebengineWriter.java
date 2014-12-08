@@ -36,36 +36,31 @@ public class JsonWebengineWriter {
     static JsonFactoryManager jsonFactoryManager;
 
     private static JsonFactory getFactory() {
-        jsonFactoryManager = Framework.getLocalService(JsonFactoryManager
-                .class);
+        jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
         return jsonFactoryManager.getJsonFactory();
     }
 
-    private static JsonGenerator createGenerator(OutputStream out)
-            throws IOException {
+    private static JsonGenerator createGenerator(OutputStream out) throws IOException {
         return getFactory().createJsonGenerator(out, JsonEncoding.UTF8);
     }
 
-    public static void writeException(OutputStream out,
-            WebException webException, MediaType mediaType)
+    public static void writeException(OutputStream out, WebException webException, MediaType mediaType)
             throws IOException {
         writeException(createGenerator(out), webException, mediaType);
     }
 
-    public static void writeException(JsonGenerator jg,
-            WebException webException, MediaType mediaType)
+    public static void writeException(JsonGenerator jg, WebException webException, MediaType mediaType)
             throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "exception");
         jg.writeStringField("code", webException.getType());
         jg.writeNumberField("status", webException.getStatus());
-        //jg.writeStringField("help_url", eh.getHelpUrl());
-        //jg.writeStringField("request_id", eh.getRequestId());
+        // jg.writeStringField("help_url", eh.getHelpUrl());
+        // jg.writeStringField("request_id", eh.getRequestId());
         jg.writeStringField("message", webException.getMessage());
-        if (jsonFactoryManager.isStackDisplay() || MediaType.valueOf
-                (MediaType.APPLICATION_JSON + "+nxentity").equals(mediaType)) {
-            jg.writeStringField("stacktrace",
-                    webException.getStackTraceString());
+        if (jsonFactoryManager.isStackDisplay()
+                || MediaType.valueOf(MediaType.APPLICATION_JSON + "+nxentity").equals(mediaType)) {
+            jg.writeStringField("stacktrace", webException.getStackTraceString());
             jg.writeObjectField("exception", webException.getCause());
         }
         jg.writeEndObject();

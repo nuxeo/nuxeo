@@ -37,8 +37,7 @@ import org.nuxeo.runtime.services.event.EventService;
 
 public class UserService extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName(
-            UserService.class.getName());
+    public static final ComponentName NAME = new ComponentName(UserService.class.getName());
 
     private static final Log log = LogFactory.getLog(UserService.class);
 
@@ -50,8 +49,7 @@ public class UserService extends DefaultComponent {
         if (userManager == null) {
             recomputeUserManager(false);
             EventService eventService = Framework.getLocalService(EventService.class);
-            eventService.addListener(UserManagerImpl.USERMANAGER_TOPIC,
-                    userManager);
+            eventService.addListener(UserManagerImpl.USERMANAGER_TOPIC, userManager);
         }
         return userManager;
     }
@@ -87,23 +85,19 @@ public class UserService extends DefaultComponent {
         Class<?> klass = merged.userManagerClass;
         if (userManager == null) {
             if (descriptors.isEmpty()) {
-                throw new ClientException(
-                        "No contributions registered for the userManager");
+                throw new ClientException("No contributions registered for the userManager");
             }
             if (klass == null) {
-                throw new ClientException(
-                        "No class specified for the userManager");
+                throw new ClientException("No class specified for the userManager");
             }
         }
         if (klass != null) {
             try {
                 userManager = (UserManager) klass.newInstance();
             } catch (InstantiationException e) {
-                throw new ClientException("Failed to instantiate class "
-                        + klass, e);
+                throw new ClientException("Failed to instantiate class " + klass, e);
             } catch (IllegalAccessException e) {
-                throw new ClientException("Failed to instantiate class "
-                        + klass, e);
+                throw new ClientException("Failed to instantiate class " + klass, e);
             }
         }
         userManager.setConfiguration(merged);
@@ -132,23 +126,20 @@ public class UserService extends DefaultComponent {
         if (userManager != null) {
             EventService eventService = Framework.getLocalService(EventService.class);
             if (eventService != null) {
-                eventService.removeListener(UserManagerImpl.USERMANAGER_TOPIC,
-                        userManager);
+                eventService.removeListener(UserManagerImpl.USERMANAGER_TOPIC, userManager);
             }
         }
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws ClientException {
         descriptors.add((UserManagerDescriptor) contribution);
         recomputeUserManager(true);
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws ClientException {
         descriptors.remove(contribution);
         // recomputeUserManager(true);

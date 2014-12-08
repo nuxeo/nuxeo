@@ -35,8 +35,7 @@ public class XMLBuilder {
     private XMLBuilder() {
     }
 
-    public static String saveToXML(Object object, Element root,
-            XAnnotatedObject xao) {
+    public static String saveToXML(Object object, Element root, XAnnotatedObject xao) {
         try {
             toXML(object, root, xao);
             return DOMSerializer.toString(root);

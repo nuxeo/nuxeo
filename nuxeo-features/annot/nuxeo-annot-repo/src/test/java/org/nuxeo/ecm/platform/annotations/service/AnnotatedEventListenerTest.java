@@ -46,23 +46,18 @@ public class AnnotatedEventListenerTest extends AbstractRepositoryTestCase {
 
         DummyDocumentEventListener.resetTest();
         assertNotNull(annotation);
-        NuxeoPrincipal user = new UserPrincipal("bob", new ArrayList<String>(),
-                false, false);
-        Annotation createdAnnotation = service.addAnnotation(annotation, user,
-                HTTP_LOCALHOST_8080_NUXEO);
+        NuxeoPrincipal user = new UserPrincipal("bob", new ArrayList<String>(), false, false);
+        Annotation createdAnnotation = service.addAnnotation(annotation, user, HTTP_LOCALHOST_8080_NUXEO);
         assertNotNull(createdAnnotation);
         int result = DummyDocumentEventListener.getTest();
         assertEquals(Integer.parseInt("11", 2), result);
-        Statement statement = new StatementImpl(createdAnnotation.getSubject(),
-                new ResourceImpl(AnnotationsConstants.A_BODY), new LiteralImpl(
-                        "My new body"));
+        Statement statement = new StatementImpl(createdAnnotation.getSubject(), new ResourceImpl(
+                AnnotationsConstants.A_BODY), new LiteralImpl("My new body"));
         createdAnnotation.setBody(statement);
-        service.updateAnnotation(createdAnnotation, user,
-                HTTP_LOCALHOST_8080_NUXEO);
+        service.updateAnnotation(createdAnnotation, user, HTTP_LOCALHOST_8080_NUXEO);
         result = DummyDocumentEventListener.getTest();
         assertEquals(Integer.parseInt("110011", 2), result);
-        createdAnnotation = service.getAnnotation(createdAnnotation.getId(),
-                user, HTTP_LOCALHOST_8080_NUXEO);
+        createdAnnotation = service.getAnnotation(createdAnnotation.getId(), user, HTTP_LOCALHOST_8080_NUXEO);
         result = DummyDocumentEventListener.getTest();
         assertEquals(Integer.parseInt("111111", 2), result);
         service.deleteAnnotation(createdAnnotation, user);

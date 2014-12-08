@@ -35,8 +35,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * @since 5.7
  */
 @Operation(id = AddEntryToMultiValuedProperty.ID, category = Constants.CAT_DOCUMENT, label = "Add entry into multi-valued metadata", description = "Add value into the field expressed by the xpath parameter. This field must be a multivalued metadata.<p> 'checkExists' parameter enables to add value only if doesn't already exists in the field: <ul><li> if checked, the value will not be added if it exists already in the list</li><li>if not checked the value will be always added</li</ul>.<p> Remark: <b>only works for a field that stores a list of scalars (string, boolean, date, int, long) and not list of complex types.<b>")
-public class AddEntryToMultiValuedProperty extends
-        AbstractOperationMultiValuedProperty {
+public class AddEntryToMultiValuedProperty extends AbstractOperationMultiValuedProperty {
 
     public static final String ID = "AddEntryToMultivaluedProperty";
 
@@ -61,8 +60,7 @@ public class AddEntryToMultiValuedProperty extends
         Type type = p.getType();
         checkFieldType(type, value);
 
-        List<Serializable> array = p.getValue() != null ? Arrays.asList((Serializable[]) p.getValue())
-                : null;
+        List<Serializable> array = p.getValue() != null ? Arrays.asList((Serializable[]) p.getValue()) : null;
 
         Serializable newValue = addValueIntoList(array, value);
 
@@ -76,8 +74,7 @@ public class AddEntryToMultiValuedProperty extends
         return doc;
     }
 
-    private Serializable addValueIntoList(List<Serializable> array,
-            Object valueToAdd) {
+    private Serializable addValueIntoList(List<Serializable> array, Object valueToAdd) {
 
         List<Object> list = new ArrayList<Object>();
 

@@ -29,15 +29,13 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.directory.types.contrib",
-        "org.nuxeo.ecm.platform.login",
+@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.platform.login",
         "org.nuxeo.ecm.platform.login.test:dummy-client-login-config.xml" })
 public class ClientLoginFeature extends SimpleFeature {
 
     protected LoginContext logContext = null;
 
-    public Principal loginAs(String username)
-            throws LoginException {
+    public Principal loginAs(String username) throws LoginException {
         this.logContext = Framework.login(username, username);
         return logContext.getSubject().getPrincipals().iterator().next();
     }

@@ -40,7 +40,6 @@ import org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NuxeoLauncher implements LifecycleListener {
 
@@ -103,8 +102,7 @@ public class NuxeoLauncher implements LifecycleListener {
                 if (devMode) {
                     bootstrap = new DevFrameworkBootstrap(cl, homeDir);
                     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                    server.registerMBean(bootstrap, new ObjectName(
-                            DEV_BUNDLES_NAME));
+                    server.registerMBean(bootstrap, new ObjectName(DEV_BUNDLES_NAME));
                     server.registerMBean(cl, new ObjectName(WEB_RESOURCES_NAME));
                     ((NuxeoDevWebappClassLoader) cl).setBootstrap((DevFrameworkBootstrap) bootstrap);
                 } else {
@@ -123,20 +121,18 @@ public class NuxeoLauncher implements LifecycleListener {
                     server.unregisterMBean(new ObjectName(WEB_RESOURCES_NAME));
                 }
             }
-        } catch (IOException| JMException | ReflectiveOperationException e) {
+        } catch (IOException | JMException | ReflectiveOperationException e) {
             log.error("Failed to handle event: " + type, e);
         }
     }
 
     protected File resolveHomeDirectory(NuxeoWebappLoader loader) {
         String path = null;
-        if (home.startsWith("/") || home.startsWith("\\")
-                || home.contains(":/") || home.contains(":\\")) {
+        if (home.startsWith("/") || home.startsWith("\\") || home.contains(":/") || home.contains(":\\")) {
             // absolute
             path = home;
         } else if (home.startsWith("${catalina.base}")) {
-            path = getTomcatHome()
-                    + home.substring("${catalina.base}".length());
+            path = getTomcatHome() + home.substring("${catalina.base}".length());
         } else {
             try {
                 File baseDir = loader.getBaseDir();

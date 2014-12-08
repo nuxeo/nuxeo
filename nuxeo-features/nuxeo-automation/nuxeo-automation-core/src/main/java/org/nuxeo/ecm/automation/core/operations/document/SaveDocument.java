@@ -20,7 +20,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = SaveDocument.ID, category = Constants.CAT_DOCUMENT, label = "Save", description = "Save in the repository any modification that was done on the input document. Returns the saved document.")
@@ -31,7 +30,7 @@ public class SaveDocument {
     @Context
     protected CoreSession session;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
         return session.saveDocument(doc);
     }

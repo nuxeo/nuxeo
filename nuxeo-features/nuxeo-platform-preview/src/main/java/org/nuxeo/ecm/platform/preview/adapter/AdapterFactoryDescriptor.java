@@ -25,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author tiry
  */
 @XObject(value = "previewAdapter")
-public class AdapterFactoryDescriptor implements Serializable{
+public class AdapterFactoryDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

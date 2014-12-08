@@ -34,18 +34,16 @@ public class HttpAutomationClient extends AsyncAutomationClient {
     protected int httpConnectionTimeout;
 
     /**
-     * Instantiates a new {@link HttpAutomationClient} with no timeout for the
-     * HTTP connection and the default timeout for the wait of the asynchronous
-     * thread pool termination: 2 seconds.
+     * Instantiates a new {@link HttpAutomationClient} with no timeout for the HTTP connection and the default timeout
+     * for the wait of the asynchronous thread pool termination: 2 seconds.
      */
     public HttpAutomationClient(String url) {
         this(url, 0);
     }
 
     /**
-     * Instantiates a new {@link HttpAutomationClient} with the given timeout in
-     * milliseconds for the HTTP connection and the default timeout for the wait
-     * of the asynchronous thread pool termination: 2 seconds.
+     * Instantiates a new {@link HttpAutomationClient} with the given timeout in milliseconds for the HTTP connection
+     * and the default timeout for the wait of the asynchronous thread pool termination: 2 seconds.
      *
      * @since 5.7
      */
@@ -55,14 +53,12 @@ public class HttpAutomationClient extends AsyncAutomationClient {
     }
 
     /**
-     * Instantiates a new {@link HttpAutomationClient} with the given timeout in
-     * milliseconds for the HTTP connection and the given timeout in
-     * milliseconds for the wait of the asynchronous thread pool termination.
+     * Instantiates a new {@link HttpAutomationClient} with the given timeout in milliseconds for the HTTP connection
+     * and the given timeout in milliseconds for the wait of the asynchronous thread pool termination.
      *
      * @since 5.7
      */
-    public HttpAutomationClient(String url, int httpConnectionTimeout,
-            long asyncAwaitTerminationTimeout) {
+    public HttpAutomationClient(String url, int httpConnectionTimeout, long asyncAwaitTerminationTimeout) {
         super(url, asyncAwaitTerminationTimeout);
         init(httpConnectionTimeout);
     }
@@ -81,8 +77,7 @@ public class HttpAutomationClient extends AsyncAutomationClient {
         // new AuthScope(PROXY, PROXY_PORT),
         // new UsernamePasswordCredentials("username", "password"));
 
-        http.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
-                new HttpHost(host, port));
+        http.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost(host, port));
     }
 
     public HttpClient http() {

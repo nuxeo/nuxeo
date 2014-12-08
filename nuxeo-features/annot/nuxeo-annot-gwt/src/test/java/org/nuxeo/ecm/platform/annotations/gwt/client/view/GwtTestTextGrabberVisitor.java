@@ -29,7 +29,6 @@ import com.google.gwt.user.client.DOM;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class GwtTestTextGrabberVisitor extends AbstractDocumentGWTTest {
     public void testProcess() {
@@ -40,7 +39,7 @@ public class GwtTestTextGrabberVisitor extends AbstractDocumentGWTTest {
         assertNotNull(end);
         assertEquals(Node.TEXT_NODE, end.getNodeType());
         Text text = (Text) end;
-        assertEquals(" and other stuff" ,text.getNodeValue());
+        assertEquals(" and other stuff", text.getNodeValue());
         TextGrabberVisitor processor = new TextGrabberVisitor();
         Visitor visitor = new Visitor(processor);
         visitor.process(start, end);

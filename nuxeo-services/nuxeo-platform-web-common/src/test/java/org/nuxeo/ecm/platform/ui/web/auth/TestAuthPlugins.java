@@ -79,9 +79,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
         assertFalse(plugin.getStateful());
         assertTrue(plugin.getNeedStartingURLSaving());
         assertEquals("Dummy_LM", plugin.getLoginModulePlugin());
-        assertSame(
-                Class.forName("org.nuxeo.ecm.platform.ui.web.auth.DummyAuthenticator"),
-                plugin.getClassName());
+        assertSame(Class.forName("org.nuxeo.ecm.platform.ui.web.auth.DummyAuthenticator"), plugin.getClassName());
     }
 
 }

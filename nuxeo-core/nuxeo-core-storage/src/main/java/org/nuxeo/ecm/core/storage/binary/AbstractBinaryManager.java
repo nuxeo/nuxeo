@@ -42,8 +42,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     protected BinaryGarbageCollector garbageCollector;
 
     @Override
-    abstract public void initialize(
-            BinaryManagerDescriptor binaryManagerDescriptor) throws IOException;
+    abstract public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException;
 
     @Override
     abstract public Binary getBinary(InputStream in) throws IOException;
@@ -54,14 +53,12 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     /**
      * Gets existing descriptor or creates a default one.
      */
-    protected BinaryManagerRootDescriptor getDescriptor(File configFile)
-            throws IOException {
+    protected BinaryManagerRootDescriptor getDescriptor(File configFile) throws IOException {
         BinaryManagerRootDescriptor desc;
         if (configFile.exists()) {
             XMap xmap = new XMap();
             xmap.register(BinaryManagerRootDescriptor.class);
-            desc = (BinaryManagerRootDescriptor) xmap.load(new FileInputStream(
-                    configFile));
+            desc = (BinaryManagerRootDescriptor) xmap.load(new FileInputStream(configFile));
         } else {
             desc = new BinaryManagerRootDescriptor();
             // TODO fetch from repo descriptor
@@ -80,8 +77,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
 
     public static final int MAX_BUF_SIZE = 64 * 1024; // 64 kB
 
-    protected String storeAndDigest(InputStream in, OutputStream out)
-            throws IOException {
+    protected String storeAndDigest(InputStream in, OutputStream out) throws IOException {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance(descriptor.digest);
@@ -156,8 +152,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
         }
 
         @Override
-        public Binary getUnscrambledBinary(File file, String digest,
-                String repoName) {
+        public Binary getUnscrambledBinary(File file, String digest, String repoName) {
             return new Binary(file, digest, repoName);
         }
 
@@ -171,8 +166,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     }
 
     /**
-     * A {@link Binary} that is unscrambled on read using a
-     * {@link BinaryScrambler}.
+     * A {@link Binary} that is unscrambled on read using a {@link BinaryScrambler}.
      */
     public static class ScrambledBinary extends Binary {
 
@@ -180,8 +174,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
 
         protected final BinaryScrambler scrambler;
 
-        public ScrambledBinary(File file, String digest, String repoName,
-                BinaryScrambler scrambler) {
+        public ScrambledBinary(File file, String digest, String repoName, BinaryScrambler scrambler) {
             super(file, digest, repoName);
             this.scrambler = scrambler;
         }
@@ -199,8 +192,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     }
 
     /**
-     * A {@link FileSource} that is unscrambled on read using a
-     * {@link BinaryScrambler}.
+     * A {@link FileSource} that is unscrambled on read using a {@link BinaryScrambler}.
      */
     public static class ScrambledStreamSource extends FileSource {
 
@@ -223,8 +215,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     }
 
     /**
-     * A {@link FileInputStream} that is unscrambled on read using a
-     * {@link BinaryScrambler}.
+     * A {@link FileInputStream} that is unscrambled on read using a {@link BinaryScrambler}.
      */
     public static class ScrambledFileInputStream extends InputStream {
 
@@ -234,8 +225,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
 
         protected final byte[] onebyte = new byte[1];
 
-        protected ScrambledFileInputStream(File file, BinaryScrambler scrambler)
-                throws IOException {
+        protected ScrambledFileInputStream(File file, BinaryScrambler scrambler) throws IOException {
             is = new FileInputStream(file);
             this.scrambler = scrambler;
             scrambler.reset();

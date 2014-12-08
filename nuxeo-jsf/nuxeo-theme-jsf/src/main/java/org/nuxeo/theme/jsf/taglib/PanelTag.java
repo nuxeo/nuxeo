@@ -81,8 +81,7 @@ public class PanelTag extends UIComponentELTag {
         component.getAttributes().put("controlledBy", controlledBy);
 
         // the panel's perspectives
-        component.getAttributes().put("visibleInPerspectives",
-                visibleInPerspectives);
+        component.getAttributes().put("visibleInPerspectives", visibleInPerspectives);
 
         // Filter
         if (null != filter) {

@@ -68,11 +68,9 @@ public class TestUserManager extends UserManagerTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/directory-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
 
-        userService = (UserService) Framework.getRuntime().getComponent(
-                UserService.NAME);
+        userService = (UserService) Framework.getRuntime().getComponent(UserService.NAME);
 
         userManager = userService.getUserManager();
     }
@@ -468,8 +466,7 @@ public class TestUserManager extends UserManagerTestCase {
         g2.setProperty("group", "subGroups", g2Groups);
         userManager.createGroup(g2);
 
-        List<String> expectedTopLevelGroups = Arrays.asList("administrators",
-                "members", "powerusers", "test_g2");
+        List<String> expectedTopLevelGroups = Arrays.asList("administrators", "members", "powerusers", "test_g2");
         List<String> topLevelGroups = userManager.getTopLevelGroups();
         Collections.sort(topLevelGroups);
 
@@ -477,8 +474,7 @@ public class TestUserManager extends UserManagerTestCase {
 
         // delete test_g2 and test if test_g1 is toplevel
         userManager.deleteGroup(g2);
-        expectedTopLevelGroups = Arrays.asList("administrators", "members",
-                "powerusers", "test_g1");
+        expectedTopLevelGroups = Arrays.asList("administrators", "members", "powerusers", "test_g1");
         topLevelGroups = userManager.getTopLevelGroups();
         Collections.sort(topLevelGroups);
         assertEquals(expectedTopLevelGroups, topLevelGroups);
@@ -488,16 +484,15 @@ public class TestUserManager extends UserManagerTestCase {
         g2Groups = Arrays.asList("test_g1");
         g2.setProperty("group", "subGroups", g2Groups);
         userManager.createGroup(g2);
-        expectedTopLevelGroups = Arrays.asList("administrators", "members",
-                "powerusers", "test_g2");
+        expectedTopLevelGroups = Arrays.asList("administrators", "members", "powerusers", "test_g2");
         topLevelGroups = userManager.getTopLevelGroups();
         Collections.sort(topLevelGroups);
         assertEquals(expectedTopLevelGroups, topLevelGroups);
     }
 
     /**
-     * Test the method getUsersInGroup, making sure it does return only the
-     * users of the group (and not the subgroups ones).
+     * Test the method getUsersInGroup, making sure it does return only the users of the group (and not the subgroups
+     * ones).
      */
     @Test
     public void testGetUsersInGroup() throws Exception {
@@ -525,19 +520,16 @@ public class TestUserManager extends UserManagerTestCase {
         userManager.createGroup(g2);
 
         List<String> expectedUsersInGroup1 = Arrays.asList("test_u1");
-        List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis",
-                "test_u2");
+        List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis", "test_u2");
         Collections.sort(expectedUsersInGroup1);
         Collections.sort(expectedUsersInGroup2);
-        assertEquals(expectedUsersInGroup1,
-                userManager.getUsersInGroup("test_g1"));
-        assertEquals(expectedUsersInGroup2,
-                userManager.getUsersInGroup("test_g2"));
+        assertEquals(expectedUsersInGroup1, userManager.getUsersInGroup("test_g1"));
+        assertEquals(expectedUsersInGroup2, userManager.getUsersInGroup("test_g2"));
     }
 
     /**
-     * Test the method getUsersInGroupAndSubgroups, making sure it does return
-     * all the users from a group and its subgroups.
+     * Test the method getUsersInGroupAndSubgroups, making sure it does return all the users from a group and its
+     * subgroups.
      */
     @Test
     public void testGetUsersInGroupAndSubgroups() throws Exception {
@@ -570,8 +562,7 @@ public class TestUserManager extends UserManagerTestCase {
         assertEquals(expectedUsersInGroup1, usersInGroupAndSubGroups1);
 
         // should have all the groups from group1 and group2
-        List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis",
-                "test_u2", "test_u1");
+        List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis", "test_u2", "test_u1");
         List<String> usersInGroupAndSubGroups2 = userManager.getUsersInGroupAndSubGroups("test_g2");
         Collections.sort(expectedUsersInGroup2);
         Collections.sort(usersInGroupAndSubGroups2);
@@ -579,12 +570,11 @@ public class TestUserManager extends UserManagerTestCase {
     }
 
     /**
-     * Test the method getUsersInGroupAndSubgroups making sure it's not going
-     * into an infinite loop when a subgroup is also parent of a group.
+     * Test the method getUsersInGroupAndSubgroups making sure it's not going into an infinite loop when a subgroup is
+     * also parent of a group.
      */
     @Test
-    public void testGetUsersInGroupAndSubgroupsWithoutInfiniteLoop()
-            throws Exception {
+    public void testGetUsersInGroupAndSubgroupsWithoutInfiniteLoop() throws Exception {
         deleteTestObjects();
 
         DocumentModel u1 = getUser("test_u1");
@@ -610,8 +600,7 @@ public class TestUserManager extends UserManagerTestCase {
         g2.setProperty("group", "subGroups", g2Groups);
         userManager.createGroup(g2);
 
-        List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis",
-                "test_u2", "test_u1");
+        List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis", "test_u2", "test_u1");
         // infinite loop can occure here:
         List<String> usersInGroupAndSubGroups2 = userManager.getUsersInGroupAndSubGroups("test_g2");
         Collections.sort(expectedUsersInGroup2);
@@ -668,8 +657,8 @@ public class TestUserManager extends UserManagerTestCase {
         assertEquals(2, principals.size());
         String name1 = principals.get(0).getName();
         String name2 = principals.get(1).getName();
-        assertTrue("test_u1".equals(name1) && "test_u2".equals(name2)
-                || "test_u1".equals(name2) && "test_u2".equals(name1));
+        assertTrue("test_u1".equals(name1) && "test_u2".equals(name2) || "test_u1".equals(name2)
+                && "test_u2".equals(name1));
     }
 
     @Test
@@ -724,8 +713,7 @@ public class TestUserManager extends UserManagerTestCase {
 
         // refresh u1
         u1 = userManager.getPrincipal("test_u1");
-        List<String> expectedGroups = Arrays.asList("defgr", "test_g1",
-                "test_g2");
+        List<String> expectedGroups = Arrays.asList("defgr", "test_g1", "test_g2");
         List<String> groups = u1.getGroups();
         Collections.sort(groups);
         assertEquals(expectedGroups, groups);
@@ -816,8 +804,7 @@ public class TestUserManager extends UserManagerTestCase {
     }
 
     /**
-     * common init method for initialising tests for the method
-     * getUsernamesForPermission.
+     * common init method for initialising tests for the method getUsernamesForPermission.
      */
     private void initTestGetUsernamesForPermission() throws Exception {
         userManager.getPrincipal("Administrator"); // creates tables
@@ -856,21 +843,18 @@ public class TestUserManager extends UserManagerTestCase {
 
         ACPImpl acp = new ACPImpl();
         ACLImpl acl = new ACLImpl();
-        acl.add(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, true));
         acl.add(new ACE("group1", SecurityConstants.READ, false));
         acl.add(new ACE("alex", SecurityConstants.READ, true));
         acp.addACL(acl);
 
-        List<String> users = Arrays.asList(userManager.getUsersForPermission(
-                SecurityConstants.READ, acp));
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(SecurityConstants.READ, acp));
 
         List<String> expectedUsers = Arrays.asList("alex", "jdoe", "bree");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
-        assertEquals("Expected users having read access are ", expectedUsers,
-                users);
+        assertEquals("Expected users having read access are ", expectedUsers, users);
     }
 
     /**
@@ -882,30 +866,25 @@ public class TestUserManager extends UserManagerTestCase {
 
         ACPImpl acp = new ACPImpl();
         ACLImpl acl = new ACLImpl();
-        acl.add(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
         acl.add(new ACE("group1", SecurityConstants.READ, false));
         acl.add(new ACE("alex", SecurityConstants.READ, true));
         acp.addACL(acl);
 
-        List<String> users = Arrays.asList(userManager.getUsersForPermission(
-                SecurityConstants.READ, acp));
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(SecurityConstants.READ, acp));
 
         List<String> expectedUsers = Arrays.asList("alex");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
-        assertEquals("Expected users having read access are ", expectedUsers,
-                users);
+        assertEquals("Expected users having read access are ", expectedUsers, users);
     }
 
     /**
-     * Same test as before but without the first ace (default value: everyone,
-     * everything false).
+     * Same test as before but without the first ace (default value: everyone, everything false).
      */
     @Test
-    public void testGetUsernamesForPermissionWithoutEveryoneEverythingACE()
-            throws Exception {
+    public void testGetUsernamesForPermissionWithoutEveryoneEverythingACE() throws Exception {
         initTestGetUsernamesForPermission();
 
         ACPImpl acp = new ACPImpl();
@@ -915,15 +894,13 @@ public class TestUserManager extends UserManagerTestCase {
         acl.add(new ACE("alex", SecurityConstants.READ, true));
         acp.addACL(acl);
 
-        List<String> users = Arrays.asList(userManager.getUsersForPermission(
-                SecurityConstants.READ, acp));
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(SecurityConstants.READ, acp));
 
         List<String> expectedUsers = Arrays.asList("alex");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
-        assertEquals("Expected users having read access are ", expectedUsers,
-                users);
+        assertEquals("Expected users having read access are ", expectedUsers, users);
     }
 
     /**
@@ -935,14 +912,12 @@ public class TestUserManager extends UserManagerTestCase {
 
         ACPImpl acp = new ACPImpl();
         ACLImpl acl = new ACLImpl();
-        acl.add(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, true));
         acl.add(new ACE("group2", SecurityConstants.READ, false));
         acl.add(new ACE("group1", SecurityConstants.READ, true));
         acp.addACL(acl);
 
-        List<String> users = Arrays.asList(userManager.getUsersForPermission(
-                SecurityConstants.READ, acp));
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(SecurityConstants.READ, acp));
 
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
@@ -951,37 +926,31 @@ public class TestUserManager extends UserManagerTestCase {
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
-        assertEquals("Expected users having read access are ", expectedUsers,
-                users);
+        assertEquals("Expected users having read access are ", expectedUsers, users);
     }
 
     /**
-     * Testing getUsernamesForPermission with compound permission. For example,
-     * READ_WRITE contains READ.
+     * Testing getUsernamesForPermission with compound permission. For example, READ_WRITE contains READ.
      */
     @Test
-    public void testGetUsernamesForPermissionWithCompoundPermission()
-            throws Exception {
+    public void testGetUsernamesForPermissionWithCompoundPermission() throws Exception {
         initTestGetUsernamesForPermission();
 
         ACPImpl acp = new ACPImpl();
         ACLImpl acl = new ACLImpl();
-        acl.add(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, true));
         acl.add(new ACE("group2", SecurityConstants.READ_WRITE, false));
         acl.add(new ACE("group1", SecurityConstants.READ, true));
         acp.addACL(acl);
 
-        List<String> users = Arrays.asList(userManager.getUsersForPermission(
-                SecurityConstants.READ, acp));
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(SecurityConstants.READ, acp));
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
         List<String> expectedUsers = Arrays.asList("alex", "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
-        assertEquals("Expected users having read access are ", expectedUsers,
-                users);
+        assertEquals("Expected users having read access are ", expectedUsers, users);
     }
 
     /**
@@ -993,8 +962,7 @@ public class TestUserManager extends UserManagerTestCase {
 
         ACPImpl acp = new ACPImpl();
         ACLImpl acl = new ACLImpl(ACL.INHERITED_ACL);
-        acl.add(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, true));
         acl.add(new ACE("group2", SecurityConstants.READ_WRITE, false));
         acp.addACL(acl);
 
@@ -1002,15 +970,13 @@ public class TestUserManager extends UserManagerTestCase {
         acl2.add(new ACE("group1", SecurityConstants.READ, true));
         acp.addACL(acl2);
 
-        List<String> users = Arrays.asList(userManager.getUsersForPermission(
-                SecurityConstants.READ, acp));
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(SecurityConstants.READ, acp));
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
         List<String> expectedUsers = Arrays.asList("alex", "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
-        assertEquals("Expected users having read access are ", expectedUsers,
-                users);
+        assertEquals("Expected users having read access are ", expectedUsers, users);
     }
 
     /**
@@ -1026,14 +992,12 @@ public class TestUserManager extends UserManagerTestCase {
         acl.add(new ACE("group1", SecurityConstants.READ, false));
         acp.addACL(acl);
 
-        List<String> users = Arrays.asList(userManager.getUsersForPermission(
-                SecurityConstants.READ, acp));
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(SecurityConstants.READ, acp));
         // group3 and group2 but alex should have read access
         List<String> expectedUsers = Arrays.asList("bree", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
-        assertEquals("Expected users having read access are ", expectedUsers,
-                users);
+        assertEquals("Expected users having read access are ", expectedUsers, users);
     }
 
     @Test

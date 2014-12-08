@@ -22,7 +22,6 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.BundleContext;
 
-
 public class MetricComponent extends DefaultComponent {
 
     protected final MetricSerializer serializer = new MetricSerializer();
@@ -45,7 +44,7 @@ public class MetricComponent extends DefaultComponent {
 
     protected final MetricRegister register = new MetricRegister();
 
-    protected final MetricRegisteringCallback registeringCB = new  MetricRegisteringCallback(register);
+    protected final MetricRegisteringCallback registeringCB = new MetricRegisteringCallback(register);
 
     @Override
     public void activate(ComponentContext context) {
@@ -59,7 +58,6 @@ public class MetricComponent extends DefaultComponent {
         super.deactivate(context);
     }
 
-
     public void start(BundleContext context) {
         doStart();
     }
@@ -72,13 +70,13 @@ public class MetricComponent extends DefaultComponent {
         enabler.setSerializer(serializer);
         SimonManager.enable();
         SimonManager.callback().addCallback(registeringCB);
-        register.registerMXBean(enabler,  "enabler", MetricEnablerMXBean.class, "Feature");
+        register.registerMXBean(enabler, "enabler", MetricEnablerMXBean.class, "Feature");
         register.registerMXBean(serializer, "serializer", MetricSerializerMXBean.class, "Feature");
     }
 
     protected void doStop() {
         SimonManager.disable();
-        if (SimonManager.callback()!=null) {
+        if (SimonManager.callback() != null) {
             SimonManager.callback().removeCallback(registeringCB);
         }
         register.unregisterAll();

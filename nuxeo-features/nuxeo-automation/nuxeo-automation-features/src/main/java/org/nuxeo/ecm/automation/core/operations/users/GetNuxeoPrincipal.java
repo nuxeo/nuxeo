@@ -23,9 +23,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
- * Fetch a user from {@link UserManager} and return it as a
- * {@link DocumentModel}. Using the DocumentModel rather that a POJO allow to
- * also fetch custom properties.
+ * Fetch a user from {@link UserManager} and return it as a {@link DocumentModel}. Using the DocumentModel rather that a
+ * POJO allow to also fetch custom properties.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7

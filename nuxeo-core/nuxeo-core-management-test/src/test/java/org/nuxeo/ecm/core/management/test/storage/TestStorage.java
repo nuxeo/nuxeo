@@ -37,11 +37,8 @@ public class TestStorage {
 
     @Test
     public void testRegistration() {
-        assertNotNull("handler is not contributed",
-                FakeDocumentStoreHandler.testInstance);
-        assertNotNull("handler is not invoked",
-                FakeDocumentStoreHandler.testInstance.repositoryName);
-        assertEquals("configuration is not contributed", "test",
-                FakeDocumentStoreHandler.testInstance.repositoryName);
+        assertNotNull("handler is not contributed", FakeDocumentStoreHandler.testInstance);
+        assertNotNull("handler is not invoked", FakeDocumentStoreHandler.testInstance.repositoryName);
+        assertEquals("configuration is not contributed", "test", FakeDocumentStoreHandler.testInstance.repositoryName);
     }
 }

@@ -73,21 +73,19 @@ import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBea
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
- * Seam component that manages statements involving current document as well as
- * creation, edition and deletion of statements involving current document.
+ * Seam component that manages statements involving current document as well as creation, edition and deletion of
+ * statements involving current document.
  * <p>
- * Current document is the subject of the relation. The predicate is resolved
- * thanks to a list of predicates URIs. The object is resolved using a type
- * (literal, resource, qname resource), an optional namespace (for qname
- * resources) and a value.
+ * Current document is the subject of the relation. The predicate is resolved thanks to a list of predicates URIs. The
+ * object is resolved using a type (literal, resource, qname resource), an optional namespace (for qname resources) and
+ * a value.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @Name("relationActions")
 @Scope(CONVERSATION)
 @AutomaticDocumentBasedInvalidation
-public class RelationActionsBean extends DocumentContextBoundActionBean
-        implements RelationActions, Serializable {
+public class RelationActionsBean extends DocumentContextBoundActionBean implements RelationActions, Serializable {
 
     private static final long serialVersionUID = 2336539966097558178L;
 
@@ -153,8 +151,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             QNameResource resource = (QNameResource) node;
             Map<String, Object> context = Collections.<String, Object> singletonMap(
                     ResourceAdapter.CORE_SESSION_CONTEXT_KEY, documentManager);
-            Object o = relationManager.getResourceRepresentation(
-                    resource.getNamespace(), resource, context);
+            Object o = relationManager.getResourceRepresentation(resource.getNamespace(), resource, context);
             if (o instanceof DocumentModel) {
                 return (DocumentModel) o;
             }
@@ -167,25 +164,22 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
     private static QNameResource getOldDocumentResource(DocumentModel document) {
         QNameResource documentResource = null;
         if (document != null) {
-            documentResource = new QNameResourceImpl(
-                    RelationConstants.DOCUMENT_NAMESPACE, document.getId());
+            documentResource = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, document.getId());
         }
         return documentResource;
     }
 
     @Override
-    public QNameResource getDocumentResource(DocumentModel document)
-            throws ClientException {
+    public QNameResource getDocumentResource(DocumentModel document) throws ClientException {
         QNameResource documentResource = null;
         if (document != null) {
-            documentResource = (QNameResource) relationManager.getResource(
-                    RelationConstants.DOCUMENT_NAMESPACE, document, null);
+            documentResource = (QNameResource) relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE,
+                    document, null);
         }
         return documentResource;
     }
 
-    protected List<StatementInfo> getStatementsInfo(List<Statement> statements)
-            throws ClientException {
+    protected List<StatementInfo> getStatementsInfo(List<Statement> statements) throws ClientException {
         if (statements == null) {
             return null;
         }
@@ -193,14 +187,11 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         for (Statement statement : statements) {
             Subject subject = statement.getSubject();
             // TODO: filter on doc visibility (?)
-            NodeInfo subjectInfo = new NodeInfoImpl(subject,
-                    getDocumentModel(subject), true);
+            NodeInfo subjectInfo = new NodeInfoImpl(subject, getDocumentModel(subject), true);
             Resource predicate = statement.getPredicate();
             Node object = statement.getObject();
-            NodeInfo objectInfo = new NodeInfoImpl(object,
-                    getDocumentModel(object), true);
-            StatementInfo info = new StatementInfoImpl(statement, subjectInfo,
-                    new NodeInfoImpl(predicate), objectInfo);
+            NodeInfo objectInfo = new NodeInfoImpl(object, getDocumentModel(object), true);
+            StatementInfo info = new StatementInfoImpl(statement, subjectInfo, new NodeInfoImpl(predicate), objectInfo);
             infoList.add(info);
         }
         return infoList;
@@ -216,8 +207,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
 
     @Override
     @Factory(value = "currentDocumentIncomingRelations", scope = ScopeType.EVENT)
-    public List<StatementInfo> getIncomingStatementsInfo()
-            throws ClientException {
+    public List<StatementInfo> getIncomingStatementsInfo() throws ClientException {
         if (incomingStatementsInfo != null) {
             return incomingStatementsInfo;
         }
@@ -232,8 +222,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             if (graph instanceof JenaGraph) {
                 // add old statements, BBB
                 Resource oldDocResource = getOldDocumentResource(currentDoc);
-                incomingStatements.addAll(graph.getStatements(null, null,
-                        oldDocResource));
+                incomingStatements.addAll(graph.getStatements(null, null, oldDocResource));
             }
             incomingStatementsInfo = getStatementsInfo(incomingStatements);
             // sort by modification date, reverse
@@ -245,8 +234,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
 
     @Override
     @Factory(value = "currentDocumentOutgoingRelations", scope = ScopeType.EVENT)
-    public List<StatementInfo> getOutgoingStatementsInfo()
-            throws ClientException {
+    public List<StatementInfo> getOutgoingStatementsInfo() throws ClientException {
         if (outgoingStatementsInfo != null) {
             return outgoingStatementsInfo;
         }
@@ -261,8 +249,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             if (graph instanceof JenaGraph) {
                 // add old statements, BBB
                 Resource oldDocResource = getOldDocumentResource(currentDoc);
-                outgoingStatements.addAll(graph.getStatements(oldDocResource,
-                        null, null));
+                outgoingStatements.addAll(graph.getStatements(oldDocResource, null, null));
             }
             outgoingStatementsInfo = getStatementsInfo(outgoingStatements);
             // sort by modification date, reverse
@@ -367,23 +354,17 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             objectDocumentUid = objectDocumentUid.trim();
             String repositoryName = navigationContext.getCurrentServerLocation().getName();
             String localName = repositoryName + "/" + objectDocumentUid;
-            object = new QNameResourceImpl(
-                    RelationConstants.DOCUMENT_NAMESPACE, localName);
+            object = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, localName);
         }
         try {
-            documentRelationManager.addRelation(documentManager,
-                    getCurrentDocument(), object, predicateUri, false,
+            documentRelationManager.addRelation(documentManager, getCurrentDocument(), object, predicateUri, false,
                     includeStatementsInEvents, comment.trim());
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "label.relation.created"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get("label.relation.created"));
             resetCreateFormValues();
         } catch (RelationAlreadyExistsException e) {
-            facesMessages.add(
-                    StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get(
-                            "label.relation.already.exists"));
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("label.relation.already.exists"));
         }
         resetStatements();
         return null;
@@ -407,13 +388,10 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
     }
 
     @Override
-    public String deleteStatement(StatementInfo stmtInfo)
-            throws ClientException {
+    public String deleteStatement(StatementInfo stmtInfo) throws ClientException {
         resetEventContext();
-        documentRelationManager.deleteRelation(documentManager,
-                stmtInfo.getStatement());
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get("label.relation.deleted"));
+        documentRelationManager.deleteRelation(documentManager, stmtInfo.getStatement());
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("label.relation.deleted"));
         resetStatements();
         return null;
     }

@@ -24,8 +24,7 @@ import java.io.IOException;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 
 /**
- * OOoManagerService can either start or stop OpenOffice pool server and return
- * an OfficeDocumentConverter.
+ * OOoManagerService can either start or stop OpenOffice pool server and return an OfficeDocumentConverter.
  *
  * @author Laurent Doguin
  */

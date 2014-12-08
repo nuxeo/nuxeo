@@ -32,8 +32,7 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Configurable Group Computer based on Metadata of Documents. Documents
- * Selection is managed by NXQL where clause.
+ * Configurable Group Computer based on Metadata of Documents. Documents Selection is managed by NXQL where clause.
  *
  * @since 5.7.3
  */
@@ -47,15 +46,12 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
 
     private String xpath;
 
-    public DocumentMetadataGroupComputer(String whereClause,
-            String groupPattern, String xpath) throws ClientException {
+    public DocumentMetadataGroupComputer(String whereClause, String groupPattern, String xpath) throws ClientException {
         this.whereClause = whereClause;
         this.xpath = xpath;
         this.groupPattern = groupPattern;
-        if (whereClause == null || whereClause.isEmpty()
-                || groupPattern == null || groupPattern.isEmpty()) {
-            throw new ClientException(
-                    "Bad Contribution Document Metadata Computer Group Configuration");
+        if (whereClause == null || whereClause.isEmpty() || groupPattern == null || groupPattern.isEmpty()) {
+            throw new ClientException("Bad Contribution Document Metadata Computer Group Configuration");
         }
     }
 
@@ -75,8 +71,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
     @Override
     public List<String> getGroupsForUser(NuxeoPrincipalImpl user) {
         String username = user.getName();
-        GetDocumentsFromUsername runner = new GetDocumentsFromUsername(
-                getRepository(), whereClause, username, xpath);
+        GetDocumentsFromUsername runner = new GetDocumentsFromUsername(getRepository(), whereClause, username, xpath);
         runner.runUnrestricted();
 
         List<String> groupIds = new ArrayList<String>();
@@ -106,8 +101,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
     }
 
     protected class GetDocumentsFromUsername extends UnrestrictedSessionRunner {
-        private static final String QUERY_PATTERN = "SELECT %s "
-                + "FROM Document %s";
+        private static final String QUERY_PATTERN = "SELECT %s " + "FROM Document %s";
 
         protected String username;
 
@@ -117,8 +111,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
 
         public List<String> result = new ArrayList<String>();
 
-        protected GetDocumentsFromUsername(String repositoryName,
-                String whereClause, String username, String xpath) {
+        protected GetDocumentsFromUsername(String repositoryName, String whereClause, String username, String xpath) {
             super(repositoryName);
             this.username = username;
             whereClausePattern = whereClause;
@@ -133,8 +126,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
             IterableQueryResult docs = session.queryAndFetch(query, "NXQL");
             for (Map<String, Serializable> doc : docs) {
                 String value = (String) doc.get(xpath);
-                if (value != null && !value.isEmpty()
-                        && !result.contains(value)) {
+                if (value != null && !value.isEmpty() && !result.contains(value)) {
                     result.add(value);
                 }
             }

@@ -26,9 +26,8 @@ import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class SimpleFormDataProvider extends HashMap<String,String[]>  implements FormDataProvider {
+public class SimpleFormDataProvider extends HashMap<String, String[]> implements FormDataProvider {
 
     private static final long serialVersionUID = 1L;
 
@@ -53,10 +52,10 @@ public class SimpleFormDataProvider extends HashMap<String,String[]>  implements
     }
 
     public void putString(String key, String value) {
-        put(key, new String[] {value});
+        put(key, new String[] { value });
     }
 
-    public void putList(String key, String ... values) {
+    public void putList(String key, String... values) {
         put(key, values);
     }
 

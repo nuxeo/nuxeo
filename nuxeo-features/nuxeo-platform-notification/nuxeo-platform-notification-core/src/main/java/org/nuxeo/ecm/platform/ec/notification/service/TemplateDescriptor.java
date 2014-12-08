@@ -25,7 +25,6 @@ import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 @XObject("template")
 public class TemplateDescriptor {
@@ -39,7 +38,6 @@ public class TemplateDescriptor {
     // this is set by the type service to the context that knows how to locate
     // the schema file
     private RuntimeContext context;
-
 
     public TemplateDescriptor() {
     }

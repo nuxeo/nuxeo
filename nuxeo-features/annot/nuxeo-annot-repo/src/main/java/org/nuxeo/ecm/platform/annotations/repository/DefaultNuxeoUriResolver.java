@@ -42,7 +42,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class DefaultNuxeoUriResolver implements UriResolver {
 
@@ -74,15 +73,13 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         return Collections.singletonList(translatedUri);
     }
 
-    public URI translateFromGraphURI(URI uri, String baseUrl)
-            throws AnnotationException {
+    public URI translateFromGraphURI(URI uri, String baseUrl) throws AnnotationException {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         if (view == null || baseUrl == null) { // not a nuxeo document or
             // already a urn
             return uri;
         }
-        String url = viewCodecManager.getUrlFromDocumentView(view, true,
-                baseUrl);
+        String url = viewCodecManager.getUrlFromDocumentView(view, true, baseUrl);
         URI u = null;
         try {
             u = new URI(url);
@@ -96,8 +93,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         if (uri.toString().startsWith("urn")) {
             return uri;
         }
-        DocumentView view = viewCodecManager.getDocumentViewFromUrl(
-                uri.toString(), true, getBaseUrl(uri));
+        DocumentView view = viewCodecManager.getDocumentViewFromUrl(uri.toString(), true, getBaseUrl(uri));
         if (view == null) {// not a nuxeo uri
             return uri;
         }
@@ -130,8 +126,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         if (translator.isNuxeoUrn(uri)) {
             view = translator.getDocumentViewFromUri(uri);
         } else {
-            view = viewCodecManager.getDocumentViewFromUrl(uri.toString(),
-                    true, getBaseUrl(uri));
+            view = viewCodecManager.getDocumentViewFromUrl(uri.toString(), true, getBaseUrl(uri));
             if (view == null) {
                 return null;
             }
@@ -145,8 +140,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         if (translator.isNuxeoUrn(uri)) {
             view = translator.getDocumentViewFromUri(uri);
         } else {
-            view = viewCodecManager.getDocumentViewFromUrl(uri.toString(),
-                    true, getBaseUrl(uri));
+            view = viewCodecManager.getDocumentViewFromUrl(uri.toString(), true, getBaseUrl(uri));
             if (view == null) {
                 return null;
             }
@@ -154,10 +148,8 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         return view.getDocumentLocation();
     }
 
-    public URI getUri(DocumentView view, String baseUrl)
-            throws URISyntaxException {
-        return new URI(viewCodecManager.getUrlFromDocumentView(view, true,
-                baseUrl));
+    public URI getUri(DocumentView view, String baseUrl) throws URISyntaxException {
+        return new URI(viewCodecManager.getUrlFromDocumentView(view, true, baseUrl));
     }
 
 }

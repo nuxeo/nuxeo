@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-
 public class TestDocumentModel extends NXRuntimeTestCase {
 
     @Before
@@ -38,7 +37,7 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
     }
 
-    @SuppressWarnings({"ObjectEqualsNull", "SimplifiableJUnitAssertion"})
+    @SuppressWarnings({ "ObjectEqualsNull", "SimplifiableJUnitAssertion" })
     @Test
     public void testDocumentModelImpl() throws Exception {
         DocumentModel model = new DocumentModelImpl("my type");
@@ -77,7 +76,7 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         assertFalse(model.isVersion());
         assertNull(model.getRepositoryName());
         assertNull(model.getSessionId());
-        //assertNull(model.getLifeCyclePolicy());
+        // assertNull(model.getLifeCyclePolicy());
 
         assertTrue(model.equals(model));
         assertFalse(model.equals(null));
@@ -91,7 +90,7 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         original.setPrefetch(new Prefetch());
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         new ObjectOutputStream(bos).writeObject(original);
-       DocumentModel rehydrated = (DocumentModel) new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray())).readObject();
-       assertNotNull(rehydrated);
+        DocumentModel rehydrated = (DocumentModel) new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray())).readObject();
+        assertNotNull(rehydrated);
     }
 }

@@ -19,7 +19,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileResourceResolver implements ResourceResolver {
 
@@ -39,7 +38,7 @@ public class FileResourceResolver implements ResourceResolver {
         if (f.isFile()) {
             try {
                 return f.toURI().toURL();
-            } catch(IOException e) {
+            } catch (IOException e) {
                 return null;
             }
         }

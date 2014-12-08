@@ -27,8 +27,7 @@ public class ClearSelectedDocuments {
 
     @OperationMethod
     public void run() {
-        OperationHelper.getDocumentListManager().resetWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        OperationHelper.getDocumentListManager().resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
     }
 
 }

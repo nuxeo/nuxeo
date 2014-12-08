@@ -27,8 +27,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  *
  * @since 5.5
  */
-public class LayoutDefinitionRegistry extends
-        SimpleContributionRegistry<LayoutDefinition> {
+public class LayoutDefinitionRegistry extends SimpleContributionRegistry<LayoutDefinition> {
 
     protected final String category;
 
@@ -63,8 +62,7 @@ public class LayoutDefinitionRegistry extends
         List<String> aliases = contrib.getAliases();
         if (aliases != null) {
             for (String alias : aliases) {
-                FragmentList<LayoutDefinition> head = addFragment(alias,
-                        contrib);
+                FragmentList<LayoutDefinition> head = addFragment(alias, contrib);
                 contributionUpdated(alias, head.merge(this), contrib);
             }
         }
@@ -72,14 +70,12 @@ public class LayoutDefinitionRegistry extends
 
     @Override
     // overridden to handle aliases
-    public synchronized void removeContribution(LayoutDefinition contrib,
-            boolean useEqualsMethod) {
+    public synchronized void removeContribution(LayoutDefinition contrib, boolean useEqualsMethod) {
         super.removeContribution(contrib, useEqualsMethod);
         List<String> aliases = contrib.getAliases();
         if (aliases != null) {
             for (String alias : aliases) {
-                FragmentList<LayoutDefinition> head = removeFragment(alias,
-                        contrib, useEqualsMethod);
+                FragmentList<LayoutDefinition> head = removeFragment(alias, contrib, useEqualsMethod);
                 if (head != null) {
                     LayoutDefinition result = head.merge(this);
                     if (result != null) {

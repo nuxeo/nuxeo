@@ -60,8 +60,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  */
 @Features({ SQLDirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@LocalDeploy({
-        "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/LDAPDirectoryFactory.xml",
+@LocalDeploy({ "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/LDAPDirectoryFactory.xml",
         "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml",
         "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml" })
 public class ExternalLDAPDirectoryFeature extends SimpleFeature {
@@ -94,21 +93,19 @@ public class ExternalLDAPDirectoryFeature extends SimpleFeature {
 
     protected void loadDataFromLdif(String ldif, DirContext ctx) {
         List<LdifLoadFilter> filters = new ArrayList<LdifLoadFilter>();
-        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif),
-                filters, Thread.currentThread().getContextClassLoader());
+        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters,
+                Thread.currentThread().getContextClassLoader());
         loader.execute();
     }
 
-    protected void destroyRecursively(String dn, DirContext ctx, int limit)
-            throws NamingException {
+    protected void destroyRecursively(String dn, DirContext ctx, int limit) throws NamingException {
         if (limit == 0) {
             log.warn("Reach recursion limit, stopping deletion at" + dn);
             return;
         }
         SearchControls scts = new SearchControls();
         scts.setSearchScope(SearchControls.ONELEVEL_SCOPE);
-        NamingEnumeration<SearchResult> children = ctx.search(dn,
-                "(objectClass=*)", scts);
+        NamingEnumeration<SearchResult> children = ctx.search(dn, "(objectClass=*)", scts);
         try {
             while (children.hasMore()) {
                 SearchResult child = children.next();
@@ -118,8 +115,7 @@ public class ExternalLDAPDirectoryFeature extends SimpleFeature {
                 destroyRecursively(subDn, ctx, limit);
             }
         } catch (SizeLimitExceededException e) {
-            log.warn("SizeLimitExceededException: trying again on partial results "
-                    + dn);
+            log.warn("SizeLimitExceededException: trying again on partial results " + dn);
             if (limit == -1) {
                 limit = 100;
             }
@@ -129,8 +125,7 @@ public class ExternalLDAPDirectoryFeature extends SimpleFeature {
     }
 
     /**
-     * Method to create a X509 certificate used to test the creation and the
-     * update of an entry in the ldap.
+     * Method to create a X509 certificate used to test the creation and the update of an entry in the ldap.
      *
      * @return A X509 certificate
      * @throws CertificateException
@@ -138,21 +133,17 @@ public class ExternalLDAPDirectoryFeature extends SimpleFeature {
      * @throws InvalidKeyException
      * @throws SignatureException
      * @throws IllegalStateException
-     *
      * @since 5.9.3
      */
-    protected X509Certificate createCertificate(String dnNameStr)
-            throws NoSuchAlgorithmException, CertificateException,
-            InvalidKeyException, IllegalStateException, SignatureException {
+    protected X509Certificate createCertificate(String dnNameStr) throws NoSuchAlgorithmException,
+            CertificateException, InvalidKeyException, IllegalStateException, SignatureException {
         X509Certificate cert = null;
 
         // Parameters used to define the certificate
         // yesterday
-        Date validityBeginDate = new Date(System.currentTimeMillis() - 24 * 60
-                * 60 * 1000);
+        Date validityBeginDate = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
         // in 2 years
-        Date validityEndDate = new Date(System.currentTimeMillis() + 2 * 365
-                * 24 * 60 * 60 * 1000);
+        Date validityEndDate = new Date(System.currentTimeMillis() + 2 * 365 * 24 * 60 * 60 * 1000);
 
         // Generate the key pair
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");

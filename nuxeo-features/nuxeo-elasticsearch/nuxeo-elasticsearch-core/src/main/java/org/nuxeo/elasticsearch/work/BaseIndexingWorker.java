@@ -27,7 +27,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Abstract class for sharing the worker state
- *
  */
 public abstract class BaseIndexingWorker extends AbstractWork {
 

@@ -31,7 +31,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
  * Directory ui descriptor
  *
  * @author Anahide Tchertchian
- *
  */
 @XObject("directory")
 public class DirectoryUIDescriptor implements DirectoryUI {
@@ -83,8 +82,7 @@ public class DirectoryUIDescriptor implements DirectoryUI {
         return readOnly;
     }
 
-    public List<DirectoryUIDeleteConstraint> getDeleteConstraints()
-            throws DirectoryException {
+    public List<DirectoryUIDeleteConstraint> getDeleteConstraints() throws DirectoryException {
         List<DirectoryUIDeleteConstraint> res = new ArrayList<DirectoryUIDeleteConstraint>();
         if (deleteConstraints != null) {
             for (DirectoryUIDeleteConstraintDescriptor deleteConstraintDescriptor : deleteConstraints) {

@@ -65,13 +65,11 @@ public class WSEndpointDescriptor {
     @XNode("publishedEndpointUrl")
     public String publishedEndpointUrl;
 
-    public Object getImplementorInstance() throws IllegalAccessException,
-            InstantiationException {
+    public Object getImplementorInstance() throws IllegalAccessException, InstantiationException {
         return clazz != null ? clazz.newInstance() : null;
     }
 
-    public Endpoint toEndpoint() throws IOException, IllegalAccessException,
-            InstantiationException {
+    public Endpoint toEndpoint() throws IOException, IllegalAccessException, InstantiationException {
         Endpoint ep = Endpoint.create(getImplementorInstance());
         List<Source> metadata = new ArrayList<>();
         Map<String, Object> properties = new HashMap<>();
@@ -84,8 +82,7 @@ public class WSEndpointDescriptor {
         }
 
         if (!isBlank(wsdl)) {
-            URL wsdlURL = WSEndpointManagerImpl.class.getClassLoader().getResource(
-                    wsdl);
+            URL wsdlURL = WSEndpointManagerImpl.class.getClassLoader().getResource(wsdl);
             if (wsdlURL == null) {
                 throw new FileNotFoundException("WSDL: " + wsdl);
             }
@@ -95,8 +92,7 @@ public class WSEndpointDescriptor {
         }
 
         if (isBlank(publishedEndpointUrl)) {
-            publishedEndpointUrl = String.format("%s%s%s",
-                    Framework.getProperty(NUXEO_URL),
+            publishedEndpointUrl = String.format("%s%s%s", Framework.getProperty(NUXEO_URL),
                     WSEndpointManager.WS_SERVLET, address);
         }
         properties.put("publishedEndpointUrl", publishedEndpointUrl);
@@ -106,8 +102,7 @@ public class WSEndpointDescriptor {
         return ep;
     }
 
-    public void configurePostPublishing(Endpoint ep)
-            throws IllegalAccessException, InstantiationException {
+    public void configurePostPublishing(Endpoint ep) throws IllegalAccessException, InstantiationException {
         if (handlers != null) {
             List<Handler> handlerChain = ep.getBinding().getHandlerChain();
             for (Class<? extends Handler> handler : handlers) {

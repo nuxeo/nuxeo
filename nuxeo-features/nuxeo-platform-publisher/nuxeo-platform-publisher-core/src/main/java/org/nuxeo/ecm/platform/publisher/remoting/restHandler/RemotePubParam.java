@@ -24,8 +24,7 @@ import java.util.List;
 
 public class RemotePubParam {
 
-    public static final MediaType mediaType = new MediaType("nuxeo",
-            "remotepub");
+    public static final MediaType mediaType = new MediaType("nuxeo", "remotepub");
 
     protected List<Object> params;
 

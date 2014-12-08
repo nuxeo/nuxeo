@@ -25,18 +25,16 @@ import org.javasimon.CallbackSkeleton;
 import org.javasimon.Counter;
 
 /**
- * Listen to Simon events to store past values of the counters
- *
- * History is kept in memory using {@link CounterHistoryStack}
+ * Listen to Simon events to store past values of the counters History is kept in memory using
+ * {@link CounterHistoryStack}
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class CounterHistoryRecorder extends CallbackSkeleton {
 
     protected Map<String, CounterHistoryStack> counterHistory = new ConcurrentHashMap<String, CounterHistoryStack>();
 
-    protected int historyLength=100;
+    protected int historyLength = 100;
 
     public CounterHistoryRecorder(int size) {
         historyLength = size;
@@ -44,7 +42,7 @@ public class CounterHistoryRecorder extends CallbackSkeleton {
 
     protected CounterHistoryStack getCounterHistoryStack(Counter counter) {
         CounterHistoryStack stack = counterHistory.get(counter.getName());
-        if (stack==null) {
+        if (stack == null) {
             stack = new CounterHistoryStack(historyLength);
             counterHistory.put(counter.getName(), stack);
         }
@@ -52,18 +50,16 @@ public class CounterHistoryRecorder extends CallbackSkeleton {
     }
 
     protected void storeCounter(Counter counter) {
-        getCounterHistoryStack(counter).push(new long[] {System.currentTimeMillis(),counter.getCounter()});
+        getCounterHistoryStack(counter).push(new long[] { System.currentTimeMillis(), counter.getCounter() });
     }
 
     @Override
-    public void counterDecrease(Counter counter, long dec)
-    {
+    public void counterDecrease(Counter counter, long dec) {
         storeCounter(counter);
     }
 
     @Override
-    public void counterSet(Counter counter, long val)
-    {
+    public void counterSet(Counter counter, long val) {
         storeCounter(counter);
     }
 

@@ -35,11 +35,9 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
-public class SQLDirectoryFactory extends DefaultComponent implements
-        DirectoryFactory {
+public class SQLDirectoryFactory extends DefaultComponent implements DirectoryFactory {
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.directory.sql.SQLDirectoryFactory");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.directory.sql.SQLDirectoryFactory");
 
     private static final Log log = LogFactory.getLog(SQLDirectoryFactory.class);
 
@@ -71,8 +69,7 @@ public class SQLDirectoryFactory extends DefaultComponent implements
     }
 
     protected static DirectoryServiceImpl getDirectoryService() {
-        return (DirectoryServiceImpl) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
+        return (DirectoryServiceImpl) Framework.getRuntime().getComponent(DirectoryService.NAME);
     }
 
     @Override

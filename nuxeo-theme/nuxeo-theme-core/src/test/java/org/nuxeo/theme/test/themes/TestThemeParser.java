@@ -40,10 +40,8 @@ public class TestThemeParser extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
 
         ThemeDescriptor themeDef = new ThemeDescriptor();
@@ -79,8 +77,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
         PresetType preset2 = PresetManager.getPresetByName("theme1/nice background");
         assertEquals("theme1", preset2.getGroup());
         assertEquals("nice background", preset2.getName());
-        assertEquals("#fff url(/skin/app/nice-bg.png) top left repeat-y",
-                preset2.getValue());
+        assertEquals("#fff url(/skin/app/nice-bg.png) top left repeat-y", preset2.getValue());
         assertEquals("background", preset2.getCategory());
     }
 
@@ -140,21 +137,16 @@ public class TestThemeParser extends NXRuntimeTestCase {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme1 = themeManager.getThemeByName("theme1");
         PageElement page1 = themeManager.getPageByPath("theme1/page1");
-        Style style1 = (Style) themeManager.getNamedObject(theme1.getName(),
-                "style", "default fonts");
+        Style style1 = (Style) themeManager.getNamedObject(theme1.getName(), "style", "default fonts");
         assertNotNull(style1);
         assertEquals("default fonts", style1.getName());
         assertTrue(style1.getPathsForView("*").contains("h3"));
-        assertEquals("green", style1.getPropertiesFor("*", "h3").getProperty(
-                "color"));
+        assertEquals("green", style1.getPropertiesFor("*", "h3").getProperty("color"));
 
         // test style inheritance
-        Element fragment = (Element) page1.getChildren().get(0).getChildren().get(
-                1).getChildren().get(1);
-        Style fragmentStyle = (Style) ElementFormatter.getFormatByType(
-                fragment, style1.getFormatType());
-        assertTrue(ThemeManager.listAncestorFormatsOf(fragmentStyle).contains(
-                style1));
+        Element fragment = (Element) page1.getChildren().get(0).getChildren().get(1).getChildren().get(1);
+        Style fragmentStyle = (Style) ElementFormatter.getFormatByType(fragment, style1.getFormatType());
+        assertTrue(ThemeManager.listAncestorFormatsOf(fragmentStyle).contains(style1));
     }
 
     @Test
@@ -164,13 +156,11 @@ public class TestThemeParser extends NXRuntimeTestCase {
         PageElement page1 = themeManager.getPageByPath("theme1/page1");
         // Make sure that new common styles are created if no style selector is
         // set on a given style
-        Style common1 = (Style) themeManager.getNamedObject(theme1.getName(),
-                "style", "common style 1");
+        Style common1 = (Style) themeManager.getNamedObject(theme1.getName(), "style", "common style 1");
         assertNotNull(common1);
         assertEquals("common style 1", common1.getName());
         assertTrue(common1.getPathsForView("*").contains("div"));
-        assertEquals("blue", common1.getPropertiesFor("*", "div").getProperty(
-                "background-color"));
+        assertEquals("blue", common1.getPropertiesFor("*", "div").getProperty("background-color"));
     }
 
     @Test
@@ -180,15 +170,12 @@ public class TestThemeParser extends NXRuntimeTestCase {
         PageElement page1 = themeManager.getPageByPath("theme1/page1");
         // if the style already inherits make it inherit from a common style
         // while preserving inheritance
-        Style common2 = (Style) themeManager.getNamedObject(theme1.getName(),
-                "style", "common style 2");
+        Style common2 = (Style) themeManager.getNamedObject(theme1.getName(), "style", "common style 2");
         assertNotNull(common2);
         assertEquals("common style 2", common2.getName());
         assertTrue(common2.getPathsForView("*").contains("table"));
 
-        assertEquals("orange",
-                common2.getPropertiesFor("*", "table").getProperty(
-                        "border-color"));
+        assertEquals("orange", common2.getPropertiesFor("*", "table").getProperty("border-color"));
 
         Style ancestor = (Style) ThemeManager.getAncestorFormatOf(common2);
         assertEquals("default colors", ancestor.getName());

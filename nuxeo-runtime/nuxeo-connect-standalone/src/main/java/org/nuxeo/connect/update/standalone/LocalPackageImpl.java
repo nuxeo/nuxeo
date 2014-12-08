@@ -44,7 +44,6 @@ import org.nuxeo.connect.update.xml.TaskDefinitionImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LocalPackageImpl implements LocalPackage {
 
@@ -59,40 +58,34 @@ public class LocalPackageImpl implements LocalPackage {
     private PackageUpdateService service;
 
     /**
-     * @deprecated Since 5.8. Use
-     *             {@link #LocalPackageImpl(File, PackageState, PackageUpdateService)}
-     *             instead.
+     * @deprecated Since 5.8. Use {@link #LocalPackageImpl(File, PackageState, PackageUpdateService)} instead.
      */
     @Deprecated
-    public LocalPackageImpl(File file, int state, PackageUpdateService pus)
-            throws PackageException {
+    public LocalPackageImpl(File file, int state, PackageUpdateService pus) throws PackageException {
         this(null, file, state, pus);
     }
 
     /**
-     * @deprecated Since 5.8. Use
-     *             {@link #LocalPackageImpl(ClassLoader, File, PackageState, PackageUpdateService)}
+     * @deprecated Since 5.8. Use {@link #LocalPackageImpl(ClassLoader, File, PackageState, PackageUpdateService)}
      *             instead.
      */
     @Deprecated
-    public LocalPackageImpl(ClassLoader parent, File file, int state,
-            PackageUpdateService pus) throws PackageException {
+    public LocalPackageImpl(ClassLoader parent, File file, int state, PackageUpdateService pus) throws PackageException {
         this(parent, file, PackageState.getByValue(state), pus);
     }
 
     /**
      * @since 5.7
      */
-    public LocalPackageImpl(File file, PackageState state,
-            PackageUpdateService pus) throws PackageException {
+    public LocalPackageImpl(File file, PackageState state, PackageUpdateService pus) throws PackageException {
         this(null, file, state, pus);
     }
 
     /**
      * @since 5.8
      */
-    public LocalPackageImpl(ClassLoader parent, File file, PackageState state,
-            PackageUpdateService pus) throws PackageException {
+    public LocalPackageImpl(ClassLoader parent, File file, PackageState state, PackageUpdateService pus)
+            throws PackageException {
         this.state = state;
         this.service = pus;
         XMap xmap = StandaloneUpdateService.getXmap();
@@ -104,13 +97,9 @@ public class LocalPackageImpl implements LocalPackage {
             InputStream in = new FileInputStream(data.getManifest());
             def = (PackageDefinitionImpl) xmap.load(in);
         } catch (FileNotFoundException e) {
-            throw new PackageException(
-                    "Invalid package - no package.xml file found in package "
-                            + file.getName());
+            throw new PackageException("Invalid package - no package.xml file found in package " + file.getName());
         } catch (IOException e) {
-            throw new PackageException(
-                    "Failed to load package.xml descriptor for package "
-                            + file.getName(), e);
+            throw new PackageException("Failed to load package.xml descriptor for package " + file.getName(), e);
         }
         id = def.getId();
     }
@@ -158,9 +147,7 @@ public class LocalPackageImpl implements LocalPackage {
             try {
                 return FileUtils.readFile(file);
             } catch (IOException e) {
-                throw new PackageException(
-                        "Failed to read license.txt file for package: "
-                                + getId());
+                throw new PackageException("Failed to read license.txt file for package: " + getId());
             }
         }
         return null;
@@ -250,8 +237,7 @@ public class LocalPackageImpl implements LocalPackage {
     @Override
     public Task getInstallTask() throws PackageException {
         if (def.getInstaller() == null) {
-            def.setInstaller(new TaskDefinitionImpl(
-                    service.getDefaultInstallTaskType(), false));
+            def.setInstaller(new TaskDefinitionImpl(service.getDefaultInstallTaskType(), false));
         } else if (def.getInstaller().getType() == null) {
             def.getInstaller().setType(service.getDefaultInstallTaskType());
         }
@@ -261,8 +247,7 @@ public class LocalPackageImpl implements LocalPackage {
     @Override
     public Task getUninstallTask() throws PackageException {
         if (def.getUninstaller() == null) {
-            def.setUninstaller(new TaskDefinitionImpl(
-                    service.getDefaultUninstallTaskType(), false));
+            def.setUninstaller(new TaskDefinitionImpl(service.getDefaultUninstallTaskType(), false));
         } else if (def.getUninstaller().getType() == null) {
             def.getUninstaller().setType(service.getDefaultUninstallTaskType());
         }
@@ -272,11 +257,10 @@ public class LocalPackageImpl implements LocalPackage {
     protected Task getTask(TaskDefinition tdef) throws PackageException {
         Task task = null;
         try {
-            task = (Task) data.loadClass(tdef.getType()).getConstructor(
-                    PackageUpdateService.class).newInstance(service);
+            task = (Task) data.loadClass(tdef.getType()).getConstructor(PackageUpdateService.class).newInstance(service);
         } catch (ReflectiveOperationException e) {
-            throw new PackageException("Could not instantiate custom task "
-                    + tdef.getType() + " for package " + getId(), e);
+            throw new PackageException("Could not instantiate custom task " + tdef.getType() + " for package "
+                    + getId(), e);
         }
         task.initialize(this, tdef.getRequireRestart());
         return task;
@@ -288,10 +272,8 @@ public class LocalPackageImpl implements LocalPackage {
             try {
                 return (Validator) data.loadClass(def.getValidator()).getConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                throw new PackageException(
-                        "Could not instantiate custom validator "
-                                + def.getValidator() + " for package "
-                                + getId(), e);
+                throw new PackageException("Could not instantiate custom validator " + def.getValidator()
+                        + " for package " + getId(), e);
             }
         }
         return null;
@@ -303,8 +285,7 @@ public class LocalPackageImpl implements LocalPackage {
             FileInputStream in = null;
             try {
                 in = new FileInputStream(file);
-                FormsDefinition forms = (FormsDefinition) StandaloneUpdateService.getXmap().load(
-                        in);
+                FormsDefinition forms = (FormsDefinition) StandaloneUpdateService.getXmap().load(in);
                 return forms.getForms();
             } catch (IOException e) {
                 throw new PackageException("Failed to load forms file: " + file);
@@ -342,9 +323,7 @@ public class LocalPackageImpl implements LocalPackage {
             try {
                 return FileUtils.readFile(file);
             } catch (IOException e) {
-                throw new PackageException(
-                        "Failed to read license.txt file for package: "
-                                + getId());
+                throw new PackageException("Failed to read license.txt file for package: " + getId());
             }
         }
         return null;

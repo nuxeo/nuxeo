@@ -71,21 +71,15 @@ public class IPTCHelper {
 
     private static final Log log = LogFactory.getLog(IPTCHelper.class);
 
-    public static void extractMetadata(InputStream stream,
-            Map<String, Object> metadata) throws JpegProcessingException {
+    public static void extractMetadata(InputStream stream, Map<String, Object> metadata) throws JpegProcessingException {
         JpegSegmentReader reader = new JpegSegmentReader(stream);
-        extractMetadataFromSegment(metadata, reader,
-                JpegSegmentReader.SEGMENT_APP1, ExifReader.class);
-        extractMetadataFromSegment(metadata, reader,
-                JpegSegmentReader.SEGMENT_APPD, IptcReader.class);
-        extractMetadataFromSegment(metadata, reader,
-                JpegSegmentReader.SEGMENT_SOF0, JpegReader.class);
-        extractMetadataFromSegment(metadata, reader,
-                JpegSegmentReader.SEGMENT_COM, JpegCommentReader.class);
+        extractMetadataFromSegment(metadata, reader, JpegSegmentReader.SEGMENT_APP1, ExifReader.class);
+        extractMetadataFromSegment(metadata, reader, JpegSegmentReader.SEGMENT_APPD, IptcReader.class);
+        extractMetadataFromSegment(metadata, reader, JpegSegmentReader.SEGMENT_SOF0, JpegReader.class);
+        extractMetadataFromSegment(metadata, reader, JpegSegmentReader.SEGMENT_COM, JpegCommentReader.class);
     }
 
-    public static void extractMetadataFromSegment(Map<String, Object> metadata,
-            JpegSegmentReader reader, byte marker,
+    public static void extractMetadataFromSegment(Map<String, Object> metadata, JpegSegmentReader reader, byte marker,
             Class<? extends MetadataReader> klass) {
         try {
             Constructor<? extends MetadataReader> constructor = klass.getConstructor(byte[].class);
@@ -106,65 +100,52 @@ public class IPTCHelper {
         Directory iptc = md.getDirectory(IptcDirectory.class);
 
         if (iptc.containsTag(IptcDirectory.TAG_BY_LINE)) {
-            metadata.put(META_BY_LINE,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_BY_LINE)));
+            metadata.put(META_BY_LINE, cleanupData(iptc.getString(IptcDirectory.TAG_BY_LINE)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_BY_LINE_TITLE)) {
-            metadata.put(
-                    META_BY_LINE_TITLE,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_BY_LINE_TITLE)));
+            metadata.put(META_BY_LINE_TITLE, cleanupData(iptc.getString(IptcDirectory.TAG_BY_LINE_TITLE)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_CAPTION)) {
-            metadata.put(META_CAPTION,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_CAPTION)));
+            metadata.put(META_CAPTION, cleanupData(iptc.getString(IptcDirectory.TAG_CAPTION)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_CATEGORY)) {
-            metadata.put(META_CATEGORY,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_CATEGORY)));
+            metadata.put(META_CATEGORY, cleanupData(iptc.getString(IptcDirectory.TAG_CATEGORY)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_CITY)) {
-            metadata.put(META_CITY,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_CITY)));
+            metadata.put(META_CITY, cleanupData(iptc.getString(IptcDirectory.TAG_CITY)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_COPYRIGHT_NOTICE)) {
-            metadata.put(
-                    META_COPYRIGHT_NOTICE,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_COPYRIGHT_NOTICE)));
+            metadata.put(META_COPYRIGHT_NOTICE, cleanupData(iptc.getString(IptcDirectory.TAG_COPYRIGHT_NOTICE)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_COUNTRY_OR_PRIMARY_LOCATION)) {
-            metadata.put(
-                    META_COUNTRY_OR_PRIMARY_LOCATION,
+            metadata.put(META_COUNTRY_OR_PRIMARY_LOCATION,
                     cleanupData(iptc.getString(IptcDirectory.TAG_COUNTRY_OR_PRIMARY_LOCATION)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_CREDIT)) {
-            metadata.put(META_CREDIT,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_CREDIT)));
+            metadata.put(META_CREDIT, cleanupData(iptc.getString(IptcDirectory.TAG_CREDIT)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_DATE_CREATED)) {
             try {
-                metadata.put(META_DATE_CREATED,
-                        iptc.getDate(IptcDirectory.TAG_DATE_CREATED));
+                metadata.put(META_DATE_CREATED, iptc.getDate(IptcDirectory.TAG_DATE_CREATED));
             } catch (MetadataException e) {
                 log.error("Failed to get IPTC - date created", e);
             }
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_HEADLINE)) {
-            metadata.put(META_HEADLINE,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_HEADLINE)));
+            metadata.put(META_HEADLINE, cleanupData(iptc.getString(IptcDirectory.TAG_HEADLINE)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_KEYWORDS)) {
-            metadata.put(META_KEYWORDS,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_KEYWORDS)));
+            metadata.put(META_KEYWORDS, cleanupData(iptc.getString(IptcDirectory.TAG_KEYWORDS)));
         }
 
         if (iptc.containsTag(135)) {
@@ -172,84 +153,65 @@ public class IPTCHelper {
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_OBJECT_NAME)) {
-            metadata.put(META_OBJECT_NAME,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_OBJECT_NAME)));
+            metadata.put(META_OBJECT_NAME, cleanupData(iptc.getString(IptcDirectory.TAG_OBJECT_NAME)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_ORIGINAL_TRANSMISSION_REFERENCE)) {
-            metadata.put(
-                    META_ORIGINAL_TRANSMISSION_REFERENCE,
+            metadata.put(META_ORIGINAL_TRANSMISSION_REFERENCE,
                     cleanupData(iptc.getString(IptcDirectory.TAG_ORIGINAL_TRANSMISSION_REFERENCE)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_ORIGINATING_PROGRAM)) {
-            metadata.put(
-                    META_ORIGINATING_PROGRAM,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_ORIGINATING_PROGRAM)));
+            metadata.put(META_ORIGINATING_PROGRAM, cleanupData(iptc.getString(IptcDirectory.TAG_ORIGINATING_PROGRAM)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_PROVINCE_OR_STATE)) {
-            metadata.put(
-                    META_PROVINCE_OR_STATE,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_PROVINCE_OR_STATE)));
+            metadata.put(META_PROVINCE_OR_STATE, cleanupData(iptc.getString(IptcDirectory.TAG_PROVINCE_OR_STATE)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_PROVINCE_OR_STATE)) {
-            metadata.put(
-                    META_PROVINCE_OR_STATE,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_PROVINCE_OR_STATE)));
+            metadata.put(META_PROVINCE_OR_STATE, cleanupData(iptc.getString(IptcDirectory.TAG_PROVINCE_OR_STATE)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_RECORD_VERSION)) {
-            metadata.put(
-                    META_RECORD_VERSION,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_RECORD_VERSION)));
+            metadata.put(META_RECORD_VERSION, cleanupData(iptc.getString(IptcDirectory.TAG_RECORD_VERSION)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_RELEASE_DATE)) {
             try {
-                metadata.put(META_RELEASE_DATE,
-                        iptc.getDate(IptcDirectory.TAG_RELEASE_DATE));
+                metadata.put(META_RELEASE_DATE, iptc.getDate(IptcDirectory.TAG_RELEASE_DATE));
             } catch (MetadataException e) {
                 log.error("Failed to get IPTC - release date", e);
             }
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_RELEASE_TIME)) {
-            metadata.put(META_RELEASE_TIME,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_RELEASE_TIME)));
+            metadata.put(META_RELEASE_TIME, cleanupData(iptc.getString(IptcDirectory.TAG_RELEASE_TIME)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_SOURCE)) {
-            metadata.put(META_SOURCE,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_SOURCE)));
+            metadata.put(META_SOURCE, cleanupData(iptc.getString(IptcDirectory.TAG_SOURCE)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_SPECIAL_INSTRUCTIONS)) {
-            metadata.put(
-                    META_SPECIAL_INSTRUCTIONS,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_SPECIAL_INSTRUCTIONS)));
+            metadata.put(META_SPECIAL_INSTRUCTIONS, cleanupData(iptc.getString(IptcDirectory.TAG_SPECIAL_INSTRUCTIONS)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_SUPPLEMENTAL_CATEGORIES)) {
-            metadata.put(
-                    META_SUPPLEMENTAL_CATEGORIES,
+            metadata.put(META_SUPPLEMENTAL_CATEGORIES,
                     cleanupData(iptc.getString(IptcDirectory.TAG_SUPPLEMENTAL_CATEGORIES)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_TIME_CREATED)) {
-            metadata.put(META_TIME_CREATED,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_TIME_CREATED)));
+            metadata.put(META_TIME_CREATED, cleanupData(iptc.getString(IptcDirectory.TAG_TIME_CREATED)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_URGENCY)) {
-            metadata.put(META_URGENCY,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_URGENCY)));
+            metadata.put(META_URGENCY, cleanupData(iptc.getString(IptcDirectory.TAG_URGENCY)));
         }
 
         if (iptc.containsTag(IptcDirectory.TAG_WRITER)) {
-            metadata.put(META_WRITER,
-                    cleanupData(iptc.getString(IptcDirectory.TAG_WRITER)));
+            metadata.put(META_WRITER, cleanupData(iptc.getString(IptcDirectory.TAG_WRITER)));
         }
     }
 

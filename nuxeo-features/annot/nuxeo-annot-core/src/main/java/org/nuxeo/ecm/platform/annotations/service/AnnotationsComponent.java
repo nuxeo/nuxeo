@@ -38,7 +38,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationsComponent extends DefaultComponent {
 
@@ -50,10 +49,8 @@ public class AnnotationsComponent extends DefaultComponent {
     private final AnnotationConfigurationService configuration = new AnnotationConfigurationServiceImpl();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
-        ExtensionPoint point = Enum.valueOf(ExtensionPoint.class,
-                extensionPoint);
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        ExtensionPoint point = Enum.valueOf(ExtensionPoint.class, extensionPoint);
         switch (point) {
         case uriResolver:
             UriResolver resolver = newInstance(((UriResolverDescriptor) contribution).getKlass());
@@ -62,8 +59,7 @@ public class AnnotationsComponent extends DefaultComponent {
         case urlPatternFilter:
             URLPatternFilterDescriptor descriptor = (URLPatternFilterDescriptor) contribution;
             boolean order = descriptor.getOrder().equalsIgnoreCase("Allow,Deny");
-            URLPatternFilter filter = new URLPatternFilter(order,
-                    descriptor.getDenies(), descriptor.getAllows());
+            URLPatternFilter filter = new URLPatternFilter(order, descriptor.getDenies(), descriptor.getAllows());
             configuration.setFilter(filter);
             break;
         case metadataMapper:

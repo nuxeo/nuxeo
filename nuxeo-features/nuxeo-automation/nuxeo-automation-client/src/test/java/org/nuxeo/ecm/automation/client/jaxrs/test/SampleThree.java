@@ -27,27 +27,22 @@ public class SampleThree {
     public static void main(String[] args) throws Exception {
         try {
             // create the client
-            HttpAutomationClient client = new HttpAutomationClient(
-                    "http://localhost:8080/nuxeo/site/automation");
+            HttpAutomationClient client = new HttpAutomationClient("http://localhost:8080/nuxeo/site/automation");
             // get an Administrator session
-            Session session = client.getSession("Administrator",
-                    "Administrator");
+            Session session = client.getSession("Administrator", "Administrator");
             // get the /default-domain/workspaces document
-            Document doc = (Document) session.newRequest("Document.Fetch").set(
-                    "value", "/default-domain/workspaces").execute();
+            Document doc = (Document) session.newRequest("Document.Fetch").set("value", "/default-domain/workspaces").execute();
             System.out.println(doc);
             System.out.println(doc.getTitle());
 
             // create a new workspace (inside /default-domain/workspaces)
-            Document myWs = (Document) session.newRequest("Document.Create").setInput(
-                    doc).set("type", "Workspace").set("name", "MyWorkspace").set(
-                    "properties",
+            Document myWs = (Document) session.newRequest("Document.Create").setInput(doc).set("type", "Workspace").set(
+                    "name", "MyWorkspace").set("properties",
                     "dc:title=My Workspace\ndc:description=This is my workspace").execute();
             System.out.println(myWs.getTitle());
 
             // now list the children in /default-domain/workspaces
-            Documents docs = (Documents) session.newRequest(
-                    DocumentService.GetDocumentChildren).setInput(doc).setHeader(
+            Documents docs = (Documents) session.newRequest(DocumentService.GetDocumentChildren).setInput(doc).setHeader(
                     Constants.HEADER_NX_SCHEMAS, "*").execute();
             System.out.println(docs);
 

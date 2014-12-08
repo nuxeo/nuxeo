@@ -35,8 +35,7 @@ import com.sun.faces.facelets.tag.jsf.html.HtmlComponentHandler;
 /**
  * Handler for deprecated components.
  * <p>
- * Behaves like a {@link HtmlComponentHandler} but issues a deprecation warning
- * log when used.
+ * Behaves like a {@link HtmlComponentHandler} but issues a deprecation warning log when used.
  *
  * @author Anahide Tchertchian
  */
@@ -49,11 +48,9 @@ public class DeprecatedComponentHandler extends HtmlComponentHandler {
     }
 
     @Override
-    public void applyNextHandler(FaceletContext ctx, UIComponent c)
-            throws IOException, FacesException, ELException {
+    public void applyNextHandler(FaceletContext ctx, UIComponent c) throws IOException, FacesException, ELException {
         if (log.isWarnEnabled()) {
-            log.warn("Component '" + c
-                    + "' is deprecated and might not work correctly. "
+            log.warn("Component '" + c + "' is deprecated and might not work correctly. "
                     + "Try to use an equivalent tag in another library");
         }
         super.applyNextHandler(ctx, c);

@@ -38,8 +38,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        FileUtils.copyDirectory(getResourceFile("templates/jboss"), new File(
-                nuxeoHome, "templates"));
+        FileUtils.copyDirectory(getResourceFile("templates/jboss"), new File(nuxeoHome, "templates"));
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
     }
 
@@ -47,11 +46,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     public void testEvalDynamicProperties() {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
-        assertEquals(
-                "Bad loop back URL",
-                "http://127.0.0.1:8080/nuxeo",
-                configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_LOOPBACK_URL));
+        assertEquals("Bad loop back URL", "http://127.0.0.1:8080/nuxeo",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_LOOPBACK_URL));
         try {
             testAddress("10.213.2.105", "http://10.213.2.105:8080/nuxeo");
         } catch (ConfigurationException e) {
@@ -66,50 +62,38 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
             log.error(e);
         }
         try {
-            testAddress("2a01:240:fe8e::226:bbff:fe09:55cd",
-                    "http://[2a01:240:fe8e:0:226:bbff:fe09:55cd]:8080/nuxeo");
+            testAddress("2a01:240:fe8e::226:bbff:fe09:55cd", "http://[2a01:240:fe8e:0:226:bbff:fe09:55cd]:8080/nuxeo");
         } catch (ConfigurationException e) {
             log.error(e);
         }
     }
 
-    private void testAddress(String bindAddress, String expectedLoopback)
-            throws ConfigurationException {
-        configGenerator.setProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS,
-                bindAddress);
-        log.debug("Test with "
-                + configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_BIND_ADDRESS));
+    private void testAddress(String bindAddress, String expectedLoopback) throws ConfigurationException {
+        configGenerator.setProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS, bindAddress);
+        log.debug("Test with " + configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
         configGenerator.init(true);
-        assertEquals(
-                "Bad loop back URL",
-                expectedLoopback,
-                configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_LOOPBACK_URL));
+        assertEquals("Bad loop back URL", expectedLoopback,
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_LOOPBACK_URL));
     }
 
     @Test
     public void testSetProperty() throws ConfigurationException {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
-        String oldValue = configGenerator.setProperty("test.prop.key",
-                "test.prop.value");
+        String oldValue = configGenerator.setProperty("test.prop.key", "test.prop.value");
         assertEquals("Wrong old value", null, oldValue);
         assertEquals("Property not set", "test.prop.value",
                 configGenerator.getUserConfig().getProperty("test.prop.key"));
         oldValue = configGenerator.setProperty("test.prop.key", null);
         assertEquals("Wrong old value", "test.prop.value", oldValue);
-        assertEquals("Property not unset", null,
-                configGenerator.getUserConfig().getProperty("test.prop.key"));
+        assertEquals("Property not unset", null, configGenerator.getUserConfig().getProperty("test.prop.key"));
         oldValue = configGenerator.setProperty("test.prop.key", "");
         assertEquals("Wrong old value", null, oldValue);
-        assertEquals("Property must not be set", null,
-                configGenerator.getUserConfig().getProperty("test.prop.key"));
+        assertEquals("Property must not be set", null, configGenerator.getUserConfig().getProperty("test.prop.key"));
         configGenerator.setProperty("test.prop.key", "test.prop.value");
         oldValue = configGenerator.setProperty("test.prop.key", "");
         assertEquals("Wrong old value", "test.prop.value", oldValue);
-        assertEquals("Property not unset", null,
-                configGenerator.getUserConfig().getProperty("test.prop.key"));
+        assertEquals("Property not unset", null, configGenerator.getUserConfig().getProperty("test.prop.key"));
     }
 
     @Test
@@ -118,33 +102,18 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertTrue(configGenerator.init());
         String originalTemplates = configGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME);
-        assertEquals(
-                "Error calculating db template",
-                "default",
-                configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
+        assertEquals("Error calculating db template", "default",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
         configGenerator.addTemplate("newTemplate");
-        assertEquals(
-                "Error calculating db template",
-                "postgresql",
-                configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
-        assertEquals(
-                "newTemplate not added",
-                originalTemplates + ",newTemplate",
-                configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        assertEquals("Error calculating db template", "postgresql",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
+        assertEquals("newTemplate not added", originalTemplates + ",newTemplate",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         configGenerator.rmTemplate("newTemplate");
-        assertEquals(
-                "Error calculating db template",
-                "default",
-                configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
-        assertEquals(
-                "newTemplate not removed",
-                originalTemplates,
-                configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        assertEquals("Error calculating db template", "default",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
+        assertEquals("newTemplate not removed", originalTemplates,
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
     }
 
     @Test
@@ -156,22 +125,17 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         configGenerator.saveFilteredConfiguration(changedParameters);
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
-        assertEquals(
-                "true",
-                configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_WIZARD_DONE));
+        assertEquals("true", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE));
     }
 
     @Test
-    public void testFreemarkerTemplate() throws ConfigurationException,
-            IOException {
+    public void testFreemarkerTemplate() throws ConfigurationException, IOException {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         configGenerator.addTemplate("fmtest");
         configGenerator.setProperty("test.freemarker.part1", "tr");
         configGenerator.setProperty("test.freemarker.part2", "ue");
-        configGenerator.setProperty("test.freemarker.key",
-                "${test.freemarker.part1}${test.freemarker.part2}");
+        configGenerator.setProperty("test.freemarker.key", "${test.freemarker.part1}${test.freemarker.part2}");
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         configGenerator.run();
@@ -189,8 +153,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         configGenerator.changeDBTemplate("postgresql");
         assertEquals("Failed to change database default to postgresql",
-                originalTemplates.replaceFirst("default", "postgresql"),
-                configGenerator.getUserTemplates());
+                originalTemplates.replaceFirst("default", "postgresql"), configGenerator.getUserTemplates());
     }
 
     @Test
@@ -201,27 +164,18 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         String originalTemplates = configGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         configGenerator.changeDBTemplate("postgresql");
-        assertEquals("Failed to change database default to postgresql",
-                originalTemplates + ",postgresql",
+        assertEquals("Failed to change database default to postgresql", originalTemplates + ",postgresql",
                 configGenerator.getUserTemplates());
         Map<String, String> customParameters = new HashMap<String, String>();
-        customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME,
-                "postgresql");
+        customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME, "postgresql");
         configGenerator.saveFilteredConfiguration(customParameters);
         // Check stored value
         assertTrue(configGenerator.init(true));
-        assertEquals("Failed to change database default to postgresql",
-                originalTemplates + ",postgresql",
+        assertEquals("Failed to change database default to postgresql", originalTemplates + ",postgresql",
                 configGenerator.getUserTemplates());
-        assertEquals(
-                "Failed to change database default to postgresql",
-                originalTemplates + ",postgresql",
-                configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_TEMPLATES_NAME));
-        assertEquals(
-                "Failed to change database default to postgresql",
-                "postgresql",
-                configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
+        assertEquals("Failed to change database default to postgresql", originalTemplates + ",postgresql",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        assertEquals("Failed to change database default to postgresql", "postgresql",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
     }
 }

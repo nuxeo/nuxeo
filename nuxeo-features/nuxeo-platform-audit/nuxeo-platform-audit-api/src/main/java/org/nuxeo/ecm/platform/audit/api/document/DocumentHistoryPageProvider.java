@@ -27,13 +27,11 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 /**
  * Page provider that is dedicated to fetching history of a Document.
  * <p>
- * Because of the way the Audit log is stored (i.e. mainly stores events
- * related to the live document), retrieving history of a version or of a proxy
- * requires some additional processing.
+ * Because of the way the Audit log is stored (i.e. mainly stores events related to the live document), retrieving
+ * history of a version or of a proxy requires some additional processing.
  * <p>
- * This {@link PageProvider} does not accept a fixed part in the whereclause
- * because it is automatically build by the provider itself. This
- * {@link PageProvider} expect to have :
+ * This {@link PageProvider} does not accept a fixed part in the whereclause because it is automatically build by the
+ * provider itself. This {@link PageProvider} expect to have :
  * <ul>
  * <li>DocumentModel or UUID as input parameter</li>
  * <li>CoreSession as property (only used if input parameter is an uuid)</li>
@@ -90,25 +88,20 @@ public class DocumentHistoryPageProvider extends AuditPageProvider {
                 uuid = doc.getId();
                 session = doc.getCoreSession();
             } else {
-                session = (CoreSession) getProperties().get(
-                        CORE_SESSION_PROPERTY);
+                session = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
                 uuid = params[0].toString();
             }
             if (session != null) {
                 try {
-                    AdditionalDocumentAuditParams additionalParams = DocumentAuditHelper.getAuditParamsForUUID(
-                            uuid, session);
+                    AdditionalDocumentAuditParams additionalParams = DocumentAuditHelper.getAuditParamsForUUID(uuid,
+                            session);
                     if (additionalParams != null) {
-                        newParams = new Object[] { uuid,
-                                additionalParams.targetUUID,
-                                additionalParams.maxDate };
+                        newParams = new Object[] { uuid, additionalParams.targetUUID, additionalParams.maxDate };
                     } else {
                         newParams = new Object[] { uuid };
                     }
                 } catch (ClientException e) {
-                    log.error(
-                            "Error while fetching additional parameters for audit query",
-                            e);
+                    log.error("Error while fetching additional parameters for audit query", e);
                 }
             } else {
                 log.warn("No core session found: cannot compute all info to get complete audit entries");

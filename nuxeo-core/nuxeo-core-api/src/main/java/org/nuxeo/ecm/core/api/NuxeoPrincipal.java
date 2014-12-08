@@ -16,8 +16,7 @@ import java.security.Principal;
 import java.util.List;
 
 /**
- * Class to represent a principal in Nuxeo. This class holds the list of roles
- * and groups for this principal.
+ * Class to represent a principal in Nuxeo. This class holds the list of roles and groups for this principal.
  */
 public interface NuxeoPrincipal extends Principal, Serializable {
 
@@ -40,8 +39,7 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     /**
      * Gets the password of this principal.
      * <p>
-     * Note: Some APIs that return principals from the database intentionally do
-     * not fill this field
+     * Note: Some APIs that return principals from the database intentionally do not fill this field
      *
      * @return the password of this principal
      */
@@ -56,6 +54,7 @@ public interface NuxeoPrincipal extends Principal, Serializable {
 
     /**
      * Get the user email if any. Return null if not email was specified
+     *
      * @return the user email or null if none
      */
     String getEmail();
@@ -125,16 +124,16 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     /**
      * Returns true if the principal is an administrator.
      * <p>
-     * Security checks still apply on the repository for administrator user. If
-     * user is a system user, this method will return true.
+     * Security checks still apply on the repository for administrator user. If user is a system user, this method will
+     * return true.
      *
      * @return true if the principal is an administrator.
      */
     boolean isAdministrator();
 
     /**
-     * Returns the {@code tenantId} of this {@NuxeoPrincipal},
-     * or {@code null} if there is no {@code tenantId}.
+     * Returns the {@code tenantId} of this {@NuxeoPrincipal}, or {@code null} if there is no
+     * {@code tenantId}.
      *
      * @since 5.6
      */
@@ -148,8 +147,8 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     boolean isAnonymous();
 
     /**
-     * Gets the base user from which this principal was created, or {@code null} if
-     * this principal was not created from another user.
+     * Gets the base user from which this principal was created, or {@code null} if this principal was not created from
+     * another user.
      *
      * @return the originating user, or {@code null}
      */
@@ -165,8 +164,8 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     /**
      * Gets the acting user for this principal.
      * <p>
-     * This is the originating user (usually when this principal is a system
-     * user), or if there is none this principal's user.
+     * This is the originating user (usually when this principal is a system user), or if there is none this principal's
+     * user.
      *
      * @return the acting user
      * @since 6.0

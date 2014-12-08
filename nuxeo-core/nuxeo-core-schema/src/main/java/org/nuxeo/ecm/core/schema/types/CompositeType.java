@@ -17,8 +17,7 @@ import java.util.Collection;
 /**
  * A composite type is an aggregation of several schemas.
  * <p>
- * Each schema defines its own namespace to avoid
- * field name collisions.
+ * Each schema defines its own namespace to avoid field name collisions.
  */
 public interface CompositeType extends ComplexType {
 
@@ -33,8 +32,7 @@ public interface CompositeType extends ComplexType {
     /**
      * Checks if this composite type has any schema defined.
      *
-     * @return true if this composite type has some schemas defined, false
-     *         otherwise
+     * @return true if this composite type has some schemas defined, false otherwise
      */
     boolean hasSchemas();
 

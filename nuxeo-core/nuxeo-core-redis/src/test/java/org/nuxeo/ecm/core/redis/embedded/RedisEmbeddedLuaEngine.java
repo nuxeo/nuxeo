@@ -74,8 +74,7 @@ public class RedisEmbeddedLuaEngine {
         binaries.clear();
     }
 
-    public Object evalsha(String sha, List<String> keys, List<String> args)
-            throws ScriptException {
+    public Object evalsha(String sha, List<String> keys, List<String> args) throws ScriptException {
         final CompiledScript script = binaries.get(sha);
         Bindings bindings = engine.createBindings();
         bindings.put("KEYS", keys.toArray(new String[keys.size()]));

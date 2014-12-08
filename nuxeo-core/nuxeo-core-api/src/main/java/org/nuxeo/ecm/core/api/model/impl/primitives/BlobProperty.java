@@ -81,13 +81,11 @@ public class BlobProperty extends MapProperty {
 
     @Override
     public boolean isNormalized(Object value) {
-        return value == null
-                || ((value instanceof Blob) && (value instanceof Serializable));
+        return value == null || ((value instanceof Blob) && (value instanceof Serializable));
     }
 
     @Override
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
             // TODO specific blob support?
             return (Serializable) value;
@@ -97,8 +95,7 @@ public class BlobProperty extends MapProperty {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType)
-            throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
         if (value == null) {
             return null;
         }
@@ -152,8 +149,7 @@ public class BlobProperty extends MapProperty {
 
     @Override
     protected Property internalGetChild(Field field) {
-        return new ScalarMemberProperty(this, field, isPhantom() ? IS_PHANTOM
-                : 0);
+        return new ScalarMemberProperty(this, field, isPhantom() ? IS_PHANTOM : 0);
     }
 
     protected Object create(Map<String, Object> value) {
@@ -170,7 +166,7 @@ public class BlobProperty extends MapProperty {
         }
         Blob blob = new StreamingBlob(ss);
         try {
-            Map<String,Object> v = new HashMap<String, Object>(value);
+            Map<String, Object> v = new HashMap<String, Object>(value);
             v.remove(DATA);
             setMap(blob, v);
         } catch (PropertyException e) {
@@ -179,11 +175,9 @@ public class BlobProperty extends MapProperty {
         return blob;
     }
 
-    protected void setMap(Object object, Map<String, Object> value)
-            throws PropertyException {
+    protected void setMap(Object object, Map<String, Object> value) throws PropertyException {
         if (object == null) {
-            throw new PropertyAccessException(
-                    "Trying to access a member of a null object");
+            throw new PropertyAccessException("Trying to access a member of a null object");
         }
         if (!(object instanceof Blob)) {
             throw new PropertyAccessException("Not a Blob: " + object);
@@ -196,8 +190,7 @@ public class BlobProperty extends MapProperty {
         }
     }
 
-    protected void setMemberValue(Blob blob, String name, Object value)
-            throws PropertyNotFoundException {
+    protected void setMemberValue(Blob blob, String name, Object value) throws PropertyNotFoundException {
         if (NAME.equals(name)) {
             blob.setFilename((String) value);
         } else if (MIME_TYPE.equals(name)) {
@@ -211,11 +204,9 @@ public class BlobProperty extends MapProperty {
         }
     }
 
-    protected Object getMemberValue(Object object, String name)
-            throws PropertyException {
+    protected Object getMemberValue(Object object, String name) throws PropertyException {
         if (object == null) {
-            throw new PropertyAccessException(
-                    "Trying to access a member of a null object: " + name);
+            throw new PropertyAccessException("Trying to access a member of a null object: " + name);
         }
         if (!(object instanceof Blob)) {
             throw new PropertyAccessException("Not a Blob: " + object);
@@ -236,11 +227,9 @@ public class BlobProperty extends MapProperty {
         }
     }
 
-    protected void setMemberValue(Object object, String name, Object value)
-            throws PropertyException {
+    protected void setMemberValue(Object object, String name, Object value) throws PropertyException {
         if (object == null) {
-            throw new PropertyAccessException(
-                    "Trying to access a member of a null object: " + name);
+            throw new PropertyAccessException("Trying to access a member of a null object: " + name);
         }
         if (!(object instanceof Blob)) {
             throw new PropertyAccessException("Not a Blob: " + object);
@@ -258,16 +247,13 @@ public class BlobProperty extends MapProperty {
         }
 
         @Override
-        public void internalSetValue(Serializable value)
-                throws PropertyException {
-            ((BlobProperty) parent).setMemberValue(parent.getValue(),
-                    getName(), value);
+        public void internalSetValue(Serializable value) throws PropertyException {
+            ((BlobProperty) parent).setMemberValue(parent.getValue(), getName(), value);
         }
 
         @Override
         public Serializable internalGetValue() throws PropertyException {
-            Object value = ((BlobProperty) parent).getMemberValue(
-                    parent.getValue(), getName());
+            Object value = ((BlobProperty) parent).getMemberValue(parent.getValue(), getName());
             if (value != null && !(value instanceof Serializable)) {
                 throw new PropertyException("Non serializable value: " + value);
             }

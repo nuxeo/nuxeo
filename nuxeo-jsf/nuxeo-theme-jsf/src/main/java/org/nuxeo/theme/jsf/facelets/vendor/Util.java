@@ -72,9 +72,8 @@ public class Util {
 
             if (conn instanceof JarURLConnection) {
                 /*
-                 * Note this is a work around for JarURLConnection since the
-                 * getLastModified method is buggy. See JAVASERVERFACES-2725
-                 * and JAVASERVERFACES-2734.
+                 * Note this is a work around for JarURLConnection since the getLastModified method is buggy. See
+                 * JAVASERVERFACES-2725 and JAVASERVERFACES-2734.
                  */
                 JarURLConnection jarUrlConnection = (JarURLConnection) conn;
                 URL jarFileUrl = jarUrlConnection.getJarFileURL();

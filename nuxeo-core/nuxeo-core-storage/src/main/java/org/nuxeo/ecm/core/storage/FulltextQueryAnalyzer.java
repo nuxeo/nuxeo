@@ -114,9 +114,7 @@ public class FulltextQueryAnalyzer {
                         word = word.substring(0, word.length() - 1).trim();
                     }
                     if (word.contains(DOUBLE_QUOTES)) {
-                        throw new FulltextQueryException(
-                                "Invalid fulltext query (double quotes in word): "
-                                        + query);
+                        throw new FulltextQueryException("Invalid fulltext query (double quotes in word): " + query);
                     }
                     if (word.length() != 0) {
                         if (phrase == null) {
@@ -130,9 +128,7 @@ public class FulltextQueryAnalyzer {
                         break;
                     }
                     if (!it.hasNext()) {
-                        throw new FulltextQueryException(
-                                "Invalid fulltext query (unterminated phrase): "
-                                        + query);
+                        throw new FulltextQueryException("Invalid fulltext query (unterminated phrase): " + query);
                     }
                     word = it.next();
                 }
@@ -142,12 +138,10 @@ public class FulltextQueryAnalyzer {
                 word = phrase.toString();
             } else if (word.equalsIgnoreCase(OR)) {
                 if (wasOr) {
-                    throw new FulltextQueryException(
-                            "Invalid fulltext query (OR OR): " + query);
+                    throw new FulltextQueryException("Invalid fulltext query (OR OR): " + query);
                 }
                 if (terms.isEmpty()) {
-                    throw new FulltextQueryException(
-                            "Invalid fulltext query (standalone OR): " + query);
+                    throw new FulltextQueryException("Invalid fulltext query (standalone OR): " + query);
                 }
                 wasOr = true;
                 continue;
@@ -155,16 +149,13 @@ public class FulltextQueryAnalyzer {
             FulltextQuery w = new FulltextQuery();
             if (minus) {
                 if (word.length() == 0) {
-                    throw new FulltextQueryException(
-                            "Invalid fulltext query (standalone -): " + query);
+                    throw new FulltextQueryException("Invalid fulltext query (standalone -): " + query);
                 }
                 w.op = Op.NOTWORD;
             } else {
                 if (plus) {
                     if (word.length() == 0) {
-                        throw new FulltextQueryException(
-                                "Invalid fulltext query (standalone +): "
-                                        + query);
+                        throw new FulltextQueryException("Invalid fulltext query (standalone +): " + query);
                     }
                 }
                 w.op = Op.WORD;
@@ -177,8 +168,7 @@ public class FulltextQueryAnalyzer {
             terms.add(w);
         }
         if (wasOr) {
-            throw new FulltextQueryException(
-                    "Invalid fulltext query (final OR): " + query);
+            throw new FulltextQueryException("Invalid fulltext query (final OR): " + query);
         }
         // final terms
         endAnd();
@@ -231,10 +221,9 @@ public class FulltextQueryAnalyzer {
         terms = new LinkedList<FulltextQuery>();
     }
 
-    public static void translate(FulltextQuery ft, StringBuilder buf,
-            String or, String and, String andNot, String wordStart,
-            String wordEnd, Set<Character> wordCharsReserved,
-            String phraseStart, String phraseEnd, boolean quotePhraseWords) {
+    public static void translate(FulltextQuery ft, StringBuilder buf, String or, String and, String andNot,
+            String wordStart, String wordEnd, Set<Character> wordCharsReserved, String phraseStart, String phraseEnd,
+            boolean quotePhraseWords) {
         if (ft.op == Op.AND || ft.op == Op.OR) {
             buf.append('(');
             for (int i = 0; i < ft.terms.size(); i++) {
@@ -252,8 +241,7 @@ public class FulltextQueryAnalyzer {
                     }
                     buf.append(' ');
                 }
-                translate(term, buf, or, and, andNot, wordStart, wordEnd,
-                        wordCharsReserved, phraseStart, phraseEnd,
+                translate(term, buf, or, and, andNot, wordStart, wordEnd, wordCharsReserved, phraseStart, phraseEnd,
                         quotePhraseWords);
             }
             buf.append(')');
@@ -268,8 +256,7 @@ public class FulltextQueryAnalyzer {
                             buf.append(" ");
                         }
                         first = false;
-                        appendWord(w, buf, wordStart, wordEnd,
-                                wordCharsReserved);
+                        appendWord(w, buf, wordStart, wordEnd, wordCharsReserved);
                     }
                 } else {
                     buf.append(phraseStart);
@@ -282,8 +269,7 @@ public class FulltextQueryAnalyzer {
         }
     }
 
-    protected static void appendWord(String word, StringBuilder buf,
-            String start, String end, Set<Character> reserved) {
+    protected static void appendWord(String word, StringBuilder buf, String start, String end, Set<Character> reserved) {
         boolean quote = true;
         if (!reserved.isEmpty()) {
             for (char c : word.toCharArray()) {
@@ -316,11 +302,10 @@ public class FulltextQueryAnalyzer {
     }
 
     /**
-     * Analyzes a fulltext query into a generic datastructure that can be used
-     * for each specific database.
+     * Analyzes a fulltext query into a generic datastructure that can be used for each specific database.
      * <p>
-     * List of terms containing only negative words are suppressed. Otherwise
-     * negative words are put at the end of the lists of terms.
+     * List of terms containing only negative words are suppressed. Otherwise negative words are put at the end of the
+     * lists of terms.
      */
     public static FulltextQuery analyzeFulltextQuery(String query) {
         return new FulltextQueryAnalyzer().analyze(query);
@@ -329,25 +314,21 @@ public class FulltextQueryAnalyzer {
     /**
      * Translate fulltext into a common pattern used by many servers.
      */
-    public static String translateFulltext(FulltextQuery ft, String or,
-            String and, String andNot, String phraseQuote) {
+    public static String translateFulltext(FulltextQuery ft, String or, String and, String andNot, String phraseQuote) {
         StringBuilder buf = new StringBuilder();
-        translate(ft, buf, or, and, andNot, "", "",
-                Collections.<Character> emptySet(), phraseQuote, phraseQuote,
-                false);
+        translate(ft, buf, or, and, andNot, "", "", Collections.<Character> emptySet(), phraseQuote, phraseQuote, false);
         return buf.toString();
     }
 
     /**
      * Translate fulltext into a common pattern used by many servers.
      */
-    public static String translateFulltext(FulltextQuery ft, String or,
-            String and, String andNot, String wordStart, String wordEnd,
-            Set<Character> wordCharsReserved, String phraseStart,
-            String phraseEnd, boolean quotePhraseWords) {
+    public static String translateFulltext(FulltextQuery ft, String or, String and, String andNot, String wordStart,
+            String wordEnd, Set<Character> wordCharsReserved, String phraseStart, String phraseEnd,
+            boolean quotePhraseWords) {
         StringBuilder buf = new StringBuilder();
-        translate(ft, buf, or, and, andNot, wordStart, wordEnd,
-                wordCharsReserved, phraseStart, phraseEnd, quotePhraseWords);
+        translate(ft, buf, or, and, andNot, wordStart, wordEnd, wordCharsReserved, phraseStart, phraseEnd,
+                quotePhraseWords);
         return buf.toString();
     }
 

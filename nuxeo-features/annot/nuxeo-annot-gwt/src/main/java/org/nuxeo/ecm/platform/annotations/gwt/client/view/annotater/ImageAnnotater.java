@@ -40,8 +40,7 @@ import com.google.gwt.user.client.Event;
 /**
  * @author Alexandre Russel
  */
-public class ImageAnnotater extends AbstractAnnotater implements
-        AnnotationChangeListener {
+public class ImageAnnotater extends AbstractAnnotater implements AnnotationChangeListener {
     private boolean writing = false;
 
     private boolean processing = false;
@@ -88,10 +87,8 @@ public class ImageAnnotater extends AbstractAnnotater implements
         }
         image = getRootImage(event);
         int[] absoluteTopLeft = Utils.getAbsoluteTopLeft(image, Document.get());
-        ax = event.getClientX() - absoluteTopLeft[1]
-                + Window.getScrollLeft();
-        ay = event.getClientY() - absoluteTopLeft[0]
-                + Window.getScrollTop();
+        ax = event.getClientX() - absoluteTopLeft[1] + Window.getScrollLeft();
+        ay = event.getClientY() - absoluteTopLeft[0] + Window.getScrollTop();
         bx = ax;
         by = ay;
         writing = true;
@@ -114,12 +111,10 @@ public class ImageAnnotater extends AbstractAnnotater implements
         return imageElement;
     }
 
-    private static ImageElement getImageElementFromAnchor(
-            com.google.gwt.dom.client.Element anchorElement) {
+    private static ImageElement getImageElementFromAnchor(com.google.gwt.dom.client.Element anchorElement) {
         Node element;
         while ((element = anchorElement.getPreviousSibling()) != null) {
-            Log.debug("getImageElementFromAnchor -- nodeName: "
-                    + element.getNodeName());
+            Log.debug("getImageElementFromAnchor -- nodeName: " + element.getNodeName());
             if (element.getNodeName().equalsIgnoreCase("img")) {
                 return ImageElement.as((Element) element.cast());
             }
@@ -137,16 +132,13 @@ public class ImageAnnotater extends AbstractAnnotater implements
         String nodeName = event.getTarget().getNodeName();
         if (nodeName.equalsIgnoreCase("img")) {
             ImageElement newImage = ImageElement.as(event.getTarget());
-            if ((!image.equals(newImage) || ax == -1 || ay == -1)
-                    && !controller.isMultiImage()) {
+            if ((!image.equals(newImage) || ax == -1 || ay == -1) && !controller.isMultiImage()) {
                 refresh();
             }
         }
         int[] absoluteTopLeft = Utils.getAbsoluteTopLeft(image, Document.get());
-        bx = event.getClientX() - absoluteTopLeft[1]
-                + Window.getScrollLeft();
-        by = event.getClientY() - absoluteTopLeft[0]
-                + Window.getScrollTop();
+        bx = event.getClientX() - absoluteTopLeft[1] + Window.getScrollLeft();
+        by = event.getClientY() - absoluteTopLeft[0] + Window.getScrollTop();
         updateMap(ax, ay, bx, by, image);
     }
 
@@ -171,17 +163,14 @@ public class ImageAnnotater extends AbstractAnnotater implements
         String nodeName = event.getTarget().getNodeName();
         if (nodeName.equalsIgnoreCase("img")) {
             ImageElement newImage = ImageElement.as(event.getTarget());
-            if ((!image.equals(newImage) || ax == -1 || ay == -1)
-                    && !controller.isMultiImage()) {
+            if ((!image.equals(newImage) || ax == -1 || ay == -1) && !controller.isMultiImage()) {
                 refresh();
             }
         }
 
         int[] absoluteTopLeft = Utils.getAbsoluteTopLeft(image, Document.get());
-        bx = event.getClientX() - absoluteTopLeft[1]
-                + Window.getScrollLeft();
-        by = event.getClientY() - absoluteTopLeft[0]
-                + Window.getScrollTop();
+        bx = event.getClientX() - absoluteTopLeft[1] + Window.getScrollLeft();
+        by = event.getClientY() - absoluteTopLeft[0] + Window.getScrollTop();
         addMapAndGetAnnot(new int[] { ax, ay, bx, by }, image);
         if (controller.isAnnotationsVisible()) {
             controller.enablePopupListeners();
@@ -195,8 +184,7 @@ public class ImageAnnotater extends AbstractAnnotater implements
         writing = false;
         processing = false;
         if (divElement != null) {
-            DOM.setEventListener(
-                    (com.google.gwt.user.client.Element) divElement.cast(), null);
+            DOM.setEventListener((com.google.gwt.user.client.Element) divElement.cast(), null);
             Log.debug("Parent element: " + divElement.getParentElement());
             if (divElement.getParentElement() != null) {
                 divElement.getParentElement().removeChild(divElement);
@@ -213,17 +201,14 @@ public class ImageAnnotater extends AbstractAnnotater implements
     }
 
     public void addMapAndGetAnnot(int[] points, ImageElement img) {
-        DOM.setEventListener(
-                (com.google.gwt.user.client.Element) divElement.cast(), null);
+        DOM.setEventListener((com.google.gwt.user.client.Element) divElement.cast(), null);
         String xpath = img.getParentElement().getId();
         xpath = XPathUtil.fromIdableName(xpath);
         checkInt(points);
-        String xpointer = controller.filterXPointer(image, xpath, points[0],
-                points[1], points[2], points[3]);
+        String xpointer = controller.filterXPointer(image, xpath, points[0], points[1], points[2], points[3]);
         Log.debug("XPointer: " + xpointer);
         controller.createNewAnnotation(xpointer);
-        NewAnnotationPopup popup = new NewAnnotationPopup(divElement, controller,
-                true, "local");
+        NewAnnotationPopup popup = new NewAnnotationPopup(divElement, controller, true, "local");
         controller.setNewAnnotationPopup(popup);
     }
 
@@ -231,9 +216,8 @@ public class ImageAnnotater extends AbstractAnnotater implements
         // following code is because, on some IE machine we got float instead of
         // integer:
         for (int x = 0; x < points.length; x++) {
-            points[x] = ("" + points[x]).contains(".") ? Integer.parseInt(("" + points[x]).substring(
-                    0, ("" + points[x]).indexOf(".")))
-                    : points[x];
+            points[x] = ("" + points[x]).contains(".") ? Integer.parseInt(("" + points[x]).substring(0,
+                    ("" + points[x]).indexOf("."))) : points[x];
         }
     }
 

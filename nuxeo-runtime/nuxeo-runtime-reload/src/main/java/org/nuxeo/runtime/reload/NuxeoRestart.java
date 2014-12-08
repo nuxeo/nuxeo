@@ -43,8 +43,7 @@ public class NuxeoRestart {
         } else { // try java
             cmd.add("java");
         }
-        File bundle = Framework.getRuntime().getBundleFile(
-                ReloadComponent.getBundle());
+        File bundle = Framework.getRuntime().getBundleFile(ReloadComponent.getBundle());
         cmd.add("-cp");
         cmd.add(bundle.getAbsolutePath());
         cmd.add(NuxeoRestart.class.getName());
@@ -110,8 +109,7 @@ public class NuxeoRestart {
     }
 
     /**
-     * First argument is the script to run followed by script arguments. The
-     * last argument is the lock file.
+     * First argument is the script to run followed by script arguments. The last argument is the lock file.
      */
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
@@ -130,10 +128,7 @@ public class NuxeoRestart {
             }
             Thread.sleep(1000);
             // start nuxeo
-            Runtime.getRuntime().exec(
-                    newArgs,
-                    new String[] { "JAVA_HOME="
-                            + System.getProperty("java.home") },
+            Runtime.getRuntime().exec(newArgs, new String[] { "JAVA_HOME=" + System.getProperty("java.home") },
                     script.getParentFile());
             ok = true;
         } finally {

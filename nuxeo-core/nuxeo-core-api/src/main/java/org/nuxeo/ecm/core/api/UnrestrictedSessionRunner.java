@@ -23,8 +23,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Helper class to run code with an unrestricted session.
  * <p>
- * The caller must implement the {@link #run} method, and call
- * {@link #runUnrestricted}.
+ * The caller must implement the {@link #run} method, and call {@link #runUnrestricted}.
  *
  * @author Florent Guillaume
  */
@@ -42,8 +41,8 @@ public abstract class UnrestrictedSessionRunner {
     public boolean isUnrestricted;
 
     /**
-     * Constructs a {@link UnrestrictedSessionRunner} given an existing session
-     * (which may or may not be already unrestricted).
+     * Constructs a {@link UnrestrictedSessionRunner} given an existing session (which may or may not be already
+     * unrestricted).
      * <p>
      * Originating user is taken on given session.
      *
@@ -75,14 +74,12 @@ public abstract class UnrestrictedSessionRunner {
     }
 
     /**
-     * Constructs a {@link UnrestrictedSessionRunner} given a repository name
-     * and an originating user name.
+     * Constructs a {@link UnrestrictedSessionRunner} given a repository name and an originating user name.
      *
      * @param repositoryName the repository name
      * @param originatingUser the user name behind the system user
      */
-    protected UnrestrictedSessionRunner(String repositoryName,
-            String originatingUser) {
+    protected UnrestrictedSessionRunner(String repositoryName, String originatingUser) {
         session = null;
         sessionIsAlreadyUnrestricted = false;
         this.repositoryName = repositoryName;
@@ -103,8 +100,8 @@ public abstract class UnrestrictedSessionRunner {
     }
 
     /**
-     * Calls the {@link #run()} method with an unrestricted {@link #session}.
-     * During this call, {@link #isUnrestricted} is set to {@code true}.
+     * Calls the {@link #run()} method with an unrestricted {@link #session}. During this call, {@link #isUnrestricted}
+     * is set to {@code true}.
      */
     public void runUnrestricted() throws ClientException {
         isUnrestricted = true;
@@ -122,8 +119,7 @@ public abstract class UnrestrictedSessionRunner {
             }
             try {
                 CoreSession baseSession = session;
-                if (baseSession != null
-                        && !baseSession.isStateSharedByAllThreadSessions()) {
+                if (baseSession != null && !baseSession.isStateSharedByAllThreadSessions()) {
                     // save base session state for unrestricted one
                     baseSession.save();
                 }
@@ -149,8 +145,7 @@ public abstract class UnrestrictedSessionRunner {
                         }
                         session.close();
                     } finally {
-                        if (baseSession != null
-                                && !baseSession.isStateSharedByAllThreadSessions()) {
+                        if (baseSession != null && !baseSession.isStateSharedByAllThreadSessions()) {
                             // process invalidations from unrestricted session
                             baseSession.save();
                         }
@@ -176,11 +171,10 @@ public abstract class UnrestrictedSessionRunner {
     }
 
     /**
-     * This method will be called by {@link #runUnrestricted()} with
-     * {@link #session} available as an unrestricted session.
+     * This method will be called by {@link #runUnrestricted()} with {@link #session} available as an unrestricted
+     * session.
      * <p>
-     * It can also be called directly in which case the {@link #session}
-     * available will be the one passed to
+     * It can also be called directly in which case the {@link #session} available will be the one passed to
      * {@code #UnrestrictedSessionRunner(CoreSession)}.
      */
     public abstract void run() throws ClientException;

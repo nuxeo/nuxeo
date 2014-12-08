@@ -46,24 +46,18 @@ public class CurrentDocumentCollectionBean implements Serializable {
 
     private boolean isDisplayAll;
 
-    public List<DocumentModel> getCurrentDocumentCollections()
-            throws ClientException {
-        final NavigationContext navigationContext = (NavigationContext) Component.getInstance(
-                "navigationContext", true);
+    public List<DocumentModel> getCurrentDocumentCollections() throws ClientException {
+        final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         if (!collectionManager.isCollectable(currentDocument)) {
             return null;
         }
-        final CoreSession session = (CoreSession) Component.getInstance(
-                "documentManager", true);
-        List<DocumentModel> result = collectionManager.getVisibleCollection(
-                currentDocument,
+        final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
+        List<DocumentModel> result = collectionManager.getVisibleCollection(currentDocument,
                 isDisplayAll ? CollectionConstants.MAX_COLLECTION_RETURNED
-                        : CollectionConstants.DEFAULT_COLLECTION_RETURNED,
-                session);
-        if (!isDisplayAll
-                && result.size() == CollectionConstants.DEFAULT_COLLECTION_RETURNED) {
+                        : CollectionConstants.DEFAULT_COLLECTION_RETURNED, session);
+        if (!isDisplayAll && result.size() == CollectionConstants.DEFAULT_COLLECTION_RETURNED) {
             hasCurrentDocumentMoreCollectionToDisplay = true;
         } else {
             isDisplayAll = true;

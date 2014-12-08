@@ -24,10 +24,8 @@ import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ListenerSetDescriptor;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletDescriptor;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistry;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ServletHolder extends HttpServlet {
 
@@ -54,7 +52,7 @@ public class ServletHolder extends HttpServlet {
         }
         ServletDescriptor desc = ServletRegistry.getInstance().getServletDescriptor(name);
         if (desc == null) {
-            throw new ServletException("No such servlet descriptor: "+name);
+            throw new ServletException("No such servlet descriptor: " + name);
         }
         return desc;
     }
@@ -70,11 +68,11 @@ public class ServletHolder extends HttpServlet {
                 listeners.init(config);
             }
             super.init(config);
-            //lazy chain.init(descriptor, config);
+            // lazy chain.init(descriptor, config);
         } catch (ServletException e) {
             throw e;
         } catch (ReflectiveOperationException | BundleNotFoundException e) {
-            throw new ServletException("Initialization exception for servlet "+config.getServletName(), e);
+            throw new ServletException("Initialization exception for servlet " + config.getServletName(), e);
         }
     }
 
@@ -89,8 +87,8 @@ public class ServletHolder extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
         Thread t = Thread.currentThread();
         ClassLoader cl = t.getContextClassLoader();
         try {
@@ -104,7 +102,6 @@ public class ServletHolder extends HttpServlet {
             t.setContextClassLoader(cl);
         }
     }
-
 
     protected synchronized void lazyInit() throws ServletException {
         try {

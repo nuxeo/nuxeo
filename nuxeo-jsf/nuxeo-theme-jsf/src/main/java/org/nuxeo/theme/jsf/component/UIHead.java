@@ -36,8 +36,7 @@ public class UIHead extends UIOutput {
         final ResponseWriter writer = context.getResponseWriter();
         final ExternalContext externalContext = context.getExternalContext();
 
-        final URL themeUrl = (URL) externalContext.getRequestMap().get(
-                "org.nuxeo.theme.url");
+        final URL themeUrl = (URL) externalContext.getRequestMap().get("org.nuxeo.theme.url");
         Map<String, String> params = new HashMap<String, String>();
 
         params.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));

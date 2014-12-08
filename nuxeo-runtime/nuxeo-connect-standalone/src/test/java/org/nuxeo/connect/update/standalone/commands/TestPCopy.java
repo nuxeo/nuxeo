@@ -33,15 +33,13 @@ import org.nuxeo.connect.update.xml.XmlWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestPCopy extends AbstractCommandTest {
 
     @Override
     protected void updatePackage(PackageBuilder builder) throws Exception {
         String content = "test=my ${v}";
-        builder.addEntry("test.properties",
-                new ByteArrayInputStream(content.getBytes()));
+        builder.addEntry("test.properties", new ByteArrayInputStream(content.getBytes()));
     }
 
     @Override

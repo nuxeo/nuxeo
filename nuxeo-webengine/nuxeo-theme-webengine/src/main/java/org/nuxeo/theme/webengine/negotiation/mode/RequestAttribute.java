@@ -20,8 +20,7 @@ import org.nuxeo.theme.negotiation.Scheme;
 public final class RequestAttribute implements Scheme {
 
     public String getOutcome(final Object context) {
-        return (String) ((WebContext) context).getRequest().getAttribute(
-                "org.nuxeo.theme.mode");
+        return (String) ((WebContext) context).getRequest().getAttribute("org.nuxeo.theme.mode");
     }
 
 }

@@ -21,10 +21,8 @@
 
 package org.nuxeo.common.utils;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class Constants {
 

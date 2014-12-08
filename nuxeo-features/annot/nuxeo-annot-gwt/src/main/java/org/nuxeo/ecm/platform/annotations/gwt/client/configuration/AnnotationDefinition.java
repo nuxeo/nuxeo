@@ -25,7 +25,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class AnnotationDefinition implements IsSerializable {
 
@@ -49,17 +48,15 @@ public class AnnotationDefinition implements IsSerializable {
 
     }
 
-    public AnnotationDefinition(String uri, String name, String icon,
-            String type) {
+    public AnnotationDefinition(String uri, String name, String icon, String type) {
         this.uri = uri;
         this.name = name;
         this.icon = icon;
         this.type = type;
     }
 
-    public AnnotationDefinition(String uri, String name, String icon,
-            String type, String listIcon, String createIcon, Boolean inMenu,
-            Map<String, String[]> fields) {
+    public AnnotationDefinition(String uri, String name, String icon, String type, String listIcon, String createIcon,
+            Boolean inMenu, Map<String, String[]> fields) {
         this.uri = uri;
         this.name = name;
         this.icon = icon;

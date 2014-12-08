@@ -202,18 +202,15 @@ public class ModuleManager {
             }
             return mc;
         } catch (IOException e) {
-            throw WebException.wrap("Faile to load module configuration: "
-                    + file, e);
+            throw WebException.wrap("Faile to load module configuration: " + file, e);
         }
     }
 
-    public static ModuleConfiguration readConfiguration(final WebEngine engine,
-            File file) throws IOException {
+    public static ModuleConfiguration readConfiguration(final WebEngine engine, File file) throws IOException {
         XMap xmap = new XMap();
         xmap.register(ModuleConfiguration.class);
         InputStream in = new BufferedInputStream(new FileInputStream(file));
-        ModuleConfiguration mc = (ModuleConfiguration) xmap.load(
-                createXMapContext(engine), in);
+        ModuleConfiguration mc = (ModuleConfiguration) xmap.load(createXMapContext(engine), in);
         return mc;
     }
 
@@ -224,8 +221,7 @@ public class ModuleManager {
                     rb.resolve(engine);
                     engine.addResourceBinding(rb);
                 } catch (ClassNotFoundException e) {
-                    throw WebException.wrap(
-                            "Faile to load module root resource: " + rb, e);
+                    throw WebException.wrap("Faile to load module root resource: " + rb, e);
                 }
             }
         }
@@ -236,8 +232,7 @@ public class ModuleManager {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public Class<?> loadClass(String className)
-                    throws ClassNotFoundException {
+            public Class<?> loadClass(String className) throws ClassNotFoundException {
                 return engine.getWebLoader().loadClass(className);
             }
 

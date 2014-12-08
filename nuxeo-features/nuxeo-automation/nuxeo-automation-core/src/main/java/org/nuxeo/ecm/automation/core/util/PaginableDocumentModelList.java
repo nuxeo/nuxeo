@@ -16,14 +16,11 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public interface PaginableDocumentModelList extends DocumentModelList,
-        Paginable<DocumentModel> {
+public interface PaginableDocumentModelList extends DocumentModelList, Paginable<DocumentModel> {
 
     /**
-     * Returns the name of what will be used to compute the document URLs,
-     * usually a codec name.
+     * Returns the name of what will be used to compute the document URLs, usually a codec name.
      *
      * @since 5.6
      */

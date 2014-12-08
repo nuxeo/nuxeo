@@ -53,8 +53,7 @@ public class TestBlob extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        url = Thread.currentThread().getContextClassLoader().getResource(
-                "test.blob");
+        url = Thread.currentThread().getContextClassLoader().getResource("test.blob");
         File file = new File(url.toURI());
         length = (int) file.length();
         blobContent = new byte[length];
@@ -76,14 +75,12 @@ public class TestBlob extends NXRuntimeTestCase {
 
         File tmpFile = File.createTempFile("FileBlobtest-", ".tmp");
 
-        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(
-                tmpFile));
+        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tmpFile));
         out.writeObject(blob);
         out.close();
 
         ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-        ObjectInputStream in = new ObjectInputStream(new FileInputStream(
-                tmpFile));
+        ObjectInputStream in = new ObjectInputStream(new FileInputStream(tmpFile));
         FileBlob blob2 = (FileBlob) in.readObject();
         blob2.transferTo(baos2);
         tmpFile.delete();
@@ -123,8 +120,7 @@ public class TestBlob extends NXRuntimeTestCase {
 
     @Test
     public void testStreamingBlob() throws Exception {
-        Blob blob = StreamingBlob.createFromStream(new FileInputStream(
-                new File(url.toURI())));
+        Blob blob = StreamingBlob.createFromStream(new FileInputStream(new File(url.toURI())));
 
         assertEquals("application/octet-stream", blob.getMimeType());
         assertNull(blob.getEncoding());

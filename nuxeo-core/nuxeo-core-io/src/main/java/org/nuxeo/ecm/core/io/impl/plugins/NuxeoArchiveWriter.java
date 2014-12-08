@@ -41,29 +41,24 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NuxeoArchiveWriter extends AbstractDocumentWriter {
 
     protected ZipOutputStream out;
 
     public NuxeoArchiveWriter(File destination) throws IOException {
-        this(new BufferedOutputStream(new FileOutputStream(destination)),
-                Deflater.DEFAULT_COMPRESSION);
+        this(new BufferedOutputStream(new FileOutputStream(destination)), Deflater.DEFAULT_COMPRESSION);
     }
 
-    public NuxeoArchiveWriter(File destination, int compressionLevel)
-            throws IOException {
-        this(new BufferedOutputStream(new FileOutputStream(destination)),
-                compressionLevel);
+    public NuxeoArchiveWriter(File destination, int compressionLevel) throws IOException {
+        this(new BufferedOutputStream(new FileOutputStream(destination)), compressionLevel);
     }
 
     public NuxeoArchiveWriter(OutputStream out) throws IOException {
         this(new ZipOutputStream(out), Deflater.DEFAULT_COMPRESSION);
     }
 
-    public NuxeoArchiveWriter(OutputStream out, int compressionLevel)
-            throws IOException {
+    public NuxeoArchiveWriter(OutputStream out, int compressionLevel) throws IOException {
         this(new ZipOutputStream(out), compressionLevel);
     }
 
@@ -71,8 +66,7 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
         this(out, Deflater.DEFAULT_COMPRESSION);
     }
 
-    public NuxeoArchiveWriter(ZipOutputStream out, int compressionLevel)
-            throws IOException {
+    public NuxeoArchiveWriter(ZipOutputStream out, int compressionLevel) throws IOException {
         this.out = out;
         this.out.setLevel(compressionLevel);
         setComment("");
@@ -87,16 +81,14 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
     }
 
     @Override
-    public DocumentTranslationMap write(ExportedDocument doc)
-            throws IOException {
+    public DocumentTranslationMap write(ExportedDocument doc) throws IOException {
         String path = doc.getPath().toString();
         writeDocument(path, doc);
         // keep location unchanged
         DocumentLocation oldLoc = doc.getSourceLocation();
         String oldServerName = oldLoc.getServerName();
         DocumentRef oldDocRef = oldLoc.getDocRef();
-        DocumentTranslationMap map = new DocumentTranslationMapImpl(
-                oldServerName, oldServerName);
+        DocumentTranslationMap map = new DocumentTranslationMapImpl(oldServerName, oldServerName);
         map.put(oldDocRef, oldDocRef);
         return map;
     }
@@ -114,8 +106,7 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
         }
     }
 
-    protected void writeDocument(String path, ExportedDocument doc)
-            throws IOException {
+    protected void writeDocument(String path, ExportedDocument doc) throws IOException {
 
         if (path.equals("/") || path.length() == 0) {
             path = "";
@@ -171,8 +162,7 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
         }
     }
 
-    protected static void writeXML(Document doc, OutputStream out)
-            throws IOException {
+    protected static void writeXML(Document doc, OutputStream out) throws IOException {
         OutputFormat format = AbstractDocumentWriter.createPrettyPrint();
         XMLWriter writer = new XMLWriter(out, format);
         writer.write(doc);

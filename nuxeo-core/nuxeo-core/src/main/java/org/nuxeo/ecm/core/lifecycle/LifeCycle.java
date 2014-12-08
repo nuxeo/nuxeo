@@ -19,9 +19,7 @@ import java.util.Collection;
  * Document life cycle.
  *
  * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleImpl
- *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface LifeCycle {
 
@@ -31,8 +29,7 @@ public interface LifeCycle {
      * @param stateName the current state name
      * @return collection of allowed state transition names.
      */
-    Collection<String> getAllowedStateTransitionsFrom(String stateName)
-            throws LifeCycleException;
+    Collection<String> getAllowedStateTransitionsFrom(String stateName) throws LifeCycleException;
 
     /**
      * Returns the default initial state name.

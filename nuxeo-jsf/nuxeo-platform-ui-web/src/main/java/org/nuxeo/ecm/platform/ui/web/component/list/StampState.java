@@ -42,8 +42,7 @@ import org.nuxeo.ecm.platform.ui.web.directory.ChainSelect;
 /**
  * This class saves the state of stamp components.
  * <p>
- * This is an adaptation of the Trinidad component to make it deal correctly
- * with any kind of component.
+ * This is an adaptation of the Trinidad component to make it deal correctly with any kind of component.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -71,8 +70,7 @@ final class StampState implements Externalizable {
             this.key1 = key1;
             this.key2 = key2;
 
-            hash = (key1 == null ? 0 : key1.hashCode())
-                    + (key2 == null ? 0 : key2.hashCode());
+            hash = (key1 == null ? 0 : key1.hashCode()) + (key2 == null ? 0 : key2.hashCode());
         }
 
         @Override
@@ -108,8 +106,7 @@ final class StampState implements Externalizable {
     }
 
     /**
-     * Clears all state except for the state associated with the give
-     * currencyObj.
+     * Clears all state except for the state associated with the give currencyObj.
      *
      * @param skipCurrencyObj
      */
@@ -147,14 +144,11 @@ final class StampState implements Externalizable {
     }
 
     /**
-     * Saves the state of a stamp. This method is called when the currency of
-     * this component is changed so that the state of this stamp can be
-     * preserved, before the stamp is updated with the state corresponding to
-     * the new currency. This method recurses for the children and facets of the
-     * stamp.
+     * Saves the state of a stamp. This method is called when the currency of this component is changed so that the
+     * state of this stamp can be preserved, before the stamp is updated with the state corresponding to the new
+     * currency. This method recurses for the children and facets of the stamp.
      *
-     * @return this object must be Serializable if client-side state saving is
-     *         used.
+     * @return this object must be Serializable if client-side state saving is used.
      */
     public static Object saveStampState(FacesContext context, UIComponent stamp) {
         if (stamp.isTransient()) {
@@ -209,8 +203,7 @@ final class StampState implements Externalizable {
                 UIComponent facet = entry.getValue();
                 if (!facet.isTransient()) {
                     facetState[base] = entry.getKey();
-                    facetState[base + 1] = saveStampState(context,
-                            entry.getValue());
+                    facetState[base + 1] = saveStampState(context, entry.getValue());
                     i++;
                 }
             }
@@ -247,13 +240,11 @@ final class StampState implements Externalizable {
     }
 
     /**
-     * Restores the state of a stamp. This method is called after the currency
-     * of this component is changed so that the state of this stamp can be
-     * changed to match the new currency. This method recurses for the children
-     * and facets of the stamp.
+     * Restores the state of a stamp. This method is called after the currency of this component is changed so that the
+     * state of this stamp can be changed to match the new currency. This method recurses for the children and facets of
+     * the stamp.
      */
-    public static void restoreStampState(FacesContext context,
-            UIComponent stamp, Object stampState) {
+    public static void restoreStampState(FacesContext context, UIComponent stamp, Object stampState) {
         if (stampState == null || stamp == null) {
             return;
         }
@@ -335,8 +326,7 @@ final class StampState implements Externalizable {
     }
 
     @SuppressWarnings("unchecked")
-    public void readExternal(ObjectInput in) throws IOException,
-            ClassNotFoundException {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         int size = in.readInt();
 
         if (size > 0) {
@@ -345,8 +335,7 @@ final class StampState implements Externalizable {
 
         if (log.isDebugEnabled()) {
             for (Map.Entry<DualKey, Object> entry : rows.entrySet()) {
-                log.debug("Restoring " + entry.getKey() + ", "
-                        + entry.getValue());
+                log.debug("Restoring " + entry.getKey() + ", " + entry.getValue());
             }
         }
     }

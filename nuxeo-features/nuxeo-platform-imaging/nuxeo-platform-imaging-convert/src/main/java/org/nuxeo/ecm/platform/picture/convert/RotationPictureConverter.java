@@ -39,8 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 public class RotationPictureConverter implements Converter {
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         try {
             ImagingService service = Framework.getService(ImagingService.class);
             List<Blob> results = new ArrayList<Blob>();

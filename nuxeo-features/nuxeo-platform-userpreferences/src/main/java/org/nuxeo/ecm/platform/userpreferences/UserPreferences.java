@@ -20,8 +20,7 @@ package org.nuxeo.ecm.platform.userpreferences;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
 
 /**
- * Interface that must be extended by other interface representing user
- * preferences.
+ * Interface that must be extended by other interface representing user preferences.
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5

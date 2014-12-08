@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
- *
  */
 @XObject("field")
 public class DisplayedFieldsDescriptor {

@@ -29,28 +29,23 @@ public interface DocumentViewCodec {
     void setPrefix(String prefix);
 
     /**
-     * Returns true if this codec should apply when iterating over codecs to
-     * find a matching one.
+     * Returns true if this codec should apply when iterating over codecs to find a matching one.
      *
-     * @see DocumentViewCodecManager#getUrlFromDocumentView(DocumentView,
-     *      boolean, String)
+     * @see DocumentViewCodecManager#getUrlFromDocumentView(DocumentView, boolean, String)
      */
     boolean handleDocumentView(DocumentView docView);
 
     /**
-     * Returns true if this codec should apply when iterating over codecs to
-     * find a matching one.
+     * Returns true if this codec should apply when iterating over codecs to find a matching one.
      *
-     * @see DocumentViewCodecManager#getDocumentViewFromUrl(String, boolean,
-     *      String)
+     * @see DocumentViewCodecManager#getDocumentViewFromUrl(String, boolean, String)
      */
     boolean handleUrl(String url);
 
     /**
      * Extracts the document view from given url.
      * <p>
-     * The url is partial: it does not hold the context path information
-     * (server:port/nuxeo).
+     * The url is partial: it does not hold the context path information (server:port/nuxeo).
      *
      * @param url the partial url to redirect to.
      * @return a document view instance.
@@ -60,8 +55,7 @@ public interface DocumentViewCodec {
     /**
      * Builds an url from the given document view.
      * <p>
-     * The url should be partial: it should not hold the context path
-     * information (server:port/nuxeo).
+     * The url should be partial: it should not hold the context path information (server:port/nuxeo).
      *
      * @param docView
      * @return

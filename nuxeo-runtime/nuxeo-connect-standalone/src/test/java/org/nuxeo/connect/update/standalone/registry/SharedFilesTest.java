@@ -37,21 +37,14 @@ import org.nuxeo.connect.update.xml.XmlWriter;
  * <li>pkg1 is installing 2 files: shared and lib1.jar in bundles dir.
  * <li>pkg2 is installing 2 files: shared and lib2.jar in bundles dir.
  * </ul>
- *
- * First we install pkg1, the pkg2 => expect pkg2 is not really copying the
- * shared but it updates the shared.files registry adding a new reference to
- * that jar. (we will use different content for these files to be able to track
- * the file that was really copied) Also, we expect that lin1.jar and lib2.jar
- * was copied.
- *
- * Then we uninstall pkg1 and we expect that lib1.jar is not removed (and the
- * jar is the one installed by pkg1). But lib1.jar must be removed. Then we
+ * First we install pkg1, the pkg2 => expect pkg2 is not really copying the shared but it updates the shared.files
+ * registry adding a new reference to that jar. (we will use different content for these files to be able to track the
+ * file that was really copied) Also, we expect that lin1.jar and lib2.jar was copied. Then we uninstall pkg1 and we
+ * expect that lib1.jar is not removed (and the jar is the one installed by pkg1). But lib1.jar must be removed. Then we
  * uninstall pkg2 and we expect all the 3 files were removed.
  *
  * @since 5.5
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class SharedFilesTest extends PackageTestCase {
 
@@ -77,8 +70,7 @@ public abstract class SharedFilesTest extends PackageTestCase {
     }
 
     public UpdateManager getManager() throws Exception {
-        UpdateManager mgr = new UpdateManager(
-                Environment.getDefault().getHome(), service.getRegistry());
+        UpdateManager mgr = new UpdateManager(Environment.getDefault().getHome(), service.getRegistry());
         mgr.load();
         return mgr;
     }
@@ -100,8 +92,7 @@ public abstract class SharedFilesTest extends PackageTestCase {
     }
 
     /**
-     * @deprecated this is no more the case - since handling explicit
-     *             constraints was fixed.
+     * @deprecated this is no more the case - since handling explicit constraints was fixed.
      */
     @Deprecated
     public void ensurePkg1AfterBlockingDowngrade() throws Exception {
@@ -123,8 +114,7 @@ public abstract class SharedFilesTest extends PackageTestCase {
     }
 
     /**
-     * Here a downgrade is made - by default downgrade is not allowed see
-     * {@link #ensurePkg21WithDowngrade()}
+     * Here a downgrade is made - by default downgrade is not allowed see {@link #ensurePkg21WithDowngrade()}
      *
      * @throws Exception
      */

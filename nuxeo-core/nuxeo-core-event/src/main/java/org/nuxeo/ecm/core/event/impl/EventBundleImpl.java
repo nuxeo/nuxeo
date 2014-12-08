@@ -45,7 +45,6 @@ public class EventBundleImpl implements EventBundle {
         this(EventServiceImpl.VMID);
     }
 
-
     @Override
     public boolean hasRemoteSource() {
         return !vmid.equals(EventServiceImpl.VMID);

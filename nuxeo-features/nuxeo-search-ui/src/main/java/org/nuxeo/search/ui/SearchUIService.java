@@ -39,11 +39,9 @@ public interface SearchUIService {
     List<ContentViewHeader> getContentViewHeaders(ActionContext actionContext);
 
     /**
-     * Returns the list of Content view headers associated to a search and
-     * depending of a local configuration.
+     * Returns the list of Content view headers associated to a search and depending of a local configuration.
      */
-    List<ContentViewHeader> getContentViewHeaders(ActionContext actionContext,
-            DocumentModel doc);
+    List<ContentViewHeader> getContentViewHeaders(ActionContext actionContext, DocumentModel doc);
 
     /**
      * Save the current search in the user workspace with the given title.
@@ -53,21 +51,16 @@ public interface SearchUIService {
      * @param title the title of the being saved search
      * @return the saved search DocumentModel
      */
-    DocumentModel saveSearch(CoreSession session,
-            ContentView searchContentView, String title) throws ClientException;
+    DocumentModel saveSearch(CoreSession session, ContentView searchContentView, String title) throws ClientException;
 
     /**
-     * Returns the current user saved searches, located into its own user
-     * workspace.
+     * Returns the current user saved searches, located into its own user workspace.
      */
-    List<DocumentModel> getCurrentUserSavedSearches(CoreSession session)
-            throws ClientException;
+    List<DocumentModel> getCurrentUserSavedSearches(CoreSession session) throws ClientException;
 
     /**
-     * Returns all the accessible saved searches except the ones for the current
-     * user.
+     * Returns all the accessible saved searches except the ones for the current user.
      */
-    List<DocumentModel> getSharedSavedSearches(CoreSession session)
-            throws ClientException;
+    List<DocumentModel> getSharedSavedSearches(CoreSession session) throws ClientException;
 
 }

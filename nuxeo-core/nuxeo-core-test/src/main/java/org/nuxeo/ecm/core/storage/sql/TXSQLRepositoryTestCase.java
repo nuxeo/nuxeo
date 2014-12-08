@@ -27,8 +27,7 @@ public abstract class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp(); // calls deployRepositoryConfig()
-        Environment.getDefault().setHostApplicationName(
-                Environment.NXSERVER_HOST);
+        Environment.getDefault().setHostApplicationName(Environment.NXSERVER_HOST);
         fireFrameworkStarted();
         TransactionHelper.startTransaction();
         openSession();
@@ -50,8 +49,7 @@ public abstract class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
     }
 
     protected boolean hasPoolingConfig() {
-        return database instanceof DatabaseH2
-                || database instanceof DatabasePostgreSQL;
+        return database instanceof DatabaseH2 || database instanceof DatabasePostgreSQL;
     }
 
     protected boolean useSingleConnectionMode() {

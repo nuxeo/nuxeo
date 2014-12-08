@@ -26,18 +26,16 @@ import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Or implements Guard {
 
     protected Guard[] perms;
 
-
     public Or(Collection<Guard> guards) {
         this(guards.toArray(new Guard[guards.size()]));
     }
 
-    public Or(Guard ... guards) {
+    public Or(Guard... guards) {
         if (guards == null) {
             throw new IllegalArgumentException("Argument cannot be null");
         }
@@ -60,7 +58,7 @@ public class Or implements Guard {
             return " [OR] ";
         }
         buf.append('(').append(perms[0]);
-        for (int i=1; i<perms.length; i++) {
+        for (int i = 1; i < perms.length; i++) {
             buf.append(" OR ").append(perms[i]);
         }
         return buf.append(')').toString();

@@ -41,10 +41,8 @@ import org.nuxeo.runtime.api.Framework;
  * Synchronous Event listener used to schedule a reindexing
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
-public class ElasticSearchInlineListener extends IndexingCommandsStacker
-        implements EventListener, Synchronization {
+public class ElasticSearchInlineListener extends IndexingCommandsStacker implements EventListener, Synchronization {
 
     private static final Log log = LogFactory.getLog(ElasticSearchInlineListener.class);
 
@@ -116,16 +114,14 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker
         if (block != null && block) {
             // ignore the event - we are blocked by the caller
             if (log.isDebugEnabled()) {
-                log.debug(
-                        "Skip indexing for doc " + docCtx.getSourceDocument());
+                log.debug("Skip indexing for doc " + docCtx.getSourceDocument());
             }
             return;
         }
 
         Boolean sync = (Boolean) docCtx.getProperty(EventConstants.ES_SYNC_INDEXING_FLAG);
         if (sync == null) {
-            sync = (Boolean) doc.getContextData().get(
-                    EventConstants.ES_SYNC_INDEXING_FLAG);
+            sync = (Boolean) doc.getContextData().get(EventConstants.ES_SYNC_INDEXING_FLAG);
         }
 
         if (sync == null) {
@@ -139,8 +135,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker
     }
 
     @Override
-    protected void fireSyncIndexing(List<IndexingCommand> syncCommands)
-            throws ClientException {
+    protected void fireSyncIndexing(List<IndexingCommand> syncCommands) throws ClientException {
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
         for (IndexingCommand cmd : syncCommands) {
             esi.scheduleIndexing(cmd);
@@ -148,8 +143,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker
     }
 
     @Override
-    protected void fireAsyncIndexing(List<IndexingCommand> asyncCommands)
-            throws ClientException {
+    protected void fireAsyncIndexing(List<IndexingCommand> asyncCommands) throws ClientException {
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
         for (IndexingCommand cmd : asyncCommands) {
             esi.scheduleIndexing(cmd);
@@ -170,8 +164,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker
 
     @Override
     public void afterCompletion(int status) {
-        if (Status.STATUS_MARKED_ROLLBACK == status
-                || Status.STATUS_ROLLEDBACK == status) {
+        if (Status.STATUS_MARKED_ROLLBACK == status || Status.STATUS_ROLLEDBACK == status) {
             synched.set(false);
             getAllCommands().clear();
         }

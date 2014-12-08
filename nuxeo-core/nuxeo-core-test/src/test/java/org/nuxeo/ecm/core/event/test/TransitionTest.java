@@ -38,8 +38,6 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 /**
- *
- *
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
@@ -83,7 +81,6 @@ public class TransitionTest implements EventListener {
      * Register this class as an eventListener for a given eventName
      *
      * @param eventName
-     *
      */
     private void registerAsEventListenerFor(final String eventName) {
         final EventListener el = this;

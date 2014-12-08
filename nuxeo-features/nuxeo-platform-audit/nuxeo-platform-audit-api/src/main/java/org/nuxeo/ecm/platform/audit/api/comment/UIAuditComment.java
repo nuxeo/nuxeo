@@ -22,10 +22,11 @@ package org.nuxeo.ecm.platform.audit.api.comment;
 public class UIAuditComment {
 
     protected final String comment;
+
     protected final LinkedDocument linkedDoc;
 
-    public UIAuditComment(String comment,LinkedDocument linkedDoc) {
-        this.comment=comment;
+    public UIAuditComment(String comment, LinkedDocument linkedDoc) {
+        this.comment = comment;
         this.linkedDoc = linkedDoc;
     }
 

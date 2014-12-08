@@ -40,8 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 5.8
  */
-public abstract class AbstractUsersPageProvider<T> extends
-        AbstractPageProvider<T> {
+public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<T> {
 
     private static final Log log = LogFactory.getLog(UsersPageProvider.class);
 
@@ -102,8 +101,7 @@ public abstract class AbstractUsersPageProvider<T> extends
                     // handle offset
                     long offset = getCurrentPageOffset();
                     if (offset <= resultsCount) {
-                        for (int i = Long.valueOf(offset).intValue(); i < resultsCount
-                                && i < offset + pageSize; i++) {
+                        for (int i = Long.valueOf(offset).intValue(); i < resultsCount && i < offset + pageSize; i++) {
                             pageUsers.add(users.get(i));
                         }
                     }
@@ -132,13 +130,11 @@ public abstract class AbstractUsersPageProvider<T> extends
         return "";
     }
 
-    protected List<DocumentModel> searchAllUsers(UserManager userManager)
-            throws ClientException {
+    protected List<DocumentModel> searchAllUsers(UserManager userManager) throws ClientException {
         return userManager.searchUsers(null);
     }
 
-    protected List<DocumentModel> searchUsers(UserManager userManager)
-            throws ClientException {
+    protected List<DocumentModel> searchUsers(UserManager userManager) throws ClientException {
         List<DocumentModel> users = new ArrayList<DocumentModel>();
         String searchString = getFirstParameter();
         if ("*".equals(searchString)) {
@@ -149,14 +145,12 @@ public abstract class AbstractUsersPageProvider<T> extends
         return users;
     }
 
-    protected List<DocumentModel> searchUsersFromCatalog(UserManager userManager)
-            throws ClientException {
+    protected List<DocumentModel> searchUsersFromCatalog(UserManager userManager) throws ClientException {
         if (userCatalog == null) {
             updateUserCatalog(userManager);
         }
         String selectedLetter = getFirstParameter();
-        if (StringUtils.isEmpty(selectedLetter)
-                || !userCatalog.containsKey(selectedLetter)) {
+        if (StringUtils.isEmpty(selectedLetter) || !userCatalog.containsKey(selectedLetter)) {
             Collection<String> catalogLetters = getCatalogLetters();
             if (!catalogLetters.isEmpty()) {
                 selectedLetter = catalogLetters.iterator().next();
@@ -165,8 +159,7 @@ public abstract class AbstractUsersPageProvider<T> extends
         return userCatalog.get(selectedLetter);
     }
 
-    protected void updateUserCatalog(UserManager userManager)
-            throws ClientException {
+    protected void updateUserCatalog(UserManager userManager) throws ClientException {
         DocumentModelList allUsers = userManager.searchUsers(null);
         userCatalog = new HashMap<String, DocumentModelList>();
         String userSortField = userManager.getUserSortField();
@@ -207,8 +200,7 @@ public abstract class AbstractUsersPageProvider<T> extends
     }
 
     /**
-     * This page provider does not support sort for now => override what may be
-     * contributed in the definition
+     * This page provider does not support sort for now => override what may be contributed in the definition
      */
     @Override
     public boolean isSortable() {

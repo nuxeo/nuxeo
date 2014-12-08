@@ -26,19 +26,14 @@ public class SampleOne {
 
     public static void main(String[] args) throws Exception {
         try {
-            HttpAutomationClient client = new HttpAutomationClient(
-                    "http://localhost:8080/nuxeo/site/automation");
+            HttpAutomationClient client = new HttpAutomationClient("http://localhost:8080/nuxeo/site/automation");
             long start = System.currentTimeMillis();
-            Session session = client.getSession("Administrator",
-                    "Administrator");
+            Session session = client.getSession("Administrator", "Administrator");
             DocumentService rs = session.getAdapter(DocumentService.class);
-            Document doc = (Document) session.newRequest(
-                    DocumentService.FetchDocument).set("value",
-                    "/default-domain").execute();
+            Document doc = (Document) session.newRequest(DocumentService.FetchDocument).set("value", "/default-domain").execute();
             System.out.println(doc);
             System.out.println(doc.getTitle());
-            Documents docs = (Documents) session.newRequest(
-                    DocumentService.GetDocumentChildren).setInput(doc).execute();
+            Documents docs = (Documents) session.newRequest(DocumentService.GetDocumentChildren).setInput(doc).execute();
             System.out.println(docs);
             Document dd = null;
             for (Document d : docs) {
@@ -53,19 +48,16 @@ public class SampleOne {
             // .set("type", "Workspace").set("name", "hello").execute();
             // System.out.println(doc + " - "+doc.getTitle());
             System.out.println("@@@@@@@@@@@@@@@@@@@");
-            docs = (Documents) session.newRequest(
-                    DocumentService.GetDocumentChildren).setInput(wsRef).execute();
+            docs = (Documents) session.newRequest(DocumentService.GetDocumentChildren).setInput(wsRef).execute();
             System.out.println(docs);
             for (Document d : docs) {
-                System.out.println(d.getTitle() + " at " + d.getLastModified()
-                        + " state: " + d.getState());
+                System.out.println(d.getTitle() + " at " + d.getLastModified() + " state: " + d.getState());
             }
             doc = rs.getDocument("/default-domain/workspaces");
             System.out.println("----------------------------");
             System.out.println(doc + " - " + doc.getTitle());
             System.out.println("@@@@@@@@@@@@@@@@@@@");
-            System.out.println("took: "
-                    + ((double) System.currentTimeMillis() - start) / 1000);
+            System.out.println("took: " + ((double) System.currentTimeMillis() - start) / 1000);
             client.shutdown();
         } catch (RemoteException e) {
             e.printStackTrace();

@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 
-
 public class TestCoreEvent {
 
     @Test

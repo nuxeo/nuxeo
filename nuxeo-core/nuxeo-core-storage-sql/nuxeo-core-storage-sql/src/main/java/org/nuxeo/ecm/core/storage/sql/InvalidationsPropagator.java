@@ -40,8 +40,7 @@ public class InvalidationsPropagator {
     }
 
     @SuppressWarnings("unchecked")
-    public void propagateInvalidations(Invalidations invalidations,
-            InvalidationsQueue skipQueue) {
+    public void propagateInvalidations(Invalidations invalidations, InvalidationsQueue skipQueue) {
         Collection<InvalidationsQueue> qq;
         synchronized (this) {
             qq = (Collection<InvalidationsQueue>) queues.clone();

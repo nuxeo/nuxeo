@@ -24,10 +24,9 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Implements the {@link OAuthServerKeyManager} interface.
- * Manages an extention point to configure RSA Key Pair.
- * Shindig/Nuxeo HMAC shared secret is dynamically generated at startup time
- * (and shared between Nuxeo OAUth Filter and Shindig directly in memory).
+ * Implements the {@link OAuthServerKeyManager} interface. Manages an extention point to configure RSA Key Pair.
+ * Shindig/Nuxeo HMAC shared secret is dynamically generated at startup time (and shared between Nuxeo OAUth Filter and
+ * Shindig directly in memory).
  *
  * @author tiry
  */
@@ -51,8 +50,7 @@ public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuth
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (XP_SERVER_KEY.equals(extensionPoint)) {
             serverKeyDescriptor = (ServerKeyDescriptor) contribution;
@@ -60,8 +58,7 @@ public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuth
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (XP_SERVER_KEY.equals(extensionPoint)) {
             serverKeyDescriptor = null;
@@ -137,4 +134,3 @@ public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuth
         }
     }
 }
-

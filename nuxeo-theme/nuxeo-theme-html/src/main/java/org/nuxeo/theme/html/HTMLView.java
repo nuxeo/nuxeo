@@ -30,11 +30,9 @@ public class HTMLView extends TemplateView {
 
     private static final Log log = LogFactory.getLog(HTMLView.class);
 
-    private static final Pattern firstTagPattern = Pattern.compile(
-            "<([a-zA-Z0-9:]*)[^>]*>", Pattern.DOTALL);
+    private static final Pattern firstTagPattern = Pattern.compile("<([a-zA-Z0-9:]*)[^>]*>", Pattern.DOTALL);
 
-    private static final String[] ALLOWED_TAGS = { "html", "body", "table",
-            "tr", "td", "div" };
+    private static final String[] ALLOWED_TAGS = { "html", "body", "table", "tr", "td", "div" };
 
     @Override
     public String render(final RenderingInfo info) {
@@ -58,8 +56,7 @@ public class HTMLView extends TemplateView {
                 // template, tag));
             }
         } else {
-            log.warn("First HTML tag of view template: " + template
-                    + " not found");
+            log.warn("First HTML tag of view template: " + template + " not found");
         }
 
         // replace model expressions
@@ -71,8 +68,7 @@ public class HTMLView extends TemplateView {
                 String fragmentTypeName = fragmentType.getTypeName();
                 log.warn(String.format(
                         "Cannot render \"%s\" with the view \"%s\" because the view's template contains a 'nxthemesInfo' variable and the fragment type is not declared as dynamic. Try to add <dynamic>true</dynamic> in the <fragment name=\"%s\"> definition.",
-                        fragmentTypeName, getViewType().getViewName(),
-                        fragmentTypeName));
+                        fragmentTypeName, getViewType().getViewName(), fragmentTypeName));
                 return "";
             }
             result = replaceModelExpressions(info, result);
@@ -89,9 +85,7 @@ public class HTMLView extends TemplateView {
         return result;
     }
 
-    public String replaceModelExpressions(
-            @SuppressWarnings("unused") final RenderingInfo info,
-            final String html) {
+    public String replaceModelExpressions(@SuppressWarnings("unused") final RenderingInfo info, final String html) {
         return html;
     }
 

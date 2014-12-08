@@ -40,26 +40,19 @@ public interface AnnotatedDocumentEventListener {
 
     String ANNOTATION_BODY = "annotationBody";
 
-    void beforeAnnotationCreated(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation);
+    void beforeAnnotationCreated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation);
 
-    void afterAnnotationCreated(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation);
+    void afterAnnotationCreated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation);
 
     void beforeAnnotationRead(NuxeoPrincipal principal, String annotationId);
 
-    void afterAnnotationRead(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation);
+    void afterAnnotationRead(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation);
 
-    void beforeAnnotationUpdated(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation);
+    void beforeAnnotationUpdated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation);
 
-    void afterAnnotationUpdated(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation);
+    void afterAnnotationUpdated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation);
 
-    void beforeAnnotationDeleted(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation);
+    void beforeAnnotationDeleted(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation);
 
-    void afterAnnotationDeleted(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation);
+    void afterAnnotationDeleted(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation);
 }

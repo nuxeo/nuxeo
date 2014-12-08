@@ -65,10 +65,8 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.theme.fragments");
         deployBundle("org.nuxeo.theme.styling");
         deployContrib("org.nuxeo.theme.styling.tests", "theme-test-config.xml");
-        deployContrib("org.nuxeo.theme.styling.tests",
-                "theme-styling-test-config.xml");
-        deployContrib("org.nuxeo.theme.styling.tests",
-                "theme-styling-test-addon-config.xml");
+        deployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config.xml");
+        deployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-addon-config.xml");
 
         // force application start
         fireFrameworkStarted();
@@ -86,35 +84,30 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         return ThemeStyles.render(params, false, true, false);
     }
 
-    protected static String getTestFileContent(String filePath)
-            throws Exception {
+    protected static String getTestFileContent(String filePath) throws Exception {
         return getTestFileContent(filePath, true);
     }
 
-    protected static String getTestFileContent(String filePath,
-            boolean checkStyles) throws Exception {
-        InputStream expected = new FileInputStream(
-                FileUtils.getResourcePathFromContext(filePath));
+    protected static String getTestFileContent(String filePath, boolean checkStyles) throws Exception {
+        InputStream expected = new FileInputStream(FileUtils.getResourcePathFromContext(filePath));
         String content = FileUtils.read(expected);
         // replacements needed for generated ids
         ThemeManager themeManager = Manager.getThemeManager();
-        Style style = (Style) themeManager.getNamedObject(THEME_NAME, "style",
-                DEFAULT_PAGE_NAME + ThemeStylingService.PAGE_STYLE_NAME_SUFFIX);
+        Style style = (Style) themeManager.getNamedObject(THEME_NAME, "style", DEFAULT_PAGE_NAME
+                + ThemeStylingService.PAGE_STYLE_NAME_SUFFIX);
         if (checkStyles) {
             assertNotNull(style);
         }
         if (style != null) {
-            content = content.replace("${default_suid}",
-                    CSSUtils.computeCssClassName(style));
+            content = content.replace("${default_suid}", CSSUtils.computeCssClassName(style));
         }
-        style = (Style) themeManager.getNamedObject(THEME_NAME, "style",
-                PRINT_PAGE_NAME + ThemeStylingService.PAGE_STYLE_NAME_SUFFIX);
+        style = (Style) themeManager.getNamedObject(THEME_NAME, "style", PRINT_PAGE_NAME
+                + ThemeStylingService.PAGE_STYLE_NAME_SUFFIX);
         if (checkStyles) {
             assertNotNull(style);
         }
         if (style != null) {
-            content = content.replace("${print_suid}",
-                    CSSUtils.computeCssClassName(style));
+            content = content.replace("${print_suid}", CSSUtils.computeCssClassName(style));
         }
         return content;
     }
@@ -233,8 +226,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         // override conf, by adding additional nuxeo_dm_default2 css to the
         // page
-        deployContrib("org.nuxeo.theme.styling.tests",
-                "theme-styling-test-config2.xml");
+        deployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config2.xml");
 
         assertEquals("default", service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
         assertEquals("default", service.getDefaultFlavorName(PRINT_PAGE_NAME));
@@ -264,8 +256,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("jquery.addon.js", resources.get(2));
 
         // undeploy, check theme styling is back to first definition
-        undeployContrib("org.nuxeo.theme.styling.tests",
-                "theme-styling-test-config2.xml");
+        undeployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config2.xml");
 
         checkOriginalTheme();
     }
@@ -275,8 +266,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         checkOriginalTheme();
 
         // override conf, by changing dark flavor colors and default flavor
-        deployContrib("org.nuxeo.theme.styling.tests",
-                "theme-styling-test-config3.xml");
+        deployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config3.xml");
 
         assertEquals("dark", service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
 
@@ -371,8 +361,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("Darxeo", logo.getTitle());
 
         // undeploy, check theme styling is back to first definition
-        undeployContrib("org.nuxeo.theme.styling.tests",
-                "theme-styling-test-config3.xml");
+        undeployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config3.xml");
         checkOriginalTheme();
     }
 
@@ -381,8 +370,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         checkOriginalTheme();
 
         // undeploy => check theme service status
-        undeployContrib("org.nuxeo.theme.styling.tests",
-                "theme-styling-test-config.xml");
+        undeployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config.xml");
 
         assertNull(service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
         assertNull(service.getFlavorNames(DEFAULT_PAGE_NAME));
@@ -394,12 +382,12 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         // check styles are not registered on theme service anymore
         ThemeManager themeManager = Manager.getThemeManager();
-        Style style = (Style) themeManager.getNamedObject(THEME_NAME, "style",
-                DEFAULT_PAGE_NAME + ThemeStylingService.PAGE_STYLE_NAME_SUFFIX);
+        Style style = (Style) themeManager.getNamedObject(THEME_NAME, "style", DEFAULT_PAGE_NAME
+                + ThemeStylingService.PAGE_STYLE_NAME_SUFFIX);
         assertNull(style);
 
-        style = (Style) themeManager.getNamedObject(THEME_NAME, "style",
-                PRINT_PAGE_NAME + ThemeStylingService.PAGE_STYLE_NAME_SUFFIX);
+        style = (Style) themeManager.getNamedObject(THEME_NAME, "style", PRINT_PAGE_NAME
+                + ThemeStylingService.PAGE_STYLE_NAME_SUFFIX);
         assertNull(style);
 
         // check presets are not registered on theme service anymore
@@ -419,8 +407,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         // check generated style
         String res = getRenderedCssFileContent("*");
-        String emptyCss = "<style type=\"text/css\">\n"
-                + "/* CSS styles for theme 'testStyling' */\n\n" + "</style>";
+        String emptyCss = "<style type=\"text/css\">\n" + "/* CSS styles for theme 'testStyling' */\n\n" + "</style>";
         assertEquals(emptyCss, res);
         assertNull(service.getFlavor("*"));
         assertNull(service.getLogo("*"));

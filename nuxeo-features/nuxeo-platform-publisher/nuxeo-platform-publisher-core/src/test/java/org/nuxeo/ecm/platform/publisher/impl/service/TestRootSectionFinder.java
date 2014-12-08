@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.publisher.impl.finder.DefaultRootSectionsFinder;
  *     tmartins - test methods for DefaultRootSectionsFinder
  */
 
-
 public class TestRootSectionFinder extends SQLRepositoryTestCase {
 
     Set<String> sectionRootTypes = new HashSet<String>();
@@ -43,7 +42,6 @@ public class TestRootSectionFinder extends SQLRepositoryTestCase {
         super.setUp();
         openSession();
     }
-
 
     @Override
     public void tearDown() throws Exception {
@@ -63,11 +61,15 @@ public class TestRootSectionFinder extends SQLRepositoryTestCase {
 
         path = "/default-domain/workspaces/space";
         query = rsf.buildQuery(path);
-        assertEquals("SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/space' and ( ecm:primaryType = 'Section' ) order by ecm:path ", query);
+        assertEquals(
+                "SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/space' and ( ecm:primaryType = 'Section' ) order by ecm:path ",
+                query);
 
         path = "/default-domain/workspaces/thierry's space";
         query = rsf.buildQuery(path);
-        assertEquals("SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/thierry\\'s space' and ( ecm:primaryType = 'Section' ) order by ecm:path ", query);
+        assertEquals(
+                "SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/thierry\\'s space' and ( ecm:primaryType = 'Section' ) order by ecm:path ",
+                query);
 
         // test if query is valid
         DocumentModelList dml = session.query(query);
@@ -77,8 +79,8 @@ public class TestRootSectionFinder extends SQLRepositoryTestCase {
 
     /**
      * test class to call protected method
-     * @author tmartins
      *
+     * @author tmartins
      */
     private class RootSectionsFinderForTest extends DefaultRootSectionsFinder {
 

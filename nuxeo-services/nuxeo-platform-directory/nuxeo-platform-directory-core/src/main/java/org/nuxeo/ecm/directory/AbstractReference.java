@@ -47,8 +47,7 @@ public abstract class AbstractReference implements Reference {
 
     public Directory getSourceDirectory() throws DirectoryException {
         if (sourceDirectory == null) {
-            sourceDirectory = getDirectoryService().getDirectory(
-                    sourceDirectoryName);
+            sourceDirectory = getDirectoryService().getDirectory(sourceDirectoryName);
         }
         return sourceDirectory;
     }
@@ -60,8 +59,7 @@ public abstract class AbstractReference implements Reference {
 
     public Directory getTargetDirectory() throws DirectoryException {
         if (targetDirectory == null) {
-            targetDirectory = getDirectoryService().getDirectory(
-                    targetDirectoryName);
+            targetDirectory = getDirectoryService().getDirectory(targetDirectoryName);
         }
         return targetDirectory;
     }
@@ -73,8 +71,7 @@ public abstract class AbstractReference implements Reference {
 
     protected DirectoryServiceImpl getDirectoryService() {
         if (directoryService == null) {
-            directoryService = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
-                    DirectoryService.NAME);
+            directoryService = (DirectoryServiceImpl) Framework.getRuntime().getComponent(DirectoryService.NAME);
         }
         return directoryService;
     }

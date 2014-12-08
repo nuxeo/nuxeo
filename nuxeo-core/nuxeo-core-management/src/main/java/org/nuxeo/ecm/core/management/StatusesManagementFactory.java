@@ -36,21 +36,15 @@ public class StatusesManagementFactory extends AbstractResourceFactory {
     public void registerResources() {
 
         AdministrativeStatusManagerImpl adminStatus = Framework.getLocalService(AdministrativeStatusManagerImpl.class);
-        service.registerResource(
-                "adminStatus",
-                ObjectNameFactory.formatQualifiedName(CoreManagementComponent.NAME)
-                        + ",status=administrative",
-                AdministrativeStatusManagerImpl.class, adminStatus);
+        service.registerResource("adminStatus", ObjectNameFactory.formatQualifiedName(CoreManagementComponent.NAME)
+                + ",status=administrative", AdministrativeStatusManagerImpl.class, adminStatus);
 
         ProbeManager runner = Framework.getLocalService(ProbeManager.class);
-        service.registerResource(
-                "probeStatus",
-                ObjectNameFactory.formatQualifiedName(CoreManagementComponent.NAME)
-                        + ",status=probes", ProbeManagerImpl.class, runner);
+        service.registerResource("probeStatus", ObjectNameFactory.formatQualifiedName(CoreManagementComponent.NAME)
+                + ",status=probes", ProbeManagerImpl.class, runner);
         for (ProbeInfo info : runner.getAllProbeInfos()) {
             doQualifyNames((ProbeInfoImpl) info);
-            service.registerResource(info.getShortcutName(),
-                    info.getQualifiedName(), ProbeInfoImpl.class, info);
+            service.registerResource(info.getShortcutName(), info.getQualifiedName(), ProbeInfoImpl.class, info);
         }
     }
 

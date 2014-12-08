@@ -19,13 +19,10 @@
 package org.nuxeo.ecm.platform.uidgen;
 
 /**
- * @deprecated do not use - it should be removed. Having a UID sequencer is
- *             useless. If you need to customize the {@link UIDGenerator} then
- *             extend {@link UIDAbstractGenerator}. The sequencer is simply
- *             returning unique integers for a given key.
- *
+ * @deprecated do not use - it should be removed. Having a UID sequencer is useless. If you need to customize the
+ *             {@link UIDGenerator} then extend {@link UIDAbstractGenerator}. The sequencer is simply returning unique
+ *             integers for a given key.
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Deprecated
 public interface UIDSequencerFactory {

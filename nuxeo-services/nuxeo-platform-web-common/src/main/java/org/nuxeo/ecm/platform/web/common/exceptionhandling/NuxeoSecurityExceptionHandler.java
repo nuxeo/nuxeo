@@ -37,12 +37,11 @@ import org.nuxeo.runtime.api.Framework;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.*;
 
 /**
- * This exception handler adds security error flag in the URL parameters to
- * ensure the anonymous user will get appropriate error message when being
- * redirected to login page.
+ * This exception handler adds security error flag in the URL parameters to ensure the anonymous user will get
+ * appropriate error message when being redirected to login page.
  * <p>
- * If it isn't a security exception, or if the user is not anonymous, this
- * handler ends up using DefaultNuxeoExceptionHandler.
+ * If it isn't a security exception, or if the user is not anonymous, this handler ends up using
+ * DefaultNuxeoExceptionHandler.
  *
  * @author ldoguin
  */
@@ -53,9 +52,8 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
     protected PluggableAuthenticationService service;
 
     @Override
-    public void handleException(HttpServletRequest request,
-            HttpServletResponse response, Throwable t) throws IOException,
-            ServletException {
+    public void handleException(HttpServletRequest request, HttpServletResponse response, Throwable t)
+            throws IOException, ServletException {
 
         Throwable unwrappedException = unwrapException(t);
         if (!ExceptionHelper.isSecurityError(unwrappedException)) {
@@ -80,27 +78,23 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
     /**
      * Handles the Security Error when the user is anonymous.
      *
-     * @return {@code true} if the Security Error is handled so that the calling
-     *         method won't fallback on the default handler, {@code false}
-     *         otherwise.
+     * @return {@code true} if the Security Error is handled so that the calling method won't fallback on the default
+     *         handler, {@code false} otherwise.
      */
-    protected boolean handleAnonymousException(HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException {
+    protected boolean handleAnonymousException(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
         getAuthenticationService().invalidateSession(request);
         Map<String, String> urlParameters = new HashMap<String, String>();
         urlParameters.put(SECURITY_ERROR, "true");
         urlParameters.put(FORCE_ANONYMOUS_LOGIN, "true");
         if (request.getAttribute(REQUESTED_URL) != null) {
-            urlParameters.put(REQUESTED_URL,
-                    (String) request.getAttribute(REQUESTED_URL));
+            urlParameters.put(REQUESTED_URL, (String) request.getAttribute(REQUESTED_URL));
         } else {
-            urlParameters.put(REQUESTED_URL,
-                    NuxeoAuthenticationFilter.getRequestedUrl(request));
+            urlParameters.put(REQUESTED_URL, NuxeoAuthenticationFilter.getRequestedUrl(request));
         }
         // Redirect to login with urlParameters
         if (!response.isCommitted()) {
-            String baseURL = getAuthenticationService().getBaseURL(request)
-                    + LOGOUT_PAGE;
+            String baseURL = getAuthenticationService().getBaseURL(request) + LOGOUT_PAGE;
             request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, true);
             baseURL = URIUtils.addParametersToURIQuery(baseURL, urlParameters);
             response.sendRedirect(baseURL);
@@ -116,16 +110,14 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
         return true;
     }
 
-    protected PluggableAuthenticationService getAuthenticationService()
-            throws ServletException {
+    protected PluggableAuthenticationService getAuthenticationService() throws ServletException {
         if (service != null) {
             return service;
         }
         service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                 PluggableAuthenticationService.NAME);
         if (service == null) {
-            throw new ServletException(
-                    "Can't initialize Nuxeo Pluggable Authentication Service: "
+            throw new ServletException("Can't initialize Nuxeo Pluggable Authentication Service: "
                     + PluggableAuthenticationService.NAME);
         }
         return service;

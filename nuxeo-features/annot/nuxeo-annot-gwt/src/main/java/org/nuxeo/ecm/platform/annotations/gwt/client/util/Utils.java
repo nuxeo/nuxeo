@@ -27,15 +27,14 @@ import com.google.gwt.dom.client.Node;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class Utils {
 
     public static native Document setDocument(Document document) /*-{
-        $temp = $doc;
-        $doc = document;
-        return $temp
-    }-*/;
+                                                                 $temp = $doc;
+                                                                 $doc = document;
+                                                                 return $temp
+                                                                 }-*/;
 
     public static int[] getAbsoluteTopLeft(Element element, Document document) {
         int[] result = new int[2];
@@ -47,29 +46,28 @@ public class Utils {
     }
 
     public static native String getBaseHref() /*-{
-        return top['baseHref'];
-    }-*/;
-
+                                              return top['baseHref'];
+                                              }-*/;
 
     public static native Range getCurrentRange(Document document) /*-{
-        if( document &&
-            document.defaultView &&
-            document.defaultView.getSelection() &&
-            document.defaultView.getSelection().getRangeAt(0)) {
-            // W3C Range
-            var userSelection = document.defaultView.getSelection().getRangeAt(0);
-            var range = @org.nuxeo.ecm.platform.annotations.gwt.client.util.Range::new(Ljava/lang/String;Lcom/google/gwt/dom/client/Node;ILcom/google/gwt/dom/client/Node;I)(userSelection.toString(), userSelection.startContainer, userSelection.startOffset, userSelection.endContainer, userSelection.endOffset);
-            return range;
-        } else if(document.selection) {
-            // IE TextRange
-            var ieSelection = document.selection.createRange();
-            var ieRange = new $wnd.InternetExplorerRange(ieSelection);
-            ieRange._init();
-            var range = @org.nuxeo.ecm.platform.annotations.gwt.client.util.Range::new(Ljava/lang/String;Lcom/google/gwt/dom/client/Node;ILcom/google/gwt/dom/client/Node;I)(ieSelection.text, ieRange.startContainer, ieRange.startOffset, ieRange.endContainer, ieRange.endOffset);
-            return range;
-        }
-        return null;
-    }-*/;
+                                                                  if( document &&
+                                                                  document.defaultView &&
+                                                                  document.defaultView.getSelection() &&
+                                                                  document.defaultView.getSelection().getRangeAt(0)) {
+                                                                  // W3C Range
+                                                                  var userSelection = document.defaultView.getSelection().getRangeAt(0);
+                                                                  var range = @org.nuxeo.ecm.platform.annotations.gwt.client.util.Range::new(Ljava/lang/String;Lcom/google/gwt/dom/client/Node;ILcom/google/gwt/dom/client/Node;I)(userSelection.toString(), userSelection.startContainer, userSelection.startOffset, userSelection.endContainer, userSelection.endOffset);
+                                                                  return range;
+                                                                  } else if(document.selection) {
+                                                                  // IE TextRange
+                                                                  var ieSelection = document.selection.createRange();
+                                                                  var ieRange = new $wnd.InternetExplorerRange(ieSelection);
+                                                                  ieRange._init();
+                                                                  var range = @org.nuxeo.ecm.platform.annotations.gwt.client.util.Range::new(Ljava/lang/String;Lcom/google/gwt/dom/client/Node;ILcom/google/gwt/dom/client/Node;I)(ieSelection.text, ieRange.startContainer, ieRange.startOffset, ieRange.endContainer, ieRange.endOffset);
+                                                                  return range;
+                                                                  }
+                                                                  return null;
+                                                                  }-*/;
 
     public static String removeWhitespaces(String text, Node node) {
         return removeWhitespaces(text, node, false);
@@ -84,16 +82,17 @@ public class Utils {
                 return text;
             }
         }
-        //Window.alert("Before removeWS: " + text);
-        Element prevSibling = (Element)node.getPreviousSibling();
+        // Window.alert("Before removeWS: " + text);
+        Element prevSibling = (Element) node.getPreviousSibling();
 
         String processedText = text;
-        if (prevSibling == null || !(new CSSClassManager(prevSibling).isClassPresent(AnnotationConstant.IGNORED_ELEMENT))) {
+        if (prevSibling == null
+                || !(new CSSClassManager(prevSibling).isClassPresent(AnnotationConstant.IGNORED_ELEMENT))) {
             processedText = processedText.replaceAll("^\\s+", "");
         }
-        //Window.alert("in progress removeWS: " + processedText);
+        // Window.alert("in progress removeWS: " + processedText);
         processedText = processedText.replaceAll("\\s+", " ");
-        //Window.alert("after removeWS: " + processedText);
+        // Window.alert("after removeWS: " + processedText);
         return processedText;
     }
 }

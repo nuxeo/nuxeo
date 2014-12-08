@@ -17,14 +17,13 @@ package org.nuxeo.ecm.core.api;
 /**
  * An ID reference to a document.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class IdRef implements DocumentRef {
 
     private static final long serialVersionUID = 2796201881930443026L;
 
     public final String value;
-
 
     public IdRef(String value) {
         this.value = value;

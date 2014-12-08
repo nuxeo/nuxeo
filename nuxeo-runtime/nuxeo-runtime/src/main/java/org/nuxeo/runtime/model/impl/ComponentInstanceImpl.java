@@ -122,16 +122,14 @@ public class ComponentInstanceImpl implements ComponentInstance {
             if (instance instanceof Component) {
                 ((Component) instance).activate(this);
             } else { // try by reflection
-                Method meth = instance.getClass().getDeclaredMethod("activate",
-                        ComponentContext.class);
+                Method meth = instance.getClass().getDeclaredMethod("activate", ComponentContext.class);
                 meth.setAccessible(true);
                 meth.invoke(instance, this);
             }
             registerServices();
         } catch (NoSuchMethodException e) {
             // ignore this exception since the activate method is not mandatory
-        } catch (SecurityException | IllegalAccessException
-                | InvocationTargetException e) {
+        } catch (SecurityException | IllegalAccessException | InvocationTargetException e) {
             Exception ee = ExceptionUtils.unwrapInvoke(e);
             log.error("Failed to activate component: " + getName(), ee);
             Framework.handleDevError(ee);
@@ -148,15 +146,13 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 ((Component) instance).deactivate(this);
             } else {
                 // try by reflection
-                Method meth = instance.getClass().getDeclaredMethod(
-                        "deactivate", ComponentContext.class);
+                Method meth = instance.getClass().getDeclaredMethod("deactivate", ComponentContext.class);
                 meth.setAccessible(true);
                 meth.invoke(instance, this);
             }
         } catch (NoSuchMethodException e) {
             // ignore this exception since the activate method is not mandatory
-        } catch (SecurityException | IllegalAccessException
-                | InvocationTargetException e) {
+        } catch (SecurityException | IllegalAccessException | InvocationTargetException e) {
             Exception ee = ExceptionUtils.unwrapInvoke(e);
             log.error("Failed to deactivate component: " + getName(), ee);
             Framework.handleDevError(ee);
@@ -170,8 +166,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
             if (instance instanceof ReloadableComponent) {
                 ((ReloadableComponent) instance).reload(this);
             } else {
-                Method meth = instance.getClass().getDeclaredMethod("reload",
-                        ComponentContext.class);
+                Method meth = instance.getClass().getDeclaredMethod("reload", ComponentContext.class);
                 meth.setAccessible(true);
                 meth.invoke(instance, this);
             }
@@ -199,10 +194,8 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 return;
             }
         } else {
-            log.error("Warning: target extension point '"
-                    + extension.getExtensionPoint() + "' of '"
-                    + extension.getTargetComponent().getName()
-                    + "' is unknown. Check your extension in component "
+            log.error("Warning: target extension point '" + extension.getExtensionPoint() + "' of '"
+                    + extension.getTargetComponent().getName() + "' is unknown. Check your extension in component "
                     + extension.getComponent().getName());
             // fatal error if development mode - exit
             Framework.handleDevError(null);
@@ -214,8 +207,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } else {
             // try by reflection
             try {
-                Method meth = instance.getClass().getDeclaredMethod(
-                        "registerExtension", Extension.class);
+                Method meth = instance.getClass().getDeclaredMethod("registerExtension", Extension.class);
                 meth.setAccessible(true);
                 meth.invoke(instance, extension);
             } catch (ReflectiveOperationException e) {
@@ -235,8 +227,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } else {
             // try by reflection
             try {
-                Method meth = instance.getClass().getDeclaredMethod(
-                        "unregisterExtension", Extension.class);
+                Method meth = instance.getClass().getDeclaredMethod("unregisterExtension", Extension.class);
                 meth.setAccessible(true);
                 meth.invoke(instance, extension);
             } catch (ReflectiveOperationException e) {
@@ -257,8 +248,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
             res = adapter.cast(object);
         }
         // to handle hot reload
-        if (res instanceof TimestampedService
-                && object instanceof TimestampedService) {
+        if (res instanceof TimestampedService && object instanceof TimestampedService) {
             Long lastModified = ((TimestampedService) object).getLastModified();
             ((TimestampedService) res).setLastModified(lastModified);
         }
@@ -360,14 +350,12 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
 
         @Override
-        public void ungetService(Bundle bundle,
-                ServiceRegistration registration, Object service) {
+        public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
             // do nothing
         }
 
         public void register() {
-            reg = ri.getContext().getBundle().getBundleContext().registerService(
-                    clazz.getName(), this, null);
+            reg = ri.getContext().getBundle().getBundleContext().registerService(clazz.getName(), this, null);
         }
 
         public void unregister() {

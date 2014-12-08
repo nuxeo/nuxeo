@@ -55,10 +55,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author Alexandre Russel
- *
  */
-public class AnnotationManagerPanel extends VerticalPanel implements
-        AnnotationChangeListener {
+public class AnnotationManagerPanel extends VerticalPanel implements AnnotationChangeListener {
 
     private static final String CLASS_NAME = "annotationManagerPanel";
 
@@ -74,8 +72,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements
 
     private HorizontalPanel selectedRow;
 
-    public AnnotationManagerPanel(AnnotationController controller,
-            WebConfiguration webConfiguration) {
+    public AnnotationManagerPanel(AnnotationController controller, WebConfiguration webConfiguration) {
         this.controller = controller;
         this.webConfiguration = webConfiguration;
 
@@ -100,12 +97,11 @@ public class AnnotationManagerPanel extends VerticalPanel implements
         HorizontalPanel toolBar = new HorizontalPanel();
         List<AnnotationFilter> filters = webConfiguration.getFilters();
         for (final AnnotationFilter filter : filters) {
-            PushButton button = new PushButton(new Image(filter.getIcon()),
-                    new ClickListener() {
-                        public void onClick(Widget sender) {
-                            model.setFilter(filter);
-                        }
-                    });
+            PushButton button = new PushButton(new Image(filter.getIcon()), new ClickListener() {
+                public void onClick(Widget sender) {
+                    model.setFilter(filter);
+                }
+            });
             button.setTitle(filter.getName());
             toolBar.add(button);
         }
@@ -118,12 +114,10 @@ public class AnnotationManagerPanel extends VerticalPanel implements
         TranslationMessages translationMessages = GWT.create(TranslationMessages.class);
         for (AnnotationDefinition annotationDef : inMenuAnnos) {
             final String annName = annotationDef.getName();
-            PushButton button = new PushButton(new Image(
-                    annotationDef.getListIcon()), new ClickListener() {
+            PushButton button = new PushButton(new Image(annotationDef.getListIcon()), new ClickListener() {
                 public void onClick(Widget sender) {
-                    new AnnotationListPopup(annName,
-                            model.filterAnnotations(new AnnotationFilter("",
-                                    "", annName, null, null)), webConfiguration).show();
+                    new AnnotationListPopup(annName, model.filterAnnotations(new AnnotationFilter("", "", annName,
+                            null, null)), webConfiguration).show();
                 }
             });
             button.setTitle(translationMessages.viewAnnotations(annotationDef.getName()));
@@ -132,12 +126,10 @@ public class AnnotationManagerPanel extends VerticalPanel implements
         for (AnnotationDefinition annotationDef : inMenuAnnos) {
             final String annName = annotationDef.getName();
             final String annType = annotationDef.getType();
-            PushButton button = new PushButton(new Image(
-                    annotationDef.getCreateIcon()), new ClickListener() {
+            PushButton button = new PushButton(new Image(annotationDef.getCreateIcon()), new ClickListener() {
                 public void onClick(Widget sender) {
                     controller.createNewAnnotation("#xpointer(null-range)");
-                    NewAnnotationPopup popup = new NewAnnotationPopup(null,
-                            controller, false, annType, annName);
+                    NewAnnotationPopup popup = new NewAnnotationPopup(null, controller, false, annType, annName);
                     popup.show();
 
                 }
@@ -158,9 +150,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements
                 final String parameter = parameters.get(i);
 
                 filterGrid.setWidget(i, 0, new Label(
-                        (labels.containsKey(parameter) ? labels.get(parameter)
-                                : parameter)
-                                + ": "));
+                        (labels.containsKey(parameter) ? labels.get(parameter) : parameter) + ": "));
                 final ListBox filterListBox = new ListBox();
                 filterListBox.setStyleName("filterListBox");
                 filterListBox.addItem("All");
@@ -192,8 +182,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements
                             } else {
                                 currentFilter.setType(filterListBox.getItemText(selectedIndex));
                             }
-                            selectedParams.put(parameter,
-                                    Integer.valueOf(selectedIndex));
+                            selectedParams.put(parameter, Integer.valueOf(selectedIndex));
                             model.setFilter(currentFilter);
                         }
                     });
@@ -206,8 +195,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements
                             } else {
                                 currentFilter.setAuthor(filterListBox.getItemText(selectedIndex));
                             }
-                            selectedParams.put(parameter,
-                                    Integer.valueOf(selectedIndex));
+                            selectedParams.put(parameter, Integer.valueOf(selectedIndex));
                             model.setFilter(currentFilter);
                         }
                     });
@@ -218,12 +206,9 @@ public class AnnotationManagerPanel extends VerticalPanel implements
                             if (selectedIndex == 0) {
                                 currentFilter.removeField(parameter);
                             } else {
-                                currentFilter.setField(
-                                        parameter,
-                                        filterListBox.getItemText(selectedIndex));
+                                currentFilter.setField(parameter, filterListBox.getItemText(selectedIndex));
                             }
-                            selectedParams.put(parameter,
-                                    Integer.valueOf(selectedIndex));
+                            selectedParams.put(parameter, Integer.valueOf(selectedIndex));
                             model.setFilter(currentFilter);
                         }
                     });
@@ -298,10 +283,10 @@ public class AnnotationManagerPanel extends VerticalPanel implements
     }
 
     private native void updateSelectedAnnotation(int index) /*-{
-        if (typeof top['updateSelectedAnnotation'] != "undefined") {
-            top['updateSelectedAnnotation'](index);
-        }
-    }-*/;
+                                                            if (typeof top['updateSelectedAnnotation'] != "undefined") {
+                                                            top['updateSelectedAnnotation'](index);
+                                                            }
+                                                            }-*/;
 
     private void selectAnnotation(HorizontalPanel hp, int index) {
         setSelectedannotationIndex(index);
@@ -310,16 +295,16 @@ public class AnnotationManagerPanel extends VerticalPanel implements
     }
 
     private native void setSelectedannotationIndex(int index) /*-{
-        top['selectedAnnotationIndex'] = index;
-    }-*/;
+                                                              top['selectedAnnotationIndex'] = index;
+                                                              }-*/;
 
     private native int getSelectedAnnotationIndex() /*-{
-        if (typeof top['selectedAnnotationIndex'] != "undefined") {
-            return top['selectedAnnotationIndex'];
-        } else {
-            return -1;
-        }
-    }-*/;
+                                                    if (typeof top['selectedAnnotationIndex'] != "undefined") {
+                                                    return top['selectedAnnotationIndex'];
+                                                    } else {
+                                                    return -1;
+                                                    }
+                                                    }-*/;
 
     private void updateShownAnnotation(int y) {
         remove(shownAnnotation);
@@ -351,8 +336,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements
             frame.setUrl(ann.getBody());
             shownAnnotation.add(frame);
         } else {
-            HTML label = new HTML(
-                    AnnotationUtils.replaceCarriageReturns(ann.getBody()));
+            HTML label = new HTML(AnnotationUtils.replaceCarriageReturns(ann.getBody()));
             label.setStyleName("annotation-body");
             shownAnnotation.add(label);
         }

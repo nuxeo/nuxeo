@@ -40,7 +40,7 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
 
     @Override
     public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
-    		PublishedDocumentFactory factory, String configName, String title) throws ClientException {
+            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
         super.initTree(sid, coreSession, parameters, factory, configName, title);
         rootFinder = RootSectionsFinderHelper.getRootSectionsFinder(coreSession);
     }
@@ -56,8 +56,8 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
             List<PublicationNode> publicationNodes = new ArrayList<PublicationNode>();
             for (DocumentModel rootSection : rootSections) {
                 if (isPublicationNode(rootSection)) {
-                    publicationNodes.add(new CoreFolderPublicationNode(rootSection,
-                            getConfigName(), sid, rootNode, factory));
+                    publicationNodes.add(new CoreFolderPublicationNode(rootSection, getConfigName(), sid, rootNode,
+                            factory));
                 }
             }
             return publicationNodes;

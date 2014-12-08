@@ -25,14 +25,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class CoreSessionProvider<REF extends SessionRef> {
 
     private static final Log log = LogFactory.getLog(CoreSessionProvider.class);
 
     protected Map<String, REF> sessions;
-
 
     protected CoreSessionProvider() {
         this.sessions = new HashMap<String, REF>();
@@ -58,8 +56,7 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
         return ref;
     }
 
-    public CoreSession getSession(HttpServletRequest request,
-            String repoName) {
+    public CoreSession getSession(HttpServletRequest request, String repoName) {
         return getSessionRef(request, repoName).get();
     }
 
@@ -71,8 +68,7 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
         }
     }
 
-    protected CoreSession _createSession(HttpServletRequest request,
-            String repoName) throws ClientException {
+    protected CoreSession _createSession(HttpServletRequest request, String repoName) throws ClientException {
         if (request.getUserPrincipal() == null) {
             throw new java.lang.IllegalStateException("Not authenticated user is trying to get a core session");
         }
@@ -87,7 +83,7 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
         for (SessionRef ref : getSessions()) {
             try {
                 ref.destroy();
-            } catch(Throwable t) {
+            } catch (Throwable t) {
                 log.error("Failed to destroy core session", t);
             }
         }

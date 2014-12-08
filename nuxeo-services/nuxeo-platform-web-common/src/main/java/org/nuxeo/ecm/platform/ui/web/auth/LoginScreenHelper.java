@@ -37,17 +37,14 @@ public class LoginScreenHelper {
         return authService.getLoginScreenConfig();
     }
 
-    public static void registerLoginProvider(String name, String iconUrl,
-            String link, String label, String description,
-            LoginProviderLinkComputer computer) throws ClientException {
+    public static void registerLoginProvider(String name, String iconUrl, String link, String label,
+            String description, LoginProviderLinkComputer computer) throws ClientException {
 
         LoginScreenConfig config = getConfig();
         if (config != null) {
-            config.registerLoginProvider(name, iconUrl, link, label,
-                    description, computer);
+            config.registerLoginProvider(name, iconUrl, link, label, description, computer);
         } else {
-            throw new ClientException(
-                    "There is no available LoginScreen config");
+            throw new ClientException("There is no available LoginScreen config");
         }
     }
 

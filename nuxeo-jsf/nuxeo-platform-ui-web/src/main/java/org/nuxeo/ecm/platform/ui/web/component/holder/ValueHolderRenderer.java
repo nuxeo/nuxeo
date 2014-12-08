@@ -26,16 +26,15 @@ import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.HiddenRenderer;
 
 /**
- * Extend hidden renderer to provide client behaviours (onchange events
- * management).
+ * Extend hidden renderer to provide client behaviours (onchange events management).
  *
  * @since 6.0
  */
 public class ValueHolderRenderer extends HiddenRenderer {
 
     @Override
-    protected void getEndTextToRender(FacesContext context,
-            UIComponent component, String currentValue) throws IOException {
+    protected void getEndTextToRender(FacesContext context, UIComponent component, String currentValue)
+            throws IOException {
 
         ResponseWriter writer = context.getResponseWriter();
         assert (writer != null);

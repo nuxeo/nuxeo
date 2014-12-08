@@ -35,18 +35,15 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Abstract Page provider listing groups.
  * <p>
- * This page provider requires one parameter: the first one to be filled with
- * the search string.
+ * This page provider requires one parameter: the first one to be filled with the search string.
  * <p>
- * This page provider requires the property
- * {@link #GROUPS_LISTING_MODE_PROPERTY} to be filled with a the listing mode to
- * use.
+ * This page provider requires the property {@link #GROUPS_LISTING_MODE_PROPERTY} to be filled with a the listing mode
+ * to use.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.8
  */
-public abstract class AbstractGroupsPageProvider<T> extends
-        AbstractPageProvider<T> {
+public abstract class AbstractGroupsPageProvider<T> extends AbstractPageProvider<T> {
 
     protected static final String GROUPS_LISTING_MODE_PROPERTY = "groupsListingMode";
 
@@ -93,8 +90,7 @@ public abstract class AbstractGroupsPageProvider<T> extends
                     // handle offset
                     long offset = getCurrentPageOffset();
                     if (offset <= resultsCount) {
-                        for (int i = Long.valueOf(offset).intValue(); i < resultsCount
-                                && i < offset + pageSize; i++) {
+                        for (int i = Long.valueOf(offset).intValue(); i < resultsCount && i < offset + pageSize; i++) {
                             pageGroups.add(groups.get(i));
                         }
                     }
@@ -105,8 +101,7 @@ public abstract class AbstractGroupsPageProvider<T> extends
     }
 
     protected List<DocumentModel> searchAllGroups() {
-        return Framework.getService(UserManager.class).searchGroups(
-                Collections.<String, Serializable> emptyMap(), null);
+        return Framework.getService(UserManager.class).searchGroups(Collections.<String, Serializable> emptyMap(), null);
     }
 
     protected List<DocumentModel> searchGroups() {
@@ -141,8 +136,7 @@ public abstract class AbstractGroupsPageProvider<T> extends
     }
 
     /**
-     * This page provider does not support sort for now => override what may be
-     * contributed in the definition
+     * This page provider does not support sort for now => override what may be contributed in the definition
      */
     @Override
     public boolean isSortable() {

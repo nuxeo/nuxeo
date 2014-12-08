@@ -56,16 +56,13 @@ public class Log4JHelper {
     protected static final String LIGHT_PATTERN_LAYOUT = "%m%n";
 
     /**
-     * Returns list of files produced by {@link FileAppender}s defined in a
-     * given {@link LoggerRepository}. There's no need for the log4j
-     * configuration corresponding to this repository of being active.
+     * Returns list of files produced by {@link FileAppender}s defined in a given {@link LoggerRepository}. There's no
+     * need for the log4j configuration corresponding to this repository of being active.
      *
-     * @param loggerRepository {@link LoggerRepository} to browse looking for
-     *            {@link FileAppender}
+     * @param loggerRepository {@link LoggerRepository} to browse looking for {@link FileAppender}
      * @return {@link FileAppender}s configured in loggerRepository
      */
-    public static ArrayList<String> getFileAppendersFiles(
-            LoggerRepository loggerRepository) {
+    public static ArrayList<String> getFileAppendersFiles(LoggerRepository loggerRepository) {
         ArrayList<String> logFiles = new ArrayList<String>();
         for (Enumeration<Appender> appenders = loggerRepository.getRootLogger().getAllAppenders(); appenders.hasMoreElements();) {
             Appender appender = appenders.nextElement();
@@ -89,28 +86,21 @@ public class Log4JHelper {
     }
 
     /**
-     * Creates a {@link LoggerRepository} initialized with given log4j
-     * configuration file without making this configuration active.
+     * Creates a {@link LoggerRepository} initialized with given log4j configuration file without making this
+     * configuration active.
      *
      * @param log4jConfigurationFile XML Log4J configuration file to load.
      * @return {@link LoggerRepository} initialized with log4jConfigurationFile
      */
-    public static LoggerRepository getNewLoggerRepository(
-            File log4jConfigurationFile) {
+    public static LoggerRepository getNewLoggerRepository(File log4jConfigurationFile) {
         LoggerRepository loggerRepository = null;
         try {
-            loggerRepository = new DefaultRepositorySelector(new Hierarchy(
-                    new RootLogger(Level.DEBUG))).getLoggerRepository();
-            if (log4jConfigurationFile == null
-                    || !log4jConfigurationFile.exists()) {
-                log.error("Missing Log4J configuration: "
-                        + log4jConfigurationFile);
+            loggerRepository = new DefaultRepositorySelector(new Hierarchy(new RootLogger(Level.DEBUG))).getLoggerRepository();
+            if (log4jConfigurationFile == null || !log4jConfigurationFile.exists()) {
+                log.error("Missing Log4J configuration: " + log4jConfigurationFile);
             } else {
-                new DOMConfigurator().doConfigure(
-                        log4jConfigurationFile.toURI().toURL(),
-                        loggerRepository);
-                log.debug("Log4j configuration " + log4jConfigurationFile
-                        + " successfully loaded.");
+                new DOMConfigurator().doConfigure(log4jConfigurationFile.toURI().toURL(), loggerRepository);
+                log.debug("Log4j configuration " + log4jConfigurationFile + " successfully loaded.");
             }
         } catch (MalformedURLException e) {
             log.error("Could not load " + log4jConfigurationFile, e);
@@ -123,25 +113,21 @@ public class Log4JHelper {
      * @param log4jConfigurationFile
      * @return {@link FileAppender}s defined in log4jConfigurationFile
      */
-    public static ArrayList<String> getFileAppendersFiles(
-            File log4jConfigurationFile) {
+    public static ArrayList<String> getFileAppendersFiles(File log4jConfigurationFile) {
         return getFileAppendersFiles(getNewLoggerRepository(log4jConfigurationFile));
     }
 
     /**
-     * Set DEBUG level on the given category and the children categories.
-     * Also change the pattern layout of the given appenderName.
+     * Set DEBUG level on the given category and the children categories. Also change the pattern layout of the given
+     * appenderName.
      *
      * @since 5.6
-     * @param categories Log4J categories for which to switch debug log level
-     *            (comma separated values)
+     * @param categories Log4J categories for which to switch debug log level (comma separated values)
      * @param debug set debug log level to true or false
      * @param includeChildren Also set/unset debug mode on children categories
-     * @param appenderNames Appender names on which to set a detailed pattern
-     *            layout. Ignored if null.
+     * @param appenderNames Appender names on which to set a detailed pattern layout. Ignored if null.
      */
-    public static void setDebug(String categories, boolean debug,
-            boolean includeChildren, String[] appenderNames) {
+    public static void setDebug(String categories, boolean debug, boolean includeChildren, String[] appenderNames) {
         Level newLevel;
         if (debug) {
             newLevel = Level.DEBUG;
@@ -154,8 +140,7 @@ public class Log4JHelper {
         for (String category : categoriesArray) { // Create non existing loggers
             Logger logger = Logger.getLogger(category);
             logger.setLevel(newLevel);
-            log.info("Log level set to " + newLevel + " for: "
-                    + logger.getName());
+            log.info("Log level set to " + newLevel + " for: " + logger.getName());
         }
         if (includeChildren) { // Also change children categories' level
             for (Enumeration<Logger> loggers = LogManager.getCurrentLoggers(); loggers.hasMoreElements();) {
@@ -166,8 +151,7 @@ public class Log4JHelper {
                 for (String category : categoriesArray) {
                     if (logger.getName().startsWith(category)) {
                         logger.setLevel(newLevel);
-                        log.info("Log level set to " + newLevel + " for: "
-                                + logger.getName());
+                        log.info("Log level set to " + newLevel + " for: " + logger.getName());
                         break;
                     }
                 }
@@ -179,8 +163,7 @@ public class Log4JHelper {
             return;
         }
         for (String appenderName : appenderNames) {
-            Appender consoleAppender = Logger.getRootLogger().getAppender(
-                    appenderName);
+            Appender consoleAppender = Logger.getRootLogger().getAppender(appenderName);
             if (consoleAppender != null) {
                 Filter filter = consoleAppender.getFilter();
                 while (filter != null && !(filter instanceof LevelRangeFilter)) {
@@ -189,21 +172,17 @@ public class Log4JHelper {
                 if (filter != null) {
                     LevelRangeFilter levelRangeFilter = (LevelRangeFilter) filter;
                     levelRangeFilter.setLevelMin(Level.DEBUG);
-                    log.debug("Log level filter set to DEBUG for appender "
-                            + appenderName);
+                    log.debug("Log level filter set to DEBUG for appender " + appenderName);
                 }
-                String patternLayout = debug ? FULL_PATTERN_LAYOUT
-                        : LIGHT_PATTERN_LAYOUT;
+                String patternLayout = debug ? FULL_PATTERN_LAYOUT : LIGHT_PATTERN_LAYOUT;
                 consoleAppender.setLayout(new PatternLayout(patternLayout));
-                log.info(String.format("Set pattern layout of %s to %s",
-                        appenderName, patternLayout));
+                log.info(String.format("Set pattern layout of %s to %s", appenderName, patternLayout));
             }
         }
     }
 
     /**
-     * Set DEBUG level on the given category and change pattern layout of
-     * {@link #CONSOLE_APPENDER_NAME} if defined.
+     * Set DEBUG level on the given category and change pattern layout of {@link #CONSOLE_APPENDER_NAME} if defined.
      * Children categories are unchanged.
      *
      * @since 5.5
@@ -233,8 +212,7 @@ public class Log4JHelper {
         if (filter != null) {
             LevelRangeFilter levelRangeFilter = (LevelRangeFilter) filter;
             levelRangeFilter.setLevelMin(Level.WARN);
-            log.debug("Log level filter set to WARN for appender "
-                    + appenderName);
+            log.debug("Log level filter set to WARN for appender " + appenderName);
         }
     }
 

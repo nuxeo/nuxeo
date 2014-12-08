@@ -33,10 +33,8 @@ public class JarUtils {
     public final static Pattern JAR_WITHOUT_VERSION_NAME = Pattern.compile("(.+)\\.jar");
 
     /**
-     * Try to find the version part in the given JAR name. Return null if name
-     * is not containing a version, otherwise return a match object with the
-     * name without the version part and the extension in the 'Match.object'
-     * field.
+     * Try to find the version part in the given JAR name. Return null if name is not containing a version, otherwise
+     * return a match object with the name without the version part and the extension in the 'Match.object' field.
      *
      * @param name
      */
@@ -67,8 +65,7 @@ public class JarUtils {
         File dir = filePattern.getParentFile();
         File[] files = dir.listFiles();
         if (files != null) {
-            FileMatcher fm = FileMatcher.getMatcher(filePattern.getName().concat(
-                    "-{v:r?[0-9]+.*}\\.jar"));
+            FileMatcher fm = FileMatcher.getMatcher(filePattern.getName().concat("-{v:r?[0-9]+.*}\\.jar"));
             String studioSnapshotName = filePattern.getName().concat(".jar");
             for (File f : files) {
                 if (fm.match(f.getName())) {

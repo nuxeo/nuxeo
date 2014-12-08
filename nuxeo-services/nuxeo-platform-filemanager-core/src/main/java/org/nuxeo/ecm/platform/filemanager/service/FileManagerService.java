@@ -66,8 +66,7 @@ import org.nuxeo.runtime.model.Extension;
  * <p>
  * This is the component to request to perform transformations. See API.
  *
- * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
- *         Kalogeropoulos</a>
+ * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas Kalogeropoulos</a>
  */
 public class FileManagerService extends DefaultComponent implements FileManager {
 
@@ -136,11 +135,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return typeService;
     }
 
-    private Blob checkMimeType(Blob blob, String fullname)
-            throws ClientException {
+    private Blob checkMimeType(Blob blob, String fullname) throws ClientException {
         final String mimeType = blob.getMimeType();
-        if (mimeType != null && !mimeType.isEmpty()
-                && !mimeType.equals("application/octet-stream")
+        if (mimeType != null && !mimeType.isEmpty() && !mimeType.equals("application/octet-stream")
                 && !mimeType.equals("application/octetstream")) {
             return blob;
         }
@@ -153,52 +150,44 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return blob;
     }
 
-    public DocumentModel createFolder(CoreSession documentManager,
-            String fullname, String path) throws ClientException, IOException {
+    public DocumentModel createFolder(CoreSession documentManager, String fullname, String path)
+            throws ClientException, IOException {
 
         if (folderImporters.isEmpty()) {
             return defaultCreateFolder(documentManager, fullname, path);
         } else {
             // use the last registered folder importer
             FolderImporter folderImporter = folderImporters.get(folderImporters.size() - 1);
-            return folderImporter.create(documentManager, fullname, path, true,
-                    getTypeService());
+            return folderImporter.create(documentManager, fullname, path, true, getTypeService());
         }
     }
 
-    public DocumentModel defaultCreateFolder(CoreSession documentManager,
-            String fullname, String path) throws ClientException {
-        return defaultCreateFolder(documentManager, fullname, path,
-                DEFAULT_FOLDER_TYPE_NAME, true);
+    public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path)
+            throws ClientException {
+        return defaultCreateFolder(documentManager, fullname, path, DEFAULT_FOLDER_TYPE_NAME, true);
     }
 
-    public DocumentModel defaultCreateFolder(CoreSession documentManager,
-            String fullname, String path, String containerTypeName,
-            boolean checkAllowedSubTypes) throws ClientException {
+    public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path,
+            String containerTypeName, boolean checkAllowedSubTypes) throws ClientException {
 
         // Fetching filename
         String title = FileManagerUtils.fetchFileName(fullname);
 
         // Looking if an existing Folder with the same filename exists.
-        DocumentModel docModel = FileManagerUtils.getExistingDocByTitle(
-                documentManager, path, title);
+        DocumentModel docModel = FileManagerUtils.getExistingDocByTitle(documentManager, path, title);
 
         if (docModel == null) {
             // check permissions
             PathRef containerRef = new PathRef(path);
-            if (!documentManager.hasPermission(containerRef,
-                    SecurityConstants.READ_PROPERTIES)
-                    || !documentManager.hasPermission(containerRef,
-                            SecurityConstants.ADD_CHILDREN)) {
-                throw new DocumentSecurityException(
-                        "Not enough rights to create folder");
+            if (!documentManager.hasPermission(containerRef, SecurityConstants.READ_PROPERTIES)
+                    || !documentManager.hasPermission(containerRef, SecurityConstants.ADD_CHILDREN)) {
+                throw new DocumentSecurityException("Not enough rights to create folder");
             }
 
             // check allowed sub types
             DocumentModel container = documentManager.getDocument(containerRef);
             if (checkAllowedSubTypes
-                    && !getTypeService().isAllowedSubType(containerTypeName,
-                            container.getType(), container)) {
+                    && !getTypeService().isAllowedSubType(containerTypeName, container.getType(), container)) {
                 // cannot create document file here
                 // TODO: we should better raise a dedicated exception to be
                 // catched by the FileManageActionsBean instead of returning
@@ -215,29 +204,23 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             docModel = documentManager.createDocument(docModel);
             documentManager.save();
 
-            log.debug("Created container: " + docModel.getName()
-                    + " with type " + containerTypeName);
+            log.debug("Created container: " + docModel.getName() + " with type " + containerTypeName);
         }
         return docModel;
     }
 
-    public DocumentModel createDocumentFromBlob(CoreSession documentManager,
-            Blob input, String path, boolean overwrite, String fullName)
-            throws ClientException, IOException {
+    public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path,
+            boolean overwrite, String fullName) throws ClientException, IOException {
 
         // check mime type to be able to select the best importer plugin
         input = checkMimeType(input, fullName);
 
-        List<FileImporter> importers = new ArrayList<FileImporter>(
-                fileImporters.values());
+        List<FileImporter> importers = new ArrayList<FileImporter>(fileImporters.values());
         Collections.sort(importers);
-        String normalizedMimeType = getMimeService().getMimetypeEntryByMimeType(
-                input.getMimeType()).getNormalized();
+        String normalizedMimeType = getMimeService().getMimetypeEntryByMimeType(input.getMimeType()).getNormalized();
         for (FileImporter importer : importers) {
-            if (importer.isEnabled()
-                    && (importer.matches(normalizedMimeType) || importer.matches(input.getMimeType()))) {
-                DocumentModel doc = importer.create(documentManager, input,
-                        path, overwrite, fullName, getTypeService());
+            if (importer.isEnabled() && (importer.matches(normalizedMimeType) || importer.matches(input.getMimeType()))) {
+                DocumentModel doc = importer.create(documentManager, input, path, overwrite, fullName, getTypeService());
                 if (doc != null) {
                     return doc;
                 }
@@ -246,11 +229,10 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return null;
     }
 
-    public DocumentModel updateDocumentFromBlob(CoreSession documentManager,
-            Blob input, String path, String fullName) throws ClientException {
+    public DocumentModel updateDocumentFromBlob(CoreSession documentManager, Blob input, String path, String fullName)
+            throws ClientException {
         String filename = FileManagerUtils.fetchFileName(fullName);
-        DocumentModel doc = FileManagerUtils.getExistingDocByFileName(
-                documentManager, path, filename);
+        DocumentModel doc = FileManagerUtils.getExistingDocByFileName(documentManager, path, filename);
         if (doc != null) {
             doc.setProperty("file", "content", input);
 
@@ -272,23 +254,18 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 if (contrib instanceof FileImporterDescriptor) {
-                    registerFileImporter((FileImporterDescriptor) contrib,
-                            extension);
+                    registerFileImporter((FileImporterDescriptor) contrib, extension);
                 } else if (contrib instanceof FolderImporterDescriptor) {
-                    registerFolderImporter((FolderImporterDescriptor) contrib,
-                            extension);
+                    registerFolderImporter((FolderImporterDescriptor) contrib, extension);
                 } else if (contrib instanceof CreationContainerListProviderDescriptor) {
-                    registerCreationContainerListProvider(
-                            (CreationContainerListProviderDescriptor) contrib,
-                            extension);
+                    registerCreationContainerListProvider((CreationContainerListProviderDescriptor) contrib, extension);
                 }
             }
         } else if (extension.getExtensionPoint().equals("unicity")) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 if (contrib instanceof UnicityExtension) {
-                    registerUnicityOptions((UnicityExtension) contrib,
-                            extension);
+                    registerUnicityOptions((UnicityExtension) contrib, extension);
                 }
             }
         } else if (extension.getExtensionPoint().equals("versioning")) {
@@ -301,9 +278,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                         try {
                             defaultVersioningOption = VersioningOption.valueOf(defver.toUpperCase(Locale.ENGLISH));
                         } catch (IllegalArgumentException e) {
-                            log.warn(String.format(
-                                    "Illegal versioning option: %s, using %s instead",
-                                    defver, DEF_VERSIONING_OPTION));
+                            log.warn(String.format("Illegal versioning option: %s, using %s instead", defver,
+                                    DEF_VERSIONING_OPTION));
                             defaultVersioningOption = DEF_VERSIONING_OPTION;
                         }
                     }
@@ -314,8 +290,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                 }
             }
         } else {
-            log.warn(String.format("Unknown contribution %s: ignored",
-                    extension.getExtensionPoint()));
+            log.warn(String.format("Unknown contribution %s: ignored", extension.getExtensionPoint()));
         }
     }
 
@@ -340,13 +315,11 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             defaultVersioningOption = DEF_VERSIONING_OPTION;
             versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
         } else {
-            log.warn(String.format("Unknown contribution %s: ignored",
-                    extension.getExtensionPoint()));
+            log.warn(String.format("Unknown contribution %s: ignored", extension.getExtensionPoint()));
         }
     }
 
-    private void registerUnicityOptions(UnicityExtension unicityExtension,
-            Extension extension) {
+    private void registerUnicityOptions(UnicityExtension unicityExtension, Extension extension) {
         if (unicityExtension.getAlgo() != null) {
             digestAlgorithm = unicityExtension.getAlgo();
         }
@@ -363,8 +336,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         }
     }
 
-    private void registerFileImporter(FileImporterDescriptor pluginExtension,
-            Extension extension) {
+    private void registerFileImporter(FileImporterDescriptor pluginExtension, Extension extension) {
         String name = pluginExtension.getName();
         if (name == null) {
             log.error("Cannot register file importer without a name");
@@ -377,26 +349,22 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             FileImporter oldPlugin = fileImporters.get(name);
             FileImporter newPlugin;
             try {
-                newPlugin = className != null ? (FileImporter) extension.getContext().loadClass(
-                        className).newInstance()
+                newPlugin = className != null ? (FileImporter) extension.getContext().loadClass(className).newInstance()
                         : oldPlugin;
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
             if (pluginExtension.isMerge()) {
-                newPlugin = mergeFileImporters(oldPlugin, newPlugin,
-                        pluginExtension);
+                newPlugin = mergeFileImporters(oldPlugin, newPlugin, pluginExtension);
             } else {
-                newPlugin = fillImporterWithDescriptor(newPlugin,
-                        pluginExtension);
+                newPlugin = fillImporterWithDescriptor(newPlugin, pluginExtension);
             }
             fileImporters.put(name, newPlugin);
             log.info("Registered file importer " + name);
         } else if (className != null) {
             FileImporter plugin;
             try {
-                plugin = (FileImporter) extension.getContext().loadClass(
-                        className).newInstance();
+                plugin = (FileImporter) extension.getContext().loadClass(className).newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
@@ -404,13 +372,11 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             fileImporters.put(name, plugin);
             log.info("Registered file importer " + name);
         } else {
-            log.info("Unable to register file importer " + name
-                    + ", className is null or plugin is not yet registered");
+            log.info("Unable to register file importer " + name + ", className is null or plugin is not yet registered");
         }
     }
 
-    private FileImporter mergeFileImporters(FileImporter oldPlugin,
-            FileImporter newPlugin, FileImporterDescriptor desc) {
+    private FileImporter mergeFileImporters(FileImporter oldPlugin, FileImporter newPlugin, FileImporterDescriptor desc) {
         List<String> filters = desc.getFilters();
         if (filters != null && !filters.isEmpty()) {
             List<String> oldFilters = oldPlugin.getFilters();
@@ -431,8 +397,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return newPlugin;
     }
 
-    private FileImporter fillImporterWithDescriptor(FileImporter fileImporter,
-            FileImporterDescriptor desc) {
+    private FileImporter fillImporterWithDescriptor(FileImporter fileImporter, FileImporterDescriptor desc) {
         List<String> filters = desc.getFilters();
         if (filters != null && !filters.isEmpty()) {
             fileImporter.setFilters(filters);
@@ -451,17 +416,14 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         log.info("unregistered file importer: " + name);
     }
 
-    private void registerFolderImporter(
-            FolderImporterDescriptor folderImporterDescriptor,
-            Extension extension) {
+    private void registerFolderImporter(FolderImporterDescriptor folderImporterDescriptor, Extension extension) {
 
         String name = folderImporterDescriptor.getName();
         String className = folderImporterDescriptor.getClassName();
 
         FolderImporter folderImporter;
         try {
-            folderImporter = (FolderImporter) extension.getContext().loadClass(
-                    className).newInstance();
+            folderImporter = (FolderImporter) extension.getContext().loadClass(className).newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
@@ -471,8 +433,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         log.info("registered folder importer: " + name);
     }
 
-    private void unregisterFolderImporter(
-            FolderImporterDescriptor folderImporterDescriptor) {
+    private void unregisterFolderImporter(FolderImporterDescriptor folderImporterDescriptor) {
         String name = folderImporterDescriptor.getName();
         FolderImporter folderImporterToRemove = null;
         for (FolderImporter folderImporter : folderImporters) {
@@ -487,8 +448,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     private void registerCreationContainerListProvider(
-            CreationContainerListProviderDescriptor ccListProviderDescriptor,
-            Extension extension) {
+            CreationContainerListProviderDescriptor ccListProviderDescriptor, Extension extension) {
 
         String name = ccListProviderDescriptor.getName();
         String[] docTypes = ccListProviderDescriptor.getDocTypes();
@@ -496,8 +456,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
         CreationContainerListProvider provider;
         try {
-            provider = (CreationContainerListProvider) extension.getContext().loadClass(
-                    className).newInstance();
+            provider = (CreationContainerListProvider) extension.getContext().loadClass(className).newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
@@ -528,13 +487,11 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         log.info("unregistered creationContaineterList provider: " + name);
     }
 
-    public List<DocumentLocation> findExistingDocumentWithFile(
-            CoreSession documentManager, String path, String digest,
+    public List<DocumentLocation> findExistingDocumentWithFile(CoreSession documentManager, String path, String digest,
             Principal principal) throws ClientException {
         String nxql = String.format(QUERY, digest);
         DocumentModelList documentModelList = documentManager.query(nxql, MAX);
-        List<DocumentLocation> docLocationList = new ArrayList<DocumentLocation>(
-                documentModelList.size());
+        List<DocumentLocation> docLocationList = new ArrayList<DocumentLocation>(documentModelList.size());
         for (DocumentModel documentModel : documentModelList) {
             docLocationList.add(new DocumentLocationImpl(documentModel));
         }
@@ -553,25 +510,21 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return fieldsXPath;
     }
 
-    public DocumentModelList getCreationContainers(Principal principal,
-            String docType) {
+    public DocumentModelList getCreationContainers(Principal principal, String docType) {
         DocumentModelList containers = new DocumentModelListImpl();
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            try (CoreSession session = CoreInstance.openCoreSession(
-                    repositoryName, principal)) {
+            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                 containers.addAll(getCreationContainers(session, docType));
             }
         }
         return containers;
     }
 
-    public DocumentModelList getCreationContainers(CoreSession documentManager,
-            String docType) {
+    public DocumentModelList getCreationContainers(CoreSession documentManager, String docType) {
         for (CreationContainerListProvider provider : creationContainerListProviders) {
             if (provider.accept(docType)) {
-                return provider.getCreationContainerList(documentManager,
-                        docType);
+                return provider.getCreationContainerList(documentManager, docType);
             }
         }
         return new DocumentModelListImpl();

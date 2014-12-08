@@ -32,29 +32,32 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
 
 /**
- *
  * @author matic
- *
  */
 public class TestInlineURLs {
 
     String info = "some info";
+
     URL inlineURL;
 
-    @BeforeClass public static void installHandler() throws Exception {
+    @BeforeClass
+    public static void installHandler() throws Exception {
         InlineURLFactory.install();
     }
 
-    @Before public void encodeURL() throws IOException {
+    @Before
+    public void encodeURL() throws IOException {
         inlineURL = InlineURLFactory.newURL(info);
     }
 
-    @Test public void hasCorrectContent() throws IOException {
+    @Test
+    public void hasCorrectContent() throws IOException {
         String inlinedContent = InlineURLFactory.newObject(String.class, inlineURL);
         assertThat(inlinedContent, equalTo(info));
     }
 
-    @Test public void canRead() throws IOException {
+    @Test
+    public void canRead() throws IOException {
         InputStream stream = inlineURL.openStream();
         String inlinedContent = FileUtils.read(stream);
         assertThat(inlinedContent, equalTo(info));

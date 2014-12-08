@@ -76,40 +76,34 @@ public class PaletteParser {
             hexcolor.append(Integer.toHexString(val));
         }
         // optimize #aabbcc to #abc
-        if (hexcolor.charAt(1) == hexcolor.charAt(2)
-                && hexcolor.charAt(3) == hexcolor.charAt(4)
+        if (hexcolor.charAt(1) == hexcolor.charAt(2) && hexcolor.charAt(3) == hexcolor.charAt(4)
                 && hexcolor.charAt(5) == hexcolor.charAt(6)) {
-            return String.format("#%s%s%s", hexcolor.charAt(1),
-                    hexcolor.charAt(4), hexcolor.charAt(6));
+            return String.format("#%s%s%s", hexcolor.charAt(1), hexcolor.charAt(4), hexcolor.charAt(6));
         }
         return hexcolor.toString();
     }
 
-    public static PaletteFamily identifyPaletteType(byte[] bytes,
-            String filename) throws PaletteIdentifyException {
-        if (filename.endsWith(".aco")
-                && PhotoshopPaletteParser.checkSanity(bytes)) {
+    public static PaletteFamily identifyPaletteType(byte[] bytes, String filename) throws PaletteIdentifyException {
+        if (filename.endsWith(".aco") && PhotoshopPaletteParser.checkSanity(bytes)) {
             return PaletteFamily.PHOTOSHOP;
-        } else if (filename.endsWith(".gpl")
-                && GimpPaletteParser.checkSanity(bytes)) {
+        } else if (filename.endsWith(".gpl") && GimpPaletteParser.checkSanity(bytes)) {
             return PaletteFamily.GIMP;
-        } else if (filename.endsWith(".properties")
-                && PropertiesPaletteParser.checkSanity(bytes)) {
+        } else if (filename.endsWith(".properties") && PropertiesPaletteParser.checkSanity(bytes)) {
             return PaletteFamily.PROPERTIES;
         }
         throw new PaletteIdentifyException();
     }
 
-    public static Map<String, String> parse(InputStream in, String filename)
-            throws IOException, PaletteIdentifyException, PaletteParseException {
+    public static Map<String, String> parse(InputStream in, String filename) throws IOException,
+            PaletteIdentifyException, PaletteParseException {
         DataInputStream dis = new DataInputStream(in);
         byte[] bytes = new byte[dis.available()];
         dis.read(bytes);
         return parse(bytes, filename);
     }
 
-    public static Map<String, String> parse(byte[] bytes, String filename)
-            throws PaletteIdentifyException, PaletteParseException {
+    public static Map<String, String> parse(byte[] bytes, String filename) throws PaletteIdentifyException,
+            PaletteParseException {
         PaletteFamily paletteFamily = identifyPaletteType(bytes, filename);
         if (paletteFamily == PaletteFamily.PHOTOSHOP) {
             return PhotoshopPaletteParser.parse(bytes);
@@ -126,8 +120,7 @@ public class PaletteParser {
 
     public static String renderPaletteAsCsv(byte[] bytes, String fileName) {
         StringWriter sw = new StringWriter();
-        try (CSVPrinter writer = new CSVPrinter(sw,
-                CSVFormat.DEFAULT.withDelimiter('\t'))) {
+        try (CSVPrinter writer = new CSVPrinter(sw, CSVFormat.DEFAULT.withDelimiter('\t'))) {
             for (Map.Entry<String, String> entry : parse(bytes, fileName).entrySet()) {
                 writer.printRecord(entry.getKey(), entry.getValue());
             }
@@ -147,8 +140,7 @@ public class PaletteParser {
             return properties;
         }
         try (StringReader sr = new StringReader(text);
-                CSVParser reader = new CSVParser(sr,
-                        CSVFormat.DEFAULT.withDelimiter('\t'))) {
+                CSVParser reader = new CSVParser(sr, CSVFormat.DEFAULT.withDelimiter('\t'))) {
             for (CSVRecord record : reader) {
                 properties.put(record.get(0), record.get(1));
             }

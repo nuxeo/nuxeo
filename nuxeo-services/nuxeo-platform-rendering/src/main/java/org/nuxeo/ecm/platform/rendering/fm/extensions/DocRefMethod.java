@@ -25,14 +25,12 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocRefMethod implements TemplateMethodModelEx {
 
     public Object exec(List arguments) throws TemplateModelException {
         if (arguments.size() != 1) {
-            throw new TemplateModelException(
-                    "Invalid number of arguments for docRef(id) method");
+            throw new TemplateModelException("Invalid number of arguments for docRef(id) method");
         }
         String value = null;
         SimpleScalar scalar = (SimpleScalar) arguments.get(0);

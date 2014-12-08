@@ -28,8 +28,7 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
  */
 public class ImportFolderPageProvider extends CoreQueryDocumentPageProvider {
 
-    public static final Filter ADD_CHILDREN_PERMISSION_FILTER = new PermissionFilter(
-            ADD_CHILDREN, true);
+    public static final Filter ADD_CHILDREN_PERMISSION_FILTER = new PermissionFilter(ADD_CHILDREN, true);
 
     @Override
     protected Filter getFilter() {

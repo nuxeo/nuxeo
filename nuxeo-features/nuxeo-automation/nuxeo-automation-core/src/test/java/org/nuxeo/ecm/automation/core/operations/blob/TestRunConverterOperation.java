@@ -38,7 +38,6 @@ import com.google.inject.Inject;
 
 /**
  * @since 7.1
- *
  * @author Vincent Vergnolle
  */
 @RunWith(FeaturesRunner.class)
@@ -64,8 +63,7 @@ public class TestRunConverterOperation {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(blob);
 
-        Blob resultBlob = (Blob) automationService.run(ctx, RunConverter.ID,
-                params);
+        Blob resultBlob = (Blob) automationService.run(ctx, RunConverter.ID, params);
 
         Assert.assertTrue(blob.equals(resultBlob));
     }

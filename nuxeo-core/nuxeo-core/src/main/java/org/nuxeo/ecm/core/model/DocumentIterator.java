@@ -16,8 +16,7 @@ package org.nuxeo.ecm.core.model;
 import java.util.Iterator;
 
 /**
- * Provides additional methods to allow clients to get meta info like the
- * total number of items.
+ * Provides additional methods to allow clients to get meta info like the total number of items.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
@@ -26,9 +25,8 @@ public interface DocumentIterator extends Iterator<Document> {
     long UNKNOWN_SIZE = -1;
 
     /**
-     * @return size of the iterator. (i.e. total number of items in the
-     *         iterator). If the size cannot be provided this will return
-     *         <code>UNKNOWN_SIZE</code>
+     * @return size of the iterator. (i.e. total number of items in the iterator). If the size cannot be provided this
+     *         will return <code>UNKNOWN_SIZE</code>
      */
     long getSize();
 

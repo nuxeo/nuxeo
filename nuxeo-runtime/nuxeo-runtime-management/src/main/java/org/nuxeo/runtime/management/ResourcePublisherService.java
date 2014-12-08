@@ -44,10 +44,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
-public class ResourcePublisherService extends DefaultComponent implements
-        ResourcePublisher, ResourcePublisherMBean {
+public class ResourcePublisherService extends DefaultComponent implements ResourcePublisher, ResourcePublisherMBean {
 
     public static final String SERVICES_EXT_KEY = "services";
 
@@ -55,8 +53,7 @@ public class ResourcePublisherService extends DefaultComponent implements
 
     public static final String SHORTCUTS_EXT_KEY = "shortcuts";
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.runtime.management.ResourcePublisher");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.management.ResourcePublisher");
 
     private static final Log log = LogFactory.getLog(ResourcePublisherService.class);
 
@@ -73,8 +70,7 @@ public class ResourcePublisherService extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(SERVICES_EXT_KEY)) {
             resourcesRegistry.doRegisterResource((ServiceDescriptor) contribution);
         } else if (extensionPoint.equals(FACTORIES_EXT_KEY)) {
@@ -85,8 +81,7 @@ public class ResourcePublisherService extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(SERVICES_EXT_KEY)) {
             resourcesRegistry.doUnregisterResource((ServiceDescriptor) contribution);
         } else if (extensionPoint.equals(FACTORIES_EXT_KEY)) {
@@ -106,8 +101,7 @@ public class ResourcePublisherService extends DefaultComponent implements
             try {
                 factory = factoryClass.newInstance();
             } catch (ReflectiveOperationException e) {
-                throw new ManagementRuntimeException("Cannot create factory "
-                        + factoryClass, e);
+                throw new ManagementRuntimeException("Cannot create factory " + factoryClass, e);
             }
             factory.configure(ResourcePublisherService.this, descriptor);
             registry.put(factoryClass, factory);
@@ -128,17 +122,14 @@ public class ResourcePublisherService extends DefaultComponent implements
         protected final Map<String, ObjectName> registry = new TreeMap<String, ObjectName>();
 
         protected void doRegisterShortcut(ShortcutDescriptor descriptor) {
-            doRegisterShortcut(descriptor.getShortName(),
-                    descriptor.getQualifiedName());
+            doRegisterShortcut(descriptor.getShortName(), descriptor.getQualifiedName());
         }
 
         protected void doRegisterShortcut(String shortName, String qualifiedName) {
-            registry.put(shortName,
-                    ObjectNameFactory.getObjectName(qualifiedName));
+            registry.put(shortName, ObjectNameFactory.getObjectName(qualifiedName));
         }
 
-        protected void doRegisterShortcut(String shortName,
-                ObjectName qualifiedName) {
+        protected void doRegisterShortcut(String shortName, ObjectName qualifiedName) {
             registry.put(shortName, qualifiedName);
         }
 
@@ -159,11 +150,8 @@ public class ResourcePublisherService extends DefaultComponent implements
 
         protected final Map<ObjectName, Resource> registry = new HashMap<ObjectName, Resource>();
 
-        protected void doRegisterResource(String qualifiedName, Class<?> info,
-                Object instance) {
-            Resource resource = new Resource(
-                    ObjectNameFactory.getObjectName(qualifiedName), info,
-                    instance);
+        protected void doRegisterResource(String qualifiedName, Class<?> info, Object instance) {
+            Resource resource = new Resource(ObjectNameFactory.getObjectName(qualifiedName), info, instance);
             doRegisterResource(resource);
         }
 
@@ -172,15 +160,13 @@ public class ResourcePublisherService extends DefaultComponent implements
             doRegisterResource(resource);
             String shortName = descriptor.getName();
             if (!StringUtils.isEmpty(shortName)) {
-                shortcutsRegistry.doRegisterShortcut(shortName,
-                        resource.getManagementName());
+                shortcutsRegistry.doRegisterShortcut(shortName, resource.getManagementName());
             }
         }
 
         protected final ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
 
-        protected RequiredModelMBean doBind(MBeanServer server,
-                ObjectName name, Object instance, Class<?> clazz)
+        protected RequiredModelMBean doBind(MBeanServer server, ObjectName name, Object instance, Class<?> clazz)
                 throws JMException, InvalidTargetObjectTypeException {
             RequiredModelMBean mbean = new RequiredModelMBean();
             mbean.setManagedResource(instance, "ObjectReference");
@@ -198,8 +184,7 @@ public class ResourcePublisherService extends DefaultComponent implements
             }
             MBeanServer server = serverLocatorService.lookupServer(resource.managementName.getDomain());
             try {
-                resource.mbean = doBind(server, resource.managementName,
-                        resource.instance, resource.clazz);
+                resource.mbean = doBind(server, resource.managementName, resource.instance, resource.clazz);
                 if (ResourcePublisherService.log.isDebugEnabled()) {
                     ResourcePublisherService.log.debug("bound " + resource);
                 }
@@ -216,8 +201,7 @@ public class ResourcePublisherService extends DefaultComponent implements
                 MBeanServer server = serverLocatorService.lookupServer(resource.managementName);
                 server.unregisterMBean(resource.managementName);
             } catch (JMException e) {
-                throw ManagementRuntimeException.wrap("Cannot unbind "
-                        + resource, e);
+                throw ManagementRuntimeException.wrap("Cannot unbind " + resource, e);
             } finally {
                 resource.mbean = null;
                 if (ResourcePublisherService.log.isDebugEnabled()) {
@@ -229,8 +213,7 @@ public class ResourcePublisherService extends DefaultComponent implements
         protected void doRegisterResource(Resource resource) {
             final ObjectName name = resource.getManagementName();
             if (registry.containsKey(name)) {
-                log.warn("Already registered " + name + ", skipping",
-                        new Throwable("Stack trace"));
+                log.warn("Already registered " + name + ", skipping", new Throwable("Stack trace"));
                 return;
             }
             registry.put(name, resource);
@@ -248,25 +231,19 @@ public class ResourcePublisherService extends DefaultComponent implements
             return ObjectNameFactory.getObjectName(qualifiedName);
         }
 
-        protected Resource doResolveServiceDescriptor(
-                ServiceDescriptor descriptor) {
+        protected Resource doResolveServiceDescriptor(ServiceDescriptor descriptor) {
             Class<?> resourceClass = descriptor.getResourceClass();
-            Object resourceInstance = doResolveService(resourceClass,
-                    descriptor);
+            Object resourceInstance = doResolveService(resourceClass, descriptor);
             ObjectName managementName = doResolveServiceName(descriptor);
             Class<?> ifaceClass = descriptor.getIfaceClass();
-            Class<?> managementClass = ifaceClass != null ? ifaceClass
-                    : resourceClass;
-            return new Resource(managementName, managementClass,
-                    resourceInstance);
+            Class<?> managementClass = ifaceClass != null ? ifaceClass : resourceClass;
+            return new Resource(managementName, managementClass, resourceInstance);
         }
 
-        protected <T> T doResolveService(Class<T> resourceClass,
-                ServiceDescriptor descriptor) {
+        protected <T> T doResolveService(Class<T> resourceClass, ServiceDescriptor descriptor) {
             T service = Framework.getService(resourceClass);
             if (service == null) {
-                throw new ManagementRuntimeException(
-                        "Cannot locate resource using " + resourceClass);
+                throw new ManagementRuntimeException("Cannot locate resource using " + resourceClass);
             }
             return service;
         }
@@ -300,8 +277,7 @@ public class ResourcePublisherService extends DefaultComponent implements
         protected void doUnregisterResource(ObjectName objectName) {
             Resource resource = registry.remove(objectName);
             if (resource == null) {
-                throw new IllegalArgumentException(objectName
-                        + " is not registered");
+                throw new IllegalArgumentException(objectName + " is not registered");
             }
             if (resource.mbean != null) {
                 doUnbind(resource);
@@ -311,10 +287,8 @@ public class ResourcePublisherService extends DefaultComponent implements
     }
 
     @Override
-    public void registerResource(String shortName, String qualifiedName,
-            Class<?> managementClass, Object instance) {
-        resourcesRegistry.doRegisterResource(qualifiedName, managementClass,
-                instance);
+    public void registerResource(String shortName, String qualifiedName, Class<?> managementClass, Object instance) {
+        resourcesRegistry.doRegisterResource(qualifiedName, managementClass, instance);
         if (shortName != null) {
             shortcutsRegistry.doRegisterShortcut(shortName, qualifiedName);
         }
@@ -382,7 +356,7 @@ public class ResourcePublisherService extends DefaultComponent implements
         doUnbindResources();
     }
 
-    protected boolean started  = false;
+    protected boolean started = false;
 
     @Override
     public void applicationStarted(ComponentContext context) {
@@ -393,11 +367,11 @@ public class ResourcePublisherService extends DefaultComponent implements
 
             @Override
             public void handleEvent(RuntimeServiceEvent event) {
-               if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
-                   return;
-               }
-               Framework.removeListener(this);
-               doUnbindResources();
+                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
+                    return;
+                }
+                Framework.removeListener(this);
+                doUnbindResources();
             }
         });
     }
@@ -428,9 +402,8 @@ public class ResourcePublisherService extends DefaultComponent implements
         resourcesRegistry.doUnbind(resource);
     }
 
-    protected void bindForTest(MBeanServer server, ObjectName name,
-            Object instance, Class<?> clazz) throws JMException,
-            InvalidTargetObjectTypeException {
+    protected void bindForTest(MBeanServer server, ObjectName name, Object instance, Class<?> clazz)
+            throws JMException, InvalidTargetObjectTypeException {
         resourcesRegistry.doBind(server, name, instance, clazz);
     }
 

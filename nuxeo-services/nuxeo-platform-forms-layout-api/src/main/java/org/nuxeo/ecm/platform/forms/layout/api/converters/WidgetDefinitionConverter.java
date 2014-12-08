@@ -26,10 +26,9 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 public interface WidgetDefinitionConverter {
 
     /**
-     * Returns the original widget definition, or a clone if it needs to be
-     * changed. Can also return null if widget should be removed.
+     * Returns the original widget definition, or a clone if it needs to be changed. Can also return null if widget
+     * should be removed.
      */
-    WidgetDefinition getWidgetDefinition(WidgetDefinition orig,
-            LayoutConversionContext ctx);
+    WidgetDefinition getWidgetDefinition(WidgetDefinition orig, LayoutConversionContext ctx);
 
 }

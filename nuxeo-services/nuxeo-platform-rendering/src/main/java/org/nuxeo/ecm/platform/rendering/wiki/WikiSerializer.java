@@ -29,7 +29,6 @@ import org.wikimodel.wem.common.CommonWikiParser;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WikiSerializer {
 
@@ -38,6 +37,7 @@ public class WikiSerializer {
     protected final CommonWikiParser parser;
 
     protected final Map<String, WikiMacro> macros = new HashMap<String, WikiMacro>();
+
     protected final List<WikiFilter> filters = new ArrayList<WikiFilter>();
 
     public WikiSerializer() {

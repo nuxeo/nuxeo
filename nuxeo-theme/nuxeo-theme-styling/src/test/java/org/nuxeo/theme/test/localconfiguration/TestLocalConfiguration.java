@@ -16,7 +16,6 @@
 
 package org.nuxeo.theme.test.localconfiguration;
 
-
 import org.junit.runner.RunWith;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -44,15 +43,12 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = LocalConfigurationRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.theme.styling",
-        "org.nuxeo.theme.styling.tests:local-configuration-config.xml" })
+@Deploy({ "org.nuxeo.theme.styling", "org.nuxeo.theme.styling.tests:local-configuration-config.xml" })
 public class TestLocalConfiguration {
 
-    public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef(
-            "/default-domain/workspaces/workspace");
+    public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace");
 
-    public static final DocumentRef CHILD_WORKSPACE_REF = new PathRef(
-            "/default-domain/workspaces/workspace/workspace2");
+    public static final DocumentRef CHILD_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace/workspace2");
 
     public static final String WORKSPACE_TYPE = "Workspace";
 
@@ -65,21 +61,14 @@ public class TestLocalConfiguration {
     @Test
     public void testLocalTheme() throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
-        workspace.setPropertyValue(
-                LocalThemeConfigConstants.THEME_CONFIGURATION_THEME_PROPERTY,
-                "galaxy");
-        workspace.setPropertyValue(
-                LocalThemeConfigConstants.THEME_CONFIGURATION_PAGE_PROPERTY,
-                "default");
-        workspace.setPropertyValue(
-                LocalThemeConfigConstants.THEME_CONFIGURATION_FLAVOR_PROPERTY,
-                "dark");
+        workspace.setPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_THEME_PROPERTY, "galaxy");
+        workspace.setPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_PAGE_PROPERTY, "default");
+        workspace.setPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_FLAVOR_PROPERTY, "dark");
         session.saveDocument(workspace);
         session.save();
 
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-        LocalThemeConfig configuration = localConfigurationService.getConfiguration(
-                LocalThemeConfig.class,
+        LocalThemeConfig configuration = localConfigurationService.getConfiguration(LocalThemeConfig.class,
                 LocalThemeConfigConstants.THEME_CONFIGURATION_FACET, workspace);
         assertNotNull(configuration);
         assertEquals("galaxy/default", configuration.computePagePath());

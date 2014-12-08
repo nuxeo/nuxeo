@@ -65,8 +65,7 @@ public class QueryOptimizer {
 
     public QueryOptimizer() {
         schemaManager = Framework.getLocalService(SchemaManager.class);
-        neverPerInstanceMixins = new HashSet<String>(
-                schemaManager.getNoPerDocumentQueryFacets());
+        neverPerInstanceMixins = new HashSet<String>(schemaManager.getNoPerDocumentQueryFacets());
         toplevelOperands = new LinkedList<Operand>();
     }
 
@@ -81,8 +80,7 @@ public class QueryOptimizer {
         return false;
     }
 
-    public MultiExpression getOptimizedQuery(SQLQuery query,
-            FacetFilter facetFilter) {
+    public MultiExpression getOptimizedQuery(SQLQuery query, FacetFilter facetFilter) {
         if (facetFilter != null) {
             addFacetFilterClauses(facetFilter);
         }
@@ -98,8 +96,7 @@ public class QueryOptimizer {
         for (String mixin : facetFilter.required) {
             // every facet is required, not just any of them,
             // so do them one by one
-            Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE),
-                    Operator.EQ, new StringLiteral(mixin));
+            Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ, new StringLiteral(mixin));
             toplevelOperands.add(expr);
         }
         if (!facetFilter.excluded.isEmpty()) {
@@ -107,15 +104,14 @@ public class QueryOptimizer {
             for (String mixin : facetFilter.excluded) {
                 list.add(new StringLiteral(mixin));
             }
-            Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE),
-                    Operator.NOTIN, list);
+            Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.NOTIN, list);
             toplevelOperands.add(expr);
         }
     }
 
     /**
-     * Finds all the types to take into account (all concrete types being a
-     * subtype of the passed types) based on the FROM list.
+     * Finds all the types to take into account (all concrete types being a subtype of the passed types) based on the
+     * FROM list.
      * <p>
      * Adds them as a ecm:primaryType match in the toplevel operands.
      */
@@ -153,8 +149,7 @@ public class QueryOptimizer {
         for (String type : fromTypes) {
             list.add(new StringLiteral(type));
         }
-        toplevelOperands.add(new Expression(
-                new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list));
+        toplevelOperands.add(new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list));
     }
 
     /**
@@ -174,8 +169,7 @@ public class QueryOptimizer {
     }
 
     /**
-     * Simplify ecm:primaryType positive references, and non-per-instance mixin
-     * types.
+     * Simplify ecm:primaryType positive references, and non-per-instance mixin types.
      */
     protected void simplifyToplevelOperands() {
         Set<String> primaryTypes = null; // if defined, required
@@ -203,8 +197,7 @@ public class QueryOptimizer {
                         continue;
                     }
                     String primaryType = ((StringLiteral) rvalue).value;
-                    set = new HashSet<String>(
-                            Collections.singleton(primaryType));
+                    set = new HashSet<String>(Collections.singleton(primaryType));
                 } else { // Operator.IN
                     if (!(rvalue instanceof LiteralList)) {
                         continue;
@@ -259,15 +252,13 @@ public class QueryOptimizer {
             Expression expr;
             if (primaryTypes.size() == 1) {
                 String pt = primaryTypes.iterator().next();
-                expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE),
-                        Operator.EQ, new StringLiteral(pt));
+                expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.EQ, new StringLiteral(pt));
             } else { // primaryTypes.size() > 1
                 LiteralList list = new LiteralList();
                 for (String pt : primaryTypes) {
                     list.add(new StringLiteral(pt));
                 }
-                expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE),
-                        Operator.IN, list);
+                expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list);
             }
             toplevelOperands.addFirst(expr);
         }

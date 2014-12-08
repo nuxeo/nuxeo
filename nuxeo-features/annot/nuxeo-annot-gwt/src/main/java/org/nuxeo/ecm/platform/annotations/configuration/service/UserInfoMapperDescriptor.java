@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.annotations.gwt.server.configuration.UserInfoMappe
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Quentin Lamerand</a>
- *
  */
 @XObject("userInfoMapper")
 public class UserInfoMapperDescriptor {

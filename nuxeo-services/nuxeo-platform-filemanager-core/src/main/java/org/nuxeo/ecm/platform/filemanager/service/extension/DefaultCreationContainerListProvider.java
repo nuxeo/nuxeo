@@ -34,16 +34,14 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Default contribution to the CreationContainerListProvider extension point
- * that find the list of Workspaces the user has the right to create new
- * document into.
+ * Default contribution to the CreationContainerListProvider extension point that find the list of Workspaces the user
+ * has the right to create new document into.
  * <p>
  * The filtered list is sorted
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
-public class DefaultCreationContainerListProvider extends
-        AbstractCreationContainerListProvider {
+public class DefaultCreationContainerListProvider extends AbstractCreationContainerListProvider {
 
     public static final String CONTAINER_LIST_PROVIDER_QM = "DEFAULT_CREATION_CONTAINER_LIST_PROVIDER";
 
@@ -57,18 +55,15 @@ public class DefaultCreationContainerListProvider extends
     }
 
     @SuppressWarnings("unchecked")
-    public DocumentModelList getCreationContainerList(
-            CoreSession documentManager, String docType) {
+    public DocumentModelList getCreationContainerList(CoreSession documentManager, String docType) {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) documentManager);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
 
         PageProvider<DocumentModel> allContainers = (PageProvider<DocumentModel>) getPageProviderService().getPageProvider(
                 CONTAINER_LIST_PROVIDER_QM, null, null, null, props);
         DocumentModelList filteredContainers = new DocumentModelListImpl();
         for (DocumentModel container : allContainers.getCurrentPage()) {
-            if (documentManager.hasPermission(container.getRef(),
-                    SecurityConstants.ADD_CHILDREN)) {
+            if (documentManager.hasPermission(container.getRef(), SecurityConstants.ADD_CHILDREN)) {
                 filteredContainers.add(container);
             }
         }

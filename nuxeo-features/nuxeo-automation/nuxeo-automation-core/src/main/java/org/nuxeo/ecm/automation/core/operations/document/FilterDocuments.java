@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = FilterDocuments.ID, category = Constants.CAT_DOCUMENT, label = "Filter List", description = "Filter the input list of documents given a condition. The condition can be expressed using 4 parameters: types, facets, lifecycle and condition. If more than one parameter is specified an AND will be used to group conditions. <br>The 'types' parameter can take a comma separated list of document type: File,Note.<br>The 'facet' parameter can take a single facet name.<br> The 'life cycle' parameter takes a name of a life cycle state the document should have.<br>The 'condition' parameter can take any EL expression.<p>Returns the list of documents that match the filter condition.")
@@ -62,14 +61,10 @@ public class FilterDocuments {
     protected String condition;
 
     @Param(name = "class", required = false, widget = Constants.W_OPTION, values = {
-            DocumentAttributeFilterFactory.ANY_DOC,
-            DocumentAttributeFilterFactory.REGULAR_DOC,
-            DocumentAttributeFilterFactory.LINK_DOC,
-            DocumentAttributeFilterFactory.PUBLISHED_DOC,
-            DocumentAttributeFilterFactory.PROXY_DOC,
-            DocumentAttributeFilterFactory.VERSION_DOC,
-            DocumentAttributeFilterFactory.IMMUTABLE_DOC,
-            DocumentAttributeFilterFactory.MUTABLE_DOC })
+            DocumentAttributeFilterFactory.ANY_DOC, DocumentAttributeFilterFactory.REGULAR_DOC,
+            DocumentAttributeFilterFactory.LINK_DOC, DocumentAttributeFilterFactory.PUBLISHED_DOC,
+            DocumentAttributeFilterFactory.PROXY_DOC, DocumentAttributeFilterFactory.VERSION_DOC,
+            DocumentAttributeFilterFactory.IMMUTABLE_DOC, DocumentAttributeFilterFactory.MUTABLE_DOC })
     protected String attr;
 
     @OperationMethod

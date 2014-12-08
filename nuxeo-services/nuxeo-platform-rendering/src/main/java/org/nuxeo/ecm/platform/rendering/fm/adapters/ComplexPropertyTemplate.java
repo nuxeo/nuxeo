@@ -30,15 +30,12 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
-public class ComplexPropertyTemplate extends PropertyWrapper implements
-        TemplateHashModelEx, AdapterTemplateModel {
+public class ComplexPropertyTemplate extends PropertyWrapper implements TemplateHashModelEx, AdapterTemplateModel {
 
     protected final Property property;
 
-    public ComplexPropertyTemplate(DocumentObjectWrapper wrapper,
-            Property property) {
+    public ComplexPropertyTemplate(DocumentObjectWrapper wrapper, Property property) {
         super(wrapper);
         this.property = property;
     }
@@ -73,8 +70,7 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements
             }
             return new CollectionAndSequence(new SimpleSequence(list, wrapper));
         } catch (PropertyException e) {
-            throw new TemplateModelException(
-                    "Failed to adapt complex property values", e);
+            throw new TemplateModelException("Failed to adapt complex property values", e);
         }
     }
 

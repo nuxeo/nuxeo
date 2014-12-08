@@ -40,8 +40,7 @@ import com.google.inject.Binder;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Features({ MDCFeature.class, ConditionalIgnoreRule.Feature.class,
-        RandomBug.Feature.class })
+@Features({ MDCFeature.class, ConditionalIgnoreRule.Feature.class, RandomBug.Feature.class })
 public class RuntimeFeature extends SimpleFeature {
 
     protected RuntimeHarness harness;
@@ -49,8 +48,7 @@ public class RuntimeFeature extends SimpleFeature {
     protected RuntimeDeployment deployment;
 
     /**
-     * Providers contributed by other features to override the default service
-     * provider used for a nuxeo service.
+     * Providers contributed by other features to override the default service provider used for a nuxeo service.
      */
     protected final Map<Class<?>, ServiceProvider<?>> serviceProviders;
 
@@ -76,11 +74,9 @@ public class RuntimeFeature extends SimpleFeature {
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         binder.bind(RuntimeHarness.class).toInstance(getHarness());
-        for (String svc : Framework.getRuntime().getComponentManager()
-            .getServices()) {
+        for (String svc : Framework.getRuntime().getComponentManager().getServices()) {
             try {
-                Class clazz = Thread.currentThread().getContextClassLoader()
-                    .loadClass(svc);
+                Class clazz = Thread.currentThread().getContextClassLoader().loadClass(svc);
                 ServiceProvider<?> provider = serviceProviders.get(clazz);
                 if (provider == null) {
                     provider = new ServiceProvider(clazz);
@@ -120,16 +116,14 @@ public class RuntimeFeature extends SimpleFeature {
         return new MethodRule() {
 
             @Override
-            public Statement apply(final Statement base,
-                    FrameworkMethod method, Object target) {
+            public Statement apply(final Statement base, FrameworkMethod method, Object target) {
                 return new Statement() {
                     @Override
                     public void evaluate() throws Throwable {
                         try {
                             base.evaluate();
                         } finally {
-                            URLStreamHandlerFactoryInstaller
-                                .resetURLStreamHandlers();
+                            URLStreamHandlerFactoryInstaller.resetURLStreamHandlers();
                         }
                     }
                 };
@@ -148,8 +142,7 @@ public class RuntimeFeature extends SimpleFeature {
         if (config.value().length == 0) {
             return;
         }
-        final ComponentManager manager = Framework.getRuntime()
-            .getComponentManager();
+        final ComponentManager manager = Framework.getRuntime().getComponentManager();
         Set<String> blacklist = new HashSet<>(manager.getBlacklist());
         blacklist.addAll(Arrays.asList(config.value()));
         manager.setBlacklist(blacklist);

@@ -33,7 +33,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class WebConfiguration implements IsSerializable {
 
@@ -42,26 +41,19 @@ public class WebConfiguration implements IsSerializable {
     static {
         DEFAULT_WEB_CONFIGURATION = new WebConfiguration();
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
-                "http://www.w3.org/2000/10/annotationType#Example", "Example",
-                "icons/annotate.png", "local"));
+                "http://www.w3.org/2000/10/annotationType#Example", "Example", "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
-                "http://www.w3.org/2000/10/annotationType#Comment", "Comment",
-                "icons/annotate.png", "local"));
+                "http://www.w3.org/2000/10/annotationType#Comment", "Comment", "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
-                "http://www.w3.org/2000/10/annotationType#SeeAlso", "SeeAlso",
-                "icons/annotate.png", "local"));
+                "http://www.w3.org/2000/10/annotationType#SeeAlso", "SeeAlso", "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
-                "http://www.w3.org/2000/10/annotationType#Question",
-                "Question", "icons/annotate.png", "local"));
+                "http://www.w3.org/2000/10/annotationType#Question", "Question", "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
-                "http://www.w3.org/2000/10/annotationType#Explanation",
-                "Explanation", "icons/annotate.png", "local"));
+                "http://www.w3.org/2000/10/annotationType#Explanation", "Explanation", "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
-                "http://www.w3.org/2000/10/annotationType#Change", "Change",
-                "icons/annotate.png", "local"));
+                "http://www.w3.org/2000/10/annotationType#Change", "Change", "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
-                "http://www.w3.org/2000/10/annotationType#Advice", "Advice",
-                "icons/annotate.png", "local"));
+                "http://www.w3.org/2000/10/annotationType#Advice", "Advice", "icons/annotate.png", "local"));
     }
 
     private Map<String, AnnotationDefinition> annotationDefinitions = new HashMap<String, AnnotationDefinition>();
@@ -76,25 +68,20 @@ public class WebConfiguration implements IsSerializable {
 
     private boolean canAnnotate = true;
 
-    public void addAnnotationDefinition(
-            AnnotationDefinition annotationDefinition) {
-        annotationDefinitions.put(annotationDefinition.getName(),
-                annotationDefinition);
+    public void addAnnotationDefinition(AnnotationDefinition annotationDefinition) {
+        annotationDefinitions.put(annotationDefinition.getName(), annotationDefinition);
     }
 
-    public void removeAnnotationDefinition(
-            AnnotationDefinition annotationDefinition) {
+    public void removeAnnotationDefinition(AnnotationDefinition annotationDefinition) {
         annotationDefinitions.remove(annotationDefinition);
     }
 
     public List<AnnotationDefinition> getAnnotationDefinitions() {
-        List<AnnotationDefinition> list = new ArrayList<AnnotationDefinition>(
-                annotationDefinitions.values());
+        List<AnnotationDefinition> list = new ArrayList<AnnotationDefinition>(annotationDefinitions.values());
         return Collections.unmodifiableList(list);
     }
 
-    public List<AnnotationDefinition> getAnnotationDefinitions(
-            AnnotationDefinitionFilter filter) {
+    public List<AnnotationDefinition> getAnnotationDefinitions(AnnotationDefinitionFilter filter) {
         List<AnnotationDefinition> types = new ArrayList<AnnotationDefinition>();
         for (AnnotationDefinition type : annotationDefinitions.values()) {
             if (filter.accept(type)) {
@@ -114,8 +101,7 @@ public class WebConfiguration implements IsSerializable {
     }
 
     private AnnotationDefinition getFirsTannotationDefinition() {
-        List<AnnotationDefinition> l = new ArrayList<AnnotationDefinition>(
-                annotationDefinitions.values());
+        List<AnnotationDefinition> l = new ArrayList<AnnotationDefinition>(annotationDefinitions.values());
         return l.isEmpty() ? null : l.get(0);
     }
 
@@ -134,8 +120,7 @@ public class WebConfiguration implements IsSerializable {
         return v;
     }
 
-    public void addFilter(int order, String name, String icon, String type,
-            String author, Map<String, String> fields) {
+    public void addFilter(int order, String name, String icon, String type, String author, Map<String, String> fields) {
         Map<String, String> newFields = new HashMap<String, String>();
         for (String fieldName : fields.keySet()) {
             String value = getValue(fields.get(fieldName));
@@ -144,11 +129,9 @@ public class WebConfiguration implements IsSerializable {
             }
         }
         if (order < filters.size()) {
-            filters.add(order, new AnnotationFilter(name, icon, getValue(type),
-                    getValue(author), newFields));
+            filters.add(order, new AnnotationFilter(name, icon, getValue(type), getValue(author), newFields));
         } else {
-            filters.add(new AnnotationFilter(name, icon, getValue(type),
-                    getValue(author), newFields));
+            filters.add(new AnnotationFilter(name, icon, getValue(type), getValue(author), newFields));
         }
     }
 

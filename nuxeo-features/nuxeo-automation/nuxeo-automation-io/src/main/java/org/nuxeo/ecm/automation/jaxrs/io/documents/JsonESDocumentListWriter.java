@@ -34,9 +34,8 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * JSon writer that outputs an elasticsearch bulk format, response header
- * contains information about the number of results and pagination.
- *
+ * JSon writer that outputs an elasticsearch bulk format, response header contains information about the number of
+ * results and pagination.
  *
  * @since 5.9.3
  */
@@ -73,39 +72,33 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
     private HttpServletRequest request;
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return super.isWriteable(type, genericType, annotations, mediaType)
-                && MIME_TYPE.equals(mediaType.toString());
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return super.isWriteable(type, genericType, annotations, mediaType) && MIME_TYPE.equals(mediaType.toString());
     }
 
     /**
      * @since 5.9.5
      */
     @Override
-    public void writeDocuments(OutputStream out, List<DocumentModel> docs,
-            String[] schemas, HttpHeaders headers) throws IOException {
-        writeDocs(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs,
-                schemas);
+    public void writeDocuments(OutputStream out, List<DocumentModel> docs, String[] schemas, HttpHeaders headers)
+            throws IOException {
+        writeDocs(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs, schemas);
     }
 
     @Override
-    public void writeDocuments(OutputStream out, List<DocumentModel> docs,
-            String[] schemas) throws IOException {
-        writeDocs(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs,
-                schemas, null);
+    public void writeDocuments(OutputStream out, List<DocumentModel> docs, String[] schemas) throws IOException {
+        writeDocs(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs, schemas, null);
     }
 
     /**
      * @since 5.9.5
      */
-    public void writeDocs(JsonGenerator jg, List<DocumentModel> docs,
-            String[] schemas) throws IOException {
+    public void writeDocs(JsonGenerator jg, List<DocumentModel> docs, String[] schemas) throws IOException {
         writeDocs(jg, docs, schemas, null);
     }
 
-    public void writeDocs(JsonGenerator jg, List<DocumentModel> docs,
-            String[] schemas, HttpHeaders headers) throws IOException {
+    public void writeDocs(JsonGenerator jg, List<DocumentModel> docs, String[] schemas, HttpHeaders headers)
+            throws IOException {
         String esIndex = request.getParameter("esIndex");
         if (esIndex == null) {
             esIndex = DEFAULT_ES_INDEX;
@@ -117,18 +110,13 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
 
         if (docs instanceof PaginableDocumentModelList) {
             PaginableDocumentModelList provider = (PaginableDocumentModelList) docs;
-            response.setHeader(HEADER_CURRENT_PAGE_INDEX,
-                    Long.valueOf(provider.getCurrentPageIndex()).toString());
-            response.setHeader(HEADER_NUMBER_OF_PAGES,
-                    Long.valueOf(provider.getNumberOfPages()).toString());
-            response.setHeader(HEADER_RESULTS_COUNT,
-                    Long.valueOf(provider.getResultsCount()).toString());
-            response.setHeader(HEADER_PAGE_SIZE,
-                    Long.valueOf(provider.size()).toString());
+            response.setHeader(HEADER_CURRENT_PAGE_INDEX, Long.valueOf(provider.getCurrentPageIndex()).toString());
+            response.setHeader(HEADER_NUMBER_OF_PAGES, Long.valueOf(provider.getNumberOfPages()).toString());
+            response.setHeader(HEADER_RESULTS_COUNT, Long.valueOf(provider.getResultsCount()).toString());
+            response.setHeader(HEADER_PAGE_SIZE, Long.valueOf(provider.size()).toString());
             response.setHeader(HEADER_IS_LAST_PAGE_AVAILABLE,
                     Boolean.valueOf(provider.isLastPageAvailable()).toString());
-            response.setHeader(HEADER_HAS_ERROR,
-                    Boolean.valueOf(provider.hasError()).toString());
+            response.setHeader(HEADER_HAS_ERROR, Boolean.valueOf(provider.hasError()).toString());
             response.setHeader(HEADER_ERROR_MESSAGE, provider.getErrorMessage());
 
             DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
@@ -155,26 +143,20 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
                 DocumentLocation docLoc = new DocumentLocationImpl(doc);
                 Map<String, String> contextParameters = new HashMap<String, String>();
                 if (documentViewCodecManager != null) {
-                    DocumentView docView = new DocumentViewImpl(docLoc,
-                            doc.getAdapter(TypeInfo.class).getDefaultView());
-                    String documentURL = VirtualHostHelper.getContextPathProperty()
-                            + "/"
-                            + documentViewCodecManager.getUrlFromDocumentView(
-                                    codecName, docView, false, null);
+                    DocumentView docView = new DocumentViewImpl(docLoc, doc.getAdapter(TypeInfo.class).getDefaultView());
+                    String documentURL = VirtualHostHelper.getContextPathProperty() + "/"
+                            + documentViewCodecManager.getUrlFromDocumentView(codecName, docView, false, null);
                     contextParameters.put("ecm:documentUrl", documentURL);
                 }
-                JsonESDocumentWriter.writeESDocument(jg, doc, schemas,
-                        contextParameters);
+                JsonESDocumentWriter.writeESDocument(jg, doc, schemas, contextParameters);
                 jg.writeRaw('\n');
             }
         } else {
             response.setHeader(HEADER_CURRENT_PAGE_INDEX, "1");
             response.setHeader(HEADER_NUMBER_OF_PAGES, "1");
             response.setHeader(HEADER_IS_LAST_PAGE_AVAILABLE, "1");
-            response.setHeader(HEADER_RESULTS_COUNT,
-                    Integer.valueOf(docs.size()).toString());
-            response.setHeader(HEADER_PAGE_SIZE,
-                    Integer.valueOf(docs.size()).toString());
+            response.setHeader(HEADER_RESULTS_COUNT, Integer.valueOf(docs.size()).toString());
+            response.setHeader(HEADER_PAGE_SIZE, Integer.valueOf(docs.size()).toString());
             response.setHeader(HEADER_HAS_ERROR, "false");
             for (DocumentModel doc : docs) {
                 JsonESDocumentWriter.writeESDocument(jg, doc, schemas, null);

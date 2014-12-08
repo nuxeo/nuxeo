@@ -204,8 +204,7 @@ public class TestDocumentAdapter {
 
         assertEquals("TestFile.txt", extractedBlobs.get(0).getFilename());
         for (int i = 1; i <= 5; i++) {
-            assertEquals("TestFile" + i + ".txt",
-                    extractedBlobs.get(i).getFilename());
+            assertEquals("TestFile" + i + ".txt", extractedBlobs.get(i).getFilename());
         }
 
     }

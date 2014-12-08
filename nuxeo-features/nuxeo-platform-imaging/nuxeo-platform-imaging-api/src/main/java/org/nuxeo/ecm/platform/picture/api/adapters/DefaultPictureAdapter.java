@@ -59,15 +59,13 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     @Override
     public boolean createPicture(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions)
-            throws IOException, ClientException {
+            ArrayList<Map<String, Object>> pictureConversions) throws IOException, ClientException {
         return fillPictureViews(blob, filename, title, pictureConversions);
     }
 
     @Override
     public boolean fillPictureViews(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions)
-            throws IOException, ClientException {
+            ArrayList<Map<String, Object>> pictureConversions) throws IOException, ClientException {
         if (blob == null) {
             clearViews();
             return true;
@@ -75,8 +73,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
         file = BlobHelper.getFileFromBlob(blob);
         CommandLineExecutorService commandLineExecutorService = Framework.getLocalService(CommandLineExecutorService.class);
-        boolean validFilename = file == null
-                || commandLineExecutorService.isValidParameter(file.getName());
+        boolean validFilename = file == null || commandLineExecutorService.isValidParameter(file.getName());
         if (file == null || !validFilename) {
             String extension = ".jpg";
             if (file != null) {
@@ -87,9 +84,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             blob.transferTo(file);
             // use a persistent blob with our file
             if (!blob.isPersistent() || !validFilename) {
-                blob = new FileBlob(file, blob.getMimeType(),
-                        blob.getEncoding(), blob.getFilename(),
-                        blob.getDigest());
+                blob = new FileBlob(file, blob.getMimeType(), blob.getEncoding(), blob.getFilename(), blob.getDigest());
             }
         }
 
@@ -107,8 +102,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         try {
             setMetadata();
         } catch (IOException | ClientException e) {
-            log.debug("An error occured while trying to set metadata for "
-                    + filename, e);
+            log.debug("An error occured while trying to set metadata for " + filename, e);
         }
         if (width != null && height != null) {
             clearViews();
@@ -118,24 +112,19 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     }
 
     @Override
-    public void preFillPictureViews(Blob blob,
-            List<Map<String, Object>> pictureConversions, ImageInfo imageInfo)
+    public void preFillPictureViews(Blob blob, List<Map<String, Object>> pictureConversions, ImageInfo imageInfo)
             throws IOException, ClientException {
         ImagingService imagingService = getImagingService();
         List<PictureView> pictureViews;
 
         if (pictureConversions != null) {
-            List<PictureConversion> conversions = new ArrayList<PictureConversion>(
-                    pictureConversions.size());
+            List<PictureConversion> conversions = new ArrayList<PictureConversion>(pictureConversions.size());
             for (Map<String, Object> template : pictureConversions) {
-                conversions.add(new PictureConversion(
-                        (String) template.get("title"),
-                        (String) template.get("description"),
-                        (String) template.get("tag"), 0));
+                conversions.add(new PictureConversion((String) template.get("title"),
+                        (String) template.get("description"), (String) template.get("tag"), 0));
             }
 
-            pictureViews = imagingService.computeViewsFor(blob, conversions,
-                    imageInfo, false);
+            pictureViews = imagingService.computeViewsFor(blob, conversions, imageInfo, false);
         } else {
             pictureViews = imagingService.computeViewFor(doc, blob, false);
         }
@@ -149,16 +138,12 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         for (int i = 0; i < size; i++) {
             String xpath = "picture:views/view[" + i + "]/";
             try {
-                BlobHolder blob = new SimpleBlobHolder(doc.getProperty(
-                        xpath + "content").getValue(Blob.class));
+                BlobHolder blob = new SimpleBlobHolder(doc.getProperty(xpath + "content").getValue(Blob.class));
                 String type = blob.getBlob().getMimeType();
                 if (type != "image/png") {
                     Map<String, Serializable> options = new HashMap<String, Serializable>();
-                    options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE,
-                            angle);
-                    blob = getConversionService().convert(
-                            ImagingConvertConstants.OPERATION_ROTATE, blob,
-                            options);
+                    options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE, angle);
+                    blob = getConversionService().convert(ImagingConvertConstants.OPERATION_ROTATE, blob, options);
                     doc.getProperty(xpath + "content").setValue(blob.getBlob());
                     Long height = (Long) doc.getProperty(xpath + "height").getValue();
                     Long width = (Long) doc.getProperty(xpath + "width").getValue();
@@ -177,8 +162,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     }
 
     @Override
-    public Blob getPictureFromTitle(String title) throws PropertyException,
-            ClientException {
+    public Blob getPictureFromTitle(String title) throws PropertyException, ClientException {
         if (title == null) {
             return null;
         }

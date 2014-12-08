@@ -143,10 +143,9 @@ public class EventListenerTest extends NXRuntimeTestCase {
     public static int SCRIPT_CNT = 0;
 
     @Test
-    @ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.IgnoreIsolated.class)
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreIsolated.class)
     public void testScripts() throws Exception {
-        URL url = EventListenerTest.class.getClassLoader().getResource(
-                "test-listeners.xml");
+        URL url = EventListenerTest.class.getClassLoader().getResource("test-listeners.xml");
         RuntimeContext rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
         assertEquals(0, SCRIPT_CNT);
 
@@ -178,7 +177,7 @@ public class EventListenerTest extends NXRuntimeTestCase {
         while (vmid2.equals(vmid1)) {
             Thread.sleep(1000);
             vmid2 = new VMID();
-            if (cnt++ >10) {
+            if (cnt++ > 10) {
                 fail("Unable to complete test - unable to generate a target vmid");
             }
         }

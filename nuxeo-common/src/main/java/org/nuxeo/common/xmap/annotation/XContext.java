@@ -29,9 +29,9 @@ import java.lang.annotation.Target;
 /**
  * Injects an execution context property.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@XMemberAnnotation (XMemberAnnotation.CONTEXT)
+@XMemberAnnotation(XMemberAnnotation.CONTEXT)
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XContext {

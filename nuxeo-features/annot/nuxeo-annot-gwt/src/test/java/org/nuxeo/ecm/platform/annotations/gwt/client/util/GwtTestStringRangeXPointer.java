@@ -23,7 +23,6 @@ import com.google.gwt.junit.client.GWTTestCase;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class GwtTestStringRangeXPointer extends GWTTestCase {
     @Override
@@ -37,10 +36,8 @@ public class GwtTestStringRangeXPointer extends GWTTestCase {
         assertNotNull(xpointer);
         assertEquals(xpointer.getLength(), 0);
         assertEquals(xpointer.getStartOffset(), 18);
-        assertEquals(
-                xpointer.getUrl(),
+        assertEquals(xpointer.getUrl(),
                 "http://localhost:8080/nuxeo/nxdoc/default/f6c3a8c3-427f-40fc-a0a0-e7630c41fdce/");
-        assertEquals(xpointer.getXPath(),
-                "/HTML[1]/BODY[0]/DIV[0]/DIV[0]/NOBR[0]/SPAN[0]");
+        assertEquals(xpointer.getXPath(), "/HTML[1]/BODY[0]/DIV[0]/DIV[0]/NOBR[0]/SPAN[0]");
     }
 }

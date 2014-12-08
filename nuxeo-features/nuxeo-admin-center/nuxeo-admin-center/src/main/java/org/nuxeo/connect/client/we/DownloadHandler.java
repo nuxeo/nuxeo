@@ -40,8 +40,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Provides REST binding for {@link org.nuxeo.connect.update.Package} download
- * management.
+ * Provides REST binding for {@link org.nuxeo.connect.update.Package} download management.
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
@@ -85,12 +84,9 @@ public class DownloadHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "progressPage/{pkgId}")
-    public Object getDownloadProgressPage(@PathParam("pkgId") String pkgId,
-            @QueryParam("source") String source,
-            @QueryParam("install") Boolean install,
-            @QueryParam("depCheck") Boolean depCheck,
-            @QueryParam("type") String pkgType,
-            @QueryParam("onlyRemote") Boolean onlyRemote,
+    public Object getDownloadProgressPage(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,
+            @QueryParam("install") Boolean install, @QueryParam("depCheck") Boolean depCheck,
+            @QueryParam("type") String pkgType, @QueryParam("onlyRemote") Boolean onlyRemote,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         DownloadablePackage pkg = getDownloadingPackage(pkgId);
         boolean downloadOver = false;
@@ -108,11 +104,9 @@ public class DownloadHandler extends DefaultObject {
                 downloadOver = true;
             }
         }
-        return getView("downloadStarted").arg("pkg", pkg).arg("source", source).arg(
-                "over", downloadOver).arg("install", install).arg("depCheck",
-                depCheck).arg("filterOnPlatform", filterOnPlatform.toString()).arg(
-                "type", pkgType.toString()).arg("onlyRemote",
-                onlyRemote.toString());
+        return getView("downloadStarted").arg("pkg", pkg).arg("source", source).arg("over", downloadOver).arg(
+                "install", install).arg("depCheck", depCheck).arg("filterOnPlatform", filterOnPlatform.toString()).arg(
+                "type", pkgType.toString()).arg("onlyRemote", onlyRemote.toString());
     }
 
     protected DownloadingPackage getDownloadingPackage(String pkgId) {
@@ -129,12 +123,9 @@ public class DownloadHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "start/{pkgId}")
-    public Object startDownload(@PathParam("pkgId") String pkgId,
-            @QueryParam("source") String source,
-            @QueryParam("install") Boolean install,
-            @QueryParam("depCheck") Boolean depCheck,
-            @QueryParam("type") String pkgType,
-            @QueryParam("onlyRemote") Boolean onlyRemote,
+    public Object startDownload(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,
+            @QueryParam("install") Boolean install, @QueryParam("depCheck") Boolean depCheck,
+            @QueryParam("type") String pkgType, @QueryParam("onlyRemote") Boolean onlyRemote,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         // flag to start install after download
@@ -146,8 +137,7 @@ public class DownloadHandler extends DefaultObject {
         }
         if (!RequestHelper.isInternalLink(getContext())) {
             DownloadablePackage pkg = pm.getPackage(pkgId);
-            return getView("confirmDownload").arg("pkg", pkg).arg("source",
-                    source);
+            return getView("confirmDownload").arg("pkg", pkg).arg("source", source);
         }
         try {
             pm.download(pkgId);
@@ -156,11 +146,9 @@ public class DownloadHandler extends DefaultObject {
         } catch (Exception e) { // TODO fix connect-client API
             throw ExceptionUtils.runtimeException(e);
         }
-        return getView("downloadStarted").arg("pkg",
-                getDownloadingPackage(pkgId)).arg("source", source).arg("over",
-                false).arg("install", install).arg("depCheck", depCheck).arg(
-                "filterOnPlatform", filterOnPlatform.toString()).arg("type",
-                pkgType.toString()).arg("onlyRemote", onlyRemote.toString());
+        return getView("downloadStarted").arg("pkg", getDownloadingPackage(pkgId)).arg("source", source).arg("over",
+                false).arg("install", install).arg("depCheck", depCheck).arg("filterOnPlatform",
+                filterOnPlatform.toString()).arg("type", pkgType.toString()).arg("onlyRemote", onlyRemote.toString());
     }
 
     @GET
@@ -172,8 +160,7 @@ public class DownloadHandler extends DefaultObject {
                 String[] pkgs = pkgList.split("/");
                 PackageManager pm = Framework.getLocalService(PackageManager.class);
                 try {
-                    log.info("Starting download for packages "
-                            + Arrays.toString(pkgs));
+                    log.info("Starting download for packages " + Arrays.toString(pkgs));
                     pm.download(Arrays.asList(pkgs));
                 } catch (ConnectServerError e) {
                     log.error(e, e);
@@ -205,8 +192,7 @@ public class DownloadHandler extends DefaultObject {
      */
     @GET
     @Path(value = "cancel/{pkgId}")
-    public Object cancelDownload(@PathParam("pkgId") String pkgId,
-            @QueryParam("source") String source) {
+    public Object cancelDownload(@PathParam("pkgId") String pkgId, @QueryParam("source") String source) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         pm.cancelDownload(pkgId);
         return redirect(getPrevious().getPath() + "/packages/" + source);

@@ -21,8 +21,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
- * Allows to ignore all the tests from a class running this feature if the
- * database configured for tests is not H2.
+ * Allows to ignore all the tests from a class running this feature if the database configured for tests is not H2.
  *
  * @since 5.9.5
  */

@@ -35,17 +35,14 @@ public class AbstractTypeDefWriter {
         super();
     }
 
-    protected JsonGenerator getGenerator(OutputStream entityStream)
-            throws IOException {
+    protected JsonGenerator getGenerator(OutputStream entityStream) throws IOException {
         JsonFactory factory = new JsonFactory();
-        JsonGenerator jg = factory.createJsonGenerator(entityStream,
-                JsonEncoding.UTF8);
+        JsonGenerator jg = factory.createJsonGenerator(entityStream, JsonEncoding.UTF8);
         jg.useDefaultPrettyPrinter();
         return jg;
     }
 
-    protected void writeSchema(JsonGenerator jg, Schema schema)
-            throws IOException {
+    protected void writeSchema(JsonGenerator jg, Schema schema) throws IOException {
         jg.writeObjectFieldStart(schema.getName());
         jg.writeStringField("@prefix", schema.getNamespace().prefix);
         for (Field field : schema.getFields()) {
@@ -54,8 +51,7 @@ public class AbstractTypeDefWriter {
         jg.writeEndObject();
     }
 
-    protected void writeSchemaObject(JsonGenerator jg, Schema schema)
-            throws IOException {
+    protected void writeSchemaObject(JsonGenerator jg, Schema schema) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("name", schema.getName());
         jg.writeStringField("@prefix", schema.getNamespace().prefix);
@@ -67,8 +63,7 @@ public class AbstractTypeDefWriter {
         jg.writeEndObject();
     }
 
-    protected void writeDocType(JsonGenerator jg, DocumentType docType,
-            boolean expandSchemas) throws IOException {
+    protected void writeDocType(JsonGenerator jg, DocumentType docType, boolean expandSchemas) throws IOException {
 
         if (docType.getSuperType() != null) {
             jg.writeStringField("parent", docType.getSuperType().getName());
@@ -102,8 +97,7 @@ public class AbstractTypeDefWriter {
                 ListType lt = (ListType) field.getType();
                 if (lt.getFieldType().isComplexType()) {
                     if (lt.getFieldType().getName().equals("content")) {
-                        jg.writeStringField(field.getName().getLocalName(),
-                                "blob[]");
+                        jg.writeStringField(field.getName().getLocalName(), "blob[]");
 
                     } else {
                         jg.writeObjectFieldStart(field.getName().getLocalName());
@@ -113,12 +107,10 @@ public class AbstractTypeDefWriter {
                     }
                 } else {
 
-                    jg.writeStringField(field.getName().getLocalName(),
-                            lt.getFieldType().getName() + "[]");
+                    jg.writeStringField(field.getName().getLocalName(), lt.getFieldType().getName() + "[]");
                 }
             } else {
-                jg.writeStringField(field.getName().getLocalName(),
-                        field.getType().getName());
+                jg.writeStringField(field.getName().getLocalName(), field.getType().getName());
             }
         } else {
             if (field.getType().getName().equals("content")) {
@@ -134,8 +126,7 @@ public class AbstractTypeDefWriter {
 
     }
 
-    protected void buildComplexFields(JsonGenerator jg, Field field)
-            throws IOException {
+    protected void buildComplexFields(JsonGenerator jg, Field field) throws IOException {
         ComplexType cplXType = (ComplexType) field.getType();
         jg.writeObjectFieldStart("fields");
         for (Field subField : cplXType.getFields()) {
@@ -144,8 +135,7 @@ public class AbstractTypeDefWriter {
         jg.writeEndObject();
     }
 
-    protected void writeFacet(JsonGenerator jg, CompositeType facet,
-            boolean expandSchemas) throws IOException {
+    protected void writeFacet(JsonGenerator jg, CompositeType facet, boolean expandSchemas) throws IOException {
 
         jg.writeStringField("name", facet.getName());
         if (facet.getSchemaNames() != null && facet.getSchemaNames().length > 0) {

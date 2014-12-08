@@ -64,8 +64,7 @@ public class SearchUIConfigurationActions implements Serializable {
         return getSelectedContentViewHeaders(currentDoc);
     }
 
-    public List<ContentViewHeader> getSelectedContentViewHeaders(
-            DocumentModel document) {
+    public List<ContentViewHeader> getSelectedContentViewHeaders(DocumentModel document) {
         if (!document.hasFacet(SEARCH_CONFIGURATION_FACET)) {
             return Collections.emptyList();
         }
@@ -76,9 +75,8 @@ public class SearchUIConfigurationActions implements Serializable {
         List<String> allowedContentViewNames = getAllowedContentViewNames(document);
         if (allowedContentViewNames.isEmpty()) {
             LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-            SearchConfiguration configuration = localConfigurationService.getConfiguration(
-                    SearchConfiguration.class, SEARCH_CONFIGURATION_FACET,
-                    document);
+            SearchConfiguration configuration = localConfigurationService.getConfiguration(SearchConfiguration.class,
+                    SEARCH_CONFIGURATION_FACET, document);
             if (configuration == null) {
                 return contentViewHeaders;
             }
@@ -104,8 +102,7 @@ public class SearchUIConfigurationActions implements Serializable {
         return getNotSelectedContentViewHeaders(currentDoc);
     }
 
-    public List<ContentViewHeader> getNotSelectedContentViewHeaders(
-            DocumentModel document) {
+    public List<ContentViewHeader> getNotSelectedContentViewHeaders(DocumentModel document) {
         if (!document.hasFacet(SEARCH_CONFIGURATION_FACET)) {
             return Collections.emptyList();
         }

@@ -40,7 +40,6 @@ public class DocumentContentProvider implements ContentProvider {
 
     protected CoreSession session;
 
-
     public DocumentContentProvider(CoreSession session) {
         this.session = session;
     }
@@ -56,7 +55,7 @@ public class DocumentContentProvider implements ContentProvider {
     public Object[] getElements(Object input) {
         if (input instanceof Repository) {
             try {
-                return new DocumentModel[]{session.getRootDocument()};
+                return new DocumentModel[] { session.getRootDocument() };
             } catch (ClientException e) {
                 log.error(e, e);
                 return null;

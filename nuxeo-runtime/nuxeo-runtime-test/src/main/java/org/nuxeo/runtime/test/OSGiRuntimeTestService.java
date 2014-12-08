@@ -26,7 +26,6 @@ import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-
 public class OSGiRuntimeTestService extends OSGiRuntimeService {
 
     public OSGiRuntimeTestService(BundleContext context) {

@@ -25,8 +25,5 @@ package org.nuxeo.ecm.platform.relations.api;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public enum NodeType {
-    LITERAL,
-    BLANK,
-    RESOURCE,
-    QNAMERESOURCE,
+    LITERAL, BLANK, RESOURCE, QNAMERESOURCE,
 }

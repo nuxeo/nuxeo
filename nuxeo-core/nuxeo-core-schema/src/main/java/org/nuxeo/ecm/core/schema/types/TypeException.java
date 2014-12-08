@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.schema.types;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TypeException extends Exception {
 
@@ -37,7 +36,5 @@ public class TypeException extends Exception {
     public TypeException(Throwable cause) {
         super(cause);
     }
-
-
 
 }

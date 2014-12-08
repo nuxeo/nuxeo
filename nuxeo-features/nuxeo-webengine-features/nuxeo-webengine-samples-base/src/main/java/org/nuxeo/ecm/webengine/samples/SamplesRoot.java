@@ -33,13 +33,11 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
  * <p>
  * This demonstrates how to define the entry point for a WebEngine module.
  * <p>
- * The module entry points are regular JAX-RS resources with an additional @WebObject
- * annotation. This annotation is mainly used to specify the resource name. A
- * Web Module is declared in the MANIFEST.MF using the directive
- * {code}NuxeoWebModule{/code}. You can also configure a Web Module using a
- * module.xml file located in the module root directory. This file can be used
- * to define: root resources (as we've seen in the previous example), links,
- * media type IDs random extensions to other extension points;
+ * The module entry points are regular JAX-RS resources with an additional @WebObject annotation. This annotation is
+ * mainly used to specify the resource name. A Web Module is declared in the MANIFEST.MF using the directive
+ * {code}NuxeoWebModule{/code}. You can also configure a Web Module using a module.xml file located in the module root
+ * directory. This file can be used to define: root resources (as we've seen in the previous example), links, media type
+ * IDs random extensions to other extension points;
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author Stephane Lacoin (aka matic)
@@ -78,11 +76,9 @@ public class SamplesRoot extends ModuleRoot {
     public Object handleError(WebApplicationException e) {
         if (e instanceof WebSecurityException) {
             // display a login page
-            return Response.status(401).entity(
-                    getTemplate("error/error_401.ftl")).build();
+            return Response.status(401).entity(getTemplate("error/error_401.ftl")).build();
         } else if (e instanceof WebResourceNotFoundException) {
-            return Response.status(404).entity(
-                    getTemplate("error/error_404.ftl")).build();
+            return Response.status(404).entity(getTemplate("error/error_404.ftl")).build();
         } else {
             // not interested in that exception - use default handling
             return super.handleError(e);

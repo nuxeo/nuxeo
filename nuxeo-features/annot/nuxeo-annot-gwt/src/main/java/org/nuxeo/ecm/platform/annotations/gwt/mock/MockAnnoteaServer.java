@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class MockAnnoteaServer extends HttpServlet {
     private static final String DESCRIPTION = "</r:Description>";
@@ -47,22 +46,21 @@ public class MockAnnoteaServer extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Writer writer = resp.getWriter();
         writer.write(response.toString());
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        InputStream  is = req.getInputStream();
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        InputStream is = req.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         String result;
         StringBuilder request = new StringBuilder();
-        while((result = reader.readLine()) != null) {
+        while ((result = reader.readLine()) != null) {
             request.append(result);
-        };
+        }
+        ;
         String r = request.toString();
         String desc = r.substring(r.indexOf(R_DESCRIPTION), r.indexOf(DESCRIPTION) + DESCRIPTION.length());
         response.insert(response.lastIndexOf("</r:RDF>"), desc);

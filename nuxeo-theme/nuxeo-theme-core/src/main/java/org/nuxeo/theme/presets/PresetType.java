@@ -43,8 +43,7 @@ public class PresetType implements Type {
     public PresetType() {
     }
 
-    public PresetType(String name, String value, String group, String category,
-            String label, String description) {
+    public PresetType(String name, String value, String group, String category, String label, String description) {
         this.name = name;
         this.value = value;
         this.group = group;

@@ -29,7 +29,8 @@ public abstract class Oauth2Request {
 
     protected String redirectUri;
 
-    public Oauth2Request() { }
+    public Oauth2Request() {
+    }
 
     public Oauth2Request(HttpServletRequest request) {
         clientId = request.getParameter(CLIENT_ID);
@@ -40,8 +41,7 @@ public abstract class Oauth2Request {
         }
     }
 
-    public static String decodeParameter(HttpServletRequest request,
-            String parameterName) {
+    public static String decodeParameter(HttpServletRequest request, String parameterName) {
         String value = request.getParameter(parameterName);
         try {
             if (isNotBlank(value)) {

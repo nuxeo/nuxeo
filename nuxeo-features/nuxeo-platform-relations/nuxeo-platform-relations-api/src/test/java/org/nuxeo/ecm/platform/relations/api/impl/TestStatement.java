@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.relations.api.exceptions.InvalidPredicateException
 import org.nuxeo.ecm.platform.relations.api.exceptions.InvalidStatementException;
 import org.nuxeo.ecm.platform.relations.api.exceptions.InvalidSubjectException;
 
-@SuppressWarnings({"ResultOfObjectAllocationIgnored"})
+@SuppressWarnings({ "ResultOfObjectAllocationIgnored" })
 public class TestStatement {
 
     private Resource subject;
@@ -63,8 +63,7 @@ public class TestStatement {
         blank = NodeFactory.createBlank("blank");
         properties = new HashMap<Resource, Node[]>();
         propertyResource = NodeFactory.createResource("http://heardBy");
-        propertyValues = new Node[] { NodeFactory.createResource("http://God"),
-                NodeFactory.createLiteral("echo") };
+        propertyValues = new Node[] { NodeFactory.createResource("http://God"), NodeFactory.createLiteral("echo") };
         properties.put(propertyResource, propertyValues);
     }
 
@@ -171,7 +170,7 @@ public class TestStatement {
         }
     }
 
-    @SuppressWarnings({"ObjectEqualsNull"})
+    @SuppressWarnings({ "ObjectEqualsNull" })
     @Test
     public void testEquals() {
         Statement st1 = new StatementImpl(subject, predicate, literal);
@@ -247,8 +246,7 @@ public class TestStatement {
         assertNotNull(st.getProperties());
         assertEquals(0, st.getProperties().size());
         st.setProperties(properties);
-        st.setProperties(NodeFactory.createResource("http://bar"),
-                propertyValues);
+        st.setProperties(NodeFactory.createResource("http://bar"), propertyValues);
         assertEquals(2, st.getProperties().size());
         st.deleteProperties();
         assertEquals(0, st.getProperties().size());
@@ -260,8 +258,7 @@ public class TestStatement {
         assertNotNull(st.getProperties());
         assertEquals(0, st.getProperties().size());
         st.setProperties(properties);
-        st.setProperties(NodeFactory.createResource("http://bar"),
-                propertyValues);
+        st.setProperties(NodeFactory.createResource("http://bar"), propertyValues);
         assertEquals(2, st.getProperties().size());
         st.deleteProperty(null);
         assertEquals(2, st.getProperties().size());
@@ -279,8 +276,7 @@ public class TestStatement {
         assertEquals(properties, st.getProperties());
         st.deleteProperties(null, propertyValues);
         assertEquals(properties, st.getProperties());
-        Node[] deleteValues = {
-                NodeFactory.createResource("http://God") };
+        Node[] deleteValues = { NodeFactory.createResource("http://God") };
         st.deleteProperties(propertyResource, deleteValues);
         Node[] newValues = { NodeFactory.createLiteral("echo") };
         assertEquals(newValues.length, st.getProperties(propertyResource).length);
@@ -353,7 +349,7 @@ public class TestStatement {
         assertEquals(properties, st.getProperties());
         Statement clone = (Statement) st.clone();
         assertEquals(clone, st);
-        //assertEquals(properties, st.getProperties());
+        // assertEquals(properties, st.getProperties());
 
         // add new properties to clone
         Map<Resource, Node[]> newProperties = new HashMap<Resource, Node[]>();

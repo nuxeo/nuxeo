@@ -76,8 +76,7 @@ public class BaseNuxeoRestlet extends Restlet {
         handleError(result, res, message, null);
     }
 
-    private static void handleError(DOMDocument result, Response res,
-            String message, String classMessage) {
+    private static void handleError(DOMDocument result, Response res, String message, String classMessage) {
         Element error = result.createElement("error");
         result.setRootElement((org.dom4j.Element) error);
         error.setAttribute("message", message);
@@ -86,8 +85,7 @@ public class BaseNuxeoRestlet extends Restlet {
         }
         result.setRootElement((org.dom4j.Element) error);
 
-        Representation rep = new StringRepresentation(result.asXML(),
-                MediaType.APPLICATION_XML);
+        Representation rep = new StringRepresentation(result.asXML(), MediaType.APPLICATION_XML);
         rep.setCharacterSet(CharacterSet.UTF_8);
         res.setEntity(rep);
     }
@@ -132,8 +130,7 @@ public class BaseNuxeoRestlet extends Restlet {
         }
     }
 
-    protected static String getQueryParamValue(Request req,
-            String paramName, String defaultValue) {
+    protected static String getQueryParamValue(Request req, String paramName, String defaultValue) {
         return req.getResourceRef().getQueryAsForm().getFirstValue(paramName, defaultValue);
     }
 

@@ -42,15 +42,15 @@ import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * The managed connection factory receives requests from the application server
- * to create new {@link ManagedConnection} (the physical connection).
+ * The managed connection factory receives requests from the application server to create new {@link ManagedConnection}
+ * (the physical connection).
  * <p>
  * It also is a factory for {@link ConnectionFactory}s.
  *
  * @author Florent Guillaume
  */
-public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
-        ResourceAdapterAssociation, RepositoryManagement {
+public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, ResourceAdapterAssociation,
+        RepositoryManagement {
 
     private static final Log log = LogFactory.getLog(ManagedConnectionFactoryImpl.class);
 
@@ -73,8 +73,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         this(new RepositoryDescriptor());
     }
 
-    public ManagedConnectionFactoryImpl(
-            RepositoryDescriptor repositoryDescriptor) {
+    public ManagedConnectionFactoryImpl(RepositoryDescriptor repositoryDescriptor) {
         this.repositoryDescriptor = repositoryDescriptor;
         if (repositoryDescriptor.properties == null) {
             repositoryDescriptor.properties = new HashMap<String, String>();
@@ -123,13 +122,11 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      */
 
     /**
-     * Called by the application server exactly once to associate this
-     * ManagedConnectionFactory with a ResourceAdapter. The ResourceAdapter may
-     * then be used to look up configuration.
+     * Called by the application server exactly once to associate this ManagedConnectionFactory with a ResourceAdapter.
+     * The ResourceAdapter may then be used to look up configuration.
      */
     @Override
-    public void setResourceAdapter(ResourceAdapter resourceAdapter)
-            throws ResourceException {
+    public void setResourceAdapter(ResourceAdapter resourceAdapter) throws ResourceException {
         this.resourceAdapter = resourceAdapter;
     }
 
@@ -164,22 +161,18 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * Used in managed scenarios.
      */
     @Override
-    public Object createConnectionFactory(ConnectionManager connectionManager)
-            throws ResourceException {
-        ConnectionFactoryImpl connectionFactory = new ConnectionFactoryImpl(
-                this, connectionManager);
+    public Object createConnectionFactory(ConnectionManager connectionManager) throws ResourceException {
+        ConnectionFactoryImpl connectionFactory = new ConnectionFactoryImpl(this, connectionManager);
         log.debug("Created repository factory (" + connectionFactory + ')');
         return connectionFactory;
     }
 
     /*
-     * Creates a new physical connection to the underlying storage. Called by
-     * the application server pool (or the non-managed ConnectionManagerImpl)
-     * when it needs a new connection.
+     * Creates a new physical connection to the underlying storage. Called by the application server pool (or the
+     * non-managed ConnectionManagerImpl) when it needs a new connection.
      */
     @Override
-    public ManagedConnection createManagedConnection(Subject subject,
-            ConnectionRequestInfo connectionRequestInfo)
+    public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
         // subject unused
         // connectionRequestInfo unused
@@ -190,12 +183,11 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     /**
      * Returns a matched connection from the candidate set of connections.
      * <p>
-     * Called by the application server when it's looking for an appropriate
-     * connection to server from a pool.
+     * Called by the application server when it's looking for an appropriate connection to server from a pool.
      */
     @Override
-    public ManagedConnection matchManagedConnections(Set set, Subject subject,
-            ConnectionRequestInfo cri) throws ResourceException {
+    public ManagedConnection matchManagedConnections(Set set, Subject subject, ConnectionRequestInfo cri)
+            throws ResourceException {
         for (Object candidate : set) {
             if (!(candidate instanceof ManagedConnectionImpl)) {
                 continue;
@@ -232,6 +224,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         }
         return repository.clearCaches();
     }
+
     @Override
     public long getCacheSize() {
         return repository.getCacheSize();
@@ -302,18 +295,16 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     }
 
     /**
-     * Gets the repository descriptor provided by the repository extension
-     * point. It's where clustering, indexing, etc. are configured.
+     * Gets the repository descriptor provided by the repository extension point. It's where clustering, indexing, etc.
+     * are configured.
      */
-    protected static RepositoryDescriptor getRepositoryDescriptor(String name)
-            throws StorageException {
+    protected static RepositoryDescriptor getRepositoryDescriptor(String name) throws StorageException {
         SQLRepositoryService sqlRepositoryService = Framework.getLocalService(SQLRepositoryService.class);
         return sqlRepositoryService.getRepositoryDescriptor(name);
     }
 
     /**
-     * Called by the {@link ManagedConnectionImpl} constructor to get a new
-     * physical connection.
+     * Called by the {@link ManagedConnectionImpl} constructor to get a new physical connection.
      */
     protected SessionImpl getConnection() throws StorageException {
         return repository.getConnection();
@@ -322,19 +313,15 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     private static final Pattern KEYVALUE = Pattern.compile("([^=]*)=(.*)");
 
     /**
-     * Parses a string of the form: <code>key1=val1;key2=val2;...</code> and
-     * collects the key/value pairs.
+     * Parses a string of the form: <code>key1=val1;key2=val2;...</code> and collects the key/value pairs.
      * <p>
-     * A ';' character may end the expression. If a value has to contain a ';',
-     * it can be escaped by doubling it.
+     * A ';' character may end the expression. If a value has to contain a ';', it can be escaped by doubling it.
      * <p>
-     * Examples of valid expressions: <code>key1=val1</code>,
-     * <code>key1=val1;</code>, <code>key1=val1;key2=val2</code>,
+     * Examples of valid expressions: <code>key1=val1</code>, <code>key1=val1;</code>, <code>key1=val1;key2=val2</code>,
      * <code>key1=a=b;;c=d;key2=val2</code>.
      * <p>
-     * Syntax errors are reported using the logger and will stop the parsing but
-     * already collected properties will be available. The ';' or '=' characters
-     * cannot be escaped in keys.
+     * Syntax errors are reported using the logger and will stop the parsing but already collected properties will be
+     * available. The ';' or '=' characters cannot be escaped in keys.
      *
      * @param expr the expression to parse
      * @return a key/value map

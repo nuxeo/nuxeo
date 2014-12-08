@@ -64,8 +64,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 public class FileService extends DefaultAdapter {
 
     @GET
-    public Response doGet(@Context
-    Request request) {
+    public Response doGet(@Context Request request) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         FormData form = ctx.getForm();
         String xpath = form.getString(FormData.PROPERTY);
@@ -81,8 +80,7 @@ public class FileService extends DefaultAdapter {
             Property p = doc.getProperty(xpath);
             Blob blob = (Blob) p.getValue();
             if (blob == null) {
-                throw new WebResourceNotFoundException("No attached file at "
-                        + xpath);
+                throw new WebResourceNotFoundException("No attached file at " + xpath);
             }
 
             String fileName = blob.getFilename();
@@ -110,12 +108,10 @@ public class FileService extends DefaultAdapter {
                 }
             }
 
-            String contentDisposition = ServletHelper.getRFC2231ContentDisposition(
-                    ctx.getRequest(), fileName);
+            String contentDisposition = ServletHelper.getRFC2231ContentDisposition(ctx.getRequest(), fileName);
 
             // cached resource did change or no ETag -> serve updated content
-            ResponseBuilder builder = Response.ok(blob).header(
-                    "Content-Disposition", contentDisposition).type(
+            ResponseBuilder builder = Response.ok(blob).header("Content-Disposition", contentDisposition).type(
                     blob.getMimeType());
             if (etag != null) {
                 builder.tag(etag);
@@ -139,15 +135,13 @@ public class FileService extends DefaultAdapter {
             } else if (doc.hasSchema("files")) {
                 xpath = "files:files";
             } else {
-                throw new IllegalArgumentException(
-                        "Missing request parameter named 'property' that specifies "
-                                + "the blob property xpath to fetch");
+                throw new IllegalArgumentException("Missing request parameter named 'property' that specifies "
+                        + "the blob property xpath to fetch");
             }
         }
         Blob blob = form.getFirstBlob();
         if (blob == null) {
-            throw new IllegalArgumentException(
-                    "Could not find any uploaded file");
+            throw new IllegalArgumentException("Could not find any uploaded file");
         }
         try {
             Property p = doc.getProperty(xpath);
@@ -172,8 +166,7 @@ public class FileService extends DefaultAdapter {
                 p.setValue(blob);
             }
             // make snapshot
-            doc.putContextData(VersioningService.VERSIONING_OPTION,
-                    form.getVersioningOption());
+            doc.putContextData(VersioningService.VERSIONING_OPTION, form.getVersioningOption());
             CoreSession session = ctx.getCoreSession();
             session.saveDocument(doc);
             session.save();
@@ -198,9 +191,8 @@ public class FileService extends DefaultAdapter {
             if (doc.hasSchema("file")) {
                 xpath = "file:content";
             } else {
-                throw new IllegalArgumentException(
-                        "Missing request parameter named 'property' that specifies "
-                                + "the blob property xpath to fetch");
+                throw new IllegalArgumentException("Missing request parameter named 'property' that specifies "
+                        + "the blob property xpath to fetch");
             }
         }
         try {

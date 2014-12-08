@@ -52,9 +52,7 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * 
  * @author tiry
- * 
  */
 public class TesteMailInjection extends SQLRepositoryTestCase {
 
@@ -74,7 +72,7 @@ public class TesteMailInjection extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.automation.core");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert.plugins");        
+        deployBundle("org.nuxeo.ecm.core.convert.plugins");
         deployContrib("org.nuxeo.ecm.platform.mail.test", "OSGI-INF/nxmail-automation-contrib.xml");
         mailService = Framework.getService(MailService.class);
         assertNotNull(mailService);
@@ -89,8 +87,8 @@ public class TesteMailInjection extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testMailImport() throws Exception {        
-        
+    public void testMailImport() throws Exception {
+
         assertNotNull(session.getDocument(new PathRef("/mailFolder1")));
         injectEmail("data/test_mail.eml", mailFolder1.getPathAsString());
         DocumentModelList children = session.getChildren(mailFolder1.getRef());
@@ -102,14 +100,12 @@ public class TesteMailInjection extends SQLRepositoryTestCase {
         children = session.getChildren(mailFolder1.getRef());
         assertEquals(2, children.size());
 
-        injectEmail("data/test_mail_attachment.eml",
-                mailFolder1.getPathAsString());
+        injectEmail("data/test_mail_attachment.eml", mailFolder1.getPathAsString());
         children = session.getChildren(mailFolder1.getRef());
-        assertEquals(3, children.size());        
-        
+        assertEquals(3, children.size());
+
         DocumentModel mailWithAttachment = session.query(
-                "select * from Document where dc:title = \"MailWithAttachment\"").get(
-                0);
+                "select * from Document where dc:title = \"MailWithAttachment\"").get(0);
         BlobHolder bh = mailWithAttachment.getAdapter(BlobHolder.class);
         assertNotNull(bh);
         List<Blob> blobs = bh.getBlobs();
@@ -117,16 +113,14 @@ public class TesteMailInjection extends SQLRepositoryTestCase {
         assertEquals(4, blobs.size());
     }
 
-    private void injectEmail(String filePath, String parentPath)
-            throws Exception {
+    private void injectEmail(String filePath, String parentPath) throws Exception {
         MessageActionPipe pipe = mailService.getPipe("nxmail");
         assertNotNull(pipe);
         Visitor visitor = new Visitor(pipe);
         ExecutionContext initialExecutionContext = new ExecutionContext();
         assertNotNull(session.getSessionId());
         // 5.8 setup
-        initialExecutionContext.put(MailCoreConstants.CORE_SESSION_KEY,
-                session);
+        initialExecutionContext.put(MailCoreConstants.CORE_SESSION_KEY, session);
         initialExecutionContext.put(MailCoreConstants.MIMETYPE_SERVICE_KEY,
                 Framework.getLocalService(MimetypeRegistry.class));
         initialExecutionContext.put(PARENT_PATH_KEY, parentPath);
@@ -147,8 +141,7 @@ public class TesteMailInjection extends SQLRepositoryTestCase {
     }
 
     private void createMailFolders() throws ClientException {
-        mailFolder1 = session.createDocumentModel("/", "mailFolder1",
-                MailCoreConstants.MAIL_FOLDER_TYPE);
+        mailFolder1 = session.createDocumentModel("/", "mailFolder1", MailCoreConstants.MAIL_FOLDER_TYPE);
         session.createDocument(mailFolder1);
         session.saveDocument(mailFolder1);
         session.save();

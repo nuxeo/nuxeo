@@ -81,12 +81,10 @@ public class UserGroupTest extends BaseUserTest {
         // Given a non existent user
 
         // When I call the Rest endpoint
-        ClientResponse response = getResponse(RequestType.GET,
-                "/user/nonexistentuser");
+        ClientResponse response = getResponse(RequestType.GET, "/user/nonexistentuser");
 
         // Then it returns the Json
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
 
     }
 
@@ -99,8 +97,7 @@ public class UserGroupTest extends BaseUserTest {
         String userJson = getPrincipalAsJson(user);
 
         // When I call a PUT on the Rest endpoint
-        ClientResponse response = getResponse(RequestType.PUT, "/user/user1",
-                userJson);
+        ClientResponse response = getResponse(RequestType.PUT, "/user/user1", userJson);
 
         // Then it changes the user
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -123,8 +120,7 @@ public class UserGroupTest extends BaseUserTest {
         ClientResponse response = getResponse(RequestType.DELETE, "/user/user1");
 
         // Then the user is deleted
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
         user = um.getPrincipal("user1");
         assertNull(user);
@@ -141,12 +137,10 @@ public class UserGroupTest extends BaseUserTest {
         principal.setEmail("test@nuxeo.com");
 
         // When i POST it on the user endpoint
-        ClientResponse response = getResponse(RequestType.POST, "/user",
-                getPrincipalAsJson(principal));
+        ClientResponse response = getResponse(RequestType.POST, "/user", getPrincipalAsJson(principal));
 
         // Then a user is created
-        assertEquals(Response.Status.CREATED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEqualsUser("newuser", "test", "user", node);
 
@@ -166,8 +160,7 @@ public class UserGroupTest extends BaseUserTest {
         NuxeoGroup group = um.getGroup("group1");
 
         // When i GET on the API
-        ClientResponse response = getResponse(RequestType.GET, "/group/"
-                + group.getName());
+        ClientResponse response = getResponse(RequestType.GET, "/group/" + group.getName());
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Then i GET the Group
@@ -185,8 +178,7 @@ public class UserGroupTest extends BaseUserTest {
         group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
 
         // When i PUT this group
-        ClientResponse response = getResponse(RequestType.PUT, "/group/"
-                + group.getName(), getGroupAsJson(group));
+        ClientResponse response = getResponse(RequestType.PUT, "/group/" + group.getName(), getGroupAsJson(group));
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Then the group is modified server side
@@ -200,10 +192,8 @@ public class UserGroupTest extends BaseUserTest {
     public void itCanDeleteGroup() throws Exception {
 
         // When i DELETE on a group resources
-        ClientResponse response = getResponse(RequestType.DELETE,
-                "/group/group1");
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(),
-                response.getStatus());
+        ClientResponse response = getResponse(RequestType.DELETE, "/group/group1");
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
         // Then the group is deleted
         assertNull(um.getGroup("group1"));
@@ -218,10 +208,8 @@ public class UserGroupTest extends BaseUserTest {
         group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.POST, "/group/",
-                getGroupAsJson(group));
-        assertEquals(Response.Status.CREATED.getStatusCode(),
-                response.getStatus());
+        ClientResponse response = getResponse(RequestType.POST, "/group/", getGroupAsJson(group));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         // Then the group is modified server side
         group = um.getGroup("newGroup");
@@ -241,11 +229,10 @@ public class UserGroupTest extends BaseUserTest {
         assertFalse(principal.isMemberOf(group.getName()));
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.POST, "/user/"
-                + principal.getName() + "/group/" + group.getName());
+        ClientResponse response = getResponse(RequestType.POST,
+                "/user/" + principal.getName() + "/group/" + group.getName());
 
-        assertEquals(Response.Status.CREATED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         principal = um.getPrincipal(principal.getName());
         assertTrue(principal.isMemberOf(group.getName()));
@@ -260,11 +247,10 @@ public class UserGroupTest extends BaseUserTest {
         assertFalse(principal.isMemberOf(group.getName()));
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.POST, "/group/"
-                + group.getName() + "/user/" + principal.getName());
+        ClientResponse response = getResponse(RequestType.POST,
+                "/group/" + group.getName() + "/user/" + principal.getName());
 
-        assertEquals(Response.Status.CREATED.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         principal = um.getPrincipal(principal.getName());
         assertTrue(principal.isMemberOf(group.getName()));
@@ -281,8 +267,8 @@ public class UserGroupTest extends BaseUserTest {
         assertTrue(principal.isMemberOf(group.getName()));
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.DELETE, "/user/"
-                + principal.getName() + "/group/" + group.getName());
+        ClientResponse response = getResponse(RequestType.DELETE,
+                "/user/" + principal.getName() + "/group/" + group.getName());
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
@@ -297,8 +283,7 @@ public class UserGroupTest extends BaseUserTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("q", "Steve");
 
-        ClientResponse response = getResponse(RequestType.GET, "/user/search",
-                queryParams);
+        ClientResponse response = getResponse(RequestType.GET, "/user/search", queryParams);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -312,13 +297,11 @@ public class UserGroupTest extends BaseUserTest {
     @Test
     public void itCanPaginateUsers() throws Exception {
 
-        String[][] expectedPages = new String[][] {
-                new String[] { "Administrator", "Guest", "user0" },
+        String[][] expectedPages = new String[][] { new String[] { "Administrator", "Guest", "user0" },
                 new String[] { "user1", "user2", "user3" }, new String[0] };
 
         for (int i = 0; i < expectedPages.length; i++) {
-            JsonNode node = getResponseAsJson(RequestType.GET, "/user/search",
-                    getQueryParamsForPage(i));
+            JsonNode node = getResponseAsJson(RequestType.GET, "/user/search", getQueryParamsForPage(i));
             assertPaging(i, 3, 2, 6, expectedPages[i].length, node);
             assertUserEntries(node, expectedPages[i]);
 
@@ -332,30 +315,25 @@ public class UserGroupTest extends BaseUserTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("q", "Lannister");
 
-        ClientResponse response = getResponse(RequestType.GET, "/group/search",
-                queryParams);
+        ClientResponse response = getResponse(RequestType.GET, "/group/search", queryParams);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals("null", node.get("errorMessage").getValueAsText());
         ArrayNode entries = (ArrayNode) node.get("entries");
         assertEquals(1, entries.size());
-        assertEquals("Lannister",
-                entries.get(0).get("grouplabel").getValueAsText());
+        assertEquals("Lannister", entries.get(0).get("grouplabel").getValueAsText());
 
     }
 
     @Test
     public void itCanPaginateGroups() throws Exception {
 
-        String[][] expectedResults = new String[][] {
-                new String[] { "administrators", "group0", "group1" },
-                new String[] { "group2", "group3", "members" },
-                new String[] { "powerusers" }, new String[0], };
+        String[][] expectedResults = new String[][] { new String[] { "administrators", "group0", "group1" },
+                new String[] { "group2", "group3", "members" }, new String[] { "powerusers" }, new String[0], };
 
         for (int i = 0; i < expectedResults.length; i++) {
-            JsonNode node = getResponseAsJson(RequestType.GET, "/group/search",
-                    getQueryParamsForPage(i));
+            JsonNode node = getResponseAsJson(RequestType.GET, "/group/search", getQueryParamsForPage(i));
             assertPaging(i, 3, 3, 7, expectedResults[i].length, node);
             assertGroupEntries(node, expectedResults[i]);
 
@@ -369,8 +347,7 @@ public class UserGroupTest extends BaseUserTest {
         JsonNode node = getResponseAsJson(RequestType.GET, "/user/user1");
 
         // Then it doesn't contain the password
-        assertEquals("",
-                node.get("properties").get("password").getValueAsText());
+        assertEquals("", node.get("properties").get("password").getValueAsText());
 
     }
 
@@ -396,12 +373,10 @@ public class UserGroupTest extends BaseUserTest {
      * @param jsonNodeToText
      * @since 5.8
      */
-    private void assertPaging(int currentPageIndex, int pageSize,
-            int numberOfPage, int resultsCount, int currentPageSize,
-            JsonNode node) {
+    private void assertPaging(int currentPageIndex, int pageSize, int numberOfPage, int resultsCount,
+            int currentPageSize, JsonNode node) {
         assertTrue(node.get("isPaginable").getBooleanValue());
-        assertEquals(currentPageIndex,
-                node.get("currentPageIndex").getIntValue());
+        assertEquals(currentPageIndex, node.get("currentPageIndex").getIntValue());
         assertEquals(pageSize, node.get("pageSize").getIntValue());
         assertEquals(numberOfPage, node.get("numberOfPages").getIntValue());
         assertEquals(resultsCount, node.get("resultsCount").getIntValue());
@@ -430,8 +405,7 @@ public class UserGroupTest extends BaseUserTest {
         ArrayNode entries = (ArrayNode) node.get("entries");
         assertEquals(groups.length, entries.size());
         for (int i = 0; i < groups.length; i++) {
-            assertEquals(groups[i],
-                    entries.get(i).get("groupname").getValueAsText());
+            assertEquals(groups[i], entries.get(i).get("groupname").getValueAsText());
         }
     }
 

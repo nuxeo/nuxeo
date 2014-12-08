@@ -15,7 +15,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -29,8 +28,7 @@ public class OperationRegistry implements Serializable {
 
     protected Map<String, OperationDocumentation> chains;
 
-    public OperationRegistry(Map<String, String> paths,
-            Map<String, OperationDocumentation> ops,
+    public OperationRegistry(Map<String, String> paths, Map<String, OperationDocumentation> ops,
             Map<String, OperationDocumentation> chains) {
         this.ops = ops;
         this.chains = chains;
@@ -50,8 +48,7 @@ public class OperationRegistry implements Serializable {
     }
 
     public Map<String, OperationDocumentation> getOperations() {
-        Map<String, OperationDocumentation> map = new HashMap<String, OperationDocumentation>(
-                ops);
+        Map<String, OperationDocumentation> map = new HashMap<String, OperationDocumentation>(ops);
         map.putAll(chains);
         return map;
     }

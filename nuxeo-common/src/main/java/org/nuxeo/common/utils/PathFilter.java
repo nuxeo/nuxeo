@@ -21,16 +21,14 @@
 
 package org.nuxeo.common.utils;
 
-
 /**
- * A path filter.
- * Two types of wildcards are supported:
+ * A path filter. Two types of wildcards are supported:
  * <ul>
  * <li><code>*</code> - match any char from a path segment
  * <li><code>**</code> - match any path segment
  * </ul>
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface PathFilter {
 

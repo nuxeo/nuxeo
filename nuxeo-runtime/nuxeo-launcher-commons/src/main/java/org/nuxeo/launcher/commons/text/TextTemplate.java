@@ -51,13 +51,11 @@ import freemarker.template.TemplateException;
 /**
  * Text template processing.
  * <p>
- * Copy files or directories replacing parameters matching pattern
- * '${[a-zA-Z_0-9\-\.]+}' with values from a {@link Map} (deprecated) or a
- * {@link Properties}.
+ * Copy files or directories replacing parameters matching pattern '${[a-zA-Z_0-9\-\.]+}' with values from a {@link Map}
+ * (deprecated) or a {@link Properties}.
  * <p>
- * Method {@link #setTextParsingExtensions(String)} allow to set list of files
- * being processed when using {@link #processDirectory(File, File)} or #pro,
- * others are simply copied.
+ * Method {@link #setTextParsingExtensions(String)} allow to set list of files being processed when using
+ * {@link #processDirectory(File, File)} or #pro, others are simply copied.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -120,8 +118,7 @@ public class TextTemplate {
     }
 
     /**
-     * @deprecated prefer use of {@link #getVariables()} then {@link Properties}
-     *             .load()
+     * @deprecated prefer use of {@link #getVariables()} then {@link Properties} .load()
      */
     @Deprecated
     public void setVariables(Map<String, String> vars) {
@@ -244,8 +241,7 @@ public class TextTemplate {
             currentString = "";
             boolean setKeyVal = true;
             for (int i = 0; i < (keyparts.length - 1); i++) {
-                currentString = currentString
-                        + (currentString.equals("") ? "" : ".") + keyparts[i];
+                currentString = currentString + (currentString.equals("") ? "" : ".") + keyparts[i];
                 if (!currentMap.containsKey(keyparts[i])) {
                     Map<String, Object> nextMap = new HashMap<String, Object>();
                     currentMap.put(keyparts[i], nextMap);
@@ -256,10 +252,7 @@ public class TextTemplate {
                     } else {
                         // silently ignore known conflicts in java properties
                         if (!key.startsWith("java.vendor")) {
-                            log.warn("FreeMarker templates: "
-                                    + currentString
-                                    + " is already defined - "
-                                    + key
+                            log.warn("FreeMarker templates: " + currentString + " is already defined - " + key
                                     + " will not be available in the data model.");
                         }
                         setKeyVal = false;
@@ -273,8 +266,7 @@ public class TextTemplate {
         }
     }
 
-    public void processFreemarker(File in, File out) throws IOException,
-            TemplateException {
+    public void processFreemarker(File in, File out) throws IOException, TemplateException {
         if (freemarkerConfiguration == null) {
             initFreeMarker();
         }
@@ -286,15 +278,15 @@ public class TextTemplate {
     }
 
     /**
-     * Recursive call {@link #process(InputStream, OutputStream, boolean)} on
-     * each file from "in" directory to "out" directory.
+     * Recursive call {@link #process(InputStream, OutputStream, boolean)} on each file from "in" directory to "out"
+     * directory.
      *
      * @param in Directory to read files from
      * @param out Directory to write files to
      * @return copied files list
      */
-    public List<String> processDirectory(File in, File out)
-            throws FileNotFoundException, IOException, TemplateException {
+    public List<String> processDirectory(File in, File out) throws FileNotFoundException, IOException,
+            TemplateException {
         List<String> newFiles = new ArrayList<String>();
         if (in.isFile()) {
             if (out.isDirectory()) {
@@ -309,10 +301,8 @@ public class TextTemplate {
             String freemarkerExtension = null;
             if (!extensionsContainsDot) {
                 int extIndex = in.getName().lastIndexOf('.');
-                String extension = extIndex == -1 ? ""
-                        : in.getName().substring(extIndex + 1).toLowerCase();
-                processAsText = plainTextExtensions == null
-                        || plainTextExtensions.contains(extension);
+                String extension = extIndex == -1 ? "" : in.getName().substring(extIndex + 1).toLowerCase();
+                processAsText = plainTextExtensions == null || plainTextExtensions.contains(extension);
                 if (freemarkerExtensions.contains(extension)) {
                     processAsFreemarker = true;
                     freemarkerExtension = extension;
@@ -339,8 +329,7 @@ public class TextTemplate {
             }
 
             if (processAsFreemarker) {
-                out = new File(out.getCanonicalPath().replaceAll(
-                        "\\.*" + Pattern.quote(freemarkerExtension) + "$", ""));
+                out = new File(out.getCanonicalPath().replaceAll("\\.*" + Pattern.quote(freemarkerExtension) + "$", ""));
             }
             // Backup existing file if not already done
             if (out.exists()) {

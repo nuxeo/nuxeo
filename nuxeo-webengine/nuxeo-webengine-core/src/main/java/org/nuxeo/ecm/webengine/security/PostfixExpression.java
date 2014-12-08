@@ -29,7 +29,6 @@ import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PostfixExpression implements Iterable<PostfixExpression.Token> {
 
@@ -158,8 +157,7 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
                     result.add(stack.pop());
                 }
                 if (stack.isEmpty()) {
-                    throw new ParseException("Not matching LPARA '(' found ",
-                            -1);
+                    throw new ParseException("Not matching LPARA '(' found ", -1);
                 }
                 stack.pop(); // remove LPARA from stack
                 break;

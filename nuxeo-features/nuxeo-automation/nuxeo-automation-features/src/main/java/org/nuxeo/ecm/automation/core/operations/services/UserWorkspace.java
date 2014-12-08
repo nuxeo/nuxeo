@@ -47,8 +47,7 @@ public class UserWorkspace {
     @OperationMethod
     public DocumentModel run() {
         UserWorkspaceService uws = Framework.getLocalService(UserWorkspaceService.class);
-        DocumentModel home = uws.getUserPersonalWorkspace(
-                session.getPrincipal().getName(), session.getRootDocument());
+        DocumentModel home = uws.getUserPersonalWorkspace(session.getPrincipal().getName(), session.getRootDocument());
         return home;
     }
 }

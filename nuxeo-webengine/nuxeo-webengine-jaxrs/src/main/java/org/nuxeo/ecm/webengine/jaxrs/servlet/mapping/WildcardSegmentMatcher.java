@@ -11,15 +11,12 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs.servlet.mapping;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WildcardSegmentMatcher extends SegmentMatcher {
 
     protected final char[] pattern;
-
 
     public WildcardSegmentMatcher(String pattern) {
         this.pattern = pattern.replace("**", "*").toCharArray();
@@ -37,7 +34,6 @@ public class WildcardSegmentMatcher extends SegmentMatcher {
         return matches(segment.toCharArray(), 0, 0);
     }
 
-
     public boolean matches(char[] segment, int soff, int poff) {
         if (poff == pattern.length) {
             // pattern consumed
@@ -46,7 +42,7 @@ public class WildcardSegmentMatcher extends SegmentMatcher {
                 return true;
             }
             // segment is not yet consumed
-            if (pattern[pattern.length-1] == '*') {
+            if (pattern[pattern.length - 1] == '*') {
                 // last char is a wildcard => matched
                 return true;
             }
@@ -54,7 +50,7 @@ public class WildcardSegmentMatcher extends SegmentMatcher {
         }
         if (soff == segment.length) {
             // segment consumed but pattern is not yet consumed
-            if (poff+1 == pattern.length && pattern[poff] == '*') {
+            if (poff + 1 == pattern.length && pattern[poff] == '*') {
                 // there is only one char remaining and it is a wildcard => matched
                 return true;
             }

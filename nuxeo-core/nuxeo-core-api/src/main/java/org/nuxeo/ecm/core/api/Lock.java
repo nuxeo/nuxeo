@@ -17,8 +17,7 @@ import java.util.Calendar;
 /**
  * Information about a lock set on a document.
  * <p>
- * The lock information holds the owner, which is a user id, and the lock
- * creation time.
+ * The lock information holds the owner, which is a user id, and the lock creation time.
  */
 public class Lock implements Serializable {
 
@@ -68,6 +67,5 @@ public class Lock implements Serializable {
     public boolean getFailed() {
         return failed;
     }
-
 
 }

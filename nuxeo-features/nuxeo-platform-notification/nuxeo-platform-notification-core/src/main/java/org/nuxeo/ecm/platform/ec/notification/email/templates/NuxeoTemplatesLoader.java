@@ -29,7 +29,6 @@ import freemarker.cache.URLTemplateLoader;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 public class NuxeoTemplatesLoader extends URLTemplateLoader {
 
@@ -38,8 +37,7 @@ public class NuxeoTemplatesLoader extends URLTemplateLoader {
     @Override
     protected URL getURL(String name) {
         log.debug("Searching for template with name: " + name);
-        return NotificationServiceHelper.getNotificationService()
-                .getTemplateURL(name);
+        return NotificationServiceHelper.getNotificationService().getTemplateURL(name);
     }
 
 }

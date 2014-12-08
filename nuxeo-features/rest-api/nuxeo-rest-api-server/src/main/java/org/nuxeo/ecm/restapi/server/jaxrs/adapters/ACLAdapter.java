@@ -26,8 +26,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @WebAdapter(name = "acl", type = "aclAdapter", targetType = "document")
@@ -38,7 +36,7 @@ public class ACLAdapter extends DefaultAdapter {
         DefaultObject target = (DefaultObject) getTarget();
         DocumentModel doc = target.getAdapter(DocumentModel.class);
 
-        if(doc == null) {
+        if (doc == null) {
             throw new IllegalArgumentException("Targeted resource should be adaptable to a document");
         }
 

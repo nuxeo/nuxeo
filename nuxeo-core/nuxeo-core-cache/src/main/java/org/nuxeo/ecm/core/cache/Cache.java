@@ -21,8 +21,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * The nuxeo cache interface that define generic methods to use cache
- * technologies
+ * The nuxeo cache interface that define generic methods to use cache technologies
  *
  * @since 6.0
  */
@@ -37,12 +36,10 @@ public interface Cache {
     public String getName();
 
     /**
-     * Get method to retrieve value from cache Must not raise exception if the
-     * key is null, but return null
+     * Get method to retrieve value from cache Must not raise exception if the key is null, but return null
      *
      * @param key the string key
-     * @return the {@link Serializable} value, return null if the key does not
-     *         exist or if the key is null
+     * @return the {@link Serializable} value, return null if the key does not exist or if the key is null
      * @since 6.0
      */
     public Serializable get(String key) throws IOException;

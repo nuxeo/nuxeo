@@ -32,13 +32,12 @@ import org.osgi.framework.BundleException;
  */
 public class RootRuntimeBundle extends BundleImpl {
 
-    public RootRuntimeBundle(OSGiAdapter osgi, BundleFile file,
-            ClassLoader loader) throws BundleException {
+    public RootRuntimeBundle(OSGiAdapter osgi, BundleFile file, ClassLoader loader) throws BundleException {
         super(osgi, file, loader);
     }
 
-    public RootRuntimeBundle(OSGiAdapter osgi, BundleFile file,
-            ClassLoader loader, boolean isSystemBundle) throws BundleException {
+    public RootRuntimeBundle(OSGiAdapter osgi, BundleFile file, ClassLoader loader, boolean isSystemBundle)
+            throws BundleException {
         super(osgi, file, loader, isSystemBundle);
     }
 

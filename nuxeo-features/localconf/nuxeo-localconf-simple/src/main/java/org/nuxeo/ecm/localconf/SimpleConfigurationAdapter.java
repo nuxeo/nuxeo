@@ -38,8 +38,7 @@ import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class SimpleConfigurationAdapter extends
-        AbstractLocalConfiguration<SimpleConfiguration> implements
+public class SimpleConfigurationAdapter extends AbstractLocalConfiguration<SimpleConfiguration> implements
         SimpleConfiguration {
 
     private static final Log log = LogFactory.getLog(SimpleConfigurationAdapter.class);
@@ -58,15 +57,13 @@ public class SimpleConfigurationAdapter extends
     }
 
     @SuppressWarnings("unchecked")
-    protected Map<String, String> computeParametersFromDocument(
-            DocumentModel doc) {
+    protected Map<String, String> computeParametersFromDocument(DocumentModel doc) {
         Map<String, String> parameters = new HashMap<String, String>();
         try {
             List<Map<String, String>> parametersFromDocument = (List<Map<String, String>>) doc.getPropertyValue(SIMPLE_CONFIGURATION_PARAMETERS_PROPERTY);
             if (parametersFromDocument != null) {
                 for (Map<String, String> parameter : parametersFromDocument) {
-                    parameters.put(
-                            parameter.get(SIMPLE_CONFIGURATION_PARAMETER_KEY),
+                    parameters.put(parameter.get(SIMPLE_CONFIGURATION_PARAMETER_KEY),
                             parameter.get(SIMPLE_CONFIGURATION_PARAMETER_VALUE));
                 }
             }
@@ -122,8 +119,7 @@ public class SimpleConfigurationAdapter extends
         for (Map.Entry<String, String> otherParameter : adapter.parameters.entrySet()) {
             // add only non-existing parameter
             if (!parameters.containsKey(otherParameter.getKey())) {
-                parameters.put(otherParameter.getKey(),
-                        otherParameter.getValue());
+                parameters.put(otherParameter.getKey(), otherParameter.getValue());
             }
         }
 
@@ -133,23 +129,20 @@ public class SimpleConfigurationAdapter extends
     @Override
     public void save(CoreSession session) throws ClientException {
         List<Map<String, String>> parametersForDocument = computeParametersForDocument(parameters);
-        detachedDocument.setPropertyValue(
-                SIMPLE_CONFIGURATION_PARAMETERS_PROPERTY,
+        detachedDocument.setPropertyValue(SIMPLE_CONFIGURATION_PARAMETERS_PROPERTY,
                 (Serializable) parametersForDocument);
         DocumentModel doc = session.saveDocument(detachedDocument);
         session.save();
         loadFromDocument(doc);
     }
 
-    protected List<Map<String, String>> computeParametersForDocument(
-            Map<String, String> parameters) {
+    protected List<Map<String, String>> computeParametersForDocument(Map<String, String> parameters) {
         List<Map<String, String>> parametersForDocument = new ArrayList<Map<String, String>>();
 
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             Map<String, String> parameter = new HashMap<String, String>();
             parameter.put(SIMPLE_CONFIGURATION_PARAMETER_KEY, entry.getKey());
-            parameter.put(SIMPLE_CONFIGURATION_PARAMETER_VALUE,
-                    entry.getValue());
+            parameter.put(SIMPLE_CONFIGURATION_PARAMETER_VALUE, entry.getValue());
             parametersForDocument.add(parameter);
         }
 

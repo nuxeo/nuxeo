@@ -51,12 +51,10 @@ public abstract class ExecutableResource {
     }
 
     @POST
-    public Object doPost(@Context
-    HttpServletRequest request, ExecutionRequest xreq) {
+    public Object doPost(@Context HttpServletRequest request, ExecutionRequest xreq) {
         this.request = request;
         try {
-            AutomationServer srv = Framework.getLocalService(AutomationServer
-                    .class);
+            AutomationServer srv = Framework.getLocalService(AutomationServer.class);
             if (!srv.accept(getId(), isChain(), request)) {
                 return ResponseHelper.notFound();
             }
@@ -66,36 +64,27 @@ public abstract class ExecutableResource {
                 return ResponseHelper.getResponse(result, request, customHttpStatus);
             }
             return ResponseHelper.getResponse(result, request);
-        } catch (OperationException | ClientException | SecurityException
-                | MessagingException | IOException cause) {
+        } catch (OperationException | ClientException | SecurityException | MessagingException | IOException cause) {
             if (cause instanceof ConflictOperationException) {
-                throw WebException.newException(
-                        "Failed to invoke operation: " + getId(), cause,
+                throw WebException.newException("Failed to invoke operation: " + getId(), cause,
                         HttpServletResponse.SC_CONFLICT);
             } else if (cause instanceof OperationNotFoundException) {
-                throw WebException.newException(
-                        "Failed to invoke operation: " + getId(), cause,
+                throw WebException.newException("Failed to invoke operation: " + getId(), cause,
                         HttpServletResponse.SC_NOT_FOUND);
             } else {
-                Throwable unWrapException = ExceptionHelper.unwrapException
-                        (cause);
+                Throwable unWrapException = ExceptionHelper.unwrapException(cause);
                 if (unWrapException instanceof RestOperationException) {
-                    int customHttpStatus = ((RestOperationException)
-                            unWrapException).getStatus();
-                    throw WebException.newException(
-                            "Failed to invoke operation: " + getId(), cause,
-                            customHttpStatus);
+                    int customHttpStatus = ((RestOperationException) unWrapException).getStatus();
+                    throw WebException.newException("Failed to invoke operation: " + getId(), cause, customHttpStatus);
                 }
-                throw WebException.newException(
-                        "Failed to invoke operation: " + getId(), cause);
+                throw WebException.newException("Failed to invoke operation: " + getId(), cause);
             }
         }
     }
 
     public abstract String getId();
 
-    public abstract Object execute(ExecutionRequest req)
-            throws OperationException;
+    public abstract Object execute(ExecutionRequest req) throws OperationException;
 
     public abstract boolean isChain();
 

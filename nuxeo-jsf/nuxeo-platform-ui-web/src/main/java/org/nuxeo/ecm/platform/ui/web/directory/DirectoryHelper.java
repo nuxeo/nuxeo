@@ -44,7 +44,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public final class DirectoryHelper {
 
@@ -53,11 +52,9 @@ public final class DirectoryHelper {
     /** Directory with a parent column. */
     public static final String XVOCABULARY_TYPE = "xvocabulary";
 
-    public static final String[] VOCABULARY_TYPES = {"vocabulary",
-            XVOCABULARY_TYPE };
+    public static final String[] VOCABULARY_TYPES = { "vocabulary", XVOCABULARY_TYPE };
 
-    private static final String[] displayOptions = {"id", "label",
-    "idAndLabel" };
+    private static final String[] displayOptions = { "id", "label", "idAndLabel" };
 
     private static DirectoryHelper instance;
 
@@ -75,12 +72,10 @@ public final class DirectoryHelper {
 
     public boolean hasParentColumn(String directoryName) {
         try {
-            return XVOCABULARY_TYPE.equals(getService()
-                    .getDirectorySchema(directoryName));
+            return XVOCABULARY_TYPE.equals(getService().getDirectorySchema(directoryName));
         } catch (DirectoryException e) {
             // GR: our callers can't throw anything. Better to catch here, then
-            log.error("Could not retrieve schema name for directory: "
-                    + directoryName, e);
+            log.error("Could not retrieve schema name for directory: " + directoryName, e);
             return false;
         }
     }
@@ -89,7 +84,7 @@ public final class DirectoryHelper {
         List<DirectorySelectItem> items = getSelectItems(directoryName, filter);
         if (items.size() > 1) {
             log.warn("More than one entry found in directory " + directoryName + " and filter:");
-            for (Map.Entry<String, Serializable> e: filter.entrySet()) {
+            for (Map.Entry<String, Serializable> e : filter.entrySet()) {
                 log.warn(String.format("%s=%s", e.getKey(), e.getValue()));
             }
         } else if (items.isEmpty()) {
@@ -98,13 +93,12 @@ public final class DirectoryHelper {
         return items.get(0);
     }
 
-    public List<DirectorySelectItem> getSelectItems(String directoryName,
-            Map<String, Serializable> filter) {
+    public List<DirectorySelectItem> getSelectItems(String directoryName, Map<String, Serializable> filter) {
         return getSelectItems(directoryName, filter, Boolean.FALSE);
     }
 
-    public List<DirectorySelectItem> getSelectItems(String directoryName,
-            Map<String, Serializable> filter, Boolean localize) {
+    public List<DirectorySelectItem> getSelectItems(String directoryName, Map<String, Serializable> filter,
+            Boolean localize) {
         List<DirectorySelectItem> list = new LinkedList<DirectorySelectItem>();
 
         Set<String> emptySet = Collections.emptySet();
@@ -119,26 +113,23 @@ public final class DirectoryHelper {
             String schema = getService().getDirectorySchema(directoryName);
             session = getService().open(directoryName);
             if (session == null) {
-                throw new ClientException("could not open session on directory: "
-                        + directoryName);
+                throw new ClientException("could not open session on directory: " + directoryName);
             }
 
             // adding sorting support
             // XXX It seems that this ordering is obsolete as
             // DirectoryAwareComponent made it's own (NXP-7349)
-            if (schema.equals(VOCABULARY_TYPES[0])
-                    || schema.equals(VOCABULARY_TYPES[1])) {
+            if (schema.equals(VOCABULARY_TYPES[0]) || schema.equals(VOCABULARY_TYPES[1])) {
                 orderBy.put("ordering", "asc");
                 orderBy.put("id", "asc");
             }
 
-            DocumentModelList docModelList = session.query(filter, emptySet,
-                    orderBy);
+            DocumentModelList docModelList = session.query(filter, emptySet, orderBy);
 
             for (DocumentModel docModel : docModelList) {
                 String id = (String) docModel.getProperty(schema, "id");
                 String label = (String) docModel.getProperty(schema, "label");
-                long ordering = (Long)docModel.getProperty(schema, "ordering");
+                long ordering = (Long) docModel.getProperty(schema, "ordering");
 
                 if (Boolean.TRUE.equals(localize)) {
                     label = translate(context, label);
@@ -148,9 +139,7 @@ public final class DirectoryHelper {
             }
 
         } catch (ClientException e) {
-            throw new RuntimeException(
-                    "failed to build option list for directory "
-                            + directoryName, e);
+            throw new RuntimeException("failed to build option list for directory " + directoryName, e);
         } finally {
             try {
                 if (session != null) {
@@ -168,13 +157,13 @@ public final class DirectoryHelper {
         return instance().getService();
     }
 
-    public static List<DirectorySelectItem> getSelectItems(
-            VocabularyEntryList directoryValues, Map<String, Serializable> filter) {
+    public static List<DirectorySelectItem> getSelectItems(VocabularyEntryList directoryValues,
+            Map<String, Serializable> filter) {
         return getSelectItems(directoryValues, filter, Boolean.FALSE);
     }
 
-    public static List<DirectorySelectItem> getSelectItems(
-            VocabularyEntryList directoryValues, Map<String, Serializable> filter, Boolean localize) {
+    public static List<DirectorySelectItem> getSelectItems(VocabularyEntryList directoryValues,
+            Map<String, Serializable> filter, Boolean localize) {
         List<DirectorySelectItem> list = new ArrayList<DirectorySelectItem>();
 
         // in obsolete filter we have either null (include obsoletes)
@@ -211,8 +200,7 @@ public final class DirectoryHelper {
         return list;
     }
 
-    public static String getOptionValue(String optionId, String optionLabel,
-            String display, boolean displayIdAndLabel,
+    public static String getOptionValue(String optionId, String optionLabel, String display, boolean displayIdAndLabel,
             String displayIdAndLabelSeparator) {
         StringBuilder displayValue = new StringBuilder();
         if (display != null && !"".equals(display)) {
@@ -221,22 +209,19 @@ public final class DirectoryHelper {
             } else if (display.equals(displayOptions[1])) {
                 displayValue.append(optionLabel);
             } else if (display.equals(displayOptions[2])) {
-                displayValue.append(optionId).append(displayIdAndLabelSeparator).append(
-                        optionLabel);
+                displayValue.append(optionId).append(displayIdAndLabelSeparator).append(optionLabel);
             } else {
                 displayValue.append(optionLabel);
             }
         } else if (displayIdAndLabel) {
-            displayValue.append(optionId).append(displayIdAndLabelSeparator).append(
-                    optionLabel);
+            displayValue.append(optionId).append(displayIdAndLabelSeparator).append(optionLabel);
         } else {
             displayValue.append(optionLabel);
         }
         return displayValue.toString();
     }
 
-    private static DocumentModel getEntryThrows(String directoryName, String entryId)
-            throws ClientException {
+    private static DocumentModel getEntryThrows(String directoryName, String entryId) throws ClientException {
         DirectoryService dirService = getDirectoryService();
         if (dirService == null) {
             throw new ClientException("Could not lookup DirectoryService");
@@ -249,8 +234,7 @@ public final class DirectoryHelper {
             try {
                 session.close();
             } catch (ClientException e) {
-                log.warn("Could not close a session on directory "
-                        + directoryName, e);
+                log.warn("Could not close a session on directory " + directoryName, e);
             }
         }
         return entry;
@@ -259,8 +243,7 @@ public final class DirectoryHelper {
     /**
      * Returns the entry with given id from specified directory.
      * <p>
-     * Method to use from components, since JSF base class that we extend don't allow
-     * to throw proper exceptions.
+     * Method to use from components, since JSF base class that we extend don't allow to throw proper exceptions.
      *
      * @param directoryName
      * @param entryId
@@ -270,9 +253,7 @@ public final class DirectoryHelper {
         try {
             return getEntryThrows(directoryName, entryId);
         } catch (ClientException e) {
-            log.error(String.format(
-                    "Error retrieving the entry (dirname=%s, entryId=%s)",
-                    directoryName, entryId), e);
+            log.error(String.format("Error retrieving the entry (dirname=%s, entryId=%s)", directoryName, entryId), e);
             return null;
         }
     }

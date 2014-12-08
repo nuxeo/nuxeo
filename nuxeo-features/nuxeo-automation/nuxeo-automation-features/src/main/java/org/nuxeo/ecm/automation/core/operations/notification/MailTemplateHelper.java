@@ -41,15 +41,12 @@ public class MailTemplateHelper {
         DocumentViewCodecManager codecMgr = Framework.getService(DocumentViewCodecManager.class);
         NotificationService notifMgr = NotificationServiceHelper.getNotificationService();
         if (codecMgr == null) {
-            throw new RuntimeException(
-                    "Service 'DocumentViewCodecManager' not available");
+            throw new RuntimeException("Service 'DocumentViewCodecManager' not available");
         }
         if (notifMgr == null) {
-            throw new RuntimeException(
-                    "Service 'NotificationService' not available");
+            throw new RuntimeException("Service 'NotificationService' not available");
         }
-        return codecMgr.getUrlFromDocumentView(docView, true,
-                notifMgr.getServerUrlPrefix());
+        return codecMgr.getUrlFromDocumentView(docView, true, notifMgr.getServerUrlPrefix());
     }
 
     public static URL getTemplate(String name) {

@@ -55,13 +55,11 @@ import com.google.inject.Inject;
 
 /**
  * @author Laurent Doguin
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.picture.core",
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert" })
 public class TestImagingConvertPlugin {
 
@@ -83,20 +81,17 @@ public class TestImagingConvertPlugin {
 
         for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = new FileBlob(
-                    ImagingResourcesHelper.getFileFromPath(path));
+            Blob blob = new FileBlob(ImagingResourcesHelper.getFileFromPath(path));
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 
-            BlobHolder result = conversionService.convert(converter, bh,
-                    options);
+            BlobHolder result = conversionService.convert(converter, bh, options);
             assertNotNull(result);
 
             BufferedImage image = ImageIO.read(result.getBlob().getStream());
 
             assertNotNull("Resized image is null", image);
-            assertEquals("Resized image height", resizeHeight,
-                    image.getHeight());
+            assertEquals("Resized image height", resizeHeight, image.getHeight());
         }
     }
 
@@ -109,17 +104,14 @@ public class TestImagingConvertPlugin {
 
         for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = new FileBlob(
-                    ImagingResourcesHelper.getFileFromPath(path));
+            Blob blob = new FileBlob(ImagingResourcesHelper.getFileFromPath(path));
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 
-            BlobHolder result = conversionService.convert(converter, bh,
-                    options);
+            BlobHolder result = conversionService.convert(converter, bh, options);
             assertNotNull(result);
 
-            BufferedImage image = ImageIO.read(new FileInputStream(
-                    FileUtils.getResourceFileFromContext(path)));
+            BufferedImage image = ImageIO.read(new FileInputStream(FileUtils.getResourceFileFromContext(path)));
             assertNotNull("Original image is null", image);
             int width = image.getWidth();
             int height = image.getHeight();
@@ -147,17 +139,14 @@ public class TestImagingConvertPlugin {
 
         for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = new FileBlob(
-                    ImagingResourcesHelper.getFileFromPath(path));
+            Blob blob = new FileBlob(ImagingResourcesHelper.getFileFromPath(path));
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 
-            BlobHolder result = conversionService.convert(converter, bh,
-                    options);
+            BlobHolder result = conversionService.convert(converter, bh, options);
             assertNotNull(result);
 
-            BufferedImage image = ImageIO.read(new FileInputStream(
-                    FileUtils.getResourceFileFromContext(path)));
+            BufferedImage image = ImageIO.read(new FileInputStream(FileUtils.getResourceFileFromContext(path)));
             assertNotNull("Original image is null", image);
             int width = image.getWidth();
             int height = image.getHeight();

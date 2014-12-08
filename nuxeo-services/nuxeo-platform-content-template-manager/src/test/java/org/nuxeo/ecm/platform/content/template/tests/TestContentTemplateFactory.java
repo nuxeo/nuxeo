@@ -50,12 +50,9 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "test-content-template-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "test-content-template-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "test-content-template-listener.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests", "test-content-template-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests", "test-content-template-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests", "test-content-template-listener.xml");
 
         openSession();
         assertNotNull(session);
@@ -95,8 +92,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertTrue(factoryBindings.containsKey("Domain"));
 
         assertEquals(4, factoryBindings.get("Domain").getTemplate().size());
-        assertEquals("Workspaces",
-                factoryBindings.get("Domain").getTemplate().get(0).getId());
+        assertEquals("Workspaces", factoryBindings.get("Domain").getTemplate().get(0).getId());
     }
 
     @Test
@@ -181,8 +177,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         service.executeFactoryForType(root);
 
         // check root ACL
-        assertTrue(session.getACP(root.getRef()).getAccess("Administrator",
-                "Everything").toBoolean());
+        assertTrue(session.getACP(root.getRef()).getAccess("Administrator", "Everything").toBoolean());
         assertTrue(session.getACP(root.getRef()).getAccess("Danny", "Dream").toBoolean());
 
         // check that default domain has been created
@@ -206,15 +201,14 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertEquals(1, children.size());
         DocumentModel sectionRoot = children.get(0);
         assertEquals("Sections", sectionRoot.getTitle());
-        children = session.getChildren(sectionRoot.getRef(), "Section" );
+        children = session.getChildren(sectionRoot.getRef(), "Section");
         assertEquals(1, children.size());
         assertEquals("Section", children.get(0).getTitle());
     }
 
     @Test
     public void testDomainFactory() throws ClientException {
-        DocumentModel testDom = session.createDocumentModel("/", "TestDomain",
-                "Domain");
+        DocumentModel testDom = session.createDocumentModel("/", "TestDomain", "Domain");
         testDom.setProperty("dublincore", "title", "MyTestDomain");
         testDom = session.createDocument(testDom);
         session.save();
@@ -235,12 +229,10 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         service.executeFactoryForType(root);
 
         DocumentModel firstDomain = session.getChildren(root.getRef()).get(0);
-        DocumentModel wsRoot = session.getChildren(firstDomain.getRef(),
-                "WorkspaceRoot").get(0);
+        DocumentModel wsRoot = session.getChildren(firstDomain.getRef(), "WorkspaceRoot").get(0);
 
         // create new WS
-        DocumentModel testWS = session.createDocumentModel(
-                wsRoot.getPathAsString(), "TestWS", "Workspace");
+        DocumentModel testWS = session.createDocumentModel(wsRoot.getPathAsString(), "TestWS", "Workspace");
         testWS.setProperty("dublincore", "title", "MyTestWorkspace");
         testWS = session.createDocument(testWS);
         session.save();
@@ -284,21 +276,16 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         service.executeFactoryForType(root);
         DocumentModel firstDomain = session.getChildren(root.getRef()).get(0);
 
-
-        //Check if every superspaces have FacetFolder Document
-        DocumentModel wsRoot = session.getChildren(firstDomain.getRef(),
-                "WorkspaceRoot").get(0);
-        DocumentModel facetFolder = session.getChild(wsRoot.getRef(),
-                "FacetFolder");
+        // Check if every superspaces have FacetFolder Document
+        DocumentModel wsRoot = session.getChildren(firstDomain.getRef(), "WorkspaceRoot").get(0);
+        DocumentModel facetFolder = session.getChild(wsRoot.getRef(), "FacetFolder");
         assertNotNull(facetFolder);
 
-        DocumentModel templateRoot = session.getChildren(firstDomain.getRef(),
-                "TemplateRoot").get(0);
+        DocumentModel templateRoot = session.getChildren(firstDomain.getRef(), "TemplateRoot").get(0);
         facetFolder = session.getChild(templateRoot.getRef(), "FacetFolder");
         assertNotNull(facetFolder);
 
-        DocumentModel sectionRoot = session.getChildren(firstDomain.getRef(),
-                "SectionRoot").get(0);
+        DocumentModel sectionRoot = session.getChildren(firstDomain.getRef(), "SectionRoot").get(0);
         facetFolder = session.getChild(sectionRoot.getRef(), "FacetFolder");
         assertNotNull(facetFolder);
     }

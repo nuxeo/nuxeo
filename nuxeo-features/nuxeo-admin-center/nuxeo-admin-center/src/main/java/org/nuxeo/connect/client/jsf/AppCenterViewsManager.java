@@ -161,8 +161,7 @@ public class AppCenterViewsManager implements Serializable {
     }
 
     public void setOnlyRemote(boolean onlyRemote) {
-        SharedPackageListingsSettings.instance().get("remote").setOnlyRemote(
-                onlyRemote);
+        SharedPackageListingsSettings.instance().get("remote").setOnlyRemote(onlyRemote);
     }
 
     protected String getListName() {
@@ -170,8 +169,7 @@ public class AppCenterViewsManager implements Serializable {
     }
 
     public void setPlatformFilter(boolean doFilter) {
-        SharedPackageListingsSettings.instance().get(getListName()).setPlatformFilter(
-                doFilter);
+        SharedPackageListingsSettings.instance().get(getListName()).setPlatformFilter(doFilter);
     }
 
     public boolean getPlatformFilter() {
@@ -183,8 +181,7 @@ public class AppCenterViewsManager implements Serializable {
     }
 
     public void setPackageTypeFilter(String filter) {
-        SharedPackageListingsSettings.instance().get(getListName()).setPackageTypeFilter(
-                filter);
+        SharedPackageListingsSettings.instance().get(getListName()).setPackageTypeFilter(filter);
     }
 
     public List<SelectItem> getPackageTypes() {
@@ -193,8 +190,7 @@ public class AppCenterViewsManager implements Serializable {
         types.add(allItem);
         for (PackageType ptype : PackageType.values()) {
             // if (!ptype.equals(PackageType.STUDIO)) {
-            SelectItem item = new SelectItem(ptype.getValue(),
-                    "label.packagetype." + ptype.getValue());
+            SelectItem item = new SelectItem(ptype.getValue(), "label.packagetype." + ptype.getValue());
             types.add(item);
             // }
         }
@@ -207,10 +203,9 @@ public class AppCenterViewsManager implements Serializable {
     }
 
     /**
-     * Method binding for the update button: needs to perform a real
-     * redirection (as ajax context is broken after hot reload) and to provide
-     * an outcome so that redirection through the URL service goes ok (even if
-     * it just reset its navigation handler cache).
+     * Method binding for the update button: needs to perform a real redirection (as ajax context is broken after hot
+     * reload) and to provide an outcome so that redirection through the URL service goes ok (even if it just reset its
+     * navigation handler cache).
      *
      * @since 5.6
      */
@@ -233,8 +228,8 @@ public class AppCenterViewsManager implements Serializable {
         if (snapshotPkg != null) {
             isStudioSnapshopUpdateInProgress = true;
             try {
-                StudioAutoInstaller studioAutoInstaller = new StudioAutoInstaller(
-                        pm, snapshotPkg.getId(), shouldValidateStudioSnapshot());
+                StudioAutoInstaller studioAutoInstaller = new StudioAutoInstaller(pm, snapshotPkg.getId(),
+                        shouldValidateStudioSnapshot());
                 studioAutoInstaller.run();
             } finally {
                 isStudioSnapshopUpdateInProgress = false;
@@ -267,8 +262,8 @@ public class AppCenterViewsManager implements Serializable {
     /**
      * Returns true if Studio snapshot module should be validated.
      * <p>
-     * Validation can be skipped by user, or can be globally disabled by setting
-     * framework property "studio.snapshot.disablePkgValidation" to true.
+     * Validation can be skipped by user, or can be globally disabled by setting framework property
+     * "studio.snapshot.disablePkgValidation" to true.
      *
      * @since 5.7.1
      */
@@ -280,8 +275,7 @@ public class AppCenterViewsManager implements Serializable {
     }
 
     protected static String translate(String label, Object... params) {
-        return ComponentUtils.translate(FacesContext.getCurrentInstance(),
-                label, params);
+        return ComponentUtils.translate(FacesContext.getCurrentInstance(), label, params);
     }
 
     protected FileTime getLastUpdateDate() {
@@ -351,16 +345,13 @@ public class AppCenterViewsManager implements Serializable {
         } else {
             FileTime update = getLastUpdateDate();
             if (update != null) {
-                DateFormat df = new SimpleDateFormat(
-                        "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+                DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
                 df.setTimeZone(TimeZone.getDefault());
                 params = new Object[] { df.format(new Date(update.toMillis())) };
             }
         }
 
-        return translate(
-                LABEL_STUDIO_UPDATE_STATUS + studioSnapshotStatus.name(),
-                params);
+        return translate(LABEL_STUDIO_UPDATE_STATUS + studioSnapshotStatus.name(), params);
     }
 
     // TODO: plug a notifier for status to be shown to the user
@@ -375,8 +366,7 @@ public class AppCenterViewsManager implements Serializable {
          */
         protected final boolean validate;
 
-        protected StudioAutoInstaller(PackageManager pm, String packageId,
-                boolean validate) {
+        protected StudioAutoInstaller(PackageManager pm, String packageId, boolean validate) {
             this.pm = pm;
             this.packageId = packageId;
             this.validate = validate;
@@ -390,61 +380,49 @@ public class AppCenterViewsManager implements Serializable {
                 pm.flushCache();
                 DownloadablePackage remotePkg = pm.findRemotePackageById(packageId);
                 if (remotePkg == null) {
-                    status.addError(String.format(
-                            "Cannot perform validation: remote package '%s' not found",
-                            packageId));
+                    status.addError(String.format("Cannot perform validation: remote package '%s' not found", packageId));
                     return;
                 }
                 PackageDependency[] pkgDeps = remotePkg.getDependencies();
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("%s target platforms: %s",
-                            remotePkg,
+                    log.debug(String.format("%s target platforms: %s", remotePkg,
                             ArrayUtils.toString(remotePkg.getTargetPlatforms())));
-                    log.debug(String.format("%s dependencies: %s", remotePkg,
-                            ArrayUtils.toString(pkgDeps)));
+                    log.debug(String.format("%s dependencies: %s", remotePkg, ArrayUtils.toString(pkgDeps)));
                 }
 
                 // TODO NXP-11776: replace errors by internationalized
                 // labels
                 String targetPlatform = PlatformVersionHelper.getPlatformFilter();
-                if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(
-                        remotePkg, targetPlatform)) {
-                    status.addError(String.format(
-                            "This package is not validated for your current platform: %s",
+                if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform)) {
+                    status.addError(String.format("This package is not validated for your current platform: %s",
                             targetPlatform));
                 }
                 // check deps requirements
                 if (pkgDeps != null && pkgDeps.length > 0) {
-                    DependencyResolution resolution = pm.resolveDependencies(
-                            packageId, targetPlatform);
+                    DependencyResolution resolution = pm.resolveDependencies(packageId, targetPlatform);
                     if (resolution.isFailed() && targetPlatform != null) {
                         // retry without PF filter in case it gives more
                         // information
                         resolution = pm.resolveDependencies(packageId, null);
                     }
                     if (resolution.isFailed()) {
-                        status.addError(String.format(
-                                "Dependency check has failed for package '%s' (%s)",
-                                packageId, resolution));
+                        status.addError(String.format("Dependency check has failed for package '%s' (%s)", packageId,
+                                resolution));
                     } else {
                         List<String> pkgToInstall = resolution.getInstallPackageIds();
-                        if (pkgToInstall != null && pkgToInstall.size() == 1
-                                && packageId.equals(pkgToInstall.get(0))) {
+                        if (pkgToInstall != null && pkgToInstall.size() == 1 && packageId.equals(pkgToInstall.get(0))) {
                             // ignore
                         } else if (resolution.requireChanges()) {
                             // do not install needed deps: they may not be
                             // hot-reloadable and that's not what the
                             // "update snapshot" button is for.
-                            status.addError(resolution.toString().trim().replaceAll(
-                                    "\n", "<br />"));
+                            status.addError(resolution.toString().trim().replaceAll("\n", "<br />"));
                         }
                     }
                 }
 
                 if (status.hasErrors()) {
-                    setStatus(SnapshotStatus.error,
-                            translate("label.studio.update.validation.error"),
-                            status);
+                    setStatus(SnapshotStatus.error, translate("label.studio.update.validation.error"), status);
                     return;
                 }
             }
@@ -504,11 +482,8 @@ public class AppCenterViewsManager implements Serializable {
                     } catch (PackageException | InterruptedException e) {
                         ExceptionUtils.checkInterrupt(e);
                         log.error("Error while downloading studio snapshot", e);
-                        setStatus(
-                                SnapshotStatus.error,
-                                translate(
-                                        "label.studio.update.downloading.error",
-                                        e.getMessage()));
+                        setStatus(SnapshotStatus.error,
+                                translate("label.studio.update.downloading.error", e.getMessage()));
                         return;
                     }
 
@@ -529,10 +504,7 @@ public class AppCenterViewsManager implements Serializable {
                     setStatus(SnapshotStatus.completed, null);
                 } catch (PackageException e) {
                     log.error("Error while installing studio snapshot", e);
-                    setStatus(
-                            SnapshotStatus.error,
-                            translate("label.studio.update.installation.error",
-                                    e.getMessage()));
+                    setStatus(SnapshotStatus.error, translate("label.studio.update.installation.error", e.getMessage()));
                 }
             } else {
                 InstallAfterRestart.addPackageForInstallation(packageId);
@@ -544,13 +516,11 @@ public class AppCenterViewsManager implements Serializable {
         protected void performTask(Task task) throws PackageException {
             ValidationStatus validationStatus = task.validate();
             if (validationStatus.hasErrors()) {
-                throw new PackageException("Failed to validate package "
-                        + task.getPackage().getId() + " -> "
+                throw new PackageException("Failed to validate package " + task.getPackage().getId() + " -> "
                         + validationStatus.getErrors());
             }
             if (validationStatus.hasWarnings()) {
-                log.warn("Got warnings on package validation "
-                        + task.getPackage().getId() + " -> "
+                log.warn("Got warnings on package validation " + task.getPackage().getId() + " -> "
                         + validationStatus.getWarnings());
             }
             task.run(null);
@@ -562,8 +532,7 @@ public class AppCenterViewsManager implements Serializable {
         studioSnapshotUpdateError = errorMessage;
     }
 
-    protected void setStatus(SnapshotStatus status, String errorMessage,
-            ValidationStatus validationStatus) {
+    protected void setStatus(SnapshotStatus status, String errorMessage, ValidationStatus validationStatus) {
         setStatus(status, errorMessage);
         setStudioSnapshotValidationStatus(validationStatus);
     }
@@ -594,9 +563,7 @@ public class AppCenterViewsManager implements Serializable {
         ConfigurationGenerator conf = setupWizardAction.getConfigurationGenerator();
         boolean configurable = conf.isConfigurable();
         if (!configurable) {
-            facesMessages.addToControl(
-                    feedbackCompId,
-                    StatusMessage.Severity.ERROR,
+            facesMessages.addToControl(feedbackCompId, StatusMessage.Severity.ERROR,
                     translate("label.setup.nuxeo.org.nuxeo.dev.changingDevModeNotConfigurable"));
             return;
         }
@@ -612,21 +579,16 @@ public class AppCenterViewsManager implements Serializable {
             Framework.getRuntime().reloadProperties();
 
             if (value) {
-                facesMessages.addToControl(feedbackCompId,
-                        StatusMessage.Severity.WARN,
+                facesMessages.addToControl(feedbackCompId, StatusMessage.Severity.WARN,
                         translate("label.admin.center.devMode.justActivated"));
             } else {
-                facesMessages.addToControl(feedbackCompId,
-                        StatusMessage.Severity.INFO,
+                facesMessages.addToControl(feedbackCompId, StatusMessage.Severity.INFO,
                         translate("label.admin.center.devMode.justDisabled"));
             }
         } catch (ConfigurationException | IOException e) {
             log.error(e, e);
-            facesMessages.addToControl(
-                    feedbackCompId,
-                    StatusMessage.Severity.ERROR,
-                    translate("label.admin.center.devMode.errorSaving",
-                            e.getMessage()));
+            facesMessages.addToControl(feedbackCompId, StatusMessage.Severity.ERROR,
+                    translate("label.admin.center.devMode.errorSaving", e.getMessage()));
         } finally {
             setupWizardAction.setNeedsRestart(true);
             setupWizardAction.resetParameters();

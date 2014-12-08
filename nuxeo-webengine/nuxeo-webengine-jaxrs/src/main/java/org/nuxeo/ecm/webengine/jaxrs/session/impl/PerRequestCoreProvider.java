@@ -20,23 +20,26 @@ import org.nuxeo.ecm.webengine.jaxrs.session.impl.PerRequestCoreProvider.Ref;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PerRequestCoreProvider extends CoreSessionProvider<Ref> {
 
     public static class Ref implements SessionRef {
         protected CoreSession session;
+
         public Ref(CoreSession session) {
             this.session = session;
         }
+
         @Override
         public CoreSession get() {
             return session;
         }
+
         @Override
         public void unget() {
             // do nothing
         }
+
         public void destroy() {
             try {
                 session.close();
@@ -45,7 +48,6 @@ public class PerRequestCoreProvider extends CoreSessionProvider<Ref> {
             }
         }
     }
-
 
     @Override
     protected void onRequestDone(HttpServletRequest request) {
@@ -62,7 +64,5 @@ public class PerRequestCoreProvider extends CoreSessionProvider<Ref> {
     protected Ref createSessionRef(CoreSession session) {
         return new Ref(session);
     }
-
-
 
 }

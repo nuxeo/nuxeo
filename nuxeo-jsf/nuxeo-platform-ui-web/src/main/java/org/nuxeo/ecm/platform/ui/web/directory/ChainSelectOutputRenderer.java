@@ -32,13 +32,11 @@ import org.apache.commons.lang.StringUtils;
  * Renderer for directory entry.
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class ChainSelectOutputRenderer extends Renderer {
 
     @Override
-    public void encodeBegin(FacesContext context, UIComponent component)
-            throws IOException {
+    public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
         ChainSelectOutputComponent comp = (ChainSelectOutputComponent) component;
         Object rawValues = comp.getValue();
         if (rawValues == null) {
@@ -54,8 +52,7 @@ public class ChainSelectOutputRenderer extends Renderer {
             } else {
                 // treat rawValues as labels to be concatenated on the same
                 // entry
-                String concat = StringUtils.join(((String[]) rawValues),
-                        comp.getKeySeparator());
+                String concat = StringUtils.join(((String[]) rawValues), comp.getKeySeparator());
                 values = new String[] { concat };
             }
         } else {

@@ -36,18 +36,15 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 /**
  * Listener for life cycle change events.
  * <p>
- * If event occurs on a folder, it will recurse on children to perform the same
- * transition if possible.
+ * If event occurs on a folder, it will recurse on children to perform the same transition if possible.
  * <p>
- * If the transition event is about marking documents as "deleted", and a child
- * cannot perform the transition, it will be removed.
+ * If the transition event is about marking documents as "deleted", and a child cannot perform the transition, it will
+ * be removed.
  * <p>
- * Undelete transitions are not processed, but this listener instead looks for a
- * specific documentUndeleted event. This is because we want to undelete
- * documents (parents) under which we don't want to recurse.
+ * Undelete transitions are not processed, but this listener instead looks for a specific documentUndeleted event. This
+ * is because we want to undelete documents (parents) under which we don't want to recurse.
  * <p>
- * Reinit document copy lifeCycle (BulkLifeCycleChangeListener is bound to the
- * event documentCreatedByCopy)
+ * Reinit document copy lifeCycle (BulkLifeCycleChangeListener is bound to the event documentCreatedByCopy)
  */
 public class BulkLifeCycleChangeListener implements PostCommitEventListener {
 
@@ -62,8 +59,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
         }
         for (Event event : events) {
             String name = event.getName();
-            if (LifeCycleConstants.TRANSITION_EVENT.equals(name)
-                    || LifeCycleConstants.DOCUMENT_UNDELETED.equals(name)
+            if (LifeCycleConstants.TRANSITION_EVENT.equals(name) || LifeCycleConstants.DOCUMENT_UNDELETED.equals(name)
                     || DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(name)) {
                 processTransition(event);
             }
@@ -78,8 +74,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (!doc.isFolder()
-                && !DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
+        if (!doc.isFolder() && !DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
             return;
         }
         CoreSession session = docCtx.getCoreSession();
@@ -90,8 +85,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
         String transition;
         String targetState;
         if (DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
-            if (!Boolean.TRUE.equals(event.getContext().getProperties().get(
-                    CoreEventConstants.RESET_LIFECYCLE))) {
+            if (!Boolean.TRUE.equals(event.getContext().getProperties().get(CoreEventConstants.RESET_LIFECYCLE))) {
                 return;
             }
             try {
@@ -133,8 +127,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
         }
     }
 
-    protected void reinitDocumentsLifeCyle(CoreSession documentManager,
-            DocumentModelList docs) throws ClientException {
+    protected void reinitDocumentsLifeCyle(CoreSession documentManager, DocumentModelList docs) throws ClientException {
         for (DocumentModel docMod : docs) {
             documentManager.reinitLifeCycleState(docMod.getRef());
             if (docMod.isFolder()) {
@@ -147,14 +140,12 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
     }
 
     protected boolean isNonRecursiveTransition(String transition, String type) {
-        List<String> nonRecursiveTransitions = NXCore.getLifeCycleService().getNonRecursiveTransitionForDocType(
-                type);
+        List<String> nonRecursiveTransitions = NXCore.getLifeCycleService().getNonRecursiveTransitionForDocType(type);
         return nonRecursiveTransitions.contains(transition);
     }
 
     // change doc state and recurse in children
-    protected void changeDocumentsState(CoreSession documentManager,
-            DocumentModelList docModelList, String transition,
+    protected void changeDocumentsState(CoreSession documentManager, DocumentModelList docModelList, String transition,
             String targetState) throws ClientException {
         for (DocumentModel docMod : docModelList) {
             boolean removed = false;
@@ -164,28 +155,22 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                     documentManager.removeDocument(docMod.getRef());
                     removed = true;
                 }
-            } else if (docMod.getAllowedStateTransitions().contains(transition)
-                    && !docMod.isProxy()) {
+            } else if (docMod.getAllowedStateTransitions().contains(transition) && !docMod.isProxy()) {
                 docMod.followTransition(transition);
             } else {
                 if (targetState.equals(docMod.getCurrentLifeCycleState())) {
-                    log.debug("Document" + docMod.getRef()
-                            + " is already in the target LifeCycle state");
+                    log.debug("Document" + docMod.getRef() + " is already in the target LifeCycle state");
                 } else if (LifeCycleConstants.DELETED_STATE.equals(targetState)) {
-                    log.debug("Impossible to change state of "
-                            + docMod.getRef() + " :removing");
+                    log.debug("Impossible to change state of " + docMod.getRef() + " :removing");
                     documentManager.removeDocument(docMod.getRef());
                     removed = true;
                 } else {
-                    log.debug("Document"
-                            + docMod.getRef()
-                            + " has no transition to the target LifeCycle state");
+                    log.debug("Document" + docMod.getRef() + " has no transition to the target LifeCycle state");
                 }
             }
             if (docMod.isFolder() && !removed) {
-                changeDocumentsState(documentManager,
-                        documentManager.getChildren(docMod.getRef()),
-                        transition, targetState);
+                changeDocumentsState(documentManager, documentManager.getChildren(docMod.getRef()), transition,
+                        targetState);
             }
         }
     }

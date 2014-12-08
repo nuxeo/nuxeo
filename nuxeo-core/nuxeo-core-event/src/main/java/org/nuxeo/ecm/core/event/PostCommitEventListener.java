@@ -15,11 +15,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.osgi.framework.BundleEvent;
 
 /**
- * A specialized event listener that is notified after the user operation is
- * committed.
+ * A specialized event listener that is notified after the user operation is committed.
  * <p>
- * This type of listener can be notified either in a synchronous or asynchronous
- * mode.
+ * This type of listener can be notified either in a synchronous or asynchronous mode.
  *
  * @see EventListener
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -27,11 +25,9 @@ import org.osgi.framework.BundleEvent;
 public interface PostCommitEventListener {
 
     /**
-     * Handles the set of events that were raised during the life of an user
-     * operation.
+     * Handles the set of events that were raised during the life of an user operation.
      * <p>
-     * The events are fired as a {@link BundleEvent} after the transaction is
-     * committed.
+     * The events are fired as a {@link BundleEvent} after the transaction is committed.
      *
      * @param events the events to handle
      */

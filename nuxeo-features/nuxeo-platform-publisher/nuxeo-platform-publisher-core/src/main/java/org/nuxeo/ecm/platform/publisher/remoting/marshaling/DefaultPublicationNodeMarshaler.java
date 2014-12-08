@@ -28,39 +28,32 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.Publishin
  * {@link PublicationNode} marshaler using simple XML representation.
  *
  * @author tiry
- *
  */
-public class DefaultPublicationNodeMarshaler extends
-        AbstractDefaultXMLMarshaler implements PublicationNodeMarshaler {
+public class DefaultPublicationNodeMarshaler extends AbstractDefaultXMLMarshaler implements PublicationNodeMarshaler {
 
-    protected static QName rootTag = DocumentFactory.getInstance().createQName(
-            "publicationNode", publisherSerializerNSPrefix,
+    protected static QName rootTag = DocumentFactory.getInstance().createQName("publicationNode",
+            publisherSerializerNSPrefix, publisherSerializerNS);
+
+    protected static QName nodePathTag = DocumentFactory.getInstance().createQName("nodePath",
+            publisherSerializerNSPrefix, publisherSerializerNS);
+
+    protected static QName nodeTitleTag = DocumentFactory.getInstance().createQName("nodeTile",
+            publisherSerializerNSPrefix, publisherSerializerNS);
+
+    protected static QName nodeTypeTag = DocumentFactory.getInstance().createQName("nodeType",
+            publisherSerializerNSPrefix, publisherSerializerNS);
+
+    protected static QName treeNameTag = DocumentFactory.getInstance().createQName("treeName",
+            publisherSerializerNSPrefix, publisherSerializerNS);
+
+    protected static QName sidTag = DocumentFactory.getInstance().createQName("sid", publisherSerializerNSPrefix,
             publisherSerializerNS);
 
-    protected static QName nodePathTag = DocumentFactory.getInstance().createQName(
-            "nodePath", publisherSerializerNSPrefix, publisherSerializerNS);
+    public String marshalPublicationNode(PublicationNode node) throws PublishingMarshalingException {
 
-    protected static QName nodeTitleTag = DocumentFactory.getInstance().createQName(
-            "nodeTile", publisherSerializerNSPrefix, publisherSerializerNS);
-
-    protected static QName nodeTypeTag = DocumentFactory.getInstance().createQName(
-            "nodeType", publisherSerializerNSPrefix, publisherSerializerNS);
-
-    protected static QName treeNameTag = DocumentFactory.getInstance().createQName(
-            "treeName", publisherSerializerNSPrefix, publisherSerializerNS);
-
-    protected static QName sidTag = DocumentFactory.getInstance().createQName(
-            "sid", publisherSerializerNSPrefix, publisherSerializerNS);
-
-    public String marshalPublicationNode(PublicationNode node)
-            throws PublishingMarshalingException {
-
-        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(
-                rootTag);
-        rootElem.addNamespace(publisherSerializerNSPrefix,
-                publisherSerializerNS);
-        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(
-                rootElem);
+        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(rootTag);
+        rootElem.addNamespace(publisherSerializerNSPrefix, publisherSerializerNS);
+        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(rootElem);
 
         org.dom4j.Element pathElem = rootElem.addElement(nodePathTag);
         pathElem.setText(node.getPath());
@@ -90,8 +83,7 @@ public class DefaultPublicationNodeMarshaler extends
         return cleanUpXml(data);
     }
 
-    public PublicationNode unMarshalPublicationNode(String data)
-            throws PublishingMarshalingException {
+    public PublicationNode unMarshalPublicationNode(String data) throws PublishingMarshalingException {
         PublicationNode node = null;
 
         try {
@@ -103,12 +95,10 @@ public class DefaultPublicationNodeMarshaler extends
             String nodeType = rootElem.element(nodeTypeTag).getTextTrim();
             String treeName = rootElem.element(treeNameTag).getTextTrim();
             String sid = rootElem.element(sidTag).getTextTrim();
-            node = new BasicPublicationNode(nodeType, nodePath, nodeTitle,
-                    treeName, sid);
+            node = new BasicPublicationNode(nodeType, nodePath, nodeTitle, treeName, sid);
 
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException(
-                    "Unable to unmarshal Piublication Node", e);
+            throw new PublishingMarshalingException("Unable to unmarshal Piublication Node", e);
         }
         return node;
     }

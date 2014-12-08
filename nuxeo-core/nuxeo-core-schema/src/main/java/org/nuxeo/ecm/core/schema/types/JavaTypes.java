@@ -14,7 +14,6 @@
 
 package org.nuxeo.ecm.core.schema.types;
 
-
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,11 +33,11 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  * Maps ECM types to Java classes.
  *
  * @author bstefanescu
- *
  */
 public final class JavaTypes {
 
     private static final Map<Class<?>, Type> class2Types = new Hashtable<Class<?>, Type>();
+
     private static final Map<Type, Class<?>> types2Class = new Hashtable<Type, Class<?>>();
 
     // Utility class.
@@ -96,9 +95,9 @@ public final class JavaTypes {
         bind(DateType.INSTANCE, Date.class);
         bind(DateType.INSTANCE, Calendar.class);
 
-        //bind(typeService.getTypeManager().getType("content"), Blob.class);
-        //bind(typeService.getTypeManager().getType("content"), List.class);
-        //bind(CompType.INSTANCE, Blob.class);
+        // bind(typeService.getTypeManager().getType("content"), Blob.class);
+        // bind(typeService.getTypeManager().getType("content"), List.class);
+        // bind(CompType.INSTANCE, Blob.class);
     }
 
 }

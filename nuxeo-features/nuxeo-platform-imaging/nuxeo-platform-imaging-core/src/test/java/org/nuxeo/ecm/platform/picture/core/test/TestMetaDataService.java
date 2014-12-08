@@ -41,12 +41,10 @@ import com.google.inject.Inject;
 
 /**
  * @author Laurent Doguin
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.picture.core",
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.api" })
 public class TestMetaDataService {
 

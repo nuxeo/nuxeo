@@ -36,22 +36,19 @@ public class ConvertHelper {
 
     protected String findConverter(Blob blob, String destMimeType) {
         MimetypeRegistry mtr = Framework.getLocalService(MimetypeRegistry.class);
-        String srcMt = mtr.getMimetypeFromFilenameAndBlobWithDefault(
-                blob.getFilename(), blob, blob.getMimeType());
+        String srcMt = mtr.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob, blob.getMimeType());
         blob.setMimeType(srcMt);
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         return cs.getConverterName(srcMt, destMimeType);
     }
 
-    protected Blob applyConverter(Blob blob, String converter,
-            String destMimeType,  Map<String, Serializable> params) {
+    protected Blob applyConverter(Blob blob, String converter, String destMimeType, Map<String, Serializable> params) {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
-        if (params == null ) {
+        if (params == null) {
             params = new HashMap<String, Serializable>();
             params.put("updateDocumentIndex", Boolean.TRUE);
         }
-        BlobHolder bh = cs.convert(converter, new SimpleBlobHolder(blob),
-                params);
+        BlobHolder bh = cs.convert(converter, new SimpleBlobHolder(blob), params);
 
         if (bh == null || bh.getBlob() == null) {
             return blob;
@@ -59,8 +56,7 @@ public class ConvertHelper {
             Blob result = bh.getBlob();
             MimetypeRegistry mtr = Framework.getLocalService(MimetypeRegistry.class);
             String filename = FileUtils.getFileNameNoExt(blob.getFilename());
-            filename = filename + "."
-                    + mtr.getExtensionsFromMimetypeName(destMimeType).get(0);
+            filename = filename + "." + mtr.getExtensionsFromMimetypeName(destMimeType).get(0);
             result.setFilename(filename);
             return result;
         }

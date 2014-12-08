@@ -48,9 +48,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * Test class on security based on LDAP external server. By default this tests
- * are disabled because they required an external ldap server to be started.
- * Remove ignore annotation to enable it.
+ * Test class on security based on LDAP external server. By default this tests are disabled because they required an
+ * external ldap server to be started. Remove ignore annotation to enable it.
  */
 @Ignore
 @RunWith(FeaturesRunner.class)
@@ -103,10 +102,8 @@ public class TestExternalLDAPSessionSecurity {
     public void tearDown() throws NamingException {
         try {
             DirContext ctx = ((LDAPSession) userDirSession).getContext();
-            ldapFeature.destroyRecursively("ou=people,dc=example,dc=com", ctx,
-                    -1);
-            ldapFeature.destroyRecursively("ou=groups,dc=example,dc=com", ctx,
-                    -1);
+            ldapFeature.destroyRecursively("ou=people,dc=example,dc=com", ctx, -1);
+            ldapFeature.destroyRecursively("ou=groups,dc=example,dc=com", ctx, -1);
         } finally {
             userDirSession.close();
             groupDirSession.close();
@@ -191,22 +188,19 @@ public class TestExternalLDAPSessionSecurity {
         assertNotNull(entry);
 
         assertEquals("cn=members,ou=editable,ou=groups,dc=example,dc=com",
-                entry.getProperty(
-                        ExternalLDAPDirectoryFeature.GROUP_SCHEMANAME, "dn"));
+                entry.getProperty(ExternalLDAPDirectoryFeature.GROUP_SCHEMANAME, "dn"));
 
-        assertEquals(Arrays.asList("submembers"), entry.getProperty(
-                ExternalLDAPDirectoryFeature.GROUP_SCHEMANAME, "subGroups"));
+        assertEquals(Arrays.asList("submembers"),
+                entry.getProperty(ExternalLDAPDirectoryFeature.GROUP_SCHEMANAME, "subGroups"));
 
         // edit description and members but not subGroups
-        entry.setProperty(ExternalLDAPDirectoryFeature.GROUP_SCHEMANAME,
-                "description", "AWonderfulGroup");
-        entry.setProperty(ExternalLDAPDirectoryFeature.GROUP_SCHEMANAME,
-                "members", Arrays.asList("user1", "user2"));
+        entry.setProperty(ExternalLDAPDirectoryFeature.GROUP_SCHEMANAME, "description", "AWonderfulGroup");
+        entry.setProperty(ExternalLDAPDirectoryFeature.GROUP_SCHEMANAME, "members", Arrays.asList("user1", "user2"));
         groupDirSession.updateEntry(entry);
 
         entry = groupDirSession.getEntry("members");
-        Assert.assertEquals("AWonderfulGroup", entry.getProperty(
-                ExternalLDAPDirectoryFeature.GROUP_SCHEMANAME, "description"));
+        Assert.assertEquals("AWonderfulGroup",
+                entry.getProperty(ExternalLDAPDirectoryFeature.GROUP_SCHEMANAME, "description"));
 
         dummyLogin.logout();
     }

@@ -50,13 +50,11 @@ public class TestExportImportBlob {
 
     private void createDocs() throws Exception {
         rootDocument = session.getRootDocument();
-        workspace = session.createDocumentModel(rootDocument.getPathAsString(),
-                "ws1", "Workspace");
+        workspace = session.createDocumentModel(rootDocument.getPathAsString(), "ws1", "Workspace");
         workspace.setProperty("dublincore", "title", "test WS");
         workspace = session.createDocument(workspace);
 
-        docToExport = session.createDocumentModel(workspace.getPathAsString(),
-                "file", "File");
+        docToExport = session.createDocumentModel(workspace.getPathAsString(), "file", "File");
         docToExport.setProperty("dublincore", "title", "MyDoc");
 
         Blob blob = new StringBlob("SomeDummyContent");
@@ -73,16 +71,14 @@ public class TestExportImportBlob {
     public void testBlobFilenamePresent() throws Exception {
         createDocs();
 
-        ExportedDocument exportedDoc = new ExportedDocumentImpl(docToExport,
-                true);
+        ExportedDocument exportedDoc = new ExportedDocumentImpl(docToExport, true);
         assertEquals("File", exportedDoc.getType());
 
         session.removeDocument(docToExport.getRef());
         session.save();
         assertEquals(0, session.getChildren(workspace.getRef()).size());
 
-        DocumentWriter writer = new DocumentModelWriter(session,
-                rootDocument.getPathAsString());
+        DocumentWriter writer = new DocumentModelWriter(session, rootDocument.getPathAsString());
         writer.write(exportedDoc);
 
         DocumentModelList children = session.getChildren(workspace.getRef());

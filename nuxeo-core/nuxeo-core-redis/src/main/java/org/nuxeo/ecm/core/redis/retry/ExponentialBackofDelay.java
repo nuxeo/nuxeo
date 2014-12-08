@@ -20,7 +20,7 @@ public class ExponentialBackofDelay extends SimpleDelay {
 
     @Override
     protected long computeDelay() {
-        int delay =  base * (1 << ++attempt);
+        int delay = base * (1 << ++attempt);
         return TimeUnit.MILLISECONDS.convert(delay, TimeUnit.SECONDS);
     }
 

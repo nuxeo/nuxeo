@@ -41,28 +41,27 @@ public class IORelationAdapterProperties {
     public static final String IMPORT_GRAPH = "import-graph";
 
     /**
-     * Property representing a boolean value that indicates if only internal
-     * relations must be kept when exporting/importing.
+     * Property representing a boolean value that indicates if only internal relations must be kept when
+     * exporting/importing.
      * <p>
-     * For instance, if a document tree is copied, we could chose to ignore
-     * relations pointing to documents outside of the copied tree.
+     * For instance, if a document tree is copied, we could chose to ignore relations pointing to documents outside of
+     * the copied tree.
      * <p>
      * Default value: false.
      */
     public static final String IGNORE_EXTERNAL = "ignore-external";
 
     /**
-     * Property representing a boolean value that indicates if relations
-     * involving literals should be ignored when importing/exporting.
+     * Property representing a boolean value that indicates if relations involving literals should be ignored when
+     * importing/exporting.
      * <p>
      * Default value: false.
      */
     public static final String IGNORE_LITERALS = "ignore-literals";
 
     /**
-     * Property representing a boolean value that indicates if relations
-     * involving resources that are not QName resources should be ignored when
-     * importing/exporting.
+     * Property representing a boolean value that indicates if relations involving resources that are not QName
+     * resources should be ignored when importing/exporting.
      * <p>
      * Default value: false.
      */
@@ -71,38 +70,33 @@ public class IORelationAdapterProperties {
     /**
      * Property representing a list of predicates uris that should be filtered.
      * <p>
-     * If list is not empty, relations using a predicate which is not on this
-     * list will not be kept.
+     * If list is not empty, relations using a predicate which is not on this list will not be kept.
      */
     public static final String FILTER_PREDICATES = "filter-predicates";
 
     /**
      * Property representing a list of predicates uris that should be ignored.
      * <p>
-     * If list is not empty, relations using a predicate which is on this list
-     * will not be kept.
+     * If list is not empty, relations using a predicate which is on this list will not be kept.
      */
     public static final String IGNORE_PREDICATES = "ignore-predicates";
 
     /**
      * Property representing a list of metadata uris that should be filtered.
      * <p>
-     * If list is not empty, metadata (properties) for relations using a uri
-     * which is not on this list will not be kept.
+     * If list is not empty, metadata (properties) for relations using a uri which is not on this list will not be kept.
      */
     public static final String FILTER_METADATA = "filter-metatada";
 
     /**
      * Property representing a list of metadata uris that should be ignored.
      * <p>
-     * If list is not empty, metadata (properties) for relations using a uri
-     * which is on this list will not be kept.
+     * If list is not empty, metadata (properties) for relations using a uri which is on this list will not be kept.
      */
     public static final String IGNORE_METADATA = "ignore-metatada";
 
     /**
-     * Property representing a boolean value that indicates if metadata should
-     * not be kept when exporting/importing.
+     * Property representing a boolean value that indicates if metadata should not be kept when exporting/importing.
      * <p>
      * Default value: false.
      */
@@ -111,8 +105,8 @@ public class IORelationAdapterProperties {
     /**
      * Property representing a list of metadata uris that should be updated.
      * <p>
-     * If list is not empty, metadata (properties) for relations using a uri
-     * which is on this list will be updated to match current date.
+     * If list is not empty, metadata (properties) for relations using a uri which is on this list will be updated to
+     * match current date.
      * <p>
      * Current date is set as a literal as described in {@link RelationDate}
      */

@@ -22,8 +22,6 @@ import org.nuxeo.ecm.automation.jaxrs.io.EntityListWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- *
- *
  * @since 5.7.3
  */
 public class DirectoryEntriesWriter extends EntityListWriter<DirectoryEntry> {
@@ -36,8 +34,7 @@ public class DirectoryEntriesWriter extends EntityListWriter<DirectoryEntry> {
     }
 
     @Override
-    protected void writeItem(JsonGenerator jg, DirectoryEntry item)
-            throws ClientException, IOException {
+    protected void writeItem(JsonGenerator jg, DirectoryEntry item) throws ClientException, IOException {
         DirectoryEntryWriter dew = new DirectoryEntryWriter();
         dew.writeEntity(jg, item);
 

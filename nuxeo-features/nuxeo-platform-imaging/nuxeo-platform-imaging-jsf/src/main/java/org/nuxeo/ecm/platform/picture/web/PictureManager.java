@@ -84,48 +84,46 @@ public interface PictureManager {
     void setFilename(String filename);
 
     /**
-     * Gets the fileurl. FileUrl is used to create valid link expression for the
-     * download function from the index of the picture's views.
+     * Gets the fileurl. FileUrl is used to create valid link expression for the download function from the index of the
+     * picture's views.
      *
      * @return a String holding the fileurl.
      */
     String getFileurlPicture() throws ClientException;
 
     /**
-     * Sets the fileurl. FileUrl is used to create valid link expression for the
-     * download function from the index of the picture's views.
+     * Sets the fileurl. FileUrl is used to create valid link expression for the download function from the index of the
+     * picture's views.
      *
      * @param fileurlPicture a String holding the fileurl.
      */
     void setFileurlPicture(String fileurlPicture);
 
     /**
-     * Gets the index. This index is used to display the selected picture in
-     * view_picture.
+     * Gets the index. This index is used to display the selected picture in view_picture.
      *
      * @return an Integer holding the index.
      */
     Integer getIndex();
 
     /**
-     * Sets the index. This index is used to display the selected picture in
-     * view_picture.
+     * Sets the index. This index is used to display the selected picture in view_picture.
      *
      * @param index an Integer holding the index.
      */
     void setIndex(Integer index);
 
     /**
-     * Sets the selectedItems. This array contains an index and the title of
-     * each picture's view. It's used to dynamically the selected view.
+     * Sets the selectedItems. This array contains an index and the title of each picture's view. It's used to
+     * dynamically the selected view.
      *
      * @param selectItems an Array holding the selectItems.
      */
     void setSelectItems(ArrayList selectItems);
 
     /**
-     * Gets the selectedItems. This array contains an index and the title of
-     * each picture's view. It's used to dynamically the selected view.
+     * Gets the selectedItems. This array contains an index and the title of each picture's view. It's used to
+     * dynamically the selected view.
      *
      * @return an Array holding the selectItems.
      */

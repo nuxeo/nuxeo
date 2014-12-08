@@ -36,15 +36,13 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import com.sun.faces.facelets.el.LegacyValueBinding;
 
 /**
- * Generic value rule, used to evaluate an expression as a regular value
- * expression, or invoking a method expression.
+ * Generic value rule, used to evaluate an expression as a regular value expression, or invoking a method expression.
  * <p>
- * The method can have parameters and the expression must use parentheses even
- * if no parameters are needed.
+ * The method can have parameters and the expression must use parentheses even if no parameters are needed.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * @deprecated since 5.7.3: resolving method expressions for value expressions
- *             is now supported by the default EL, this is now useless
+ * @deprecated since 5.7.3: resolving method expressions for value expressions is now supported by the default EL, this
+ *             is now useless
  */
 @Deprecated
 public class GenericValueHolderRule extends MetaRule {
@@ -59,8 +57,7 @@ public class GenericValueHolderRule extends MetaRule {
 
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
-            ((ValueHolder) instance).setConverter(ctx.getFacesContext().getApplication().createConverter(
-                    converterId));
+            ((ValueHolder) instance).setConverter(ctx.getFacesContext().getApplication().createConverter(converterId));
         }
     }
 
@@ -74,8 +71,7 @@ public class GenericValueHolderRule extends MetaRule {
 
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
-            ((UIComponent) instance).setValueExpression("converter",
-                    attr.getValueExpression(ctx, Converter.class));
+            ((UIComponent) instance).setValueExpression("converter", attr.getValueExpression(ctx, Converter.class));
         }
     }
 
@@ -103,8 +99,7 @@ public class GenericValueHolderRule extends MetaRule {
 
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
-            ((UIComponent) instance).setValueExpression("value",
-                    attr.getValueExpression(ctx, Object.class));
+            ((UIComponent) instance).setValueExpression("value", attr.getValueExpression(ctx, Object.class));
         }
     }
 
@@ -120,21 +115,17 @@ public class GenericValueHolderRule extends MetaRule {
         public void applyMetadata(FaceletContext ctx, Object instance) {
             Class[] paramTypesClasses = new Class[0];
             Class returnType = Object.class;
-            MethodExpression meth = attr.getMethodExpression(ctx, returnType,
+            MethodExpression meth = attr.getMethodExpression(ctx, returnType, paramTypesClasses);
+            ValueExpression ve = new MethodValueExpression(ctx.getFunctionMapper(), ctx.getVariableMapper(), meth,
                     paramTypesClasses);
-            ValueExpression ve = new MethodValueExpression(
-                    ctx.getFunctionMapper(), ctx.getVariableMapper(), meth,
-                    paramTypesClasses);
-            ((UIComponent) instance).setValueBinding("value",
-                    new LegacyValueBinding(ve));
+            ((UIComponent) instance).setValueBinding("value", new LegacyValueBinding(ve));
         }
     }
 
     public static final GenericValueHolderRule Instance = new GenericValueHolderRule();
 
     @Override
-    public Metadata applyRule(String name, TagAttribute attribute,
-            MetadataTarget meta) {
+    public Metadata applyRule(String name, TagAttribute attribute, MetadataTarget meta) {
         if (meta.isTargetInstanceOf(ValueHolder.class)) {
 
             if ("converter".equals(name)) {

@@ -46,8 +46,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 /**
  * Layout widget recursion tag handler.
  * <p>
- * Iterates over a layout row widgets and apply next handlers as many times as
- * needed.
+ * Iterates over a layout row widgets and apply next handlers as many times as needed.
  * <p>
  * Only works when used inside a tag using the {@link LayoutRowTagHandler}.
  *
@@ -65,25 +64,21 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
     }
 
     /**
-     * For each widget in current row, exposes widget variables and applies
-     * next handler.
+     * For each widget in current row, exposes widget variables and applies next handler.
      * <p>
-     * Needs row to be exposed in context, so works in conjunction with
-     * {@link LayoutRowTagHandler}.
+     * Needs row to be exposed in context, so works in conjunction with {@link LayoutRowTagHandler}.
      * <p>
-     * Widget variables exposed: {@link RenderVariables.widgetVariables#widget}
-     * , same variable suffixed with "_n" where n is the widget level, and
-     * {@link RenderVariables.widgetVariables#widgetIndex}.
+     * Widget variables exposed: {@link RenderVariables.widgetVariables#widget} , same variable suffixed with "_n" where
+     * n is the widget level, and {@link RenderVariables.widgetVariables#widgetIndex}.
      */
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
+            ELException {
 
         // resolve widgets from row in context
         LayoutRow row = null;
         String rowVariableName = RenderVariables.rowVariables.layoutRow.name();
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        TagAttribute rowAttribute = helper.createAttribute(rowVariableName,
-                String.format("#{%s}", rowVariableName));
+        TagAttribute rowAttribute = helper.createAttribute(rowVariableName, String.format("#{%s}", rowVariableName));
         if (rowAttribute != null) {
             row = (LayoutRow) rowAttribute.getObject(ctx, LayoutRow.class);
         }
@@ -106,25 +101,19 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             // expose widget variables
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
             ExpressionFactory eFactory = ctx.getExpressionFactory();
-            ValueExpression widgetVe = eFactory.createValueExpression(widget,
-                    Widget.class);
-            variables.put(RenderVariables.widgetVariables.widget.name(),
-                    widgetVe);
+            ValueExpression widgetVe = eFactory.createValueExpression(widget, Widget.class);
+            variables.put(RenderVariables.widgetVariables.widget.name(), widgetVe);
             Integer level = null;
             String tagConfigId = null;
             if (widget != null) {
                 level = Integer.valueOf(widget.getLevel());
                 tagConfigId = widget.getTagConfigId();
             }
-            variables.put(String.format("%s_%s",
-                    RenderVariables.widgetVariables.widget.name(), level),
-                    widgetVe);
-            ValueExpression widgetIndexVe = eFactory.createValueExpression(
-                    Integer.valueOf(widgetCounter), Integer.class);
-            variables.put(RenderVariables.widgetVariables.widgetIndex.name(),
-                    widgetIndexVe);
-            variables.put(String.format("%s_%s",
-                    RenderVariables.widgetVariables.widgetIndex.name(), level),
+            variables.put(String.format("%s_%s", RenderVariables.widgetVariables.widget.name(), level), widgetVe);
+            ValueExpression widgetIndexVe = eFactory.createValueExpression(Integer.valueOf(widgetCounter),
+                    Integer.class);
+            variables.put(RenderVariables.widgetVariables.widgetIndex.name(), widgetIndexVe);
+            variables.put(String.format("%s_%s", RenderVariables.widgetVariables.widgetIndex.name(), level),
                     widgetIndexVe);
 
             // XXX: expose widget controls too, need to figure out
@@ -133,26 +122,18 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             if (widget != null) {
                 for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
                     String key = ctrl.getKey();
-                    String name = String.format(
-                            "%s_%s",
-                            RenderVariables.widgetVariables.widgetControl.name(),
-                            key);
+                    String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetControl.name(), key);
                     Serializable value = ctrl.getValue();
-                    variables.put(name,
-                            eFactory.createValueExpression(value, Object.class));
+                    variables.put(name, eFactory.createValueExpression(value, Object.class));
                 }
             }
 
             List<String> blockedPatterns = new ArrayList<String>();
-            blockedPatterns.add(RenderVariables.widgetVariables.widget.name()
-                    + "*");
-            blockedPatterns.add(RenderVariables.widgetVariables.widgetIndex.name()
-                    + "*");
-            blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name()
-                    + "_*");
+            blockedPatterns.add(RenderVariables.widgetVariables.widget.name() + "*");
+            blockedPatterns.add(RenderVariables.widgetVariables.widgetIndex.name() + "*");
+            blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");
 
-            FaceletHandler handler = helper.getAliasTagHandler(tagConfigId,
-                    variables, blockedPatterns, nextHandler);
+            FaceletHandler handler = helper.getAliasTagHandler(tagConfigId, variables, blockedPatterns, nextHandler);
 
             // apply
             handler.apply(ctx, parent);

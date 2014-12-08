@@ -21,10 +21,8 @@ import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializerHandler;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiWriter;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WikiBlockWriter extends WikiWriter {
 
@@ -36,10 +34,9 @@ public class WikiBlockWriter extends WikiWriter {
     }
 
     @Override
-    public void writeTo(WikiSerializerHandler handler, Writer writer)
-            throws IOException {
+    public void writeTo(WikiSerializerHandler handler, Writer writer) throws IOException {
         if (writer instanceof BlockWriter) {
-            BlockWriter parentWriter = (BlockWriter)writer;
+            BlockWriter parentWriter = (BlockWriter) writer;
             BlockWriter bw = new BlockWriter("__dynamic__wiki", blockName, parentWriter.getRegistry());
             boolean parentSuppressOutput = parentWriter.getSuppressOutput();
             try {

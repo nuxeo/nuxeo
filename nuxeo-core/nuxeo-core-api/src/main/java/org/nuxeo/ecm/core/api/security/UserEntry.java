@@ -49,7 +49,6 @@ public interface UserEntry extends Serializable {
      * @deprecated since 5.9.4 readonly is not used
      */
     @Deprecated
-    void addPrivilege(String permission, boolean granted,
-            boolean readOnly);
+    void addPrivilege(String permission, boolean granted, boolean readOnly);
 
 }

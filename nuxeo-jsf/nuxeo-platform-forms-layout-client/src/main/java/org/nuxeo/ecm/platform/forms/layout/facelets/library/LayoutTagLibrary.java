@@ -71,25 +71,21 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
 
         try {
             addFunction("widgetTypeDefinition",
-                    LayoutTagLibrary.class.getMethod("getWidgetTypeDefinition",
-                            new Class[] { String.class }));
+                    LayoutTagLibrary.class.getMethod("getWidgetTypeDefinition", new Class[] { String.class }));
         } catch (NoSuchMethodException e) {
             log.error(e, e);
         }
 
         try {
-            addFunction("fieldDefinitionsAsString",
-                    LayoutTagLibrary.class.getMethod(
-                            "getFieldDefinitionsAsString",
-                            new Class[] { FieldDefinition[].class }));
+            addFunction("fieldDefinitionsAsString", LayoutTagLibrary.class.getMethod("getFieldDefinitionsAsString",
+                    new Class[] { FieldDefinition[].class }));
         } catch (NoSuchMethodException e) {
             log.error(e, e);
         }
 
         try {
-            Method getSelectedRows = LayoutTagLibrary.class.getMethod(
-                    "getSelectedRows", new Class[] { Layout.class, List.class,
-                            boolean.class });
+            Method getSelectedRows = LayoutTagLibrary.class.getMethod("getSelectedRows", new Class[] { Layout.class,
+                    List.class, boolean.class });
             addFunction("selectedRows", getSelectedRows);
             addFunction("selectedColumns", getSelectedRows);
         } catch (NoSuchMethodException e) {
@@ -97,9 +93,8 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
         }
 
         try {
-            Method getNotSelectedRows = LayoutTagLibrary.class.getMethod(
-                    "getNotSelectedRows", new Class[] { Layout.class,
-                            List.class });
+            Method getNotSelectedRows = LayoutTagLibrary.class.getMethod("getNotSelectedRows", new Class[] {
+                    Layout.class, List.class });
             addFunction("notSelectedRows", getNotSelectedRows);
             addFunction("notSelectedColumns", getNotSelectedRows);
         } catch (NoSuchMethodException e) {
@@ -107,35 +102,30 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
         }
 
         try {
-            Method getDefaultSelectedRowNames = LayoutTagLibrary.class.getMethod(
-                    "getDefaultSelectedRowNames", new Class[] { Layout.class,
-                            boolean.class });
+            Method getDefaultSelectedRowNames = LayoutTagLibrary.class.getMethod("getDefaultSelectedRowNames",
+                    new Class[] { Layout.class, boolean.class });
             addFunction("defaultSelectedRowNames", getDefaultSelectedRowNames);
-            addFunction("defaultSelectedColumnNames",
-                    getDefaultSelectedRowNames);
+            addFunction("defaultSelectedColumnNames", getDefaultSelectedRowNames);
         } catch (NoSuchMethodException e) {
             log.error(e, e);
         }
 
         try {
-            Method isBoundToEditMode = BuiltinModes.class.getMethod(
-                    "isBoundToEditMode", new Class[] { String.class });
+            Method isBoundToEditMode = BuiltinModes.class.getMethod("isBoundToEditMode", new Class[] { String.class });
             addFunction("isBoundToEditMode", isBoundToEditMode);
         } catch (NoSuchMethodException e) {
             log.error(e, e);
         }
 
         try {
-            Method isLikePlainMode = BuiltinWidgetModes.class.getMethod(
-                    "isLikePlainMode", new Class[] { String.class });
+            Method isLikePlainMode = BuiltinWidgetModes.class.getMethod("isLikePlainMode", new Class[] { String.class });
             addFunction("isLikePlainMode", isLikePlainMode);
         } catch (NoSuchMethodException e) {
             log.error(e, e);
         }
 
         try {
-            Method isLikeViewMode = BuiltinWidgetModes.class.getMethod(
-                    "isLikeViewMode", new Class[] { String.class });
+            Method isLikeViewMode = BuiltinWidgetModes.class.getMethod("isLikeViewMode", new Class[] { String.class });
             addFunction("isLikeViewMode", isLikeViewMode);
         } catch (NoSuchMethodException e) {
             log.error(e, e);
@@ -143,8 +133,8 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
 
         // BBB
         try {
-            Method joinReRender = LayoutTagLibrary.class.getMethod(
-                    "joinReRender", new Class[] { String.class, String.class });
+            Method joinReRender = LayoutTagLibrary.class.getMethod("joinReRender", new Class[] { String.class,
+                    String.class });
             addFunction("joinReRender", joinReRender);
         } catch (NoSuchMethodException e) {
             log.error(e, e);
@@ -160,36 +150,30 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
     }
 
     /**
-     * Returns a String representing each of the field definitions property
-     * name, separated by a space.
+     * Returns a String representing each of the field definitions property name, separated by a space.
      */
     public static String getFieldDefinitionsAsString(FieldDefinition[] defs) {
         return LayoutFunctions.getFieldDefinitionsAsString(defs);
     }
 
-    public static List<LayoutRow> getSelectedRows(Layout layout,
-            List<String> selectedRowNames, boolean showAlwaysSelected) {
-        return LayoutFunctions.getSelectedRows(layout, selectedRowNames,
-                showAlwaysSelected);
+    public static List<LayoutRow> getSelectedRows(Layout layout, List<String> selectedRowNames,
+            boolean showAlwaysSelected) {
+        return LayoutFunctions.getSelectedRows(layout, selectedRowNames, showAlwaysSelected);
     }
 
-    public static List<LayoutRow> getNotSelectedRows(Layout layout,
-            List<String> selectedRowNames) {
+    public static List<LayoutRow> getNotSelectedRows(Layout layout, List<String> selectedRowNames) {
         return LayoutFunctions.getNotSelectedRows(layout, selectedRowNames);
     }
 
-    public static List<String> getDefaultSelectedRowNames(Layout layout,
-            boolean showAlwaysSelected) {
-        return LayoutFunctions.getDefaultSelectedRowNames(layout,
-                showAlwaysSelected);
+    public static List<String> getDefaultSelectedRowNames(Layout layout, boolean showAlwaysSelected) {
+        return LayoutFunctions.getDefaultSelectedRowNames(layout, showAlwaysSelected);
     }
 
     /**
      * Joins two strings to get a valid reRender attribute for ajax components.
      *
      * @since 5.7
-     * @deprecated since 6.0: use {@link #joinRender(String, String)}
-     *             instead.
+     * @deprecated since 6.0: use {@link #joinRender(String, String)} instead.
      */
     @Deprecated
     public static String joinReRender(String render1, String render2) {

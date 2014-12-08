@@ -41,11 +41,10 @@ import org.apache.directory.shared.ldap.schema.Normalizer;
 import org.nuxeo.ecm.directory.DirectoryException;
 
 /**
- * Helper class to parse and evaluate if a LDAP filter expression matches a
- * fetched LDAP entry.
+ * Helper class to parse and evaluate if a LDAP filter expression matches a fetched LDAP entry.
  * <p>
- * This is done by recursively evaluating the abstract syntax tree of the
- * expression as parsed by an apache directory shared method.
+ * This is done by recursively evaluating the abstract syntax tree of the expression as parsed by an apache directory
+ * shared method.
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
@@ -61,17 +60,14 @@ public class LDAPFilterMatcher {
     }
 
     /**
-     * Check whether a raw string filter expression matches on the given LDAP
-     * entry.
+     * Check whether a raw string filter expression matches on the given LDAP entry.
      *
      * @param attributes the ldap entry to match
-     * @param filter a raw string filter expression (eg.
-     *            <tt>(!(&(attr1=*)(attr2=value2)(attr3=val*)))</tt> )
+     * @param filter a raw string filter expression (eg. <tt>(!(&(attr1=*)(attr2=value2)(attr3=val*)))</tt> )
      * @return true if the ldap entry matches the filter
      * @throws DirectoryException if the filter is not a valid LDAP filter
      */
-    public boolean match(Attributes attributes, String filter)
-            throws DirectoryException {
+    public boolean match(Attributes attributes, String filter) throws DirectoryException {
         if (filter == null || "".equals(filter)) {
             return true;
         }
@@ -79,13 +75,11 @@ public class LDAPFilterMatcher {
             ExprNode parsedFilter = parser.parse(filter);
             return recursiveMatch(attributes, parsedFilter);
         } catch (DirectoryException | IOException | ParseException e) {
-            throw new DirectoryException("could not parse LDAP filter: "
-                    + filter, e);
+            throw new DirectoryException("could not parse LDAP filter: " + filter, e);
         }
     }
 
-    private boolean recursiveMatch(Attributes attributes, ExprNode filterElement)
-            throws DirectoryException {
+    private boolean recursiveMatch(Attributes attributes, ExprNode filterElement) throws DirectoryException {
         if (filterElement instanceof PresenceNode) {
             return presenceMatch(attributes, (PresenceNode) filterElement);
         } else if (filterElement instanceof SimpleNode) {
@@ -95,27 +89,23 @@ public class LDAPFilterMatcher {
         } else if (filterElement instanceof BranchNode) {
             return branchMatch(attributes, (BranchNode) filterElement);
         } else {
-            throw new DirectoryException("unsupported filter element type: "
-                    + filterElement);
+            throw new DirectoryException("unsupported filter element type: " + filterElement);
         }
     }
 
     /**
      * Handle attribute presence check (eg: <tt>(attr1=*)</tt>)
      */
-    private boolean presenceMatch(Attributes attributes,
-            PresenceNode presenceElement) {
+    private boolean presenceMatch(Attributes attributes, PresenceNode presenceElement) {
         return attributes.get(presenceElement.getAttribute()) != null;
     }
 
     /**
-     * Handle simple equality test on any non-null value (eg:
-     * <tt>(attr2=value2)</tt>).
+     * Handle simple equality test on any non-null value (eg: <tt>(attr2=value2)</tt>).
      *
      * @return true if the equality holds
      */
-    protected static boolean simpleMatch(Attributes attributes,
-            SimpleNode simpleElement) throws DirectoryException {
+    protected static boolean simpleMatch(Attributes attributes, SimpleNode simpleElement) throws DirectoryException {
         Attribute attribute = attributes.get(simpleElement.getAttribute());
         if (attribute == null) {
             // null attribute cannot match any equality statement
@@ -144,9 +134,7 @@ public class LDAPFilterMatcher {
                 rawValues.close();
             }
         } catch (NamingException e) {
-            throw new DirectoryException(
-                    "could not retrieve value for attribute: "
-                            + simpleElement.getAttribute());
+            throw new DirectoryException("could not retrieve value for attribute: " + simpleElement.getAttribute());
         }
         return false;
     }
@@ -169,13 +157,11 @@ public class LDAPFilterMatcher {
     }
 
     /**
-     * Implement the substring match on any non-null value of a string attribute
-     * (eg: <tt>(attr3=val*)</tt>).
+     * Implement the substring match on any non-null value of a string attribute (eg: <tt>(attr3=val*)</tt>).
      *
      * @return the result of the regex evaluation
      */
-    protected boolean substringMatch(Attributes attributes,
-            SubstringNode substringElement) throws DirectoryException {
+    protected boolean substringMatch(Attributes attributes, SubstringNode substringElement) throws DirectoryException {
         try {
 
             Attribute attribute = attributes.get(substringElement.getAttribute());
@@ -195,7 +181,7 @@ public class LDAPFilterMatcher {
                         sb.append(Pattern.quote((String) normalizer.normalize(initial)));
                     }
                     sb.append(".*");
-                    for (Object segment: substringElement.getAny()) {
+                    for (Object segment : substringElement.getAny()) {
                         if (segment instanceof String) {
                             sb.append(Pattern.quote((String) normalizer.normalize(segment)));
                             sb.append(".*");
@@ -209,13 +195,11 @@ public class LDAPFilterMatcher {
                         if (isCaseSensitiveSubstringMatch(attribute)) {
                             pattern = Pattern.compile(sb.toString());
                         } else {
-                            pattern = Pattern.compile(sb.toString(),
-                                    Pattern.CASE_INSENSITIVE);
+                            pattern = Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
                         }
                     } catch (PatternSyntaxException e) {
-                        throw new DirectoryException(
-                                "could not build regexp for substring: "
-                                        + substringElement.toString());
+                        throw new DirectoryException("could not build regexp for substring: "
+                                + substringElement.toString());
                     }
                     if (pattern.matcher(rawValue).matches()) {
                         return true;
@@ -226,9 +210,7 @@ public class LDAPFilterMatcher {
             }
             return false;
         } catch (NamingException e1) {
-            throw new DirectoryException(
-                    "could not retrieve value for attribute: "
-                            + substringElement.getAttribute());
+            throw new DirectoryException("could not retrieve value for attribute: " + substringElement.getAttribute());
         }
     }
 
@@ -240,13 +222,11 @@ public class LDAPFilterMatcher {
     }
 
     /**
-     * Handle conjunction, disjunction and negation nodes and recursively call
-     * the generic matcher on children.
+     * Handle conjunction, disjunction and negation nodes and recursively call the generic matcher on children.
      *
      * @return the boolean value of the evaluation of the sub expression
      */
-    private boolean branchMatch(Attributes attributes, BranchNode branchElement)
-            throws DirectoryException {
+    private boolean branchMatch(Attributes attributes, BranchNode branchElement) throws DirectoryException {
         if (branchElement.isConjunction()) {
             for (ExprNode child : branchElement.getChildren()) {
                 if (!recursiveMatch(attributes, child)) {
@@ -264,9 +244,7 @@ public class LDAPFilterMatcher {
         } else if (branchElement.isNegation()) {
             return !recursiveMatch(attributes, branchElement.getChild());
         } else {
-            throw new DirectoryException(
-                    "unsupported branching filter element type: "
-                            + branchElement.toString());
+            throw new DirectoryException("unsupported branching filter element type: " + branchElement.toString());
         }
     }
 

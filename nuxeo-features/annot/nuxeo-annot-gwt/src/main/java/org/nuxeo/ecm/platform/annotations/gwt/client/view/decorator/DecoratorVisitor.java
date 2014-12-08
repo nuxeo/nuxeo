@@ -23,7 +23,6 @@ import org.nuxeo.ecm.platform.annotations.gwt.client.util.NodeProcessor;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public interface DecoratorVisitor extends NodeProcessor {
 

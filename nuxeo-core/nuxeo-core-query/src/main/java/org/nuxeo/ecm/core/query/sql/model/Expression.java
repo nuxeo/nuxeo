@@ -19,17 +19,17 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 /**
  * An infix expression.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Expression implements Operand {
 
     private static final long serialVersionUID = 6007989243273673300L;
 
     public final Operator operator;
-    public final Operand lvalue;
-    public final Operand rvalue;
 
+    public final Operand lvalue;
+
+    public final Operand rvalue;
 
     public Expression(Operand lvalue, Operator operator, Operand rvalue) {
         this.lvalue = lvalue;
@@ -96,9 +96,8 @@ public class Expression implements Operand {
         return result;
     }
 
-
     public boolean isPathExpression() {
-        return (lvalue instanceof Reference) && NXQL.ECM_PATH.equals(((Reference)lvalue).name);
+        return (lvalue instanceof Reference) && NXQL.ECM_PATH.equals(((Reference) lvalue).name);
     }
 
 }

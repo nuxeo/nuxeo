@@ -34,8 +34,7 @@ public class DocumentPropertyTest {
 
     @Test
     public void theSessionIsUsable() throws Exception {
-        DocumentModel doc = session.createDocumentModel(
-                "/default-domain/workspaces", "myfile", "File");
+        DocumentModel doc = session.createDocumentModel("/default-domain/workspaces", "myfile", "File");
         StringBlob blob = new StringBlob("test", "text/plain");
         blob.setFilename("myfile");
         blob.setDigest("mydigest");
@@ -43,8 +42,7 @@ public class DocumentPropertyTest {
         doc = session.createDocument(doc);
         doc = session.getDocument(doc.getRef());
         assertEquals("myfile", doc.getPropertyValue("file:content/name"));
-        assertEquals("mydigest",
-                doc.getPropertyValue("file:content/digest"));
+        assertEquals("mydigest", doc.getPropertyValue("file:content/digest"));
     }
 
 }

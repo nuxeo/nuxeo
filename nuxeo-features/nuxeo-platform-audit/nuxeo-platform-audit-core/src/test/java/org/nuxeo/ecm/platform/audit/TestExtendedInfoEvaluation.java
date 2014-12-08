@@ -44,8 +44,7 @@ public class TestExtendedInfoEvaluation extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        evaluatorUnderTest = new ExpressionEvaluator(
-                new ExpressionFactoryImpl());
+        evaluatorUnderTest = new ExpressionEvaluator(new ExpressionFactoryImpl());
 
         openSession();
     }
@@ -59,8 +58,7 @@ public class TestExtendedInfoEvaluation extends SQLRepositoryTestCase {
 
     protected DocumentModel doCreateDocument() throws ClientException {
         DocumentModel rootDocument = session.getRootDocument();
-        DocumentModel model = session.createDocumentModel(
-                rootDocument.getPathAsString(), "youps", "File");
+        DocumentModel model = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");
 
         return session.createDocument(model);
@@ -70,18 +68,16 @@ public class TestExtendedInfoEvaluation extends SQLRepositoryTestCase {
     public void testBean() throws ClientException {
         ExpressionContext context = new ExpressionContext();
         DocumentModel source = doCreateDocument();
-        EventContext eventContext = new DocumentEventContext(session,
-                session.getPrincipal(), source);
+        EventContext eventContext = new DocumentEventContext(session, session.getPrincipal(), source);
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("test", "test");
         eventContext.setProperties(properties);
         evaluatorUnderTest.bindValue(context, "context", eventContext);
-        DocumentModel value = evaluatorUnderTest.evaluateExpression(context,
-                "${context.arguments[0]}", DocumentModel.class);
+        DocumentModel value = evaluatorUnderTest.evaluateExpression(context, "${context.arguments[0]}",
+                DocumentModel.class);
         assertNotNull(value);
         assertEquals(source, value);
-        String test = evaluatorUnderTest.evaluateExpression(context,
-                "${context.properties.test}", String.class);
+        String test = evaluatorUnderTest.evaluateExpression(context, "${context.properties.test}", String.class);
         assertNotNull(value);
         assertEquals("test", test);
     }

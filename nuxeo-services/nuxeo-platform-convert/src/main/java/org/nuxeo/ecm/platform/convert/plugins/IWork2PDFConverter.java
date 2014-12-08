@@ -41,40 +41,34 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
  */
 public class IWork2PDFConverter implements Converter {
 
-    public static final List<String> IWORK_MIME_TYPES = Arrays.asList(new String[] {
-            "application/vnd.apple.pages", "application/vnd.apple.keynote",
-            "application/vnd.apple.numbers", "application/vnd.apple.iwork" });
+    public static final List<String> IWORK_MIME_TYPES = Arrays.asList(new String[] { "application/vnd.apple.pages",
+            "application/vnd.apple.keynote", "application/vnd.apple.numbers", "application/vnd.apple.iwork" });
 
     private static final String IWORK_PREVIEW_FILE = "QuickLook/Preview.pdf";
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         try {
             // retrieve the blob and verify its mimeType
             Blob blob = blobHolder.getBlob();
             String mimeType = blob.getMimeType();
 
-            if (mimeType == null
-                    || !IWORK_MIME_TYPES.contains(mimeType)) {
+            if (mimeType == null || !IWORK_MIME_TYPES.contains(mimeType)) {
                 throw new ConversionException("not an iWork file");
             }
             // look for the pdf file
             if (ZipUtils.hasEntry(blob.getStream(), IWORK_PREVIEW_FILE)) {
                 // pdf file exist, let's extract it and return it as a
                 // BlobHolder.
-                InputStream previewPDFFile = ZipUtils.getEntryContentAsStream(
-                        blob.getStream(), IWORK_PREVIEW_FILE);
+                InputStream previewPDFFile = ZipUtils.getEntryContentAsStream(blob.getStream(), IWORK_PREVIEW_FILE);
                 Blob previewBlob = new FileBlob(previewPDFFile);
                 return new SimpleCachableBlobHolder(previewBlob);
             } else {
                 // Pdf file does not exist, conversion cannot be done.
-                throw new ConversionException(
-                        "iWork file does not contain a pdf preview.");
+                throw new ConversionException("iWork file does not contain a pdf preview.");
             }
         } catch (IOException e) {
-            throw new ConversionException(
-                    "Could not find the pdf preview in the iWork file", e);
+            throw new ConversionException("Could not find the pdf preview in the iWork file", e);
         }
     }
 

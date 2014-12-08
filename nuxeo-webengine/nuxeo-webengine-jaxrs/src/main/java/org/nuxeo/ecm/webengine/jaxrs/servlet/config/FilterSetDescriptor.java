@@ -23,21 +23,19 @@ import org.nuxeo.ecm.webengine.jaxrs.servlet.mapping.PathMatcher;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("filters")
 public class FilterSetDescriptor {
 
     /**
-     * To be used only when a filter set is declared outside a servlet.
-     * This is the ID of the contributed filter set.
+     * To be used only when a filter set is declared outside a servlet. This is the ID of the contributed filter set.
      */
     @XNode("@id")
     protected String id;
 
     /**
-     * To be used only when a filter set is declared outside a servlet.
-     * This is the target servlet name where the filter should be added.
+     * To be used only when a filter set is declared outside a servlet. This is the target servlet name where the filter
+     * should be added.
      */
     @XNode("@target")
     protected String targetServlet;

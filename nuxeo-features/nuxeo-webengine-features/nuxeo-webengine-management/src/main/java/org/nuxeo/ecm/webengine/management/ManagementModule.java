@@ -30,8 +30,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
 /**
- * Web object implementation corresponding to the root module for management
- * (module used for administrative purpose).
+ * Web object implementation corresponding to the root module for management (module used for administrative purpose).
  *
  * @author mcedica
  */

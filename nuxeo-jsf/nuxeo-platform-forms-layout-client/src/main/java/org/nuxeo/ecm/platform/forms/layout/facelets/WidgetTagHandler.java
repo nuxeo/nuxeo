@@ -54,8 +54,7 @@ import com.sun.faces.facelets.el.VariableMapperWrapper;
 /**
  * Widget tag handler.
  * <p>
- * Applies {@link WidgetTypeHandler} found for given widget, in given mode and
- * for given value.
+ * Applies {@link WidgetTypeHandler} found for given widget, in given mode and for given value.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -102,9 +101,8 @@ public class WidgetTagHandler extends MetaTagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "widget", "name",
-            "category", "definition", "mode", "layoutName", "value",
-            "resolveOnly" };
+    protected final String[] reservedVarsArray = { "id", "widget", "name", "category", "definition", "mode",
+            "layoutName", "value", "resolveOnly" };
 
     public WidgetTagHandler(TagConfig config) {
         super(config);
@@ -123,30 +121,24 @@ public class WidgetTagHandler extends MetaTagHandler {
 
         // additional checks
         if (name == null && widget == null && definition == null) {
-            throw new TagException(this.tag,
-                    "At least one of attributes 'name', 'widget' "
-                            + "or 'definition' is required");
+            throw new TagException(this.tag, "At least one of attributes 'name', 'widget' "
+                    + "or 'definition' is required");
         }
         if (widget == null && (name != null || definition != null)) {
             if (mode == null) {
-                throw new TagException(this.tag,
-                        "Attribute 'mode' is required when using attribute"
-                                + " 'name' or 'definition' so that the "
-                                + "widget instance " + "can be resolved");
+                throw new TagException(this.tag, "Attribute 'mode' is required when using attribute"
+                        + " 'name' or 'definition' so that the " + "widget instance " + "can be resolved");
             }
         }
     }
 
     /**
-     * Renders given widget resolving its {@link FaceletHandler} from
-     * {@link WebLayoutManager} configuration.
+     * Renders given widget resolving its {@link FaceletHandler} from {@link WebLayoutManager} configuration.
      * <p>
-     * Variables exposed: {@link RenderVariables.globalVariables#value}, same
-     * variable suffixed with "_n" where n is the widget level, and
-     * {@link RenderVariables.globalVariables#document}.
+     * Variables exposed: {@link RenderVariables.globalVariables#value}, same variable suffixed with "_n" where n is the
+     * widget level, and {@link RenderVariables.globalVariables#document}.
      */
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
         // compute value name to set on widget instance in case it's changed
         // from first computation
         String valueName = null;
@@ -182,15 +174,13 @@ public class WidgetTagHandler extends MetaTagHandler {
                 if (category != null) {
                     catValue = category.getValue(ctx);
                 }
-                widgetInstance = layoutService.getWidget(ctx, nameValue,
-                        catValue, modeValue, valueName, layoutNameValue);
+                widgetInstance = layoutService.getWidget(ctx, nameValue, catValue, modeValue, valueName,
+                        layoutNameValue);
                 widgetInstanceBuilt = true;
             } else if (definition != null) {
-                WidgetDefinition widgetDef = (WidgetDefinition) definition.getObject(
-                        ctx, WidgetDefinition.class);
+                WidgetDefinition widgetDef = (WidgetDefinition) definition.getObject(ctx, WidgetDefinition.class);
                 if (widgetDef != null) {
-                    widgetInstance = layoutService.getWidget(ctx, widgetDef,
-                            modeValue, valueName, layoutNameValue);
+                    widgetInstance = layoutService.getWidget(ctx, widgetDef, modeValue, valueName, layoutNameValue);
                     widgetInstanceBuilt = true;
                 }
             }
@@ -198,14 +188,12 @@ public class WidgetTagHandler extends MetaTagHandler {
         }
         if (widgetInstance != null) {
             // add additional properties put on tag
-            String widgetPropertyMarker = RenderVariables.widgetVariables.widgetProperty.name()
-                    + "_";
+            String widgetPropertyMarker = RenderVariables.widgetVariables.widgetProperty.name() + "_";
             List<String> reservedVars = Arrays.asList(reservedVarsArray);
             for (TagAttribute var : vars) {
                 String localName = var.getLocalName();
                 if (!reservedVars.contains(localName)) {
-                    if (localName != null
-                            && localName.startsWith(widgetPropertyMarker)) {
+                    if (localName != null && localName.startsWith(widgetPropertyMarker)) {
                         localName = localName.substring(widgetPropertyMarker.length());
                     }
                     widgetInstance.setProperty(localName, var.getValue());
@@ -216,29 +204,21 @@ public class WidgetTagHandler extends MetaTagHandler {
                 // expose widget variable to the context as layout row has not
                 // done it already, and set unique id on widget and sub widgets
                 // before exposing them to the context
-                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx,
-                        config);
-                WidgetTagHandler.generateWidgetIdsRecursive(helper,
-                        widgetInstance);
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+                WidgetTagHandler.generateWidgetIdsRecursive(helper, widgetInstance);
 
                 VariableMapper vm = new VariableMapperWrapper(orig);
                 ctx.setVariableMapper(vm);
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
-                ValueExpression widgetVe = eFactory.createValueExpression(
-                        widgetInstance, Widget.class);
-                vm.setVariable(RenderVariables.widgetVariables.widget.name(),
-                        widgetVe);
+                ValueExpression widgetVe = eFactory.createValueExpression(widgetInstance, Widget.class);
+                vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
                 // expose widget controls too
                 for (Map.Entry<String, Serializable> ctrl : widgetInstance.getControls().entrySet()) {
                     String key = ctrl.getKey();
-                    String name = String.format(
-                            "%s_%s",
-                            RenderVariables.widgetVariables.widgetControl.name(),
+                    String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetControl.name(), key);
+                    String value = String.format("#{%s.controls.%s}", RenderVariables.widgetVariables.widget.name(),
                             key);
-                    String value = String.format("#{%s.controls.%s}",
-                            RenderVariables.widgetVariables.widget.name(), key);
-                    vm.setVariable(name, eFactory.createValueExpression(ctx,
-                            value, Object.class));
+                    vm.setVariable(name, eFactory.createValueExpression(ctx, value, Object.class));
                 }
             }
 
@@ -251,8 +231,7 @@ public class WidgetTagHandler extends MetaTagHandler {
                 if (resolveOnlyBool) {
                     nextHandler.apply(ctx, parent);
                 } else {
-                    applyWidgetHandler(ctx, parent, config, widgetInstance,
-                            value, true, nextHandler);
+                    applyWidgetHandler(ctx, parent, config, widgetInstance, value, true, nextHandler);
                 }
             } finally {
                 ctx.setVariableMapper(orig);
@@ -260,8 +239,7 @@ public class WidgetTagHandler extends MetaTagHandler {
         }
     }
 
-    public static void generateWidgetIdsRecursive(FaceletHandlerHelper helper,
-            Widget widget) {
+    public static void generateWidgetIdsRecursive(FaceletHandlerHelper helper, Widget widget) {
         if (widget == null) {
             return;
         }
@@ -274,18 +252,15 @@ public class WidgetTagHandler extends MetaTagHandler {
         }
     }
 
-    public static void applyWidgetHandler(FaceletContext ctx,
-            UIComponent parent, TagConfig config, Widget widget,
-            TagAttribute value, boolean fillVariables,
-            FaceletHandler nextHandler) throws IOException {
+    public static void applyWidgetHandler(FaceletContext ctx, UIComponent parent, TagConfig config, Widget widget,
+            TagAttribute value, boolean fillVariables, FaceletHandler nextHandler) throws IOException {
         if (widget == null) {
             return;
         }
         WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        FaceletHandler handler = layoutService.getFaceletHandler(ctx, config,
-                widget, nextHandler);
+        FaceletHandler handler = layoutService.getFaceletHandler(ctx, config, widget, nextHandler);
         if (handler == null) {
             return;
         }
@@ -300,17 +275,16 @@ public class WidgetTagHandler extends MetaTagHandler {
                 valueExpr = value.getValueExpression(ctx, Object.class);
             }
 
-            variables.put(RenderVariables.globalVariables.value.name(),
-                    valueExpr);
-            variables.put(String.format("%s_%s",
-                    RenderVariables.globalVariables.value.name(),
-                    Integer.valueOf(widget.getLevel())), valueExpr);
+            variables.put(RenderVariables.globalVariables.value.name(), valueExpr);
+            variables.put(
+                    String.format("%s_%s", RenderVariables.globalVariables.value.name(),
+                            Integer.valueOf(widget.getLevel())), valueExpr);
             // document as alias to value
             // variables.put(RenderVariables.globalVariables.document.name(),
             // valueExpr);
 
-            FaceletHandler handlerWithVars = helper.getAliasTagHandler(
-                    widget.getTagConfigId(), variables, null, handler);
+            FaceletHandler handlerWithVars = helper.getAliasTagHandler(widget.getTagConfigId(), variables, null,
+                    handler);
             // apply
             handlerWithVars.apply(ctx, parent);
 

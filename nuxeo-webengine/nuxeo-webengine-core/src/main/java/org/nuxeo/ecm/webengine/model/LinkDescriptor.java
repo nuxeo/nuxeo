@@ -106,8 +106,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
                 if (handlerClass != null) {
                     Object obj = resource.getModule().loadClass(handlerClass).newInstance();
                     if (obj instanceof LinkHandlerFactory) {
-                        handler = ((LinkHandlerFactory) obj).getHandler(this,
-                                resource);
+                        handler = ((LinkHandlerFactory) obj).getHandler(this, resource);
                     } else {
                         handler = (LinkHandler) obj;
                     }
@@ -158,8 +157,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     }
 
     public boolean acceptResource(Resource context) {
-        if (type == ResourceType.ROOT_TYPE_NAME
-                && adapter == ResourceType.ROOT_TYPE_NAME && facets == null) {
+        if (type == ResourceType.ROOT_TYPE_NAME && adapter == ResourceType.ROOT_TYPE_NAME && facets == null) {
             return true;
         }
         if (facets != null && facets.length > 0) {
@@ -207,8 +205,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         StringBuilder res = new StringBuilder();
         res.append(parentPath);
         // avoid adding duplicate '/' character
-        if (parentPath != null && parentPath.endsWith("/") && path != null
-                && path.startsWith("/")) {
+        if (parentPath != null && parentPath.endsWith("/") && path != null && path.startsWith("/")) {
             res.append(path.substring(1));
         } else {
             res.append(path);
@@ -228,12 +225,10 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
                 categories.addAll(fragment.categories);
             }
         }
-        if (fragment.type != null
-                && !fragment.type.equals(ResourceType.ROOT_TYPE_NAME)) {
+        if (fragment.type != null && !fragment.type.equals(ResourceType.ROOT_TYPE_NAME)) {
             type = fragment.type;
         }
-        if (fragment.adapter != null
-                && !fragment.adapter.equals(ResourceType.ROOT_TYPE_NAME)) {
+        if (fragment.adapter != null && !fragment.adapter.equals(ResourceType.ROOT_TYPE_NAME)) {
             adapter = fragment.adapter;
         }
         if (fragment.facets != null && fragment.facets.length > 0) {

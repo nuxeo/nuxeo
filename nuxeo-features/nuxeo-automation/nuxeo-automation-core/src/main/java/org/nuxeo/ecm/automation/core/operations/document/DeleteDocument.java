@@ -21,7 +21,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = DeleteDocument.ID, category = Constants.CAT_DOCUMENT, label = "Delete", description = "Delete the input document. The previous context input will be restored for the next operation.")
@@ -32,7 +31,7 @@ public class DeleteDocument {
     @Context
     protected CoreSession session;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef doc) {
         // if (soft) {
         // //TODO impl safe delete
@@ -44,7 +43,7 @@ public class DeleteDocument {
         return null;
     }
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
         // if (soft) {
         // //TODO impl safe delete
@@ -55,6 +54,5 @@ public class DeleteDocument {
         // TODO ctx.pop
         return null;
     }
-
 
 }

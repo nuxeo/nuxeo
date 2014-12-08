@@ -24,28 +24,22 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime component that provides the {@link CounterManager} service.
- *
- * Uses Simon Counters for implementation
+ * Runtime component that provides the {@link CounterManager} service. Uses Simon Counters for implementation
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
-public class CounterManagerImpl extends DefaultComponent implements
-        CounterManager {
+public class CounterManagerImpl extends DefaultComponent implements CounterManager {
 
     public static final String COUNTER_PREFIX = "org.nuxeo";
 
     protected CounterHistoryRecorder history = new CounterHistoryRecorder(50);
 
     public void enableCounters() {
-        SimonManager.getCounter(COUNTER_PREFIX).setState(SimonState.ENABLED,
-                true);
+        SimonManager.getCounter(COUNTER_PREFIX).setState(SimonState.ENABLED, true);
     }
 
     public void disableCounters() {
-        SimonManager.getCounter(COUNTER_PREFIX).setState(SimonState.DISABLED,
-                true);
+        SimonManager.getCounter(COUNTER_PREFIX).setState(SimonState.DISABLED, true);
     }
 
     @Override

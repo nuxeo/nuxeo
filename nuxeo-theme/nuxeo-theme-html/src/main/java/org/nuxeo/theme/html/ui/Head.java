@@ -36,10 +36,8 @@ public class Head {
         StringBuilder sb = new StringBuilder();
 
         String themeName = params.get("themeName");
-        final ThemeElement theme = Manager.getThemeManager().getThemeByName(
-                themeName);
-        final Widget widget = (Widget) ElementFormatter.getFormatFor(theme,
-                "widget");
+        final ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
+        final Widget widget = (Widget) ElementFormatter.getFormatFor(theme, "widget");
 
         if (widget == null) {
             log.warn("Theme " + themeName + " has no widget.");
@@ -48,25 +46,19 @@ public class Head {
 
             // Charset
             final String charset = properties.getProperty("charset", "utf-8");
-            sb.append(String.format(
-                    "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=%s\"/>",
-                    charset));
+            sb.append(String.format("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=%s\"/>", charset));
 
             // Site icon
             String icon = properties.getProperty("icon", "/favicon.ico");
             String mimeType = getMimeType(icon);
-            sb.append(String.format(
-                    "<link rel=\"icon\" href=\"%s\" type=\""+ mimeType +"\"/>",
-                    icon));
+            sb.append(String.format("<link rel=\"icon\" href=\"%s\" type=\"" + mimeType + "\"/>", icon));
 
             // If specified use a real .ico file for IE
             final String iconIco = properties.getProperty("iconIco", null);
             if (StringUtils.isNotEmpty(iconIco)) {
                 icon = iconIco;
             }
-            sb.append(String.format(
-                    "<link rel=\"shortcut icon\" href=\"%s\" type=\"image/x-icon\"/>",
-                    icon));
+            sb.append(String.format("<link rel=\"shortcut icon\" href=\"%s\" type=\"image/x-icon\"/>", icon));
         }
 
         // Base URL
@@ -91,11 +83,11 @@ public class Head {
         if (index > 0) {
             // Handle only gif and png
             String ext = ico.substring(1 + index);
-            switch (ext){
-                case "gif":
-                    return "image/gif";
-                case "png":
-                    return "image/png";
+            switch (ext) {
+            case "gif":
+                return "image/gif";
+            case "png":
+                return "image/png";
             }
         }
         return "image/x-icon";

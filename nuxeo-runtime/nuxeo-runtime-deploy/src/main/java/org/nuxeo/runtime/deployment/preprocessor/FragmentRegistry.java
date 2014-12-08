@@ -32,8 +32,7 @@ import org.nuxeo.common.collections.DependencyTree;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class FragmentRegistry extends
-        DependencyTree<String, FragmentDescriptor> {
+public class FragmentRegistry extends DependencyTree<String, FragmentDescriptor> {
 
     private static final Log log = LogFactory.getLog(FragmentRegistry.class);
 
@@ -43,10 +42,8 @@ public class FragmentRegistry extends
     public void add(FragmentDescriptor fragment) {
         if (fragments.containsKey(fragment.name)) {
             FragmentDescriptor existing = fragments.get(fragment.name);
-            log.error(String.format(
-                    "Overriding fragment with name '%s' and path '%s' "
-                            + "that is already present with path '%s'",
-                    fragment.name, fragment.filePath, existing.filePath));
+            log.error(String.format("Overriding fragment with name '%s' and path '%s' "
+                    + "that is already present with path '%s'", fragment.name, fragment.filePath, existing.filePath));
         }
         fragments.put(fragment.name, fragment);
     }
@@ -138,8 +135,7 @@ public class FragmentRegistry extends
         }
 
         // add the "all" marker fragment
-        add(FragmentDescriptor.ALL.name, FragmentDescriptor.ALL,
-                (Collection<String>) null);
+        add(FragmentDescriptor.ALL.name, FragmentDescriptor.ALL, (Collection<String>) null);
 
         fragments.clear();
     }

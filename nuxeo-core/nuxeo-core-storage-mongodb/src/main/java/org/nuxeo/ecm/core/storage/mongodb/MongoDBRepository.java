@@ -136,16 +136,14 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     // used also by unit tests
-    public static MongoClient newMongoClient(
-            MongoDBRepositoryDescriptor descriptor) throws UnknownHostException {
+    public static MongoClient newMongoClient(MongoDBRepositoryDescriptor descriptor) throws UnknownHostException {
         ServerAddress addr = new ServerAddress(descriptor.server);
         // TODO sharding options
         // TODO mongoClient.setWriteConcern
         return new MongoClient(addr);
     }
 
-    protected static DBCollection getCollection(MongoClient mongoClient,
-            String name) {
+    protected static DBCollection getCollection(MongoClient mongoClient, String name) {
         // TODO configure db name
         // TODO authentication
         DB db = mongoClient.getDB(DB_NAME);
@@ -153,14 +151,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     // used also by unit tests
-    public static DBCollection getCollection(
-            MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
+    public static DBCollection getCollection(MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
         return getCollection(mongoClient, descriptor.name);
     }
 
     // used also by unit tests
-    public static DBCollection getCountersCollection(
-            MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
+    public static DBCollection getCountersCollection(MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
         return getCollection(mongoClient, descriptor.name + ".counters");
     }
 
@@ -277,11 +273,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
     /**
      * Update list builder to prevent several updates of the same field.
      * <p>
-     * This happens if two operations act on two fields where one is a prefix of
-     * the other.
+     * This happens if two operations act on two fields where one is a prefix of the other.
      * <p>
-     * Example: Cannot update 'mylist.0.string' and 'mylist' at the same time
-     * (error 16837)
+     * Example: Cannot update 'mylist.0.string' and 'mylist' at the same time (error 16837)
      *
      * @since 5.9.5
      */
@@ -317,14 +311,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
         /**
          * Checks if the key conflicts with one of the previous keys.
          * <p>
-         * A conflict occurs if one key is equals to or is a prefix of the
-         * other.
+         * A conflict occurs if one key is equals to or is a prefix of the other.
          */
         protected boolean conflicts(String key, List<String> previousKeys) {
             String keydot = key + '.';
             for (String prev : previousKeys) {
-                if (prev.equals(key) || prev.startsWith(keydot)
-                        || key.startsWith(prev + '.')) {
+                if (prev.equals(key) || prev.startsWith(keydot) || key.startsWith(prev + '.')) {
                     return true;
                 }
             }
@@ -350,8 +342,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
     }
 
-    protected void diffToUpdates(ListDiff listDiff, String prefix,
-            Updates updates) {
+    protected void diffToUpdates(ListDiff listDiff, String prefix, Updates updates) {
         if (listDiff.diff != null) {
             String elemPrefix = prefix == null ? "" : prefix + '.';
             int i = 0;
@@ -372,8 +363,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 // no need to use $each for one element
                 pushed = valueToBson(listDiff.rpush.get(0));
             } else {
-                pushed = new BasicDBObject(MONGODB_EACH,
-                        listToBson(listDiff.rpush));
+                pushed = new BasicDBObject(MONGODB_EACH, listToBson(listDiff.rpush));
             }
             updates.push.put(prefix, pushed);
         }
@@ -427,11 +417,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected Long getNextUuidSeq() {
         DBObject query = new BasicDBObject(MONGODB_ID, COUNTER_NAME_UUID);
-        DBObject update = new BasicDBObject(MONGODB_INC, new BasicDBObject(
-                COUNTER_FIELD, ONE));
+        DBObject update = new BasicDBObject(MONGODB_INC, new BasicDBObject(COUNTER_FIELD, ONE));
         boolean returnNew = true;
-        DBObject idCounter = countersColl.findAndModify(query, null, null,
-                false, update, returnNew, false);
+        DBObject idCounter = countersColl.findAndModify(query, null, null, false, update, returnNew, false);
         if (idCounter == null) {
             throw new RuntimeException("Repository id counter not initialized");
         }
@@ -467,8 +455,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public List<State> readStates(List<String> ids) {
-        DBObject query = new BasicDBObject(KEY_ID, new BasicDBObject(
-                QueryOperators.IN, ids));
+        DBObject query = new BasicDBObject(KEY_ID, new BasicDBObject(QueryOperators.IN, ids));
         return findAll(query, ids.size());
     }
 
@@ -487,21 +474,18 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void deleteStates(Set<String> ids) throws DocumentException {
-        DBObject query = new BasicDBObject(KEY_ID, new BasicDBObject(
-                QueryOperators.IN, ids));
+        DBObject query = new BasicDBObject(KEY_ID, new BasicDBObject(QueryOperators.IN, ids));
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: REMOVE " + ids);
         }
         WriteResult w = coll.remove(query);
         if (w.getN() != ids.size()) {
-            log.error("Removed " + w.getN() + " docs for " + ids.size()
-                    + " ids: " + ids);
+            log.error("Removed " + w.getN() + " docs for " + ids.size() + " ids: " + ids);
         }
     }
 
     @Override
-    public State readChildState(String parentId, String name,
-            Set<String> ignored) {
+    public State readChildState(String parentId, String name, Set<String> ignored) {
         DBObject query = getChildQuery(parentId, name, ignored);
         return findOne(query);
     }
@@ -512,8 +496,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return coll.findOne(query, justPresenceField()) != null;
     }
 
-    protected DBObject getChildQuery(String parentId, String name,
-            Set<String> ignored) {
+    protected DBObject getChildQuery(String parentId, String name, Set<String> ignored) {
         DBObject query = new BasicDBObject();
         query.put(KEY_PARENT_ID, parentId);
         query.put(KEY_NAME, name);
@@ -523,23 +506,20 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected void addIgnoredIds(DBObject query, Set<String> ignored) {
         if (!ignored.isEmpty()) {
-            DBObject notInIds = new BasicDBObject(QueryOperators.NIN,
-                    new ArrayList<String>(ignored));
+            DBObject notInIds = new BasicDBObject(QueryOperators.NIN, new ArrayList<String>(ignored));
             query.put(KEY_ID, notInIds);
         }
     }
 
     @Override
-    public List<State> queryKeyValue(String key, String value,
-            Set<String> ignored) {
+    public List<State> queryKeyValue(String key, String value, Set<String> ignored) {
         DBObject query = new BasicDBObject(key, value);
         addIgnoredIds(query, ignored);
         return findAll(query, 0);
     }
 
     @Override
-    public void queryKeyValueArray(String key, Object value, Set<String> ids,
-            Map<String, String> proxyTargets,
+    public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
         DBObject query = new BasicDBObject(key, value);
         DBObject fields = new BasicDBObject();
@@ -570,8 +550,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public boolean queryKeyValuePresence(String key, String value,
-            Set<String> ignored) {
+    public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
         DBObject query = new BasicDBObject(key, value);
         addIgnoredIds(query, ignored);
         return coll.findOne(query, justPresenceField()) != null;
@@ -605,12 +584,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public PartialList<State> queryAndFetch(Expression expression,
-            DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, boolean deepCopy,
-            boolean fulltextScore) {
-        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(
-                evaluator.pathResolver);
+    public PartialList<State> queryAndFetch(Expression expression, DBSExpressionEvaluator evaluator,
+            OrderByClause orderByClause, int limit, int offset, int countUpTo, boolean deepCopy, boolean fulltextScore) {
+        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(evaluator.pathResolver);
         DBObject query = builder.walkExpression(expression);
         addPrincipals(query, evaluator.principals);
 
@@ -630,12 +606,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     Object value;
                     if (KEY_FULLTEXT_SCORE.equals(field)) {
                         if (!desc) {
-                            throw new RuntimeException("Cannot sort by "
-                                    + NXQL.ECM_FULLTEXT_SCORE + " ascending");
+                            throw new RuntimeException("Cannot sort by " + NXQL.ECM_FULLTEXT_SCORE + " ascending");
                         }
                         sortScore = true;
-                        value = new BasicDBObject(MONGODB_META,
-                                MONGODB_TEXT_SCORE);
+                        value = new BasicDBObject(MONGODB_META, MONGODB_TEXT_SCORE);
                     } else {
                         value = desc ? MINUS_ONE : ONE;
                     }
@@ -643,8 +617,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 }
             }
             if (sortScore && orderBy.size() > 1) {
-                throw new RuntimeException("Cannot sort by "
-                        + NXQL.ECM_FULLTEXT_SCORE + " and other criteria");
+                throw new RuntimeException("Cannot sort by " + NXQL.ECM_FULLTEXT_SCORE + " and other criteria");
             }
         }
 
@@ -653,21 +626,18 @@ public class MongoDBRepository extends DBSRepositoryBase {
         DBObject keys;
         if (fulltextScore || sortScore) {
             if (!builder.hasFulltext) {
-                throw new RuntimeException(NXQL.ECM_FULLTEXT_SCORE
-                        + " cannot be used without " + NXQL.ECM_FULLTEXT);
+                throw new RuntimeException(NXQL.ECM_FULLTEXT_SCORE + " cannot be used without " + NXQL.ECM_FULLTEXT);
             }
             // because it's a $meta, it won't prevent all other keys
             // from being returned
-            keys = new BasicDBObject(KEY_FULLTEXT_SCORE, new BasicDBObject(
-                    MONGODB_META, MONGODB_TEXT_SCORE));
+            keys = new BasicDBObject(KEY_FULLTEXT_SCORE, new BasicDBObject(MONGODB_META, MONGODB_TEXT_SCORE));
         } else {
             keys = null; // all
         }
 
         if (log.isTraceEnabled()) {
-            log.trace("MongoDB: QUERY " + query
-                    + (orderBy == null ? "" : " ORDER BY " + orderBy)
-                    + " OFFSET " + offset + " LIMIT " + limit);
+            log.trace("MongoDB: QUERY " + query + (orderBy == null ? "" : " ORDER BY " + orderBy) + " OFFSET " + offset
+                    + " LIMIT " + limit);
         }
 
         List<State> list;
@@ -713,8 +683,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected void addPrincipals(DBObject query, Set<String> principals) {
         if (principals != null) {
-            DBObject inPrincipals = new BasicDBObject(QueryOperators.IN,
-                    new ArrayList<String>(principals));
+            DBObject inPrincipals = new BasicDBObject(QueryOperators.IN, new ArrayList<String>(principals));
             query.put(DBSDocument.KEY_READ_ACL, inPrincipals);
         }
     }

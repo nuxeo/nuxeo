@@ -14,21 +14,20 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
-
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FromClause extends Clause {
 
     private static final long serialVersionUID = 3563271484181691679L;
 
     public static final int DOCTYPE = 0;
+
     public static final int LOCATION = 1;
 
     public final FromList elements;
-    public final int type;
 
+    public final int type;
 
     public FromClause() {
         this(new FromList());
@@ -43,7 +42,6 @@ public class FromClause extends Clause {
         this.elements = elements;
         this.type = type;
     }
-
 
     public void add(String alias, String element) {
         elements.add(alias, element);

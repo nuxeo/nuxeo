@@ -63,8 +63,7 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         return loginPage;
     }
 
-    public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         try {
             log.debug("Forward to Login Screen");
             Map<String, String> parameters = new HashMap<String, String>();
@@ -106,8 +105,7 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
 
             // avoid resending the password in clear !!!
             parameters.remove(passwordKey);
-            redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl,
-                    parameters);
+            redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl, parameters);
             httpResponse.sendRedirect(redirectUrl);
         } catch (IOException e) {
             log.error(e, e);
@@ -116,14 +114,13 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         return Boolean.TRUE;
     }
 
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
         log.debug("Looking for user/password in the request");
         String userName = httpRequest.getParameter(usernameKey);
         String password = httpRequest.getParameter(passwordKey);
         // NXP-2650: ugly hack to check if form was submitted
-        if (httpRequest.getParameter(FORM_SUBMITTED_MARKER) != null
-                && (userName == null || userName.length() == 0)) {
+        if (httpRequest.getParameter(FORM_SUBMITTED_MARKER) != null && (userName == null || userName.length() == 0)) {
             httpRequest.setAttribute(LOGIN_ERROR, ERROR_USERNAME_MISSING);
         }
         if (userName == null || userName.length() == 0) {

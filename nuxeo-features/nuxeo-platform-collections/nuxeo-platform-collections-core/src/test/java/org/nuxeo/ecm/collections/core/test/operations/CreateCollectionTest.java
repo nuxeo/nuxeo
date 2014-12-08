@@ -45,8 +45,7 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
 
     @Before
     public void setup() throws ClientException {
-        testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         session.save();
     }
@@ -65,8 +64,7 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
         assertNotNull(doc);
         Assert.assertEquals(COLLECTION_NAME, doc.getTitle());
-        Assert.assertEquals(COLLECTION_DESCRIPTION,
-                doc.getPropertyValue("dc:description"));
+        Assert.assertEquals(COLLECTION_DESCRIPTION, doc.getPropertyValue("dc:description"));
     }
 
     @Test
@@ -92,8 +90,7 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
 
     @Test
     public void testCreateCollectionOnWrongDocument() throws Exception {
-        DocumentModel doc = session.createDocumentModel(testWorkspace.getPath().toString(),
-                "test", "File");
+        DocumentModel doc = session.createDocumentModel(testWorkspace.getPath().toString(), "test", "File");
         session.createDocument(doc);
         session.save();
 
@@ -111,7 +108,7 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
             service.run(ctx, chain);
             // Should fail before
             fail("Document is not a File");
-        } catch( TraceException e) {
+        } catch (TraceException e) {
             return;
         } finally {
             TransactionHelper.commitOrRollbackTransaction();

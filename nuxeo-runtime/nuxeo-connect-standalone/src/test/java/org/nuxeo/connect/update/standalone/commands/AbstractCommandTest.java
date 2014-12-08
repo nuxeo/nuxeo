@@ -56,11 +56,9 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     }
 
     /**
-     * Override this method to add to the package any resources required y the
-     * command execution.
+     * Override this method to add to the package any resources required y the command execution.
      */
-    protected abstract void updatePackage(PackageBuilder builder)
-            throws Exception;
+    protected abstract void updatePackage(PackageBuilder builder) throws Exception;
 
     /**
      * Override this method to write the command XML definition to test.
@@ -68,13 +66,11 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     protected abstract void writeCommand(XmlWriter writer);
 
     /**
-     * Override this method to check the install outcome. If the
-     * <code>error</code> argument is not null then a rollback was done. In that
-     * case you must check the rollback outcome.
+     * Override this method to check the install outcome. If the <code>error</code> argument is not null then a rollback
+     * was done. In that case you must check the rollback outcome.
      *
      * @param task the executed task.
-     * @param error always null if task successfully executed. Not null if a
-     *            rollback occurred.
+     * @param error always null if task successfully executed. Not null if a rollback occurred.
      */
     protected void installDone(Task task, Throwable error) throws Exception {
         if (error != null) {
@@ -84,13 +80,11 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     }
 
     /**
-     * Override this method to check the uninstall outcome. If the
-     * <code>error</code> argument is not null then a rollback was done. In that
-     * case you must check the rollback outcome.
+     * Override this method to check the uninstall outcome. If the <code>error</code> argument is not null then a
+     * rollback was done. In that case you must check the rollback outcome.
      *
      * @param task the executed task.
-     * @param error always null if task successfully executed. Not null if a
-     *            rollback occurred.
+     * @param error always null if task successfully executed. Not null if a rollback occurred.
      */
     protected void uninstallDone(Task task, Throwable error) throws Exception {
         if (error != null) {
@@ -100,10 +94,9 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     }
 
     /**
-     * Override this method if the install execution is expected to not be
-     * validated - in that case check the execution status for consistency. The
-     * default implementation expects valid task and will fails if any errors
-     * are found in the validation status.
+     * Override this method if the install execution is expected to not be validated - in that case check the execution
+     * status for consistency. The default implementation expects valid task and will fails if any errors are found in
+     * the validation status.
      *
      * @param task the task to execute
      * @param status the validation status to check
@@ -116,10 +109,9 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     }
 
     /**
-     * Override this method if the uninstall execution is expected to not be
-     * validated - in that case check the execution status for consistency. The
-     * default implementation expects valid task and will fails if any errors
-     * are found in the validation status.
+     * Override this method if the uninstall execution is expected to not be validated - in that case check the
+     * execution status for consistency. The default implementation expects valid task and will fails if any errors are
+     * found in the validation status.
      *
      * @param task the task to execute
      * @param status the validation status to check
@@ -135,8 +127,7 @@ public abstract class AbstractCommandTest extends PackageTestCase {
 
     protected File createPackage() throws Exception {
         PackageBuilder builder = new PackageBuilder();
-        builder.name("nuxeo-automation").version("5.3.2").type(
-                PackageType.ADDON);
+        builder.name("nuxeo-automation").version("5.3.2").type(PackageType.ADDON);
         builder.platform("dm-5.3.2");
         builder.dependency("nuxeo-automation:5.3.2");
         builder.title("Test Package");

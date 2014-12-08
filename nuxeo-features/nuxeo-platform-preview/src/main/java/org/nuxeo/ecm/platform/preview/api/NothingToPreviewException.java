@@ -15,10 +15,8 @@
 package org.nuxeo.ecm.platform.preview.api;
 
 /**
- * Preview exception.
- * Use this when there is nothing to preview and this is not an error.
- * ie when there is no Blob to preview (not when it cannot be found)
- *
+ * Preview exception. Use this when there is nothing to preview and this is not an error. ie when there is no Blob to
+ * preview (not when it cannot be found)
  */
 public class NothingToPreviewException extends PreviewException {
 

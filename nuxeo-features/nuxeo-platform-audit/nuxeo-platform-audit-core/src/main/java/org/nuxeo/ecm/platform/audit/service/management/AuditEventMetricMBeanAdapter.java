@@ -27,14 +27,13 @@ public class AuditEventMetricMBeanAdapter implements AuditEventMetricMBean {
 
     protected final String eventName;
 
-    protected AuditEventMetricMBeanAdapter(Logs service,
-            String name) {
+    protected AuditEventMetricMBeanAdapter(Logs service, String name) {
         this.service = service;
         this.eventName = name;
     }
 
     public Long getCount() {
-        return service.getEventsCount(eventName);        
+        return service.getEventsCount(eventName);
     }
 
 }

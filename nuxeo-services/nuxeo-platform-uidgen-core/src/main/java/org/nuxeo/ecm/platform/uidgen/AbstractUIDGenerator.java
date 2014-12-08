@@ -47,8 +47,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
         this.sequencer = sequencer;
     }
 
-    protected int getNext(final DocumentModel document)
-            throws DocumentException {
+    protected int getNext(final DocumentModel document) throws DocumentException {
         if (null == sequencer) {
             throw new IllegalStateException("sequencer not defined");
         }
@@ -80,22 +79,18 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
     /**
      * Checks if the property with the given name is defined and is not null.
      */
-    protected final boolean isPropValueDefined(String propName,
-            DocumentModel document) {
+    protected final boolean isPropValueDefined(String propName, DocumentModel document) {
         try {
-            Object val = document.getProperty(getSchemaName(propName),
-                    getFieldName(propName));
+            Object val = document.getProperty(getSchemaName(propName), getFieldName(propName));
             return val != null;
         } catch (PropertyException e) {
             return false;
         }
     }
 
-    protected final String str(String propName, DocumentModel document)
-            throws DocumentException {
+    protected final String str(String propName, DocumentModel document) throws DocumentException {
         try {
-            Object val = document.getProperty(getSchemaName(propName),
-                    getFieldName(propName));
+            Object val = document.getProperty(getSchemaName(propName), getFieldName(propName));
             if (val == null) {
                 return null;
             }
@@ -106,19 +101,16 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
             throw new DocumentException(e);
         }
 
-        throw new DocumentException("Doc property '" + propName
-                + "' is not of String type.");
+        throw new DocumentException("Doc property '" + propName + "' is not of String type.");
     }
 
     public void setUID(DocumentModel document) throws DocumentException {
         String uid = createUID(document);
         for (String propertyName : propertyNames) {
             try {
-                document.setProperty(getSchemaName(propertyName),
-                        getFieldName(propertyName), uid);
+                document.setProperty(getSchemaName(propertyName), getFieldName(propertyName), uid);
             } catch (PropertyException e) {
-                throw new DocumentException(String.format(
-                        "Cannot set uid %s on property %s for doc %s", uid,
+                throw new DocumentException(String.format("Cannot set uid %s on property %s for doc %s", uid,
                         propertyName, document));
             }
         }

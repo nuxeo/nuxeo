@@ -46,18 +46,15 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
- * Test the {@link org.nuxeo.ecm.platform.picture.api.PictureConversion}
- * contributions.
+ * Test the {@link org.nuxeo.ecm.platform.picture.api.PictureConversion} contributions.
  *
  * @since 7.1
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.actions",
-        "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.picture.core",
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.actions",
+        "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert" })
 @LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestPictureConversions {
@@ -70,8 +67,8 @@ public class TestPictureConversions {
 
     private static final String PICTURE_CONVERSIONS_FILTERS_COMPONENT_LOCATION = "OSGI-INF/imaging-picture-conversions-filters.xml";
 
-    protected static final List<String> DEFAULT_PICTURE_CONVERSIONS = Arrays.asList(
-            "Small", "Medium", "Original", "Thumbnail", "OriginalJpeg");
+    protected static final List<String> DEFAULT_PICTURE_CONVERSIONS = Arrays.asList("Small", "Medium", "Original",
+            "Thumbnail", "OriginalJpeg");
 
     @Inject
     protected CoreSession session;
@@ -102,13 +99,12 @@ public class TestPictureConversions {
 
     @Test
     public void iHaveDefaultPictureConversionsOrder() {
-        String[] defaultPictureConversionsOrder = new String[] { "Medium",
-                "Original", "Small", "Thumbnail", "OriginalJpeg" };
+        String[] defaultPictureConversionsOrder = new String[] { "Medium", "Original", "Small", "Thumbnail",
+                "OriginalJpeg" };
         List<PictureConversion> pictureConversions = imagingService.getPictureConversions();
 
         for (int i = 0; i < defaultPictureConversionsOrder.length; i++) {
-            assertEquals(defaultPictureConversionsOrder[i],
-                    pictureConversions.get(i).getId());
+            assertEquals(defaultPictureConversionsOrder[i], pictureConversions.get(i).getId());
         }
     }
 
@@ -116,17 +112,14 @@ public class TestPictureConversions {
     public void iHavePictureConversionsOrder() throws Exception {
         deployContrib(PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION);
 
-        String[] expectedPictureConversionsOrder = new String[] {
-                "ThumbnailMini", "Tiny", "Medium", "OriginalJpeg", "Thumbnail",
-                "Wide", "Small", "Original", "ThumbnailWide" };
+        String[] expectedPictureConversionsOrder = new String[] { "ThumbnailMini", "Tiny", "Medium", "OriginalJpeg",
+                "Thumbnail", "Wide", "Small", "Original", "ThumbnailWide" };
         List<PictureConversion> pictureConversions = imagingService.getPictureConversions();
 
-        assertEquals(expectedPictureConversionsOrder.length,
-                pictureConversions.size());
+        assertEquals(expectedPictureConversionsOrder.length, pictureConversions.size());
 
         for (int i = 0; i < expectedPictureConversionsOrder.length; i++) {
-            assertEquals(expectedPictureConversionsOrder[i],
-                    pictureConversions.get(i).getId());
+            assertEquals(expectedPictureConversionsOrder[i], pictureConversions.get(i).getId());
         }
 
         undeployContrib(PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION);
@@ -142,15 +135,13 @@ public class TestPictureConversions {
             switch (pictureConversion.getId()) {
             case "Small":
                 assertEquals(50, (int) pictureConversion.getMaxSize());
-                assertTrue(pictureConversion.getDescription().contains(
-                        "override"));
+                assertTrue(pictureConversion.getDescription().contains("override"));
                 break;
             case "Thumbnail":
                 assertEquals(320, (int) pictureConversion.getMaxSize());
                 break;
             case "Medium":
-                assertTrue(pictureConversion.getDescription().contains(
-                        "override"));
+                assertTrue(pictureConversion.getDescription().contains("override"));
                 break;
             }
         }
@@ -165,8 +156,7 @@ public class TestPictureConversions {
         checkDefaultPictureConversionsPresence();
 
         int count = 0;
-        List<String> newPictureConversions = Arrays.asList("ThumbnailMini",
-                "ThumbnailWide", "Tiny", "Wide");
+        List<String> newPictureConversions = Arrays.asList("ThumbnailMini", "ThumbnailWide", "Tiny", "Wide");
 
         for (PictureConversion pictureConversion : imagingService.getPictureConversions()) {
             if (newPictureConversions.contains(pictureConversion.getId())) {
@@ -178,16 +168,10 @@ public class TestPictureConversions {
         assertEquals(newPictureConversions.size(), count);
 
         // Assert maxSize values
-        assertEquals(
-                96,
-                (int) imagingService.getPictureConversion("ThumbnailMini").getMaxSize());
-        assertEquals(
-                320,
-                (int) imagingService.getPictureConversion("ThumbnailWide").getMaxSize());
-        assertEquals(48,
-                (int) imagingService.getPictureConversion("Tiny").getMaxSize());
-        assertEquals(2048,
-                (int) imagingService.getPictureConversion("Wide").getMaxSize());
+        assertEquals(96, (int) imagingService.getPictureConversion("ThumbnailMini").getMaxSize());
+        assertEquals(320, (int) imagingService.getPictureConversion("ThumbnailWide").getMaxSize());
+        assertEquals(48, (int) imagingService.getPictureConversion("Tiny").getMaxSize());
+        assertEquals(2048, (int) imagingService.getPictureConversion("Wide").getMaxSize());
 
         undeployContrib(PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION);
     }
@@ -196,10 +180,8 @@ public class TestPictureConversions {
     public void shouldFilterPictureConversions() throws Exception {
         deployContrib(PICTURE_CONVERSIONS_FILTERS_COMPONENT_LOCATION);
 
-        DocumentModel picture = session.createDocumentModel("/", "picture",
-                "Picture");
-        Blob blob = new FileBlob(
-                FileUtils.getResourceFileFromContext("images/test.jpg"));
+        DocumentModel picture = session.createDocumentModel("/", "picture", "Picture");
+        Blob blob = new FileBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
         blob.setFilename("MyTest.jpg");
         blob.setMimeType("image/jpeg");
         picture.setPropertyValue("file:content", (Serializable) blob);

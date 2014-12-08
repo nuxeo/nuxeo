@@ -25,7 +25,7 @@ import javax.faces.context.FacesContext;
 /**
  * Helper to generate JSF context messages.
  * <p>
- * Use  &lt;h:messages/&gt; to display them client side.
+ * Use &lt;h:messages/&gt; to display them client side.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -48,17 +48,15 @@ public final class FacesContextMessageHelper {
     }
 
     /**
-     * Appends a FacesMessage to the set of messages associated with the
-     * specified client identifier, if clientId is not null.
+     * Appends a FacesMessage to the set of messages associated with the specified client identifier, if clientId is not
+     * null.
      *
-     * @param fctx
-     *            the FacesContext
-     * @param content
-     *            the actual message content.
+     * @param fctx the FacesContext
+     * @param content the actual message content.
      */
     public static void addMessageToFctx(FacesContext fctx, String clientId, String content) {
         if (fctx != null && clientId != null) {
-           fctx.addMessage(clientId, getFacesMessageFor(content));
+            fctx.addMessage(clientId, getFacesMessageFor(content));
         }
     }
 

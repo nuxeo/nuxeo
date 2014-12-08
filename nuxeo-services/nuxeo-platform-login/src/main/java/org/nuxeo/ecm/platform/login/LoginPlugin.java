@@ -25,9 +25,9 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 
 public interface LoginPlugin {
 
-    //public String getLoginPage();
+    // public String getLoginPage();
 
-    //public void setLoginPage(String loginPage);
+    // public void setLoginPage(String loginPage);
 
     Boolean initLoginModule();
 

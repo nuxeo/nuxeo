@@ -32,8 +32,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author Anahide Tchertchian
  * @since 5.5
  */
-public abstract class AbstractLayoutManager extends DefaultComponent implements
-        LayoutManager {
+public abstract class AbstractLayoutManager extends DefaultComponent implements LayoutManager {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,50 +44,42 @@ public abstract class AbstractLayoutManager extends DefaultComponent implements
 
     @Override
     public WidgetType getWidgetType(String typeName) {
-        return getLayoutStore().getWidgetType(getDefaultStoreCategory(),
-                typeName);
+        return getLayoutStore().getWidgetType(getDefaultStoreCategory(), typeName);
     }
 
     @Override
     public WidgetTypeDefinition getWidgetTypeDefinition(String typeName) {
-        return getLayoutStore().getWidgetTypeDefinition(
-                getDefaultStoreCategory(), typeName);
+        return getLayoutStore().getWidgetTypeDefinition(getDefaultStoreCategory(), typeName);
     }
 
     @Override
     public List<WidgetTypeDefinition> getWidgetTypeDefinitions() {
-        return getLayoutStore().getWidgetTypeDefinitions(
-                getDefaultStoreCategory());
+        return getLayoutStore().getWidgetTypeDefinitions(getDefaultStoreCategory());
     }
 
     @Override
     public LayoutTypeDefinition getLayoutTypeDefinition(String typeName) {
-        return getLayoutStore().getLayoutTypeDefinition(
-                getDefaultStoreCategory(), typeName);
+        return getLayoutStore().getLayoutTypeDefinition(getDefaultStoreCategory(), typeName);
     }
 
     @Override
     public List<LayoutTypeDefinition> getLayoutTypeDefinitions() {
-        return getLayoutStore().getLayoutTypeDefinitions(
-                getDefaultStoreCategory());
+        return getLayoutStore().getLayoutTypeDefinitions(getDefaultStoreCategory());
     }
 
     @Override
     public LayoutDefinition getLayoutDefinition(String layoutName) {
-        return getLayoutStore().getLayoutDefinition(getDefaultStoreCategory(),
-                layoutName);
+        return getLayoutStore().getLayoutDefinition(getDefaultStoreCategory(), layoutName);
     }
 
     @Override
     public List<String> getLayoutDefinitionNames() {
-        return getLayoutStore().getLayoutDefinitionNames(
-                getDefaultStoreCategory());
+        return getLayoutStore().getLayoutDefinitionNames(getDefaultStoreCategory());
     }
 
     @Override
     public WidgetDefinition getWidgetDefinition(String widgetName) {
-        return getLayoutStore().getWidgetDefinition(getDefaultStoreCategory(),
-                widgetName);
+        return getLayoutStore().getWidgetDefinition(getDefaultStoreCategory(), widgetName);
     }
 
     // registry helpers

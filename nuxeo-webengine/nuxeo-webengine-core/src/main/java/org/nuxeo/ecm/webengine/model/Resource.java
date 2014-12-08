@@ -32,7 +32,7 @@ import org.nuxeo.runtime.model.Adaptable;
  */
 public interface Resource extends Adaptable {
 
-    Resource initialize(WebContext ctx, ResourceType type, Object ...  args);
+    Resource initialize(WebContext ctx, ResourceType type, Object... args);
 
     void dispose();
 
@@ -74,9 +74,9 @@ public interface Resource extends Adaptable {
 
     List<LinkDescriptor> getLinks(String category);
 
-    Resource newObject(String type, Object ... args);
+    Resource newObject(String type, Object... args);
 
-    AdapterResource newAdapter(String type, Object ... args);
+    AdapterResource newAdapter(String type, Object... args);
 
     Template getView(String viewId);
 
@@ -96,6 +96,6 @@ public interface Resource extends Adaptable {
      */
     boolean checkGuard(String guard) throws ParseException;
 
-//    Response getEntries();
+    // Response getEntries();
 
 }

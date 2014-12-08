@@ -23,7 +23,6 @@ import org.nuxeo.common.utils.StringUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class EnumerationValidator implements FieldValidator {
 

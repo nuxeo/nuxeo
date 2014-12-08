@@ -50,11 +50,9 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.forms.layout.core",
-        "org.nuxeo.ecm.platform.forms.layout.client",
+@Deploy({ "org.nuxeo.ecm.platform.forms.layout.core", "org.nuxeo.ecm.platform.forms.layout.client",
         "org.nuxeo.ecm.platform.forms.layout.io.plugins" })
-@LocalDeploy({
-        "org.nuxeo.ecm.platform.forms.layout.io.plugins:layouts-test-contrib.xml",
+@LocalDeploy({ "org.nuxeo.ecm.platform.forms.layout.io.plugins:layouts-test-contrib.xml",
         "org.nuxeo.ecm.platform.forms.layout.io.plugins:test-directories-contrib.xml" })
 public class TestLayoutExport {
 
@@ -65,8 +63,7 @@ public class TestLayoutExport {
 
     @Test
     public void testLayoutDefinitionExport() throws Exception {
-        LayoutDefinition layoutDef = service.getLayoutDefinition(
-                WebLayoutManager.JSF_CATEGORY, "dublincore");
+        LayoutDefinition layoutDef = service.getLayoutDefinition(WebLayoutManager.JSF_CATEGORY, "dublincore");
         assertNotNull(layoutDef);
 
         check(layoutDef, "en");
@@ -74,38 +71,31 @@ public class TestLayoutExport {
         check(layoutDef, null);
     }
 
-    protected void check(LayoutDefinition layoutDef, String lang)
-            throws Exception {
+    protected void check(LayoutDefinition layoutDef, String lang) throws Exception {
         LayoutConversionContext ctx = new LayoutConversionContext(lang, null);
-        List<LayoutDefinitionConverter> layoutConverters = service
-            .getLayoutConverters(TEST_CATEGORY);
+        List<LayoutDefinitionConverter> layoutConverters = service.getLayoutConverters(TEST_CATEGORY);
         for (LayoutDefinitionConverter conv : layoutConverters) {
             layoutDef = conv.getLayoutDefinition(layoutDef, ctx);
         }
-        List<WidgetDefinitionConverter> widgetConverters = service
-            .getWidgetConverters(TEST_CATEGORY);
+        List<WidgetDefinitionConverter> widgetConverters = service.getWidgetConverters(TEST_CATEGORY);
 
         String langFilePath = lang;
         if (langFilePath == null) {
             langFilePath = "nolang";
         }
-        File file = File.createTempFile("layout-export-" + langFilePath,
-                ".json");
+        File file = File.createTempFile("layout-export-" + langFilePath, ".json");
         FileOutputStream out = new FileOutputStream(file);
-        JSONLayoutExporter.export(WebLayoutManager.JSF_CATEGORY, layoutDef,
-                ctx, widgetConverters, out);
+        JSONLayoutExporter.export(WebLayoutManager.JSF_CATEGORY, layoutDef, ctx, widgetConverters, out);
 
         InputStream written = new FileInputStream(file);
-        InputStream expected = new FileInputStream(
-                FileUtils.getResourcePathFromContext("layout-export-"
-                        + langFilePath + ".json"));
+        InputStream expected = new FileInputStream(FileUtils.getResourcePathFromContext("layout-export-" + langFilePath
+                + ".json"));
 
         String expectedString = FileUtils.read(expected);
         String writtenString = FileUtils.read(written);
         // order of select options may depend on directory database => do not
         // check order of element by using the NON_EXTENSIBLE mode
-        JSONAssert.assertEquals(expectedString, writtenString,
-                JSONCompareMode.NON_EXTENSIBLE);
+        JSONAssert.assertEquals(expectedString, writtenString, JSONCompareMode.NON_EXTENSIBLE);
     }
 
 }

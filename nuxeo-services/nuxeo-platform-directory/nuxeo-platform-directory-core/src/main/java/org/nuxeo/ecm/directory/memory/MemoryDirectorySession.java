@@ -56,8 +56,7 @@ public class MemoryDirectorySession extends BaseSession {
         data = Collections.synchronizedMap(new LinkedHashMap<String, Map<String, Object>>());
     }
 
-    public boolean authenticate(String username, String password)
-            throws DirectoryException {
+    public boolean authenticate(String username, String password) throws DirectoryException {
         Map<String, Object> map = data.get(username);
         if (map == null) {
             return false;
@@ -80,8 +79,7 @@ public class MemoryDirectorySession extends BaseSession {
         throw new RuntimeException("Not implemented");
     }
 
-    public DocumentModel createEntry(Map<String, Object> fieldMap)
-            throws DirectoryException {
+    public DocumentModel createEntry(Map<String, Object> fieldMap) throws DirectoryException {
         if (isReadOnly()) {
             return null;
         }
@@ -93,8 +91,7 @@ public class MemoryDirectorySession extends BaseSession {
         String id = String.valueOf(rawId);
         Map<String, Object> map = data.get(id);
         if (map != null) {
-            throw new DirectoryException(String.format(
-                    "Entry with id %s already exists", id));
+            throw new DirectoryException(String.format("Entry with id %s already exists", id));
         }
         map = new HashMap<String, Object>();
         data.put(id, map);
@@ -113,16 +110,14 @@ public class MemoryDirectorySession extends BaseSession {
         return getEntry(id, true);
     }
 
-    public DocumentModel getEntry(String id, boolean fetchReferences)
-            throws DirectoryException {
+    public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
         // XXX no references here
         Map<String, Object> map = data.get(id);
         if (map == null) {
             return null;
         }
         try {
-            DocumentModel entry = BaseSession.createEntryModel(null,
-                    directory.schemaName, id, map, isReadOnly());
+            DocumentModel entry = BaseSession.createEntryModel(null, directory.schemaName, id, map, isReadOnly());
             return entry;
         } catch (PropertyException e) {
             throw new DirectoryException(e);
@@ -140,14 +135,12 @@ public class MemoryDirectorySession extends BaseSession {
 
         Map<String, Object> map = data.get(id);
         if (map == null) {
-            throw new DirectoryException("UpdateEntry failed: entry '" + id
-                    + "' not found");
+            throw new DirectoryException("UpdateEntry failed: entry '" + id + "' not found");
         }
 
         for (String fieldName : directory.schemaSet) {
             try {
-                if (!dataModel.isDirty(fieldName)
-                        || fieldName.equals(directory.idField)) {
+                if (!dataModel.isDirty(fieldName) || fieldName.equals(directory.idField)) {
                     continue;
                 }
             } catch (PropertyNotFoundException e) {
@@ -177,8 +170,7 @@ public class MemoryDirectorySession extends BaseSession {
 
     // given our storage model this doesn't even make sense, as id field is
     // unique
-    public void deleteEntry(String id, Map<String, String> map)
-            throws DirectoryException {
+    public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
         throw new DirectoryException("Not implemented");
     }
 
@@ -202,24 +194,20 @@ public class MemoryDirectorySession extends BaseSession {
         return directory.isReadOnly();
     }
 
-    public DocumentModelList query(Map<String, Serializable> filter)
-            throws DirectoryException {
+    public DocumentModelList query(Map<String, Serializable> filter) throws DirectoryException {
         return query(filter, Collections.<String> emptySet());
     }
 
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext) throws DirectoryException {
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws DirectoryException {
         return query(filter, fulltext, Collections.<String, String> emptyMap());
     }
 
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy)
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
         return query(filter, fulltext, orderBy, true);
     }
 
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy,
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException {
         DocumentModelList results = new DocumentModelListImpl();
         // canonicalize filter
@@ -245,8 +233,7 @@ public class MemoryDirectorySession extends BaseSession {
                     }
                 } else {
                     if (fulltext != null && fulltext.contains(fieldName)) {
-                        if (!value.toString().toLowerCase().startsWith(
-                                expected.toString().toLowerCase())) {
+                        if (!value.toString().toLowerCase().startsWith(expected.toString().toLowerCase())) {
                             continue data_loop;
                         }
                     } else {
@@ -266,14 +253,12 @@ public class MemoryDirectorySession extends BaseSession {
         return results;
     }
 
-    public List<String> getProjection(Map<String, Serializable> filter,
-            String columnName) throws DirectoryException {
-        return getProjection(filter, Collections.<String> emptySet(),
-                columnName);
+    public List<String> getProjection(Map<String, Serializable> filter, String columnName) throws DirectoryException {
+        return getProjection(filter, Collections.<String> emptySet(), columnName);
     }
 
-    public List<String> getProjection(Map<String, Serializable> filter,
-            Set<String> fulltext, String columnName) throws DirectoryException {
+    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
+            throws DirectoryException {
         DocumentModelList l = query(filter, fulltext);
         List<String> results = new ArrayList<String>(l.size());
         for (DocumentModel doc : l) {
@@ -292,8 +277,7 @@ public class MemoryDirectorySession extends BaseSession {
         return results;
     }
 
-    public DocumentModel createEntry(DocumentModel entry)
-            throws ClientException {
+    public DocumentModel createEntry(DocumentModel entry) throws ClientException {
         Map<String, Object> fieldMap = entry.getProperties(directory.schemaName);
         return createEntry(fieldMap);
     }

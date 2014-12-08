@@ -94,10 +94,8 @@ public class DirectorySelectOneListboxHandler extends MetaTagHandler {
                     options.add(attr);
                 } else {
                     if (deprecatedProps.contains(name)) {
-                        log.error(String.format(
-                                "Property %s is not taken into account "
-                                        + "anymore on tag nxdir:selectOneListbox",
-                                name));
+                        log.error(String.format("Property %s is not taken into account "
+                                + "anymore on tag nxdir:selectOneListbox", name));
                     }
                     select.add(attr);
                 }
@@ -109,32 +107,25 @@ public class DirectorySelectOneListboxHandler extends MetaTagHandler {
     }
 
     protected TagAttribute getTagAttribute(String name, String value) {
-        return new TagAttributeImpl(tagConfig.getTag().getLocation(),
-                tagConfig.getTag().getNamespace(), name, name, value);
+        return new TagAttributeImpl(tagConfig.getTag().getLocation(), tagConfig.getTag().getNamespace(), name, name,
+                value);
     }
 
     @Override
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
         // generate component handlers to be used instead
-        TagAttributes optionAttributes = new TagAttributesImpl(
-                options.toArray(new TagAttribute[] {}));
-        ComponentConfig optionsConfig = TagConfigFactory.createComponentConfig(
-                tagConfig, tagConfig.getTagId(), optionAttributes,
-                new FaceletHandler() {
+        TagAttributes optionAttributes = new TagAttributesImpl(options.toArray(new TagAttribute[] {}));
+        ComponentConfig optionsConfig = TagConfigFactory.createComponentConfig(tagConfig, tagConfig.getTagId(),
+                optionAttributes, new FaceletHandler() {
                     @Override
-                    public void apply(FaceletContext ctx, UIComponent parent)
-                            throws IOException {
+                    public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
                         // do nothing
                     }
                 }, UIDirectorySelectItems.COMPONENT_TYPE, null);
-        FaceletHandler optionsHandler = new GenericHtmlComponentHandler(
-                optionsConfig);
-        TagAttributes selectAttributes = new TagAttributesImpl(
-                select.toArray(new TagAttribute[] {}));
-        ComponentConfig selectConfig = TagConfigFactory.createComponentConfig(
-                tagConfig, tagConfig.getTagId(), selectAttributes,
-                optionsHandler, getSelectComponentType(), null);
+        FaceletHandler optionsHandler = new GenericHtmlComponentHandler(optionsConfig);
+        TagAttributes selectAttributes = new TagAttributesImpl(select.toArray(new TagAttribute[] {}));
+        ComponentConfig selectConfig = TagConfigFactory.createComponentConfig(tagConfig, tagConfig.getTagId(),
+                selectAttributes, optionsHandler, getSelectComponentType(), null);
         new GenericHtmlComponentHandler(selectConfig).apply(ctx, parent);
     }
 

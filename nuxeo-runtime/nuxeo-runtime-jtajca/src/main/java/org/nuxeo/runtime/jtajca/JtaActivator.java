@@ -17,11 +17,9 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * If this bundle is present in the running platform it should automatically
- * install the NuxeoContainer.
+ * If this bundle is present in the running platform it should automatically install the NuxeoContainer.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JtaActivator extends DefaultComponent {
 

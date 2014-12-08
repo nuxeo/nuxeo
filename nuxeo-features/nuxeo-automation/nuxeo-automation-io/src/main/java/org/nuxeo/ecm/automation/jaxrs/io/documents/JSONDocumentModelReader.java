@@ -55,16 +55,14 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
- * JAX-RS reader for a DocumentModel. If an id is given, it tries to reattach
- * the document to the session. If not, it creates a ready to create
- * DocumentModel filled with the properties found.
+ * JAX-RS reader for a DocumentModel. If an id is given, it tries to reattach the document to the session. If not, it
+ * creates a ready to create DocumentModel filled with the properties found.
  *
  * @since 5.7.2
  */
 @Provider
 @Consumes({ "application/json+nxentity", "application/json" })
-public class JSONDocumentModelReader implements
-        MessageBodyReader<DocumentModel> {
+public class JSONDocumentModelReader implements MessageBodyReader<DocumentModel> {
 
     // private static final String REQUEST_BATCH_ID = "batchId";
 
@@ -77,21 +75,18 @@ public class JSONDocumentModelReader implements
     JsonFactory factory;
 
     @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return DocumentModel.class.isAssignableFrom(type);
     }
 
     @Override
-    public DocumentModel readFrom(Class<DocumentModel> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public DocumentModel readFrom(Class<DocumentModel> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
         String content = IOUtils.toString(entityStream);
         if (content.isEmpty()) {
             if (content.isEmpty()) {
-                throw new WebException("No content in request body",
-                        Response.Status.BAD_REQUEST.getStatusCode());
+                throw new WebException("No content in request body", Response.Status.BAD_REQUEST.getStatusCode());
             }
 
         }
@@ -103,20 +98,17 @@ public class JSONDocumentModelReader implements
         }
     }
 
-    private DocumentModel readRequest(String content,
-            MultivaluedMap<String, String> httpHeaders) throws IOException {
+    private DocumentModel readRequest(String content, MultivaluedMap<String, String> httpHeaders) throws IOException {
         return readRequest(content, httpHeaders, request);
     }
 
-    protected DocumentModel readRequest(String content,
-            MultivaluedMap<String, String> httpHeaders,
+    protected DocumentModel readRequest(String content, MultivaluedMap<String, String> httpHeaders,
             HttpServletRequest request) throws IOException {
         JsonParser jp = factory.createJsonParser(content);
         return readJson(jp, httpHeaders, request);
     }
 
-    public static DocumentModel readJson(JsonParser jp,
-            MultivaluedMap<String, String> httpHeaders,
+    public static DocumentModel readJson(JsonParser jp, MultivaluedMap<String, String> httpHeaders,
             HttpServletRequest request) throws IOException {
         JsonToken tok = jp.nextToken();
 
@@ -132,8 +124,7 @@ public class JSONDocumentModelReader implements
             String key = jp.getCurrentName();
             jp.nextToken();
             if ("properties".equals(key)) {
-                DocumentHelper.setJSONProperties(null, simpleDoc,
-                        readProperties(jp));
+                DocumentHelper.setJSONProperties(null, simpleDoc, readProperties(jp));
             } else if ("name".equals(key)) {
                 name = jp.readValueAs(String.class);
             } else if ("type".equals(key)) {
@@ -143,8 +134,7 @@ public class JSONDocumentModelReader implements
             } else if ("entity-type".equals(key)) {
                 String entityType = jp.readValueAs(String.class);
                 if (!"document".equals(entityType)) {
-                    throw new WebApplicationException(
-                            Response.Status.BAD_REQUEST);
+                    throw new WebApplicationException(Response.Status.BAD_REQUEST);
                 }
             } else {
                 log.debug("Unknown key: " + key);
@@ -198,8 +188,7 @@ public class JSONDocumentModelReader implements
         }
     }
 
-    public static void applyPropertyValues(DocumentModel src, DocumentModel dst)
-            throws ClientException {
+    public static void applyPropertyValues(DocumentModel src, DocumentModel dst) throws ClientException {
         for (String schema : src.getSchemas()) {
             DataModelImpl dataModel = (DataModelImpl) dst.getDataModel(schema);
             DataModelImpl fromDataModel = (DataModelImpl) src.getDataModel(schema);
@@ -214,9 +203,7 @@ public class JSONDocumentModelReader implements
                     }
                     // }
                 } catch (PropertyNotFoundException e) {
-                    log.warn(String.format(
-                            "Trying to deserialize unexistent field : {%s}",
-                            field));
+                    log.warn(String.format("Trying to deserialize unexistent field : {%s}", field));
                 }
             }
         }

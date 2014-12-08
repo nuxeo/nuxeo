@@ -77,8 +77,7 @@ public class BlankImpl extends AbstractNode implements Blank {
             return false;
         }
         BlankImpl otherBlank = (BlankImpl) other;
-        return id == null ? otherBlank.id == null
-                : id.equals(otherBlank.id);
+        return id == null ? otherBlank.id == null : id.equals(otherBlank.id);
     }
 
     @Override

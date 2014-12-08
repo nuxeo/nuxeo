@@ -54,7 +54,6 @@ public class TestLogEntryProvider extends PersistenceTestCase {
 
     private LogEntryProvider providerUnderTest;
 
-
     @Override
     protected void handleAfterSetup(EntityManager entityManager) {
         providerUnderTest = LogEntryProvider.createProvider(entityManager);
@@ -110,8 +109,8 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     public void testHavingKey() {
         LogEntry entry = doCreateEntryAndPersist("id");
         providerUnderTest.addLogEntry(entry);
-        List<LogEntry> entries = providerUnderTest.nativeQueryLogs(
-                "log.id = " + entry.getId() + " and log.extendedInfos['id'] is not null", 1, 10);
+        List<LogEntry> entries = providerUnderTest.nativeQueryLogs("log.id = " + entry.getId()
+                + " and log.extendedInfos['id'] is not null", 1, 10);
         assertEquals(1, entries.size());
         assertEquals(new Long(1L), entries.get(0).getExtendedInfos().get("id").getValue(Long.class));
     }
@@ -194,8 +193,8 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         LogEntry three = doCreateEntryAndPersist("three");
         one.setCategory("nuch");
         three.setCategory("nuch");
-        String[] categories = {"nuch"};
-        List<LogEntry> entries = providerUnderTest.queryLogsByPage(eventIds(), limit, categories , "/", 1, 1);
+        String[] categories = { "nuch" };
+        List<LogEntry> entries = providerUnderTest.queryLogsByPage(eventIds(), limit, categories, "/", 1, 1);
         assertNotNull(entries);
         int entryCount = entries.size();
         assertEquals(1, entryCount);

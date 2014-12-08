@@ -15,8 +15,8 @@ public class TestAuthorizationRequest extends AuthorizationRequest {
         return AuthorizationRequest.requests;
     }
 
-    public TestAuthorizationRequest(String clientId, String responseType,
-            String state, String redirectUri, Date creationDate) {
+    public TestAuthorizationRequest(String clientId, String responseType, String state, String redirectUri,
+            Date creationDate) {
         this.clientId = clientId;
         this.responseType = responseType;
         this.state = state;

@@ -32,15 +32,17 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ContributionImpl<K, T> implements Contribution<K, T> {
 
     private static final Log log = LogFactory.getLog(ContributionImpl.class);
 
     protected final AbstractContributionRegistry<K, T> registry;
+
     protected final K primaryKey;
+
     protected final List<T> mainFragments = new ArrayList<T>();
+
     protected final List<T> fragments = new ArrayList<T>();
 
     // the contributions I depend on
@@ -50,19 +52,20 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
     protected final Set<Contribution<K, T>> dependents = new HashSet<Contribution<K, T>>();
 
     // the unresolved dependencies that are blocking my registration
-    //TODO: this member can be removed since we can obtain unresolved deps from dependencies set.
-    //protected Set<Contribution<K,T>> unresolvedDependencies = new HashSet<Contribution<K,T>>();
+    // TODO: this member can be removed since we can obtain unresolved deps from dependencies set.
+    // protected Set<Contribution<K,T>> unresolvedDependencies = new HashSet<Contribution<K,T>>();
 
     // last merged fragment
     protected T value;
+
     protected boolean isResolved = false;
 
-    public ContributionImpl(AbstractContributionRegistry<K,T> reg,  K primaryKey) {
+    public ContributionImpl(AbstractContributionRegistry<K, T> reg, K primaryKey) {
         this.primaryKey = primaryKey;
         registry = reg;
     }
 
-    public ContributionRegistry<K,T> getRegistry() {
+    public ContributionRegistry<K, T> getRegistry() {
         return registry;
     }
 
@@ -77,17 +80,17 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         return fragments.iterator();
     }
 
-    public Set<Contribution<K,T>> getDependencies() {
+    public Set<Contribution<K, T>> getDependencies() {
         return dependencies;
     }
 
-    public Set<Contribution<K,T>> getDependents() {
+    public Set<Contribution<K, T>> getDependents() {
         return dependents;
     }
 
-    public Set<Contribution<K,T>> getUnresolvedDependencies() {
-        Set<Contribution<K,T>> set = new HashSet<Contribution<K,T>>();
-        for (Contribution<K,T> dep : dependencies) {
+    public Set<Contribution<K, T>> getUnresolvedDependencies() {
+        Set<Contribution<K, T>> set = new HashSet<Contribution<K, T>>();
+        for (Contribution<K, T> dep : dependencies) {
             if (dep.isResolved()) {
                 set.add(dep);
             }
@@ -99,7 +102,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         if (mainFragments.isEmpty()) {
             return false;
         }
-        for (Contribution<K,T> dep : dependencies) {
+        for (Contribution<K, T> dep : dependencies) {
             if (!dep.isResolved()) {
                 return false;
             }
@@ -141,7 +144,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         return false;
     }
 
-    public void addFragment(T fragment, K ... superKeys) {
+    public void addFragment(T fragment, K... superKeys) {
         // check if it is the main fragment
         if (registry.isMainFragment(fragment)) {
             mainFragments.add(fragment);
@@ -162,8 +165,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
 
     public T getValue() {
         if (!isResolved) {
-            throw new IllegalStateException(
-                    "Cannot compute merged values for not resolved contributions");
+            throw new IllegalStateException("Cannot compute merged values for not resolved contributions");
         }
         if (mainFragments.isEmpty() || value != null) {
             return value;
@@ -196,9 +198,8 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
     }
 
     /**
-     * Called each time a fragment is added or removed
-     * to update resolved state and to fire update notifications to
-     * the registry owning that contribution
+     * Called each time a fragment is added or removed to update resolved state and to fire update notifications to the
+     * registry owning that contribution
      */
     protected void update() {
         T oldValue = value;
@@ -228,7 +229,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
             return;
         }
         isResolved = false;
-        for (Contribution<K,T> dep : dependents) {
+        for (Contribution<K, T> dep : dependents) {
             dep.unresolve();
         }
         registry.fireUnresolved(this, value);
@@ -237,13 +238,13 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
 
     public void resolve() {
         if (isResolved || isPhantom()) {
-            throw new IllegalStateException(
-                    "Cannot resolve. Invalid state. phantom: "+isPhantom()+"; resolved: "+isResolved);
+            throw new IllegalStateException("Cannot resolve. Invalid state. phantom: " + isPhantom() + "; resolved: "
+                    + isResolved);
         }
         if (checkIsResolved()) { // resolve dependents
             isResolved = true;
             registry.fireResolved(this);
-            for (Contribution<K,T> dep : dependents) {
+            for (Contribution<K, T> dep : dependents) {
                 if (!dep.isResolved()) {
                     dep.resolve();
                 }
@@ -264,7 +265,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
 
     @Override
     public String toString() {
-        return primaryKey.toString()+" [ phantom: "+isPhantom()+"; resolved: "+isResolved+"]";
+        return primaryKey.toString() + " [ phantom: " + isPhantom() + "; resolved: " + isResolved + "]";
     }
 
 }

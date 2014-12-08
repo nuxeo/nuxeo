@@ -45,8 +45,7 @@ public class UIDGeneratorService extends DefaultComponent {
     public static final String UID_GENERATORS_EXTENSION_POINT = "generators";
 
     /**
-     * Extension point is deprecated should be removed - preserved for now only
-     * for startup warnings.
+     * Extension point is deprecated should be removed - preserved for now only for startup warnings.
      */
     public static final String EXTENSION_POINT_SEQUENCER_FACTORY = "sequencerFactory";
 
@@ -72,8 +71,7 @@ public class UIDGeneratorService extends DefaultComponent {
 
         final String extPoint = extension.getExtensionPoint();
         if (UID_GENERATORS_EXTENSION_POINT.equals(extPoint)) {
-            log.info("register contributions for extension point: "
-                    + UID_GENERATORS_EXTENSION_POINT);
+            log.info("register contributions for extension point: " + UID_GENERATORS_EXTENSION_POINT);
 
             // if (null == this.sequencer) {
             // throw new RuntimeServiceException("Sequencer not initialized.");
@@ -100,16 +98,14 @@ public class UIDGeneratorService extends DefaultComponent {
 
             UIDGenerator generator;
             try {
-                generator = (UIDGenerator) extension.getContext().loadClass(
-                        generatorDescriptor.getClassName()).newInstance();
+                generator = (UIDGenerator) extension.getContext().loadClass(generatorDescriptor.getClassName()).newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
 
             final String[] propNames = generatorDescriptor.getPropertyNames();
             if (propNames.length == 0) {
-                log.error("no property name defined on generator "
-                        + generatorName);
+                log.error("no property name defined on generator " + generatorName);
             }
             // set the property name on generator
             generator.setPropertyNames(propNames);
@@ -123,21 +119,17 @@ public class UIDGeneratorService extends DefaultComponent {
     }
 
     /**
-     * Registers given UIDGenerator for the given document types. If there is
-     * already a generator registered for one of document type it will be
-     * discarded (and replaced with the new generator).
+     * Registers given UIDGenerator for the given document types. If there is already a generator registered for one of
+     * document type it will be discarded (and replaced with the new generator).
      */
-    private void registerGeneratorForDocTypes(final UIDGenerator generator,
-            final String[] docTypes) {
+    private void registerGeneratorForDocTypes(final UIDGenerator generator, final String[] docTypes) {
 
         for (String docType : docTypes) {
             final UIDGenerator previous = generators.put(docType, generator);
             if (previous != null) {
-                log.info("Overwriting generator: " + previous.getClass()
-                        + " for docType: " + docType);
+                log.info("Overwriting generator: " + previous.getClass() + " for docType: " + docType);
             }
-            log.info("Registered generator: " + generator.getClass()
-                    + " for docType: " + docType);
+            log.info("Registered generator: " + generator.getClass() + " for docType: " + docType);
         }
     }
 
@@ -150,8 +142,7 @@ public class UIDGeneratorService extends DefaultComponent {
     /**
      * Returns the uid generator to use for this document.
      * <p>
-     * Choice is made following the document type and the generator
-     * configuration.
+     * Choice is made following the document type and the generator configuration.
      */
     public UIDGenerator getUIDGeneratorFor(DocumentModel doc) {
         final String docTypeName = doc.getType();
@@ -169,8 +160,7 @@ public class UIDGeneratorService extends DefaultComponent {
     }
 
     /**
-     * Creates a new UID for the given doc and sets the field configured in the
-     * generator component with this value.
+     * Creates a new UID for the given doc and sets the field configured in the generator component with this value.
      */
     public void setUID(DocumentModel doc) throws DocumentException {
         final UIDGenerator generator = getUIDGeneratorFor(doc);

@@ -50,9 +50,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- *
  * @author Bogdan Stefanescu
- *
  */
 // We're declaring variables as HashMaps / ArrayLists so they can be
 // Serializable
@@ -161,11 +159,9 @@ public class TestPropertyModel extends NXRuntimeTestCase {
             } else {
                 map.put("book:references", references);
             }
-            map.put("book:file", file != null ? file.getMap()
-                    : new HashMap<String, Serializable>());
+            map.put("book:file", file != null ? file.getMap() : new HashMap<String, Serializable>());
             if (authors == null) {
-                map.put("book:authors",
-                        new ArrayList<HashMap<String, Serializable>>());
+                map.put("book:authors", new ArrayList<HashMap<String, Serializable>>());
             } else {
                 ArrayList<HashMap<String, Serializable>> list = new ArrayList<HashMap<String, Serializable>>();
                 for (Author author : authors) {
@@ -181,12 +177,11 @@ public class TestPropertyModel extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.core.api.tests",
-                "OSGI-INF/test-propmodel-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-propmodel-types-contrib.xml");
         SchemaManager mgr = Framework.getService(SchemaManager.class);
-//        XSDLoader loader = new XSDLoader((SchemaManagerImpl) mgr);
-//         schema = loader.loadSchema("test", "book",
-//         getResource("TestSchema.xsd"));
+        // XSDLoader loader = new XSDLoader((SchemaManagerImpl) mgr);
+        // schema = loader.loadSchema("test", "book",
+        // getResource("TestSchema.xsd"));
         schema = mgr.getSchema("test");
         dp = new DocumentPartImpl(schema);
     }
@@ -211,8 +206,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         }
     }
 
-    protected static Map<String, Serializable> unPrefixedMap(
-            Map<String, Serializable> map) {
+    protected static Map<String, Serializable> unPrefixedMap(Map<String, Serializable> map) {
         Map<String, Serializable> res = new HashMap<String, Serializable>();
         for (Entry<String, Serializable> e : map.entrySet()) {
             String key = e.getKey();
@@ -269,8 +263,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
 
     // Duplicated from NXRuntimeTestCase
     public static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResource(
-                resource);
+        return Thread.currentThread().getContextClassLoader().getResource(resource);
     }
 
     @Test
@@ -344,17 +337,14 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         prop = dp.resolvePath("title");
         assertEquals(prop, dp.get("title"));
         assertEquals(fileNameProp, dp.resolvePath("file/fileName"));
-        assertEquals(fileNameProp.get("name"),
-                dp.resolvePath("file/fileName/name"));
+        assertEquals(fileNameProp.get("name"), dp.resolvePath("file/fileName/name"));
         assertEquals(fileNameProp.get("name"), fileNameProp.resolvePath("name"));
-        assertEquals(fileNameProp.get("name"),
-                fileNameProp.resolvePath("../fileName/name"));
+        assertEquals(fileNameProp.get("name"), fileNameProp.resolvePath("../fileName/name"));
         assertEquals(dp, fileNameProp.resolvePath("../.."));
         assertEquals(dp.get("title"), fileNameProp.resolvePath("../../title"));
 
         // using prefixed names
-        assertEquals(fileNameProp.resolvePath("name/../extension"),
-                dp.resolvePath("book:file/fileName/extension"));
+        assertEquals(fileNameProp.resolvePath("name/../extension"), dp.resolvePath("book:file/fileName/extension"));
 
         // testing list access - for this we need a phantom property??
         assertEquals(keysProp, dp.resolvePath("book:keywords"));
@@ -409,10 +399,8 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         // test add(index)
         author.name.lastName = "Toto";
         dp.get("authors").addValue(0, author.getMap());
-        assertEquals("Toto",
-                dp.resolvePath("authors/author[0]/name/lastName").getValue());
-        assertEquals("Tete",
-                dp.resolvePath("authors/author[1]/name/lastName").getValue());
+        assertEquals("Toto", dp.resolvePath("authors/author[0]/name/lastName").getValue());
+        assertEquals("Tete", dp.resolvePath("authors/author[1]/name/lastName").getValue());
     }
 
     @Test
@@ -466,8 +454,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
     }
 
     /**
-     * Compatibility test - this should be removed when ListDiff will be no more
-     * used in nuxeo.
+     * Compatibility test - this should be removed when ListDiff will be no more used in nuxeo.
      */
     @Test
     public void testListDiffCompatibility() throws Exception {
@@ -507,8 +494,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
     }
 
     /**
-     * Compatibility test - this should be removed when ListDiff will be no more
-     * used in nuxeo.
+     * Compatibility test - this should be removed when ListDiff will be no more used in nuxeo.
      */
     @Test
     public void testListDiffCompatibilityForScalarList() throws Exception {
@@ -601,8 +587,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         ObjectOutputStream out = new ObjectOutputStream(baos);
         out.writeObject(dp);
 
-        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(
-                baos.toByteArray()));
+        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
         DocumentPartImpl dp2 = (DocumentPartImpl) in.readObject();
 
         // blobs are equals only if they are the same object so we need

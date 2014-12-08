@@ -31,13 +31,10 @@ import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @Provider
-public class JsonFactoryProvider implements
-        InjectableProvider<Context, Type>, Injectable<JsonFactory> {
+public class JsonFactoryProvider implements InjectableProvider<Context, Type>, Injectable<JsonFactory> {
 
     @Override
     public JsonFactory getValue() {
@@ -45,9 +42,8 @@ public class JsonFactoryProvider implements
     }
 
     @Override
-    public Injectable<JsonFactory> getInjectable(ComponentContext arg0, Context arg1,
-            Type t) {
-        if(t.equals(JsonFactory.class)) {
+    public Injectable<JsonFactory> getInjectable(ComponentContext arg0, Context arg1, Type t) {
+        if (t.equals(JsonFactory.class)) {
             return this;
         } else {
             return null;
@@ -58,7 +54,5 @@ public class JsonFactoryProvider implements
     public ComponentScope getScope() {
         return ComponentScope.Singleton;
     }
-
-
 
 }

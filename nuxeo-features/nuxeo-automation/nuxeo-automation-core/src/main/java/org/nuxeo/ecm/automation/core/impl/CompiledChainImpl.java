@@ -34,30 +34,33 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * An operation invocation chain. The chain is immutable (cannot be modified
- * after it was built). To create a new chain from a description call the
- * static method: {@link this#buildChain (AutomationService, Class, List)} This is a
- * self contained object - once built it can be used at any time to invoke the
- * operations in the chain.
+ * An operation invocation chain. The chain is immutable (cannot be modified after it was built). To create a new chain
+ * from a description call the static method: {@link this#buildChain (AutomationService, Class, List)} This is a self
+ * contained object - once built it can be used at any time to invoke the operations in the chain.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 class CompiledChainImpl implements CompiledChain {
 
     protected final OperationType op;
+
     protected static String opId;
+
     protected OperationContext context;
+
     protected AutomationService service;
+
     protected Map<String, Object> compileParameters; // argument references
+
     protected InvokableMethod method;
+
     protected CompiledChainImpl next;
 
     CompiledChainImpl(OperationType op, Map<String, Object> args) {
         this(null, op, args);
     }
 
-    CompiledChainImpl(CompiledChainImpl parent, OperationType op,
-            Map<String, Object> args) {
+    CompiledChainImpl(CompiledChainImpl parent, OperationType op, Map<String, Object> args) {
         if (parent != null) {
             parent.next = this;
         }
@@ -75,11 +78,11 @@ class CompiledChainImpl implements CompiledChain {
     }
 
     /**
-     * Compute the best matching path to perform the chain of operations. The
-     * path is computed using a backtracking algorithm.
+     * Compute the best matching path to perform the chain of operations. The path is computed using a backtracking
+     * algorithm.
      */
     public boolean initializePath(Class<?> in) {
-        InvokableMethod[] methods =  op.getMethodsMatchingInput(in);
+        InvokableMethod[] methods = op.getMethodsMatchingInput(in);
         if (methods == null) {
             return false;
         }
@@ -136,36 +139,29 @@ class CompiledChainImpl implements CompiledChain {
         return "CompiledChainImpl [op=" + op + "]";
     }
 
-    public static CompiledChainImpl buildChain(Class<?> in,
-            OperationParameters[] params) throws OperationNotFoundException,
-            InvalidChainException {
-        return buildChain(Framework.getLocalService(AutomationService.class),
-                in, params);
+    public static CompiledChainImpl buildChain(Class<?> in, OperationParameters[] params)
+            throws OperationNotFoundException, InvalidChainException {
+        return buildChain(Framework.getLocalService(AutomationService.class), in, params);
     }
 
-    public static CompiledChainImpl buildChain(AutomationService service,
-            Class<?> in, OperationParameters[] operations)
+    public static CompiledChainImpl buildChain(AutomationService service, Class<?> in, OperationParameters[] operations)
             throws OperationNotFoundException, InvalidChainException {
         if (operations.length == 0) {
             throw new InvalidChainException("Null operation chain.");
         }
         OperationParameters params = operations[0];
 
-        CompiledChainImpl invocation = new CompiledChainImpl(
-                service.getOperation(params.id()), params.map());
+        CompiledChainImpl invocation = new CompiledChainImpl(service.getOperation(params.id()), params.map());
         CompiledChainImpl last = invocation;
         for (int i = 1; i < operations.length; i++) {
             params = operations[i];
-            last = new CompiledChainImpl(last,
-                    service.getOperation(params.id()), params.map());
+            last = new CompiledChainImpl(last, service.getOperation(params.id()), params.map());
         }
         // find the best matching path in the chain
         if (!invocation.initializePath(in)) {
             throw new InvalidChainException(
-                    "Cannot find any valid path in operation chain - no method found for operation '"
-                            + opId
-                            + "' and for first input type '"
-                            + in.getName() + "'");
+                    "Cannot find any valid path in operation chain - no method found for operation '" + opId
+                            + "' and for first input type '" + in.getName() + "'");
         }
         return invocation;
     }

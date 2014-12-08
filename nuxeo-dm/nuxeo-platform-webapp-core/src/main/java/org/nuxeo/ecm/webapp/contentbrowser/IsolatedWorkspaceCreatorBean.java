@@ -60,13 +60,11 @@ public class IsolatedWorkspaceCreatorBean {
 
         // Grant to principalList
         for (String principalName : principalsName) {
-            securityActions.addPermission(principalName,
-                    SecurityConstants.EVERYTHING, true);
+            securityActions.addPermission(principalName, SecurityConstants.EVERYTHING, true);
         }
 
         // DENY at root
-        securityActions.addPermission(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false);
+        securityActions.addPermission(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
         securityActions.updateSecurityOnDocument();
 
         return result;

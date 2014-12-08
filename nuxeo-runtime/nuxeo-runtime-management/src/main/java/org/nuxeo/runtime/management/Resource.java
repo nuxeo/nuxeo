@@ -21,7 +21,6 @@ import javax.management.modelmbean.RequiredModelMBean;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
 public class Resource {
 
@@ -33,8 +32,7 @@ public class Resource {
 
     protected RequiredModelMBean mbean;
 
-    public Resource(ObjectName managementName,
-            Class<?> managementClass, Object serviceInstance) {
+    public Resource(ObjectName managementName, Class<?> managementClass, Object serviceInstance) {
         this.managementName = managementName;
         clazz = managementClass;
         instance = serviceInstance;

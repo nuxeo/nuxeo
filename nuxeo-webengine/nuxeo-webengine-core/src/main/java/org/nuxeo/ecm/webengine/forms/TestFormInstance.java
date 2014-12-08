@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class TestFormInstance implements FormInstance {
 
     protected final Map<String, String[]> params;
+
     protected final Map<String, Blob[]> blobs;
 
     public TestFormInstance(Map<String, String[]> params, Map<String, Blob[]> blobs) {
@@ -59,32 +60,32 @@ public class TestFormInstance implements FormInstance {
         this(params, null);
     }
 
-    public void setField(String key, String ... values) {
+    public void setField(String key, String... values) {
         params.put(key, values);
     }
 
-    public void addField(String key, String ... values) {
+    public void addField(String key, String... values) {
         String[] ar = params.get(key);
-        if (ar  == null) {
+        if (ar == null) {
             params.put(key, values);
         } else {
-            String[] tmp = new String[ar.length+values.length];
+            String[] tmp = new String[ar.length + values.length];
             System.arraycopy(ar, 0, tmp, 0, ar.length);
             System.arraycopy(values, 0, tmp, ar.length, values.length);
             params.put(key, tmp);
         }
     }
 
-    public void setField(String key, Blob ... values) {
+    public void setField(String key, Blob... values) {
         blobs.put(key, values);
     }
 
-    public void addField(String key, Blob ... values) {
+    public void addField(String key, Blob... values) {
         Blob[] ar = blobs.get(key);
         if (blobs == null) {
             blobs.put(key, values);
         } else {
-            Blob[] tmp = new Blob[ar.length+values.length];
+            Blob[] tmp = new Blob[ar.length + values.length];
             System.arraycopy(ar, 0, tmp, 0, ar.length);
             System.arraycopy(values, 0, tmp, ar.length, values.length);
             blobs.put(key, tmp);
@@ -106,7 +107,7 @@ public class TestFormInstance implements FormInstance {
     }
 
     public Object[] get(String key) {
-        Object[] val =  params.get(key);
+        Object[] val = params.get(key);
         if (val == null) {
             val = blobs.get(key);
         }

@@ -37,12 +37,10 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Action that check the mail address against the user directory.
- * If the address of the sender is not in the user directory, the
- * mail is not processed further.
+ * Action that check the mail address against the user directory. If the address of the sender is not in the user
+ * directory, the mail is not processed further.
  * <p>
- * If the sender is in the user directory, it put the principal as a
- * string in the context under the "sender" key.
+ * If the sender is in the user directory, it put the principal as a string in the context under the "sender" key.
  *
  * @author Alexandre Russel
  */
@@ -89,7 +87,7 @@ public class CheckSenderAction implements MessageAction {
     }
 
     public void reset(ExecutionContext context) {
-        //do nothing
+        // do nothing
     }
 
 }

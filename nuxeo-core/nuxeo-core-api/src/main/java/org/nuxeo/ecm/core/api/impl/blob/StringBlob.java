@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StringBlob extends DefaultBlob implements Serializable {
 
@@ -59,9 +58,7 @@ public class StringBlob extends DefaultBlob implements Serializable {
         try {
             return getByteArray().length;
         } catch (IOException e) {
-            log.error(String.format(
-                    "Error while getting byte array from blob %s, returning -1",
-                    getFilename()));
+            log.error(String.format("Error while getting byte array from blob %s, returning -1", getFilename()));
             return -1;
         }
     }

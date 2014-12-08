@@ -20,13 +20,10 @@ import java.util.List;
 import org.nuxeo.ecm.core.schema.types.Constraint;
 
 /**
- * Constraint based on String enumeration
- * 
- * NB : for now, the validation is not done.
+ * Constraint based on String enumeration NB : for now, the validation is not done.
  * 
  * @since 5.7
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class EnumConstraint implements Constraint {
 

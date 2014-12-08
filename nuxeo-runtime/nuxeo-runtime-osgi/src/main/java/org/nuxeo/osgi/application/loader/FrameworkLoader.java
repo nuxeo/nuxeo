@@ -53,25 +53,41 @@ import org.osgi.framework.FrameworkEvent;
 public class FrameworkLoader {
 
     public static final String HOST_NAME = "org.nuxeo.app.host.name";
+
     public static final String HOST_VERSION = "org.nuxeo.app.host.version";
+
     /**
      * @deprecated prefer use of {@link Environment#NUXEO_TMP_DIR}
      */
     @Deprecated
     public static final String TMP_DIR = "org.nuxeo.app.tmp";
+
     public static final String LIBS = "org.nuxeo.app.libs"; // class path
+
     public static final String BUNDLES = "org.nuxeo.app.bundles"; // class path
+
     public static final String DEVMODE = "org.nuxeo.app.devmode";
+
     public static final String PREPROCESSING = "org.nuxeo.app.preprocessing";
+
     public static final String SCAN_FOR_NESTED_JARS = "org.nuxeo.app.scanForNestedJars";
+
     public static final String FLUSH_CACHE = "org.nuxeo.app.flushCache";
+
     public static final String ARGS = "org.nuxeo.app.args";
+
     private static final Log log = LogFactory.getLog(FrameworkLoader.class);
+
     private static boolean isInitialized;
+
     private static boolean isStarted;
+
     private static File home;
+
     private static ClassLoader loader;
+
     private static List<File> bundleFiles;
+
     private static OSGiAdapter osgi;
 
     public static OSGiAdapter osgi() {
@@ -82,14 +98,13 @@ public class FrameworkLoader {
         return loader;
     }
 
-    public static synchronized void initialize(ClassLoader cl, File home,
-            List<File> bundleFiles, Map<String, Object> hostEnv) {
+    public static synchronized void initialize(ClassLoader cl, File home, List<File> bundleFiles,
+            Map<String, Object> hostEnv) {
         if (isInitialized) {
             return;
         }
         FrameworkLoader.home = home;
-        FrameworkLoader.bundleFiles = bundleFiles == null ? new ArrayList<File>()
-                : bundleFiles;
+        FrameworkLoader.bundleFiles = bundleFiles == null ? new ArrayList<File>() : bundleFiles;
         Collections.sort(FrameworkLoader.bundleFiles);
 
         loader = cl;
@@ -103,8 +118,7 @@ public class FrameworkLoader {
             return;
         }
         if (!isInitialized) {
-            throw new IllegalStateException(
-                    "Framework is not initialized. Call initialize method first");
+            throw new IllegalStateException("Framework is not initialized. Call initialize method first");
         }
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
@@ -229,8 +243,7 @@ public class FrameworkLoader {
                 // continue
             }
         }
-        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
-                systemBundle, null));
+        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, systemBundle, null));
         // osgi.fireFrameworkEvent(new
         // FrameworkEvent(FrameworkEvent.AFTER_START, systemBundle, null));
     }
@@ -274,8 +287,7 @@ public class FrameworkLoader {
         try {
             Class<?> klass = loader.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
             Method main = klass.getMethod("main", String[].class);
-            main.invoke(null,
-                    new Object[] { new String[] { home.getAbsolutePath() } });
+            main.invoke(null, new Object[] { new String[] { home.getAbsolutePath() } });
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (SecurityException e) {
@@ -318,8 +330,7 @@ public class FrameworkLoader {
         }
     }
 
-    protected static String getEnvProperty(String key,
-            Map<String, Object> hostEnv, Properties sysprops,
+    protected static String getEnvProperty(String key, Map<String, Object> hostEnv, Properties sysprops,
             boolean addToSystemProperties) {
         String v = (String) hostEnv.get(key);
         if (v == null) {
@@ -334,11 +345,9 @@ public class FrameworkLoader {
         return v;
     }
 
-    protected static Environment createEnvironment(File home,
-            Map<String, Object> hostEnv) {
+    protected static Environment createEnvironment(File home, Map<String, Object> hostEnv) {
         Properties sysprops = System.getProperties();
-        sysprops.setProperty(Environment.NUXEO_RUNTIME_HOME,
-                home.getAbsolutePath());
+        sysprops.setProperty(Environment.NUXEO_RUNTIME_HOME, home.getAbsolutePath());
 
         Environment env = new Environment(home);
         String v = (String) hostEnv.get(HOST_NAME);
@@ -352,41 +361,35 @@ public class FrameworkLoader {
         if (v != null) {
             env.setData(new File(v));
         } else {
-            sysprops.setProperty(Environment.NUXEO_DATA_DIR,
-                    env.getData().getAbsolutePath());
+            sysprops.setProperty(Environment.NUXEO_DATA_DIR, env.getData().getAbsolutePath());
         }
 
         v = getEnvProperty(Environment.NUXEO_LOG_DIR, hostEnv, sysprops, true);
         if (v != null) {
             env.setLog(new File(v));
         } else {
-            sysprops.setProperty(Environment.NUXEO_LOG_DIR,
-                    env.getLog().getAbsolutePath());
+            sysprops.setProperty(Environment.NUXEO_LOG_DIR, env.getLog().getAbsolutePath());
         }
 
         v = getEnvProperty(Environment.NUXEO_TMP_DIR, hostEnv, sysprops, true);
         if (v != null) {
             env.setTemp(new File(v));
         } else {
-            sysprops.setProperty(Environment.NUXEO_TMP_DIR,
-                    env.getTemp().getAbsolutePath());
+            sysprops.setProperty(Environment.NUXEO_TMP_DIR, env.getTemp().getAbsolutePath());
         }
 
-        v = getEnvProperty(Environment.NUXEO_CONFIG_DIR, hostEnv, sysprops,
-                true);
+        v = getEnvProperty(Environment.NUXEO_CONFIG_DIR, hostEnv, sysprops, true);
         if (v != null) {
             env.setConfig(new File(v));
         } else {
-            sysprops.setProperty(Environment.NUXEO_CONFIG_DIR,
-                    env.getConfig().getAbsolutePath());
+            sysprops.setProperty(Environment.NUXEO_CONFIG_DIR, env.getConfig().getAbsolutePath());
         }
 
         v = getEnvProperty(Environment.NUXEO_WEB_DIR, hostEnv, sysprops, true);
         if (v != null) {
             env.setWeb(new File(v));
         } else {
-            sysprops.setProperty(Environment.NUXEO_WEB_DIR,
-                    env.getWeb().getAbsolutePath());
+            sysprops.setProperty(Environment.NUXEO_WEB_DIR, env.getWeb().getAbsolutePath());
         }
 
         v = (String) hostEnv.get(ARGS);

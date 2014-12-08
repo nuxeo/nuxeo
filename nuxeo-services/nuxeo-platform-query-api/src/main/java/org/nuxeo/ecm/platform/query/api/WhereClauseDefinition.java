@@ -40,8 +40,8 @@ public interface WhereClauseDefinition {
     Class<? extends Escaper> getEscaperClass();
 
     /**
-     * Return the custom select statement used by the fixed part
-     * ("select * from Document" for NXQL queries, for instance).
+     * Return the custom select statement used by the fixed part ("select * from Document" for NXQL queries, for
+     * instance).
      *
      * @since 5.9.2
      */

@@ -25,11 +25,11 @@ import java.net.URLClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DelegateLoader implements SharedClassLoader {
 
     protected final URLClassLoader loader;
+
     protected Method addUrl;
 
     public DelegateLoader(URLClassLoader loader) {
@@ -38,13 +38,9 @@ public class DelegateLoader implements SharedClassLoader {
             addUrl = loader.getClass().getDeclaredMethod("addURL", URL.class);
             addUrl.setAccessible(true);
         } catch (SecurityException e) {
-            throw new RuntimeException(
-                    "Failed to create a shared delegate loader for classloader: "
-                            + loader, e);
+            throw new RuntimeException("Failed to create a shared delegate loader for classloader: " + loader, e);
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(
-                    "Failed to create a shared delegate loader for classloader: "
-                            + loader, e);
+            throw new RuntimeException("Failed to create a shared delegate loader for classloader: " + loader, e);
         }
     }
 
@@ -53,11 +49,9 @@ public class DelegateLoader implements SharedClassLoader {
         try {
             addUrl.invoke(loader, url);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Failed to add an URL to this loader: "
-                    + url, e);
+            throw new RuntimeException("Failed to add an URL to this loader: " + url, e);
         } catch (InvocationTargetException e) {
-            throw new RuntimeException("Failed to add an URL to this loader: "
-                    + url, e);
+            throw new RuntimeException("Failed to add an URL to this loader: " + url, e);
         }
     }
 

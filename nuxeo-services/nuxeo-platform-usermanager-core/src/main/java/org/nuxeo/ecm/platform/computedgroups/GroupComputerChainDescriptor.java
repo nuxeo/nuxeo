@@ -27,10 +27,8 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
-*
-* @author Thierry Delprat
-*
-*/
+ * @author Thierry Delprat
+ */
 
 @XObject("groupComputerChain")
 public class GroupComputerChainDescriptor implements Serializable {

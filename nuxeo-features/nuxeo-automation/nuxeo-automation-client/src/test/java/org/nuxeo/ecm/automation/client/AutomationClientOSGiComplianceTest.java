@@ -54,8 +54,7 @@ public class AutomationClientOSGiComplianceTest {
 
     @Configuration
     public Option[] config() throws FileNotFoundException {
-        return options(baseBundle(), junitBundles(),
-                bundle("reference:file:target/classes"));
+        return options(baseBundle(), junitBundles(), bundle("reference:file:target/classes"));
     }
 
     // Inject all automation client dependencies
@@ -69,8 +68,7 @@ public class AutomationClientOSGiComplianceTest {
     }
 
     @Test
-    public void checkAutomationClientActive() throws MalformedURLException,
-            URISyntaxException {
+    public void checkAutomationClientActive() throws MalformedURLException, URISyntaxException {
         // Check if automation client bundle is loaded
         List<Bundle> bundleList = Arrays.asList(bc.getBundles());
         Bundle acBundle = null;
@@ -89,16 +87,13 @@ public class AutomationClientOSGiComplianceTest {
         ServiceReference ref = bc.getServiceReference(AutomationClientFactory.class.getName());
         AutomationClientFactory factory = (AutomationClientFactory) bc.getService(ref);
         Assert.assertNotNull(factory);
-        AutomationClient client = factory.getClient(new URL(
-                "http://localhost:8080/nuxeo/site/automation"));
+        AutomationClient client = factory.getClient(new URL("http://localhost:8080/nuxeo/site/automation"));
         Assert.assertNotNull(client);
         // Check if client constructor with timeout is available
-        client = factory.getClient(new URL(
-                "http://localhost:8080/nuxeo/site/automation"), 3600);
+        client = factory.getClient(new URL("http://localhost:8080/nuxeo/site/automation"), 3600);
         Assert.assertNotNull(client);
         // Check if registerPojoMarshaller feature is accessible
-        client = factory.getClient(new URL(
-                "http://localhost:8080/nuxeo/site/automation"));
+        client = factory.getClient(new URL("http://localhost:8080/nuxeo/site/automation"));
         client.registerPojoMarshaller(acBundle.getClass());
     }
 }

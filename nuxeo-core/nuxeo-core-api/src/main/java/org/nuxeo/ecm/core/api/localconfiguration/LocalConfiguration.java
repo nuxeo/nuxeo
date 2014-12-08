@@ -18,8 +18,7 @@ import org.nuxeo.ecm.core.api.DetachedAdapter;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- * Interface that must be implemented by other interface representing a local
- * configuration.
+ * Interface that must be implemented by other interface representing a local configuration.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.2
@@ -32,8 +31,8 @@ public interface LocalConfiguration<T> extends DetachedAdapter {
     DocumentRef getDocumentRef();
 
     /**
-     * Returns {@code true} if this {@code LocalConfiguration} accepted to be
-     * merged with a parent configuration, {@code false} otherwise.
+     * Returns {@code true} if this {@code LocalConfiguration} accepted to be merged with a parent configuration,
+     * {@code false} otherwise.
      */
     boolean canMerge();
 

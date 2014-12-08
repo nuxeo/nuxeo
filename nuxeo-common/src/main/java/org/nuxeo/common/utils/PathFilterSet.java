@@ -24,8 +24,7 @@ package org.nuxeo.common.utils;
 import java.util.ArrayList;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PathFilterSet extends ArrayList<PathFilter> implements PathFilter {
 

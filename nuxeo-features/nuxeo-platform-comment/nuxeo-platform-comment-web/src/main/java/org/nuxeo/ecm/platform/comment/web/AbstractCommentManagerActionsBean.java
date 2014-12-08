@@ -53,10 +53,8 @@ import org.nuxeo.ecm.webapp.security.UserSession;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
-public abstract class AbstractCommentManagerActionsBean implements
-        CommentManagerActions {
+public abstract class AbstractCommentManagerActionsBean implements CommentManagerActions {
 
     protected static final String COMMENTS_ACTIONS = "COMMENT_ACTIONS";
 
@@ -138,16 +136,14 @@ public abstract class AbstractCommentManagerActionsBean implements
                 if (comment.getProperty("dublincore", "contributors") == null) {
                     String[] contributors = new String[1];
                     contributors[0] = getPrincipalName();
-                    comment.setProperty("dublincore", "contributors",
-                            contributors);
+                    comment.setProperty("dublincore", "contributors", contributors);
                 }
             } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
             }
             try {
                 if (comment.getProperty("dublincore", "created") == null) {
-                    comment.setProperty("dublincore", "created",
-                            Calendar.getInstance());
+                    comment.setProperty("dublincore", "created", Calendar.getInstance());
                 }
             } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
@@ -156,8 +152,7 @@ public abstract class AbstractCommentManagerActionsBean implements
         return comment;
     }
 
-    public DocumentModel addComment(DocumentModel comment,
-            DocumentModel docToComment) throws ClientException {
+    public DocumentModel addComment(DocumentModel comment, DocumentModel docToComment) throws ClientException {
         comment = initializeComment(comment);
         UIComment parentComment = null;
         if (savedReplyCommentId != null) {
@@ -175,16 +170,14 @@ public abstract class AbstractCommentManagerActionsBean implements
         }
         DocumentModel newComment;
         if (parentComment != null) {
-            newComment = commentableDoc.addComment(parentComment.getComment(),
-                    comment);
+            newComment = commentableDoc.addComment(parentComment.getComment(), comment);
         } else {
             newComment = commentableDoc.addComment(comment);
         }
 
         // automatically validate the comments
         if (CommentsConstants.COMMENT_LIFECYCLE.equals(newComment.getLifeCyclePolicy())) {
-            new FollowTransitionUnrestricted(documentManager,
-                    newComment.getRef(),
+            new FollowTransitionUnrestricted(documentManager, newComment.getRef(),
                     CommentsConstants.TRANSITION_TO_PUBLISHED_STATE).runUnrestricted();
         }
 
@@ -196,8 +189,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     }
 
     @Override
-    public DocumentModel addComment(DocumentModel comment)
-            throws ClientException {
+    public DocumentModel addComment(DocumentModel comment) throws ClientException {
         return addComment(comment, null);
     }
 
@@ -215,8 +207,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     }
 
     @Override
-    public String createComment(DocumentModel docToComment)
-            throws ClientException {
+    public String createComment(DocumentModel docToComment) throws ClientException {
         DocumentModel myComment = documentManager.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
 
         myComment.setProperty("comment", "author", principal.getName());
@@ -229,8 +220,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     }
 
     @Override
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.CONTENT_ROOT_SELECTION_CHANGED,
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.CONTENT_ROOT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void documentChanged() {
@@ -283,8 +273,7 @@ public abstract class AbstractCommentManagerActionsBean implements
         }
     }
 
-    public List<UIComment> getComments(DocumentModel doc)
-            throws ClientException {
+    public List<UIComment> getComments(DocumentModel doc) throws ClientException {
         List<UIComment> allComments = new ArrayList<UIComment>();
         commentableDoc = doc.getAdapter(CommentableDocument.class);
         if (commentableDoc != null) {
@@ -301,8 +290,7 @@ public abstract class AbstractCommentManagerActionsBean implements
      * Recursively retrieves all comments of a doc.
      */
     @Override
-    public List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc)
-            throws ClientException {
+    public List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc) throws ClientException {
         List<ThreadEntry> allComments = new ArrayList<ThreadEntry>();
         List<UIComment> allUIComments = getComments(doc);
 
@@ -316,8 +304,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     }
 
     @Override
-    public List<ThreadEntry> getCommentsAsThread(DocumentModel commentedDoc)
-            throws ClientException {
+    public List<ThreadEntry> getCommentsAsThread(DocumentModel commentedDoc) throws ClientException {
         if (commentThread != null) {
             return commentThread;
         }
@@ -338,11 +325,9 @@ public abstract class AbstractCommentManagerActionsBean implements
     }
 
     /**
-     * Visits a list of comment trees and puts them into a list of
-     * "ThreadEntry"s.
+     * Visits a list of comment trees and puts them into a list of "ThreadEntry"s.
      */
-    public void flattenTree(List<ThreadEntry> commentThread,
-            UIComment uiComment, int depth) {
+    public void flattenTree(List<ThreadEntry> commentThread, UIComment uiComment, int depth) {
         List<UIComment> uiChildren = uiComment.getChildren();
         for (UIComment uiChild : uiChildren) {
             commentThread.add(new ThreadEntry(uiChild.getComment(), depth + 1));
@@ -355,8 +340,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     /**
      * Creates a UIComment wrapping "comment", having "parent" as parent.
      */
-    protected UIComment createUIComment(UIComment parent, DocumentModel comment)
-            throws ClientException {
+    protected UIComment createUIComment(UIComment parent, DocumentModel comment) throws ClientException {
         UIComment wrapper = new UIComment(parent, comment);
         commentMap.put(wrapper.getId(), wrapper);
         List<DocumentModel> children = commentableDoc.getComments(comment);
@@ -437,8 +421,8 @@ public abstract class AbstractCommentManagerActionsBean implements
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<UIComment> getLastCommentsByDate(String commentNumber,
-            DocumentModel commentedDoc) throws ClientException {
+    public List<UIComment> getLastCommentsByDate(String commentNumber, DocumentModel commentedDoc)
+            throws ClientException {
         int number = Integer.parseInt(commentNumber);
         List<UIComment> comments = new ArrayList<UIComment>();
         flatComments = new ArrayList<UIComment>();
@@ -465,8 +449,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     }
 
     @Override
-    public List<UIComment> getLastCommentsByDate(String commentNumber)
-            throws ClientException {
+    public List<UIComment> getLastCommentsByDate(String commentNumber) throws ClientException {
         return getLastCommentsByDate(commentNumber, null);
     }
 

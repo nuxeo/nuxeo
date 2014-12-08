@@ -50,10 +50,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core",
-        "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core",
+@Deploy({ "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core",
+        "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.filemanager.core" })
 public class TestCSVImporter {
 
@@ -65,16 +63,13 @@ public class TestCSVImporter {
     protected DocumentModel wsRoot;
 
     private static File getArchiveFile() {
-        return new File(
-                FileUtils.getResourcePathFromContext("test-data/testCSVArchive.zip"));
+        return new File(FileUtils.getResourcePathFromContext("test-data/testCSVArchive.zip"));
     }
 
     public void createTestDocuments() throws Exception {
-        wsRoot = coreSession.getDocument(new PathRef(
-                "default-domain/workspaces"));
+        wsRoot = coreSession.getDocument(new PathRef("default-domain/workspaces"));
 
-        DocumentModel ws = coreSession.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
+        DocumentModel ws = coreSession.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");
         ws = coreSession.createDocument(ws);
         destWS = ws;
@@ -94,8 +89,7 @@ public class TestCSVImporter {
         File archive = getArchiveFile();
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new FileBlob(archive);
-        fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(),
-                true, "toto");
+        fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "toto");
         DocumentModelList children = coreSession.getChildren(destWS.getRef());
         assertSame(2, children.size());
 

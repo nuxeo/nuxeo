@@ -195,8 +195,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
                 try {
                     session2 = openSessionAs(ADMINISTRATOR);
                     DocumentModel root2 = session2.getRootDocument();
-                    DocumentModel doc2 = session2.getChild(root2.getRef(),
-                            "doc");
+                    DocumentModel doc2 = session2.getChild(root2.getRef(), "doc");
                     // let main thread continue
                     threadStartLatch.countDown();
                     // wait main thread trigger

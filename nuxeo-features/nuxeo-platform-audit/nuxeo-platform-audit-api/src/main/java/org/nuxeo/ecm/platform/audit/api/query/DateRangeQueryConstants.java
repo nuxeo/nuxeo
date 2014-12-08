@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.audit.api.query;
 public class DateRangeQueryConstants {
 
     public static final String MIN = "m";
+
     public static final String HOUR = "h";
 
     // Constant utility class

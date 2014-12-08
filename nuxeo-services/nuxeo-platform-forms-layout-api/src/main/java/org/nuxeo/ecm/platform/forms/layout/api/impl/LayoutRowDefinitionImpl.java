@@ -53,8 +53,7 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
     }
 
     /**
-     * Instantiates a new {@code LayoutRowDefinitionImpl} with a given widget
-     * name and category.
+     * Instantiates a new {@code LayoutRowDefinitionImpl} with a given widget name and category.
      *
      * @param name the row name
      * @param widget the widget name
@@ -67,8 +66,7 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
         if (widget == null) {
             this.widgets = new WidgetReferenceImpl[0];
         } else {
-            WidgetReferenceImpl widgetRef = new WidgetReferenceImpl(category,
-                    widget);
+            WidgetReferenceImpl widgetRef = new WidgetReferenceImpl(category, widget);
             this.widgets = new WidgetReferenceImpl[] { widgetRef };
         }
         this.alwaysSelected = false;
@@ -79,10 +77,8 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
         this(name, widget, null);
     }
 
-    public LayoutRowDefinitionImpl(String name,
-            Map<String, Map<String, Serializable>> properties,
-            List<WidgetReference> widgets, boolean alwaysSelected,
-            boolean selectedByDefault) {
+    public LayoutRowDefinitionImpl(String name, Map<String, Map<String, Serializable>> properties,
+            List<WidgetReference> widgets, boolean alwaysSelected, boolean selectedByDefault) {
         super();
         this.name = name;
         this.properties = properties;
@@ -99,10 +95,8 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
         this.selectedByDefault = selectedByDefault;
     }
 
-    public LayoutRowDefinitionImpl(String name,
-            Map<String, Map<String, Serializable>> properties,
-            WidgetReference[] widgets, boolean alwaysSelected,
-            boolean selectedByDefault) {
+    public LayoutRowDefinitionImpl(String name, Map<String, Map<String, Serializable>> properties,
+            WidgetReference[] widgets, boolean alwaysSelected, boolean selectedByDefault) {
         super();
         this.name = name;
         this.properties = properties;
@@ -182,8 +176,8 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
                 cwidgets[i] = widgets[i].clone();
             }
         }
-        LayoutRowDefinition clone = new LayoutRowDefinitionImpl(name, cprops,
-                cwidgets, alwaysSelected, selectedByDefault);
+        LayoutRowDefinition clone = new LayoutRowDefinitionImpl(name, cprops, cwidgets, alwaysSelected,
+                selectedByDefault);
         return clone;
     }
 

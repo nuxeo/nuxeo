@@ -53,10 +53,8 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
-public abstract class ChainSelectBase extends UIInput implements
-        NamingContainer {
+public abstract class ChainSelectBase extends UIInput implements NamingContainer {
 
     private static final Log log = LogFactory.getLog(ChainSelect.class);
 
@@ -187,8 +185,7 @@ public abstract class ChainSelectBase extends UIInput implements
             reRender = getId();
         }
 
-        UIComponent support = context.getApplication().createComponent(
-                "org.ajax4jsf.ajax.Support");
+        UIComponent support = context.getApplication().createComponent("org.ajax4jsf.ajax.Support");
         support.getAttributes().put("event", "onchange");
         support.getAttributes().put("reRender", reRender);
         support.getAttributes().put("immediate", Boolean.TRUE);
@@ -198,8 +195,7 @@ public abstract class ChainSelectBase extends UIInput implements
         return listbox;
     }
 
-    protected void encodeListbox(FacesContext context, int level,
-            String[] selectedKeys) throws IOException {
+    protected void encodeListbox(FacesContext context, int level, String[] selectedKeys) throws IOException {
         HtmlSelectOneListbox listbox = getListbox(context, level);
         listbox.setSize(getListboxSize());
 
@@ -211,8 +207,7 @@ public abstract class ChainSelectBase extends UIInput implements
         }
 
         UISelectItem emptyItem = new UISelectItem();
-        emptyItem.setItemLabel(ComponentUtils.translate(context,
-                "label.vocabulary.selectValue"));
+        emptyItem.setItemLabel(ComponentUtils.translate(context, "label.vocabulary.selectValue"));
         emptyItem.setItemValue("");
         emptyItem.setId(context.getViewRoot().createUniqueId());
         listbox.getChildren().add(emptyItem);
@@ -245,16 +240,14 @@ public abstract class ChainSelectBase extends UIInput implements
     }
 
     /**
-     * Computes the items that should be displayed for the nth listbox,
-     * depending on the options that have been selected in the previous ones.
+     * Computes the items that should be displayed for the nth listbox, depending on the options that have been selected
+     * in the previous ones.
      *
      * @param level the index of the listbox for which to compute the items
-     * @param selectedKeys the keys for the items selected on the previous
-     *            levels
+     * @param selectedKeys the keys for the items selected on the previous levels
      * @return a list of directory items
      */
-    public List<DirectoryEntry> getDirectoryEntries(int level,
-            String[] selectedKeys) {
+    public List<DirectoryEntry> getDirectoryEntries(int level, String[] selectedKeys) {
 
         assert level <= selectedKeys.length;
 
@@ -274,8 +267,7 @@ public abstract class ChainSelectBase extends UIInput implements
                 }
             } else {
                 if (getQualifiedParentKeys()) {
-                    Iterator<String> iter = Arrays.asList(selectedKeys).subList(
-                            0, level).iterator();
+                    Iterator<String> iter = Arrays.asList(selectedKeys).subList(0, level).iterator();
                     String fullPath = StringUtils.join(iter, getKeySeparator());
                     filter.put("parent", fullPath);
                 } else {
@@ -291,8 +283,7 @@ public abstract class ChainSelectBase extends UIInput implements
             Map<String, String> orderBy = new LinkedHashMap<String, String>();
 
             // adding sorting suport
-            if (schema.equals(VOCABULARY_SCHEMA)
-                    || schema.equals(XVOCABULARY_SCHEMA)) {
+            if (schema.equals(VOCABULARY_SCHEMA) || schema.equals(XVOCABULARY_SCHEMA)) {
                 orderBy.put("ordering", "asc");
                 orderBy.put("id", "asc");
             }
@@ -304,8 +295,7 @@ public abstract class ChainSelectBase extends UIInput implements
             }
 
         } catch (ClientException e) {
-            throw new RuntimeException("failed to query  directory: "
-                    + directoryName, e);
+            throw new RuntimeException("failed to query  directory: " + directoryName, e);
         } finally {
             closeSession(session);
         }
@@ -314,9 +304,8 @@ public abstract class ChainSelectBase extends UIInput implements
     }
 
     /**
-     * Resolves a list of keys (a selection) to a list of coresponding directory
-     * items. Example: [a, b, c] is resolved to [getNode(a), getNode(b),
-     * getNode(c)]
+     * Resolves a list of keys (a selection) to a list of coresponding directory items. Example: [a, b, c] is resolved
+     * to [getNode(a), getNode(b), getNode(c)]
      *
      * @param keys
      * @return
@@ -339,10 +328,8 @@ public abstract class ChainSelectBase extends UIInput implements
                     }
                 } else {
                     if (getQualifiedParentKeys()) {
-                        Iterator<String> iter = Arrays.asList(keys).subList(0,
-                                level).iterator();
-                        String fullPath = StringUtils.join(iter,
-                                getKeySeparator());
+                        Iterator<String> iter = Arrays.asList(keys).subList(0, level).iterator();
+                        String fullPath = StringUtils.join(iter, getKeySeparator());
                         filter.put("parent", fullPath);
                     } else {
                         filter.put("parent", keys[level - 1]);
@@ -576,8 +563,7 @@ public abstract class ChainSelectBase extends UIInput implements
         return StringUtils.join(ar, getKeySeparator());
     }
 
-    protected String computeItemLabel(FacesContext context, String id,
-            String label) {
+    protected String computeItemLabel(FacesContext context, String id, String label) {
         boolean translate = getTranslate();
         String display = getDisplay();
 
@@ -606,8 +592,7 @@ public abstract class ChainSelectBase extends UIInput implements
 
         String[] selection = getSelection();
         for (int level = 0; level < getDepth(); level++) {
-            String clientId = getClientId(context) + SEPARATOR_CHAR
-                    + getComponentId(level);
+            String clientId = getClientId(context) + SEPARATOR_CHAR + getComponentId(level);
             String value = parameters.get(clientId);
             if (StringUtils.isEmpty(value)) {
                 break;
@@ -635,10 +620,8 @@ public abstract class ChainSelectBase extends UIInput implements
 
     protected boolean validateEntry(FacesContext context, String[] keys) {
         if (!getAllowBranchSelection() && keys.length != getDepth()) {
-            String messageStr = ComponentUtils.translate(context,
-                    "label.chainSelect.incomplete_selection");
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, messageStr, messageStr);
+            String messageStr = ComponentUtils.translate(context, "label.chainSelect.incomplete_selection");
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageStr, messageStr);
             context.addMessage(getClientId(context), message);
             setValid(false);
             return false;

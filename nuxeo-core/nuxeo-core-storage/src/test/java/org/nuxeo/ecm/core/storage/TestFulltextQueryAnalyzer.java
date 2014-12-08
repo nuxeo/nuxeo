@@ -106,8 +106,7 @@ public class TestFulltextQueryAnalyzer {
         assertFulltextQuery("[foo OR [bar AND baz]]", "foo OR bar baz");
         assertFulltextQuery("[[foo AND bar] OR baz]", "foo bar OR baz");
         assertFulltextQuery("[foo OR bar OR baz]", "foo OR bar OR baz");
-        assertFulltextQuery("[foo OR [bar AND baz] OR gee]",
-                "foo OR bar baz OR gee");
+        assertFulltextQuery("[foo OR [bar AND baz] OR gee]", "foo OR bar baz OR gee");
         assertFulltextQuery("[[bar AND ~foo] OR baz]", "-foo bar OR baz");
         assertFulltextQuery("[foo OR [bar AND ~baz]]", "foo OR bar -baz");
 
@@ -149,8 +148,7 @@ public class TestFulltextQueryAnalyzer {
         assertFulltextQuery("[{foo bar} AND baz]", "\"foo bar\" baz");
         assertFulltextQuery("[{foo bar} AND baz]", "+\"foo bar\" baz");
         assertFulltextQuery("[baz AND ~{foo bar}]", "-\"foo bar\" baz");
-        assertFulltextQuery("[{foo bar} AND ~{baz gee}]",
-                "\"foo bar\" -\"baz gee\"");
+        assertFulltextQuery("[{foo bar} AND ~{baz gee}]", "\"foo bar\" -\"baz gee\"");
     }
 
 }

@@ -12,11 +12,9 @@
 package org.nuxeo.ecm.core.management;
 
 /**
- * Services that wants to register with the core management for being
- * call-backed should implement that interface.
+ * Services that wants to register with the core management for being call-backed should implement that interface.
  * <p>
- * For being call-backed during document store initialization, services should
- * implement the StorageClient interface.
+ * For being call-backed during document store initialization, services should implement the StorageClient interface.
  *
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
  */

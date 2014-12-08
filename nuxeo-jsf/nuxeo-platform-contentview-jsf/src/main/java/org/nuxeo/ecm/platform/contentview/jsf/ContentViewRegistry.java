@@ -32,13 +32,11 @@ import org.nuxeo.ecm.platform.query.core.ReferencePageProviderDescriptor;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for content view contributions, handling accurate merge on hot
- * reload.
+ * Registry for content view contributions, handling accurate merge on hot reload.
  *
  * @since 5.6
  */
-public class ContentViewRegistry extends
-        ContributionFragmentRegistry<ContentViewDescriptor> {
+public class ContentViewRegistry extends ContributionFragmentRegistry<ContentViewDescriptor> {
 
     protected static final Log log = LogFactory.getLog(ContentViewRegistry.class);
 
@@ -52,8 +50,7 @@ public class ContentViewRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, ContentViewDescriptor contrib,
-            ContentViewDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, ContentViewDescriptor contrib, ContentViewDescriptor newOrigContrib) {
         String name = contrib.getName();
         if (name == null) {
             log.error("Cannot register content view without a name");
@@ -119,8 +116,7 @@ public class ContentViewRegistry extends
     }
 
     @Override
-    public void merge(ContentViewDescriptor newDesc,
-            ContentViewDescriptor oldDesc) {
+    public void merge(ContentViewDescriptor newDesc, ContentViewDescriptor oldDesc) {
         oldDesc.setEnabled(newDesc.isEnabled());
 
         String title = newDesc.getTitle();
@@ -209,8 +205,7 @@ public class ContentViewRegistry extends
         List<ContentViewLayout> resultLayouts = newDesc.getResultLayouts();
         if (resultLayouts != null) {
             Boolean appendResultLayout = newDesc.getAppendResultLayouts();
-            if (Boolean.TRUE.equals(appendResultLayout)
-                    || resultLayouts.isEmpty()) {
+            if (Boolean.TRUE.equals(appendResultLayout) || resultLayouts.isEmpty()) {
                 List<ContentViewLayout> allLayouts = new ArrayList<ContentViewLayout>();
                 if (oldDesc.resultLayouts != null) {
                     allLayouts.addAll(oldDesc.resultLayouts);

@@ -60,8 +60,7 @@ public class TestOrderedProperties {
     public void testLoad() throws IOException {
         Properties properties = new OrderedProperties();
 
-        InputStream in = getClass().getClassLoader().getResourceAsStream(
-                "ordered.properties");
+        InputStream in = getClass().getClassLoader().getResourceAsStream("ordered.properties");
         properties.load(in);
 
         Enumeration<?> keys = properties.propertyNames();

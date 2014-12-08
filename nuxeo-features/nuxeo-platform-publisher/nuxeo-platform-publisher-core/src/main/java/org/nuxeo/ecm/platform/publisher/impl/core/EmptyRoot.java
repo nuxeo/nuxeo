@@ -12,14 +12,12 @@ public class EmptyRoot extends CoreFolderPublicationNode {
 
     private static final long serialVersionUID = 1L;
 
-    public EmptyRoot(String treeConfigName, String sid,
-            PublishedDocumentFactory factory) throws ClientException {
+    public EmptyRoot(String treeConfigName, String sid, PublishedDocumentFactory factory) throws ClientException {
         super(null, treeConfigName, sid, factory);
     }
 
     @SuppressWarnings("unchecked")
-    public List<PublishedDocument> getChildrenDocuments()
-            throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
         return Collections.emptyList();
     }
 

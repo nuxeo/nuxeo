@@ -33,12 +33,11 @@ import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestContro
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Filter that sets encoding to UTF-8, before any other filter tries to parse
- * the request. Also set the X-UA-Compatible meta for browsers.
+ * Filter that sets encoding to UTF-8, before any other filter tries to parse the request. Also set the X-UA-Compatible
+ * meta for browsers.
  * <p>
- * See NXP-5555: the first parsing of the request is cached, so it should be
- * done with the right encoding.
- * See NXP-12862: we must pass the X-UA-Compatible meta in the header.
+ * See NXP-5555: the first parsing of the request is cached, so it should be done with the right encoding. See
+ * NXP-12862: we must pass the X-UA-Compatible meta in the header.
  *
  * @author Anahide Tchertchian
  * @since 5.4.2
@@ -48,8 +47,8 @@ public class NuxeoEncodingFilter implements Filter {
     private static final Log log = LogFactory.getLog(NuxeoEncodingFilter.class);
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         if (request != null) {
             // NXP-5555: set encoding to UTF-8 in case this method is called
             // before
@@ -61,13 +60,12 @@ public class NuxeoEncodingFilter implements Filter {
                     log.error(e, e);
                 }
             }
-            
+
             RequestControllerManager rcm = Framework.getLocalService(RequestControllerManager.class);
             for (String headerName : rcm.getResponseHeaders().keySet()) {
                 if (response instanceof HttpServletResponse
                         && !((HttpServletResponse) response).containsHeader(headerName)) {
-                    ((HttpServletResponse) response).addHeader(headerName,
-                            rcm.getResponseHeaders().get(headerName));
+                    ((HttpServletResponse) response).addHeader(headerName, rcm.getResponseHeaders().get(headerName));
                 }
             }
         }

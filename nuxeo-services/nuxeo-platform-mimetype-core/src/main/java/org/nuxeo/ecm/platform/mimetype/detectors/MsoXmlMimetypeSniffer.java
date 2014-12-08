@@ -29,7 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 
-
 public class MsoXmlMimetypeSniffer implements MagicDetector {
 
     private static final Log log = LogFactory.getLog(MsoXmlMimetypeSniffer.class);
@@ -39,7 +38,7 @@ public class MsoXmlMimetypeSniffer implements MagicDetector {
     }
 
     public String[] getHandledExtensions() {
-        return new String[]{"xml"};
+        return new String[] { "xml" };
     }
 
     public String[] getHandledTypes() {
@@ -54,11 +53,11 @@ public class MsoXmlMimetypeSniffer implements MagicDetector {
         return "0.1";
     }
 
-    public String[] process(byte[] data, int offset, int length, long bitmask,
-            char comparator, String mimeType, Map params) {
-      String[] mimetypes = {};
-      File file = null;
-      try {
+    public String[] process(byte[] data, int offset, int length, long bitmask, char comparator, String mimeType,
+            Map params) {
+        String[] mimetypes = {};
+        File file = null;
+        try {
             file = File.createTempFile("magicdetector", ".xml");
             FileUtils.writeFile(file, data);
             mimetypes = guessMsoXml(file);
@@ -72,8 +71,8 @@ public class MsoXmlMimetypeSniffer implements MagicDetector {
         return mimetypes;
     }
 
-    public String[] process(File file, int offset, int length, long bitmask,
-            char comparator, String mimeType, Map params) {
+    public String[] process(File file, int offset, int length, long bitmask, char comparator, String mimeType,
+            Map params) {
         return guessMsoXml(file);
     }
 

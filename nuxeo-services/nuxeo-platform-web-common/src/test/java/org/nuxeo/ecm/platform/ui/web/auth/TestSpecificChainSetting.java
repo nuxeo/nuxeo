@@ -49,7 +49,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
     private PluggableAuthenticationService getAuthService() {
         PluggableAuthenticationService authService;
         authService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                    PluggableAuthenticationService.NAME);
+                PluggableAuthenticationService.NAME);
 
         return authService;
     }

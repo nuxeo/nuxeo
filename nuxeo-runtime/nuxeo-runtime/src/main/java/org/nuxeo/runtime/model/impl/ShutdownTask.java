@@ -25,7 +25,6 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  * Deactivate components in the proper order to avoid exceptions at shutdown.
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class ShutdownTask {
 
@@ -36,8 +35,7 @@ public class ShutdownTask {
         }
     }
 
-    private static void shutdown(ComponentManagerImpl mgr,
-            RegistrationInfoImpl ri) {
+    private static void shutdown(ComponentManagerImpl mgr, RegistrationInfoImpl ri) {
         ComponentName name = ri.getName();
         if (name == null) {
             return; // already destroyed

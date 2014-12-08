@@ -42,8 +42,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class AnnotationListPopup extends PopupPanel {
 
-    public AnnotationListPopup(String annotationName,
-            List<Annotation> annotations, WebConfiguration configuration) {
+    public AnnotationListPopup(String annotationName, List<Annotation> annotations, WebConfiguration configuration) {
         super();
         this.setWidth(Window.getClientWidth() + " px");
         this.setHeight(Window.getClientHeight() + " px");
@@ -53,8 +52,7 @@ public class AnnotationListPopup extends PopupPanel {
         HorizontalPanel titleBar = new HorizontalPanel();
         titleBar.setStyleName("annotationListPopupTitleBar");
         TranslationMessages translationMessages = GWT.create(TranslationMessages.class);
-        Label title = new Label(
-                translationMessages.annotationListPopupTitle(annotationName));
+        Label title = new Label(translationMessages.annotationListPopupTitle(annotationName));
         titleBar.add(title);
         titleBar.setCellWidth(title, "100%");
         PushButton closeButton = new PushButton(" ", new ClickListener() {
@@ -85,8 +83,7 @@ public class AnnotationListPopup extends PopupPanel {
             grid.getColumnFormatter().addStyleName(1, "annotationListPopupFields");
 
             String body = "";
-            Set<String> definedFields = configuration.getAnnotationDefinition(
-                    annotationName).getFields().keySet();
+            Set<String> definedFields = configuration.getAnnotationDefinition(annotationName).getFields().keySet();
             for (String definedField : definedFields) {
                 if (!displayedFields.contains(definedField)) {
                     body += annotation.getFields().get(definedField) + " - ";

@@ -18,8 +18,8 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- * File system external adapter that takes the "container" property to set the
- * absolute path of the container folder on the file system.
+ * File system external adapter that takes the "container" property to set the absolute path of the container folder on
+ * the file system.
  *
  * @author Anahide Tchertchian
  */
@@ -29,14 +29,12 @@ public class FileSystemExternalBlobAdapter extends AbstractExternalBlobAdapter {
 
     public static final String CONTAINER_PROPERTY_NAME = "container";
 
-    public String getFileAbsolutePath(String localPath)
-            throws PropertyException {
+    public String getFileAbsolutePath(String localPath) throws PropertyException {
         String container = getProperty(CONTAINER_PROPERTY_NAME);
         if (container == null) {
-            throw new PropertyException(String.format(
-                    "External blob adapter with prefix '%s' "
-                            + "and class '%s' is missing the '%s' property",
-                    getPrefix(), getClass().getName(), CONTAINER_PROPERTY_NAME));
+            throw new PropertyException(String.format("External blob adapter with prefix '%s' "
+                    + "and class '%s' is missing the '%s' property", getPrefix(), getClass().getName(),
+                    CONTAINER_PROPERTY_NAME));
         }
         container = container.trim();
         if (!container.endsWith(File.separator)) {
@@ -52,8 +50,7 @@ public class FileSystemExternalBlobAdapter extends AbstractExternalBlobAdapter {
         String path = getFileAbsolutePath(localPath);
         File file = new File(path);
         if (!file.exists()) {
-            throw new PropertyException(String.format(
-                    "Cannot find file at '%s'", path));
+            throw new PropertyException(String.format("Cannot find file at '%s'", path));
         }
         Blob blob = new FileBlob(file);
         blob.setFilename(file.getName());

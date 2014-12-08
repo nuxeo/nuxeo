@@ -32,8 +32,7 @@ import org.nuxeo.theme.negotiation.Scheme;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 
 /**
- * Returns the flavor associated to the current space (workspace, section, ...)
- * as a String. Return null otherwise.
+ * Returns the flavor associated to the current space (workspace, section, ...) as a String. Return null otherwise.
  *
  * @since 5.5
  */
@@ -68,8 +67,7 @@ public class LocalThemeFlavor implements Scheme {
         // Check that the theme page accepts this flavor
         FacesContext faces = (FacesContext) context;
         String theme = (String) faces.getExternalContext().getRequestMap().get(
-                Negotiator.NEGOTIATION_RESULT_PREFIX
-                        + Negotiator.NEGOTIATION_OBJECT.theme.name());
+                Negotiator.NEGOTIATION_RESULT_PREFIX + Negotiator.NEGOTIATION_OBJECT.theme.name());
         if (theme != null) {
             ThemeStylingService service = Framework.getService(ThemeStylingService.class);
             if (service == null) {
@@ -81,10 +79,8 @@ public class LocalThemeFlavor implements Scheme {
                 return flavor;
             } else {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Local configuration: current theme page "
-                                    + "'%s' does not accept the flavor '%s'",
-                            theme, flavor));
+                    log.debug(String.format("Local configuration: current theme page "
+                            + "'%s' does not accept the flavor '%s'", theme, flavor));
                 }
             }
         }

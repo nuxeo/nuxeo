@@ -34,15 +34,17 @@ import org.nuxeo.ecm.platform.annotations.service.AnnotationConfigurationService
 import org.nuxeo.ecm.platform.annotations.service.MetadataMapper;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.runtime.api.Framework;
+
 /**
- * @author Alexandre Russel
- *
- * Check the default configuration to the annotation service.
+ * @author Alexandre Russel Check the default configuration to the annotation service.
  */
 public class AnnotationsComponentTest extends AbstractRepositoryTestCase {
     private AnnotationsService service;
+
     private AnnotationConfigurationService configuration;
+
     private AnnotationsRepositoryConfigurationService repositoryConfiguration;
+
     private AnnotationsRepositoryService repositoryService;
 
     @Test

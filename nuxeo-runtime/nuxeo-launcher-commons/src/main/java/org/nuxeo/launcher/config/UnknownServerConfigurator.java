@@ -23,8 +23,6 @@ import java.io.File;
 import org.nuxeo.common.Environment;
 
 /**
- *
- *
  * @since 5.7
  */
 public class UnknownServerConfigurator extends ServerConfigurator {
@@ -32,8 +30,7 @@ public class UnknownServerConfigurator extends ServerConfigurator {
     /**
      * @param configurationGenerator
      */
-    public UnknownServerConfigurator(
-            ConfigurationGenerator configurationGenerator) {
+    public UnknownServerConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
         log.warn("Unknown server.");
     }
@@ -45,8 +42,7 @@ public class UnknownServerConfigurator extends ServerConfigurator {
 
     @Override
     protected File getRuntimeHome() {
-        return new File(System.getProperty(Environment.NUXEO_RUNTIME_HOME,
-                generator.getNuxeoHome().getPath()));
+        return new File(System.getProperty(Environment.NUXEO_RUNTIME_HOME, generator.getNuxeoHome().getPath()));
     }
 
     @Override
@@ -56,9 +52,8 @@ public class UnknownServerConfigurator extends ServerConfigurator {
 
     @Override
     public File getConfigDir() {
-        return new File(System.getProperty(Environment.NUXEO_CONFIG_DIR,
-                getRuntimeHome().getPath() + File.separator
-                        + Environment.DEFAULT_CONFIG_DIR));
+        return new File(System.getProperty(Environment.NUXEO_CONFIG_DIR, getRuntimeHome().getPath() + File.separator
+                + Environment.DEFAULT_CONFIG_DIR));
     }
 
     @Override

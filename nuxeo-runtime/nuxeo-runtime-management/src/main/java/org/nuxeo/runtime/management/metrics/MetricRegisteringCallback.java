@@ -29,16 +29,15 @@ import org.nuxeo.runtime.management.stopwatchs.StopwatchMXBeanImpl;
  * Callback that registers MXBeans for metrics after their creation.
  */
 public class MetricRegisteringCallback extends CallbackSkeleton {
-   
+
     MetricRegister register;
-    
+
     /**
      * @param register
      */
     public MetricRegisteringCallback(MetricRegister register) {
-       this.register = register;
+        this.register = register;
     }
-
 
     @Override
     public void simonCreated(Simon simon) {
@@ -47,7 +46,6 @@ public class MetricRegisteringCallback extends CallbackSkeleton {
         }
         register(simon);
     }
-
 
     @Override
     public void simonDestroyed(Simon simon) {
@@ -63,7 +61,7 @@ public class MetricRegisteringCallback extends CallbackSkeleton {
         SimonSuperMXBean mbean;
         if (simon instanceof Counter) {
             mbean = new CounterMXBeanImpl((Counter) simon);
-        } else  if (simon instanceof Stopwatch) {
+        } else if (simon instanceof Stopwatch) {
             mbean = new StopwatchMXBeanImpl((Stopwatch) simon);
         } else {
             return;

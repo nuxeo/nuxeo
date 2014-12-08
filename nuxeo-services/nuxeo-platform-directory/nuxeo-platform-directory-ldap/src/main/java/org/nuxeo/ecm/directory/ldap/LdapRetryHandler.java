@@ -29,12 +29,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Wrapper to encapsulate the calls to LDAP and retry the requests in case of
- * ServiceUnavailableException errors
+ * Wrapper to encapsulate the calls to LDAP and retry the requests in case of ServiceUnavailableException errors
  *
  * @since 5.7
  * @author Thierry Martins <tm@nuxeo.com>
- *
  */
 public class LdapRetryHandler implements InvocationHandler {
 
@@ -50,8 +48,7 @@ public class LdapRetryHandler implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args)
-            throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         int attempts = attemptsNumber;
         Throwable e = null;
         while (attempts-- > 0) {
@@ -71,8 +68,7 @@ public class LdapRetryHandler implements InvocationHandler {
 
     public static DirContext wrap(DirContext dirContext, int retries) {
         LdapRetryHandler handler = new LdapRetryHandler(dirContext, retries);
-        return (DirContext) Proxy.newProxyInstance(
-                Thread.currentThread().getContextClassLoader(),
+        return (DirContext) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
                 new Class<?>[] { DirContext.class }, handler);
     }
 }

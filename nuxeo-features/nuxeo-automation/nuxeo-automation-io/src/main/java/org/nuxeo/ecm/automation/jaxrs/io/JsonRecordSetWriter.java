@@ -51,23 +51,20 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
     JsonFactory factory;
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         boolean canUse = RecordSet.class.isAssignableFrom(type);
         return canUse;
     }
 
     @Override
-    public long getSize(RecordSet t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public long getSize(RecordSet t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1L;
     }
 
     @Override
-    public void writeTo(RecordSet records, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders, OutputStream out)
-            throws IOException, WebApplicationException {
+    public void writeTo(RecordSet records, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream out) throws IOException,
+            WebApplicationException {
         try {
             writeRecords(out, records);
         } catch (IOException e) {
@@ -77,8 +74,7 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
 
     }
 
-    protected void writeRecords(OutputStream out, RecordSet records)
-            throws IOException {
+    protected void writeRecords(OutputStream out, RecordSet records) throws IOException {
 
         JsonGenerator jg = factory.createJsonGenerator(out, JsonEncoding.UTF8);
 
@@ -92,15 +88,11 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
             jg.writeNumberField("pageSize", pRecord.getPageSize());
             jg.writeNumberField("maxPageSize", pRecord.getMaxPageSize());
             jg.writeNumberField("currentPageSize", pRecord.getCurrentPageSize());
-            jg.writeNumberField("currentPageIndex",
-                    pRecord.getCurrentPageIndex());
+            jg.writeNumberField("currentPageIndex", pRecord.getCurrentPageIndex());
             jg.writeNumberField("numberOfPages", pRecord.getNumberOfPages());
-            jg.writeBooleanField("isPreviousPageAvailable",
-                    pRecord.isPreviousPageAvailable());
-            jg.writeBooleanField("isNextPageAvailable",
-                    pRecord.isNextPageAvailable());
-            jg.writeBooleanField("isLastPageAvailable",
-                    pRecord.isLastPageAvailable());
+            jg.writeBooleanField("isPreviousPageAvailable", pRecord.isPreviousPageAvailable());
+            jg.writeBooleanField("isNextPageAvailable", pRecord.isNextPageAvailable());
+            jg.writeBooleanField("isLastPageAvailable", pRecord.isLastPageAvailable());
             jg.writeBooleanField("isSortable", pRecord.isSortable());
             jg.writeBooleanField("hasError", pRecord.hasError());
             jg.writeStringField("errorMessage", pRecord.getErrorMessage());
@@ -113,8 +105,7 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
 
         if (records instanceof PaginableRecordSet) {
             PaginableRecordSet pRecord = (PaginableRecordSet) records;
-            if (pRecord.hasAggregateSupport() && pRecord.getAggregates() !=
-                    null && !pRecord.getAggregates().isEmpty()) {
+            if (pRecord.hasAggregateSupport() && pRecord.getAggregates() != null && !pRecord.getAggregates().isEmpty()) {
                 jg.writeObjectField("aggregations", pRecord.getAggregates());
             }
         }

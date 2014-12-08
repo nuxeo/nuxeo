@@ -106,8 +106,7 @@ public class PhotoshopPaletteParser extends PaletteParser {
                 float saturation = x / 65535F; // [0.0-1.0]
                 float brightness = y / 65535F; // [0.0-1.0]
                 Color color = Color.getHSBColor(hue, saturation, brightness);
-                value = rgbToHex(color.getRed(), color.getGreen(),
-                        color.getBlue());
+                value = rgbToHex(color.getRed(), color.getGreen(), color.getBlue());
 
             } else if (colorSpace == CMYK) {
                 float cyan = 1F - w / 65535F; // [0.0-1.0]

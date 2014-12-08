@@ -27,14 +27,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class DocumentFieldAccessor {
 
     protected final String name;
 
     public static final Map<String, DocumentFieldAccessor> accessors = new HashMap<String, DocumentFieldAccessor>();
-
 
     protected DocumentFieldAccessor(String name) {
         this.name = name;
@@ -66,7 +64,6 @@ public abstract class DocumentFieldAccessor {
     }
 
     public abstract Object getValue(DocumentModel doc);
-
 
     public static DocumentFieldAccessor ID = new DocumentFieldAccessor("id") {
         @Override
@@ -113,7 +110,7 @@ public abstract class DocumentFieldAccessor {
     public static DocumentFieldAccessor SYSTEM = new DocumentFieldAccessor("system") {
         @Override
         public Object getValue(DocumentModel doc) {
-            return null; //TODO
+            return null; // TODO
         }
     };
 

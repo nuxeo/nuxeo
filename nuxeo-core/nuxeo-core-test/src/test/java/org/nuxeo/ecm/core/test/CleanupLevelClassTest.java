@@ -52,7 +52,7 @@ public class CleanupLevelClassTest {
     }
 
     public void runTest() throws Exception {
-        switch(++phase) {
+        switch (++phase) {
         case 1:
             firstTestToCreateADoc();
             break;
@@ -63,8 +63,7 @@ public class CleanupLevelClassTest {
     }
 
     public void firstTestToCreateADoc() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "default-domain",
-                "Domain");
+        DocumentModel doc = session.createDocumentModel("/", "default-domain", "Domain");
         doc.setProperty("dublincore", "title", "Default domain");
         doc = session.createDocument(doc);
         session.save();

@@ -47,8 +47,7 @@ public class ResizePictureConverter implements Converter {
     private static final Log log = LogFactory.getLog(ResizePictureConverter.class);
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         try {
             ImagingService service = Framework.getService(ImagingService.class);
 
@@ -69,8 +68,7 @@ public class ResizePictureConverter implements Converter {
 
             for (Blob source : sources) {
                 if (source != null) {
-                    Blob result = service.resize(source, format, width, height,
-                            depth);
+                    Blob result = service.resize(source, format, width, height, depth);
                     if (result != null) {
                         results.add(result);
                     }

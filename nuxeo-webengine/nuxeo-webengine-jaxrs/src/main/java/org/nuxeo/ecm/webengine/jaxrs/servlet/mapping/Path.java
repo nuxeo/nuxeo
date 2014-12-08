@@ -13,20 +13,20 @@ package org.nuxeo.ecm.webengine.jaxrs.servlet.mapping;
 
 import java.util.Arrays;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class Path {
 
     public static final int HAS_LEADING_SLASH = 1;
+
     public static final int HAS_TRAILING_SLASH = 2;
 
     public static final String[] EMPTY_SEGMENTS = new String[0];
 
-    public static final Path ROOT = new Path(EMPTY_SEGMENTS, HAS_LEADING_SLASH|HAS_TRAILING_SLASH);
-    public static final Path EMPTY = new Path(EMPTY_SEGMENTS);
+    public static final Path ROOT = new Path(EMPTY_SEGMENTS, HAS_LEADING_SLASH | HAS_TRAILING_SLASH);
 
+    public static final Path EMPTY = new Path(EMPTY_SEGMENTS);
 
     public static Path parse(String path) {
         return new PathParser().parse(path);
@@ -37,11 +37,11 @@ public final class Path {
     protected final String[] segments;
 
     public Path(String[] segments) {
-        this (segments, 0);
+        this(segments, 0);
     }
 
     public Path(String[] segments, int bits) {
-        this (segments, bits, true);
+        this(segments, bits, true);
     }
 
     protected Path(String[] segments, int bits, boolean updateHashCode) {
@@ -86,12 +86,12 @@ public final class Path {
         if (len == 0) {
             return hasLeadingSlash() || hasTrailingSlash() ? "/" : "";
         }
-        StringBuilder buf = new StringBuilder(segments.length*16);
+        StringBuilder buf = new StringBuilder(segments.length * 16);
         if (hasLeadingSlash()) {
             buf.append('/');
         }
         buf.append(segments[0]);
-        for (int i=1; i<segments.length; i++) {
+        for (int i = 1; i < segments.length; i++) {
             buf.append('/').append(segments[i]);
         }
         if (hasTrailingSlash()) {
@@ -101,23 +101,23 @@ public final class Path {
     }
 
     public String lastSegment() {
-        return segments.length == 0 ? "" : segments[segments.length-1];
+        return segments.length == 0 ? "" : segments[segments.length - 1];
     }
 
     public String getFileExtension() {
         if (segments.length == 0) {
             return null;
         }
-        String last = segments[segments.length-1];
+        String last = segments[segments.length - 1];
         int i = last.lastIndexOf('.');
-        return i > -1 ? last.substring(i+1) : null;
+        return i > -1 ? last.substring(i + 1) : null;
     }
 
     public String getFileName() {
         if (segments.length == 0) {
             return "";
         }
-        String last = segments[segments.length-1];
+        String last = segments[segments.length - 1];
         int i = last.lastIndexOf('.');
         return i > -1 ? last.substring(0, i) : null;
     }
@@ -158,7 +158,6 @@ public final class Path {
         return new Path(segments, bits);
     }
 
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -168,7 +167,7 @@ public final class Path {
             return false;
         }
         if (obj.getClass() == Path.class) {
-            Path path = (Path)obj;
+            Path path = (Path) obj;
             return path.bits == bits && Arrays.equals(path.segments, segments);
         }
         return false;
@@ -187,7 +186,7 @@ public final class Path {
         int hash = 17;
         int segmentCount = segments.length;
         for (int i = 0; i < segmentCount; i++) {
-            //this function tends to given a fairly even distribution
+            // this function tends to given a fairly even distribution
             hash = hash * 37 + segments[i].hashCode();
         }
         return hash;

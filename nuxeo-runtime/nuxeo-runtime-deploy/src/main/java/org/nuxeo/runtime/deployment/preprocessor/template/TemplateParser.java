@@ -29,7 +29,7 @@ import java.net.URL;
 import org.nuxeo.common.utils.FileUtils;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TemplateParser {
 
@@ -94,7 +94,7 @@ public class TemplateParser {
                 if (i < chars.length && chars[i + 1] == '%') {
                     marker = false;
                     i++;
-                    // create  a new Part:
+                    // create a new Part:
                     tpl.addPart(name.toString(), buf.toString());
                     name.setLength(0);
                     buf.setLength(0);

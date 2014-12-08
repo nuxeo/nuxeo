@@ -19,16 +19,14 @@
 
 package org.nuxeo.ecm.webengine.loader;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StaticClassProxy implements ClassProxy {
 
     protected final Class<?> clazz;
 
-    public StaticClassProxy(Class<?>clazz) {
+    public StaticClassProxy(Class<?> clazz) {
         this.clazz = clazz;
     }
 

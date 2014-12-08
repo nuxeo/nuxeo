@@ -46,7 +46,6 @@ public class XAnnotatedContent extends XAnnotatedMember {
         DEFAULT_FORMAT.setEncoding("UTF-8");
     }
 
-
     public XAnnotatedContent(XMap xmap, XAccessor setter, XContent anno) {
         super(xmap, setter);
         path = new Path(anno.value());

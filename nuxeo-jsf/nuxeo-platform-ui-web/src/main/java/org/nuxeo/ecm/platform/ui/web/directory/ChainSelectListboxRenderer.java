@@ -38,7 +38,6 @@ import com.sun.faces.renderkit.RenderKitUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class ChainSelectListboxRenderer extends Renderer {
 
@@ -50,20 +49,18 @@ public class ChainSelectListboxRenderer extends Renderer {
     }
 
     @Override
-    public void encodeBegin(FacesContext context, UIComponent component)
-            throws IOException {
+    public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
         ChainSelectListboxComponent comp = (ChainSelectListboxComponent) component;
         ResponseWriter writer = context.getResponseWriter();
-        Boolean displayValueOnly = comp.getChain().getBooleanProperty(
-                "displayValueOnly", false);
+        Boolean displayValueOnly = comp.getChain().getBooleanProperty("displayValueOnly", false);
         if (displayValueOnly) {
             return;
         }
         encodeInput(context, writer, comp);
     }
 
-    private static void encodeInput(FacesContext context, ResponseWriter writer,
-            ChainSelectListboxComponent comp) throws IOException {
+    private static void encodeInput(FacesContext context, ResponseWriter writer, ChainSelectListboxComponent comp)
+            throws IOException {
         String id = comp.getClientId(context);
         ChainSelect chain = comp.getChain();
         String cssStyleClass = comp.getStringProperty("cssStyleClass", null);
@@ -85,10 +82,8 @@ public class ChainSelectListboxRenderer extends Renderer {
 
         boolean multiSelect = comp.getBooleanProperty("multiSelect", false);
         String size = comp.getStringProperty("size", null);
-        boolean displayIdAndLabel = comp.getBooleanProperty(
-                "displayIdAndLabel", false);
-        String displayIdAndLabelSeparator = comp.getStringProperty(
-                "displayIdAndLabelSeparator", " ");
+        boolean displayIdAndLabel = comp.getBooleanProperty("displayIdAndLabel", false);
+        String displayIdAndLabelSeparator = comp.getStringProperty("displayIdAndLabelSeparator", " ");
         boolean localize = comp.getBooleanProperty("localize", false);
         String display = comp.getStringProperty("display", "");
 
@@ -148,9 +143,9 @@ public class ChainSelectListboxRenderer extends Renderer {
                 if (localize) {
                     optionLabel = translate(context, optionLabel);
                 }
-                writer.writeText(DirectoryHelper.instance().getOptionValue(
-                        optionId, optionLabel, display, displayIdAndLabel,
-                        displayIdAndLabelSeparator), null);
+                writer.writeText(
+                        DirectoryHelper.instance().getOptionValue(optionId, optionLabel, display, displayIdAndLabel,
+                                displayIdAndLabelSeparator), null);
                 writer.endElement("option");
             }
         }

@@ -35,19 +35,18 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
- * Version Service - manage document versions
- * TODO not yet implemented
+ * Version Service - manage document versions TODO not yet implemented
  * <p>
  * Accepts the following methods:
  * <ul>
- * <li> GET - get the last document version
- * <li> DELETE - delete a version
- * <li> POST - create a new version
+ * <li>GET - get the last document version
+ * <li>DELETE - delete a version
+ * <li>POST - create a new version
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebAdapter(name = "versions", type = "VersionService", targetType = "Document", targetFacets = {"Versionable"})
+@WebAdapter(name = "versions", type = "VersionService", targetType = "Document", targetFacets = { "Versionable" })
 public class VersionService extends DefaultAdapter {
 
     @GET
@@ -67,8 +66,8 @@ public class VersionService extends DefaultAdapter {
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
-        throw new WebResourceNotFoundException(
-                "No version found for " + ((DocumentObject) getTarget()).getDocument().getPath());
+        throw new WebResourceNotFoundException("No version found for "
+                + ((DocumentObject) getTarget()).getDocument().getPath());
     }
 
     @Path("{label}")
@@ -85,8 +84,7 @@ public class VersionService extends DefaultAdapter {
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
-        throw new WebResourceNotFoundException(
-                "No such version " + label + " for document" + getTarget().getPath());
+        throw new WebResourceNotFoundException("No such version " + label + " for document" + getTarget().getPath());
     }
 
     @POST

@@ -37,9 +37,8 @@ public class LifeCycleFilter implements Filter {
     /**
      * Generic constructor.
      * <p>
-     * To be accepted, the document must have its lifecycle state in the {@code
-     * required} list and the {@code excluded} list must not contain its
-     * lifecycle state.
+     * To be accepted, the document must have its lifecycle state in the {@code required} list and the {@code excluded}
+     * list must not contain its lifecycle state.
      *
      * @param accepted the list of accepted lifecycle states
      * @param excluded the list of excluded lifecycle states
@@ -53,9 +52,8 @@ public class LifeCycleFilter implements Filter {
      * Convenient constructor to filter on a lifecycle state.
      *
      * @param lifeCycle the lifecycle to filter on
-     * @param isRequired if {@code true} accepted documents must have this
-     *            lifecycle state, if {@code false} accepted documents must not
-     *            have this lifecycle state.
+     * @param isRequired if {@code true} accepted documents must have this lifecycle state, if {@code false} accepted
+     *            documents must not have this lifecycle state.
      */
     public LifeCycleFilter(String lifeCycle, boolean isRequired) {
         if (isRequired) {

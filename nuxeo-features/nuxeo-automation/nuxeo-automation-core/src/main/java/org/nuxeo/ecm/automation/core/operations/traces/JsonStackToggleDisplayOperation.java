@@ -30,10 +30,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 6.0
  */
-@Operation(id = JsonStackToggleDisplayOperation.ID,
-        category = Constants.CAT_EXECUTION, label = "Json Error Stack Display",
-        description = "Toggle stack display in json response for all rest api" +
-                " calls in Nuxeo", addToStudio = false, since = "6.0")
+@Operation(id = JsonStackToggleDisplayOperation.ID, category = Constants.CAT_EXECUTION, label = "Json Error Stack Display", description = "Toggle stack display in json response for all rest api"
+        + " calls in Nuxeo", addToStudio = false, since = "6.0")
 public class JsonStackToggleDisplayOperation {
 
     public static final String ID = "JsonStack.ToggleDisplay";
@@ -51,8 +49,7 @@ public class JsonStackToggleDisplayOperation {
 
     @OperationMethod
     public boolean run() {
-        JsonFactoryManager jsonFactoryManager = Framework.getLocalService
-                (JsonFactoryManager.class);
+        JsonFactoryManager jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
         if (canManageStackDisplay()) {
             if (displayStack == null) {
                 jsonFactoryManager.toggleStackDisplay();

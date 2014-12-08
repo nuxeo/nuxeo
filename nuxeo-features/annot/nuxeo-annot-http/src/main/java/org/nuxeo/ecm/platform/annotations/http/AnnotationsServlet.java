@@ -56,8 +56,7 @@ public class AnnotationsServlet extends HttpServlet {
 
     // HTTP Methods
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String w3c_annotates = req.getParameter(W3C_ANNOTATES);
         String annId = null;
         if (req.getPathInfo() != null) {
@@ -68,16 +67,14 @@ public class AnnotationsServlet extends HttpServlet {
         resp.setHeader("Pragma", "no-cache");
         if (annId != null) {
             try {
-                facade.getAnnotation(annId,
-                        (NuxeoPrincipal) req.getUserPrincipal(),
-                        resp.getOutputStream(), req.getRequestURL() + "/");
+                facade.getAnnotation(annId, (NuxeoPrincipal) req.getUserPrincipal(), resp.getOutputStream(),
+                        req.getRequestURL() + "/");
             } catch (AnnotationException e) {
                 throw new ServletException(e);
             }
         } else if (w3c_annotates != null && !w3c_annotates.isEmpty()) {
             try {
-                facade.query(w3c_annotates, resp.getOutputStream(),
-                        (NuxeoPrincipal) req.getUserPrincipal());
+                facade.query(w3c_annotates, resp.getOutputStream(), (NuxeoPrincipal) req.getUserPrincipal());
             } catch (AnnotationException | IOException e) {
                 throw new ServletException(e);
             }
@@ -85,8 +82,7 @@ public class AnnotationsServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("Pragma", "no-cache");
 
@@ -94,17 +90,15 @@ public class AnnotationsServlet extends HttpServlet {
         if (replace_source != null) {
             InputStream is = req.getInputStream();
             try {
-                facade.updateAnnotation(is,
-                        (NuxeoPrincipal) req.getUserPrincipal(),
-                        resp.getOutputStream(), getBaseUrl(req));
+                facade.updateAnnotation(is, (NuxeoPrincipal) req.getUserPrincipal(), resp.getOutputStream(),
+                        getBaseUrl(req));
             } catch (AnnotationException e) {
                 throw new ServletException(e);
             }
         } else {
             try {
                 StringBuffer baseUrl = req.getRequestURL();
-                facade.createAnnotation(req.getInputStream(),
-                        (NuxeoPrincipal) req.getUserPrincipal(),
+                facade.createAnnotation(req.getInputStream(), (NuxeoPrincipal) req.getUserPrincipal(),
                         resp.getOutputStream(), baseUrl.toString());
             } catch (AnnotationException e) {
                 throw new ServletException(e);
@@ -119,28 +113,24 @@ public class AnnotationsServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("Pragma", "no-cache");
         String annId = req.getPathInfo().replaceFirst("/", "");
         String documentUrl = req.getParameter(DOCUMENT_URL);
         try {
-            facade.deleteFor(documentUrl, annId, (NuxeoPrincipal) req.getUserPrincipal(),
-                    getBaseUrl(req) + "/");
+            facade.deleteFor(documentUrl, annId, (NuxeoPrincipal) req.getUserPrincipal(), getBaseUrl(req) + "/");
         } catch (AnnotationException e) {
             throw new ServletException(e);
         }
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("Pragma", "no-cache");
         try {
-            facade.updateAnnotation(req.getInputStream(),
-                    (NuxeoPrincipal) req.getUserPrincipal(),
+            facade.updateAnnotation(req.getInputStream(), (NuxeoPrincipal) req.getUserPrincipal(),
                     resp.getOutputStream(), req.getRequestURL() + "/");
         } catch (AnnotationException e) {
             throw new ServletException(e);

@@ -32,21 +32,18 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 public class WebEngineSessionManager extends DefaultSessionManager {
 
     // TODO work on skin request to avoid hardcoding paths
-    private static final String RESOURCES_PATH = VirtualHostHelper.getContextPathProperty()
-            + "/site/files/";
+    private static final String RESOURCES_PATH = VirtualHostHelper.getContextPathProperty() + "/site/files/";
 
     private static final Log log = LogFactory.getLog(WebEngineSessionManager.class);
 
     @Override
     public boolean canBypassRequest(ServletRequest request) {
         // static resources don't require Authentication
-        return ((HttpServletRequest) request).getRequestURI().startsWith(
-                RESOURCES_PATH);
+        return ((HttpServletRequest) request).getRequestURI().startsWith(RESOURCES_PATH);
     }
 
     @Override
-    public void onAuthenticatedSessionCreated(ServletRequest request,
-            HttpSession httpSession,
+    public void onAuthenticatedSessionCreated(ServletRequest request, HttpSession httpSession,
             CachableUserIdentificationInfo cachableUserInfo) {
 
         // do nothing

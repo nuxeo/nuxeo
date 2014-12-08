@@ -21,14 +21,15 @@ package org.nuxeo.ecm.platform.domsync.core.events;
 
 /**
  * @author Max Stepanov
- *
  */
 public class DOMAttrModifiedEvent extends DOMMutationEvent {
 
     private static final long serialVersionUID = -1903741037336659664L;
 
     private final String attrName;
+
     private final short attrChange;
+
     private final String newValue;
 
     public DOMAttrModifiedEvent(String target, String attrName, short attrChange, String newValue) {
@@ -52,18 +53,18 @@ public class DOMAttrModifiedEvent extends DOMMutationEvent {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof DOMAttrModifiedEvent) {
+        if (obj instanceof DOMAttrModifiedEvent) {
             DOMAttrModifiedEvent other = (DOMAttrModifiedEvent) obj;
-            return super.equals(obj) && attrName.equals(other.attrName)
-                    && attrChange == other.attrChange && newValue.equals(other.newValue);
+            return super.equals(obj) && attrName.equals(other.attrName) && attrChange == other.attrChange
+                    && newValue.equals(other.newValue);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "DOMAttrModifiedEvent " + super.toString() + " attrName=" + attrName
-                + " attrChange=" + attrChange + " newValue=" + newValue;
+        return "DOMAttrModifiedEvent " + super.toString() + " attrName=" + attrName + " attrChange=" + attrChange
+                + " newValue=" + newValue;
     }
 
 }

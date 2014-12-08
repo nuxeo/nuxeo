@@ -120,8 +120,7 @@ public class Management extends DefaultObject {
 
     @POST
     @Path("{collection}/download")
-    public Response downloadCollection(
-            @PathParam("collection") String collection) {
+    public Response downloadCollection(@PathParam("collection") String collection) {
         byte[] data;
         try {
             data = BankManager.exportBankData(bank, collection);
@@ -130,8 +129,7 @@ public class Management extends DefaultObject {
         }
         String filename = String.format("%s.zip", collection.replace(" ", "-"));
         ResponseBuilder builder = Response.ok(data);
-        builder.header("Content-disposition",
-                String.format("attachment; filename=%s", filename));
+        builder.header("Content-disposition", String.format("attachment; filename=%s", filename));
         builder.type("application/zip");
         return builder.build();
     }

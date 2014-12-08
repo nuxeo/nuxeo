@@ -38,10 +38,8 @@ import org.nuxeo.runtime.api.Framework;
  * Contains the Hibernate based (legacy) implementation
  *
  * @author tiry
- *
  */
-public class DefaultAuditBackend extends AbstractAuditBackend implements
-        AuditBackend {
+public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBackend {
 
     protected PersistenceProvider persistenceProvider;
 
@@ -98,12 +96,11 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     @Override
     public List<LogEntry> getLogEntriesFor(final String uuid) {
         try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<List<LogEntry>>() {
-                        public List<LogEntry> runWith(EntityManager em) {
-                            return getLogEntriesFor(em, uuid);
-                        }
-                    });
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return getLogEntriesFor(em, uuid);
+                }
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -114,37 +111,32 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     }
 
     @Override
-    public List<LogEntry> getLogEntriesFor(final String uuid,
-            final Map<String, FilterMapEntry> filterMap,
+    public List<LogEntry> getLogEntriesFor(final String uuid, final Map<String, FilterMapEntry> filterMap,
             final boolean doDefaultSort) {
         try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<List<LogEntry>>() {
-                        public List<LogEntry> runWith(EntityManager em) {
-                            return getLogEntriesFor(em, uuid, filterMap,
-                                    doDefaultSort);
-                        }
-                    });
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return getLogEntriesFor(em, uuid, filterMap, doDefaultSort);
+                }
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
-    protected List<LogEntry> getLogEntriesFor(EntityManager em, String uuid,
-            Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid,
-                filterMap, doDefaultSort);
+    protected List<LogEntry> getLogEntriesFor(EntityManager em, String uuid, Map<String, FilterMapEntry> filterMap,
+            boolean doDefaultSort) {
+        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid, filterMap, doDefaultSort);
     }
 
     @Override
     public LogEntry getLogEntryByID(final long id) {
         try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<LogEntry>() {
-                        public LogEntry runWith(EntityManager em) {
-                            return getLogEntryByID(em, id);
-                        }
-                    });
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<LogEntry>() {
+                public LogEntry runWith(EntityManager em) {
+                    return getLogEntryByID(em, id);
+                }
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -155,175 +147,143 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     }
 
     @Override
-    public List<LogEntry> nativeQueryLogs(final String whereClause,
-            final int pageNb, final int pageSize) {
+    public List<LogEntry> nativeQueryLogs(final String whereClause, final int pageNb, final int pageSize) {
         try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<List<LogEntry>>() {
-                        public List<LogEntry> runWith(EntityManager em) {
-                            return nativeQueryLogs(em, whereClause, pageNb,
-                                    pageSize);
-                        }
-                    });
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return nativeQueryLogs(em, whereClause, pageNb, pageSize);
+                }
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
-    protected List<LogEntry> nativeQueryLogs(EntityManager em,
-            String whereClause, int pageNb, int pageSize) {
-        return LogEntryProvider.createProvider(em).nativeQueryLogs(
-                whereClause, pageNb, pageSize);
+    protected List<LogEntry> nativeQueryLogs(EntityManager em, String whereClause, int pageNb, int pageSize) {
+        return LogEntryProvider.createProvider(em).nativeQueryLogs(whereClause, pageNb, pageSize);
     }
 
     @Override
-    public List<?> nativeQuery(final String query, final int pageNb,
+    public List<?> nativeQuery(final String query, final int pageNb, final int pageSize) {
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<?>>() {
+                public List<?> runWith(EntityManager em) {
+                    return nativeQuery(em, query, pageNb, pageSize);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    protected List<?> nativeQuery(EntityManager em, String query, int pageNb, int pageSize) {
+        return LogEntryProvider.createProvider(em).nativeQuery(query, pageNb, pageSize);
+    }
+
+    @Override
+    public List<?> nativeQuery(final String query, final Map<String, Object> params, final int pageNb,
             final int pageSize) {
         try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<List<?>>() {
-                        public List<?> runWith(EntityManager em) {
-                            return nativeQuery(em, query, pageNb, pageSize);
-                        }
-                    });
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<?>>() {
+                public List<?> runWith(EntityManager em) {
+                    return nativeQuery(em, query, params, pageNb, pageSize);
+                }
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
-    protected List<?> nativeQuery(EntityManager em, String query, int pageNb,
-            int pageSize) {
-        return LogEntryProvider.createProvider(em).nativeQuery(query, pageNb,
-                pageSize);
+    protected List<?> nativeQuery(EntityManager em, String query, Map<String, Object> params, int pageNb, int pageSize) {
+        return LogEntryProvider.createProvider(em).nativeQuery(query, params, pageNb, pageSize);
     }
 
     @Override
-    public List<?> nativeQuery(final String query,
-            final Map<String, Object> params, final int pageNb,
-            final int pageSize) {
+    public List<LogEntry> queryLogs(final String[] eventIds, final String dateRange) {
         try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<List<?>>() {
-                        public List<?> runWith(EntityManager em) {
-                            return nativeQuery(em, query, params, pageNb,
-                                    pageSize);
-                        }
-                    });
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return queryLogs(em, eventIds, dateRange);
+                }
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
-    protected List<?> nativeQuery(EntityManager em, String query,
-            Map<String, Object> params, int pageNb, int pageSize) {
-        return LogEntryProvider.createProvider(em).nativeQuery(query, params,
-                pageNb, pageSize);
+    protected List<LogEntry> queryLogs(EntityManager em, String[] eventIds, String dateRange) {
+        return LogEntryProvider.createProvider(em).queryLogs(eventIds, dateRange);
     }
 
     @Override
-    public List<LogEntry> queryLogs(final String[] eventIds,
-            final String dateRange) {
+    public List<LogEntry> queryLogsByPage(final String[] eventIds, final String dateRange, final String[] category,
+            final String path, final int pageNb, final int pageSize) {
         try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<List<LogEntry>>() {
-                        public List<LogEntry> runWith(EntityManager em) {
-                            return queryLogs(em, eventIds, dateRange);
-                        }
-                    });
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return queryLogsByPage(em, eventIds, dateRange, category, path, pageNb, pageSize);
+                }
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
-    protected List<LogEntry> queryLogs(EntityManager em, String[] eventIds,
-            String dateRange) {
-        return LogEntryProvider.createProvider(em).queryLogs(eventIds,
-                dateRange);
-    }
-
-    @Override
-    public List<LogEntry> queryLogsByPage(final String[] eventIds,
-            final String dateRange, final String[] category, final String path,
-            final int pageNb, final int pageSize) {
-        try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<List<LogEntry>>() {
-                        public List<LogEntry> runWith(EntityManager em) {
-                            return queryLogsByPage(em, eventIds, dateRange,
-                                    category, path, pageNb, pageSize);
-                        }
-                    });
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
-    }
-
-    protected List<LogEntry> queryLogsByPage(EntityManager em,
-            String[] eventIds, String dateRange, String[] category,
+    protected List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, String dateRange, String[] category,
             String path, int pageNb, int pageSize) {
         try {
-            return LogEntryProvider.createProvider(em).queryLogsByPage(
-                    eventIds, dateRange, category, path, pageNb, pageSize);
+            return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds, dateRange, category, path, pageNb,
+                    pageSize);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
     @Override
-    public List<LogEntry> queryLogsByPage(final String[] eventIds,
-            final Date limit, final String[] category, final String path,
-            final int pageNb, final int pageSize) {
+    public List<LogEntry> queryLogsByPage(final String[] eventIds, final Date limit, final String[] category,
+            final String path, final int pageNb, final int pageSize) {
         try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<List<LogEntry>>() {
-                        public List<LogEntry> runWith(EntityManager em) {
-                            return queryLogsByPage(em, eventIds, limit,
-                                    category, path, pageNb, pageSize);
-                        }
-                    });
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return queryLogsByPage(em, eventIds, limit, category, path, pageNb, pageSize);
+                }
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
-    protected List<LogEntry> queryLogsByPage(EntityManager em,
-            String[] eventIds, Date limit, String[] category, String path,
-            int pageNb, int pageSize) {
-        return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds,
-                limit, category, path, pageNb, pageSize);
+    protected List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, Date limit, String[] category,
+            String path, int pageNb, int pageSize) {
+        return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds, limit, category, path, pageNb, pageSize);
     }
 
     @Override
-    public long syncLogCreationEntries(final String repoId, final String path,
-            final Boolean recurs) {
+    public long syncLogCreationEntries(final String repoId, final String path, final Boolean recurs) {
         try {
-            return getOrCreatePersistenceProvider().run(true,
-                    new RunCallback<Long>() {
-                        public Long runWith(EntityManager em) {
-                            return syncLogCreationEntries(em, repoId, path,
-                                    recurs);
-                        }
-                    });
+            return getOrCreatePersistenceProvider().run(true, new RunCallback<Long>() {
+                public Long runWith(EntityManager em) {
+                    return syncLogCreationEntries(em, repoId, path, recurs);
+                }
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
-    protected long syncLogCreationEntries(EntityManager em, String repoId,
-            String path, Boolean recurs) {
+    protected long syncLogCreationEntries(EntityManager em, String repoId, String path, Boolean recurs) {
         LogEntryProvider provider = LogEntryProvider.createProvider(em);
         return syncLogCreationEntries(provider, repoId, path, recurs);
     }
 
     public void addLogEntry(final LogEntry entry) {
         try {
-            getOrCreatePersistenceProvider().run(true,
-                    new RunCallback<Integer>() {
-                        public Integer runWith(EntityManager em) {
-                            addLogEntry(em, entry);
-                            return 0;
-                        }
-                    });
+            getOrCreatePersistenceProvider().run(true, new RunCallback<Integer>() {
+                public Integer runWith(EntityManager em) {
+                    addLogEntry(em, entry);
+                    return 0;
+                }
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -336,13 +296,12 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     @Override
     public Long getEventsCount(final String eventId) {
         try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<Long>() {
-                        public Long runWith(EntityManager em) {
-                            return getEventsCount(em, eventId);
-                        }
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<Long>() {
+                public Long runWith(EntityManager em) {
+                    return getEventsCount(em, eventId);
+                }
 
-                    });
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -354,13 +313,12 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
 
     public List<String> getLoggedEventIds() {
         try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<List<String>>() {
-                        public List<String> runWith(EntityManager em) {
-                            return getLoggedEventIds(em);
-                        }
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<String>>() {
+                public List<String> runWith(EntityManager em) {
+                    return getLoggedEventIds(em);
+                }
 
-                    });
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -420,20 +378,16 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
 
     // Compat APIs
 
-    protected List<LogEntry> queryLogsByPage(EntityManager em,
-            String[] eventIds, String dateRange, String category, String path,
-            int pageNb, int pageSize) {
+    protected List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, String dateRange, String category,
+            String path, int pageNb, int pageSize) {
         String[] categories = { category };
-        return queryLogsByPage(em, eventIds, dateRange, categories, path,
-                pageNb, pageSize);
+        return queryLogsByPage(em, eventIds, dateRange, categories, path, pageNb, pageSize);
     }
 
-    protected List<LogEntry> queryLogsByPage(EntityManager em,
-            String[] eventIds, Date limit, String category, String path,
-            int pageNb, int pageSize) {
+    protected List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, Date limit, String category,
+            String path, int pageNb, int pageSize) {
         String[] categories = { category };
-        return queryLogsByPage(em, eventIds, limit, categories, path, pageNb,
-                pageSize);
+        return queryLogsByPage(em, eventIds, limit, categories, path, pageNb, pageSize);
     }
 
 }

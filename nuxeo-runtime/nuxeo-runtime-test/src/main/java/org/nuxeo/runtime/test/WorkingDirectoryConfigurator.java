@@ -24,7 +24,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface WorkingDirectoryConfigurator {
 

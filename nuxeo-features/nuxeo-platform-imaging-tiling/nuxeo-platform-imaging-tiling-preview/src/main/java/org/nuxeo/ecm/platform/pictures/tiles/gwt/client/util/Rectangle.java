@@ -24,7 +24,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class Rectangle {
 
@@ -78,10 +77,9 @@ public class Rectangle {
     }
 
     public boolean contains(Point p) {
-        Point bottomRight = new Point(topLeft.getX() + width, topLeft.getY()
-                + height);
-        if (p.getX() >= topLeft.getX() && p.getX() <= bottomRight.getX()
-                && p.getY() >= topLeft.getY() && p.getY() <= bottomRight.getY()) {
+        Point bottomRight = new Point(topLeft.getX() + width, topLeft.getY() + height);
+        if (p.getX() >= topLeft.getX() && p.getX() <= bottomRight.getX() && p.getY() >= topLeft.getY()
+                && p.getY() <= bottomRight.getY()) {
             return true;
         }
         return false;

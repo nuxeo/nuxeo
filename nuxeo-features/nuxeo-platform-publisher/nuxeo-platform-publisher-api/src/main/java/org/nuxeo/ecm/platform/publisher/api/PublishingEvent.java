@@ -21,10 +21,5 @@ package org.nuxeo.ecm.platform.publisher.api;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public enum PublishingEvent {
-    documentPublished,
-    documentSubmittedForPublication,
-    documentPublicationRejected,
-    documentPublicationApproved,
-    documentWaitingPublication,
-    documentUnpublished
+    documentPublished, documentSubmittedForPublication, documentPublicationRejected, documentPublicationApproved, documentWaitingPublication, documentUnpublished
 }

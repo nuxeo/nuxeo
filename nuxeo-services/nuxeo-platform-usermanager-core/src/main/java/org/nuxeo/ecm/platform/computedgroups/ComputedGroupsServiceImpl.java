@@ -40,10 +40,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * {@link ComputedGroupsService} implementation
  *
  * @author Thierry Delprat
- *
  */
-public class ComputedGroupsServiceImpl extends DefaultComponent implements
-        ComputedGroupsService {
+public class ComputedGroupsServiceImpl extends DefaultComponent implements ComputedGroupsService {
 
     public static final String COMPUTER_EP = "computer";
 
@@ -65,33 +63,28 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (COMPUTER_EP.equals(extensionPoint)) {
             if (contribution instanceof GroupComputerDescriptor) {
                 GroupComputerDescriptor desc = (GroupComputerDescriptor) contribution;
 
                 if (desc.isEnabled()) {
-                    log.debug("Add " + desc.getName() + " from component "
-                            + contributor.getName());
+                    log.debug("Add " + desc.getName() + " from component " + contributor.getName());
                     computers.put(desc.getName(), desc);
                 } else {
                     if (computers.containsKey(desc.getName())) {
-                        log.debug("Remove " + desc.getName()
-                                + " from component " + contributor.getName());
+                        log.debug("Remove " + desc.getName() + " from component " + contributor.getName());
                         computers.remove(desc.getName());
                     } else {
-                        log.warn("Can't remove " + desc.getName()
-                                + " as not found, from component "
+                        log.warn("Can't remove " + desc.getName() + " as not found, from component "
                                 + contributor.getName());
                     }
                 }
                 return;
             } else {
-                throw new RuntimeException(
-                        "Waiting GroupComputerDescriptor contribution kind, please look component "
-                                + contributor.getName());
+                throw new RuntimeException("Waiting GroupComputerDescriptor contribution kind, please look component "
+                        + contributor.getName());
             }
         }
 
@@ -105,8 +98,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
             return;
         }
 
-        log.warn("Unkown contribution, please check the component "
-                + contributor.getName());
+        log.warn("Unkown contribution, please check the component " + contributor.getName());
     }
 
     @Override
@@ -115,12 +107,10 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
         List<String> userGroups = new ArrayList<String>();
         try {
             for (String computerName : computerNames) {
-                userGroups.addAll(computers.get(computerName).getComputer().getGroupsForUser(
-                        nuxeoPrincipal));
+                userGroups.addAll(computers.get(computerName).getComputer().getGroupsForUser(nuxeoPrincipal));
             }
         } catch (ClientException e) {
-            log.error("Error while getting virtual groups for user "
-                    + nuxeoPrincipal.getName(), e);
+            log.error("Error while getting virtual groups for user " + nuxeoPrincipal.getName(), e);
         }
         return userGroups;
     }
@@ -129,13 +119,11 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
     public void updateGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
         try {
             List<String> computedGroups = computeGroupsForUser(nuxeoPrincipal);
-            Set<String> virtualGroups = new HashSet<String>(
-                    nuxeoPrincipal.getVirtualGroups());
+            Set<String> virtualGroups = new HashSet<String>(nuxeoPrincipal.getVirtualGroups());
             virtualGroups.addAll(computedGroups);
             nuxeoPrincipal.setVirtualGroups(new ArrayList<String>(virtualGroups));
         } catch (ClientException e) {
-            log.error("Error while updating the virtual groups for user "
-                    + nuxeoPrincipal.getName(), e);
+            log.error("Error while updating the virtual groups for user " + nuxeoPrincipal.getName(), e);
         }
     }
 
@@ -189,16 +177,14 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
 
             for (String name : computerNames) {
                 GroupComputerDescriptor desc = computers.get(name);
-                List<String> foundMembers = desc.getComputer().getGroupMembers(
-                        groupName);
+                List<String> foundMembers = desc.getComputer().getGroupMembers(groupName);
                 if (foundMembers != null) {
                     members.addAll(foundMembers);
                 }
             }
             return members;
         } catch (ClientException e) {
-            log.error("Error while getting members of virtual group "
-                    + groupName, e);
+            log.error("Error while getting members of virtual group " + groupName, e);
             return new ArrayList<String>();
         }
     }
@@ -210,16 +196,14 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
 
             for (String name : computerNames) {
                 GroupComputerDescriptor desc = computers.get(name);
-                List<String> foundParents = desc.getComputer().getParentsGroupNames(
-                        groupName);
+                List<String> foundParents = desc.getComputer().getParentsGroupNames(groupName);
                 if (foundParents != null) {
                     parents.addAll(foundParents);
                 }
             }
             return parents;
         } catch (ClientException e) {
-            log.error("Error while getting parent of virtual group "
-                    + groupName, e);
+            log.error("Error while getting parent of virtual group " + groupName, e);
         }
         return null;
     }
@@ -230,16 +214,14 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
             List<String> subGroups = new ArrayList<String>();
             for (String name : computerNames) {
                 GroupComputerDescriptor desc = computers.get(name);
-                List<String> foundSubGroups = desc.getComputer().getSubGroupsNames(
-                        groupName);
+                List<String> foundSubGroups = desc.getComputer().getSubGroupsNames(groupName);
                 if (foundSubGroups != null) {
                     subGroups.addAll(foundSubGroups);
                 }
             }
             return subGroups;
         } catch (ClientException e) {
-            log.error("Error while getting subgroups of virtual group "
-                    + groupName, e);
+            log.error("Error while getting subgroups of virtual group " + groupName, e);
         }
         return null;
     }
@@ -259,15 +241,13 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<String> searchComputedGroups(Map<String, Serializable> filter,
-            Set<String> fulltext) {
+    public List<String> searchComputedGroups(Map<String, Serializable> filter, Set<String> fulltext) {
 
         List<String> foundGroups = new ArrayList<String>();
         try {
             for (String name : computerNames) {
                 GroupComputerDescriptor desc = computers.get(name);
-                foundGroups.addAll(desc.getComputer().searchGroups(filter,
-                        fulltext));
+                foundGroups.addAll(desc.getComputer().searchGroups(filter, fulltext));
             }
             Collections.sort(foundGroups);
         } catch (ClientException e) {

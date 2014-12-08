@@ -94,8 +94,7 @@ public class YamlAutomationRepresenter extends Representer {
                             subs.put(param.getName(), props);
                         } else {
                             try {
-                                Properties props = new Properties(
-                                        param.getValue());
+                                Properties props = new Properties(param.getValue());
                                 subs.put(param.getName(), props);
                             } catch (IOException e) {
                                 subs.put(param.getName(), param.getValue());

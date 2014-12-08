@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.directory;
 
-
 import static org.nuxeo.ecm.restapi.server.jaxrs.directory.DirectorySessionRunner.withDirectorySession;
 
 import javax.ws.rs.DELETE;
@@ -38,8 +37,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @WebObject(type = "directoryEntry")
@@ -52,8 +49,7 @@ public class DirectoryEntryObject extends DefaultObject {
     @Override
     protected void initialize(Object... args) {
         if (args.length < 1) {
-            throw new IllegalArgumentException(
-                    "Directory Entry obhect  takes one parameter");
+            throw new IllegalArgumentException("Directory Entry obhect  takes one parameter");
         }
 
         entry = (DirectoryEntry) args[0];
@@ -69,22 +65,19 @@ public class DirectoryEntryObject extends DefaultObject {
     @PUT
     public DirectoryEntry doUpdateEntry(final DirectoryEntry entry) {
         checkEditGuards();
-        return withDirectorySession(directory,
-                new DirectorySessionRunner<DirectoryEntry>() {
+        return withDirectorySession(directory, new DirectorySessionRunner<DirectoryEntry>() {
 
-                    @Override
-                    DirectoryEntry run(Session session) throws ClientException {
-                        DocumentModel docEntry = entry.getDocumentModel();
-                        session.updateEntry(docEntry);
+            @Override
+            DirectoryEntry run(Session session) throws ClientException {
+                DocumentModel docEntry = entry.getDocumentModel();
+                session.updateEntry(docEntry);
 
-                        String id = (String) docEntry.getPropertyValue(directory.getSchema()
-                                + ":" + directory.getIdField());
+                String id = (String) docEntry.getPropertyValue(directory.getSchema() + ":" + directory.getIdField());
 
-                        return new DirectoryEntry(directory.getName(),
-                                session.getEntry(id));
+                return new DirectoryEntry(directory.getName(), session.getEntry(id));
 
-                    }
-                });
+            }
+        });
 
     }
 
@@ -95,15 +88,14 @@ public class DirectoryEntryObject extends DefaultObject {
     @DELETE
     public Response doDeleteEntry() {
         checkEditGuards();
-        withDirectorySession(directory,
-                new DirectorySessionRunner<DirectoryEntry>() {
+        withDirectorySession(directory, new DirectorySessionRunner<DirectoryEntry>() {
 
-                    @Override
-                    DirectoryEntry run(Session session) throws ClientException {
-                        session.deleteEntry(entry.getDocumentModel());
-                        return null;
-                    }
-                });
+            @Override
+            DirectoryEntry run(Session session) throws ClientException {
+                session.deleteEntry(entry.getDocumentModel());
+                return null;
+            }
+        });
 
         return Response.ok().status(Status.NO_CONTENT).build();
 

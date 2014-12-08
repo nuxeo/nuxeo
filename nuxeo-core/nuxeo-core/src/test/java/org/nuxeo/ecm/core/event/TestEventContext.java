@@ -22,9 +22,8 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- * This test probably should be in
- * org.nuxeo.ecm.core.event.test.EventListenerTest but this would create
- * dependency loops.
+ * This test probably should be in org.nuxeo.ecm.core.event.test.EventListenerTest but this would create dependency
+ * loops.
  *
  * @author Bogdan Stefanescu
  * @author Florent Guillaume

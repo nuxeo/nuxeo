@@ -23,7 +23,6 @@ import org.nuxeo.connect.update.model.Forms;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("forms")
 public class FormsDefinition implements Forms {

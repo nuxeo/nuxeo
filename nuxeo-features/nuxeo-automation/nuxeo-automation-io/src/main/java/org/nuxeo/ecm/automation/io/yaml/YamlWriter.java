@@ -34,18 +34,15 @@ import org.yaml.snakeyaml.Yaml;
  */
 public class YamlWriter {
 
-    public static void toYaml(OutputStream out, OperationDocumentation info)
-            throws IOException {
+    public static void toYaml(OutputStream out, OperationDocumentation info) throws IOException {
         toYaml(out, (Object) info);
     }
 
-    public static void toYaml(OutputStream out, Operation info)
-            throws IOException {
+    public static void toYaml(OutputStream out, Operation info) throws IOException {
         toYaml(out, (Object) info);
     }
 
-    protected static void toYaml(OutputStream out, Object info)
-            throws IOException {
+    protected static void toYaml(OutputStream out, Object info) throws IOException {
         if (info == null) {
             return;
         }

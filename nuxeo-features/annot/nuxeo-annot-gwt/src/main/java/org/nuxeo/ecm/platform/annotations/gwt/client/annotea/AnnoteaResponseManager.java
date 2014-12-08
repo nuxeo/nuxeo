@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.annotations.gwt.client.model.Annotation;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnoteaResponseManager {
     private static AnnotationController controller;

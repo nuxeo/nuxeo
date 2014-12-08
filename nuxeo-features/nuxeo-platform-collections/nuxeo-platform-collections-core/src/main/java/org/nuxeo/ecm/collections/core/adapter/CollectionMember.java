@@ -38,8 +38,7 @@ public class CollectionMember {
         document = doc;
     }
 
-    public void addToCollection(final String collectionId)
-            throws ClientException {
+    public void addToCollection(final String collectionId) throws ClientException {
         List<String> collectionIds = getCollectionIds();
         if (!collectionIds.contains(collectionId)) {
             collectionIds.add(collectionId);
@@ -47,10 +46,8 @@ public class CollectionMember {
         setCollectionIds(collectionIds);
     }
 
-    public void setCollectionIds(final List<String> collectionIds)
-            throws ClientException {
-        document.setPropertyValue(
-                CollectionConstants.DOCUMENT_COLLECTION_IDS_PROPERTY_NAME,
+    public void setCollectionIds(final List<String> collectionIds) throws ClientException {
+        document.setPropertyValue(CollectionConstants.DOCUMENT_COLLECTION_IDS_PROPERTY_NAME,
                 (Serializable) collectionIds);
     }
 
@@ -64,8 +61,7 @@ public class CollectionMember {
         return document;
     }
 
-    public void removeFromCollection(final String documentId)
-            throws ClientException {
+    public void removeFromCollection(final String documentId) throws ClientException {
         List<String> collectionIds = getCollectionIds();
         if (!collectionIds.remove(documentId)) {
             log.warn(String.format("Element '%s' is not present in the specified collection.", documentId));

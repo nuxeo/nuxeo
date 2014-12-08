@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.model.Document;
  * Life cycle service.
  *
  * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl
- *
  * @author Julien Anguenot
  * @author Florent Guillaume
  */
@@ -49,8 +48,7 @@ public interface LifeCycleService {
      * @param initialStateName the initial state name
      * @throws LifeCycleException
      */
-    void initialize(Document doc, String initialStateName)
-            throws LifeCycleException;
+    void initialize(Document doc, String initialStateName) throws LifeCycleException;
 
     /**
      * Follows a given transition.
@@ -59,8 +57,7 @@ public interface LifeCycleService {
      * @param transitionName the transition name
      * @throws LifeCycleException
      */
-    void followTransition(Document doc, String transitionName)
-            throws LifeCycleException;
+    void followTransition(Document doc, String transitionName) throws LifeCycleException;
 
     /**
      * Returns a life cycle given its name.
@@ -94,16 +91,12 @@ public interface LifeCycleService {
     String getLifeCycleNameFor(String typeName);
 
     /**
-     * Returns a list of transition for which, when a it is followed, it should
-     * no recurse in its children.
-     *
-     * The {@link BulkLifeCycleChangeListener} will listen to the transition
-     * taken event and call a follow transition on the children of the document
-     * if the document is folderish. It check this list of transition to find
-     * out if it should recurse.
+     * Returns a list of transition for which, when a it is followed, it should no recurse in its children. The
+     * {@link BulkLifeCycleChangeListener} will listen to the transition taken event and call a follow transition on the
+     * children of the document if the document is folderish. It check this list of transition to find out if it should
+     * recurse.
      *
      * @see BulkLifeCycleChangeListener
-     *
      * @param docTypeName The doc type
      * @return a list of transition name
      */
@@ -125,8 +118,7 @@ public interface LifeCycleService {
     LifeCycle getLifeCycleFor(Document doc);
 
     /**
-     * Sets the current state to the initial state as defined by the associated
-     * lifecycle.
+     * Sets the current state to the initial state as defined by the associated lifecycle.
      *
      * @param doc
      * @throws LifeCycleException

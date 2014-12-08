@@ -47,8 +47,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @LocalDeploy({ "org.nuxeo.ecm.platform.picture.core:OSGI-INF/commandline-imagemagick-contrib.xml" })
 public class TestMagickExecutors {
 
-    private static final String TMP_FILE_PREFIX = TestMagickExecutors.class.getName()
-            + "_";
+    private static final String TMP_FILE_PREFIX = TestMagickExecutors.class.getName() + "_";
 
     @Test
     public void testIdentify() throws Exception {
@@ -70,8 +69,7 @@ public class TestMagickExecutors {
         File out = File.createTempFile(TMP_FILE_PREFIX, ".test_small.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
-        ImageInfo info = ImageResizer.resize(file.getAbsolutePath(),
-                out.getAbsolutePath(), 20, 20, 8);
+        ImageInfo info = ImageResizer.resize(file.getAbsolutePath(), out.getAbsolutePath(), 20, 20, 8);
         assertNotNull(info);
 
         assertTrue(out.exists());
@@ -84,8 +82,7 @@ public class TestMagickExecutors {
         File out = File.createTempFile(TMP_FILE_PREFIX, ".test_crop.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
-        ImageCropper.crop(file.getAbsolutePath(), out.getAbsolutePath(), 255,
-                255, 10, 10);
+        ImageCropper.crop(file.getAbsolutePath(), out.getAbsolutePath(), 255, 255, 10, 10);
 
         assertTrue(out.exists());
         assertTrue(out.length() < file.length());
@@ -99,12 +96,10 @@ public class TestMagickExecutors {
 
     @Test
     public void testCropperAndResize() throws Exception {
-        File out = File.createTempFile(TMP_FILE_PREFIX,
-                ".test_crop_resized.jpg");
+        File out = File.createTempFile(TMP_FILE_PREFIX, ".test_crop_resized.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
-        ImageCropperAndResizer.cropAndResize(file.getAbsolutePath(),
-                out.getAbsolutePath(), 255, 255, 10, 10, 200, 200);
+        ImageCropperAndResizer.cropAndResize(file.getAbsolutePath(), out.getAbsolutePath(), 255, 255, 10, 10, 200, 200);
 
         assertTrue(out.exists());
         assertTrue(out.length() < file.length());

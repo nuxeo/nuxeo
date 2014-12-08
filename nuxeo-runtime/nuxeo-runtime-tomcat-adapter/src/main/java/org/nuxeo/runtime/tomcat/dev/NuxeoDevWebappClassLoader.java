@@ -35,8 +35,8 @@ import org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 
-public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements
-        MutableClassLoader, WebResourcesCacheFlusher {
+public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements MutableClassLoader,
+        WebResourcesCacheFlusher {
 
     public LocalClassLoader createLocalClassLoader(URL... urls) {
         LocalClassLoader cl = new LocalURLClassLoader(urls, this);
@@ -103,8 +103,7 @@ public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements
      * Do not synchronize this method at method level to avoid deadlocks.
      */
     @Override
-    public Class<?> loadClass(String name, boolean resolve)
-            throws ClassNotFoundException {
+    public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         try {
             synchronized (this) {
                 return super.loadClass(name, resolve);
@@ -137,12 +136,12 @@ public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements
     }
 
     @Override
-    public InputStream getResourceAsStream(String name)  {
+    public InputStream getResourceAsStream(String name) {
         InputStream is = super.getResourceAsStream(name);
-        if  (is != null) {
+        if (is != null) {
             return is;
         }
-        for (LocalClassLoader cl:getChildren()) {
+        for (LocalClassLoader cl : getChildren()) {
             try {
                 is = cl.getLocalResourceAsStream(name);
             } catch (IOException e) {

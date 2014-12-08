@@ -21,14 +21,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Alternate implementation that is backward compatible.
- * (Allow to have one UserWorkspace per user and per domain).
+ * Alternate implementation that is backward compatible. (Allow to have one UserWorkspace per user and per domain).
  *
  * @author Thierry Delprat
  */
 @Deprecated
-public class CompatUserWorkspaceServiceImpl extends
-        DefaultUserWorkspaceServiceImpl {
+public class CompatUserWorkspaceServiceImpl extends DefaultUserWorkspaceServiceImpl {
 
     private static final long serialVersionUID = 1L;
 

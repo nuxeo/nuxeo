@@ -21,11 +21,11 @@ package org.nuxeo.runtime.management;
 
 /**
  * @author matic
- *
  */
 public abstract class AbstractResourceFactory implements ResourceFactory {
 
     protected ResourcePublisherService service;
+
     protected ResourceFactoryDescriptor descriptor;
 
     @Override

@@ -73,10 +73,8 @@ public class BinaryManagerRootDescriptor {
 
         Element root = doc.createElement(BINARY_STORE);
         doc.appendChild(root);
-        root.appendChild(doc.createElement(DIGEST)).appendChild(
-                doc.createTextNode(digest));
-        root.appendChild(doc.createElement(DEPTH)).appendChild(
-                doc.createTextNode(String.valueOf(depth)));
+        root.appendChild(doc.createElement(DIGEST)).appendChild(doc.createTextNode(digest));
+        root.appendChild(doc.createElement(DEPTH)).appendChild(doc.createTextNode(String.valueOf(depth)));
 
         try {
             Transformer trans = TransformerFactory.newInstance().newTransformer();

@@ -20,7 +20,6 @@ import java.net.URL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class URLSource extends AbstractStreamSource {
 

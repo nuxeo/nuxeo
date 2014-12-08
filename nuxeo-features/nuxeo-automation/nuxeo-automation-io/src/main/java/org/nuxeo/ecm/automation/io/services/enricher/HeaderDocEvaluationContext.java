@@ -22,9 +22,7 @@ import javax.ws.rs.core.HttpHeaders;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- *
- * Evaluation context that knows about the current document and the HTTP request
- * headers.
+ * Evaluation context that knows about the current document and the HTTP request headers.
  *
  * @since 5.7.3
  */

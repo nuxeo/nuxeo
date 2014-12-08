@@ -21,8 +21,7 @@ import javax.el.ELResolver;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 
 /**
- * Custom context for pseudo Seam context, needing the SeamELResolver to lookup
- * components in Seam Contexts.
+ * Custom context for pseudo Seam context, needing the SeamELResolver to lookup components in Seam Contexts.
  *
  * @since 5.7.3
  */

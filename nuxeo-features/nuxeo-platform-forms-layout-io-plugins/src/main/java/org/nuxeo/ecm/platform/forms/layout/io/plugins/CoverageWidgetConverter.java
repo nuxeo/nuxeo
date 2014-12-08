@@ -24,8 +24,7 @@ import java.util.List;
  *
  * @since 5.5
  */
-public class CoverageWidgetConverter extends
-        AbstractChainedVocabularyWidgetConverter {
+public class CoverageWidgetConverter extends AbstractChainedVocabularyWidgetConverter {
 
     @Override
     protected List<String> getAcceptedWidgetNames() {

@@ -26,7 +26,6 @@ import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("isAdministrator")
 public class IsAdministratorGuard implements Guard {
@@ -48,7 +47,7 @@ public class IsAdministratorGuard implements Guard {
     public boolean check(Adaptable context) {
         Principal p = context.getAdapter(Principal.class);
         if (p instanceof NuxeoPrincipal) {
-            return ((NuxeoPrincipal)p).isAdministrator() == isAdministrator;
+            return ((NuxeoPrincipal) p).isAdministrator() == isAdministrator;
         }
         return false;
     }

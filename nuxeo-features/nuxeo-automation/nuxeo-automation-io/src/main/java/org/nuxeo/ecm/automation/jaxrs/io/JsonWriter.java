@@ -52,18 +52,17 @@ public class JsonWriter {
         return Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();
     }
 
-    private static JsonGenerator createGenerator(OutputStream out)
-            throws IOException {
+    private static JsonGenerator createGenerator(OutputStream out) throws IOException {
         return getFactory().createJsonGenerator(out, JsonEncoding.UTF8);
     }
 
-    public static void writeAutomationInfo(OutputStream out,
-            AutomationInfo info, boolean prettyPrint) throws IOException {
+    public static void writeAutomationInfo(OutputStream out, AutomationInfo info, boolean prettyPrint)
+            throws IOException {
         writeAutomationInfo(createGenerator(out), info, prettyPrint);
     }
 
-    public static void writeAutomationInfo(JsonGenerator jg,
-            AutomationInfo info, boolean prettyPrint) throws IOException {
+    public static void writeAutomationInfo(JsonGenerator jg, AutomationInfo info, boolean prettyPrint)
+            throws IOException {
         if (prettyPrint) {
             jg.useDefaultPrettyPrinter();
         }
@@ -96,22 +95,18 @@ public class JsonWriter {
     /**
      * Used to export operations to studio.
      */
-    public static String exportOperations() throws IOException,
-            OperationException {
+    public static String exportOperations() throws IOException, OperationException {
         return exportOperations(false);
     }
 
     /**
      * Used to export operations to studio.
      *
-     * @param filterNotInStudio if true, operation types not exposed in Studio
-     *            will be filtered.
+     * @param filterNotInStudio if true, operation types not exposed in Studio will be filtered.
      * @since 5.9.1
      */
-    public static String exportOperations(boolean filterNotInStudio)
-            throws IOException, OperationException {
-        List<OperationDocumentation> ops = Framework.getLocalService(
-                AutomationService.class).getDocumentation();
+    public static String exportOperations(boolean filterNotInStudio) throws IOException, OperationException {
+        List<OperationDocumentation> ops = Framework.getLocalService(AutomationService.class).getDocumentation();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = getFactory().createJsonGenerator(out);
         jg.useDefaultPrettyPrinter();
@@ -132,8 +127,7 @@ public class JsonWriter {
         return out.toString("UTF-8");
     }
 
-    private static void writeOperations(JsonGenerator jg, AutomationInfo info)
-            throws IOException {
+    private static void writeOperations(JsonGenerator jg, AutomationInfo info) throws IOException {
         jg.writeArrayFieldStart("operations");
         for (OperationDocumentation op : info.getOperations()) {
             writeOperation(jg, op);
@@ -141,8 +135,7 @@ public class JsonWriter {
         jg.writeEndArray();
     }
 
-    private static void writeChains(JsonGenerator jg, AutomationInfo info)
-            throws IOException {
+    private static void writeChains(JsonGenerator jg, AutomationInfo info) throws IOException {
         jg.writeArrayFieldStart("chains");
         for (OperationDocumentation op : info.getChains()) {
             writeOperation(jg, op, Constants.CHAIN_ID_PREFIX + op.id);
@@ -150,42 +143,38 @@ public class JsonWriter {
         jg.writeEndArray();
     }
 
-    public static void writeOperation(OutputStream out,
-            OperationDocumentation op) throws IOException {
+    public static void writeOperation(OutputStream out, OperationDocumentation op) throws IOException {
         writeOperation(out, op, false);
     }
 
     /**
      * @since 5.9.4
      */
-    public static void writeOperation(OutputStream out,
-            OperationDocumentation op, boolean prettyPrint) throws IOException {
+    public static void writeOperation(OutputStream out, OperationDocumentation op, boolean prettyPrint)
+            throws IOException {
         writeOperation(createGenerator(out), op, prettyPrint);
     }
 
-    public static void writeOperation(JsonGenerator jg,
-            OperationDocumentation op) throws IOException {
+    public static void writeOperation(JsonGenerator jg, OperationDocumentation op) throws IOException {
         writeOperation(jg, op, false);
     }
 
     /**
      * @since 5.9.4
      */
-    public static void writeOperation(JsonGenerator jg,
-            OperationDocumentation op, boolean prettyPrint) throws IOException {
+    public static void writeOperation(JsonGenerator jg, OperationDocumentation op, boolean prettyPrint)
+            throws IOException {
         writeOperation(jg, op, op.url, prettyPrint);
     }
 
-    public static void writeOperation(JsonGenerator jg,
-            OperationDocumentation op, String url) throws IOException {
+    public static void writeOperation(JsonGenerator jg, OperationDocumentation op, String url) throws IOException {
         writeOperation(jg, op, url, false);
     }
 
     /**
      * @since 5.9.4
      */
-    public static void writeOperation(JsonGenerator jg,
-            OperationDocumentation op, String url, boolean prettyPrint)
+    public static void writeOperation(JsonGenerator jg, OperationDocumentation op, String url, boolean prettyPrint)
             throws IOException {
         if (prettyPrint) {
             jg.useDefaultPrettyPrinter();
@@ -224,8 +213,7 @@ public class JsonWriter {
         jg.flush();
     }
 
-    private static void writeParams(JsonGenerator jg, List<Param> params)
-            throws IOException {
+    private static void writeParams(JsonGenerator jg, List<Param> params) throws IOException {
         jg.writeArrayFieldStart("params");
         for (Param p : params) {
             jg.writeStartObject();
@@ -246,13 +234,11 @@ public class JsonWriter {
         jg.writeEndArray();
     }
 
-    public static void writeLogin(OutputStream out, LoginInfo login)
-            throws IOException {
+    public static void writeLogin(OutputStream out, LoginInfo login) throws IOException {
         writeLogin(createGenerator(out), login);
     }
 
-    public static void writeLogin(JsonGenerator jg, LoginInfo login)
-            throws IOException {
+    public static void writeLogin(JsonGenerator jg, LoginInfo login) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "login");
         jg.writeStringField("username", login.getUsername());
@@ -266,13 +252,11 @@ public class JsonWriter {
         jg.flush();
     }
 
-    public static void writePrimitive(OutputStream out, Object value)
-            throws IOException {
+    public static void writePrimitive(OutputStream out, Object value) throws IOException {
         writePrimitive(createGenerator(out), value);
     }
 
-    public static void writePrimitive(JsonGenerator jg, Object value)
-            throws IOException {
+    public static void writePrimitive(JsonGenerator jg, Object value) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "primitive");
         if (value != null) {
@@ -298,24 +282,22 @@ public class JsonWriter {
     }
 
     /**
-     * @deprecated since 6.0 - use {@link org.nuxeo.ecm.webengine.app
-     * .JsonWebengineWriter#writeException(java.io.OutputStream,
-     * org.nuxeo.ecm.webengine.WebException)} instead
+     * @deprecated since 6.0 - use
+     *             {@link org.nuxeo.ecm.webengine.app .JsonWebengineWriter#writeException(java.io.OutputStream, org.nuxeo.ecm.webengine.WebException)}
+     *             instead
      */
     @Deprecated
-    public static void writeException(OutputStream out, WebException eh)
-            throws IOException {
+    public static void writeException(OutputStream out, WebException eh) throws IOException {
         writeException(createGenerator(out), eh);
     }
 
     /**
-     * @deprecated since 6.0 - use {@link org.nuxeo.ecm.webengine.app
-     * .JsonWebengineWriter#writeException(org.codehaus.jackson.JsonGenerator,
-     * org.nuxeo.ecm.webengine.WebException)} instead
+     * @deprecated since 6.0 - use
+     *             {@link org.nuxeo.ecm.webengine.app .JsonWebengineWriter#writeException(org.codehaus.jackson.JsonGenerator, org.nuxeo.ecm.webengine.WebException)}
+     *             instead
      */
     @Deprecated
-    public static void writeException(JsonGenerator jg, WebException eh)
-            throws IOException {
+    public static void writeException(JsonGenerator jg, WebException eh) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "exception");
         jg.writeStringField("type", eh.getType());

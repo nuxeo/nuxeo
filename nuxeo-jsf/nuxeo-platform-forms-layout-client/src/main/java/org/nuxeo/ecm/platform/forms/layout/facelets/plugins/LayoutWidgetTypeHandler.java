@@ -47,40 +47,32 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String widgetId = widget.getId();
         String widgetMode = widget.getMode();
 
-        TagAttributes attributes = helper.getTagAttributes(widget,
-                Arrays.asList(new String[] { "mode" }), true, true);
-        attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                helper.createAttribute("id", widgetId));
+        TagAttributes attributes = helper.getTagAttributes(widget, Arrays.asList(new String[] { "mode" }), true, true);
+        attributes = FaceletHandlerHelper.addTagAttribute(attributes, helper.createAttribute("id", widgetId));
 
         // add mode attribute
         String modeValue;
         Serializable modeFromProps = widget.getProperty("mode");
-        if ((modeFromProps instanceof String)
-                && !StringUtils.isBlank((String) modeFromProps)) {
+        if ((modeFromProps instanceof String) && !StringUtils.isBlank((String) modeFromProps)) {
             modeValue = (String) modeFromProps;
         } else {
             modeValue = widgetMode;
         }
-        attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                helper.createAttribute("mode", modeValue));
+        attributes = FaceletHandlerHelper.addTagAttribute(attributes, helper.createAttribute("mode", modeValue));
 
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
-                subHandlers, helper, false);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper, false);
         String widgetTagConfigId = widget.getTagConfigId();
-        TagConfig layoutTagConfig = TagConfigFactory.createTagConfig(tagConfig,
-                widgetTagConfigId, attributes, leaf);
+        TagConfig layoutTagConfig = TagConfigFactory.createTagConfig(tagConfig, widgetTagConfigId, attributes, leaf);
         FaceletHandler res = new LayoutTagHandler(layoutTagConfig);
         if (BuiltinWidgetModes.PDF.equals(widgetMode)) {
             // add a surrounding p:html tag handler
-            return helper.getHtmlComponentHandler(widgetTagConfigId,
-                    new TagAttributesImpl(new TagAttribute[0]), res,
+            return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]), res,
                     UIHtmlText.class.getName(), null);
         } else {
             return res;

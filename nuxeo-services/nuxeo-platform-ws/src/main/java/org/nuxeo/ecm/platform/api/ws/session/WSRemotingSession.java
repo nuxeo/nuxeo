@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  * Web service remoting session.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface WSRemotingSession {
 
@@ -58,7 +57,6 @@ public interface WSRemotingSession {
 
     /**
      * Returns the user password bound to the session
-     *
      * <p>
      * Note the password is clear.
      * </p>

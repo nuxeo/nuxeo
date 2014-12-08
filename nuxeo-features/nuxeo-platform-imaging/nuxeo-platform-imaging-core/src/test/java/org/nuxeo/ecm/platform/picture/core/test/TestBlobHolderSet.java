@@ -53,8 +53,7 @@ import com.google.inject.Inject;
 @Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert" })
 public class TestBlobHolderSet {
 
@@ -74,9 +73,8 @@ public class TestBlobHolderSet {
         map.put("title", "Original");
         map.put("content",
                 new FileBlob(
-                        FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
-                                + "test.jpg"), "image/jpeg", null, "test.jpg",
-                        null));
+                        FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER + "test.jpg"),
+                        "image/jpeg", null, "test.jpg", null));
         map.put("filename", "test.jpg");
         views.add(map);
         return views;
@@ -84,8 +82,7 @@ public class TestBlobHolderSet {
 
     @Test
     public void testBlobHolderSet() throws Exception {
-        DocumentModel picture = new DocumentModelImpl(root.getPathAsString(),
-                "pic", "Picture");
+        DocumentModel picture = new DocumentModelImpl(root.getPathAsString(), "pic", "Picture");
         picture.setPropertyValue("picture:views", (Serializable) createViews());
         picture = session.createDocument(picture);
         session.save();
@@ -97,9 +94,8 @@ public class TestBlobHolderSet {
         assertEquals(1, bh.getBlobs().size());
 
         // test write
-        blob = new FileBlob(
-                FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
-                        + "test.jpg"), "image/jpeg", null, "logo.jpg", null);
+        blob = new FileBlob(FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER + "test.jpg"),
+                "image/jpeg", null, "logo.jpg", null);
         bh.setBlob(blob);
         session.saveDocument(picture);
         session.save();

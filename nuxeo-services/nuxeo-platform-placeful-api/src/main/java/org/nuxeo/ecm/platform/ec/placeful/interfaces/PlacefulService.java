@@ -25,27 +25,22 @@ import org.nuxeo.ecm.platform.ec.placeful.Annotation;
 import org.nuxeo.runtime.model.ComponentName;
 
 /**
- *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 public interface PlacefulService {
 
-    ComponentName ID = new ComponentName(
-            "org.nuxeo.ecm.platform.ec.placeful.PlacefulService");
+    ComponentName ID = new ComponentName("org.nuxeo.ecm.platform.ec.placeful.PlacefulService");
 
     Map<String, String> getAnnotationRegistry();
 
     Annotation getAnnotation(String uuid, String name);
 
-    List<Annotation> getAnnotationListByParamMap(Map<String, Object> paramMap,
-            String name);
+    List<Annotation> getAnnotationListByParamMap(Map<String, Object> paramMap, String name);
 
     void setAnnotation(Annotation annotation);
 
     void removeAnnotation(Annotation annotation);
 
-    void removeAnnotationListByParamMap(Map<String, Object> paramMap,
-            String name);
+    void removeAnnotationListByParamMap(Map<String, Object> paramMap, String name);
 
 }

@@ -54,12 +54,9 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.query.api",
-                "OSGI-INF/pageprovider-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf",
-                "OSGI-INF/contentview-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
-                "test-contentview-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf", "OSGI-INF/contentview-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-contrib.xml");
 
         service = Framework.getService(ContentViewService.class);
         assertNotNull(service);
@@ -75,18 +72,15 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
         assertEquals("current document children", contentView.getTitle());
         assertFalse(contentView.getTranslateTitle());
-        assertEquals("/icons/document_listing_icon.png",
-                contentView.getIconPath());
-        assertEquals("CURRENT_SELECTION_LIST",
-                contentView.getActionsCategories().get(0));
+        assertEquals("/icons/document_listing_icon.png", contentView.getIconPath());
+        assertEquals("CURRENT_SELECTION_LIST", contentView.getActionsCategories().get(0));
         assertEquals("simple", contentView.getPagination());
 
         List<ContentViewLayout> resultLayouts = contentView.getResultLayouts();
         assertNotNull(resultLayouts);
         assertEquals(1, resultLayouts.size());
         assertEquals("document_listing", resultLayouts.get(0).getName());
-        assertEquals("label.document_listing.layout",
-                resultLayouts.get(0).getTitle());
+        assertEquals("label.document_listing.layout", resultLayouts.get(0).getTitle());
         assertTrue(resultLayouts.get(0).getTranslateTitle());
         assertEquals("/icons/myicon.png", resultLayouts.get(0).getIconPath());
         assertTrue(resultLayouts.get(0).getShowCSVExport());
@@ -100,8 +94,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertFalse(contentView.getShowTitle());
         assertNull(contentView.getSearchLayout().getIconPath());
         assertFalse(contentView.getSearchLayout().getShowCSVExport());
-        assertEquals("quick",
-                contentView.getSearchLayout().getFilterDisplayType());
+        assertEquals("quick", contentView.getSearchLayout().getFilterDisplayType());
 
         assertEquals("CURRENT_SELECTION", contentView.getSelectionListName());
         List<String> eventNames = contentView.getRefreshEventNames();
@@ -139,8 +132,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertTrue(contentView.getShowFilterForm());
         assertFalse(contentView.getShowRefreshCommand());
 
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
-                "test-contentview-override-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
 
         // check content view has been disabled correctly
         contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
@@ -152,17 +144,13 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNotNull(contentView);
         // check content view attributes
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
-        assertEquals("current document children overriden",
-                contentView.getTitle());
+        assertEquals("current document children overriden", contentView.getTitle());
         assertFalse(contentView.getTranslateTitle());
-        assertEquals("label.my.empty.cv.sentence",
-                contentView.getEmptySentence());
+        assertEquals("label.my.empty.cv.sentence", contentView.getEmptySentence());
         assertTrue(contentView.getTranslateEmptySentence());
         assertTrue(contentView.getShowTitle());
-        assertEquals("/icons/document_listing_icon.png",
-                contentView.getIconPath());
-        assertEquals("CURRENT_SELECTION_LIST_2",
-                contentView.getActionsCategories().get(0));
+        assertEquals("/icons/document_listing_icon.png", contentView.getIconPath());
+        assertEquals("CURRENT_SELECTION_LIST_2", contentView.getActionsCategories().get(0));
         assertEquals("simple_2", contentView.getPagination());
 
         assertTrue(contentView.getShowFilterForm());
@@ -172,14 +160,12 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNotNull(resultLayouts);
         assertEquals(2, resultLayouts.size());
         assertEquals("document_listing", resultLayouts.get(0).getName());
-        assertEquals("label.document_listing.layout",
-                resultLayouts.get(0).getTitle());
+        assertEquals("label.document_listing.layout", resultLayouts.get(0).getTitle());
         assertTrue(resultLayouts.get(0).getTranslateTitle());
         assertEquals("/icons/myicon.png", resultLayouts.get(0).getIconPath());
         assertTrue(resultLayouts.get(0).getShowCSVExport());
         assertEquals("document_listing_2", resultLayouts.get(1).getName());
-        assertEquals("label.document_listing.layout_2",
-                resultLayouts.get(1).getTitle());
+        assertEquals("label.document_listing.layout_2", resultLayouts.get(1).getTitle());
         assertTrue(resultLayouts.get(1).getTranslateTitle());
         assertNull(resultLayouts.get(1).getIconPath());
         assertFalse(resultLayouts.get(1).getShowCSVExport());
@@ -236,14 +222,11 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH", orderedNames.get(1));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH_REF", orderedNames.get(2));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_REF", orderedNames.get(3));
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
-                orderedNames.get(4));
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
-                orderedNames.get(5));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", orderedNames.get(4));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF", orderedNames.get(5));
 
         // check after override too
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
-                "test-contentview-override-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
 
         names = service.getContentViewNames();
         assertNotNull(names);
@@ -254,10 +237,8 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN", orderedNames.get(0));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH_REF", orderedNames.get(1));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_REF", orderedNames.get(2));
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
-                orderedNames.get(3));
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
-                orderedNames.get(4));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", orderedNames.get(3));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF", orderedNames.get(4));
     }
 
     @Test
@@ -268,23 +249,15 @@ public class TestContentViewService extends NXRuntimeTestCase {
         List<ContentViewHeader> sortedHeaders = new ArrayList<ContentViewHeader>();
         sortedHeaders.addAll(headers);
         Collections.sort(sortedHeaders);
-        assertEquals("CURRENT_DOCUMENT_CHILDREN",
-                sortedHeaders.get(0).getName());
-        assertEquals("current document children",
-                sortedHeaders.get(0).getTitle());
-        assertEquals("/icons/document_listing_icon.png",
-                sortedHeaders.get(0).getIconPath());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", sortedHeaders.get(0).getName());
+        assertEquals("current document children", sortedHeaders.get(0).getTitle());
+        assertEquals("/icons/document_listing_icon.png", sortedHeaders.get(0).getIconPath());
         assertFalse(sortedHeaders.get(0).isTranslateTitle());
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH",
-                sortedHeaders.get(1).getName());
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH_REF",
-                sortedHeaders.get(2).getName());
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_REF",
-                sortedHeaders.get(3).getName());
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
-                sortedHeaders.get(4).getName());
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
-                sortedHeaders.get(5).getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH", sortedHeaders.get(1).getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH_REF", sortedHeaders.get(2).getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_REF", sortedHeaders.get(3).getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", sortedHeaders.get(4).getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF", sortedHeaders.get(5).getName());
     }
 
     @Test
@@ -315,8 +288,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals(0, names.size());
 
         // check after override too
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
-                "test-contentview-override-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
 
         names = service.getContentViewNames("foo");
         assertNotNull(names);
@@ -344,15 +316,11 @@ public class TestContentViewService extends NXRuntimeTestCase {
         List<ContentViewHeader> sortedHeaders = new ArrayList<ContentViewHeader>();
         sortedHeaders.addAll(headers);
         Collections.sort(sortedHeaders);
-        assertEquals("CURRENT_DOCUMENT_CHILDREN",
-                sortedHeaders.get(0).getName());
-        assertEquals("current document children",
-                sortedHeaders.get(0).getTitle());
-        assertEquals("/icons/document_listing_icon.png",
-                sortedHeaders.get(0).getIconPath());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", sortedHeaders.get(0).getName());
+        assertEquals("current document children", sortedHeaders.get(0).getTitle());
+        assertEquals("/icons/document_listing_icon.png", sortedHeaders.get(0).getIconPath());
         assertFalse(sortedHeaders.get(0).isTranslateTitle());
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH",
-                sortedHeaders.get(1).getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH", sortedHeaders.get(1).getName());
 
         headers = service.getContentViewHeaders("foo2");
         assertNotNull(headers);
@@ -364,8 +332,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         sortedHeaders.clear();
         sortedHeaders.addAll(headers);
         Collections.sort(sortedHeaders);
-        assertEquals("CURRENT_DOCUMENT_CHILDREN",
-                sortedHeaders.get(0).getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", sortedHeaders.get(0).getName());
 
         headers = service.getContentViewHeaders("not_set");
         assertNotNull(headers);
@@ -380,8 +347,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
             Assert.fail("Should have triggered an exception");
         } catch (Exception e) {
             assertTrue(e instanceof ClientException);
-            assertEquals("Could not resolve page provider with name 'foo'",
-                    e.getMessage());
+            assertEquals("Could not resolve page provider with name 'foo'", e.getMessage());
         }
     }
 
@@ -393,8 +359,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC", pp.getName());
 
         // check after override too
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
-                "test-contentview-override-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
 
         cv = service.getContentView("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC");
         pp = cv.getPageProvider(null, null, -1L, -1L, null);
@@ -410,8 +375,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN_PP", pp.getName());
 
         // check after override too
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
-                "test-contentview-override-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
 
         cv = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
         pp = cv.getPageProvider(null, null, -1L, -1L, null);
@@ -421,8 +385,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
     @Test
     public void testSetResultLayoutByName() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
-                "test-contentview-override-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
@@ -431,13 +394,11 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals(2, resultLayouts.size());
 
         ContentViewLayout currentResultLayout = contentView.getCurrentResultLayout();
-        assertEquals(currentResultLayout.getName(),
-                resultLayouts.get(0).getName());
+        assertEquals(currentResultLayout.getName(), resultLayouts.get(0).getName());
 
         contentView.setCurrentResultLayout(resultLayouts.get(1).getName());
         currentResultLayout = contentView.getCurrentResultLayout();
-        assertEquals(currentResultLayout.getName(),
-                resultLayouts.get(1).getName());
+        assertEquals(currentResultLayout.getName(), resultLayouts.get(1).getName());
     }
 
     @Test

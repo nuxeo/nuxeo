@@ -26,7 +26,6 @@ import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = PostBlob.ID, category = Constants.CAT_BLOB, label = "HTTP Post", description = "Post the input file to a target HTTP URL. Returns back the input file.")
@@ -37,7 +36,7 @@ public class PostBlob {
     @Param(name = "url")
     protected String url;
 
-    @OperationMethod(collector=BlobCollector.class)
+    @OperationMethod(collector = BlobCollector.class)
     public Blob run(Blob blob) throws IOException {
         URL target = new URL(url);
         URLConnection conn = target.openConnection();

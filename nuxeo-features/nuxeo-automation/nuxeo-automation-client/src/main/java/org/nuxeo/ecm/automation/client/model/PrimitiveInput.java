@@ -13,12 +13,10 @@ package org.nuxeo.ecm.automation.client.model;
 
 import org.nuxeo.ecm.automation.client.OperationRequest;
 
-
-
 /**
  * @author matic
- * @deprecated in 5.7 (did not work in 5.6 either): pass Object instance
- *             directly to the {@link OperationRequest#setInput} method.
+ * @deprecated in 5.7 (did not work in 5.6 either): pass Object instance directly to the
+ *             {@link OperationRequest#setInput} method.
  */
 @Deprecated
 public class PrimitiveInput<T> implements OperationInput {
@@ -27,7 +25,7 @@ public class PrimitiveInput<T> implements OperationInput {
 
     public PrimitiveInput(T value) {
         this.value = value;
-        this.type= value.getClass().getSimpleName().toLowerCase();
+        this.type = value.getClass().getSimpleName().toLowerCase();
     }
 
     protected final T value;

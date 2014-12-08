@@ -47,8 +47,7 @@ public class DummyAsyncRetryListener implements PostCommitEventListener {
             // simulate error
             throw new ConcurrentUpdateException();
         }
-        if (doc != null
-                && ((String) doc.getPropertyValue("dc:title")).startsWith("title")) {
+        if (doc != null && ((String) doc.getPropertyValue("dc:title")).startsWith("title")) {
             countOk++;
         }
     }

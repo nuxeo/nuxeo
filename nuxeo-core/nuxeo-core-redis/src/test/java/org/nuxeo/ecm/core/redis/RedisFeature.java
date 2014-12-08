@@ -58,8 +58,7 @@ import org.w3c.dom.Element;
 public class RedisFeature extends SimpleFeature {
 
     /**
-     * This defines configuration that can be used to run Redis tests with a
-     * given Redis configured.
+     * This defines configuration that can be used to run Redis tests with a given Redis configured.
      *
      * @since 6.0
      */
@@ -85,21 +84,18 @@ public class RedisFeature extends SimpleFeature {
 
     protected RedisServerDescriptor newRedisServerDescriptor() {
         RedisServerDescriptor desc = new RedisServerDescriptor();
-        desc.hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(
-                config.host(), config.port()) };
+        desc.hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(config.host(), config.port()) };
         return desc;
     }
 
     protected RedisSentinelDescriptor newRedisSentinelDescriptor() {
         RedisSentinelDescriptor desc = new RedisSentinelDescriptor();
         desc.master = "mymaster";
-        desc.hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(
-                config.host(), config.port()) };
+        desc.hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(config.host(), config.port()) };
         return desc;
     }
 
-    public static void clear()
-            throws IOException {
+    public static void clear() throws IOException {
         final RedisAdmin admin = Framework.getService(RedisAdmin.class);
         admin.clear("*");
     }
@@ -122,12 +118,11 @@ public class RedisFeature extends SimpleFeature {
             harness.deployBundle("org.nuxeo.ecm.core.cache");
         }
         harness.deployBundle("org.nuxeo.ecm.core.redis");
-        harness.deployTestContrib("org.nuxeo.ecm.core.redis",
-                RedisFeature.class.getResource("/redis-contribs.xml"));
-
+        harness.deployTestContrib("org.nuxeo.ecm.core.redis", RedisFeature.class.getResource("/redis-contribs.xml"));
 
         if (Mode.embedded.equals(config.mode())) {
-            RedisComponent component = (RedisComponent) Framework.getRuntime().getComponent(RedisComponent.class.getPackage().getName());
+            RedisComponent component = (RedisComponent) Framework.getRuntime().getComponent(
+                    RedisComponent.class.getPackage().getName());
             RedisExecutor executor = new RedisPoolExecutor(new RedisEmbeddedPool());
             executor = new RedisEmbeddedTraceExecutor(executor);
             executor = new RedisEmbeddedSynchronizedExecutor(executor);
@@ -142,16 +137,14 @@ public class RedisFeature extends SimpleFeature {
         return true;
     }
 
-    private InlineRef toDescriptor(Config config) throws IOException,
-            URISyntaxException, ParserConfigurationException {
-        File sourceFile = new File(RedisFeature.class.getResource(
-                "/redis-config.xml").toURI());
+    private InlineRef toDescriptor(Config config) throws IOException, URISyntaxException, ParserConfigurationException {
+        File sourceFile = new File(RedisFeature.class.getResource("/redis-config.xml").toURI());
         TextTemplate template = new TextTemplate();
         template.setVariable("timeout", Long.toString(config.failoverTimeout()));
         RedisServerDescriptor desc = null;
         XMap xmap = new XMap();
         Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        Element extension = (Element)doc.appendChild(doc.createElement("extension"));
+        Element extension = (Element) doc.appendChild(doc.createElement("extension"));
         extension.setAttribute("target", "org.nuxeo.ecm.core.redis.RedisConnector");
         extension.setAttribute("point", "configuration");
         switch (config.mode()) {
@@ -170,7 +163,7 @@ public class RedisFeature extends SimpleFeature {
         String ext = "";
         if (desc != null) {
             xmap.toXML(desc, doc.getDocumentElement());
-            ext = DOMSerializer.toStringOmitXml((Element)doc.getDocumentElement().getChildNodes().item(0));
+            ext = DOMSerializer.toStringOmitXml((Element) doc.getDocumentElement().getChildNodes().item(0));
         }
         template.setVariable("extension", ext);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -186,7 +179,6 @@ public class RedisFeature extends SimpleFeature {
         runner.getFeature(CacheFeature.class).enable();
         InlineURLFactory.install();
     }
-
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {

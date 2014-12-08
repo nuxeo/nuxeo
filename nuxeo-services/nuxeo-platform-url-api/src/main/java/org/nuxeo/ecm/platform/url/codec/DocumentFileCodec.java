@@ -52,8 +52,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
     public static final String FILE_PROPERTY_PATH_KEY = "FILE_PROPERTY_PATH";
 
     /**
-     * @deprecated soon will be part of the file property, passed as parameter
-     *             for now
+     * @deprecated soon will be part of the file property, passed as parameter for now
      */
     @Deprecated
     public static final String FILENAME_PROPERTY_PATH_KEY = "FILENAME_PROPERTY_PATH";
@@ -92,8 +91,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
             items.add(URIUtils.quoteURIPathComponent(filename, true));
             String uri = StringUtils.join(items, "/");
 
-            Map<String, String> requestParams = new HashMap<String, String>(
-                    docView.getParameters());
+            Map<String, String> requestParams = new HashMap<String, String>(docView.getParameters());
             requestParams.remove(FILE_PROPERTY_PATH_KEY);
             requestParams.remove(FILENAME_KEY);
             return URIUtils.addParametersToURIQuery(uri, requestParams);
@@ -102,8 +100,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
     }
 
     /**
-     * Extracts document location from a Zope-like URL ie :
-     * server/path_or_docId/view_id/tab_id .
+     * Extracts document location from a Zope-like URL ie : server/path_or_docId/view_id/tab_id .
      */
     public DocumentView getDocumentViewFromUrl(String url) {
         final Pattern pattern = Pattern.compile(getPrefix() + URLPattern);
@@ -150,8 +147,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
                     }
                 }
 
-                final DocumentLocation docLoc = new DocumentLocationImpl(
-                        server, docRef);
+                final DocumentLocation docLoc = new DocumentLocationImpl(server, docRef);
 
                 return new DocumentViewImpl(docLoc, null, params);
             }
@@ -170,8 +166,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
         if (propertyName != null) {
             if (propertyName.startsWith("blobholder")) {
                 blob = getBlobViaBlobHolder(doc, propertyName);
-            }
-            else {
+            } else {
                 blob = (Blob) DocumentModelUtils.getPropertyValue(doc, propertyName);
             }
         }
@@ -181,7 +176,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
     public static Blob getBlobViaBlobHolder(DocumentModel doc, String bhPath) {
 
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        if (bh==null) {
+        if (bh == null) {
             return null;
         }
         bhPath = bhPath.replace("blobholder:", "");
@@ -192,13 +187,11 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
                 int idx = Integer.parseInt(bhPath);
                 return bh.getBlobs().get(idx);
             }
-        }
-        catch (ClientException | NumberFormatException e) {
+        } catch (ClientException | NumberFormatException e) {
             log.error("Error whild using BlobHolder to retrieve Blob", e);
         }
         return null;
     }
-
 
     public static String getFilenamePropertyName(DocumentView docView) {
         String propertyPath = docView.getParameter(FILENAME_PROPERTY_PATH_KEY);
@@ -211,8 +204,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
             // try to get it from document
             String propertyName = getFilenamePropertyName(docView);
             if (propertyName != null) {
-                filename = (String) DocumentModelUtils.getPropertyValue(doc,
-                        propertyName);
+                filename = (String) DocumentModelUtils.getPropertyValue(doc, propertyName);
             }
         }
         return filename;

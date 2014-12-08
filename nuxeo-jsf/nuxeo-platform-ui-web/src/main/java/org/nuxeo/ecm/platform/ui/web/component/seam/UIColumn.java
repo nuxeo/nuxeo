@@ -32,10 +32,9 @@ import org.jboss.seam.excel.ui.command.Command;
 /**
  * Overrides default column for better introspection of children.
  * <p>
- * If e:column tags are not direct children, the work sheet will not find them.
- * As layout templating adds additional JSF components, the children tree has
- * to be introspected further on, and other children components need to be
- * processed (UIAliasHolder components used in layout rendering for instance).
+ * If e:column tags are not direct children, the work sheet will not find them. As layout templating adds additional JSF
+ * components, the children tree has to be introspected further on, and other children components need to be processed
+ * (UIAliasHolder components used in layout rendering for instance).
  *
  * @since 5.4.2
  */
@@ -57,8 +56,7 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
         // Column width etc.
         excelWorkbook.applyColumnSettings(this);
 
-        UIWorksheet sheet = (UIWorksheet) getParentByClass(getParent(),
-                UIWorksheet.class);
+        UIWorksheet sheet = (UIWorksheet) getParentByClass(getParent(), UIWorksheet.class);
         if (sheet == null) {
             throw new ExcelWorkbookException("Could not find worksheet");
         }
@@ -84,8 +82,7 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
             // Store away the old value for the sheet binding var (if there is
             // one)
             if (sheet.getVar() != null) {
-                oldValue = FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(
-                        sheet.getVar());
+                oldValue = FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(sheet.getVar());
                 iterator = sheet.getDataIterator();
             } else {
                 // No var, no iteration...
@@ -94,8 +91,8 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
 
             while (iterator.hasNext()) {
                 // Store the bound data in the request map and add the cell
-                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
-                        sheet.getVar(), iterator.next());
+                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(sheet.getVar(),
+                        iterator.next());
 
                 encodeChild(facesContext, sheet, excelWorkbook, child);
             }
@@ -106,11 +103,9 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
             }
             // Restore the previously modified request map (if there was a var)
             if (oldValue == null) {
-                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(
-                        sheet.getVar());
+                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(sheet.getVar());
             } else {
-                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
-                        sheet.getVar(), oldValue);
+                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(sheet.getVar(), oldValue);
             }
 
         }
@@ -127,8 +122,8 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
     }
 
     @SuppressWarnings("rawtypes")
-    protected void encodeChild(FacesContext facesContext, UIWorksheet sheet,
-            ExcelWorkbook excelWorkbook, UIComponent child) throws IOException {
+    protected void encodeChild(FacesContext facesContext, UIWorksheet sheet, ExcelWorkbook excelWorkbook,
+            UIComponent child) throws IOException {
         // XXX make sure other components are processed
         if (child instanceof WorksheetItem) {
             excelWorkbook.addItem((WorksheetItem) child);
@@ -148,16 +143,14 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> List<T> getAllChildrenOfType(List<UIComponent> children,
-            Class<T> childType) {
+    public static <T> List<T> getAllChildrenOfType(List<UIComponent> children, Class<T> childType) {
         List<T> matches = new ArrayList<T>();
         for (UIComponent child : children) {
             if (childType.isAssignableFrom(child.getClass())) {
                 matches.add((T) child);
             } else {
                 // XXX introspect children
-                List<T> subChildren = getAllChildrenOfType(child.getChildren(),
-                        childType);
+                List<T> subChildren = getAllChildrenOfType(child.getChildren(), childType);
                 if (subChildren != null && !subChildren.isEmpty()) {
                     matches.addAll(subChildren);
                 }

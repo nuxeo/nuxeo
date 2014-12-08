@@ -31,20 +31,19 @@ import java.util.regex.Pattern;
 public interface CommandLineExecutorService {
 
     Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[\\p{L}_0-9-.%:=/\\\\ ]+");
+
     Pattern VALID_PARAMETER_PATTERN_WIN = Pattern.compile("[\\p{L}_0-9-.%:=/\\\\ ()]+");
 
     CommandAvailability getCommandAvailability(String commandName);
 
-    ExecResult execCommand(String commandName, CmdParameters params)
-            throws CommandNotAvailable;
+    ExecResult execCommand(String commandName, CmdParameters params) throws CommandNotAvailable;
 
     List<String> getRegistredCommands();
 
     List<String> getAvailableCommands();
 
     /**
-     * Returns true if the given {@code parameter} is valid to be used in a
-     * command.
+     * Returns true if the given {@code parameter} is valid to be used in a command.
      *
      * @since 5.7
      */

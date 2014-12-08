@@ -24,18 +24,14 @@ import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagator;
 
 /**
- * Propagate the login information from the web authentication filter to the
- * client login module stack.
+ * Propagate the login information from the web authentication filter to the client login module stack.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LoginStackPropagator implements NuxeoAuthenticationPropagator {
 
-    public CleanupCallback propagateUserIdentificationInformation(
-            CachableUserIdentificationInfo cachableUserIdent) {
-        ClientLoginModule.getThreadLocalLogin().push(
-                cachableUserIdent.getPrincipal(),
+    public CleanupCallback propagateUserIdentificationInformation(CachableUserIdentificationInfo cachableUserIdent) {
+        ClientLoginModule.getThreadLocalLogin().push(cachableUserIdent.getPrincipal(),
                 cachableUserIdent.getUserInfo().getPassword().toCharArray(),
                 cachableUserIdent.getLoginContext().getSubject());
         return new CleanupCallback() {

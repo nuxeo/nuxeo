@@ -85,8 +85,8 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     public ContentViewLayoutImpl() {
     }
 
-    public ContentViewLayoutImpl(String name, String title,
-            boolean translateTitle, String iconPath, boolean showCSVExport) {
+    public ContentViewLayoutImpl(String name, String title, boolean translateTitle, String iconPath,
+            boolean showCSVExport) {
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;
@@ -154,9 +154,8 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     @Override
     public String toString() {
         return String.format("ContentViewLayoutImpl [name=%s, title=%s, "
-                + "translateTitle=%s, iconPath=%s, showCSVExport=%s]", name,
-                title, Boolean.valueOf(translateTitle), iconPath, new Boolean(
-                        showCSVExport));
+                + "translateTitle=%s, iconPath=%s, showCSVExport=%s]", name, title, Boolean.valueOf(translateTitle),
+                iconPath, new Boolean(showCSVExport));
     }
 
     public ContentViewLayoutImpl clone() {

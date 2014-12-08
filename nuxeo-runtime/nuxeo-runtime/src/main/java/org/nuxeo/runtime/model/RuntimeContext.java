@@ -23,14 +23,11 @@ import org.osgi.framework.Bundle;
 /**
  * The runtime context.
  * <p>
- * Runtime contexts are used to create components. They provides custom methods
- * to load classes and find resources.
+ * Runtime contexts are used to create components. They provides custom methods to load classes and find resources.
  * <p>
- * Runtime contexts are generally attached to a bundle context (or module
- * deployment context)
+ * Runtime contexts are generally attached to a bundle context (or module deployment context)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface RuntimeContext {
 
@@ -42,8 +39,7 @@ public interface RuntimeContext {
     RuntimeService getRuntime();
 
     /**
-     * Gets the container bundle or null if we are not running in an OSGi
-     * environment.
+     * Gets the container bundle or null if we are not running in an OSGi environment.
      */
     Bundle getBundle();
 
@@ -82,12 +78,10 @@ public interface RuntimeContext {
      * <p>
      * Do nothing if component is already deployed.
      * <p>
-     * Returns the registration info of the new deployed component or null if
-     * the component was not deployed.
+     * Returns the registration info of the new deployed component or null if the component was not deployed.
      *
      * @param url the url of the XML descriptor
-     * @return the component registration info or null if registration failed
-     *         for some reason
+     * @return the component registration info or null if registration failed for some reason
      */
     RegistrationInfo deploy(URL url) throws IOException;
 
@@ -109,8 +103,7 @@ public interface RuntimeContext {
     void undeploy(URL url) throws IOException;
 
     /**
-     * Same as {@link #undeploy(URL)} but using a {@link StreamRef} as stream
-     * reference.
+     * Same as {@link #undeploy(URL)} but using a {@link StreamRef} as stream reference.
      *
      * @param ref
      */
@@ -125,8 +118,7 @@ public interface RuntimeContext {
     boolean isDeployed(URL url);
 
     /**
-     * Checks whether the component XML file given by the StreamRef argument was
-     * deployed.
+     * Checks whether the component XML file given by the StreamRef argument was deployed.
      *
      * @param ref
      * @return
@@ -138,16 +130,13 @@ public interface RuntimeContext {
      * <p>
      * If the component is already deployed do nothing.
      * <p>
-     * The location is interpreted as a relative path inside the bundle (jar)
-     * containing the component - and will be loaded using
-     * {@link RuntimeContext#getLocalResource(String)}.
+     * The location is interpreted as a relative path inside the bundle (jar) containing the component - and will be
+     * loaded using {@link RuntimeContext#getLocalResource(String)}.
      * <p>
-     * Returns the registration info of the new deployed component or null if
-     * the component was not deployed.
+     * Returns the registration info of the new deployed component or null if the component was not deployed.
      *
      * @param location the location
-     * @return the component registration info or null if registration failed
-     *         for some reason
+     * @return the component registration info or null if registration failed for some reason
      */
     RegistrationInfo deploy(String location);
 

@@ -55,13 +55,10 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @Provider
-@Consumes({ MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_JSON + "+nxentity" })
+@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
 
     protected static final Log log = LogFactory.getLog(DirectoryEntryReader.class);
@@ -70,21 +67,18 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
     private JsonFactory factory;
 
     @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return DirectoryEntry.class.isAssignableFrom(type);
     }
 
     @Override
-    public DirectoryEntry readFrom(Class<DirectoryEntry> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public DirectoryEntry readFrom(Class<DirectoryEntry> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
         String content = IOUtils.toString(entityStream);
         if (content.isEmpty()) {
             if (content.isEmpty()) {
-                throw new WebException("No content in request body",
-                        Response.Status.BAD_REQUEST.getStatusCode());
+                throw new WebException("No content in request body", Response.Status.BAD_REQUEST.getStatusCode());
             }
 
         }
@@ -103,19 +97,16 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
      * @throws IOException
      * @throws JsonParseException
      * @throws ClientException
-     *
      */
-    private DirectoryEntry readRequest(String content,
-            MultivaluedMap<String, String> httpHeaders) throws IOException,
+    private DirectoryEntry readRequest(String content, MultivaluedMap<String, String> httpHeaders) throws IOException,
             ClientException {
 
         JsonParser jp = factory.createJsonParser(content);
         return readJson(jp, httpHeaders);
     }
 
-    public static DirectoryEntry readJson(JsonParser jp,
-            MultivaluedMap<String, String> httpHeaders) throws IOException,
-            ClientException {
+    public static DirectoryEntry readJson(JsonParser jp, MultivaluedMap<String, String> httpHeaders)
+            throws IOException, ClientException {
 
         JsonToken tok = jp.nextToken();
 
@@ -135,8 +126,7 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
             } else if ("entity-type".equals(key)) {
                 String entityType = jp.readValueAs(String.class);
                 if (!DirectoryEntryWriter.ENTITY_TYPE.equals(entityType)) {
-                    throw new WebApplicationException(
-                            Response.Status.BAD_REQUEST);
+                    throw new WebApplicationException(Response.Status.BAD_REQUEST);
                 }
             } else {
                 log.debug("Unknown key: " + key);
@@ -151,16 +141,14 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
         Directory directory = ds.getDirectory(directoryName);
 
         if (directory == null) {
-            throw new WebResourceNotFoundException("Directory " + directoryName
-                    + " does not exists");
+            throw new WebResourceNotFoundException("Directory " + directoryName + " does not exists");
         }
 
         return getDirectoryEntryFromNode(propertiesNode, directory);
 
     }
 
-    private static DirectoryEntry getDirectoryEntryFromNode(
-            JsonNode propertiesNode, Directory directory)
+    private static DirectoryEntry getDirectoryEntryFromNode(JsonNode propertiesNode, Directory directory)
             throws DirectoryException, ClientException, IOException {
 
         String schema = directory.getSchema();
@@ -172,16 +160,14 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
             DocumentModel entry = session.getEntry(id);
 
             if (entry == null) {
-                entry = BaseSession.createEntryModel(null, schema, id,
-                        new HashMap<String, Object>());
+                entry = BaseSession.createEntryModel(null, schema, id, new HashMap<String, Object>());
             }
 
             Properties props = new Properties();
             Iterator<Entry<String, JsonNode>> fields = propertiesNode.getFields();
             while (fields.hasNext()) {
                 Entry<String, JsonNode> fieldEntry = fields.next();
-                props.put(schema + ":" + fieldEntry.getKey(),
-                        fieldEntry.getValue().getTextValue());
+                props.put(schema + ":" + fieldEntry.getKey(), fieldEntry.getValue().getTextValue());
             }
 
             DocumentHelper.setProperties(null, entry, props);

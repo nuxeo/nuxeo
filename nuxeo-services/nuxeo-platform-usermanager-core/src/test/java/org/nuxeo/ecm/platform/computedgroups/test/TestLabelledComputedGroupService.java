@@ -50,8 +50,7 @@ public class TestLabelledComputedGroupService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
 
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/directory-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
 
         ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
         assertNotNull(cgs);

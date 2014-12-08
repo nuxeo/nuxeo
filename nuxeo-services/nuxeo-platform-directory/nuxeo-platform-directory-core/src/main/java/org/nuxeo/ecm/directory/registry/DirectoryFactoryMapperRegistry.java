@@ -28,8 +28,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  *
  * @since 5.6
  */
-public class DirectoryFactoryMapperRegistry extends
-        ContributionFragmentRegistry<DirectoryFactoryMapper> {
+public class DirectoryFactoryMapperRegistry extends ContributionFragmentRegistry<DirectoryFactoryMapper> {
 
     protected Map<String, List<String>> factoriesByDir = new HashMap<String, List<String>>();
 
@@ -39,14 +38,12 @@ public class DirectoryFactoryMapperRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, DirectoryFactoryMapper contrib,
-            DirectoryFactoryMapper newOrigContrib) {
+    public void contributionUpdated(String id, DirectoryFactoryMapper contrib, DirectoryFactoryMapper newOrigContrib) {
         factoriesByDir.put(id, contrib.getFactories());
     }
 
     @Override
-    public void contributionRemoved(String id,
-            DirectoryFactoryMapper origContrib) {
+    public void contributionRemoved(String id, DirectoryFactoryMapper origContrib) {
         List<String> factories = factoriesByDir.get(id);
         if (factories != null) {
             List<String> toRemove = origContrib.getFactories();

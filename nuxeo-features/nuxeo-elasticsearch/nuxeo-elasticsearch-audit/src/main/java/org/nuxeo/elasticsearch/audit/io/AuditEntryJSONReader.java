@@ -36,9 +36,9 @@ public class AuditEntryJSONReader {
         while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             JsonToken token = jp.nextToken();
-            if (token!=JsonToken.VALUE_NULL) {
+            if (token != JsonToken.VALUE_NULL) {
                 if ("category".equals(key)) {
-                    entry.setCategory(token==JsonToken.VALUE_NULL?null:jp.getText());
+                    entry.setCategory(token == JsonToken.VALUE_NULL ? null : jp.getText());
                 } else if ("principalName".equals(key)) {
                     entry.setPrincipalName(jp.getText());
                 } else if ("comment".equals(key)) {
@@ -63,15 +63,15 @@ public class AuditEntryJSONReader {
                     entry.setLogDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
                 } else if ("extended".equals(key)) {
                     entry.setExtendedInfos(readExtendedInfo(entry, jp));
-                };
+                }
+                ;
             }
             tok = jp.nextToken();
         }
         return entry;
     }
 
-    public static Map<String, ExtendedInfo> readExtendedInfo(
-            LogEntryImpl entry, JsonParser jp) throws IOException {
+    public static Map<String, ExtendedInfo> readExtendedInfo(LogEntryImpl entry, JsonParser jp) throws IOException {
         JsonToken tok = jp.nextToken();
 
         // skip {
@@ -85,7 +85,7 @@ public class AuditEntryJSONReader {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
             if (tok != JsonToken.VALUE_NULL) {
-                info.put(key,  ExtendedInfoImpl.createExtendedInfo((Serializable)jp.getText()));
+                info.put(key, ExtendedInfoImpl.createExtendedInfo((Serializable) jp.getText()));
             }
             tok = jp.nextToken();
         }

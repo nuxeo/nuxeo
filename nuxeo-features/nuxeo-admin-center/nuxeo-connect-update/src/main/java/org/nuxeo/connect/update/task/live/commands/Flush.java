@@ -52,8 +52,7 @@ public class Flush extends FlushPlaceholder {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         flush();
         return new Flush();
     }

@@ -63,13 +63,11 @@ public class TestStringUtils {
         ar = StringUtils.split(str, ',', true);
         assertTrue(Arrays.equals(new String[] { "a", "b", "c", "d", "" }, ar));
 
-        str  = " , , a , b, c, d  ,  ,  ";
+        str = " , , a , b, c, d  ,  ,  ";
         ar = StringUtils.split(str, ',', false);
-        assertTrue(Arrays.equals(
-                new String[] { " ", " ", " a ", " b", " c", " d  ", "  ", "  " }, ar));
+        assertTrue(Arrays.equals(new String[] { " ", " ", " a ", " b", " c", " d  ", "  ", "  " }, ar));
         ar = StringUtils.split(str, ',', true);
-        assertTrue(Arrays.equals(
-                new String[] { "", "", "a", "b", "c", "d", "", "" }, ar));
+        assertTrue(Arrays.equals(new String[] { "", "", "a", "b", "c", "d", "", "" }, ar));
     }
 
     @Test
@@ -84,7 +82,7 @@ public class TestStringUtils {
 
         assertEquals("", StringUtils.join(new String[0]));
 
-        ar = new String[] { "a", "b", "", "c", null, "d"};
+        ar = new String[] { "a", "b", "", "c", null, "d" };
         assertEquals("a()b()()c()()d", StringUtils.join(ar, "()"));
         assertEquals("abcd", StringUtils.join(ar, null));
         assertEquals("abcd", StringUtils.join(ar));

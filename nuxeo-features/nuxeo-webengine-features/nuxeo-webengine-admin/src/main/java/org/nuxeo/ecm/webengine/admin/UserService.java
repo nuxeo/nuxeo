@@ -47,8 +47,7 @@ import org.nuxeo.runtime.api.Framework;
 public class UserService extends DefaultObject {
 
     @GET
-    public Object getIndex(@QueryParam("query") String query,
-            @QueryParam("group") String group) {
+    public Object getIndex(@QueryParam("query") String query, @QueryParam("group") String group) {
         if (query != null && !query.isEmpty()) {
             UserManager userManager = Framework.getService(UserManager.class);
             if (group != null) {
@@ -65,7 +64,7 @@ public class UserService extends DefaultObject {
     @Path("user/{user}")
     public Object searchUsers(@PathParam("user") String user) {
         UserManager userManager = Framework.getService(UserManager.class);
-        NuxeoPrincipalImpl principal = (NuxeoPrincipalImpl)userManager.getPrincipal(user);
+        NuxeoPrincipalImpl principal = (NuxeoPrincipalImpl) userManager.getPrincipal(user);
         if (principal == null) {
             throw new WebResourceNotFoundException("User not found: " + user);
         }

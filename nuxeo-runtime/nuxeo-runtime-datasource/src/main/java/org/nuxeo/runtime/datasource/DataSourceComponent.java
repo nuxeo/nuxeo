@@ -33,8 +33,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Nuxeo component allowing the JNDI registration of datasources by extension
- * point contributions.
+ * Nuxeo component allowing the JNDI registration of datasources by extension point contributions.
  * <p>
  * For now only the internal Nuxeo JNDI server is supported.
  */
@@ -55,30 +54,28 @@ public class DataSourceComponent extends DefaultComponent {
     protected Context namingContext;
 
     @Override
-    public void registerContribution(Object contrib, String extensionPoint,
-            ComponentInstance component) {
+    public void registerContribution(Object contrib, String extensionPoint, ComponentInstance component) {
         if (DATASOURCES_XP.equals(extensionPoint)) {
-        	if (contrib instanceof DataSourceDescriptor) {
-        		addDataSource((DataSourceDescriptor) contrib);
-        	} else if (contrib instanceof DataSourceLinkDescriptor) {
-        		addDataSourceLink((DataSourceLinkDescriptor) contrib);
-        	} else {
-        		log.error("Wrong datasource extension type " + contrib.getClass().getName());
-        	}
+            if (contrib instanceof DataSourceDescriptor) {
+                addDataSource((DataSourceDescriptor) contrib);
+            } else if (contrib instanceof DataSourceLinkDescriptor) {
+                addDataSourceLink((DataSourceLinkDescriptor) contrib);
+            } else {
+                log.error("Wrong datasource extension type " + contrib.getClass().getName());
+            }
         } else {
             log.error("Ignoring unknown extension point: " + extensionPoint);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contrib, String extensionPoint,
-            ComponentInstance component) {
+    public void unregisterContribution(Object contrib, String extensionPoint, ComponentInstance component) {
         if (DATASOURCES_XP.equals(extensionPoint)) {
-        	if (contrib instanceof DataSourceDescriptor) {
-        		removeDataSource((DataSourceDescriptor) contrib);
-        	} else if (contrib instanceof DataSourceLinkDescriptor) {
-        		removeDataSourceLink((DataSourceLinkDescriptor) contrib);
-        	}
+            if (contrib instanceof DataSourceDescriptor) {
+                removeDataSource((DataSourceDescriptor) contrib);
+            } else if (contrib instanceof DataSourceLinkDescriptor) {
+                removeDataSourceLink((DataSourceLinkDescriptor) contrib);
+            }
         }
     }
 
@@ -121,8 +118,8 @@ public class DataSourceComponent extends DefaultComponent {
             bindDataSource(datasourceDesc);
         }
         // bind links
-        for (DataSourceLinkDescriptor linkDesc:links.values()) {
-        	bindDataSourceLink(linkDesc);
+        for (DataSourceLinkDescriptor linkDesc : links.values()) {
+            bindDataSourceLink(linkDesc);
         }
     }
 
@@ -170,8 +167,7 @@ public class DataSourceComponent extends DefaultComponent {
         try {
             descr.unbindSelf(namingContext);
         } catch (NamingException cause) {
-            log.error("Cannot unbind datasource '" + descr.name + "' in JNDI",
-                    cause);
+            log.error("Cannot unbind datasource '" + descr.name + "' in JNDI", cause);
         }
     }
 

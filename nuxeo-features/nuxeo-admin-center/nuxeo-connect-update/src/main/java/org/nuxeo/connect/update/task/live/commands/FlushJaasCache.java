@@ -35,8 +35,7 @@ import org.nuxeo.runtime.reload.ReloadService;
 public class FlushJaasCache extends FlushJaasCachePlaceholder {
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         Framework.getService(ReloadService.class).flushJaasCache();
         return new FlushJaasCache();
     }

@@ -79,15 +79,14 @@ import org.osgi.framework.FrameworkEvent;
 /**
  * Abstract base class for test cases that require a test runtime service.
  * <p>
- * The runtime service itself is conveniently available as the
- * <code>runtime</code> instance variable in derived classes.
+ * The runtime service itself is conveniently available as the <code>runtime</code> instance variable in derived
+ * classes.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // Make sure this class is kept in sync with with RuntimeHarness
 @RunWith(FeaturesRunner.class)
-@Features({MDCFeature.class, ConditionalIgnoreRule.Feature.class,
-        RandomBug.Feature.class})
+@Features({ MDCFeature.class, ConditionalIgnoreRule.Feature.class, RandomBug.Feature.class })
 @Ignore
 public class NXRuntimeTestCase implements RuntimeHarness {
 
@@ -142,8 +141,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     }
 
     @Override
-    public void addWorkingDirectoryConfigurator(
-            WorkingDirectoryConfigurator config) {
+    public void addWorkingDirectoryConfigurator(WorkingDirectoryConfigurator config) {
         wdConfigs.add(config);
     }
 
@@ -188,8 +186,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      */
     @Override
     public void fireFrameworkStarted() throws Exception {
-        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
-                runtimeBundle, null));
+        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, runtimeBundle, null));
     }
 
     @After
@@ -224,9 +221,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 if (System.getProperties().remove("nuxeo.home") != null) {
                     log.warn("Removed System property nuxeo.home.");
                 }
-                workingDir = File.createTempFile("nxruntime-"
-                        + Thread.currentThread().getName() + "-", null,
-                        new File("target"));
+                workingDir = File.createTempFile("nxruntime-" + Thread.currentThread().getName() + "-", null, new File(
+                        "target"));
                 workingDir.delete();
             }
         } catch (IOException e) {
@@ -235,13 +231,10 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         }
         osgi = new OSGiAdapter(workingDir);
         BundleFile bf = new SystemBundleFile(workingDir);
-        bundleLoader = new StandaloneBundleLoader(osgi,
-                NXRuntimeTestCase.class.getClassLoader());
-        SystemBundle systemBundle = new SystemBundle(osgi, bf,
-                bundleLoader.getSharedClassLoader().getLoader());
+        bundleLoader = new StandaloneBundleLoader(osgi, NXRuntimeTestCase.class.getClassLoader());
+        SystemBundle systemBundle = new SystemBundle(osgi, bf, bundleLoader.getSharedClassLoader().getLoader());
         osgi.setSystemBundle(systemBundle);
-        Thread.currentThread().setContextClassLoader(
-                bundleLoader.getSharedClassLoader().getLoader());
+        Thread.currentThread().setContextClassLoader(bundleLoader.getSharedClassLoader().getLoader());
 
         for (WorkingDirectoryConfigurator cfg : wdConfigs) {
             cfg.configure(this, workingDir);
@@ -251,8 +244,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         bundleLoader.setExtractNestedJARs(false);
 
         BundleFile bundleFile = lookupBundle("org.nuxeo.runtime");
-        runtimeBundle = new RootRuntimeBundle(osgi, bundleFile,
-                bundleLoader.getClass().getClassLoader(), true);
+        runtimeBundle = new RootRuntimeBundle(osgi, bundleFile, bundleLoader.getClass().getClassLoader(), true);
         runtimeBundle.start();
 
         runtime = handleNewRuntime((OSGiRuntimeService) Framework.getRuntime());
@@ -281,22 +273,18 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                     urls[i] = new URL("file:" + paths[i]);
                 }
                 return urls;
-            } catch (NoSuchMethodException | SecurityException
-                    | IllegalAccessException | IllegalArgumentException
+            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                     | InvocationTargetException | MalformedURLException cause) {
-                throw new AssertionError(
-                        "Cannot introspect mavent class loader", cause);
+                throw new AssertionError("Cannot introspect mavent class loader", cause);
             }
         }
         // try getURLs method
         try {
             Method m = loaderClass.getMethod("getURLs");
             return (URL[]) m.invoke(loader);
-        } catch (NoSuchMethodException | SecurityException
-                | IllegalAccessException | IllegalArgumentException
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException cause) {
-            throw new AssertionError("Unsupported classloader type: "
-                    + loaderClass.getName()
+            throw new AssertionError("Unsupported classloader type: " + loaderClass.getName()
                     + "\nWon't be able to load OSGI bundles");
         }
     }
@@ -313,23 +301,20 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             if (uri.getPath().matches(".*/nuxeo-runtime-[^/]*\\.jar")) {
                 found = true;
                 break;
-            } else if (uri.getScheme().equals("file")
-                    && uri.getPath().contains("surefirebooter")) {
+            } else if (uri.getScheme().equals("file") && uri.getPath().contains("surefirebooter")) {
                 surefirebooterJar = new JarFile(new File(uri));
             }
         }
         if (!found && surefirebooterJar != null) {
             try {
-                String cp = surefirebooterJar.getManifest().getMainAttributes().getValue(
-                        Attributes.Name.CLASS_PATH);
+                String cp = surefirebooterJar.getManifest().getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
                 if (cp != null) {
                     String[] cpe = cp.split(" ");
                     URL[] newUrls = new URL[cpe.length];
                     for (int i = 0; i < cpe.length; i++) {
                         // Don't need to add 'file:' with maven surefire
                         // >= 2.4.2
-                        String newUrl = cpe[i].startsWith("file:") ? cpe[i]
-                                : "file:" + cpe[i];
+                        String newUrl = cpe[i].startsWith("file:") ? cpe[i] : "file:" + cpe[i];
                         newUrls[i] = new URL(newUrl);
                     }
                     urls = newUrls;
@@ -356,9 +341,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     /**
      * Makes sure there is no previous runtime hanging around.
      * <p>
-     * This happens for instance if a previous test had errors in its
-     * <code>setUp()</code>, because <code>tearDown()</code> has not been
-     * called.
+     * This happens for instance if a previous test had errors in its <code>setUp()</code>, because
+     * <code>tearDown()</code> has not been called.
      */
     protected void wipeRuntime() throws Exception {
         // Make sure there is no active runtime (this might happen if an
@@ -373,11 +357,9 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     public static URL getResource(String name) {
         final ClassLoader loader = Thread.currentThread().getContextClassLoader();
         String callerName = Thread.currentThread().getStackTrace()[2].getClassName();
-        final String relativePath = callerName.replace('.', '/').concat(
-                ".class");
+        final String relativePath = callerName.replace('.', '/').concat(".class");
         final String fullPath = loader.getResource(relativePath).getPath();
-        final String basePath = fullPath.substring(0,
-                fullPath.indexOf(relativePath));
+        final String basePath = fullPath.substring(0, fullPath.indexOf(relativePath));
         Enumeration<URL> resources;
         try {
             resources = loader.getResources(name);
@@ -415,11 +397,10 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     /**
      * Deploys a contribution file by looking for it in the class loader.
      * <p>
-     * The first contribution file found by the class loader will be used. You
-     * have no guarantee in case of name collisions.
+     * The first contribution file found by the class loader will be used. You have no guarantee in case of name
+     * collisions.
      *
-     * @deprecated use the less ambiguous
-     *             {@link #deployContrib(BundleFile,String)}
+     * @deprecated use the less ambiguous {@link #deployContrib(BundleFile,String)}
      * @param contrib the relative path to the contribution file
      */
     @Override
@@ -437,8 +418,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
      * </code>
      * <p>
-     * For compatibility reasons the name of the bundle may be a jar name, but
-     * this use is discouraged and deprecated.
+     * For compatibility reasons the name of the bundle may be a jar name, but this use is discouraged and deprecated.
      *
      * @param bundle the name of the bundle to peek the contrib in
      * @param contrib the path to contrib in the bundle.
@@ -451,8 +431,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             BundleFile file = lookupBundle(name);
             URL location = file.getEntry(contrib);
             if (location == null) {
-                throw new AssertionError("Cannot locate " + contrib + " in "
-                        + name);
+                throw new AssertionError("Cannot locate " + contrib + " in " + name);
             }
             context.deploy(location);
             return;
@@ -463,11 +442,9 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     /**
      * Deploy an XML contribution from outside a bundle.
      * <p>
-     * This should be used by tests wiling to deploy test contribution as part
-     * of a real bundle.
+     * This should be used by tests wiling to deploy test contribution as part of a real bundle.
      * <p>
-     * The bundle owner is important since the contribution may depend on
-     * resources deployed in that bundle.
+     * The bundle owner is important since the contribution may depend on resources deployed in that bundle.
      * <p>
      * Note that the owner bundle MUST be an already deployed bundle.
      *
@@ -475,15 +452,13 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * @param contrib the contribution to deploy as part of the given bundle
      */
     @Override
-    public RuntimeContext deployTestContrib(String bundle, String contrib)
-            throws Exception {
+    public RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception {
         URL url = targetResourceLocator.getTargetTestResource(contrib);
         return deployTestContrib(bundle, url);
     }
 
     @Override
-    public RuntimeContext deployTestContrib(String bundle, URL contrib)
-            throws Exception {
+    public RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception {
         Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
         if (b == null) {
             b = osgi.getSystemBundle();
@@ -554,8 +529,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         for (URL url : urls) {
             String[] pathElts = url.getPath().split("/");
             for (int i = 0; i < pathElts.length; i++) {
-                if (pathElts[i].startsWith(bundle)
-                        && isVersionSuffix(pathElts[i].substring(bundle.length()))) {
+                if (pathElts[i].startsWith(bundle) && isVersionSuffix(pathElts[i].substring(bundle.length()))) {
                     // we want the main version of the bundle
                     boolean isTestVersion = false;
                     for (int j = i + 1; j < pathElts.length; j++) {
@@ -578,9 +552,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     /**
      * Deploys a whole OSGI bundle.
      * <p>
-     * The lookup is first done on symbolic name, as set in
-     * <code>MANIFEST.MF</code> and then falls back to the bundle url (e.g.,
-     * <code>nuxeo-platform-search-api</code>) for backwards compatibility.
+     * The lookup is first done on symbolic name, as set in <code>MANIFEST.MF</code> and then falls back to the bundle
+     * url (e.g., <code>nuxeo-platform-search-api</code>) for backwards compatibility.
      *
      * @param bundle the symbolic name
      */
@@ -637,16 +610,14 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             }
             String symbolicName = readSymbolicName(bundleFile);
             if (symbolicName != null) {
-                log.info(String.format("Bundle '%s' has URL %s", symbolicName,
-                        url));
+                log.info(String.format("Bundle '%s' has URL %s", symbolicName, url));
                 bundles.put(symbolicName, bundleFile);
             }
             if (bundleName.equals(symbolicName)) {
                 return bundleFile;
             }
         }
-        log.warn(String.format(
-                "No bundle with symbolic name '%s'; Falling back to deprecated url lookup scheme",
+        log.warn(String.format("No bundle with symbolic name '%s'; Falling back to deprecated url lookup scheme",
                 bundleName));
         return oldLookupBundle(bundleName);
     }
@@ -691,7 +662,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
 
     /*
      * (non-Javadoc)
-     *
      * @see org.nuxeo.runtime.test.runner.RuntimeHarness#getClassLoaderFiles()
      */
     @Override

@@ -29,16 +29,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 
 /**
- * Operation to set a context variable with the value of the given parameter
- * name of the SimpleConfiguration retrieve from the input Document.
+ * Operation to set a context variable with the value of the given parameter name of the SimpleConfiguration retrieve
+ * from the input Document.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
 @Operation(id = SetSimpleConfParamVar.ID, category = CAT_LOCAL_CONFIGURATION, label = "Set Context Variable From a Simple Configuration Parameter", description = "Set a context variable "
         + "that points to the value of the given parameter name in "
-        + "the SimpleConfiguration from the input Document. "
-        + "You must give a name for the variable.")
+        + "the SimpleConfiguration from the input Document. " + "You must give a name for the variable.")
 public class SetSimpleConfParamVar {
 
     public static final String ID = "LocalConfiguration.SetSimpleConfigurationParameterAsVar";
@@ -60,8 +59,8 @@ public class SetSimpleConfParamVar {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) {
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET, doc);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, doc);
         String value = simpleConfiguration.get(parameterName, defaultValue);
         ctx.put(name, value);
         return doc;

@@ -25,7 +25,6 @@ import com.google.gwt.junit.client.GWTTestCase;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class GwtTestTilingInfo extends GWTTestCase {
     private TilingInfo info = new TilingInfo("docId", "repoId", "/nuxeo");
@@ -50,15 +49,11 @@ public class GwtTestTilingInfo extends GWTTestCase {
             + "        \"additionalInfo\": {"
             + "         \"XTiles\": \"3\","
             + "         \"outputDirPath\": \"/tmp/default_8c3fb786-a397-44f1-9ef6-c425195b9f43_file_content/tiles-200-200-4\","
-            + "         \"YTiles\": \"4\","
-            + "         \"TilesWidth\": \"200\","
-            + "         \"TilesHeight\": \"200\","
-            + "         \"MaxTiles\": \"4\"" + "        },"
-            + "        \"srcImage\": {" + "         \"width\": 1193,"
-            + "         \"height\": 1784," + "         \"format\": \"JPEG\""
-            + "        }," + "        \"tileInfo\": {"
-            + "         \"zoom\": 0.25146690011024475,"
-            + "         \"xtiles\": 3," + "         \"maxtiles\": 4,"
-            + "         \"ytiles\": 4," + "         \"tileHeight\": 200,"
-            + "         \"tileWidth\": 200" + "        }" + "       }";
+            + "         \"YTiles\": \"4\"," + "         \"TilesWidth\": \"200\","
+            + "         \"TilesHeight\": \"200\"," + "         \"MaxTiles\": \"4\"" + "        },"
+            + "        \"srcImage\": {" + "         \"width\": 1193," + "         \"height\": 1784,"
+            + "         \"format\": \"JPEG\"" + "        }," + "        \"tileInfo\": {"
+            + "         \"zoom\": 0.25146690011024475," + "         \"xtiles\": 3," + "         \"maxtiles\": 4,"
+            + "         \"ytiles\": 4," + "         \"tileHeight\": 200," + "         \"tileWidth\": 200" + "        }"
+            + "       }";
 }

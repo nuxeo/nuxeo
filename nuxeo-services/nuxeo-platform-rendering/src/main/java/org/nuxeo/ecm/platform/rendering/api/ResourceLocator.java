@@ -21,7 +21,6 @@ import java.net.URL;
  * Resource locators are used to resolve resource names to resource URLs
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ResourceLocator {
 

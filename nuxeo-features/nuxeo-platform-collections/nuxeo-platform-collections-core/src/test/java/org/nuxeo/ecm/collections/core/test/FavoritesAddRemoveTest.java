@@ -37,12 +37,10 @@ import com.google.inject.Inject;
  * @since 5.9.4
  */
 @RunWith(FeaturesRunner.class)
-@Features({TransactionalFeature.class, PlatformFeature.class})
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.web.common"})
+@Features({ TransactionalFeature.class, PlatformFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.collections.core",
+        "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.ecm.platform.web.common" })
 public class FavoritesAddRemoveTest {
 
     protected static final String TEST_FILE_NAME = "testFile";
@@ -55,14 +53,12 @@ public class FavoritesAddRemoveTest {
 
     protected CoreSession userSession;
 
-
     @Test
     public void addRemoveToFavoritesTest() throws ClientException {
-        DocumentModel testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
-        DocumentModel testFile = session.createDocumentModel(
-                testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
+        DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
         testFile = session.createDocument(testFile);
 
         favoritesManager.addToFavorites(testFile, session);

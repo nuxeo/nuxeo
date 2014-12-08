@@ -35,25 +35,21 @@ public class ObjectNameFactory {
     private ObjectNameFactory() {
     }
 
-    public static String formatQualifiedName(String domainName,
-            String typeName, String instanceName) {
+    public static String formatQualifiedName(String domainName, String typeName, String instanceName) {
         int lastDotIndex = instanceName.lastIndexOf('.');
         if (lastDotIndex > 0) {
             String packageName = instanceName.substring(0, lastDotIndex);
             instanceName = instanceName.substring(lastDotIndex + 1);
             return formatQualifiedName(domainName, typeName, packageName, instanceName);
         }
-        return String.format("%s:name=%s,type=%s", domainName, instanceName,
-                typeName);
+        return String.format("%s:name=%s,type=%s", domainName, instanceName, typeName);
     }
 
-    public static String formatQualifiedName(String domainName,
-            String typeName, String packageName, String instanceName) {
-        return String.format("%s:package=%s,name=%s,type=%s", domainName, packageName, instanceName,
-                typeName);
+    public static String formatQualifiedName(String domainName, String typeName, String packageName, String instanceName) {
+        return String.format("%s:package=%s,name=%s,type=%s", domainName, packageName, instanceName, typeName);
     }
-    public static String formatQualifiedName(String typeName,
-            String instanceName) {
+
+    public static String formatQualifiedName(String typeName, String instanceName) {
         return formatQualifiedName(NUXEO_DOMAIN_NAME, typeName, instanceName);
     }
 
@@ -71,10 +67,10 @@ public class ObjectNameFactory {
 
     public static String formatMetricQualifiedName(String name, String type) {
         if (NUXEO_DOMAIN_NAME.equals(name)) {
-            name ="root";
+            name = "root";
         }
         if (name.startsWith(NUXEO_DOMAIN_NAME)) {
-            name = name.substring(NUXEO_DOMAIN_NAME.length()+1);
+            name = name.substring(NUXEO_DOMAIN_NAME.length() + 1);
         }
         return String.format("%s:name=%s,type=%s,management=metric", NUXEO_DOMAIN_NAME, name, type);
     }
@@ -143,7 +139,7 @@ public class ObjectNameFactory {
     private static final Pattern namePattern = Pattern.compile(".*:.*");
 
     public static boolean hasDomain(String value) {
-        if (value==null) {
+        if (value == null) {
             return false;
         }
         Matcher matcher = namePattern.matcher(value);
@@ -153,7 +149,7 @@ public class ObjectNameFactory {
     private static final Pattern avaPattern = Pattern.compile(".*=.*");
 
     public static boolean hasAttributeValueAssertion(String value) {
-        if (value==null) {
+        if (value == null) {
             return false;
         }
         Matcher matcher = avaPattern.matcher(value);

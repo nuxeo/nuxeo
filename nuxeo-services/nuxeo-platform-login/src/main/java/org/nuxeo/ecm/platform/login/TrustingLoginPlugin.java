@@ -22,18 +22,14 @@ package org.nuxeo.ecm.platform.login;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 
 /**
- * Dummy LoginModule Plugin:
- * it always trusts in the UserIndetificationInfo that it receive
- * and does no validation.
+ * Dummy LoginModule Plugin: it always trusts in the UserIndetificationInfo that it receive and does no validation.
  * <p>
- * This plugin can be used when the complete authentication process
- * has already been done before: for example by an authentification proxy.
+ * This plugin can be used when the complete authentication process has already been done before: for example by an
+ * authentification proxy.
  * <p>
- * Warning: only configure this LoginModulePlugin if you have an Auth Plugin
- * that checks completely user authentication.
+ * Warning: only configure this LoginModulePlugin if you have an Auth Plugin that checks completely user authentication.
  *
  * @author tiry
- *
  */
 public class TrustingLoginPlugin extends BaseLoginModule {
 

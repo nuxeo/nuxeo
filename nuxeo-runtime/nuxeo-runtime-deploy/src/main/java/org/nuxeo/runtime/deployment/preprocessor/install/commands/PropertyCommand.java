@@ -27,11 +27,12 @@ import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
 /**
  * Sets a property that is valid along the current preprocessing context.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PropertyCommand implements Command {
 
     protected final String name;
+
     protected final String value;
 
     public PropertyCommand(String name, String value) {

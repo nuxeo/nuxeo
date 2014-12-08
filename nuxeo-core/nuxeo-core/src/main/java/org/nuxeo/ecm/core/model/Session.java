@@ -53,14 +53,14 @@ public interface Session {
      *
      * @since 5.9.4
      */
-    DocumentModelList query(String query, String queryType,
-            QueryFilter queryFilter, long countUpTo) throws QueryException;
+    DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
+            throws QueryException;
 
     /**
      * Does a query and fetch the individual results as maps.
      */
-    IterableQueryResult queryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, Object[] params) throws QueryException;
+    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params)
+            throws QueryException;
 
     /**
      * Saves this session.
@@ -77,8 +77,7 @@ public interface Session {
     boolean isLive();
 
     /**
-     * Returns {@code true} if all sessions in the current thread share the same
-     * state.
+     * Returns {@code true} if all sessions in the current thread share the same state.
      */
     boolean isStateSharedByAllThreadSessions();
 
@@ -116,8 +115,7 @@ public interface Session {
     Document getRootDocument() throws DocumentException;
 
     /**
-     * Gets the null document, to be used as a fake parent to add placeless
-     * children.
+     * Gets the null document, to be used as a fake parent to add placeless children.
      *
      * @return the null document
      * @throws DocumentException
@@ -134,8 +132,7 @@ public interface Session {
      * @param name
      * @throws DocumentException if any error occurs
      */
-    Document copy(Document src, Document dst, String name)
-            throws DocumentException;
+    Document copy(Document src, Document dst, String name) throws DocumentException;
 
     /**
      * Moves the source document to the given folder.
@@ -144,12 +141,10 @@ public interface Session {
      *
      * @param src the source document to move
      * @param dst the destination folder
-     * @param name the new name of the document or null if the original name
-     *            should be preserved
+     * @param name the new name of the document or null if the original name should be preserved
      * @throws DocumentException if any error occurs
      */
-    Document move(Document src, Document dst, String name)
-            throws DocumentException;
+    Document move(Document src, Document dst, String name) throws DocumentException;
 
     /**
      * Creates a generic proxy to the given document inside the given folder.
@@ -159,15 +154,12 @@ public interface Session {
      * @return the proxy
      * @throws DocumentException if any error occurs
      */
-    Document createProxy(Document doc, Document folder)
-            throws DocumentException;
+    Document createProxy(Document doc, Document folder) throws DocumentException;
 
     /**
-     * Finds the proxies for a document. If the folder is not null, the search
-     * will be limited to its children.
+     * Finds the proxies for a document. If the folder is not null, the search will be limited to its children.
      * <p>
-     * If the document is a version, then only proxies to that version will be
-     * looked up.
+     * If the document is a version, then only proxies to that version will be looked up.
      *
      * @param doc the document or version
      * @param folder the folder, or null
@@ -175,8 +167,7 @@ public interface Session {
      * @throws DocumentException if any error occurs
      * @since 1.4.1 for the case where doc is a proxy
      */
-    Collection<Document> getProxies(Document doc, Document folder)
-            throws DocumentException;
+    Collection<Document> getProxies(Document doc, Document folder) throws DocumentException;
 
     /**
      * Sets a proxies' target.
@@ -187,8 +178,7 @@ public interface Session {
      * @param target the new target
      * @since 5.5
      */
-    void setProxyTarget(Document proxy, Document target)
-            throws DocumentException;
+    void setProxyTarget(Document proxy, Document target) throws DocumentException;
 
     /**
      * Imports a document with a given id and parent.
@@ -199,37 +189,32 @@ public interface Session {
      * @param parent the document parent, or {@code null} for a version
      * @param name the document name in its parent
      * @param typeName the document type, or {@code ecm:proxy} for a proxy
-     * @param properties system properties of the document, which will vary
-     *            depending whether it's a live document, a version or a proxy
-     *            (see the various {@code IMPORT_*} constants of
-     *            {@link CoreSession})
+     * @param properties system properties of the document, which will vary depending whether it's a live document, a
+     *            version or a proxy (see the various {@code IMPORT_*} constants of {@link CoreSession})
      * @return a writable {@link Document}, even for proxies and versions
      * @throws DocumentException
      */
-    Document importDocument(String uuid, Document parent, String name,
-            String typeName, Map<String, Serializable> properties)
-            throws DocumentException;
+    Document importDocument(String uuid, Document parent, String name, String typeName,
+            Map<String, Serializable> properties) throws DocumentException;
 
     /**
      * Gets a version of a document, given its versionable id and label.
      * <p>
-     * The version model contains the label of the version to look for. On
-     * return, it is filled with the version's description and creation date.
+     * The version model contains the label of the version to look for. On return, it is filled with the version's
+     * description and creation date.
      *
      * @param versionableId the versionable id
      * @param versionModel the version model
      * @return the version, or {@code null} if not found
      * @throws DocumentException
      */
-    Document getVersion(String versionableId, VersionModel versionModel)
-            throws DocumentException;
+    Document getVersion(String versionableId, VersionModel versionModel) throws DocumentException;
 
     /**
      * Returns {@code true} if negative ACLs are allowed.
      * <p>
-     * Negative ACLs are ACLs that include an ACE with a deny (isGranted=false).
-     * This does not include the full-blocking ACE for Everyone/Everything,
-     * which is always allowed.
+     * Negative ACLs are ACLs that include an ACE with a deny (isGranted=false). This does not include the full-blocking
+     * ACE for Everyone/Everything, which is always allowed.
      *
      * @return {@code true} if negative ACLs are allowed
      * @since 6.0
@@ -238,8 +223,7 @@ public interface Session {
 
     ACP getMergedACP(Document doc) throws SecurityException;
 
-    void setACP(Document doc, ACP acp, boolean overwrite)
-            throws DocumentException;
+    void setACP(Document doc, ACP acp, boolean overwrite) throws DocumentException;
 
     /**
      * Gets the fulltext extracted from the binary fields.

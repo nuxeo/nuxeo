@@ -51,8 +51,7 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
  */
 @Provider
 @Consumes("multipart/form-data")
-public class MultiPartFormRequestReader implements
-        MessageBodyReader<ExecutionRequest> {
+public class MultiPartFormRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     private static final Log log = LogFactory.getLog(MultiPartFormRequestReader.class);
 
@@ -62,24 +61,19 @@ public class MultiPartFormRequestReader implements
     @Context
     JsonFactory factory;
 
-
     public CoreSession getCoreSession() {
         return SessionFactory.getSession(request);
     }
 
-
     @Override
-    public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
         return ExecutionRequest.class.isAssignableFrom(arg0); // TODO check
         // media type too
     }
 
     @Override
-    public ExecutionRequest readFrom(Class<ExecutionRequest> arg0, Type arg1,
-            Annotation[] arg2, MediaType arg3,
-            MultivaluedMap<String, String> headers, InputStream in)
-            throws IOException, WebApplicationException {
+    public ExecutionRequest readFrom(Class<ExecutionRequest> arg0, Type arg1, Annotation[] arg2, MediaType arg3,
+            MultivaluedMap<String, String> headers, InputStream in) throws IOException, WebApplicationException {
         ExecutionRequest req = null;
         try {
             List<String> ctypes = headers.get("Content-Type");
@@ -93,8 +87,7 @@ public class MultiPartFormRequestReader implements
             // get the input from the saved file
             in = new SharedFileInputStream(tmp);
             try {
-                MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(
-                        in, ctype));
+                MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(in, ctype));
                 BodyPart part = mp.getBodyPart(0); // use content ids
                 InputStream pin = part.getInputStream();
                 JsonParser jp = factory.createJsonParser(pin);
@@ -111,13 +104,11 @@ public class MultiPartFormRequestReader implements
                 } else {
                     log.error("Not all parts received.");
                     for (int i = 0; i < cnt; i++) {
-                        log.error("Received parts: "
-                                + mp.getBodyPart(i).getHeader("Content-ID")[0]
-                                + " -> " + mp.getBodyPart(i).getContentType());
+                        log.error("Received parts: " + mp.getBodyPart(i).getHeader("Content-ID")[0] + " -> "
+                                + mp.getBodyPart(i).getContentType());
                     }
-                    throw WebException.newException(new IllegalStateException(
-                            "Received only " + cnt
-                                    + " part in a multipart request"));
+                    throw WebException.newException(new IllegalStateException("Received only " + cnt
+                            + " part in a multipart request"));
                 }
             } finally {
                 try {
@@ -128,27 +119,24 @@ public class MultiPartFormRequestReader implements
                 tmp.delete();
             }
         } catch (MessagingException | IOException e) {
-            throw WebException.newException(
-                    "Failed to parse multipart request", e);
+            throw WebException.newException("Failed to parse multipart request", e);
         }
         return req;
     }
 
-    public static Blob readBlob(HttpServletRequest request, BodyPart part)
-            throws MessagingException, IOException {
+    public static Blob readBlob(HttpServletRequest request, BodyPart part) throws MessagingException, IOException {
         String ctype = part.getContentType();
         String fname = part.getFileName();
         InputStream pin = part.getInputStream();
         final File tmp = File.createTempFile("nx-automation-upload-", ".tmp");
         FileUtils.copyToFile(pin, tmp);
         FileBlob blob = new FileBlob(tmp, ctype, null, fname, null);
-        RequestContext.getActiveContext(request).addRequestCleanupHandler(
-                new RequestCleanupHandler() {
-                    @Override
-                    public void cleanup(HttpServletRequest req) {
-                        tmp.delete();
-                    }
-                });
+        RequestContext.getActiveContext(request).addRequestCleanupHandler(new RequestCleanupHandler() {
+            @Override
+            public void cleanup(HttpServletRequest req) {
+                tmp.delete();
+            }
+        });
         return blob;
     }
 

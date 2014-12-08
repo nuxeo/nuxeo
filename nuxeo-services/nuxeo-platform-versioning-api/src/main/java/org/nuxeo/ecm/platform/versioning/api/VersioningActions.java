@@ -37,9 +37,7 @@ public enum VersioningActions implements Serializable {
     public static final String KEY_FOR_INC_OPTION = VersioningDocument.KEY_FOR_INC_OPTION;
 
     /**
-     * @deprecated use
-     *             {@link org.nuxeo.ecm.core.versioning.VersioningService#SKIP_VERSIONING}
-     *             instead
+     * @deprecated use {@link org.nuxeo.ecm.core.versioning.VersioningService#SKIP_VERSIONING} instead
      */
     @Deprecated
     public static final String SKIP_VERSIONING = "SKIP_VERSIONING";
@@ -77,8 +75,7 @@ public enum VersioningActions implements Serializable {
     }
 
     /**
-     * Returns the corresponding core versioning option for this UI versioning
-     * action.
+     * Returns the corresponding core versioning option for this UI versioning action.
      *
      * @since 5.7.3
      */

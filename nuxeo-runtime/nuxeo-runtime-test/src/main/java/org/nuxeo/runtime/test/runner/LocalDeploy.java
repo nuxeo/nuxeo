@@ -29,11 +29,12 @@ import java.lang.annotation.Target;
  * <p>
  * Deployable artifacts are either bundles either components:
  * <ul>
- * <li> A bundle entry is represented by the bundle symbolic name.
- * <li> A component entry is represented by an URI of the form: symbolicName:componentXmlPath,
- * where symbolicName is the symbolic name of the bundle owning the component.
+ * <li>A bundle entry is represented by the bundle symbolic name.
+ * <li>A component entry is represented by an URI of the form: symbolicName:componentXmlPath, where symbolicName is the
+ * symbolic name of the bundle owning the component.
  * </ul>
  * Example:
+ *
  * <pre>
  * @Deploy("org.nuxeo.runtime")
  * @Deploy("org.nuxeo.core:OSGI-INF/component.xml")
@@ -41,14 +42,13 @@ import java.lang.annotation.Target;
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.TYPE, ElementType.METHOD })
+@Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface LocalDeploy {
 
     /**
-     * The local resource URI.
-     * The resource uri is of the form bundleId:path/to/resource where resource is a test resource
-     * located in src/test/resources that should be resolved using current class loader and deployed as part of the
-     * given bundle.
+     * The local resource URI. The resource uri is of the form bundleId:path/to/resource where resource is a test
+     * resource located in src/test/resources that should be resolved using current class loader and deployed as part of
+     * the given bundle.
      */
     String[] value();
 

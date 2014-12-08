@@ -54,12 +54,10 @@ import org.nuxeo.theme.themes.ThemeSerializer;
 @Features(RuntimeFeature.class)
 @Deploy({ "org.nuxeo.theme.core:OSGI-INF/nxthemes-core-service.xml",
         "org.nuxeo.theme.core:OSGI-INF/nxthemes-core-contrib.xml" })
-@LocalDeploy({ "org.nuxeo.theme.core.tests:fragment-config.xml",
-        "org.nuxeo.theme.core.tests:view-config.xml" })
+@LocalDeploy({ "org.nuxeo.theme.core.tests:fragment-config.xml", "org.nuxeo.theme.core.tests:view-config.xml" })
 public class TestThemeSerializer {
     @Test
-    public void testSerializeTheme() throws ThemeException, NodeException,
-            ThemeIOException, IOException {
+    public void testSerializeTheme() throws ThemeException, NodeException, ThemeIOException, IOException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName("default");
         PageElement page = (PageElement) ElementFactory.create("page");
@@ -161,8 +159,7 @@ public class TestThemeSerializer {
         themeDef.setSrc("test-default.xml");
         themeDef.setLastLoaded(new Date());
         Manager.getTypeRegistry().register(themeDef);
-        assertFilesContentEquals(
-                Utils.readResourceAsString("themeSerializerOutput.xml"),
+        assertFilesContentEquals(Utils.readResourceAsString("themeSerializerOutput.xml"),
                 new ThemeSerializer().serializeToXml("test-default.xml", 4));
     }
 }

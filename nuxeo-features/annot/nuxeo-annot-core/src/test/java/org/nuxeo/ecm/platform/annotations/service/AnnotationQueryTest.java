@@ -39,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationQueryTest extends SQLRepositoryTestCase {
 
@@ -55,7 +54,7 @@ public class AnnotationQueryTest extends SQLRepositoryTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations");
-        deployTestContrib("org.nuxeo.ecm.annotations","test-ann-contrib.xml");
+        deployTestContrib("org.nuxeo.ecm.annotations", "test-ann-contrib.xml");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.platform.types.core");
@@ -73,20 +72,18 @@ public class AnnotationQueryTest extends SQLRepositoryTestCase {
         assertNotNull(annotation);
 
         annotation.setSubject(new ResourceImpl("http://foo/1"));
-        assertEquals("http://www.w3.org/2005/Incubator/",
-                annotation.getAnnotates().toString());
+        assertEquals("http://www.w3.org/2005/Incubator/", annotation.getAnnotates().toString());
 
         AnnotationImpl ann = (AnnotationImpl) annotation;
         assertNotNull(ann);
 
-        List<Annotation> annotations = query.getAnnotationsForURIs(
-                Collections.singletonList(ann.getAnnotates()), ann.getGraph());
+        List<Annotation> annotations = query.getAnnotationsForURIs(Collections.singletonList(ann.getAnnotates()),
+                ann.getGraph());
         assertNotNull(annotations);
         assertEquals(1, annotations.size());
 
         annotation = annotations.get(0);
-        assertEquals("http://www.w3.org/2005/Incubator/",
-                annotation.getAnnotates().toString());
+        assertEquals("http://www.w3.org/2005/Incubator/", annotation.getAnnotates().toString());
         assertEquals("Alexandre Russel", annotation.getCreator());
     }
 

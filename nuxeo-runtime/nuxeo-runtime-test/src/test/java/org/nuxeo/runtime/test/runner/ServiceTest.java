@@ -33,7 +33,9 @@ import com.google.inject.Inject;
 @Features(RuntimeFeature.class)
 public class ServiceTest {
 
-    @Inject EventService eventService;
+    @Inject
+    EventService eventService;
+
     @Test
     public void testService() {
         assertNotNull(eventService);

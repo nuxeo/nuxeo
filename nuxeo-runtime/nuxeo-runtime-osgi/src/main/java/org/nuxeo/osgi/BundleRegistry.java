@@ -70,14 +70,13 @@ public class BundleRegistry {
     }
 
     /**
-     *
      * @since 5.6
      */
     public synchronized BundleImpl[] getFragments(String symbolicName) {
         BundleRegistration reg = bundles.get(symbolicName);
 
         ArrayList<BundleImpl> fragments = new ArrayList<BundleImpl>();
-        for (String id:reg.extendsMe) {
+        for (String id : reg.extendsMe) {
             fragments.add(getBundle(id));
         }
         return fragments.toArray(new BundleImpl[fragments.size()]);
@@ -103,8 +102,7 @@ public class BundleRegistry {
         }
     }
 
-    public synchronized void uninstall(BundleImpl bundle)
-            throws BundleException {
+    public synchronized void uninstall(BundleImpl bundle) throws BundleException {
         if (bundle.getState() != Bundle.UNINSTALLED) {
             BundleRegistration reg = bundles.get(bundle.getSymbolicName());
             if (reg != null) {
@@ -204,21 +202,16 @@ public class BundleRegistry {
     }
 
     public void shutdown() {
-        BundleRegistration[] regs = bundles.values().toArray(
-                new BundleRegistration[bundles.size()]);
+        BundleRegistration[] regs = bundles.values().toArray(new BundleRegistration[bundles.size()]);
         for (BundleRegistration reg : regs) {
             try {
                 if (reg.bundle != null) {
                     reg.bundle.shutdown();
                 }
             } catch (BundleException e) {
-                log.error(
-                        "Failed to stop bundle " + reg.bundle.getSymbolicName(),
-                        e);
+                log.error("Failed to stop bundle " + reg.bundle.getSymbolicName(), e);
             } catch (RuntimeException e) {
-                log.error(
-                        "Failed to stop bundle " + reg.bundle.getSymbolicName(),
-                        e);
+                log.error("Failed to stop bundle " + reg.bundle.getSymbolicName(), e);
             }
         }
     }

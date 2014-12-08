@@ -51,8 +51,8 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * A DocumentModel that can have any schema and is not made persistent by
- * itself. A mockup to keep arbitrary schema data.
+ * A DocumentModel that can have any schema and is not made persistent by itself. A mockup to keep arbitrary schema
+ * data.
  */
 public class SimpleDocumentModel implements DocumentModel {
 
@@ -92,8 +92,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     /**
-     * A data model that is not tied to a particular schema, neither has
-     * anything to do with a session (CoreSession).
+     * A data model that is not tied to a particular schema, neither has anything to do with a session (CoreSession).
      *
      * @deprecated since 5.7.3. Use standard {@link DataModelImpl} instead.
      */
@@ -160,8 +159,7 @@ public class SimpleDocumentModel implements DocumentModel {
         }
 
         @Override
-        public Object setValue(String path, Object value)
-                throws PropertyException {
+        public Object setValue(String path, Object value) throws PropertyException {
             throw new UnsupportedOperationException("setValue");
         }
     }
@@ -191,15 +189,13 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Object getProperty(String schemaName, String name)
-            throws ClientException {
+    public Object getProperty(String schemaName, String name) throws ClientException {
         DataModel dm = getDataModelInternal(schemaName);
         return dm != null ? dm.getData(name) : null;
     }
 
     @Override
-    public void setProperty(String schemaName, String name, Object value)
-            throws ClientException {
+    public void setProperty(String schemaName, String name, Object value) throws ClientException {
         if (name.contains(":")) {
             name = name.substring(name.indexOf(":"), name.length());
         }
@@ -207,14 +203,12 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Map<String, Object> getProperties(String schemaName)
-            throws ClientException {
+    public Map<String, Object> getProperties(String schemaName) throws ClientException {
         return getDataModelInternal(schemaName).getMap();
     }
 
     @Override
-    public void setProperties(String schemaName, Map<String, Object> data)
-            throws ClientException {
+    public void setProperties(String schemaName, Map<String, Object> data) throws ClientException {
         getDataModelInternal(schemaName).setMap(data);
     }
 
@@ -252,8 +246,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Property getProperty(String xpath) throws PropertyException,
-            ClientException {
+    public Property getProperty(String xpath) throws PropertyException, ClientException {
         if (xpath == null) {
             throw new PropertyNotFoundException("null", "Invalid null xpath");
         }
@@ -261,8 +254,7 @@ public class SimpleDocumentModel implements DocumentModel {
         if (cxpath.isEmpty()) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String schemaName = DocumentModelImpl.getXPathSchemaName(cxpath,
-                schemas, null);
+        String schemaName = DocumentModelImpl.getXPathSchemaName(cxpath, schemas, null);
         if (schemaName == null) {
             if (cxpath.indexOf(':') != -1) {
                 throw new PropertyNotFoundException(xpath, "No such schema");
@@ -285,14 +277,12 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Serializable getPropertyValue(String xpath)
-            throws PropertyException, ClientException {
+    public Serializable getPropertyValue(String xpath) throws PropertyException, ClientException {
         return getProperty(xpath).getValue();
     }
 
     @Override
-    public void setPropertyValue(String xpath, Serializable value)
-            throws ClientException {
+    public void setPropertyValue(String xpath, Serializable value) throws ClientException {
         getProperty(xpath).setValue(value);
     }
 
@@ -505,8 +495,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public void accept(PropertyVisitor visitor, Object arg)
-            throws ClientException {
+    public void accept(PropertyVisitor visitor, Object arg) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -536,8 +525,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Collection<String> getAllowedStateTransitions()
-            throws ClientException {
+    public Collection<String> getAllowedStateTransitions() throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -597,8 +585,8 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public <T extends Serializable> T getSystemProp(String systemProperty,
-            Class<T> type) throws ClientException, DocumentException {
+    public <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type) throws ClientException,
+            DocumentException {
         throw new UnsupportedOperationException();
     }
 
@@ -622,8 +610,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public void refresh(int refreshFlags, String[] schemas)
-            throws ClientException {
+    public void refresh(int refreshFlags, String[] schemas) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -648,8 +635,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public DocumentRef checkIn(VersioningOption option, String description)
-            throws ClientException {
+    public DocumentRef checkIn(VersioningOption option, String description) throws ClientException {
         throw new UnsupportedOperationException();
     }
 

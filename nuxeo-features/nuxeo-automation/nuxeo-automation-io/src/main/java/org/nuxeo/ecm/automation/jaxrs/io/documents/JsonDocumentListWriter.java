@@ -76,23 +76,19 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
     }
 
     @Override
-    protected void writeItem(JsonGenerator jg, DocumentModel item)
-            throws ClientException, IOException {
+    protected void writeItem(JsonGenerator jg, DocumentModel item) throws ClientException, IOException {
         // do nothing, everything is done in #writeTo
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
         return DocumentModelList.class.isAssignableFrom(arg0);
     }
 
     @Override
-    public void writeTo(List<DocumentModel> docs, Class<?> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
-            WebApplicationException {
+    public void writeTo(List<DocumentModel> docs, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException {
         try {
             List<String> props = headers.getRequestHeader(JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER);
             String[] schemas = null;
@@ -106,33 +102,28 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
         }
     }
 
-    public void writeDocuments(OutputStream out, List<DocumentModel> docs,
-            String[] schemas) throws IOException {
-        writeDocuments(factory.createJsonGenerator(out, JsonEncoding.UTF8),
-                docs, schemas, request);
+    public void writeDocuments(OutputStream out, List<DocumentModel> docs, String[] schemas) throws IOException {
+        writeDocuments(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs, schemas, request);
     }
 
     /**
      * @since 5.9.5
      */
-    public void writeDocuments(OutputStream out, List<DocumentModel> docs,
-            String[] schemas, HttpHeaders headers) throws IOException {
-        writeDocuments(factory.createJsonGenerator(out, JsonEncoding.UTF8),
-                docs, schemas, headers, request);
+    public void writeDocuments(OutputStream out, List<DocumentModel> docs, String[] schemas, HttpHeaders headers)
+            throws IOException {
+        writeDocuments(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs, schemas, headers, request);
     }
 
-    public static void writeDocuments(JsonGenerator jg,
-            List<DocumentModel> docs, String[] schemas, ServletRequest request)
-            throws IOException {
+    public static void writeDocuments(JsonGenerator jg, List<DocumentModel> docs, String[] schemas,
+            ServletRequest request) throws IOException {
         writeDocuments(jg, docs, schemas, null, request);
     }
 
     /**
      * @since 5.9.5
      */
-    public static void writeDocuments(JsonGenerator jg,
-            List<DocumentModel> docs, String[] schemas, HttpHeaders headers,
-            ServletRequest request) throws IOException {
+    public static void writeDocuments(JsonGenerator jg, List<DocumentModel> docs, String[] schemas,
+            HttpHeaders headers, ServletRequest request) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "documents");
 
@@ -142,17 +133,12 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
             jg.writeNumberField("resultsCount", provider.getResultsCount());
             jg.writeNumberField("pageSize", provider.getPageSize());
             jg.writeNumberField("maxPageSize", provider.getMaxPageSize());
-            jg.writeNumberField("currentPageSize",
-                    provider.getCurrentPageSize());
-            jg.writeNumberField("currentPageIndex",
-                    provider.getCurrentPageIndex());
+            jg.writeNumberField("currentPageSize", provider.getCurrentPageSize());
+            jg.writeNumberField("currentPageIndex", provider.getCurrentPageIndex());
             jg.writeNumberField("numberOfPages", provider.getNumberOfPages());
-            jg.writeBooleanField("isPreviousPageAvailable",
-                    provider.isPreviousPageAvailable());
-            jg.writeBooleanField("isNextPageAvailable",
-                    provider.isNextPageAvailable());
-            jg.writeBooleanField("isLastPageAvailable",
-                    provider.isLastPageAvailable());
+            jg.writeBooleanField("isPreviousPageAvailable", provider.isPreviousPageAvailable());
+            jg.writeBooleanField("isNextPageAvailable", provider.isNextPageAvailable());
+            jg.writeBooleanField("isLastPageAvailable", provider.isLastPageAvailable());
             jg.writeBooleanField("isSortable", provider.isSortable());
             jg.writeBooleanField("hasError", provider.hasError());
             jg.writeStringField("errorMessage", provider.getErrorMessage());
@@ -177,27 +163,22 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
                 DocumentLocation docLoc = new DocumentLocationImpl(doc);
                 Map<String, String> contextParameters = new HashMap<String, String>();
                 if (documentViewCodecManager != null) {
-                    DocumentView docView = new DocumentViewImpl(docLoc,
-                            doc.getAdapter(TypeInfo.class).getDefaultView());
-                    String documentURL = VirtualHostHelper.getContextPathProperty()
-                            + "/"
-                            + documentViewCodecManager.getUrlFromDocumentView(
-                                    codecName, docView, false, null);
+                    DocumentView docView = new DocumentViewImpl(docLoc, doc.getAdapter(TypeInfo.class).getDefaultView());
+                    String documentURL = VirtualHostHelper.getContextPathProperty() + "/"
+                            + documentViewCodecManager.getUrlFromDocumentView(codecName, docView, false, null);
                     contextParameters.put("documentURL", documentURL);
                 }
-                JsonDocumentWriter.writeDocument(jg, doc, schemas,
-                        contextParameters, headers, request);
+                JsonDocumentWriter.writeDocument(jg, doc, schemas, contextParameters, headers, request);
             }
             jg.writeEndArray();
-            if (provider.hasAggregateSupport() && provider.getAggregates() !=
-                    null && !provider.getAggregates().isEmpty()) {
+            if (provider.hasAggregateSupport() && provider.getAggregates() != null
+                    && !provider.getAggregates().isEmpty()) {
                 jg.writeObjectField("aggregations", provider.getAggregates());
             }
         } else {
             jg.writeArrayFieldStart("entries");
             for (DocumentModel doc : docs) {
-                JsonDocumentWriter.writeDocument(jg, doc, schemas,
-                        new HashMap<String, String>(), headers, request);
+                JsonDocumentWriter.writeDocument(jg, doc, schemas, new HashMap<String, String>(), headers, request);
             }
             jg.writeEndArray();
         }

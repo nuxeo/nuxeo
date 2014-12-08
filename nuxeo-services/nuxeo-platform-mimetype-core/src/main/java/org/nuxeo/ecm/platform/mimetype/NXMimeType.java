@@ -23,11 +23,9 @@ import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * NXMimeType helper.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public final class NXMimeType {
 
@@ -35,8 +33,6 @@ public final class NXMimeType {
     }
 
     public static MimetypeRegistryService getMimetypeRegistryService() {
-        return (MimetypeRegistryService)
-                Framework.getRuntime().getComponent(
-                MimetypeRegistryService.NAME);
+        return (MimetypeRegistryService) Framework.getRuntime().getComponent(MimetypeRegistryService.NAME);
     }
 }

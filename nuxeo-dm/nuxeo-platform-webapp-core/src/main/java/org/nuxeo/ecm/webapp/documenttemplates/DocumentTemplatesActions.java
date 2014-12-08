@@ -25,18 +25,15 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
  * Stateful Seam component.
- *
  * <ul>
- * <li> lookup of document templates
- * <li> creation of document from a template
+ * <li>lookup of document templates
+ * <li>creation of document from a template
  * </ul>
  */
 public interface DocumentTemplatesActions {
 
     /**
-     *
-     * @return list of DocumentModels of available templates
-     *         of currently selected type.
+     * @return list of DocumentModels of available templates of currently selected type.
      */
     DocumentModelList getTemplates() throws ClientException;
 
@@ -53,8 +50,7 @@ public interface DocumentTemplatesActions {
      * @param doc the DocumentModel with edited data
      * @param templateId the template id
      */
-    String createDocumentFromTemplate(DocumentModel doc, String templateId)
-            throws ClientException;
+    String createDocumentFromTemplate(DocumentModel doc, String templateId) throws ClientException;
 
     /**
      * Creates a Document from a template using the selectedTemplateId.
@@ -62,8 +58,7 @@ public interface DocumentTemplatesActions {
     String createDocumentFromTemplate(DocumentModel doc) throws ClientException;
 
     /**
-     * Creates a Document from a template using the selectedTemplateId
-     * and the changeableDocument.
+     * Creates a Document from a template using the selectedTemplateId and the changeableDocument.
      */
     String createDocumentFromTemplate() throws ClientException;
 

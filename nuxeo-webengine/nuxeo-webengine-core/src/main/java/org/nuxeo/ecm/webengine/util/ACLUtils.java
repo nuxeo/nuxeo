@@ -30,51 +30,48 @@ import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ACLUtils {
 
     private ACLUtils() {
     }
 
-    public static void removePermission(CoreSession session,
-            DocumentRef docRef, String username, String permission)
+    public static void removePermission(CoreSession session, DocumentRef docRef, String username, String permission)
             throws ClientException {
         ACP acp = session.getACP(docRef);
         if (acp == null) {
             return;
         }
-        ACL  acl = acp.getACL(null);
+        ACL acl = acp.getACL(null);
         if (acl == null) {
             return;
         }
         ACE[] aces = acl.getACEs();
 
         int i = 0;
-        for (; i<aces.length; i++) {
-            if (permission.equals(aces[i].getPermission())
-                    && username.equals(aces[i].getUsername())) {
+        for (; i < aces.length; i++) {
+            if (permission.equals(aces[i].getPermission()) && username.equals(aces[i].getUsername())) {
                 break;
             }
         }
         if (i == aces.length) {
             return;
         }
-        UserEntry[] entries = new UserEntry[aces.length-1];
+        UserEntry[] entries = new UserEntry[aces.length - 1];
         if (i == 0) {
             copyTo(aces, 1, entries, 0, entries.length);
-        } else if (i == aces.length-1) {
+        } else if (i == aces.length - 1) {
             copyTo(aces, 0, entries, 0, entries.length);
         } else {
             copyTo(aces, 0, entries, 0, i);
-            copyTo(aces, i+1, entries, i, entries.length-i-1);
+            copyTo(aces, i + 1, entries, i, entries.length - i - 1);
         }
         acp.setRules(entries, true);
         session.setACP(docRef, acp, true);
     }
 
     private static void copyTo(ACE[] aces, int s0, UserEntry[] entries, int s1, int len) {
-        for (int i=s0,k=s1; i<len; i++,k++) {
+        for (int i = s0, k = s1; i < len; i++, k++) {
             ACE ace = aces[i];
             UserEntry entry = new UserEntryImpl(ace.getUsername());
             entry.addPrivilege(ace.getPermission(), ace.isGranted(), false);

@@ -75,16 +75,13 @@ public class MailActionsBean implements Serializable {
         } catch (MessagingException | ClientException e) {
             log.debug(e, e);
             facesMessages.add(StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.check.mail.error")
-                            + e.getMessage());
+                    resourcesAccessor.getMessages().get("feedback.check.mail.error") + e.getMessage());
 
             return CURRENT_PAGE;
         }
 
         facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get(
-                        "feedback.check.mail.success"));
+                resourcesAccessor.getMessages().get("feedback.check.mail.success"));
         Events.instance().raiseEvent("documentChildrenChanged");
 
         return CURRENT_PAGE;

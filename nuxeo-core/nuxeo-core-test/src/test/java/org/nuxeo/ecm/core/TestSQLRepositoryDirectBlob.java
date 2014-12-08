@@ -58,8 +58,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.test.tests",
-                "OSGI-INF/test-repo-core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib.xml");
         openSession();
     }
 
@@ -96,8 +95,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
     @Test
     public void testDirectBlob() throws Exception {
         DocumentModel folder = session.getRootDocument();
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
-                "filea", "File");
+        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "filea", "File");
         file = session.createDocument(file);
         session.save();
 
@@ -114,8 +112,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         Binary binary = binaryManager.getBinary(digest);
         assertNotNull("Missing file for digest: " + digest, binary);
         String filename = "doc.txt";
-        Blob blob = new StorageBlob(binary, filename, "text/plain", "utf-8",
-                binary.getDigest(), binary.getLength());
+        Blob blob = new StorageBlob(binary, filename, "text/plain", "utf-8", binary.getDigest(), binary.getLength());
         file.setProperty("file", "filename", filename);
         file.setProperty("file", "content", blob);
         session.saveDocument(file);
@@ -147,8 +144,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
     @Test
     public void testBinarySerialization() throws Exception {
         DocumentModel folder = session.getRootDocument();
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
-                "filea", "File");
+        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "filea", "File");
         file = session.createDocument(file);
         session.save();
 
@@ -164,8 +160,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         byte[] observedContent = new byte[expected.length()];
         assertEquals(digest, binary.getDigest());
         assertEquals(expected.length(), binary.getLength());
-        assertEquals(expected.length(),
-                binary.getStream().read(observedContent));
+        assertEquals(expected.length(), binary.getStream().read(observedContent));
         assertEquals(expected, new String(observedContent));
 
         // serialize and deserialize the binary instance
@@ -177,15 +172,13 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
 
         // Make an input stream from the byte array and read
         // a copy of the object back in.
-        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(
-                bos.toByteArray()));
+        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
         Binary binaryCopy = (Binary) in.readObject();
 
         observedContent = new byte[expected.length()];
         assertEquals(digest, binaryCopy.getDigest());
         assertEquals(expected.length(), binaryCopy.getLength());
-        assertEquals(expected.length(), binaryCopy.getStream().read(
-                observedContent));
+        assertEquals(expected.length(), binaryCopy.getStream().read(observedContent));
         assertEquals(expected, new String(observedContent));
 
         binaryManager.close();
@@ -210,8 +203,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         LocalBinaryManager binaryManager = (LocalBinaryManager) bms.getBinaryManager(session.getRepositoryName());
 
         // tmp file in binary manager filesystem (not in tmp but still works)
-        File file = File.createTempFile("test-", ".data",
-                binaryManager.getStorageDir());
+        File file = File.createTempFile("test-", ".data", binaryManager.getStorageDir());
         FileOutputStream out = new FileOutputStream(file);
         IOUtils.copy(new ByteArrayInputStream("abcd\n".getBytes("UTF-8")), out);
         out.close();
@@ -235,16 +227,14 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
 /**
  * Class doing a simplified version of what the binaries storage does.
  * <p>
- * In a real application, change the constructor to pass the rootDir as a
- * parameter or use configuration.
+ * In a real application, change the constructor to pass the rootDir as a parameter or use configuration.
  *
  * @author Florent Guillaume
  */
 class FileManager {
 
     /*
-     * These parameters have to be the same as the one from the binaries
-     * storage.
+     * These parameters have to be the same as the one from the binaries storage.
      */
 
     public static final String DIGEST_ALGORITHM = "MD5";

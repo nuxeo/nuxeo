@@ -85,24 +85,20 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
      */
     protected List<DocumentModel> documents;
 
-    public CreateTaskUnrestricted(CoreSession session,
-            NuxeoPrincipal principal, DocumentModel document, String taskName,
-            List<String> prefixedActorIds, boolean createOneTaskPerActor,
-            String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath) {
-        this(session, principal, document, taskName, null, null,
-                prefixedActorIds, createOneTaskPerActor, directive, comment,
-                dueDate, taskVariables, parentPath);
+    public CreateTaskUnrestricted(CoreSession session, NuxeoPrincipal principal, DocumentModel document,
+            String taskName, List<String> prefixedActorIds, boolean createOneTaskPerActor, String directive,
+            String comment, Date dueDate, Map<String, String> taskVariables, String parentPath) {
+        this(session, principal, document, taskName, null, null, prefixedActorIds, createOneTaskPerActor, directive,
+                comment, dueDate, taskVariables, parentPath);
     }
 
     /**
      * @since 5.6
      */
-    public CreateTaskUnrestricted(CoreSession session,
-            NuxeoPrincipal principal, DocumentModel document, String taskName,
-            String taskType, String processId, List<String> prefixedActorIds,
-            boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath) {
+    public CreateTaskUnrestricted(CoreSession session, NuxeoPrincipal principal, DocumentModel document,
+            String taskName, String taskType, String processId, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath) {
         super(session);
         this.principal = principal;
         this.document = document;
@@ -123,32 +119,25 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
     /**
      * @since 5.6
      */
-    public CreateTaskUnrestricted(CoreSession session,
-            NuxeoPrincipal principal, DocumentModel document,
-            String taskDocumentType, String taskName, String taskType,
-            String processId, List<String> prefixedActorIds,
-            boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath) {
-        this(session, principal, document, taskName, taskType, processId,
-                prefixedActorIds, createOneTaskPerActor, directive, comment,
-                dueDate, taskVariables, parentPath);
+    public CreateTaskUnrestricted(CoreSession session, NuxeoPrincipal principal, DocumentModel document,
+            String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath) {
+        this(session, principal, document, taskName, taskType, processId, prefixedActorIds, createOneTaskPerActor,
+                directive, comment, dueDate, taskVariables, parentPath);
         this.taskDocumentType = taskDocumentType;
     }
 
     /**
      * @since 5.8
      */
-    public CreateTaskUnrestricted(CoreSession session,
-            NuxeoPrincipal principal, List<DocumentModel> documents,
-            String taskDocumentType, String taskName, String taskType,
-            String processId, List<String> prefixedActorIds,
-            boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath) {
-        this(session, principal,
-                documents != null && documents.size() > 0 ? documents.get(0)
-                        : null, taskName, taskType, processId,
-                prefixedActorIds, createOneTaskPerActor, directive, comment,
-                dueDate, taskVariables, parentPath);
+    public CreateTaskUnrestricted(CoreSession session, NuxeoPrincipal principal, List<DocumentModel> documents,
+            String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath) {
+        this(session, principal, documents != null && documents.size() > 0 ? documents.get(0) : null, taskName,
+                taskType, processId, prefixedActorIds, createOneTaskPerActor, directive, comment, dueDate,
+                taskVariables, parentPath);
         this.taskDocumentType = taskDocumentType;
         this.documents = documents;
         if (this.documents != null && this.documents.size() > 0) {
@@ -161,45 +150,37 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
         if (StringUtils.isEmpty(taskDocumentType)) {
             taskDocumentType = TaskConstants.TASK_TYPE_NAME;
         }
-        createTask(session, principal, documents, taskDocumentType, taskName,
-                taskType, processId, prefixedActorIds, createOneTaskPerActor,
-                directive, comment, dueDate, taskVariables, parentPath);
+        createTask(session, principal, documents, taskDocumentType, taskName, taskType, processId, prefixedActorIds,
+                createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath);
     }
 
     /**
      * @throws ClientException
      * @since 5.6
      */
-    public void createTask(CoreSession coreSession, NuxeoPrincipal principal,
-            DocumentModel document, String taskDocumentType, String taskName,
-            String taskType, String processId, List<String> prefixedActorIds,
-            boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath)
-            throws ClientException {
+    public void createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document,
+            String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath) throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         docs.add(document);
-        createTask(coreSession, principal, docs, taskDocumentType, taskName,
-                taskType, processId, prefixedActorIds, createOneTaskPerActor,
-                directive, comment, dueDate, taskVariables, parentPath);
+        createTask(coreSession, principal, docs, taskDocumentType, taskName, taskType, processId, prefixedActorIds,
+                createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath);
 
     }
 
     /**
      * @since 5.8
      */
-    public void createTask(CoreSession coreSession, NuxeoPrincipal principal,
-            List<DocumentModel> documents, String taskDocumentType,
-            String taskName, String taskType, String processId,
-            List<String> prefixedActorIds, boolean createOneTaskPerActor,
-            String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath)
-            throws ClientException {
+    public void createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
+            String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath) throws ClientException {
         if (createOneTaskPerActor) {
             for (String prefixedActorId : prefixedActorIds) {
-                createTask(coreSession, principal, documents, taskDocumentType,
-                        taskName, taskType, processId,
-                        Collections.singletonList(prefixedActorId), false,
-                        directive, comment, dueDate, taskVariables, parentPath);
+                createTask(coreSession, principal, documents, taskDocumentType, taskName, taskType, processId,
+                        Collections.singletonList(prefixedActorId), false, directive, comment, dueDate, taskVariables,
+                        parentPath);
             }
         } else {
             try {
@@ -207,13 +188,10 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                 // doesn't contain "/" characters), but fallback on task name
                 // if task type is null (for old API kept for compat)
                 String docName = taskType == null ? taskName : taskType;
-                DocumentModel taskDocument = session.createDocumentModel(
-                        parentPath, docName, taskDocumentType);
+                DocumentModel taskDocument = session.createDocumentModel(parentPath, docName, taskDocumentType);
                 Task task = taskDocument.getAdapter(Task.class);
                 if (task == null) {
-                    throw new ClientRuntimeException("Document "
-                            + taskDocumentType
-                            + "  can not be adapted to a Task");
+                    throw new ClientRuntimeException("Document " + taskDocumentType + "  can not be adapted to a Task");
                 }
                 task.setName(taskName);
                 task.setType(taskType);
@@ -242,17 +220,11 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                 // add variables
                 Map<String, String> variables = new HashMap<String, String>();
                 if (document != null) {
-                    variables.put(TaskService.VariableName.documentId.name(),
-                            document.getId());
-                    variables.put(
-                            TaskService.VariableName.documentRepositoryName.name(),
-                            document.getRepositoryName());
+                    variables.put(TaskService.VariableName.documentId.name(), document.getId());
+                    variables.put(TaskService.VariableName.documentRepositoryName.name(), document.getRepositoryName());
                 }
-                variables.put(TaskService.VariableName.directive.name(),
-                        directive);
-                variables.put(
-                        TaskService.VariableName.createdFromTaskService.name(),
-                        "true");
+                variables.put(TaskService.VariableName.directive.name(), directive);
+                variables.put(TaskService.VariableName.createdFromTaskService.name(), "true");
                 if (taskVariables != null) {
                     variables.putAll(taskVariables);
                 }
@@ -278,8 +250,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                 ACP acp = taskDocument.getACP();
                 ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
                 if (principal != null) {
-                    acl.add(new ACE(principal.getName(),
-                            SecurityConstants.EVERYTHING, true));
+                    acl.add(new ACE(principal.getName(), SecurityConstants.EVERYTHING, true));
 
                 }
                 for (String actorId : actorIds) {
@@ -295,16 +266,11 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
         }
     }
 
-    public void createTask(CoreSession coreSession, NuxeoPrincipal principal,
-            DocumentModel document, String taskName,
-            List<String> prefixedActorIds, boolean createOneTaskPerActor,
-            String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath)
-            throws ClientException {
-        createTask(coreSession, principal, document,
-                TaskConstants.TASK_TYPE_NAME, taskName, null, null,
-                prefixedActorIds, createOneTaskPerActor, directive, comment,
-                dueDate, taskVariables, parentPath);
+    public void createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document, String taskName,
+            List<String> prefixedActorIds, boolean createOneTaskPerActor, String directive, String comment,
+            Date dueDate, Map<String, String> taskVariables, String parentPath) throws ClientException {
+        createTask(coreSession, principal, document, TaskConstants.TASK_TYPE_NAME, taskName, null, null,
+                prefixedActorIds, createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath);
     }
 
     public List<Task> getTasks() {

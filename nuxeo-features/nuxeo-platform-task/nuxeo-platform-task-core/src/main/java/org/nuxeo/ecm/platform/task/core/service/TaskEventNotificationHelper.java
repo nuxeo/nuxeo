@@ -43,10 +43,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class TaskEventNotificationHelper {
 
-    public static void notifyEvent(CoreSession coreSession,
-            DocumentModel document, NuxeoPrincipal principal, Task task,
-            String eventId, Map<String, Serializable> properties,
-            String comment, String category) throws ClientException {
+    public static void notifyEvent(CoreSession coreSession, DocumentModel document, NuxeoPrincipal principal,
+            Task task, String eventId, Map<String, Serializable> properties, String comment, String category)
+            throws ClientException {
         // Default category
         if (category == null) {
             category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
@@ -57,14 +56,10 @@ public final class TaskEventNotificationHelper {
 
         EventContext eventContext = null;
         if (document != null) {
-            properties.put(CoreEventConstants.REPOSITORY_NAME,
-                    document.getRepositoryName());
-            properties.put(CoreEventConstants.SESSION_ID,
-                    coreSession.getSessionId());
-            properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
-                    document.getCurrentLifeCycleState());
-            eventContext = new DocumentEventContext(coreSession, principal,
-                    document);
+            properties.put(CoreEventConstants.REPOSITORY_NAME, document.getRepositoryName());
+            properties.put(CoreEventConstants.SESSION_ID, coreSession.getSessionId());
+            properties.put(CoreEventConstants.DOC_LIFE_CYCLE, document.getCurrentLifeCycleState());
+            eventContext = new DocumentEventContext(coreSession, principal, document);
         } else {
             eventContext = new EventContextImpl(coreSession, principal);
         }
@@ -72,10 +67,8 @@ public final class TaskEventNotificationHelper {
         properties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, category);
         properties.put(TaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY, task);
         String disableNotif = task.getVariable(TaskEventNames.DISABLE_NOTIFICATION_SERVICE);
-        if (disableNotif != null
-                && Boolean.TRUE.equals(Boolean.valueOf(disableNotif))) {
-            properties.put(TaskEventNames.DISABLE_NOTIFICATION_SERVICE,
-                    Boolean.TRUE);
+        if (disableNotif != null && Boolean.TRUE.equals(Boolean.valueOf(disableNotif))) {
+            properties.put(TaskEventNames.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);
         }
         eventContext.setProperties(properties);
 

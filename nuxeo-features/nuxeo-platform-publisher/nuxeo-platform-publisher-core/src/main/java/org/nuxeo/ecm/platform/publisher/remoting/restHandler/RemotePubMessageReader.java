@@ -36,20 +36,16 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.Publishin
 import org.nuxeo.ecm.webengine.WebEngine;
 
 @Provider
-public class RemotePubMessageReader implements
-        MessageBodyReader<RemotePubParam> {
+public class RemotePubMessageReader implements MessageBodyReader<RemotePubParam> {
 
-    public boolean isReadable(Class arg0, Type arg1, Annotation[] arg2,
-            MediaType mt) {
+    public boolean isReadable(Class arg0, Type arg1, Annotation[] arg2, MediaType mt) {
         return mt.equals(RemotePubParam.mediaType);
     }
 
-    public RemotePubParam readFrom(Class arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3, MultivaluedMap arg4, InputStream is)
-            throws IOException, WebApplicationException {
+    public RemotePubParam readFrom(Class arg0, Type arg1, Annotation[] arg2, MediaType arg3, MultivaluedMap arg4,
+            InputStream is) throws IOException, WebApplicationException {
 
-        DefaultMarshaler marshaler = new DefaultMarshaler(
-                WebEngine.getActiveContext().getCoreSession());
+        DefaultMarshaler marshaler = new DefaultMarshaler(WebEngine.getActiveContext().getCoreSession());
 
         InputStreamReader isr = new InputStreamReader(is, "UTF-8");
         BufferedReader br = new BufferedReader(isr);
@@ -66,8 +62,7 @@ public class RemotePubMessageReader implements
             List<Object> params = marshaler.unMarshallParameters(xmlData);
             return new RemotePubParam(params);
         } catch (PublishingMarshalingException e) {
-            throw new IOException("Error while unmarshaling parameters"
-                    + e.getMessage());
+            throw new IOException("Error while unmarshaling parameters" + e.getMessage());
         }
     }
 }

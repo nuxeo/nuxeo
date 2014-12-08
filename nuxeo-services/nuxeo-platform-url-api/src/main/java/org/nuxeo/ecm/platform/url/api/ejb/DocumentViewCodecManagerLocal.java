@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
  * Local interface for DocumentViewCodecManager
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface DocumentViewCodecManagerLocal extends DocumentViewCodecManager {
 

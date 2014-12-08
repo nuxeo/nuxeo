@@ -42,8 +42,7 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
 
     @Test
     public void testMerge() throws Exception {
-        URL url = EventListenerTest.class.getClassLoader().getResource(
-        "test-listeners.xml");
+        URL url = EventListenerTest.class.getClassLoader().getResource("test-listeners.xml");
         RuntimeContext rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
 
         EventService service = Framework.getService(EventService.class);
@@ -55,7 +54,7 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         assertEquals(N, serviceImpl.getEventListenerList().getInLineListeners().size());
 
         // check enable flag
-        EventListenerDescriptor desc =  inLineDescs.get(0);
+        EventListenerDescriptor desc = inLineDescs.get(0);
         desc.setEnabled(false);
         serviceImpl.addEventListener(desc);
         assertEquals(N - 1, serviceImpl.getEventListenerList().getInLineListeners().size());
@@ -80,8 +79,8 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
 
         boolean isScriptListener = false;
         PostCommitEventListener listener = serviceImpl.getEventListenerList().getSyncPostCommitListeners().get(0);
-        if ( listener instanceof ScriptingPostCommitEventListener) {
-            isScriptListener=true;
+        if (listener instanceof ScriptingPostCommitEventListener) {
+            isScriptListener = true;
         }
         assertTrue(isScriptListener);
         desc = serviceImpl.getEventListener("testPostCommit");

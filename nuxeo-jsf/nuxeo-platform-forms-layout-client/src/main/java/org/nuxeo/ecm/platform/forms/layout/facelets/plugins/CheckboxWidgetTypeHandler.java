@@ -45,51 +45,43 @@ import org.nuxeo.ecm.platform.ui.web.renderer.NXCheckboxRenderer;
 import com.sun.faces.facelets.tag.TagAttributesImpl;
 
 /**
- * Checkbox widget that generates a checkbox for a boolean value in edit mode,
- * and displays the boolean value in view mode.
+ * Checkbox widget that generates a checkbox for a boolean value in edit mode, and displays the boolean value in view
+ * mode.
  * <p>
- * In view mode, it expects the messages 'label.yes' and 'label.no' to be
- * present in a bundle called 'messages' for internationalization, when the
- * bound value is computed from field definitions.
+ * In view mode, it expects the messages 'label.yes' and 'label.no' to be present in a bundle called 'messages' for
+ * internationalization, when the bound value is computed from field definitions.
  */
 public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
-                subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
-            ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
-                    HtmlSelectBooleanCheckbox.COMPONENT_TYPE,
-                    NXCheckboxRenderer.RENDERER_TYPE);
+            ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
+                    HtmlSelectBooleanCheckbox.COMPONENT_TYPE, NXCheckboxRenderer.RENDERER_TYPE);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(
-                    widgetTagConfigId, msgId, widgetId, null);
+            ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
-            TagAttributes attributes = getViewTagAttributes(ctx, helper,
-                    widgetId, widget, !BuiltinWidgetModes.isLikePlainMode(mode));
+            TagAttributes attributes = getViewTagAttributes(ctx, helper, widgetId, widget,
+                    !BuiltinWidgetModes.isLikePlainMode(mode));
             // default on text for other modes
-            ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+            ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributesImpl(new TagAttribute[0]), output,
-                        UIHtmlText.class.getName(), null);
+                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
+                        output, UIHtmlText.class.getName(), null);
             } else {
                 return output;
             }
@@ -97,31 +89,27 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
     }
 
     /**
-     * Return tag attributes after having replaced the usual value expression
-     * for the 'value' field by a specific expression to display the boolean
-     * value as an internationalized label.
+     * Return tag attributes after having replaced the usual value expression for the 'value' field by a specific
+     * expression to display the boolean value as an internationalized label.
      */
-    protected TagAttributes getViewTagAttributes(FaceletContext ctx,
-            FaceletHandlerHelper helper, String id, Widget widget, boolean addId) {
+    protected TagAttributes getViewTagAttributes(FaceletContext ctx, FaceletHandlerHelper helper, String id,
+            Widget widget, boolean addId) {
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 0) {
             FieldDefinition field = fields[0];
-            String bareExpression = ValueExpressionHelper.createBareExpressionString(
-                    widget.getValueName(), field);
+            String bareExpression = ValueExpressionHelper.createBareExpressionString(widget.getValueName(), field);
             String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
             String messageYes = String.format("%s['label.yes']", bundleName);
             String messageNo = String.format("%s['label.no']", bundleName);
-            String expression = String.format("#{%s ? %s : %s}",
-                    bareExpression, messageYes, messageNo);
+            String expression = String.format("#{%s ? %s : %s}", bareExpression, messageYes, messageNo);
             TagAttribute valueAttr = helper.createAttribute("value", expression);
             attrs.add(valueAttr);
         }
 
         // fill with widget properties
-        List<TagAttribute> propertyAttrs = helper.getTagAttributes(
-                widget.getProperties(), null, true, widget.getType(),
-                widget.getTypeCategory(), widget.getMode());
+        List<TagAttribute> propertyAttrs = helper.getTagAttributes(widget.getProperties(), null, true,
+                widget.getType(), widget.getTypeCategory(), widget.getMode());
         if (propertyAttrs != null) {
             attrs.addAll(propertyAttrs);
         }
@@ -130,8 +118,7 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
         if (!addId) {
             return widgetAttrs;
         } else {
-            return FaceletHandlerHelper.addTagAttribute(widgetAttrs,
-                    helper.createAttribute("id", id));
+            return FaceletHandlerHelper.addTagAttribute(widgetAttrs, helper.createAttribute("id", id));
         }
 
     }

@@ -20,7 +20,6 @@ import org.nuxeo.connect.update.Version;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class VersionHelper {
 

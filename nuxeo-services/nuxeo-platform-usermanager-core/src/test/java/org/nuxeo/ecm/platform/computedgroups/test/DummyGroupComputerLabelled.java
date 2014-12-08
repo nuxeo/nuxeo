@@ -20,10 +20,8 @@ import org.nuxeo.ecm.platform.computedgroups.GroupComputerLabelled;
 
 /**
  * @since 5.7.3
- *
  */
-public class DummyGroupComputerLabelled extends DummyGroupComputer implements
-        GroupComputerLabelled {
+public class DummyGroupComputerLabelled extends DummyGroupComputer implements GroupComputerLabelled {
 
     @Override
     public String getLabel(String groupName) {

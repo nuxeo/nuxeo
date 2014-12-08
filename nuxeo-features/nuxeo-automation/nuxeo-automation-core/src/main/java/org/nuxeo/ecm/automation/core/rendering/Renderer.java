@@ -26,8 +26,7 @@ public interface Renderer {
 
     String TEMPLATE_PREFIX = "template:";
 
-    String render(String uriOrContent, Map<String, Object> root)
-            throws OperationException, RenderingException, TemplateException,
-            IOException;
+    String render(String uriOrContent, Map<String, Object> root) throws OperationException, RenderingException,
+            TemplateException, IOException;
 
 }

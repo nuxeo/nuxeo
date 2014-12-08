@@ -25,12 +25,11 @@ import java.io.IOException;
 public interface DocumentTransformer {
 
     /**
-     * Transforms the given document and returns true to pass to the next
-     * transformer or false to exit from the transformation chain.
+     * Transforms the given document and returns true to pass to the next transformer or false to exit from the
+     * transformation chain.
      *
      * @param doc the document to transform
-     * @return true to continue with the next transformer or false to exit
-     *         transformation chain
+     * @return true to continue with the next transformer or false to exit transformation chain
      */
     boolean transform(ExportedDocument doc) throws IOException;
 

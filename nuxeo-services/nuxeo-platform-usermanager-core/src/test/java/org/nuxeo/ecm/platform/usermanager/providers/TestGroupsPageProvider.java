@@ -44,15 +44,12 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployContrib("org.nuxeo.ecm.platform.query.api",
-                "OSGI-INF/pageprovider-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
         deployBundle("org.nuxeo.ecm.platform.usermanager.api");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
 
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/directory-config.xml");
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "computedgroups-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "computedgroups-contrib.xml");
 
         ppService = Framework.getService(PageProviderService.class);
         assertNotNull(ppService);
@@ -68,8 +65,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         userManager.createGroup(createGroup("group2"));
     }
 
-    protected DocumentModel createGroup(String groupName)
-            throws ClientException {
+    protected DocumentModel createGroup(String groupName) throws ClientException {
         DocumentModel newGroup = userManager.getBareGroupModel();
         newGroup.setProperty("group", "groupname", groupName);
         return newGroup;
@@ -79,8 +75,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
     @SuppressWarnings("unchecked")
     public void testGroupsPageProviderAllMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
-                AbstractGroupsPageProvider.ALL_MODE);
+        properties.put(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY, AbstractGroupsPageProvider.ALL_MODE);
         PageProvider<DocumentModel> groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                 PROVIDER_NAME, null, null, null, properties, "");
         List<DocumentModel> groups = groupsProvider.getCurrentPage();
@@ -116,8 +111,8 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         assertEquals("group2", group.getId());
 
         // check computed groups
-        groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, properties, "Grp");
+        groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(PROVIDER_NAME, null, null, null,
+                properties, "Grp");
         groups = groupsProvider.getCurrentPage();
         assertNotNull(groups);
         assertEquals(2, groups.size());

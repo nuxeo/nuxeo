@@ -59,8 +59,7 @@ public class TestVersioningSaveOptions extends SQLRepositoryTestCase {
         assertEquals(3, opts.size());
         assertEquals(VersioningOption.NONE, opts.get(0));
 
-        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
-                "test-versioning-contrib.xml");
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE, "test-versioning-contrib.xml");
         fileDoc = new DocumentModelImpl("File");
         fileDoc = session.createDocument(fileDoc);
         versionLabel = fileDoc.getVersionLabel();
@@ -76,8 +75,7 @@ public class TestVersioningSaveOptions extends SQLRepositoryTestCase {
         opts = vService.getSaveOptions(fileDoc);
         assertEquals(3, opts.size());
 
-        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
-                "test-versioning-override-contrib.xml");
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE, "test-versioning-override-contrib.xml");
         fileDoc = new DocumentModelImpl("File");
         fileDoc = session.createDocument(fileDoc);
         versionLabel = fileDoc.getVersionLabel();

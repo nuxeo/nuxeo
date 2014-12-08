@@ -21,7 +21,6 @@ package org.nuxeo.ecm.directory;
 
 /**
  * @author <a href='mailto:glefter@nuxeo.com'>George Lefter</a>
- *
  */
 public class SizeLimitExceededException extends DirectoryException {
 

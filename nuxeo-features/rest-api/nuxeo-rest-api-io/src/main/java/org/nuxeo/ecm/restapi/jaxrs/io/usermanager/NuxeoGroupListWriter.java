@@ -27,8 +27,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @Provider
@@ -46,8 +44,7 @@ public class NuxeoGroupListWriter extends EntityListWriter<NuxeoGroup> {
     }
 
     @Override
-    protected void writeItem(JsonGenerator jg, NuxeoGroup item)
-            throws ClientException, IOException {
+    protected void writeItem(JsonGenerator jg, NuxeoGroup item) throws ClientException, IOException {
         NuxeoGroupWriter ngw = new NuxeoGroupWriter();
         ngw.writeEntity(jg, item);
     }

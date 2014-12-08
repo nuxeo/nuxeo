@@ -26,7 +26,6 @@ import com.google.gwt.i18n.client.Dictionary;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class PreviewSettings {
 

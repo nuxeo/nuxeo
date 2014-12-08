@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface SecurityManager {
     boolean check(NuxeoPrincipal user, String permission, DocumentModel dm);

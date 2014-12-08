@@ -37,16 +37,13 @@ import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
 @Produces("*/*")
 public class URLWriter implements MessageBodyWriter<URL> {
 
-    public void writeTo(URL t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(URL t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         InputStream in = null;
         try {
             in = t.openStream();
@@ -61,13 +58,11 @@ public class URLWriter implements MessageBodyWriter<URL> {
         }
     }
 
-    public long getSize(URL arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(URL arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return URL.class.isAssignableFrom(arg0);
     }
 

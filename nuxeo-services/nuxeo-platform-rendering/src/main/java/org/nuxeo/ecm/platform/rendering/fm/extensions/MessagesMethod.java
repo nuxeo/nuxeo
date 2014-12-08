@@ -26,7 +26,6 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MessagesMethod implements TemplateMethodModelEx {
 
@@ -77,8 +76,8 @@ public class MessagesMethod implements TemplateMethodModelEx {
             return '!' + key + '!';
         }
         if (size > 1) { // format the string using given args
-            String[] args = new String[size-1];
-            for (int i=0; i<args.length; i++) {
+            String[] args = new String[size - 1];
+            for (int i = 0; i < args.length; i++) {
                 args[i] = ((SimpleScalar) arguments.get(i + 1)).getAsString();
             }
             value = MessageFormat.format(value, (Object[]) args);

@@ -25,10 +25,10 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class InlineURLConnection extends URLConnection {
-;
+    ;
     protected final Object content;
 
-    protected InlineURLConnection(URL url)  {
+    protected InlineURLConnection(URL url) {
         super(url);
         try {
             content = InlineURLFactory.newObject(Object.class, url);

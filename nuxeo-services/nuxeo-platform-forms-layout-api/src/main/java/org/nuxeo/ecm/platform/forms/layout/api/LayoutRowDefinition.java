@@ -59,8 +59,7 @@ public interface LayoutRowDefinition extends Serializable {
     /**
      * Returns the list of widget names to use at a given row.
      * <p>
-     * For instance, this could describe a layout like: ['title'], or
-     * ['creationDate', '', 'modificationDate'].
+     * For instance, this could describe a layout like: ['title'], or ['creationDate', '', 'modificationDate'].
      *
      * @deprecated since 5.5: use {@link #getWidgetReferences()} instead.
      */

@@ -39,7 +39,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({"org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features"})
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
 public class FunctionsTest {
 
     protected DocumentModel src;
@@ -79,11 +79,8 @@ public class FunctionsTest {
     public void testPrincipalProperties() throws Exception {
         NuxeoPrincipalImpl np = new NuxeoPrincipalImpl("test");
         np.setFirstName("Bob");
-        assertEquals("test",
-                Scripting.newExpression("CurrentUser.name").eval(ctx));
-        assertEquals(
-                "Bob",
-                Scripting.newExpression("CurrentUser.firstName").eval(ctx));
+        assertEquals("test", Scripting.newExpression("CurrentUser.name").eval(ctx));
+        assertEquals("Bob", Scripting.newExpression("CurrentUser.firstName").eval(ctx));
     }
 
 }

@@ -35,7 +35,7 @@ public class MetricInvocationHandler<T> implements InvocationHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T newProxy(T proxied, Class<?> ...classes) {
+    public static <T> T newProxy(T proxied, Class<?>... classes) {
         MetricInvocationHandler<T> handler = new MetricInvocationHandler<T>(proxied);
         return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), classes, handler);
     }

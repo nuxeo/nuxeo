@@ -78,10 +78,8 @@ public class TypesTool implements Serializable {
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
-    @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOMAIN_SELECTION_CHANGED,
-            EventNames.LOCAL_CONFIGURATION_CHANGED }, create = false)
+    @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED, EventNames.DOCUMENT_SELECTION_CHANGED,
+            EventNames.DOMAIN_SELECTION_CHANGED, EventNames.LOCAL_CONFIGURATION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetTypesList() {
         typesMap = null;
@@ -91,8 +89,8 @@ public class TypesTool implements Serializable {
     /**
      * Retrieves the list of allowed sub types given a current type.
      * <p>
-     * This is used at creation time. Current type is retrieved thanks to the
-     * document model hold and passed by the event.
+     * This is used at creation time. Current type is retrieved thanks to the document model hold and passed by the
+     * event.
      */
     public void populateTypesList() {
         boolean set = false;
@@ -108,20 +106,16 @@ public class TypesTool implements Serializable {
         typesMapTimestamp = typeManager.getLastModified();
     }
 
-    public Map<String, List<List<Type>>> getOrganizedTypeMapForDocumentType(
-            String type) {
-        Map<String, List<Type>> docTypesMap = typeManager.getTypeMapForDocumentType(
-                type, getConfigurationDocument());
+    public Map<String, List<List<Type>>> getOrganizedTypeMapForDocumentType(String type) {
+        Map<String, List<Type>> docTypesMap = typeManager.getTypeMapForDocumentType(type, getConfigurationDocument());
         docTypesMap = filterTypeMap(docTypesMap);
         return organizeType(docTypesMap);
     }
 
     /**
-     * Returns the Configuration document to be used as the local configuration
-     * of the {@code TypeManager}.
+     * Returns the Configuration document to be used as the local configuration of the {@code TypeManager}.
      * <p>
-     * This method can be overridden by Subclasses to define a specific
-     * Configuration document.
+     * This method can be overridden by Subclasses to define a specific Configuration document.
      *
      * @since 5.4.2
      */
@@ -134,18 +128,15 @@ public class TypesTool implements Serializable {
      *
      * @since 5.4.2
      */
-    protected Map<String, List<Type>> filterTypeMap(
-            Map<String, List<Type>> docTypeMap) {
+    protected Map<String, List<Type>> filterTypeMap(Map<String, List<Type>> docTypeMap) {
         return docTypeMap;
     }
 
     /**
-     * Split each @{code List} of {@code Type} in one or more new {@code List},
-     * with maximum 4 {@code Type}s in each new {@code List} and returns the
-     * new computed {@code Map}.
+     * Split each @{code List} of {@code Type} in one or more new {@code List}, with maximum 4 {@code Type}s in each new
+     * {@code List} and returns the new computed {@code Map}.
      */
-    protected Map<String, List<List<Type>>> organizeType(
-            Map<String, List<Type>> types) {
+    protected Map<String, List<List<Type>>> organizeType(Map<String, List<Type>> types) {
         Map<String, List<List<Type>>> newTypesMap = new HashMap<String, List<List<Type>>>();
         Set<Entry<String, List<Type>>> typeEntrySet = types.entrySet();
         for (Entry<String, List<Type>> set : typeEntrySet) {
@@ -172,17 +163,14 @@ public class TypesTool implements Serializable {
 
     public Type getSelectedType() {
         if (selectedType != null) {
-            log.debug("Returning selected type with id: "
-                    + selectedType.getId());
+            log.debug("Returning selected type with id: " + selectedType.getId());
         }
         return selectedType;
     }
 
     /**
-     * If the selected type is supposed to be automatically injected by Seam
-     * through @DataModelSelection callback (i.e. the user will select the type
-     * from a list), this method should be called with <code>null</code>
-     * parameter before.
+     * If the selected type is supposed to be automatically injected by Seam through @DataModelSelection callback (i.e.
+     * the user will select the type from a list), this method should be called with <code>null</code> parameter before.
      */
     public void setSelectedType(Type type) {
         if (typesMap == null) {
@@ -195,8 +183,7 @@ public class TypesTool implements Serializable {
     public Map<String, List<List<Type>>> getTypesList() {
         // XXX : should cache per currentDocument type
         if (typesMap == null
-                || (seamReload.isDevModeSet() && seamReload.shouldResetCache(
-                        typeManager, typesMapTimestamp))) {
+                || (seamReload.isDevModeSet() && seamReload.shouldResetCache(typeManager, typesMapTimestamp))) {
             // cache the list of allowed subtypes
             populateTypesList();
         }

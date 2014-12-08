@@ -17,9 +17,7 @@ package org.nuxeo.ecm.core.lifecycle;
  * Life cycle transition.
  *
  * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleTransitionImpl
- *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface LifeCycleTransition {
 

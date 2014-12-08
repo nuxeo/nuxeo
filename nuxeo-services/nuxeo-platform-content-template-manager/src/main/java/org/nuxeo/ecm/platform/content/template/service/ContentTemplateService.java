@@ -27,8 +27,7 @@ public interface ContentTemplateService {
 
     ContentFactory getFactoryForType(String documentType);
 
-    void executeFactoryForType(DocumentModel createdDocument)
-            throws ClientException;
+    void executeFactoryForType(DocumentModel createdDocument) throws ClientException;
 
     /**
      * Executes all the registered {@code PostContentCreationHandler}s.

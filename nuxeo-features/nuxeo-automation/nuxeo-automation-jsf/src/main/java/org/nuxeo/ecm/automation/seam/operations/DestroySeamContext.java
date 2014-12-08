@@ -28,7 +28,6 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  * Cleanup Seam context
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 @Operation(id = DestroySeamContext.ID, category = Constants.CAT_UI, label = "Destroy Seam Context", description = "Cleanup up Seam context")
 public class DestroySeamContext {

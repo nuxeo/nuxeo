@@ -28,7 +28,7 @@ public interface ExceptionHandlingService {
 
     NuxeoExceptionHandler getExceptionHandler();
 
-    void forwardToErrorPage(HttpServletRequest request, HttpServletResponse response, Throwable t)
-            throws IOException, ServletException;
+    void forwardToErrorPage(HttpServletRequest request, HttpServletResponse response, Throwable t) throws IOException,
+            ServletException;
 
 }

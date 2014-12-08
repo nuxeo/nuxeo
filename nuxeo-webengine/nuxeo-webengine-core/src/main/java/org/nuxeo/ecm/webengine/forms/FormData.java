@@ -60,7 +60,6 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FormData implements FormInstance {
 
@@ -78,8 +77,7 @@ public class FormData implements FormInstance {
 
     public static final String MINOR = "minor";
 
-    protected static ServletFileUpload fu = new ServletFileUpload(
-            new DiskFileItemFactory());
+    protected static ServletFileUpload fu = new ServletFileUpload(new DiskFileItemFactory());
 
     protected final HttpServletRequest request;
 
@@ -159,14 +157,12 @@ public class FormData implements FormInstance {
     public Map<String, List<FileItem>> getMultiPartItems() {
         if (items == null) {
             if (!isMultipart) {
-                throw new IllegalStateException(
-                        "Not in a multi part form request");
+                throw new IllegalStateException("Not in a multi part form request");
             }
             try {
                 items = new HashMap<String, List<FileItem>>();
                 ServletRequestContext ctx = new ServletRequestContext(request);
-                List<FileItem> fileItems = new ServletFileUpload(
-                        new DiskFileItemFactory()).parseRequest(ctx);
+                List<FileItem> fileItems = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(ctx);
                 for (FileItem item : fileItems) {
                     String key = item.getFieldName();
                     List<FileItem> list = items.get(key);
@@ -241,8 +237,7 @@ public class FormData implements FormInstance {
         }
         String ctype = item.getContentType();
 
-        StreamingBlob blob = new StreamingBlob(src,
-                ctype == null ? "application/octet-stream" : ctype);
+        StreamingBlob blob = new StreamingBlob(src, ctype == null ? "application/octet-stream" : ctype);
         try {
             blob.persist();
         } catch (IOException e) {
@@ -283,7 +278,6 @@ public class FormData implements FormInstance {
     }
 
     /**
-     *
      * @param key
      * @return an array of strings or an array of blobs
      */
@@ -369,15 +363,12 @@ public class FormData implements FormInstance {
                 fillDocumentFromForm(doc);
             }
         } catch (PropertyException e) {
-            throw WebException.wrap(
-                    "Failed to fill document properties from request properties",
-                    e);
+            throw WebException.wrap("Failed to fill document properties from request properties", e);
         }
     }
 
     @SuppressWarnings("unchecked")
-    public void fillDocumentFromForm(DocumentModel doc)
-            throws PropertyException {
+    public void fillDocumentFromForm(DocumentModel doc) throws PropertyException {
         Map<String, String[]> map = request.getParameterMap();
         for (Map.Entry<String, String[]> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -396,8 +387,7 @@ public class FormData implements FormInstance {
         }
     }
 
-    public void fillDocumentFromMultiPartForm(DocumentModel doc)
-            throws PropertyException {
+    public void fillDocumentFromMultiPartForm(DocumentModel doc) throws PropertyException {
         Map<String, List<FileItem>> map = getMultiPartItems();
         for (Map.Entry<String, List<FileItem>> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -421,8 +411,7 @@ public class FormData implements FormInstance {
         }
     }
 
-    static void fillDocumentProperty(Property p, String key, Object[] ar)
-            throws PropertyException {
+    static void fillDocumentProperty(Property p, String key, Object[] ar) throws PropertyException {
         if (ar == null || ar.length == 0) {
             p.remove();
         } else if (p.isScalar()) {
@@ -477,8 +466,7 @@ public class FormData implements FormInstance {
     public VersioningOption getVersioningOption() {
         String val = getString(VERSIONING);
         if (val != null) {
-            return val.equals(MAJOR) ? VersioningOption.MAJOR
-                    : val.equals(MINOR) ? VersioningOption.MINOR : null;
+            return val.equals(MAJOR) ? VersioningOption.MAJOR : val.equals(MINOR) ? VersioningOption.MINOR : null;
         }
         return null;
     }
@@ -491,8 +479,7 @@ public class FormData implements FormInstance {
         return getString(TITLE);
     }
 
-    public <T extends Form> T validate(Class<T> type)
-            throws ValidationException {
+    public <T extends Form> T validate(Class<T> type) throws ValidationException {
         T proxy = FormManager.newProxy(type);
         try {
             proxy.load(this, proxy);

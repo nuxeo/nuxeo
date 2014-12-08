@@ -90,9 +90,8 @@ public class CSVZipImporter extends AbstractFileImporter {
     }
 
     @Override
-    public DocumentModel create(CoreSession documentManager, Blob content,
-            String path, boolean overwrite, String filename,
-            TypeManager typeService) throws ClientException, IOException {
+    public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
+            String filename, TypeManager typeService) throws ClientException, IOException {
         File tmp = null;
         try {
             tmp = File.createTempFile("zipcsv-importer", null);
@@ -102,14 +101,11 @@ public class CSVZipImporter extends AbstractFileImporter {
                 return null;
             }
 
-            DocumentModel container = documentManager.getDocument(new PathRef(
-                    path));
+            DocumentModel container = documentManager.getDocument(new PathRef(path));
 
             ZipEntry index = zip.getEntry(MARKER);
-            try (Reader reader = new InputStreamReader(
-                    zip.getInputStream(index));
-                    CSVParser csvParser = new CSVParser(reader,
-                            CSVFormat.DEFAULT.withHeader());) {
+            try (Reader reader = new InputStreamReader(zip.getInputStream(index));
+                    CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader());) {
 
                 Map<String, Integer> header = csvParser.getHeaderMap();
                 for (CSVRecord csvRecord : csvParser) {
@@ -134,8 +130,7 @@ public class CSVZipImporter extends AbstractFileImporter {
                         // update ?
                         String targetPath = new Path(path).append(id).toString();
                         if (documentManager.exists(new PathRef(targetPath))) {
-                            targetDoc = documentManager.getDocument(new PathRef(
-                                    targetPath));
+                            targetDoc = documentManager.getDocument(new PathRef(targetPath));
                             updateDoc = true;
                         }
                     }
@@ -150,8 +145,7 @@ public class CSVZipImporter extends AbstractFileImporter {
                         if (id == null) {
                             id = IdUtils.generateStringId();
                         }
-                        targetDoc = documentManager.createDocumentModel(path,
-                                id, type);
+                        targetDoc = documentManager.createDocumentModel(path, id, type);
                     }
 
                     // update doc properties
@@ -186,16 +180,13 @@ public class CSVZipImporter extends AbstractFileImporter {
                         }
 
                         if (field != null) {
-                            Serializable fieldValue = getFieldValue(field,
-                                    stringValue, zip);
+                            Serializable fieldValue = getFieldValue(field, stringValue, zip);
 
                             if (fieldValue != null) {
                                 if (usePrefix) {
-                                    targetDoc.setPropertyValue(fname,
-                                            fieldValue);
+                                    targetDoc.setPropertyValue(fname, fieldValue);
                                 } else {
-                                    targetDoc.setProperty(schemaName,
-                                            fieldName, fieldValue);
+                                    targetDoc.setProperty(schemaName, fieldName, fieldValue);
                                 }
                             }
                         }
@@ -215,8 +206,7 @@ public class CSVZipImporter extends AbstractFileImporter {
         }
     }
 
-    protected Serializable getFieldValue(Field field, String stringValue,
-            ZipFile zip) {
+    protected Serializable getFieldValue(Field field, String stringValue, ZipFile zip) {
         Serializable fieldValue = null;
         Type type = field.getType();
         if (type.isSimpleType()) {

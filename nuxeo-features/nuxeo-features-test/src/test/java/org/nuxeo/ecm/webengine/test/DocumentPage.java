@@ -19,10 +19,8 @@ package org.nuxeo.ecm.webengine.test;
 import org.nuxeo.runtime.test.runner.web.WebPage;
 import org.openqa.selenium.By;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentPage extends WebPage {
 

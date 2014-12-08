@@ -24,7 +24,6 @@ import javax.ws.rs.core.Application;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RemotePubApp extends Application {
 

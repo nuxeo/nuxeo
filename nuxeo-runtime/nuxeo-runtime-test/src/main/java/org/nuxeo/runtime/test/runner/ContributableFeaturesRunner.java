@@ -22,7 +22,7 @@ public class ContributableFeaturesRunner extends Suite {
             public Runner runnerForClass(Class<?> testClass) throws Throwable {
                 Runner runner = builder.runnerForClass(testClass);
                 if (runner instanceof FeaturesRunner) {
-                    ((FeaturesRunner)runner).loader.loadFeatures(clazz);
+                    ((FeaturesRunner) runner).loader.loadFeatures(clazz);
                 }
                 return runner;
             }

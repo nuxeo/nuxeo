@@ -43,34 +43,26 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * @since 5.9.4
  */
-public class FavoritesManagerImpl extends DefaultComponent implements
-        FavoritesManager {
+public class FavoritesManagerImpl extends DefaultComponent implements FavoritesManager {
 
     @Override
-    public void addToFavorites(DocumentModel document, CoreSession session)
-            throws ClientException {
+    public void addToFavorites(DocumentModel document, CoreSession session) throws ClientException {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
-        collectionManager.addToCollection(getFavorites(document, session),
-                document, session);
+        collectionManager.addToCollection(getFavorites(document, session), document, session);
     }
 
     @Override
-    public boolean canAddToFavorites(DocumentModel document)
-            throws ClientException {
+    public boolean canAddToFavorites(DocumentModel document) throws ClientException {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         return collectionManager.isCollectable(document);
     }
 
-    protected DocumentModel createFavorites(CoreSession session,
-            DocumentModel userWorkspace) throws ClientException {
-        DocumentModel doc = session.createDocumentModel(
-                userWorkspace.getPath().toString(),
-                FavoritesConstants.DEFAULT_FAVORITES_NAME,
-                FavoritesConstants.FAVORITES_TYPE);
+    protected DocumentModel createFavorites(CoreSession session, DocumentModel userWorkspace) throws ClientException {
+        DocumentModel doc = session.createDocumentModel(userWorkspace.getPath().toString(),
+                FavoritesConstants.DEFAULT_FAVORITES_NAME, FavoritesConstants.FAVORITES_TYPE);
         String title = null;
         try {
-            title = I18NUtils.getMessageString("messages",
-                    FavoritesConstants.DEFAULT_FAVORITES_TITLE, new Object[0],
+            title = I18NUtils.getMessageString("messages", FavoritesConstants.DEFAULT_FAVORITES_TITLE, new Object[0],
                     getLocale(session));
         } catch (MissingResourceException e) {
             title = FavoritesConstants.DEFAULT_FAVORITES_NAME;
@@ -80,10 +72,8 @@ public class FavoritesManagerImpl extends DefaultComponent implements
         doc = session.createDocument(doc);
 
         ACP acp = new ACPImpl();
-        ACE denyEverything = new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false);
-        ACE allowEverything = new ACE(session.getPrincipal().getName(),
-                SecurityConstants.EVERYTHING, true);
+        ACE denyEverything = new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
+        ACE allowEverything = new ACE(session.getPrincipal().getName(), SecurityConstants.EVERYTHING, true);
         ACL acl = new ACLImpl();
         acl.setACEs(new ACE[] { allowEverything, denyEverything });
         acp.addACL(acl);
@@ -93,17 +83,13 @@ public class FavoritesManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public DocumentModel getFavorites(final DocumentModel context,
-            final CoreSession session) throws ClientException {
+    public DocumentModel getFavorites(final DocumentModel context, final CoreSession session) throws ClientException {
         final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
-        final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session, context);
-        final DocumentRef lookupRef = new PathRef(
-                userWorkspace.getPath().toString(),
+        final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, context);
+        final DocumentRef lookupRef = new PathRef(userWorkspace.getPath().toString(),
                 FavoritesConstants.DEFAULT_FAVORITES_NAME);
         if (session.exists(lookupRef)) {
-            return session.getChild(userWorkspace.getRef(),
-                    FavoritesConstants.DEFAULT_FAVORITES_NAME);
+            return session.getChild(userWorkspace.getRef(), FavoritesConstants.DEFAULT_FAVORITES_NAME);
         } else {
             // does not exist yet, let's create it
             synchronized (this) {
@@ -126,11 +112,9 @@ public class FavoritesManagerImpl extends DefaultComponent implements
         }
     }
 
-    protected Locale getLocale(final CoreSession session)
-            throws ClientException {
+    protected Locale getLocale(final CoreSession session) throws ClientException {
         Locale locale = null;
-        locale = Framework.getLocalService(LocaleProvider.class).getLocale(
-                session);
+        locale = Framework.getLocalService(LocaleProvider.class).getLocale(session);
         if (locale == null) {
             locale = Locale.getDefault();
         }
@@ -138,19 +122,15 @@ public class FavoritesManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean isFavorite(DocumentModel document, CoreSession session)
-            throws ClientException {
+    public boolean isFavorite(DocumentModel document, CoreSession session) throws ClientException {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
-        return collectionManager.isInCollection(
-                getFavorites(document, session), document, session);
+        return collectionManager.isInCollection(getFavorites(document, session), document, session);
     }
 
     @Override
-    public void removeFromFavorites(DocumentModel document, CoreSession session)
-            throws ClientException {
+    public void removeFromFavorites(DocumentModel document, CoreSession session) throws ClientException {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
-        collectionManager.removeFromCollection(getFavorites(document, session),
-                document, session);
+        collectionManager.removeFromCollection(getFavorites(document, session), document, session);
     }
 
 }

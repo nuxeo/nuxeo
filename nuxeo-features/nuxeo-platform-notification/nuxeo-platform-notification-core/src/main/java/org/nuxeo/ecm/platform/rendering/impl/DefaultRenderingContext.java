@@ -25,15 +25,12 @@ import org.nuxeo.ecm.platform.rendering.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.RenderingEngine;
 
 /**
- * Abstract RenderingContext subclass that adds capabilities of storing a
- * DocumentModel and retrieve RenderingConfig associated with the current set
- * DocumentModel.
+ * Abstract RenderingContext subclass that adds capabilities of storing a DocumentModel and retrieve RenderingConfig
+ * associated with the current set DocumentModel.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
- *
  */
-public class DefaultRenderingContext extends HashMap<String, Object>
-        implements RenderingContext {
+public class DefaultRenderingContext extends HashMap<String, Object> implements RenderingContext {
 
     private static final long serialVersionUID = -5442029141468819238L;
 

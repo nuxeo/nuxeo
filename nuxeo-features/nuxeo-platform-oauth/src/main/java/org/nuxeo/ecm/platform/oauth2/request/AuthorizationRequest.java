@@ -49,7 +49,8 @@ public class AuthorizationRequest extends Oauth2Request {
 
     public static final String STATE = "state";
 
-    public AuthorizationRequest() { }
+    public AuthorizationRequest() {
+    }
 
     public AuthorizationRequest(HttpServletRequest request) {
         super(request);
@@ -93,8 +94,7 @@ public class AuthorizationRequest extends Oauth2Request {
     }
 
     public boolean isValidState(HttpServletRequest request) {
-        return isBlank(getState())
-                || request.getParameter(STATE).equals(getState());
+        return isBlank(getState()) || request.getParameter(STATE).equals(getState());
     }
 
     public String getUsername() {
@@ -134,8 +134,7 @@ public class AuthorizationRequest extends Oauth2Request {
         }
     }
 
-    public static AuthorizationRequest from(HttpServletRequest request)
-            throws UnsupportedEncodingException {
+    public static AuthorizationRequest from(HttpServletRequest request) throws UnsupportedEncodingException {
         deleteExpiredRequests();
 
         String sessionId = request.getSession(true).getId();
@@ -153,8 +152,7 @@ public class AuthorizationRequest extends Oauth2Request {
 
     public static AuthorizationRequest fromCode(String authorizationCode) {
         for (AuthorizationRequest auth : requests.values()) {
-            if (auth.authorizationCode != null
-                    && auth.authorizationCode.equals(authorizationCode)) {
+            if (auth.authorizationCode != null && auth.authorizationCode.equals(authorizationCode)) {
                 requests.remove(auth.sessionId);
                 return auth.isExpired() ? null : auth;
             }

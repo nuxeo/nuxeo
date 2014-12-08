@@ -27,8 +27,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
  * @author Anahide Tchertchian
  * @since 5.4.2
  */
-public class WidgetTypeDefinitionComparator implements
-        Comparator<WidgetTypeDefinition> {
+public class WidgetTypeDefinitionComparator implements Comparator<WidgetTypeDefinition> {
 
     protected boolean compareLabels = false;
 

@@ -42,13 +42,11 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
 
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         // override user schema with intField & dateField
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-sql-directories-schema-override.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-schema-override.xml");
 
         DatabaseHelper.DATABASE.setUp();
 
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-sql-directories-bundle.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-bundle.xml");
     }
 
     protected static Session getSession(String dirName) throws ClientException {
@@ -56,8 +54,7 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
         return dirService.open(dirName);
     }
 
-    protected static Directory getDirectory(String dirName)
-            throws DirectoryException {
+    protected static Directory getDirectory(String dirName) throws DirectoryException {
         DirectoryServiceImpl dirServiceImpl = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
                 DirectoryService.NAME);
         Directory dir = dirServiceImpl.getDirectory(dirName);

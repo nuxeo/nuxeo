@@ -26,8 +26,8 @@ import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 /**
  * Service used generate meaningful and permanent urls.
  * <p>
- * It handles a set of codecs, used to code/decode a document information
- * between a url and a {@link DocumentView} instance.
+ * It handles a set of codecs, used to code/decode a document information between a url and a {@link DocumentView}
+ * instance.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -45,50 +45,39 @@ public interface DocumentViewCodecManager extends Serializable {
      * <p>
      * Iterates over registered codecs, starting from the default codec, and if
      * {@link DocumentViewCodec#handleUrl(String)} returns true, calls
-     * {@link DocumentViewCodec#getDocumentViewFromUrl(String)}. Stops
-     * iterating when a codec returns a non-null value.
+     * {@link DocumentViewCodec#getDocumentViewFromUrl(String)}. Stops iterating when a codec returns a non-null value.
      *
-     * @param url the original url from request, including request parameters
-     *            if any.
-     * @param hasBaseUrl boolean indicating if base url should be removed from
-     *            given url.
+     * @param url the original url from request, including request parameters if any.
+     * @param hasBaseUrl boolean indicating if base url should be removed from given url.
      * @param baseUrl value of the base url.
      */
-    DocumentView getDocumentViewFromUrl(String url, boolean hasBaseUrl,
-            String baseUrl);
+    DocumentView getDocumentViewFromUrl(String url, boolean hasBaseUrl, String baseUrl);
 
     /**
-     * Returns a DocumentView calling
-     * {@link DocumentViewCodec#getDocumentViewFromUrl(String, boolean, String)}
-     * on codec with given name.
+     * Returns a DocumentView calling {@link DocumentViewCodec#getDocumentViewFromUrl(String, boolean, String)} on codec
+     * with given name.
      *
-     * @param url the original url from request, including request parameters
-     *            if any.
-     * @param hasBaseUrl boolean indicating if base url should be removed from
-     *            given url.
+     * @param url the original url from request, including request parameters if any.
+     * @param hasBaseUrl boolean indicating if base url should be removed from given url.
      * @param baseUrl value of the base url.
      */
-    DocumentView getDocumentViewFromUrl(String codecName, String url,
-            boolean hasBaseUrl, String baseUrl);
+    DocumentView getDocumentViewFromUrl(String codecName, String url, boolean hasBaseUrl, String baseUrl);
 
     /**
      * Returns an URL applying for given document view, or null.
      * <p>
      * Iterates over registered codecs, starting from the default codec, and if
-     * {@link DocumentViewCodec#handleDocumentView(DocumentView)} returns true,
-     * calls {@link DocumentViewCodec#getUrlFromDocumentView(DocumentView)}.
-     * Stops iterating when a codec returns a non-null value. am docView the
-     * original document view from request
+     * {@link DocumentViewCodec#handleDocumentView(DocumentView)} returns true, calls
+     * {@link DocumentViewCodec#getUrlFromDocumentView(DocumentView)}. Stops iterating when a codec returns a non-null
+     * value. am docView the original document view from request
      *
      * @param docView the original document view from request
-     * @param hasBaseUrl boolean indicating if base url should be added to the
-     *            url returned by the codec.
+     * @param hasBaseUrl boolean indicating if base url should be added to the url returned by the codec.
      * @param baseUrl value of the base url.
      */
-    String getUrlFromDocumentView(DocumentView docView, boolean needBaseUrl,
-            String baseUrl);
+    String getUrlFromDocumentView(DocumentView docView, boolean needBaseUrl, String baseUrl);
 
-    /**
+/**
      * Returns an URL calling
      * {@link DocumentViewCodec#getUrlFromDocumentView(DocumentView) on codec
      * with given name.
@@ -98,7 +87,6 @@ public interface DocumentViewCodecManager extends Serializable {
      *            url returned by the codec.
      * @param baseUrl value of the base url.
      */
-    String getUrlFromDocumentView(String codecName, DocumentView docView,
-            boolean needBaseUrl, String baseUrl);
+    String getUrlFromDocumentView(String codecName, DocumentView docView, boolean needBaseUrl, String baseUrl);
 
 }

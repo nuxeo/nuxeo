@@ -45,7 +45,6 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
 
     DocumentModel doc2Publish;
 
-
     @Override
     @Before
     public void setUp() throws Exception {
@@ -57,7 +56,6 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.versioning.api");
         deployBundle("org.nuxeo.ecm.platform.versioning");
         deployBundle("org.nuxeo.ecm.platform.query.api");
-
 
         deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployBundle("org.nuxeo.ecm.platform.publisher.core");
@@ -75,34 +73,27 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
 
     protected void createInitialDocs() throws Exception {
 
-        DocumentModel wsRoot = session.getDocument(new PathRef(
-                "default-domain/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
 
-        workspace = session.createDocumentModel(wsRoot.getPathAsString(),
-                "ws1", "Workspace");
+        workspace = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         workspace.setProperty("dublincore", "title", "test WS");
         workspace = session.createDocument(workspace);
 
-        DocumentModel sectionsRoot = session.getDocument(new PathRef(
-                "default-domain/sections"));
+        DocumentModel sectionsRoot = session.getDocument(new PathRef("default-domain/sections"));
 
-        DocumentModel section1 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), "section1", "Section");
+        DocumentModel section1 = session.createDocumentModel(sectionsRoot.getPathAsString(), "section1", "Section");
         section1.setProperty("dublincore", "title", "section1");
         section1 = session.createDocument(section1);
 
-        DocumentModel section2 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), "section2", "Section");
+        DocumentModel section2 = session.createDocumentModel(sectionsRoot.getPathAsString(), "section2", "Section");
         section2.setProperty("dublincore", "title", "section2");
         section2 = session.createDocument(section2);
 
-        DocumentModel section11 = session.createDocumentModel(
-                section1.getPathAsString(), "section11", "Section");
+        DocumentModel section11 = session.createDocumentModel(section1.getPathAsString(), "section11", "Section");
         section11.setProperty("dublincore", "title", "section11");
         section11 = session.createDocument(section11);
 
-        doc2Publish = session.createDocumentModel(workspace.getPathAsString(),
-                "file", "File");
+        doc2Publish = session.createDocumentModel(workspace.getPathAsString(), "file", "File");
         doc2Publish.setProperty("dublincore", "title", "MyDoc");
 
         Blob blob = new StringBlob("SomeDummyContent");
@@ -119,8 +110,7 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
     public void testCorePublishingWithRemoting() throws Exception {
         createInitialDocs();
 
-        deployContrib("org.nuxeo.ecm.platform.publisher.test",
-                "OSGI-INF/publisher-remote-contrib-test.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.test", "OSGI-INF/publisher-remote-contrib-test.xml");
 
         // check service config
         PublisherService service = Framework.getLocalService(PublisherService.class);
@@ -128,8 +118,7 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         assertTrue(treeNames.contains("ClientRemoteTree"));
 
         // check publication tree
-        PublicationTree tree = service.getPublicationTree("ClientRemoteTree",
-                session, null);
+        PublicationTree tree = service.getPublicationTree("ClientRemoteTree", session, null);
         assertNotNull(tree);
         assertEquals("ClientRemoteTree", tree.getConfigName());
 
@@ -160,8 +149,7 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         DocumentModel publishedDocVersion = session.getLastDocumentVersion(doc2Publish.getRef());
         assertNotNull(publishedDocVersion);
         assertTrue(publishedDocVersion.isVersion());
-        assertEquals(doc2Publish.getRef().toString(),
-                publishedDocVersion.getSourceId());
+        assertEquals(doc2Publish.getRef().toString(), publishedDocVersion.getSourceId());
 
         // check tree features about proxy detection
         // List<PublishedDocument> detectedProxies =
@@ -173,16 +161,14 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         detectedProxies = tree.getPublishedDocumentInNode(nodes.get(0));
         assertTrue(detectedProxies.size() == 0);
 
-        detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(
-                publishedDocVersion));
+        detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(publishedDocVersion));
         assertTrue(detectedProxies.size() == 1);
         detectedProxies = tree.getPublishedDocumentInNode(nodes.get(0));
         assertTrue(detectedProxies.size() == 0);
 
         detectedProxies = tree.getPublishedDocumentInNode(subnodes.get(0));
         assertTrue(detectedProxies.size() == 1);
-        assertEquals(publishedDocVersion.getRef(),
-                detectedProxies.get(0).getSourceDocumentRef());
+        assertEquals(publishedDocVersion.getRef(), detectedProxies.get(0).getSourceDocumentRef());
 
         // check publishing 2
         PublicationNode targetNode2 = nodes.get(0);
@@ -191,14 +177,12 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         session.save();
 
         // check tree features about proxy detection
-        detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(
-                publishedDocVersion));
+        detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(publishedDocVersion));
         assertTrue(detectedProxies.size() == 2);
 
         detectedProxies = tree.getPublishedDocumentInNode(nodes.get(0));
         assertTrue(detectedProxies.size() == 1);
-        assertEquals(publishedDocVersion.getRef(),
-                detectedProxies.get(0).getSourceDocumentRef());
+        assertEquals(publishedDocVersion.getRef(), detectedProxies.get(0).getSourceDocumentRef());
         assertEquals("MyLocalServer", detectedProxies.get(0).getSourceServer());
 
         detectedProxies = tree.getPublishedDocumentInNode(subnodes.get(0));
@@ -206,13 +190,11 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
 
         // check unpublish
         tree.unpublish(publishedDocVersion, targetNode);
-        detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(
-                doc2Publish));
+        detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish));
         assertEquals(1, detectedProxies.size());
 
         tree.unpublish(pubDoc2);
-        detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(
-                doc2Publish));
+        detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish));
         assertEquals(0, detectedProxies.size());
 
         tree.release();
@@ -223,15 +205,13 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
     public void testWrappingThroughRemoting() throws Exception {
         createInitialDocs();
 
-        deployContrib("org.nuxeo.ecm.platform.publisher.test",
-                "OSGI-INF/publisher-remote-contrib-test.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.test", "OSGI-INF/publisher-remote-contrib-test.xml");
 
         // check service config
         PublisherService service = Framework.getLocalService(PublisherService.class);
 
         // check proxy publication tree
-        PublicationTree proxyTree = service.getPublicationTree(
-                "ClientRemoteTree", session, null);
+        PublicationTree proxyTree = service.getPublicationTree("ClientRemoteTree", session, null);
         List<PublicationNode> nodes = proxyTree.getChildrenNodes();
         PublicationNode proxyNode = nodes.get(0);
 
@@ -296,11 +276,9 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
     public void testTitleWithSpaces() throws Exception {
         createInitialDocs();
 
-        deployContrib("org.nuxeo.ecm.platform.publisher.test",
-                "OSGI-INF/publisher-remote-contrib-test.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.test", "OSGI-INF/publisher-remote-contrib-test.xml");
 
-        DocumentModel doc = session.createDocumentModel(
-                workspace.getPathAsString(), "file2", "File");
+        DocumentModel doc = session.createDocumentModel(workspace.getPathAsString(), "file2", "File");
         doc.setProperty("dublincore", "title", "A title with spaces");
 
         Blob blob = new StringBlob("SomeDummyContent");
@@ -312,8 +290,7 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
 
         PublisherService service = Framework.getLocalService(PublisherService.class);
 
-        PublicationTree clientTree = service.getPublicationTree(
-                "ClientRemoteTree", session, null);
+        PublicationTree clientTree = service.getPublicationTree("ClientRemoteTree", session, null);
         List<PublicationNode> clientNodes = clientTree.getChildrenNodes();
         PublicationNode clientNode = clientNodes.get(0);
 

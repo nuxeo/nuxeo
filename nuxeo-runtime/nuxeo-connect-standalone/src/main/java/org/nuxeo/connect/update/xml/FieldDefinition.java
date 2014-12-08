@@ -22,7 +22,6 @@ import org.nuxeo.connect.update.model.Field;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject
 public class FieldDefinition implements Field {

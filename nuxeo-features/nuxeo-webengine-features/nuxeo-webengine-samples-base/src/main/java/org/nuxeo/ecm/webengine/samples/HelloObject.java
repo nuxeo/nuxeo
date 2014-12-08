@@ -29,4 +29,3 @@ public class HelloObject extends DefaultObject {
     }
 
 }
-

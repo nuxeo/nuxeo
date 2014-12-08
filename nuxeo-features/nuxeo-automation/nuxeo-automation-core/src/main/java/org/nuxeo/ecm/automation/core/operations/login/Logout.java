@@ -44,5 +44,4 @@ public class Logout {
         return ctx.getCoreSession().getDocument(doc.getRef());
     }
 
-
 }

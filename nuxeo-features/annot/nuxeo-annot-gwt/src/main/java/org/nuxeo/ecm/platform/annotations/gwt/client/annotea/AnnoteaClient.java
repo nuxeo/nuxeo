@@ -35,7 +35,6 @@ import com.google.gwt.user.client.Window;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnoteaClient {
 
@@ -54,20 +53,16 @@ public class AnnoteaClient {
     }
 
     public void submitAnnotation(Annotation newAnnotation) {
-        AnnotationXmlGenerator xmlGenerator = new AnnotationXmlGenerator(
-                webConfiguration, newAnnotation);
+        AnnotationXmlGenerator xmlGenerator = new AnnotationXmlGenerator(webConfiguration, newAnnotation);
         String request = xmlGenerator.generateXml();
-        postRequest = new RequestBuilder(RequestBuilder.POST,
-                URL.encode(controller.getAnnoteaServerUrl()));
+        postRequest = new RequestBuilder(RequestBuilder.POST, URL.encode(controller.getAnnoteaServerUrl()));
         try {
             postRequest.sendRequest(request, new RequestCallback() {
                 public void onError(Request request, Throwable exception) {
-                    Window.alert("Error while sending data to annotea server: "
-                            + exception.toString());
+                    Window.alert("Error while sending data to annotea server: " + exception.toString());
                 }
 
-                public void onResponseReceived(Request request,
-                        Response response) {
+                public void onResponseReceived(Request request, Response response) {
                     responseManager.processSubmitAnnotationResponse(response.getText());
                     getAnnotationList(controller.getDocumentUrl());
                     controller.reloadAnnotations();
@@ -88,18 +83,16 @@ public class AnnoteaClient {
             annotates = annotates.substring(0, annotates.indexOf('?'));
         }
         String url = controller.getAnnoteaServerUrl() + "?w3c_annotates=" + annotates;
-        RequestBuilder getRequest = new RequestBuilder(RequestBuilder.GET,
-                URL.encode(url));
+        RequestBuilder getRequest = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
         try {
             getRequest.sendRequest(null, new RequestCallback() {
                 public void onError(Request request, Throwable exception) {
                 }
 
-                public void onResponseReceived(Request request,
-                        Response response) {
+                public void onResponseReceived(Request request, Response response) {
                     responseManager.processAnnotationListResponse(response.getText());
                     if (forceDecorate) {
-                     // Force all the annotations to be redecorated
+                        // Force all the annotations to be redecorated
                         controller.updateAnnotations(true);
                     }
                 }
@@ -126,6 +119,7 @@ public class AnnoteaClient {
             req.sendRequest(null, new RequestCallback() {
                 public void onError(Request arg0, Throwable arg1) {
                 }
+
                 public void onResponseReceived(Request arg0, Response arg1) {
                     getAnnotationList(Window.Location.getHref(), true);
                     controller.reloadAnnotations();

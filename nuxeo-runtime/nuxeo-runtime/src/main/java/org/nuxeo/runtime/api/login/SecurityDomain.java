@@ -50,6 +50,7 @@ public class SecurityDomain implements Serializable {
 
     public SecurityDomain() {
     }
+
     public SecurityDomain(String name) {
         this.name = name;
     }
@@ -89,8 +90,7 @@ public class SecurityDomain implements Serializable {
                 flag = LoginModuleControlFlag.REQUISITE;
             }
             descriptor.options.put(LoginModuleWrapper.DELEGATE_CLASS_KEY, descriptor.code);
-            entries[i++] = new AppConfigurationEntry(LoginModuleWrapper.class.getName(), flag,
-                    descriptor.options);
+            entries[i++] = new AppConfigurationEntry(LoginModuleWrapper.class.getName(), flag, descriptor.options);
         }
     }
 
@@ -106,17 +106,14 @@ public class SecurityDomain implements Serializable {
         return ctx;
     }
 
-    public LoginContext login(Subject subject, CallbackHandler handler)
-            throws LoginException {
+    public LoginContext login(Subject subject, CallbackHandler handler) throws LoginException {
         LoginContext ctx = new LoginContext(name, subject, handler);
         ctx.login();
         return ctx;
     }
 
-    public LoginContext login(String username, Object credentials)
-            throws LoginException {
-        CredentialsCallbackHandler handler = new CredentialsCallbackHandler(username,
-                credentials);
+    public LoginContext login(String username, Object credentials) throws LoginException {
+        CredentialsCallbackHandler handler = new CredentialsCallbackHandler(username, credentials);
         LoginContext ctx = new LoginContext(name, handler);
         ctx.login();
         return ctx;
@@ -132,8 +129,7 @@ public class SecurityDomain implements Serializable {
         } else if (flag == LoginModuleControlFlag.SUFFICIENT) {
             return "sufficient";
         }
-        throw new IllegalArgumentException(
-                "Not a supported LoginModuleControlFlag: " + flag);
+        throw new IllegalArgumentException("Not a supported LoginModuleControlFlag: " + flag);
     }
 
     public static LoginModuleControlFlag controlFlagFromString(String flag) {
@@ -148,23 +144,20 @@ public class SecurityDomain implements Serializable {
         } else if ("requisite".equals(flag)) {
             return LoginModuleControlFlag.REQUISITE;
         }
-        throw new IllegalArgumentException(
-                "Not a supported LoginModuleControlFlag: " + flag);
+        throw new IllegalArgumentException("Not a supported LoginModuleControlFlag: " + flag);
     }
 
-
     @SuppressWarnings("unchecked")
-    private void readObject(ObjectInputStream in)
-            throws ClassNotFoundException, IOException {
+    private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
         in.defaultReadObject();
         // read app config entries
         int size = in.readInt();
         entries = new AppConfigurationEntry[size];
-        for (int i=0; i<size; i++) {
-            String name = (String)in.readObject();
-            String ctrlFlag = (String)in.readObject();
+        for (int i = 0; i < size; i++) {
+            String name = (String) in.readObject();
+            String ctrlFlag = (String) in.readObject();
             LoginModuleControlFlag flag = controlFlagFromString(ctrlFlag);
-            Map<String, ?> opts = (Map<String, ?>)in.readObject();
+            Map<String, ?> opts = (Map<String, ?>) in.readObject();
             entries[i] = new AppConfigurationEntry(name, flag, opts);
         }
     }
@@ -173,7 +166,7 @@ public class SecurityDomain implements Serializable {
         out.defaultWriteObject();
         // write app config entries
         if (entries == null) {
-           out.writeInt(0);
+            out.writeInt(0);
         } else {
             out.writeInt(entries.length);
             for (AppConfigurationEntry entry : entries) {

@@ -23,13 +23,15 @@ import com.google.gwt.user.client.Command;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public abstract class AbstractAnnotationCommand implements Command {
 
     protected AnnotationController controller;
+
     protected int annotationIndex;
+
     protected AnnotationPopupMenu popupMenu;
+
     protected String title;
 
     protected AbstractAnnotationCommand(String title, AnnotationController controller, int annotationIndex) {

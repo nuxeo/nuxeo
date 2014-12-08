@@ -25,7 +25,9 @@ package org.nuxeo.ecm.core.rest.security;
 public class Permission {
 
     public final String name;
+
     public final boolean granted;
+
     public final String permission;
 
     public Permission(String name, String permission, boolean granted) {

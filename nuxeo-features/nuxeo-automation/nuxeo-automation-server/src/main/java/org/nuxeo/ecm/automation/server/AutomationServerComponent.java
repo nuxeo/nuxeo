@@ -36,13 +36,12 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class AutomationServerComponent extends DefaultComponent implements
-        AutomationServer {
+public class AutomationServerComponent extends DefaultComponent implements AutomationServer {
 
     /**
      * Was used to get the JsonFactory, but since 5.7.3 use either: *
-     * <code>{@link JsonFactoryManager#getJsonFactory()}</code> * Context
-     * annotation in JAX-RS object (providers or resources)
+     * <code>{@link JsonFactoryManager#getJsonFactory()}</code> * Context annotation in JAX-RS object (providers or
+     * resources)
      */
     @Deprecated
     public static AutomationServerComponent me;
@@ -71,8 +70,7 @@ public class AutomationServerComponent extends DefaultComponent implements
         writers = new ArrayList<>();
         readers = new ArrayList<>();
         me = this;
-        ioComponent = ((IOComponent) Framework.getRuntime().getComponentInstance(
-                IOCOMPONENT_NAME).getInstance());
+        ioComponent = ((IOComponent) Framework.getRuntime().getComponentInstance(IOCOMPONENT_NAME).getInstance());
     }
 
     @Override
@@ -82,8 +80,7 @@ public class AutomationServerComponent extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             addBinding(binding);
@@ -92,20 +89,17 @@ public class AutomationServerComponent extends DefaultComponent implements
             writers.addAll(marshaller.getWriters());
             readers.addAll(marshaller.getReaders());
         } else if (XP_CODECS.equals(extensionPoint)) {
-            ioComponent.registerContribution(contribution, extensionPoint,
-                    contributor);
+            ioComponent.registerContribution(contribution, extensionPoint, contributor);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             removeBinding(binding);
         } else if (XP_CODECS.equals(extensionPoint)) {
-            ioComponent.unregisterContribution(contribution, extensionPoint,
-                    contributor);
+            ioComponent.unregisterContribution(contribution, extensionPoint, contributor);
         }
     }
 
@@ -147,8 +141,7 @@ public class AutomationServerComponent extends DefaultComponent implements
     }
 
     protected String getBindingKey(RestBinding binding) {
-        return binding.isChain() ? Constants.CHAIN_ID_PREFIX
-                + binding.getName() : binding.getName();
+        return binding.isChain() ? Constants.CHAIN_ID_PREFIX + binding.getName() : binding.getName();
     }
 
     @Override

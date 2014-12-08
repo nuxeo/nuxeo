@@ -63,12 +63,10 @@ import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
- * Serves UI for the setup screen, handling properties that can be saved on the
- * bin/nuxeo.conf file on server.
+ * Serves UI for the setup screen, handling properties that can be saved on the bin/nuxeo.conf file on server.
  * <p>
- * Manages some important parameters to perform validation on them, and accepts
- * custom parameters that would be present in the server nuxeo.conf file, and
- * moves to advanced mode any property that would not be in that list.
+ * Manages some important parameters to perform validation on them, and accepts custom parameters that would be present
+ * in the server nuxeo.conf file, and moves to advanced mode any property that would not be in that list.
  *
  * @since 5.5
  */
@@ -81,47 +79,30 @@ public class SetupWizardActionBean implements Serializable {
     protected static final Log log = LogFactory.getLog(SetupWizardActionBean.class);
 
     /**
-     * The list of important parameters that need to be presented first to the
-     * user
+     * The list of important parameters that need to be presented first to the user
      */
-    private static final String[] managedKeyParameters = {
-            "nuxeo.bind.address", "nuxeo.url", Environment.NUXEO_DATA_DIR,
-            Environment.NUXEO_LOG_DIR, "org.nuxeo.ecm.product.name",
-            "org.nuxeo.ecm.product.version", "nuxeo.conf",
-            PARAM_TEMPLATE_DBNAME, "nuxeo.db.name", "nuxeo.db.user",
-            "nuxeo.db.password", "nuxeo.db.host", "nuxeo.db.port",
-            "nuxeo.db.min-pool-size", "nuxeo.db.min-pool-size",
-            "nuxeo.db.max-pool-size", "nuxeo.vcs.min-pool-size",
-            "nuxeo.vcs.max-pool-size", "nuxeo.notification.eMailSubjectPrefix",
-            "mailservice.user", "mailservice.password", "mail.store.protocol",
-            "mail.transport.protocol", "mail.store.host", "mail.store.port",
-            "mail.store.user", "mail.store.password", "mail.debug",
-            "mail.transport.host", "mail.transport.port",
-            "mail.transport.auth", "mail.transport.user",
-            "mail.transport.password", "mail.from", "mail.user",
-            "mail.transport.usetls", "nuxeo.http.proxy.host",
-            "nuxeo.http.proxy.port", "nuxeo.http.proxy.login",
-            "nuxeo.http.proxy.password", "org.nuxeo.dev",
-            "nuxeo.directory.type", "nuxeo.user.group.storage",
-            "nuxeo.ldap.url", "nuxeo.ldap.binddn", "nuxeo.ldap.bindpassword",
-            "nuxeo.ldap.retries", "nuxeo.ldap.user.searchBaseDn",
-            "nuxeo.ldap.user.searchClass", "nuxeo.ldap.user.searchFilter",
-            "nuxeo.ldap.user.searchScope", "nuxeo.ldap.user.readonly",
-            "nuxeo.ldap.user.mapping.rdn", "nuxeo.ldap.user.mapping.username",
-            "nuxeo.ldap.user.mapping.password",
-            "nuxeo.ldap.user.mapping.firstname",
-            "nuxeo.ldap.user.mapping.lastname",
-            "nuxeo.ldap.user.mapping.email", "nuxeo.ldap.user.mapping.company",
-            "nuxeo.ldap.group.searchBaseDn", "nuxeo.ldap.group.searchFilter",
-            "nuxeo.ldap.group.searchScope", "nuxeo.ldap.group.readonly",
-            "nuxeo.ldap.group.mapping.rdn", "nuxeo.ldap.group.mapping.name",
-            "nuxeo.ldap.group.mapping.label",
-            "nuxeo.ldap.group.mapping.members.staticAttributeId",
-            "nuxeo.ldap.group.mapping.members.dynamicAttributeId",
-            "nuxeo.ldap.defaultAdministratorId",
-            "nuxeo.ldap.defaultMembersGroup", "nuxeo.user.anonymous.enable",
-            "nuxeo.user.emergency.enable", "nuxeo.user.emergency.username",
-            "nuxeo.user.emergency.password", "nuxeo.user.emergency.firstname",
+    private static final String[] managedKeyParameters = { "nuxeo.bind.address", "nuxeo.url",
+            Environment.NUXEO_DATA_DIR, Environment.NUXEO_LOG_DIR, "org.nuxeo.ecm.product.name",
+            "org.nuxeo.ecm.product.version", "nuxeo.conf", PARAM_TEMPLATE_DBNAME, "nuxeo.db.name", "nuxeo.db.user",
+            "nuxeo.db.password", "nuxeo.db.host", "nuxeo.db.port", "nuxeo.db.min-pool-size", "nuxeo.db.min-pool-size",
+            "nuxeo.db.max-pool-size", "nuxeo.vcs.min-pool-size", "nuxeo.vcs.max-pool-size",
+            "nuxeo.notification.eMailSubjectPrefix", "mailservice.user", "mailservice.password", "mail.store.protocol",
+            "mail.transport.protocol", "mail.store.host", "mail.store.port", "mail.store.user", "mail.store.password",
+            "mail.debug", "mail.transport.host", "mail.transport.port", "mail.transport.auth", "mail.transport.user",
+            "mail.transport.password", "mail.from", "mail.user", "mail.transport.usetls", "nuxeo.http.proxy.host",
+            "nuxeo.http.proxy.port", "nuxeo.http.proxy.login", "nuxeo.http.proxy.password", "org.nuxeo.dev",
+            "nuxeo.directory.type", "nuxeo.user.group.storage", "nuxeo.ldap.url", "nuxeo.ldap.binddn",
+            "nuxeo.ldap.bindpassword", "nuxeo.ldap.retries", "nuxeo.ldap.user.searchBaseDn",
+            "nuxeo.ldap.user.searchClass", "nuxeo.ldap.user.searchFilter", "nuxeo.ldap.user.searchScope",
+            "nuxeo.ldap.user.readonly", "nuxeo.ldap.user.mapping.rdn", "nuxeo.ldap.user.mapping.username",
+            "nuxeo.ldap.user.mapping.password", "nuxeo.ldap.user.mapping.firstname",
+            "nuxeo.ldap.user.mapping.lastname", "nuxeo.ldap.user.mapping.email", "nuxeo.ldap.user.mapping.company",
+            "nuxeo.ldap.group.searchBaseDn", "nuxeo.ldap.group.searchFilter", "nuxeo.ldap.group.searchScope",
+            "nuxeo.ldap.group.readonly", "nuxeo.ldap.group.mapping.rdn", "nuxeo.ldap.group.mapping.name",
+            "nuxeo.ldap.group.mapping.label", "nuxeo.ldap.group.mapping.members.staticAttributeId",
+            "nuxeo.ldap.group.mapping.members.dynamicAttributeId", "nuxeo.ldap.defaultAdministratorId",
+            "nuxeo.ldap.defaultMembersGroup", "nuxeo.user.anonymous.enable", "nuxeo.user.emergency.enable",
+            "nuxeo.user.emergency.username", "nuxeo.user.emergency.password", "nuxeo.user.emergency.firstname",
             "nuxeo.user.emergency.lastname" };
 
     protected Map<String, String> parameters;
@@ -205,8 +186,8 @@ public class SetupWizardActionBean implements Serializable {
     }
 
     /**
-     * Fill {@link #parameters} and {@link #advancedParameters} with properties
-     * from #{@link ConfigurationGenerator#getUserConfig()}
+     * Fill {@link #parameters} and {@link #advancedParameters} with properties from #
+     * {@link ConfigurationGenerator#getUserConfig()}
      *
      * @since 5.6
      */
@@ -258,8 +239,7 @@ public class SetupWizardActionBean implements Serializable {
         resetParameters();
         // initialize setupConfigurator again, as it's in scope page
         getConfigurationGenerator();
-        facesMessages.add(StatusMessage.Severity.INFO,
-                messages.get("label.parameters.saved"));
+        facesMessages.add(StatusMessage.Severity.INFO, messages.get("label.parameters.saved"));
     }
 
     @SuppressWarnings("unchecked")
@@ -290,8 +270,7 @@ public class SetupWizardActionBean implements Serializable {
         }
 
         // Remove empty values for password keys
-        for (String pwdKey : new String[] { "nuxeo.db.password",
-                "mailservice.password", "mail.transport.password",
+        for (String pwdKey : new String[] { "nuxeo.db.password", "mailservice.password", "mail.transport.password",
                 "nuxeo.http.proxy.password" }) {
             if (StringUtils.isEmpty(parameters.get(pwdKey))) {
                 parameters.remove(pwdKey);
@@ -318,8 +297,7 @@ public class SetupWizardActionBean implements Serializable {
     /**
      * @since 5.6
      */
-    public void checkDatabaseParameters(FacesContext context,
-            UIComponent component, Object value) {
+    public void checkDatabaseParameters(FacesContext context, UIComponent component, Object value) {
         Map<String, Object> attributes = component.getAttributes();
         String dbNameInputId = (String) attributes.get("dbNameInputId");
         String dbUserInputId = (String) attributes.get("dbUserInputId");
@@ -327,8 +305,7 @@ public class SetupWizardActionBean implements Serializable {
         String dbHostInputId = (String) attributes.get("dbHostInputId");
         String dbPortInputId = (String) attributes.get("dbPortInputId");
 
-        if (dbNameInputId == null || dbUserInputId == null
-                || dbPwdInputId == null || dbHostInputId == null
+        if (dbNameInputId == null || dbUserInputId == null || dbPwdInputId == null || dbHostInputId == null
                 || dbPortInputId == null) {
             log.error("Cannot validate database parameters: missing inputIds");
             return;
@@ -339,8 +316,7 @@ public class SetupWizardActionBean implements Serializable {
         UIInput dbPwdComp = (UIInput) component.findComponent(dbPwdInputId);
         UIInput dbHostComp = (UIInput) component.findComponent(dbHostInputId);
         UIInput dbPortComp = (UIInput) component.findComponent(dbPortInputId);
-        if (dbNameComp == null || dbUserComp == null || dbPwdComp == null
-                || dbHostComp == null || dbPortComp == null) {
+        if (dbNameComp == null || dbUserComp == null || dbPwdComp == null || dbHostComp == null || dbPortComp == null) {
             log.error("Cannot validate inputs: not found");
             return;
         }
@@ -359,8 +335,7 @@ public class SetupWizardActionBean implements Serializable {
         String errorLabel = null;
         Exception error = null;
         try {
-            setupConfigGenerator.checkDatabaseConnection(
-                    parameters.get(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME),
+            setupConfigGenerator.checkDatabaseConnection(parameters.get(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME),
                     dbName, dbUser, dbPwd, dbHost, dbPort);
         } catch (FileNotFoundException e) {
             errorLabel = ERROR_DB_FS;
@@ -377,14 +352,13 @@ public class SetupWizardActionBean implements Serializable {
         }
         if (error != null) {
             log.error(error, error);
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, errorLabel), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    errorLabel), null);
             throw new ValidatorException(message);
         }
 
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                ComponentUtils.translate(context, "error.db.none"), null);
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, ComponentUtils.translate(context,
+                "error.db.none"), null);
         message.setSeverity(FacesMessage.SEVERITY_INFO);
         context.addMessage(component.getClientId(context), message);
     }
@@ -396,8 +370,7 @@ public class SetupWizardActionBean implements Serializable {
             dbTemplate = (String) ((ValueHolder) select).getValue();
         } else {
             log.error("Bad component returned " + select);
-            throw new AbortProcessingException("Bad component returned "
-                    + select);
+            throw new AbortProcessingException("Bad component returned " + select);
         }
         setupConfigGenerator.changeDBTemplate(dbTemplate);
         setParameters();
@@ -413,8 +386,7 @@ public class SetupWizardActionBean implements Serializable {
             proxyType = (String) ((ValueHolder) select).getValue();
         } else {
             log.error("Bad component returned " + select);
-            throw new AbortProcessingException("Bad component returned "
-                    + select);
+            throw new AbortProcessingException("Bad component returned " + select);
         }
         Contexts.getEventContext().remove("setupParams");
         FacesContext context = FacesContext.getCurrentInstance();
@@ -452,8 +424,7 @@ public class SetupWizardActionBean implements Serializable {
     public boolean getNeedGroupConfiguration() {
         if (needGroupConfiguration == null) {
             String storageType = parameters.get("nuxeo.user.group.storage");
-            if ("userLdapOnly".equals(storageType)
-                    || "multiUserSqlGroup".equals(storageType)) {
+            if ("userLdapOnly".equals(storageType) || "multiUserSqlGroup".equals(storageType)) {
                 needGroupConfiguration = Boolean.FALSE;
             } else {
                 needGroupConfiguration = Boolean.TRUE;
@@ -468,8 +439,7 @@ public class SetupWizardActionBean implements Serializable {
             directoryType = (String) ((ValueHolder) select).getValue();
         } else {
             log.error("Bad component returned " + select);
-            throw new AbortProcessingException("Bad component returned "
-                    + select);
+            throw new AbortProcessingException("Bad component returned " + select);
         }
         if ("multi".equals(directoryType)) {
             setDirectoryStorage("multiUserGroup");
@@ -482,8 +452,7 @@ public class SetupWizardActionBean implements Serializable {
         context.renderResponse();
     }
 
-    public void checkLdapNetworkParameters(FacesContext context,
-            UIComponent component, Object value) {
+    public void checkLdapNetworkParameters(FacesContext context, UIComponent component, Object value) {
         Map<String, Object> attributes = component.getAttributes();
         String ldapUrlId = (String) attributes.get("directoryLdapUrl");
 
@@ -510,21 +479,18 @@ public class SetupWizardActionBean implements Serializable {
         }
         if (error != null) {
             log.error(error, error);
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, errorLabel), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    errorLabel), null);
             throw new ValidatorException(message);
         }
 
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                ComponentUtils.translate(context, "error.ldap.network.none"),
-                null);
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, ComponentUtils.translate(context,
+                "error.ldap.network.none"), null);
         message.setSeverity(FacesMessage.SEVERITY_INFO);
         context.addMessage(component.getClientId(context), message);
     }
 
-    public void checkLdapAuthenticationParameters(FacesContext context,
-            UIComponent component, Object value) {
+    public void checkLdapAuthenticationParameters(FacesContext context, UIComponent component, Object value) {
 
         Map<String, Object> attributes = component.getAttributes();
         String ldapUrlId = (String) attributes.get("ldapUrl");
@@ -539,8 +505,7 @@ public class SetupWizardActionBean implements Serializable {
         UIInput ldapUrlComp = (UIInput) component.findComponent(ldapUrlId);
         UIInput ldapBinddnComp = (UIInput) component.findComponent(ldapBinddnId);
         UIInput ldapBindpwdComp = (UIInput) component.findComponent(ldapBindpwdId);
-        if (ldapUrlComp == null || ldapBinddnComp == null
-                || ldapBindpwdComp == null) {
+        if (ldapUrlComp == null || ldapBinddnComp == null || ldapBindpwdComp == null) {
             log.error("Cannot validate LDAP inputs: not found");
             return;
         }
@@ -552,8 +517,7 @@ public class SetupWizardActionBean implements Serializable {
         String errorLabel = null;
         Exception error = null;
         try {
-            setupConfigGenerator.checkLdapConnection(ldapUrl, ldapBindDn,
-                    ldapBindPwd, true);
+            setupConfigGenerator.checkLdapConnection(ldapUrl, ldapBindDn, ldapBindPwd, true);
         } catch (NamingException e) {
             if (e instanceof AuthenticationException) {
                 errorLabel = ERROR_LDAP_AUTHENTICATION;
@@ -564,14 +528,13 @@ public class SetupWizardActionBean implements Serializable {
         }
         if (error != null) {
             log.error(error, error);
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, errorLabel), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    errorLabel), null);
             throw new ValidatorException(message);
         }
 
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                ComponentUtils.translate(context, "error.ldap.auth.none"), null);
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, ComponentUtils.translate(context,
+                "error.ldap.auth.none"), null);
         message.setSeverity(FacesMessage.SEVERITY_INFO);
         context.addMessage(component.getClientId(context), message);
     }

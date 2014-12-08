@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AnnotationTest {
 
@@ -51,11 +50,9 @@ public class AnnotationTest {
         assertEquals("I_class_anno", acC.getAnnotation(Anno2.class).value());
         assertEquals("I_class_anno", acI.getAnnotation(Anno2.class).value());
 
-        assertEquals(
-                "[@org.nuxeo.runtime.annotations.Anno1(value=A_class_anno)]",
+        assertEquals("[@org.nuxeo.runtime.annotations.Anno1(value=A_class_anno)]",
                 Arrays.asList(acA.getAnnotations()).toString());
-        assertEquals(
-                "[@org.nuxeo.runtime.annotations.Anno1(value=B_class_anno)]",
+        assertEquals("[@org.nuxeo.runtime.annotations.Anno1(value=B_class_anno)]",
                 Arrays.asList(acB.getAnnotations()).toString());
 
         List<Annotation> actual = Arrays.asList(acC.getAnnotations());
@@ -65,8 +62,7 @@ public class AnnotationTest {
         assertTrue(("[" + a1 + ", " + a2 + "]").equals(actual.toString())
                 || ("[" + a2 + ", " + a1 + "]").equals(actual.toString()));
 
-        assertEquals(
-                "[@org.nuxeo.runtime.annotations.Anno2(value=I_class_anno)]",
+        assertEquals("[@org.nuxeo.runtime.annotations.Anno2(value=I_class_anno)]",
                 Arrays.asList(acI.getAnnotations()).toString());
 
         // methods
@@ -83,11 +79,9 @@ public class AnnotationTest {
         }
     }
 
-    static void printMethodAnnos(AnnotatedClass<?> ac,
-            Class<? extends Annotation> annoClass) {
+    static void printMethodAnnos(AnnotatedClass<?> ac, Class<? extends Annotation> annoClass) {
         AnnotatedMethod[] ams = ac.getAnnotatedMethods(annoClass);
-        log.debug("Annotation " + annoClass + " on class "
-                + ac.getAnnotatedClass() + " is present on methods:");
+        log.debug("Annotation " + annoClass + " on class " + ac.getAnnotatedClass() + " is present on methods:");
         if (ams.length == 0) {
             log.debug("N/A");
         } else {

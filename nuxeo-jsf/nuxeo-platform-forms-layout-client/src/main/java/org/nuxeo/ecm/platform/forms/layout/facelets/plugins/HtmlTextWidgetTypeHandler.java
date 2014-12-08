@@ -50,9 +50,8 @@ public class HtmlTextWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final long serialVersionUID = 1495841177711755669L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
@@ -66,44 +65,34 @@ public class HtmlTextWidgetTypeHandler extends AbstractWidgetTypeHandler {
             if (BuiltinWidgetModes.EDIT.equals(mode)) {
                 // exclude styleClass, it needs a specific css class also, see
                 // below
-                attributes = helper.getTagAttributes(widget,
-                        Arrays.asList("styleClass"), true);
-                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                        helper.createAttribute("id", widgetId));
+                attributes = helper.getTagAttributes(widget, Arrays.asList("styleClass"), true);
+                attributes = FaceletHandlerHelper.addTagAttribute(attributes, helper.createAttribute("id", widgetId));
             } else {
                 attributes = helper.getTagAttributes(widgetId, widget);
             }
         }
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
-                subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+            ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     UIHtmlEditor.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(
-                    widgetTagConfigId, msgId, widgetId, null);
+            ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
             // default on text for other modes, do not escape
             TagAttribute escape = helper.createAttribute("escape", "false");
-            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                    escape);
+            attributes = FaceletHandlerHelper.addTagAttribute(attributes, escape);
             String styleClass = (String) widget.getProperty("styleClass");
             TagAttribute styleClassAttr = helper.createAttribute("styleClass",
-                    StringUtils.isBlank(styleClass) ? "textBlock"
-                            : "textBlock " + styleClass);
-            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                    styleClassAttr);
-            ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+                    StringUtils.isBlank(styleClass) ? "textBlock" : "textBlock " + styleClass);
+            attributes = FaceletHandlerHelper.addTagAttribute(attributes, styleClassAttr);
+            ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributesImpl(new TagAttribute[0]), output,
-                        UIHtmlText.class.getName(), null);
+                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
+                        output, UIHtmlText.class.getName(), null);
             } else {
                 return output;
             }

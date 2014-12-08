@@ -93,8 +93,7 @@ public class FetchByPropertyTest {
     public void testFetchOne() throws Exception {
         OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("testChain");
-        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values",
-                "title1");
+        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values", "title1");
 
         DocumentModelList docs = (DocumentModelList) service.run(ctx, chain);
         assertEquals(1, docs.size());
@@ -103,8 +102,8 @@ public class FetchByPropertyTest {
         // add a where clause
 
         chain = new OperationChain("testChain");
-        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values",
-                "title1").set("query", "ecm:primaryType = 'Workspace'");
+        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values", "title1").set("query",
+                "ecm:primaryType = 'Workspace'");
 
         docs = (DocumentModelList) service.run(ctx, chain);
         assertEquals(1, docs.size());
@@ -115,8 +114,8 @@ public class FetchByPropertyTest {
     public void testFetchMultiple() throws Exception {
         OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("testChain");
-        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values",
-                "title1, title3, title3"); // twice title3
+        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values", "title1, title3, title3"); // twice
+                                                                                                           // title3
 
         DocumentModelList docs = (DocumentModelList) service.run(ctx, chain);
         assertEquals(2, docs.size());
@@ -130,8 +129,8 @@ public class FetchByPropertyTest {
         // add a where clause
 
         chain = new OperationChain("testChain");
-        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values",
-                "title1, title3").set("query", "ecm:primaryType = 'Workspace'");
+        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values", "title1, title3").set("query",
+                "ecm:primaryType = 'Workspace'");
 
         docs = (DocumentModelList) service.run(ctx, chain);
         assertEquals(1, docs.size());
@@ -142,8 +141,7 @@ public class FetchByPropertyTest {
     public void testEscaping() throws Exception {
         OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("testChain");
-        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values",
-                "\"sinead o'connor\"");
+        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values", "\"sinead o'connor\"");
 
         DocumentModelList docs = (DocumentModelList) service.run(ctx, chain);
         assertEquals(1, docs.size());

@@ -23,7 +23,6 @@ import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractStreamSource implements StreamSource {
 
@@ -65,8 +64,7 @@ public abstract class AbstractStreamSource implements StreamSource {
     }
 
     /**
-     * Change the charset used for serializing the String source as a byte
-     * stream.
+     * Change the charset used for serializing the String source as a byte stream.
      *
      * @since 5.7
      */

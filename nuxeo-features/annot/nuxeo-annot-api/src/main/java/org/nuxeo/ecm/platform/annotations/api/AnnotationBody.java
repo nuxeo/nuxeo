@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.annotations.api;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface AnnotationBody {
 

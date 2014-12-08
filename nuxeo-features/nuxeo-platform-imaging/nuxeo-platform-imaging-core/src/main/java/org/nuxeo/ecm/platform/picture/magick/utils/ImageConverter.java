@@ -29,8 +29,8 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
  */
 public class ImageConverter extends MagickExecutor {
 
-    public static void convert(String inputFilePath, String outputFilePath)
-            throws CommandNotAvailable, CommandException {
+    public static void convert(String inputFilePath, String outputFilePath) throws CommandNotAvailable,
+            CommandException {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("inputFilePath", inputFilePath);
         params.addNamedParameter("outputFilePath", outputFilePath);

@@ -38,8 +38,7 @@ import com.google.inject.Inject;
  *
  * @since 6.0
  */
-public class GetDocumentsFromFavoritesTest extends
-        CollectionOperationsTestCase {
+public class GetDocumentsFromFavoritesTest extends CollectionOperationsTestCase {
 
     @Inject
     FavoritesManager favoritesManager;
@@ -48,8 +47,7 @@ public class GetDocumentsFromFavoritesTest extends
 
     @Before
     public void setUp() throws ClientException {
-        testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         // Create a list of test documents
         listDocuments = createTestFiles(session, 5);

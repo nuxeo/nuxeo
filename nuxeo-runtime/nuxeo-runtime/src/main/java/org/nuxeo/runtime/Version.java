@@ -17,26 +17,29 @@ package org.nuxeo.runtime;
 import java.io.Serializable;
 
 /**
- * A version consists of three fields, denoting the major version,
- * the minor version, and the update version. Example: 3.1.2.
+ * A version consists of three fields, denoting the major version, the minor version, and the update version. Example:
+ * 3.1.2.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Version implements Serializable, Comparable<Version> {
 
     public static final Version ZERO = new Version(0, 0, 0);
+
     public static final Version MIN = ZERO;
+
     public static final Version MAX = new Version(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     private static final long serialVersionUID = 4287621413157054503L;
 
     private final int major;
+
     private final int minor;
+
     private final int update;
 
     /**
-     * Creates a new version object given the major, minor and update
-     * version numbers.
+     * Creates a new version object given the major, minor and update version numbers.
      *
      * @param major the major version
      * @param minor the minor version
@@ -65,8 +68,7 @@ public class Version implements Serializable, Comparable<Version> {
                 int update = Integer.parseInt(version.substring(q + 1));
                 return new Version(major, minor, update);
             } else {
-                return new Version(major,
-                        Integer.parseInt(version.substring(p + 1)), 0);
+                return new Version(major, Integer.parseInt(version.substring(p + 1)), 0);
             }
         } else {
             return new Version(Integer.parseInt(version), 0, 0);
@@ -124,9 +126,7 @@ public class Version implements Serializable, Comparable<Version> {
      * @return if the current version is equal to the given one, false otherwise
      */
     public boolean isEqualTo(Version version) {
-        return major == version.major
-            && minor == version.minor
-            && update == version.update;
+        return major == version.major && minor == version.minor && update == version.update;
     }
 
     /**
@@ -159,14 +159,11 @@ public class Version implements Serializable, Comparable<Version> {
     /**
      * Gets the string representation of this version.
      * <p>
-     * The string representation can be used in {@link Version#parseString(String)}
-     * to create a version object.
+     * The string representation can be used in {@link Version#parseString(String)} to create a version object.
      */
     @Override
     public String toString() {
-        return new StringBuffer().append(major)
-            .append('.').append(minor).append('.')
-            .append(update).toString();
+        return new StringBuffer().append(major).append('.').append(minor).append('.').append(update).toString();
     }
 
     @Override

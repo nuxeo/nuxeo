@@ -44,8 +44,7 @@ public class Md2HtmlConverter implements Converter {
     private ConverterDescriptor descriptor;
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         Boolean bodyContentOnly = Boolean.FALSE;
         if (parameters != null) {
@@ -66,8 +65,7 @@ public class Md2HtmlConverter implements Converter {
             if (!bodyContentOnly) {
                 html.append("</body></html>");
             }
-            Blob outputBlob = new StringBlob(html.toString(),
-                    descriptor.getDestinationMimeType());
+            Blob outputBlob = new StringBlob(html.toString(), descriptor.getDestinationMimeType());
             String filename = inputBlob.getFilename();
             if (filename != null) {
                 int dotPosition = filename.lastIndexOf('.');
@@ -78,8 +76,7 @@ public class Md2HtmlConverter implements Converter {
             }
             return new SimpleCachableBlobHolder(outputBlob);
         } catch (IOException e) {
-            throw new ConversionException(
-                    "Could not get Markdown string from BlobHolder", e);
+            throw new ConversionException("Could not get Markdown string from BlobHolder", e);
         }
     }
 

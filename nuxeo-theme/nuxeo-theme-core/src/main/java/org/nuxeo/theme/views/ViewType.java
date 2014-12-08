@@ -76,11 +76,9 @@ public final class ViewType implements Type {
     public ViewType() {
     }
 
-    public ViewType(final String viewName, final String className,
-            final String engineName, final String templateEngine,
-            final String mode, final String elementTypeName,
-            final String modelTypeName, final String formatTypeName,
-            final String template, final List<String> resources) {
+    public ViewType(final String viewName, final String className, final String engineName,
+            final String templateEngine, final String mode, final String elementTypeName, final String modelTypeName,
+            final String formatTypeName, final String template, final List<String> resources) {
         this.viewName = viewName;
         this.elementTypeName = elementTypeName;
         this.modelTypeName = modelTypeName;
@@ -94,18 +92,14 @@ public final class ViewType implements Type {
     }
 
     public String getTypeName() {
-        return computeName(formatTypeName, elementTypeName, viewName,
-                modelTypeName, engineName, mode, templateEngine);
+        return computeName(formatTypeName, elementTypeName, viewName, modelTypeName, engineName, mode, templateEngine);
     }
 
-    public static String computeName(final String formatTypeName,
-            final String elementTypeName, final String viewName,
-            final String modelTypeName, final String engineName,
-            final String mode, final String templateEngineName) {
+    public static String computeName(final String formatTypeName, final String elementTypeName, final String viewName,
+            final String modelTypeName, final String engineName, final String mode, final String templateEngineName) {
 
-        return String.format("%s/%s/%s/%s/%s/%s/%s", formatTypeName,
-                elementTypeName, viewName, modelTypeName, engineName, mode,
-                templateEngineName);
+        return String.format("%s/%s/%s/%s/%s/%s/%s", formatTypeName, elementTypeName, viewName, modelTypeName,
+                engineName, mode, templateEngineName);
     }
 
     public TypeFamily getTypeFamily() {
@@ -121,8 +115,8 @@ public final class ViewType implements Type {
             return view;
         }
         if (className == null) {
-            className = ((TemplateEngineType) Manager.getTypeRegistry().lookup(
-                    TypeFamily.TEMPLATE_ENGINE, templateEngine)).getTemplateView();
+            className = ((TemplateEngineType) Manager.getTypeRegistry().lookup(TypeFamily.TEMPLATE_ENGINE,
+                    templateEngine)).getTemplateView();
         }
         try {
             view = (View) Class.forName(className).newInstance();
@@ -135,18 +129,15 @@ public final class ViewType implements Type {
     }
 
     public ElementType getElementType() {
-        return (ElementType) Manager.getTypeRegistry().lookup(
-                TypeFamily.ELEMENT, elementTypeName);
+        return (ElementType) Manager.getTypeRegistry().lookup(TypeFamily.ELEMENT, elementTypeName);
     }
 
     public ModelType getModelType() {
-        return (ModelType) Manager.getTypeRegistry().lookup(TypeFamily.MODEL,
-                modelTypeName);
+        return (ModelType) Manager.getTypeRegistry().lookup(TypeFamily.MODEL, modelTypeName);
     }
 
     public FormatType getFormatType() {
-        return (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT,
-                formatTypeName);
+        return (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, formatTypeName);
     }
 
     public String getTemplate() {

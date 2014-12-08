@@ -46,10 +46,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.9.1
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -85,8 +83,7 @@ public class TestImportExportWithComplexXSD {
 
         Assert.assertTrue(out.length() > 0);
 
-        DocumentModel newParent = session.createDocumentModel("/",
-                "importRoot", "Folder");
+        DocumentModel newParent = session.createDocumentModel("/", "importRoot", "Folder");
         newParent.setPropertyValue("dc:title", "Import Root");
         newParent = session.createDocument(newParent);
         session.save();

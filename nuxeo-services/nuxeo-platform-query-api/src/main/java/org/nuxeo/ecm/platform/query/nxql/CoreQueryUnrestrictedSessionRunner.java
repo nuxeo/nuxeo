@@ -24,13 +24,11 @@ import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
- * Unrestricted session runner providing API for retrieving the result
- * documents list.
+ * Unrestricted session runner providing API for retrieving the result documents list.
  *
  * @since 6.0
  */
-public class CoreQueryUnrestrictedSessionRunner extends
-        UnrestrictedSessionRunner {
+public class CoreQueryUnrestrictedSessionRunner extends UnrestrictedSessionRunner {
 
     protected final String query;
 
@@ -48,9 +46,8 @@ public class CoreQueryUnrestrictedSessionRunner extends
 
     protected DocumentModelList docs;
 
-    public CoreQueryUnrestrictedSessionRunner(CoreSession session,
-            String query, Filter filter, long limit, long offset,
-            boolean countTotal, long countUpTo, boolean detachDocuments) {
+    public CoreQueryUnrestrictedSessionRunner(CoreSession session, String query, Filter filter, long limit,
+            long offset, boolean countTotal, long countUpTo, boolean detachDocuments) {
         super(session);
         this.query = query;
         this.filter = filter;

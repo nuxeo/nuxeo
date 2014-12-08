@@ -19,8 +19,7 @@
 package org.nuxeo.common.utils;
 
 /**
- * Class containing helpers related to the expression of sizes in bytes,
- * kilobytes, etc.
+ * Class containing helpers related to the expression of sizes in bytes, kilobytes, etc.
  */
 public class SizeUtils {
 
@@ -45,8 +44,7 @@ public class SizeUtils {
      * @return the size
      * @throws NumberFormatException if the size cannot be parsed
      */
-    public static long parseSizeInBytes(String string)
-            throws NumberFormatException {
+    public static long parseSizeInBytes(String string) throws NumberFormatException {
         String digits = string;
         if (digits.length() == 0) {
             throw new NumberFormatException("Invalid empty string");

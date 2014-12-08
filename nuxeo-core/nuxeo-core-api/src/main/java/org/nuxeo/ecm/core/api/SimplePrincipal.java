@@ -20,7 +20,7 @@ import java.security.Principal;
 /**
  * Used to change permission in connect.
  */
-//FIXME remove this when connect will be changed to use SystemPrincipal
+// FIXME remove this when connect will be changed to use SystemPrincipal
 public class SimplePrincipal implements Principal, Serializable {
 
     private static final long serialVersionUID = 4899743263998931844L;

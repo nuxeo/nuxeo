@@ -14,29 +14,23 @@ package org.nuxeo.ecm.core.event;
 import java.io.Serializable;
 
 /**
- * A lightweight object used by core components to notify interested components
- * about events in core.
+ * A lightweight object used by core components to notify interested components about events in core.
  * <p>
- * These events should be used by all core components not only by the
- * repository.
+ * These events should be used by all core components not only by the repository.
  * <p>
- * The events may specify a set of control flags that can be used to control the
- * visibility and the way post commit events are handled. There are 3 types of
- * visibility:
+ * The events may specify a set of control flags that can be used to control the visibility and the way post commit
+ * events are handled. There are 3 types of visibility:
  * <ul>
  * <li>LOCAL - events that are considered being visible to the local machine.
- * <li>PUBLIC (the default) - events visible on any machine. Clearing this flag
- * will avoid forwarding the event on remote machines (through JMS or other
- * messaging systems)
+ * <li>PUBLIC (the default) - events visible on any machine. Clearing this flag will avoid forwarding the event on
+ * remote machines (through JMS or other messaging systems)
  * </ul>
  * There are 2 post commit control flags:
  * <ul>
- * <li>INLINE - if true the event will not be recorded as part of the post
- * commit event bundle. Defaults to false.
- * <li>COMMIT - the event will simulate a commit so that the post commit event
- * bundle will be fired. TYhe COMMIT flag is ignored while in a transaction.
+ * <li>INLINE - if true the event will not be recorded as part of the post commit event bundle. Defaults to false.
+ * <li>COMMIT - the event will simulate a commit so that the post commit event bundle will be fired. TYhe COMMIT flag is
+ * ignored while in a transaction.
  * </ul>
- *
  * More flags may be added in the future.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -63,9 +57,8 @@ public interface Event extends Serializable {
     /**
      * Gets the event name.
      * <p>
-     * The name must be unique. It is recommended to use prefixes in the style
-     * of java package names to differentiate between similar events that are
-     * sent by different components.
+     * The name must be unique. It is recommended to use prefixes in the style of java package names to differentiate
+     * between similar events that are sent by different components.
      */
     String getName();
 
@@ -79,12 +72,10 @@ public interface Event extends Serializable {
     /**
      * Gets the event context.
      * <p>
-     * Event contexts give access to the context in which the the event was
-     * raised. Event contexts are usually identifying the operation that raised
-     * the event. The context is exposing data objects linked to the event like
-     * documents and also may give access to the operation that raised the event
-     * allowing thus to canceling the operation, to record time spent to set the
-     * result status etc.
+     * Event contexts give access to the context in which the the event was raised. Event contexts are usually
+     * identifying the operation that raised the event. The context is exposing data objects linked to the event like
+     * documents and also may give access to the operation that raised the event allowing thus to canceling the
+     * operation, to record time spent to set the result status etc.
      *
      * @return the event context
      */
@@ -100,9 +91,8 @@ public interface Event extends Serializable {
     /**
      * Cancels this event.
      * <p>
-     * This can be used by event listeners to exit the event notification.
-     * Remaining event listeners will no more be notified. Note that this is not
-     * canceling the underlying operation if any.
+     * This can be used by event listeners to exit the event notification. Remaining event listeners will no more be
+     * notified. Note that this is not canceling the underlying operation if any.
      */
     void cancel();
 
@@ -116,16 +106,15 @@ public interface Event extends Serializable {
     /**
      * Marks the event to bubble the Exception thrown by a listener.
      * <p>
-     * This will exit the event listeners loop. The transaction won't be
-     * rollbacked, but the Exception will be thrown by the {@link EventService}.
+     * This will exit the event listeners loop. The transaction won't be rollbacked, but the Exception will be thrown by
+     * the {@link EventService}.
      *
      * @since 5.7
      */
     void markBubbleException();
 
     /**
-     * Returns {@code true} if the event was marked to bubble the Exception,
-     * {@code false} otherwise.
+     * Returns {@code true} if the event was marked to bubble the Exception, {@code false} otherwise.
      *
      * @since 5.7
      */
@@ -134,16 +123,16 @@ public interface Event extends Serializable {
     /**
      * Marks transaction for RollBack
      * <p>
-     * This will exit the event listeners loop and throw a RuntimeException In
-     * JTA container, this will make the global transaction rollback.
+     * This will exit the event listeners loop and throw a RuntimeException In JTA container, this will make the global
+     * transaction rollback.
      */
     void markRollBack();
 
     /**
      * Marks transaction for RollBack
      * <p>
-     * This will exit the event listeners loop and throw a RuntimeException In
-     * JTA container, this will make the global transaction rollback.
+     * This will exit the event listeners loop and throw a RuntimeException In JTA container, this will make the global
+     * transaction rollback.
      *
      * @param message message that explains the reason of the Rollback
      * @param exception associated Exception that explains the Rollback if any
@@ -162,7 +151,6 @@ public interface Event extends Serializable {
      * Returns the Exception associated the RollBack if any
      *
      * @return the Exception associated the RollBack if any
-     *
      * @since 5.6
      */
     Exception getRollbackException();
@@ -171,32 +159,28 @@ public interface Event extends Serializable {
      * Returns the message associated to the RollBack if any
      *
      * @return the message associated to the RollBack if any
-     *
      * @since 5.6
      */
     String getRollbackMessage();
 
     /**
-     * Whether this event must not be added to a bundle. An event is not inline
-     * by default.
+     * Whether this event must not be added to a bundle. An event is not inline by default.
      *
-     * @return true if the event must be omitted from event bundles, false
-     *         otherwise.
+     * @return true if the event must be omitted from event bundles, false otherwise.
      */
     boolean isInline();
 
     /**
      * Set the inline flag.
      *
-     * @param isInline true if the event must not be recorded as part of the
-     *            transaction
+     * @param isInline true if the event must not be recorded as part of the transaction
      * @see #isInline()
      */
     void setInline(boolean isInline);
 
     /**
-     * Tests whether or not this is a commit event. A commit event is triggering
-     * the post commit notification and then is reseting the recorded events.
+     * Tests whether or not this is a commit event. A commit event is triggering the post commit notification and then
+     * is reseting the recorded events.
      *
      * @return true if a commit event false otherwise
      */

@@ -31,8 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Helper that can redirect all {@code java.util.logging} messages to the Apache
- * Commons Logging implementation.
+ * Helper that can redirect all {@code java.util.logging} messages to the Apache Commons Logging implementation.
  *
  * @author Florent Guillaume
  */
@@ -47,16 +46,14 @@ public class JavaUtilLoggingHelper {
     }
 
     /**
-     * Redirects {@code java.util.logging} to Apache Commons Logging do not log
-     * below INFO level.
+     * Redirects {@code java.util.logging} to Apache Commons Logging do not log below INFO level.
      */
     public static synchronized void redirectToApacheCommons() {
         redirectToApacheCommons(Level.INFO);
     }
 
     /**
-     * Redirects {@code java.util.logging} to Apache Commons Logging do not log
-     * below the threshold level.
+     * Redirects {@code java.util.logging} to Apache Commons Logging do not log below the threshold level.
      *
      * @since 5.4.2
      */
@@ -73,8 +70,7 @@ public class JavaUtilLoggingHelper {
             activeHandler.setLevel(threshold);
             rootLogger.addHandler(activeHandler);
             rootLogger.setLevel(threshold);
-            log.info("Redirecting java.util.logging to Apache Commons Logging, threshold is "
-                    + threshold.toString());
+            log.info("Redirecting java.util.logging to Apache Commons Logging, threshold is " + threshold.toString());
         } catch (SecurityException e) {
             log.error("Handler setup failed", e);
         }

@@ -65,8 +65,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.task.automation",
-        "org.nuxeo.ecm.platform.task.core",
+        "org.nuxeo.ecm.platform.task.automation", "org.nuxeo.ecm.platform.task.core",
         "org.nuxeo.ecm.platform.task.testing" })
 @LocalDeploy("org.nuxeo.ecm.platform.task.automation:test-operations.xml")
 public class TaskAutomationTest {
@@ -103,15 +102,13 @@ public class TaskAutomationTest {
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(document);
 
-        List<Task> tasks = taskService.getTaskInstances(document,
-                (NuxeoPrincipal) null, coreSession);
+        List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSingleTaskChain");
 
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                coreSession);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertEquals(1, tasks.size());
 
         Task task = tasks.get(0);
@@ -140,28 +137,19 @@ public class TaskAutomationTest {
         assertFalse(task.isCancelled());
         assertFalse(task.hasEnded());
         assertEquals(6, task.getVariables().size());
-        assertEquals(
-                document.getRepositoryName(),
+        assertEquals(document.getRepositoryName(),
                 task.getVariable(TaskService.VariableName.documentRepositoryName.name()));
-        assertEquals(document.getId(),
-                task.getVariable(TaskService.VariableName.documentId.name()));
-        assertEquals("test directive",
-                task.getVariable(TaskService.VariableName.directive.name()));
-        assertEquals(
-                "true",
-                task.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
-        assertEquals(
-                "true",
-                task.getVariable(TaskService.VariableName.createdFromTaskService.name()));
+        assertEquals(document.getId(), task.getVariable(TaskService.VariableName.documentId.name()));
+        assertEquals("test directive", task.getVariable(TaskService.VariableName.directive.name()));
+        assertEquals("true", task.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
+        assertEquals("true", task.getVariable(TaskService.VariableName.createdFromTaskService.name()));
         assertEquals(SecurityConstants.ADMINISTRATOR, task.getInitiator());
 
         // accept task
-        taskService.acceptTask(coreSession,
-                (NuxeoPrincipal) coreSession.getPrincipal(), task, "ok i'm in");
+        taskService.acceptTask(coreSession, (NuxeoPrincipal) coreSession.getPrincipal(), task, "ok i'm in");
         coreSession.save();
         // test task again
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                coreSession);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         // ended tasks are filtered
         assertEquals(0, tasks.size());
 
@@ -196,15 +184,13 @@ public class TaskAutomationTest {
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(document);
 
-        List<Task> tasks = taskService.getTaskInstances(document,
-                (NuxeoPrincipal) null, coreSession);
+        List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSingleTaskChainWithoutActors");
 
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                coreSession);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertEquals(0, tasks.size());
     }
 
@@ -213,15 +199,13 @@ public class TaskAutomationTest {
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(document);
 
-        List<Task> tasks = taskService.getTaskInstances(document,
-                (NuxeoPrincipal) null, coreSession);
+        List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSeveralTasksChain");
 
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                coreSession);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         Collections.sort(tasks, new TaskInstanceComparator());
         assertEquals(3, tasks.size());
 
@@ -239,27 +223,19 @@ public class TaskAutomationTest {
         assertFalse(task1.isCancelled());
         assertFalse(task1.hasEnded());
         assertEquals(5, task1.getVariables().size());
-        assertEquals(
-                document.getRepositoryName(),
+        assertEquals(document.getRepositoryName(),
                 task1.getVariable(TaskService.VariableName.documentRepositoryName.name()));
-        assertEquals(document.getId(),
-                task1.getVariable(TaskService.VariableName.documentId.name()));
+        assertEquals(document.getId(), task1.getVariable(TaskService.VariableName.documentId.name()));
         assertNull(task1.getVariable(TaskService.VariableName.directive.name()));
-        assertEquals(
-                "true",
-                task1.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
-        assertEquals(
-                "true",
-                task1.getVariable(TaskService.VariableName.createdFromTaskService.name()));
+        assertEquals("true", task1.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
+        assertEquals("true", task1.getVariable(TaskService.VariableName.createdFromTaskService.name()));
 
         assertEquals(SecurityConstants.ADMINISTRATOR, task1.getInitiator());
         // accept task
-        taskService.acceptTask(coreSession,
-                (NuxeoPrincipal) coreSession.getPrincipal(), task1, "ok i'm in");
+        taskService.acceptTask(coreSession, (NuxeoPrincipal) coreSession.getPrincipal(), task1, "ok i'm in");
         coreSession.save();
         // test task again
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                coreSession);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         // ended tasks are filtered
         assertEquals(2, tasks.size());
 
@@ -280,18 +256,12 @@ public class TaskAutomationTest {
         assertFalse(task2.isCancelled());
         assertFalse(task2.hasEnded());
         assertEquals(5, task2.getVariables().size());
-        assertEquals(
-                document.getRepositoryName(),
+        assertEquals(document.getRepositoryName(),
                 task2.getVariable(TaskService.VariableName.documentRepositoryName.name()));
-        assertEquals(document.getId(),
-                task2.getVariable(TaskService.VariableName.documentId.name()));
+        assertEquals(document.getId(), task2.getVariable(TaskService.VariableName.documentId.name()));
         assertNull(task2.getVariable(TaskService.VariableName.directive.name()));
-        assertEquals(
-                "true",
-                task2.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
-        assertEquals(
-                "true",
-                task2.getVariable(TaskService.VariableName.createdFromTaskService.name()));
+        assertEquals("true", task2.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
+        assertEquals("true", task2.getVariable(TaskService.VariableName.createdFromTaskService.name()));
 
         assertEquals(SecurityConstants.ADMINISTRATOR, task2.getInitiator());
         Task task3 = tasks.get(1);
@@ -308,18 +278,12 @@ public class TaskAutomationTest {
         assertFalse(task3.isCancelled());
         assertFalse(task3.hasEnded());
         assertEquals(5, task3.getVariables().size());
-        assertEquals(
-                document.getRepositoryName(),
+        assertEquals(document.getRepositoryName(),
                 task3.getVariable(TaskService.VariableName.documentRepositoryName.name()));
-        assertEquals(document.getId(),
-                task3.getVariable(TaskService.VariableName.documentId.name()));
+        assertEquals(document.getId(), task3.getVariable(TaskService.VariableName.documentId.name()));
         assertNull(task3.getVariable(TaskService.VariableName.directive.name()));
-        assertEquals(
-                "true",
-                task3.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
-        assertEquals(
-                "true",
-                task3.getVariable(TaskService.VariableName.createdFromTaskService.name()));
+        assertEquals("true", task3.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
+        assertEquals("true", task3.getVariable(TaskService.VariableName.createdFromTaskService.name()));
 
         assertEquals(SecurityConstants.ADMINISTRATOR, task3.getInitiator());
         // check document metadata
@@ -331,45 +295,37 @@ public class TaskAutomationTest {
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(document);
 
-        List<Task> tasks = taskService.getTaskInstances(document,
-                (NuxeoPrincipal) null, coreSession);
+        List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
         automationService.run(ctx, "createSingleTaskAndRunOperationChain");
 
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                coreSession);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertEquals(1, tasks.size());
 
         Task task = tasks.get(0);
 
         // accept task
-        taskService.acceptTask(coreSession,
-                (NuxeoPrincipal) coreSession.getPrincipal(), task, "ok i'm in");
+        taskService.acceptTask(coreSession, (NuxeoPrincipal) coreSession.getPrincipal(), task, "ok i'm in");
         coreSession.save();
         // test task again
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                coreSession);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         // ended tasks are filtered
         assertEquals(0, tasks.size());
 
         // check document metadata, refetching doc from core
         document = coreSession.getDocument(document.getRef());
-        assertEquals("This document has been accepted",
-                document.getPropertyValue("dc:description"));
+        assertEquals("This document has been accepted", document.getPropertyValue("dc:description"));
 
         // run another time, and this time reject
         automationService.run(ctx, "createSingleTaskAndRunOperationChain");
-        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
-                coreSession);
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertEquals(1, tasks.size());
-        taskService.rejectTask(coreSession,
-                (NuxeoPrincipal) coreSession.getPrincipal(), tasks.get(0),
+        taskService.rejectTask(coreSession, (NuxeoPrincipal) coreSession.getPrincipal(), tasks.get(0),
                 "i don't agree with what you're saying");
         document = coreSession.getDocument(document.getRef());
-        assertEquals("This document has been rejected !!!",
-                document.getPropertyValue("dc:description"));
+        assertEquals("This document has been rejected !!!", document.getPropertyValue("dc:description"));
 
     }
 

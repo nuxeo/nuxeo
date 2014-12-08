@@ -33,8 +33,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  *
  * @since 5.6
  */
-public class LifeCycleTypeRegistry extends
-        ContributionFragmentRegistry<LifeCycleTypesDescriptor> {
+public class LifeCycleTypeRegistry extends ContributionFragmentRegistry<LifeCycleTypesDescriptor> {
 
     private static final Log log = LogFactory.getLog(LifeCycleTypeRegistry.class);
 
@@ -52,25 +51,19 @@ public class LifeCycleTypeRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            LifeCycleTypesDescriptor contrib,
-            LifeCycleTypesDescriptor newOrigContrib) {
-        log.info("Registering lifecycle types mapping: "
-                + contrib.getDocumentType() + "-" + contrib.getLifeCycleName());
+    public void contributionUpdated(String id, LifeCycleTypesDescriptor contrib, LifeCycleTypesDescriptor newOrigContrib) {
+        log.info("Registering lifecycle types mapping: " + contrib.getDocumentType() + "-" + contrib.getLifeCycleName());
         typesMapping.put(contrib.getDocumentType(), contrib.getLifeCycleName());
         String transitionArray = contrib.getNoRecursionForTransitions();
         List<String> transitions = new ArrayList<String>();
         if (transitionArray != null && !transitionArray.isEmpty()) {
-            transitions = Arrays.asList(contrib.getNoRecursionForTransitions().split(
-                    ","));
+            transitions = Arrays.asList(contrib.getNoRecursionForTransitions().split(","));
         }
-        docTypeToNonRecursiveTransition.put(contrib.getDocumentType(),
-                transitions);
+        docTypeToNonRecursiveTransition.put(contrib.getDocumentType(), transitions);
     }
 
     @Override
-    public void contributionRemoved(String id,
-            LifeCycleTypesDescriptor origContrib) {
+    public void contributionRemoved(String id, LifeCycleTypesDescriptor origContrib) {
         typesMapping.remove(id);
         docTypeToNonRecursiveTransition.remove(id);
     }

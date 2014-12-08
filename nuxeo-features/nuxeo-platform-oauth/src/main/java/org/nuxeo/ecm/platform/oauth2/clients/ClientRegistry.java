@@ -12,6 +12,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface ClientRegistry {
 
     public static final String OAUTH2CLIENT_DIRECTORY_NAME = "oauth2Clients";
+
     public static final String OAUTH2CLIENT_SCHEMA = "oauth2Client";
 
     boolean hasClient(String clientId) throws ClientException;

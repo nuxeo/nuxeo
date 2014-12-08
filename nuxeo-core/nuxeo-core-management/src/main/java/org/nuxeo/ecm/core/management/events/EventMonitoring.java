@@ -36,8 +36,7 @@ public class EventMonitoring implements EventMonitoringMBean {
 
     @Override
     public void setAsyncHandlersTrackingEnabled(boolean collectAsyncHandlersExecTime) {
-        EventStatsHolder
-                .setCollectAsyncHandlersExecTime(collectAsyncHandlersExecTime);
+        EventStatsHolder.setCollectAsyncHandlersExecTime(collectAsyncHandlersExecTime);
     }
 
     @Override
@@ -47,8 +46,7 @@ public class EventMonitoring implements EventMonitoringMBean {
 
     @Override
     public void setSyncHandlersTrackingEnabled(boolean collectSyncHandlersExecTime) {
-        EventStatsHolder
-                .setCollectSyncHandlersExecTime(collectSyncHandlersExecTime);
+        EventStatsHolder.setCollectSyncHandlersExecTime(collectSyncHandlersExecTime);
     }
 
     @Override
@@ -88,8 +86,7 @@ public class EventMonitoring implements EventMonitoringMBean {
 
     @Override
     public void setBlockSyncPostCommitHandlers(boolean blockSyncPostCommitHandlers) {
-        getAdminService().setBlockSyncPostCommitHandlers(
-                blockSyncPostCommitHandlers);
+        getAdminService().setBlockSyncPostCommitHandlers(blockSyncPostCommitHandlers);
     }
 
     @Override
@@ -102,22 +99,19 @@ public class EventMonitoring implements EventMonitoringMBean {
 
         EventListenerList listenerList = getAdminService().getListenerList();
         StringBuilder sb = new StringBuilder();
-        for (EventListenerDescriptor desc : listenerList
-                .getAsyncPostCommitListenersDescriptors()) {
+        for (EventListenerDescriptor desc : listenerList.getAsyncPostCommitListenersDescriptors()) {
             sb.append(desc.getName());
             sb.append(" - Async PostCommit - ");
             sb.append(desc.isEnabled());
             sb.append("\n");
         }
-        for (EventListenerDescriptor desc : listenerList
-                .getSyncPostCommitListenersDescriptors()) {
+        for (EventListenerDescriptor desc : listenerList.getSyncPostCommitListenersDescriptors()) {
             sb.append(desc.getName());
             sb.append(" - Sync PostCommit - ");
             sb.append(desc.isEnabled());
             sb.append("\n");
         }
-        for (EventListenerDescriptor desc : listenerList
-                .getInlineListenersDescriptors()) {
+        for (EventListenerDescriptor desc : listenerList.getInlineListenersDescriptors()) {
             sb.append(desc.getName());
             sb.append(" - Synchronous - ");
             sb.append(desc.isEnabled());

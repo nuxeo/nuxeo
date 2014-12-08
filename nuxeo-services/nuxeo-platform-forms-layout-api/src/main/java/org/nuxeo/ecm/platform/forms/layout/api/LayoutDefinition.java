@@ -43,8 +43,8 @@ public interface LayoutDefinition extends Serializable {
     /**
      * Return the layout type, or null if not defined.
      * <p>
-     * Since 6.0, the layout type can hold templates and properties
-     * configuration, so that layout does not need to define them again.
+     * Since 6.0, the layout type can hold templates and properties configuration, so that layout does not need to
+     * define them again.
      *
      * @since 6.0
      */
@@ -80,8 +80,8 @@ public interface LayoutDefinition extends Serializable {
     /**
      * Returns the list of widget names to use at a given row.
      * <p>
-     * For instance, this could describe a layout like: [['title'],
-     * ['description'], ['creationDate', '', 'modificationDate'], ['subject']].
+     * For instance, this could describe a layout like: [['title'], ['description'], ['creationDate', '',
+     * 'modificationDate'], ['subject']].
      */
     LayoutRowDefinition[] getRows();
 
@@ -113,9 +113,8 @@ public interface LayoutDefinition extends Serializable {
     /**
      * Returns the map of rendering information per mode.
      * <p>
-     * Useful for preview management where some configuration needs to be
-     * changed: what's changed can be set as rendering information here to be
-     * displayed.
+     * Useful for preview management where some configuration needs to be changed: what's changed can be set as
+     * rendering information here to be displayed.
      *
      * @since 5.5
      */
@@ -134,8 +133,7 @@ public interface LayoutDefinition extends Serializable {
     void setRenderingInfos(Map<String, List<RenderingInfo>> renderingInfos);
 
     /**
-     * Return alias names for this layout definition (useful for compatibility
-     * on old layout names).
+     * Return alias names for this layout definition (useful for compatibility on old layout names).
      *
      * @since 6.0
      */

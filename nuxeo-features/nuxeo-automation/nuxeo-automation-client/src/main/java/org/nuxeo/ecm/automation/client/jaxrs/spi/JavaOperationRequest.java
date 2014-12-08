@@ -45,8 +45,7 @@ public class JavaOperationRequest implements OperationRequest {
         this(session, op, new HashMap<String, Object>());
     }
 
-    public JavaOperationRequest(JavaSession session, OperationDocumentation op,
-            Map<String, Object> ctx) {
+    public JavaOperationRequest(JavaSession session, OperationDocumentation op, Map<String, Object> ctx) {
         this.session = session;
         this.op = op;
         params = new HashMap<String, Object>();
@@ -114,9 +113,8 @@ public class JavaOperationRequest implements OperationRequest {
     public OperationRequest set(String key, Object value) {
         Param param = getParam(key);
         if (param == null) {
-            throw new IllegalArgumentException("No such parameter '" + key
-                    + "' for operation " + op.id + ".\n\tAvailable params: "
-                    + getParamNames());
+            throw new IllegalArgumentException("No such parameter '" + key + "' for operation " + op.id
+                    + ".\n\tAvailable params: " + getParamNames());
         }
         if (value == null) {
             params.remove(key);

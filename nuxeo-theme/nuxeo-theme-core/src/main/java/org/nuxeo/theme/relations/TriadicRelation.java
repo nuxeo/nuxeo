@@ -19,8 +19,7 @@ import java.util.List;
 
 public final class TriadicRelation extends AbstractRelation {
 
-    public TriadicRelation(Predicate predicate, Relate first, Relate second,
-            Relate third) {
+    public TriadicRelation(Predicate predicate, Relate first, Relate second, Relate third) {
         super(predicate);
         List<Relate> relates = new ArrayList<Relate>();
         relates.add(first);

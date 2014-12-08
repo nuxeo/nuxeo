@@ -32,29 +32,24 @@ import org.nuxeo.ecm.automation.jaxrs.JsonAdapter;
 
 /**
  * @author bstefanescu
- *
  */
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
 public class JsonAdapterWriter implements MessageBodyWriter<JsonAdapter> {
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return JsonAdapter.class.isAssignableFrom(type);
     }
 
     @Override
-    public long getSize(JsonAdapter t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public long getSize(JsonAdapter t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
     @Override
-    public void writeTo(JsonAdapter arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream arg6)
-            throws IOException, WebApplicationException {
+    public void writeTo(JsonAdapter arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
+            MultivaluedMap<String, Object> arg5, OutputStream arg6) throws IOException, WebApplicationException {
         arg0.toJSON(arg6);
     }
 }

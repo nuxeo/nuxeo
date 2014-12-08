@@ -41,64 +41,53 @@ public class TestXmlNamespacesFilter {
 
     @Test
     public void testFilter2() {
-        info.setMarkup("<html><div xmlns:c=\"http://java.sun.com/jstl/core\">"
-                + "content</div></html>");
+        info.setMarkup("<html><div xmlns:c=\"http://java.sun.com/jstl/core\">" + "content</div></html>");
         filter.process(info, false);
-        assertEquals("<html xmlns:c=\"http://java.sun.com/jstl/core\">"
-                + "<div>content</div></html>", info.getMarkup());
+        assertEquals("<html xmlns:c=\"http://java.sun.com/jstl/core\">" + "<div>content</div></html>", info.getMarkup());
     }
 
     @Test
     public void testFilter3() {
         info.setMarkup("<html><div xmlns:c=\"http://java.sun.com/jstl/core\">"
-                + "<p xmlns:f=\"http://java.sun.com/jsf/core\">"
-                + "content</p></div></html>");
+                + "<p xmlns:f=\"http://java.sun.com/jsf/core\">" + "content</p></div></html>");
         filter.process(info, false);
-        assertEquals("<html xmlns:c=\"http://java.sun.com/jstl/core\" "
-                + "xmlns:f=\"http://java.sun.com/jsf/core\">"
+        assertEquals("<html xmlns:c=\"http://java.sun.com/jstl/core\" " + "xmlns:f=\"http://java.sun.com/jsf/core\">"
                 + "<div><p>content</p></div></html>", info.getMarkup());
     }
 
     @Test
     public void testFilter4() {
         info.setMarkup("<html xmlns:ui=\"http://java.sun.com/jsf/facelets\">"
-                + "<div xmlns:c=\"http://java.sun.com/jstl/core\">"
-                + "<p xmlns:f=\"http://java.sun.com/jsf/core\">"
+                + "<div xmlns:c=\"http://java.sun.com/jstl/core\">" + "<p xmlns:f=\"http://java.sun.com/jsf/core\">"
                 + "content</p></div></html>");
         filter.process(info, false);
         assertEquals("<html xmlns:ui=\"http://java.sun.com/jsf/facelets\" "
-                + "xmlns:c=\"http://java.sun.com/jstl/core\" "
-                + "xmlns:f=\"http://java.sun.com/jsf/core\">"
+                + "xmlns:c=\"http://java.sun.com/jstl/core\" " + "xmlns:f=\"http://java.sun.com/jsf/core\">"
                 + "<div><p>content</p></div></html>", info.getMarkup());
     }
 
     @Test
     public void testFilter5() {
         info.setMarkup("<html xmlns:ui=\"http://java.sun.com/jsf/facelets\">"
-                + "<div xmlns:c=\"http://java.sun.com/jstl/core\">"
-                + "<p xmlns:c=\"http://java.sun.com/jstl/core\">"
+                + "<div xmlns:c=\"http://java.sun.com/jstl/core\">" + "<p xmlns:c=\"http://java.sun.com/jstl/core\">"
                 + "content</p></div></html>");
         filter.process(info, false);
         assertEquals("<html xmlns:ui=\"http://java.sun.com/jsf/facelets\" "
-                + "xmlns:c=\"http://java.sun.com/jstl/core\">"
-                + "<div><p>content</p></div></html>", info.getMarkup());
+                + "xmlns:c=\"http://java.sun.com/jstl/core\">" + "<div><p>content</p></div></html>", info.getMarkup());
     }
 
     @Test
     public void testFilter6() {
         info.setMarkup("<html><div xmlns=\"http://www.w3.org/1999/xhtml\">content</div></html>");
         filter.process(info, false);
-        assertEquals(
-                "<html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>",
-                info.getMarkup());
+        assertEquals("<html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>", info.getMarkup());
     }
 
     @Test
     public void testFilter7() {
         info.setMarkup("<@abc></@abc><html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>");
         filter.process(info, false);
-        assertEquals(
-                "<@abc></@abc><html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>",
+        assertEquals("<@abc></@abc><html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>",
                 info.getMarkup());
     }
 
@@ -106,8 +95,7 @@ public class TestXmlNamespacesFilter {
     public void testFilter8() {
         info.setMarkup("<!-- comment --><html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>");
         filter.process(info, false);
-        assertEquals(
-                "<!-- comment --><html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>",
+        assertEquals("<!-- comment --><html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>",
                 info.getMarkup());
     }
 

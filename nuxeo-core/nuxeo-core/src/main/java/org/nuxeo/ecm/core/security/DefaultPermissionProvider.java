@@ -37,8 +37,7 @@ import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     @SuppressWarnings("unused")
-    private static final Log log = LogFactory
-            .getLog(DefaultPermissionProvider.class);
+    private static final Log log = LogFactory.getLog(DefaultPermissionProvider.class);
 
     private final List<PermissionDescriptor> registeredPermissions = new LinkedList<PermissionDescriptor>();
 
@@ -48,8 +47,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     private Map<String, Set<String>> mergedGroups;
 
-    private final List<PermissionVisibilityDescriptor> registeredPermissionsVisibility
-            = new LinkedList<PermissionVisibilityDescriptor>();
+    private final List<PermissionVisibilityDescriptor> registeredPermissionsVisibility = new LinkedList<PermissionVisibilityDescriptor>();
 
     private Map<String, PermissionVisibilityDescriptor> mergedPermissionsVisibility;
 
@@ -58,36 +56,31 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     }
 
     @Override
-    public List<UserVisiblePermission> getUserVisiblePermissionDescriptors(
-            String typeName) throws ClientException {
+    public List<UserVisiblePermission> getUserVisiblePermissionDescriptors(String typeName) throws ClientException {
         if (mergedPermissionsVisibility == null) {
             computeMergedPermissionsVisibility();
         }
         // grab the default items (type is "")
-        PermissionVisibilityDescriptor defaultVisibility = mergedPermissionsVisibility
-                .get(typeName);
+        PermissionVisibilityDescriptor defaultVisibility = mergedPermissionsVisibility.get(typeName);
         if (defaultVisibility == null) {
             // fallback to default
             defaultVisibility = mergedPermissionsVisibility.get("");
         }
         if (defaultVisibility == null) {
-            throw new ClientException(
-                    "no permission visibility configuration registered");
+            throw new ClientException("no permission visibility configuration registered");
         }
         return defaultVisibility.getSortedUIPermissionDescriptor();
     }
 
     @Override
-    public List<UserVisiblePermission> getUserVisiblePermissionDescriptors()
-            throws ClientException {
+    public List<UserVisiblePermission> getUserVisiblePermissionDescriptors() throws ClientException {
         return getUserVisiblePermissionDescriptors("");
     }
 
     private void computeMergedPermissionsVisibility() {
         mergedPermissionsVisibility = new HashMap<String, PermissionVisibilityDescriptor>();
         for (PermissionVisibilityDescriptor pvd : registeredPermissionsVisibility) {
-            PermissionVisibilityDescriptor mergedPvd = mergedPermissionsVisibility
-                    .get(pvd.getTypeName());
+            PermissionVisibilityDescriptor mergedPvd = mergedPermissionsVisibility.get(pvd.getTypeName());
             if (mergedPvd == null) {
                 mergedPvd = new PermissionVisibilityDescriptor(pvd);
                 if (!StringUtils.isEmpty(pvd.getTypeName())) {
@@ -97,8 +90,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
                     mergedPvd.setPermissionUIItems(defaultPerms.getPermissionUIItems().toArray(
                             new PermissionUIItemDescriptor[] {}));
                 }
-                mergedPermissionsVisibility.put(mergedPvd.getTypeName(),
-                        mergedPvd);
+                mergedPermissionsVisibility.put(mergedPvd.getTypeName(), mergedPvd);
             } else {
                 mergedPvd.merge(pvd);
             }
@@ -117,8 +109,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         return permissions.toArray(new String[permissions.size()]);
     }
 
-    private MergedPermissionDescriptor getPermission(String perm)
-            throws ClientException {
+    private MergedPermissionDescriptor getPermission(String perm) throws ClientException {
         if (mergedPermissions == null) {
             computeMergedPermissions();
         }
@@ -171,14 +162,12 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         for (Entry<String, Set<String>> groupEntry : mergedGroups.entrySet()) {
             String permissionName = groupEntry.getKey();
             Set<String> groups = groupEntry.getValue();
-            Set<String> allGroups = computeAllGroups(permissionName,
-                    alreadyProcessed);
+            Set<String> allGroups = computeAllGroups(permissionName, alreadyProcessed);
             groups.addAll(allGroups);
         }
     }
 
-    protected Set<String> computeAllGroups(String permissionName,
-            Set<String> alreadyProcessed) {
+    protected Set<String> computeAllGroups(String permissionName, Set<String> alreadyProcessed) {
         Set<String> allGroups = mergedGroups.get(permissionName);
         if (allGroups == null) {
             allGroups = new TreeSet<String>();
@@ -190,8 +179,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
             // recursive inclusion
             alreadyProcessed.add(permissionName);
             for (String directGroupName : new TreeSet<String>(allGroups)) {
-                allGroups.addAll(computeAllGroups(directGroupName,
-                        alreadyProcessed));
+                allGroups.addAll(computeAllGroups(directGroupName, alreadyProcessed));
             }
             return allGroups;
         }
@@ -204,15 +192,13 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
             computeMergedPermissions();
         }
         // TODO OG: should we add aliased permissions here as well?
-        return mergedPermissions.keySet().toArray(
-                new String[mergedPermissions.size()]);
+        return mergedPermissions.keySet().toArray(new String[mergedPermissions.size()]);
     }
 
     protected synchronized void computeMergedPermissions() {
         mergedPermissions = new HashMap<String, MergedPermissionDescriptor>();
         for (PermissionDescriptor pd : registeredPermissions) {
-            MergedPermissionDescriptor mpd = mergedPermissions
-                    .get(pd.getName());
+            MergedPermissionDescriptor mpd = mergedPermissions.get(pd.getName());
             if (mpd == null) {
                 mpd = new MergedPermissionDescriptor(pd);
                 mergedPermissions.put(mpd.getName(), mpd);
@@ -231,10 +217,9 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
         for (String includePerm : descriptor.getIncludePermissions()) {
             if (!alreadyRegistered.contains(includePerm)) {
-                throw new NuxeoException(
-                        String.format(
-                                "Permission '%s' included by '%s' is not a registered permission",
-                                includePerm, descriptor.getName()));
+                throw new NuxeoException(String.format(
+                        "Permission '%s' included by '%s' is not a registered permission", includePerm,
+                        descriptor.getName()));
             }
         }
         // invalidate merged permission
@@ -265,8 +250,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     @Override
     public synchronized void unregisterDescriptor(PermissionVisibilityDescriptor descriptor) {
-        int lastOccurence = registeredPermissionsVisibility
-                .lastIndexOf(descriptor);
+        int lastOccurence = registeredPermissionsVisibility.lastIndexOf(descriptor);
         if (lastOccurence != -1) {
             // invalidate merged descriptors
             mergedPermissionsVisibility = null;

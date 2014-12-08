@@ -27,13 +27,10 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.SharedResourceLoader;
 
 /**
- *
- * Given a location, close the corresponding jar files opened by URL class
- * loaders and in jar file cache
+ * Given a location, close the corresponding jar files opened by URL class loaders and in jar file cache
  *
  * @since 5.6
  * @author matic
- *
  */
 public class URLJarFileCloser implements JarFileCloser {
 
@@ -41,11 +38,11 @@ public class URLJarFileCloser implements JarFileCloser {
 
     protected final URLJarFileIntrospector introspector;
 
-
-    public URLJarFileCloser(URLJarFileIntrospector anIntrospector, ClassLoader appCL) throws URLJarFileIntrospectionError {
+    public URLJarFileCloser(URLJarFileIntrospector anIntrospector, ClassLoader appCL)
+            throws URLJarFileIntrospectionError {
         introspector = anIntrospector;
-        applicationCloser = appCL instanceof URLClassLoader ? introspector
-            .newURLClassLoaderCloser((URLClassLoader) appCL) : null;
+        applicationCloser = appCL instanceof URLClassLoader ? introspector.newURLClassLoaderCloser((URLClassLoader) appCL)
+                : null;
     }
 
     @Override
@@ -56,11 +53,10 @@ public class URLJarFileCloser implements JarFileCloser {
         try {
             final SharedResourceLoader loader = Framework.getResourceLoader();
             if (loader != null) {
-               closed = introspector.newURLClassLoaderCloser(loader).close(location);
+                closed = introspector.newURLClassLoaderCloser(loader).close(location);
             }
         } catch (URLJarFileIntrospectionError cause) {
-            LogFactory.getLog(URLJarFileCloser.class).error(
-                    "Cannot introspect shared resource loader", cause);
+            LogFactory.getLog(URLJarFileCloser.class).error("Cannot introspect shared resource loader", cause);
 
         }
         if (closed == false) {

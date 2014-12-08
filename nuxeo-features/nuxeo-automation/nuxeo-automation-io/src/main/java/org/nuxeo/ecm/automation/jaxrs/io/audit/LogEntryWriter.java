@@ -43,8 +43,7 @@ public class LogEntryWriter extends EntityWriter<LogEntry> {
     }
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg, LogEntry logEntry)
-            throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg, LogEntry logEntry) throws IOException, ClientException {
         jg.writeStringField("entity-type", "logEntry");
         jg.writeStringField("category", logEntry.getCategory());
         jg.writeStringField("principalName", logEntry.getPrincipalName());
@@ -55,15 +54,9 @@ public class LogEntryWriter extends EntityWriter<LogEntry> {
         jg.writeStringField("docUUID", logEntry.getDocUUID());
         jg.writeStringField("eventId", logEntry.getEventId());
         jg.writeStringField("repositoryId", logEntry.getRepositoryId());
-        jg.writeStringField(
-                "eventDate",
-                ISODateTimeFormat.dateTime().print(
-                        new DateTime(logEntry.getEventDate())));
+        jg.writeStringField("eventDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getEventDate())));
         jg.writeNumberField("id", logEntry.getId());
-        jg.writeStringField(
-                "logDate",
-                ISODateTimeFormat.dateTime().print(
-                        new DateTime(logEntry.getLogDate())));
+        jg.writeStringField("logDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getLogDate())));
     }
 
 }

@@ -12,8 +12,7 @@ public class PresetInfo {
 
     private String value;
 
-    public PresetInfo(String name, String bank, String collection,
-            String category, String value) {
+    public PresetInfo(String name, String bank, String collection, String category, String value) {
         this.name = name;
         this.bank = bank;
         this.collection = collection;

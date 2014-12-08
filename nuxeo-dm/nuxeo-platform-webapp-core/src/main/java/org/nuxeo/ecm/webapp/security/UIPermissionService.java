@@ -28,12 +28,10 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * A service that provided the UI visible permissions for different document
- * types.
+ * A service that provided the UI visible permissions for different document types.
  *
  * @author <a href='mailto:glefter@nuxeo.com'>George Lefter</a>
- * @deprecated use the PermissionProvider that is part of the core
- *             SecurityService instead
+ * @deprecated use the PermissionProvider that is part of the core SecurityService instead
  */
 @Deprecated
 public class UIPermissionService extends DefaultComponent {
@@ -47,8 +45,7 @@ public class UIPermissionService extends DefaultComponent {
     private String[] defaultPermissionList = new String[0];
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("uiPermissions")) {
             UIPermissionListDescriptor desc = (UIPermissionListDescriptor) contribution;
             if (desc.isDefault) {
@@ -62,8 +59,7 @@ public class UIPermissionService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("uiPermissions")) {
             UIPermissionListDescriptor desc = (UIPermissionListDescriptor) contribution;
             permissionMap.remove(desc.documentType);
@@ -75,8 +71,8 @@ public class UIPermissionService extends DefaultComponent {
     /**
      * Retrieves the visible permissions for a document type.
      *
-     * @param documentType the type of document for which to retrieve
-     *            permissions, or null to retrieve the default permissions
+     * @param documentType the type of document for which to retrieve permissions, or null to retrieve the default
+     *            permissions
      * @return the list of permissions for the specified document type
      */
     public String[] getUIPermissions(String documentType) {

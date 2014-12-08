@@ -35,8 +35,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class CoreManagementComponent extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName(
-            CoreManagementComponent.class.getCanonicalName());
+    public static final ComponentName NAME = new ComponentName(CoreManagementComponent.class.getCanonicalName());
 
     public static final String PROBES_EP = "probes";
 
@@ -61,8 +60,7 @@ public class CoreManagementComponent extends DefaultComponent {
     }
 
     public AdministrativeStatusManagerImpl getLocalManager() {
-        return (AdministrativeStatusManagerImpl) globalManager.getStatusManager(
-                globalManager.getLocalNuxeoInstanceIdentifier());
+        return (AdministrativeStatusManagerImpl) globalManager.getStatusManager(globalManager.getLocalNuxeoInstanceIdentifier());
     }
 
     @Override
@@ -83,8 +81,7 @@ public class CoreManagementComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(PROBES_EP)) {
             probeRunner.registerProbe((ProbeDescriptor) contribution);
         } else if (extensionPoint.equals(SERVICE_DEF_EP)) {
@@ -94,14 +91,12 @@ public class CoreManagementComponent extends DefaultComponent {
         } else if (extensionPoint.equals(STORAGE_CONFIG_EP)) {
             storageManager.registerConfig((DocumentStoreConfigurationDescriptor) contribution);
         } else {
-            super.registerContribution(contribution, extensionPoint,
-                    contributor);
+            super.registerContribution(contribution, extensionPoint, contributor);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("probes")) {
             probeRunner.unregisterProbe((ProbeDescriptor) contribution);
         }

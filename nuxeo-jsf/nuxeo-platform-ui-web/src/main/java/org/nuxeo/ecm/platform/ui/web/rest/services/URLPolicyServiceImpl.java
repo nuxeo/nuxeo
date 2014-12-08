@@ -151,14 +151,12 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         // only POST access need a redirect,unless with force encoding (this
         // happens when redirect is triggered after a seam page has been
         // processed)
-        if (!forceEncoding.booleanValue()
-                && !httpRequest.getMethod().equals("POST")) {
+        if (!forceEncoding.booleanValue() && !httpRequest.getMethod().equals("POST")) {
             return false;
         }
 
         Object skipRedirect = httpRequest.getAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY);
-        if (skipRedirect instanceof Boolean
-                && ((Boolean) skipRedirect).booleanValue()) {
+        if (skipRedirect instanceof Boolean && ((Boolean) skipRedirect).booleanValue()) {
             return false;
         }
 
@@ -175,19 +173,15 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return false;
     }
 
-    public void setDocumentViewInRequest(HttpServletRequest request,
-            DocumentView docView) {
-        request.setAttribute(NXAuthConstants.REQUESTED_URL,
-                NuxeoAuthenticationFilter.getRequestedUrl(request));
+    public void setDocumentViewInRequest(HttpServletRequest request, DocumentView docView) {
+        request.setAttribute(NXAuthConstants.REQUESTED_URL, NuxeoAuthenticationFilter.getRequestedUrl(request));
         request.setAttribute(DOCUMENT_VIEW_REQUEST_KEY, docView);
     }
 
-    protected URLPatternDescriptor getURLPatternDescriptor(
-            HttpServletRequest request) {
+    protected URLPatternDescriptor getURLPatternDescriptor(HttpServletRequest request) {
         URLPatternDescriptor res = null;
         for (URLPatternDescriptor desc : getURLPatternDescriptors()) {
-            DocumentView docView = getDocumentViewFromRequest(desc.getName(),
-                    request);
+            DocumentView docView = getDocumentViewFromRequest(desc.getName(), request);
             if (docView != null) {
                 res = desc;
                 break;
@@ -216,8 +210,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return docView;
     }
 
-    public DocumentView getDocumentViewFromRequest(String patternName,
-            HttpServletRequest request) {
+    public DocumentView getDocumentViewFromRequest(String patternName, HttpServletRequest request) {
         Object value = request.getAttribute(DOCUMENT_VIEW_REQUEST_KEY);
         if (value instanceof DocumentView) {
             DocumentView requestDocView = (DocumentView) value;
@@ -238,8 +231,8 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         URLPatternDescriptor desc = getURLPatternDescriptor(patternName);
         String codecName = desc.getDocumentViewCodecName();
         DocumentViewCodecManager docViewService = getDocumentViewCodecService();
-        DocumentView docView = docViewService.getDocumentViewFromUrl(codecName,
-                url, desc.getNeedBaseURL(), BaseURL.getLocalBaseURL(request));
+        DocumentView docView = docViewService.getDocumentViewFromUrl(codecName, url, desc.getNeedBaseURL(),
+                BaseURL.getLocalBaseURL(request));
         if (docView != null) {
             // set pattern name
             docView.setPatternName(patternName);
@@ -319,8 +312,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
      * @deprecated since 5.5
      */
     @Deprecated
-    protected List<URLPatternDescriptor> getSortedURLPatternDescriptorsFor(
-            String viewId) {
+    protected List<URLPatternDescriptor> getSortedURLPatternDescriptorsFor(String viewId) {
         List<URLPatternDescriptor> sortedDescriptors = new ArrayList<URLPatternDescriptor>();
         List<URLPatternDescriptor> nonMatchingViewIdDescriptors = new ArrayList<URLPatternDescriptor>();
 
@@ -337,13 +329,11 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return sortedDescriptors;
     }
 
-    public String getUrlFromDocumentView(String patternName,
-            DocumentView docView, String baseUrl) {
+    public String getUrlFromDocumentView(String patternName, DocumentView docView, String baseUrl) {
         DocumentViewCodecManager docViewService = getDocumentViewCodecService();
         URLPatternDescriptor desc = getURLPatternDescriptor(patternName);
         String codecName = desc.getDocumentViewCodecName();
-        return docViewService.getUrlFromDocumentView(codecName, docView,
-                desc.getNeedBaseURL(), baseUrl);
+        return docViewService.getUrlFromDocumentView(codecName, docView, desc.getNeedBaseURL(), baseUrl);
     }
 
     public void applyRequestParameters(FacesContext facesContext) {
@@ -358,15 +348,13 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             return;
         }
 
-        DocumentView docView = getDocumentViewFromRequest(pattern.getName(),
-                httpRequest);
+        DocumentView docView = getDocumentViewFromRequest(pattern.getName(), httpRequest);
         // pattern applies => document view will not be null
         if (docView != null) {
             String documentViewBinding = pattern.getDocumentViewBinding();
             if (documentViewBinding != null && !"".equals(documentViewBinding)) {
                 // try to set it from custom mapping
-                ValueExpression ve = ef.createValueExpression(context,
-                        pattern.getDocumentViewBinding(), Object.class);
+                ValueExpression ve = ef.createValueExpression(context, pattern.getDocumentViewBinding(), Object.class);
                 ve.setValue(context, docView);
             }
         }
@@ -376,8 +364,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             docViewParameters = docView.getParameters();
         }
         ValueBindingDescriptor[] bindings = pattern.getValueBindings();
-        if (bindings != null
-                && httpRequest.getAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY) == null) {
+        if (bindings != null && httpRequest.getAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY) == null) {
             for (ValueBindingDescriptor binding : bindings) {
                 if (!binding.getCallSetter()) {
                     continue;
@@ -385,8 +372,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                 String paramName = binding.getName();
                 // try doc view parameters
                 Object value = null;
-                if (docViewParameters != null
-                        && docViewParameters.containsKey(paramName)) {
+                if (docViewParameters != null && docViewParameters.containsKey(paramName)) {
                     value = docView.getParameter(paramName);
                 } else {
                     // try request attributes
@@ -394,14 +380,13 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                 }
                 String expr = binding.getExpression();
                 if (ComponentTagUtils.isValueReference(expr)) {
-                    ValueExpression ve = ef.createValueExpression(context,
-                            expr, Object.class);
+                    ValueExpression ve = ef.createValueExpression(context, expr, Object.class);
                     try {
                         ve.setValue(context, value);
                     } catch (ELException e) {
-                        log.error(String.format(
-                                "Could not apply request parameter %s "
-                                        + "to expression %s", value, expr), e);
+                        log.error(
+                                String.format("Could not apply request parameter %s " + "to expression %s", value, expr),
+                                e);
                     }
                 }
             }
@@ -412,8 +397,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         appendParametersToRequest(facesContext, null);
     }
 
-    public void appendParametersToRequest(FacesContext facesContext,
-            String pattern) {
+    public void appendParametersToRequest(FacesContext facesContext, String pattern) {
         // try to get doc view from custom mapping
         DocumentView docView = null;
         ExpressionFactory ef = facesContext.getApplication().getExpressionFactory();
@@ -434,8 +418,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                 if (!StringUtils.isBlank(documentViewAppliesExpr)) {
                     // TODO: maybe put view id to the request to help writing
                     // the EL expression
-                    ValueExpression ve = ef.createValueExpression(context,
-                            documentViewAppliesExpr, Object.class);
+                    ValueExpression ve = ef.createValueExpression(context, documentViewAppliesExpr, Object.class);
                     try {
                         Object res = ve.getValue(context);
                         if (Boolean.TRUE.equals(res)) {
@@ -443,11 +426,8 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                         }
                     } catch (ELException e) {
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format(
-                                    "Error executing expression '%s' for "
-                                            + "url pattern '%s': %s",
-                                    documentViewAppliesExpr, desc.getName(),
-                                    e.getMessage()));
+                            log.debug(String.format("Error executing expression '%s' for " + "url pattern '%s': %s",
+                                    documentViewAppliesExpr, desc.getName(), e.getMessage()));
                         }
                     }
                 }
@@ -466,15 +446,13 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             Object docViewValue = null;
             String documentViewBinding = patternDesc.getDocumentViewBinding();
             if (!StringUtils.isBlank(documentViewBinding)) {
-                ValueExpression ve = ef.createValueExpression(context,
-                        documentViewBinding, Object.class);
+                ValueExpression ve = ef.createValueExpression(context, documentViewBinding, Object.class);
                 docViewValue = ve.getValue(context);
             }
             if (docViewValue == null) {
                 documentViewBinding = patternDesc.getNewDocumentViewBinding();
                 if (!StringUtils.isBlank(documentViewBinding)) {
-                    ValueExpression ve = ef.createValueExpression(context,
-                            documentViewBinding, Object.class);
+                    ValueExpression ve = ef.createValueExpression(context, documentViewBinding, Object.class);
                     docViewValue = ve.getValue(context);
                 }
             }
@@ -493,8 +471,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                         try {
                             Object value;
                             if (ComponentTagUtils.isValueReference(expr)) {
-                                ValueExpression ve = ef.createValueExpression(
-                                        context, expr, Object.class);
+                                ValueExpression ve = ef.createValueExpression(context, expr, Object.class);
                                 value = ve.getValue(context);
                             } else {
                                 value = expr;
@@ -508,10 +485,8 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                                 httpRequest.setAttribute(paramName, value);
                             }
                         } catch (ELException e) {
-                            log.error(
-                                    String.format(
-                                            "Could not get parameter %s from expression %s",
-                                            paramName, expr), e);
+                            log.error(String.format("Could not get parameter %s from expression %s", paramName, expr),
+                                    e);
                         }
                     }
                 }
@@ -530,17 +505,14 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             return null;
         }
 
-        DocumentView docView = getDocumentViewFromRequest(pattern.getName(),
-                httpRequest);
+        DocumentView docView = getDocumentViewFromRequest(pattern.getName(), httpRequest);
         ExpressionFactory ef = facesContext.getApplication().getExpressionFactory();
         ELContext context = facesContext.getELContext();
         String actionBinding = pattern.getActionBinding();
 
-        if (actionBinding != null
-                && !"".equals(actionBinding)
+        if (actionBinding != null && !"".equals(actionBinding)
                 && httpRequest.getAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY) == null) {
-            MethodExpression action = ef.createMethodExpression(context,
-                    actionBinding, String.class,
+            MethodExpression action = ef.createMethodExpression(context, actionBinding, String.class,
                     new Class[] { DocumentView.class });
             return (String) action.invoke(context, new Object[] { docView });
         }
@@ -566,26 +538,22 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     }
 
     @Override
-    public void initViewIdManager(ServletContext context,
-            HttpServletRequest request, HttpServletResponse response) {
+    public void initViewIdManager(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
         if (viewIdManager == null) {
-            viewIdManager = new StaticNavigationHandler(context, request,
-                    response);
+            viewIdManager = new StaticNavigationHandler(context, request, response);
         }
     }
 
     StaticNavigationHandler getViewIdManager() {
         if (viewIdManager == null) {
             throw new RuntimeException("View id manager is not initialized: "
-                    + "URLPolicyService#initViewIdManager should "
-                    + "have been called first");
+                    + "URLPolicyService#initViewIdManager should " + "have been called first");
         }
         return viewIdManager;
     }
 
     @Override
-    public String getOutcomeFromViewId(String viewId,
-            HttpServletRequest httpRequest) {
+    public String getOutcomeFromViewId(String viewId, HttpServletRequest httpRequest) {
         return getViewIdManager().getOutcomeFromViewId(viewId);
     }
 
@@ -610,8 +578,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     }
 
     @Override
-    public String getViewIdFromOutcome(String outcome,
-            HttpServletRequest httpRequest) {
+    public String getViewIdFromOutcome(String outcome, HttpServletRequest httpRequest) {
         return getViewIdManager().getViewIdFromOutcome(outcome);
     }
 

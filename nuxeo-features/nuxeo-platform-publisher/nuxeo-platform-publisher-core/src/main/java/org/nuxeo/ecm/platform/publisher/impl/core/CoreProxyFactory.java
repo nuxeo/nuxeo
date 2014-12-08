@@ -29,16 +29,13 @@ import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
 import java.util.Map;
 
 /**
- * Implementation of the {@link PublishedDocumentFactory} for simple core
- * implementation using native proxy system.
+ * Implementation of the {@link PublishedDocumentFactory} for simple core implementation using native proxy system.
  *
  * @author tiry
  */
-public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory
-        implements PublishedDocumentFactory {
+public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory implements PublishedDocumentFactory {
 
-    public PublishedDocument publishDocument(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
 
         DocumentModel targetDocModel;
@@ -46,11 +43,10 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory
             CoreFolderPublicationNode coreNode = (CoreFolderPublicationNode) targetNode;
             targetDocModel = coreNode.getTargetDocumentModel();
         } else {
-            targetDocModel = coreSession.getDocument(new PathRef(
-                    targetNode.getPath()));
+            targetDocModel = coreSession.getDocument(new PathRef(targetNode.getPath()));
         }
 
-        DocumentModel proxy ;
+        DocumentModel proxy;
         if ((params != null) && (params.containsKey("overwriteExistingProxy"))) {
             proxy = coreSession.publishDocument(doc, targetDocModel,
                     Boolean.parseBoolean(params.get("overwriteExistingProxy")));
@@ -62,8 +58,7 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory
         } else {
             coreSession.save();
         }
-        notifyEvent(PublishingEvent.documentPublished, proxy,
-                            coreSession);
+        notifyEvent(PublishingEvent.documentPublished, proxy, coreSession);
         return new SimpleCorePublishedDocument(proxy);
     }
 
@@ -72,18 +67,15 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory
         return doc;
     }
 
-    public DocumentModel unwrapPublishedDocument(PublishedDocument pubDoc)
-            throws ClientException {
+    public DocumentModel unwrapPublishedDocument(PublishedDocument pubDoc) throws ClientException {
         if (pubDoc instanceof SimpleCorePublishedDocument) {
             SimpleCorePublishedDocument pubProxy = (SimpleCorePublishedDocument) pubDoc;
             return pubProxy.getProxy();
         }
-        throw new ClientException(
-                "factory can not unwrap this PublishedDocument");
+        throw new ClientException("factory can not unwrap this PublishedDocument");
     }
 
-    public PublishedDocument wrapDocumentModel(DocumentModel doc)
-            throws ClientException {
+    public PublishedDocument wrapDocumentModel(DocumentModel doc) throws ClientException {
         return new SimpleCorePublishedDocument(doc);
     }
 

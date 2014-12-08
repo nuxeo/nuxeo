@@ -23,8 +23,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 
 /**
- * A simple operation that takes raw nested datastructures as input and
- * parameters.
+ * A simple operation that takes raw nested datastructures as input and parameters.
  */
 @Operation(id = NestedJSONOperation.ID, category = Constants.CAT_EXECUTION, label = "NestedJSONOperation")
 public class NestedJSONOperation {
@@ -54,8 +53,7 @@ public class NestedJSONOperation {
         if (mapParam != null && mapParam.containsKey("textContent")) {
             mergedTexts += mapParam.get("textContent").toString();
         }
-        if (mapParam != null && mapParam.containsKey("items")
-                && mapParam.get("items") instanceof Collection) {
+        if (mapParam != null && mapParam.containsKey("items") && mapParam.get("items") instanceof Collection) {
             mergedItems.addAll((Collection<? extends String>) mapParam.get("items"));
         }
         if (doubleParam != null) {

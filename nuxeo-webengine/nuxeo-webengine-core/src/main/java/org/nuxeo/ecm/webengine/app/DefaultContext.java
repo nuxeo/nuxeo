@@ -24,12 +24,12 @@ import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultContext extends AbstractWebContext {
 
     // FIXME: these two members must be removed - they are redundant and buggy
     protected UriInfo info;
+
     protected HttpHeaders headers;
 
     public DefaultContext(HttpServletRequest request) {
@@ -38,13 +38,13 @@ public class DefaultContext extends AbstractWebContext {
 
     @Deprecated
     public HttpHeaders getHttpHeaders() {
-        //throw new UnsupportedOperationException("Deprecated. Use @Context HttpHeaders to inject this object");
+        // throw new UnsupportedOperationException("Deprecated. Use @Context HttpHeaders to inject this object");
         return headers;
     }
 
     @Deprecated
     public UriInfo getUriInfo() {
-        //throw new UnsupportedOperationException("Deprecated. Use @Context UriInfo to inject this object");
+        // throw new UnsupportedOperationException("Deprecated. Use @Context UriInfo to inject this object");
         return info;
     }
 

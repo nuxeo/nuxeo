@@ -34,8 +34,7 @@ public class Accesskeys {
         sb.append("<div>");
         for (Type type : shortcuts) {
             final ShortcutType shortcut = (ShortcutType) type;
-            sb.append(String.format("<a href=\"%s\" accesskey=\"%s\"></a>",
-                    shortcut.getTarget(), shortcut.getKey()));
+            sb.append(String.format("<a href=\"%s\" accesskey=\"%s\"></a>", shortcut.getTarget(), shortcut.getKey()));
         }
         sb.append("</div>");
         return sb.toString();

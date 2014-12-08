@@ -45,8 +45,7 @@ public class GroupImpl implements Group {
      * adds the specified member to the group.
      *
      * @param user The principal to add to the group.
-     * @return true if the member was added - false if the member could not be
-     *         added.
+     * @return true if the member was added - false if the member could not be added.
      */
     public boolean addMember(Principal user) {
         if (groupMembers.contains(user)) {
@@ -66,8 +65,7 @@ public class GroupImpl implements Group {
      * Removes the specified member from the group.
      *
      * @param user The principal to remove from the group.
-     * @return true if the principal was removed false if the principal was not
-     *         a member
+     * @return true if the principal was removed false if the principal was not a member
      */
     public boolean removeMember(Principal user) {
         return groupMembers.removeElement(user);
@@ -81,8 +79,7 @@ public class GroupImpl implements Group {
     }
 
     /**
-     * This function returns true if the group passed matches the group
-     * represented in this interface.
+     * This function returns true if the group passed matches the group represented in this interface.
      *
      * @param obj the group to compare this group to.
      */

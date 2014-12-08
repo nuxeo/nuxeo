@@ -112,12 +112,11 @@ public class EditableListBean {
     }
 
     /**
-     * Resets all {@link UIEditableList} components cached model in first
-     * container found thanks to given event
+     * Resets all {@link UIEditableList} components cached model in first container found thanks to given event
      *
      * @since 5.3.1
-     * @deprecated since 5.6: the component resets its cache correctly after
-     *             update now so forcing the reset is now useless
+     * @deprecated since 5.6: the component resets its cache correctly after update now so forcing the reset is now
+     *             useless
      */
     @Deprecated
     public void resetAllListsCachedModels(ActionEvent event) {
@@ -131,8 +130,8 @@ public class EditableListBean {
     }
 
     /**
-     * @deprecated since 5.6: the component resets its cache correctly after
-     *             update now so forcing the reset is now useless
+     * @deprecated since 5.6: the component resets its cache correctly after update now so forcing the reset is now
+     *             useless
      */
     @Deprecated
     protected void resetListCachedModels(UIComponent parent) {
@@ -176,10 +175,8 @@ public class EditableListBean {
         }
     }
 
-    protected static void performAction(UIComponent binding,
-            Map<String, String> requestMap) {
-        UIEditableList editableComp = getEditableListComponent(binding,
-                requestMap);
+    protected static void performAction(UIComponent binding, Map<String, String> requestMap) {
+        UIEditableList editableComp = getEditableListComponent(binding, requestMap);
         if (editableComp == null) {
             return;
         }
@@ -243,8 +240,7 @@ public class EditableListBean {
         }
     }
 
-    protected static String getParameterValue(Map<String, String> requestMap,
-            String parameterName) {
+    protected static String getParameterValue(Map<String, String> requestMap, String parameterName) {
         String string = requestMap.get(parameterName);
         if (string == null || string.length() == 0) {
             return null;
@@ -253,23 +249,18 @@ public class EditableListBean {
         }
     }
 
-    protected static UIEditableList getEditableListComponent(
-            UIComponent component, Map<String, String> requestMap) {
+    protected static UIEditableList getEditableListComponent(UIComponent component, Map<String, String> requestMap) {
         UIEditableList listComponent = null;
         String forString = getParameterValue(requestMap, FOR_PARAMETER_NAME);
         if (forString == null) {
-            log.error(String.format(
-                    "Could not find '%s' parameter in the request map",
-                    FOR_PARAMETER_NAME));
+            log.error(String.format("Could not find '%s' parameter in the request map", FOR_PARAMETER_NAME));
         } else {
             UIComponent forComponent = component.findComponent(forString);
             if (forComponent == null) {
                 log.error("Could not find component with id: " + forString);
             } else if (!(forComponent instanceof UIEditableList)) {
-                log.error(String.format(
-                        "Invalid component with id %s: %s, expected a "
-                                + "component with class %s", forString,
-                        forComponent, UIEditableList.class));
+                log.error(String.format("Invalid component with id %s: %s, expected a " + "component with class %s",
+                        forString, forComponent, UIEditableList.class));
             } else {
                 listComponent = (UIEditableList) forComponent;
             }
@@ -277,22 +268,17 @@ public class EditableListBean {
         return listComponent;
     }
 
-    protected static EditableListModificationType getModificationType(
-            Map<String, String> requestMap) {
+    protected static EditableListModificationType getModificationType(Map<String, String> requestMap) {
         EditableListModificationType type = null;
         String typeString = getParameterValue(requestMap, TYPE_PARAMETER_NAME);
         if (typeString == null) {
-            log.error(String.format(
-                    "Could not find '%s' parameter in the request map",
-                    TYPE_PARAMETER_NAME));
+            log.error(String.format("Could not find '%s' parameter in the request map", TYPE_PARAMETER_NAME));
         } else {
             try {
                 type = EditableListModificationType.valueOfString(typeString);
             } catch (IllegalArgumentException err) {
-                log.error(String.format(
-                        "Illegal value for '%s' attribute: %s, "
-                                + "should be one of %s", TYPE_PARAMETER_NAME,
-                        typeString, EditableListModificationType.values()));
+                log.error(String.format("Illegal value for '%s' attribute: %s, " + "should be one of %s",
+                        TYPE_PARAMETER_NAME, typeString, EditableListModificationType.values()));
             }
         }
         return type;
@@ -302,17 +288,13 @@ public class EditableListBean {
         Integer index = null;
         String indexString = getParameterValue(requestMap, INDEX_PARAMETER_NAME);
         if (indexString == null) {
-            log.error(String.format(
-                    "Could not find '%s' parameter in the request map",
-                    INDEX_PARAMETER_NAME));
+            log.error(String.format("Could not find '%s' parameter in the request map", INDEX_PARAMETER_NAME));
         } else {
             try {
                 index = Integer.valueOf(indexString);
             } catch (NumberFormatException e) {
-                log.error(String.format(
-                        "Illegal value for '%s' attribute: %s, "
-                                + "should be integer", INDEX_PARAMETER_NAME,
-                        indexString));
+                log.error(String.format("Illegal value for '%s' attribute: %s, " + "should be integer",
+                        INDEX_PARAMETER_NAME, indexString));
             }
         }
         return index;
@@ -320,16 +302,13 @@ public class EditableListBean {
 
     protected static Integer getNumber(Map<String, String> requestMap) {
         Integer number = null;
-        String numberString = getParameterValue(requestMap,
-                NUMBER_PARAMETER_NAME);
+        String numberString = getParameterValue(requestMap, NUMBER_PARAMETER_NAME);
         if (numberString != null) {
             try {
                 number = Integer.valueOf(numberString);
             } catch (NumberFormatException e) {
-                log.error(String.format(
-                        "Illegal value for '%s' attribute: %s, "
-                                + "should be integer", NUMBER_PARAMETER_NAME,
-                        numberString));
+                log.error(String.format("Illegal value for '%s' attribute: %s, " + "should be integer",
+                        NUMBER_PARAMETER_NAME, numberString));
             }
         }
         return number;
@@ -338,11 +317,9 @@ public class EditableListBean {
     /**
      * Dummy list of one item, used to wrap a table within another table.
      * <p>
-     * A table resets its saved state when decoding, which is a problem when
-     * saving a file temporarily: as it will not be submitted again in the
-     * request, the new value will be lost. The table is not reset when
-     * embedded in another table, so we can use this list as value of the
-     * embedding table as a work around.
+     * A table resets its saved state when decoding, which is a problem when saving a file temporarily: as it will not
+     * be submitted again in the request, the new value will be lost. The table is not reset when embedded in another
+     * table, so we can use this list as value of the embedding table as a work around.
      *
      * @return dummy list of one item
      */

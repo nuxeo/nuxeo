@@ -43,18 +43,15 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * Useful for content views displaying users' tasks.
  * <p>
- * WARNING: this page provider does not handle sorting, and its pagination
- * management is not efficient (done in post filter).
+ * WARNING: this page provider does not handle sorting, and its pagination management is not efficient (done in post
+ * filter).
  * <p>
- * This page provider requires the property {@link #CORE_SESSION_PROPERTY} to
- * be filled with a core session. It also accepts an optional property
- * {@link #FILTER_DOCS_FROM_TRASH}, defaulting to true.
+ * This page provider requires the property {@link #CORE_SESSION_PROPERTY} to be filled with a core session. It also
+ * accepts an optional property {@link #FILTER_DOCS_FROM_TRASH}, defaulting to true.
  *
  * @since 5.5
  */
-public class UserTaskPageProvider extends
-        AbstractPageProvider<DashBoardItem> implements
-        PageProvider<DashBoardItem> {
+public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> implements PageProvider<DashBoardItem> {
 
     private static final long serialVersionUID = 1L;
 
@@ -86,8 +83,7 @@ public class UserTaskPageProvider extends
                     // handle offset
                     long offset = getCurrentPageOffset();
                     if (offset <= resultsCount) {
-                        for (int i = Long.valueOf(offset).intValue(); i < resultsCount
-                                && i < offset + pageSize; i++) {
+                        for (int i = Long.valueOf(offset).intValue(); i < resultsCount && i < offset + pageSize; i++) {
                             pageTasks.add(userTasks.get(i));
                         }
                     }
@@ -99,7 +95,7 @@ public class UserTaskPageProvider extends
 
     protected Locale getLocale() {
         String locale = (String) getProperties().get("locale");
-        if (locale!=null) {
+        if (locale != null) {
             return new Locale(locale);
         }
         return null;
@@ -122,8 +118,7 @@ public class UserTaskPageProvider extends
                         if (task.hasEnded() || task.isCancelled()) {
                             continue;
                         }
-                        DocumentModel doc = taskService.getTargetDocumentModel(task,
-                                coreSession);
+                        DocumentModel doc = taskService.getTargetDocumentModel(task, coreSession);
                         if (doc != null) {
                             if (filterTrashDocs
                                     && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
@@ -132,10 +127,8 @@ public class UserTaskPageProvider extends
                                 userTasks.add(new DashBoardItemImpl(task, doc, getLocale()));
                             }
                         } else {
-                            log.warn(String.format(
-                                    "User '%s' has a task of type '%s' on a "
-                                            + "missing or deleted document",
-                                    pal.getName(), task.getName()));
+                            log.warn(String.format("User '%s' has a task of type '%s' on a "
+                                    + "missing or deleted document", pal.getName(), task.getName()));
                         }
                     } catch (ClientException e) {
                         log.error(e);
@@ -167,8 +160,7 @@ public class UserTaskPageProvider extends
     }
 
     /**
-     * This page provider does not support sort for now => override what may be
-     * contributed in the definition
+     * This page provider does not support sort for now => override what may be contributed in the definition
      */
     @Override
     public boolean isSortable() {

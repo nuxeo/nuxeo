@@ -29,8 +29,7 @@ class ImagingResourcesHelper {
 
     public static final String TEST_DATA_FOLDER = "images/";
 
-    public static final List<String> TEST_IMAGE_FILENAMES = Arrays.asList(
-            "cat.gif", "andy.bmp");
+    public static final List<String> TEST_IMAGE_FILENAMES = Arrays.asList("cat.gif", "andy.bmp");
 
     public static File getFileFromPath(String path) {
         File file = FileUtils.getResourceFileFromContext(path);

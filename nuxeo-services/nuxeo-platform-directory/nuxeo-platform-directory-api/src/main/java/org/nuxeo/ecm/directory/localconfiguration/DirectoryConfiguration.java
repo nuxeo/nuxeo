@@ -27,8 +27,7 @@ import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
 public interface DirectoryConfiguration extends LocalConfiguration<DirectoryConfiguration> {
 
     /**
-     * Returns the directory suffix if any is configured.
-     * Else, returns null.
+     * Returns the directory suffix if any is configured. Else, returns null.
      */
     String getDirectorySuffix();
 

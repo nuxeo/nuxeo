@@ -47,8 +47,7 @@ public class RestoreVersion {
     @OperationMethod
     public DocumentModel run(DocumentModel version) {
         DocumentModel liveDoc = session.getSourceDocument(version.getRef());
-        return session.restoreToVersion(liveDoc.getRef(), version.getRef(),
-                !createVersion, !checkout);
+        return session.restoreToVersion(liveDoc.getRef(), version.getRef(), !createVersion, !checkout);
     }
 
 }

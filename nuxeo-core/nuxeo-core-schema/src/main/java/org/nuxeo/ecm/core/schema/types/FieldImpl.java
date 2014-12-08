@@ -13,8 +13,7 @@
 package org.nuxeo.ecm.core.schema.types;
 
 /**
- * The implementation for a field, which is the association of a type, a name,
- * and default values.
+ * The implementation for a field, which is the association of a type, a name, and default values.
  */
 public class FieldImpl implements Field {
 
@@ -36,8 +35,7 @@ public class FieldImpl implements Field {
 
     private int maxLength = -1;
 
-    public FieldImpl(QName name, Type declaringType, Type type,
-            String defaultValue, int flags) {
+    public FieldImpl(QName name, Type declaringType, Type type, String defaultValue, int flags) {
         this.name = name;
         this.type = type;
         this.declaringType = declaringType;

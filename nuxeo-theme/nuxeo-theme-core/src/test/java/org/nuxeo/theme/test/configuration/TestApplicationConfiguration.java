@@ -32,18 +32,15 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "application-config.xml");
     }
 
     @Test
     public void testRegisterApplication1() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        ApplicationType app1a = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, "/my-app");
+        ApplicationType app1a = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION, "/my-app");
         assertEquals("/my-app", app1a.getTypeName());
         assertEquals("html", app1a.getTemplateEngine());
 
@@ -73,8 +70,7 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
     @Test
     public void testRegisterApplication2() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        ApplicationType app2a = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, "/my-app2");
+        ApplicationType app2a = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION, "/my-app2");
         assertEquals("freemarker", app2a.getTemplateEngine());
         assertNull(app2a.getNegotiation());
         assertNull(app2a.getResourceCaching());
@@ -86,10 +82,8 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
     public void testOverrideProperties() throws Exception {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // Override default application settings
-        deployContrib("org.nuxeo.theme.core.tests",
-                "application-config-override.xml");
-        ApplicationType app1b = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, "/my-app");
+        deployContrib("org.nuxeo.theme.core.tests", "application-config-override.xml");
+        ApplicationType app1b = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION, "/my-app");
 
         // Existing properties are left unchanged
         assertTrue(app1b.getViewIds().contains("/workspaces.xhtml"));
@@ -124,10 +118,8 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
     public void testOverrideProperties2() throws Exception {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // Override default application settings
-        deployContrib("org.nuxeo.theme.core.tests",
-                "application-config-override.xml");
-        ApplicationType app2b = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, "/my-app2");
+        deployContrib("org.nuxeo.theme.core.tests", "application-config-override.xml");
+        ApplicationType app2b = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION, "/my-app2");
 
         // Existing properties are left unchanged
         assertEquals("freemarker", app2b.getTemplateEngine());

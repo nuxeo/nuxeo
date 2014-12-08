@@ -23,8 +23,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Anahide Tchertchian
  */
 @XObject("policy")
-public class SecurityPolicyDescriptor implements
-        Comparable<SecurityPolicyDescriptor> {
+public class SecurityPolicyDescriptor implements Comparable<SecurityPolicyDescriptor> {
 
     @XNode("@name")
     private String name;

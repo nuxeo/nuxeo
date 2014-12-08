@@ -17,8 +17,7 @@ package org.nuxeo.runtime.services.event;
 /**
  * Used to pass execution status for asynchronous events.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface EventCallback {
 

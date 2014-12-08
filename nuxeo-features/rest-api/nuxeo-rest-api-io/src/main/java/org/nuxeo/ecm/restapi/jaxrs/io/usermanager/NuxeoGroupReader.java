@@ -43,8 +43,6 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.7.3
  */
 public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
@@ -52,18 +50,15 @@ public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
     @Context
     JsonFactory factory;
 
-
     @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return NuxeoGroup.class.isAssignableFrom(type);
     }
 
     @Override
-    public NuxeoGroup readFrom(Class<NuxeoGroup> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
+    public NuxeoGroup readFrom(Class<NuxeoGroup> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
+            WebApplicationException {
         String content = IOUtils.toString(entityStream);
         if (content.isEmpty()) {
             throw new WebException("No content in request body", Response.Status.BAD_REQUEST.getStatusCode());
@@ -77,17 +72,13 @@ public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
      * @param content
      * @param httpHeaders
      * @return
-     *
      */
-    private NuxeoGroup readRequest(String json,
-            MultivaluedMap<String, String> httpHeaders) {
+    private NuxeoGroup readRequest(String json, MultivaluedMap<String, String> httpHeaders) {
         try {
-            JsonParser jp = factory.createJsonParser(
-                    json);
+            JsonParser jp = factory.createJsonParser(json);
             return readJson(jp, httpHeaders);
         } catch (ClientException | IOException e) {
-            throw new WebApplicationException(e,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -98,11 +89,9 @@ public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
      * @throws IOException
      * @throws JsonParseException
      * @throws ClientException
-     *
      */
-    private NuxeoGroup readJson(JsonParser jp,
-            MultivaluedMap<String, String> httpHeaders)
-            throws JsonParseException, IOException, ClientException {
+    private NuxeoGroup readJson(JsonParser jp, MultivaluedMap<String, String> httpHeaders) throws JsonParseException,
+            IOException, ClientException {
         JsonToken tok = jp.nextToken();
 
         // skip {
@@ -145,8 +134,7 @@ public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
             } else if ("entity-type".equals(key)) {
                 String entityType = jp.readValueAs(String.class);
                 if (!NuxeoGroupWriter.ENTITY_TYPE.equals(entityType)) {
-                    throw new WebApplicationException(
-                            Response.Status.BAD_REQUEST);
+                    throw new WebApplicationException(Response.Status.BAD_REQUEST);
                 }
             }
             tok = jp.nextToken();

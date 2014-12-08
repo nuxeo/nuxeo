@@ -71,8 +71,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         // assertEquals(4, schemas.size()); // file, common, MySchema
         Schema schema = typeMgr.getSchema("MySchema");
         assertEquals("MySchema", schema.getName());
-        assertEquals("http://www.nuxeo.org/ecm/schemas/MySchema",
-                schema.getNamespace().uri);
+        assertEquals("http://www.nuxeo.org/ecm/schemas/MySchema", schema.getNamespace().uri);
         assertEquals("", schema.getNamespace().prefix);
 
         Collection<Field> fields = schema.getFields();
@@ -103,8 +102,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
     @Test
     public void testContribs() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests",
-                "OSGI-INF/CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/CoreTestExtensions.xml");
         DocumentType docType = typeMgr.getDocumentType("myDoc");
 
         assertNotNull(docType);
@@ -126,8 +124,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         docType = typeMgr.getDocumentType("myDoc2");
         assertNotNull(docType);
         assertEquals(2, docType.getSchemas().size());
-        assertEquals(Arrays.asList("schema1", "schema2"),
-                Arrays.asList(docType.getSchemaNames()));
+        assertEquals(Arrays.asList("schema1", "schema2"), Arrays.asList(docType.getSchemaNames()));
     }
 
     @SuppressWarnings("unchecked")
@@ -402,8 +399,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertNotNull(ct.getField("field2B"));
         assertEquals("string", ct.getField("field2B").getType().getName());
         assertNotNull(ct.getField("TestNestedChoicesWithListType#anonymousList"));
-        assertEquals(
-                "TestNestedChoicesWithListType#anonymousListType",
+        assertEquals("TestNestedChoicesWithListType#anonymousListType",
                 ct.getField("TestNestedChoicesWithListType#anonymousList").getType().getName());
 
         Field listField = ct.getField("TestNestedChoicesWithListType#anonymousList");
@@ -412,8 +408,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         ListType listType = (ListType) listField.getType();
 
         Field listItemField = listType.getField();
-        assertEquals("TestNestedChoicesWithListType#anonymousListItem",
-                listItemField.getType().getName());
+        assertEquals("TestNestedChoicesWithListType#anonymousListItem", listItemField.getType().getName());
 
         assertTrue(listItemField.getType().isComplexType());
 

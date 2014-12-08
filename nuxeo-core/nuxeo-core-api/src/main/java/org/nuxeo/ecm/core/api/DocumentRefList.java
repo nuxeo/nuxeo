@@ -17,8 +17,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * A serializable list of document references.
- * Use this instead of <code>List&lt;DocumentRef&gt;</code> when a list of document references should be returned.
+ * A serializable list of document references. Use this instead of <code>List&lt;DocumentRef&gt;</code> when a list of
+ * document references should be returned.
  * <p>
  * This object is type safe and can help services which need to dynamically discover which type of object is returned.
  * (see operation framework for this)

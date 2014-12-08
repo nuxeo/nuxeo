@@ -25,17 +25,15 @@ import org.nuxeo.ecm.platform.content.template.listener.RepositoryInitialization
 import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
 
 /**
- * Specific factory for Root. Since some other
- * {@link RepositoryInitializationListener} have run before, root won't be empty
- * but we may still have to run this initializer.
+ * Specific factory for Root. Since some other {@link RepositoryInitializationListener} have run before, root won't be
+ * empty but we may still have to run this initializer.
  *
  * @author Thierry Delprat
  */
 public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
 
     @Override
-    public void createContentStructure(DocumentModel eventDoc)
-            throws ClientException {
+    public void createContentStructure(DocumentModel eventDoc) throws ClientException {
         initSession(eventDoc);
 
         if (!shouldCreateContent(eventDoc)) {
@@ -47,11 +45,9 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
             if (item.getPath() != null) {
                 itemPath += "/" + item.getPath();
             }
-            DocumentModel newChild = session.createDocumentModel(itemPath,
-                    item.getId(), item.getTypeName());
+            DocumentModel newChild = session.createDocumentModel(itemPath, item.getId(), item.getTypeName());
             newChild.setProperty("dublincore", "title", item.getTitle());
-            newChild.setProperty("dublincore", "description",
-                    item.getDescription());
+            newChild.setProperty("dublincore", "description", item.getDescription());
             setProperties(item.getProperties(), newChild);
             newChild = session.createDocument(newChild);
             setAcl(item.getAcl(), newChild.getRef());
@@ -61,11 +57,10 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
     }
 
     /**
-     * Returns {@code false} if the type of one of the children documents
-     * matches a template item type, {@code true} otherwise.
+     * Returns {@code false} if the type of one of the children documents matches a template item type, {@code true}
+     * otherwise.
      */
-    protected boolean shouldCreateContent(DocumentModel eventDoc)
-            throws ClientException {
+    protected boolean shouldCreateContent(DocumentModel eventDoc) throws ClientException {
         for (TemplateItemDescriptor item : template) {
             // don't use getChildren, which can be costly
             // if the folder has a huge number of children

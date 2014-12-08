@@ -33,8 +33,7 @@ public abstract class AbstractDefaultXMLMarshaler {
             return null;
         }
         if (data.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")) {
-            data = data.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
-                    "");
+            data = data.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n", "");
         }
         return data;
     }

@@ -59,8 +59,7 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
     private List<String> excludedHeadersForBasicAuth;
 
     @Override
-    public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         try {
 
             if (needToAddBAHeader(httpRequest)) {
@@ -79,7 +78,6 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
      *
      * @param httpRequest
      * @return true if we need to include the auth header
-     *
      * @since 5.9.2
      */
     private boolean needToAddBAHeader(HttpServletRequest httpRequest) {
@@ -99,8 +97,8 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
     }
 
     @Override
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
 
         String auth = httpRequest.getHeader("authorization");
 
@@ -147,8 +145,7 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
         }
 
         if (parameters.containsKey(AUTO_PROMPT_KEY)) {
-            autoPrompt = parameters.get(AUTO_PROMPT_KEY).equalsIgnoreCase(
-                    "true");
+            autoPrompt = parameters.get(AUTO_PROMPT_KEY).equalsIgnoreCase("true");
         }
 
         forcePromptURLs = new ArrayList<String>();

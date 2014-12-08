@@ -29,8 +29,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.MetaValueHolderTagHandler;
 import com.sun.faces.facelets.tag.jsf.html.AbstractHtmlLibrary;
 
 /**
- * Replicate the HTML Library with facelet handlers to use a specific
- * namespace.
+ * Replicate the HTML Library with facelet handlers to use a specific namespace.
  *
  * @author Jacob Hookom
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -46,89 +45,66 @@ public class HtmlLibrary extends AbstractHtmlLibrary {
 
         this.addHtmlComponent("column", "javax.faces.Column", null);
 
-        this.addComponent("commandButton", "javax.faces.HtmlCommandButton",
-                "javax.faces.Button", MetaActionSourceTagHandler.class);
+        this.addComponent("commandButton", "javax.faces.HtmlCommandButton", "javax.faces.Button",
+                MetaActionSourceTagHandler.class);
 
-        this.addComponent("commandLink", "javax.faces.HtmlCommandLink",
-                "javax.faces.Link", MetaActionSourceTagHandler.class);
+        this.addComponent("commandLink", "javax.faces.HtmlCommandLink", "javax.faces.Link",
+                MetaActionSourceTagHandler.class);
 
-        this.addHtmlComponent("dataTable", "javax.faces.HtmlDataTable",
-                "javax.faces.Table");
+        this.addHtmlComponent("dataTable", "javax.faces.HtmlDataTable", "javax.faces.Table");
 
-        this.addHtmlComponent("form", "javax.faces.HtmlForm",
-                "javax.faces.Form");
+        this.addHtmlComponent("form", "javax.faces.HtmlForm", "javax.faces.Form");
 
-        this.addHtmlComponent("graphicImage", "javax.faces.HtmlGraphicImage",
-                NXImageRenderer.RENDERER_TYPE);
+        this.addHtmlComponent("graphicImage", "javax.faces.HtmlGraphicImage", NXImageRenderer.RENDERER_TYPE);
 
-        this.addHtmlComponent("inputHidden", "javax.faces.HtmlInputHidden",
-                "javax.faces.Hidden");
+        this.addHtmlComponent("inputHidden", "javax.faces.HtmlInputHidden", "javax.faces.Hidden");
 
-        this.addHtmlComponent("inputSecret", "javax.faces.HtmlInputSecret",
-                "javax.faces.Secret");
+        this.addHtmlComponent("inputSecret", "javax.faces.HtmlInputSecret", "javax.faces.Secret");
 
-        this.addHtmlComponent("inputText", "javax.faces.HtmlInputText",
-                "javax.faces.Text");
+        this.addHtmlComponent("inputText", "javax.faces.HtmlInputText", "javax.faces.Text");
 
-        this.addHtmlComponent("inputTextarea", "javax.faces.HtmlInputTextarea",
-                "javax.faces.Textarea");
+        this.addHtmlComponent("inputTextarea", "javax.faces.HtmlInputTextarea", "javax.faces.Textarea");
 
-        this.addHtmlComponent("message", "javax.faces.HtmlMessage",
-                "javax.faces.Message");
+        this.addHtmlComponent("message", "javax.faces.HtmlMessage", "javax.faces.Message");
 
-        this.addHtmlComponent("messages", "javax.faces.HtmlMessages",
-                NXMessagesRenderer.RENDERER_TYPE);
+        this.addHtmlComponent("messages", "javax.faces.HtmlMessages", NXMessagesRenderer.RENDERER_TYPE);
 
-        this.addHtmlComponent("outputFormat", "javax.faces.HtmlOutputFormat",
-                "javax.faces.Format");
+        this.addHtmlComponent("outputFormat", "javax.faces.HtmlOutputFormat", "javax.faces.Format");
 
-        this.addHtmlComponent("outputLabel", "javax.faces.HtmlOutputLabel",
-                "javax.faces.Label");
+        this.addHtmlComponent("outputLabel", "javax.faces.HtmlOutputLabel", "javax.faces.Label");
 
-        this.addHtmlComponent("outputLink", "javax.faces.HtmlOutputLink",
-                "javax.faces.Link");
+        this.addHtmlComponent("outputLink", "javax.faces.HtmlOutputLink", "javax.faces.Link");
 
         // meta value wired
-        this.addComponent("metaOutputLink", "javax.faces.HtmlOutputLink",
-                "javax.faces.Link", MetaValueHolderTagHandler.class);
+        this.addComponent("metaOutputLink", "javax.faces.HtmlOutputLink", "javax.faces.Link",
+                MetaValueHolderTagHandler.class);
 
-        this.addComponent("outputText", "javax.faces.HtmlOutputText",
-                "javax.faces.Text", MetaValueHolderTagHandler.class);
+        this.addComponent("outputText", "javax.faces.HtmlOutputText", "javax.faces.Text",
+                MetaValueHolderTagHandler.class);
 
-        this.addHtmlComponent("panelGrid", "javax.faces.HtmlPanelGrid",
-                "javax.faces.Grid");
+        this.addHtmlComponent("panelGrid", "javax.faces.HtmlPanelGrid", "javax.faces.Grid");
 
-        this.addHtmlComponent("panelGroup", "javax.faces.HtmlPanelGroup",
-                "javax.faces.Group");
+        this.addHtmlComponent("panelGroup", "javax.faces.HtmlPanelGroup", "javax.faces.Group");
 
-        this.addHtmlComponent("selectBooleanCheckbox",
-                "javax.faces.HtmlSelectBooleanCheckbox",
+        this.addHtmlComponent("selectBooleanCheckbox", "javax.faces.HtmlSelectBooleanCheckbox",
                 NXCheckboxRenderer.RENDERER_TYPE);
 
-        this.addHtmlComponent("selectManyCheckbox",
-                "javax.faces.HtmlSelectManyCheckbox", "javax.faces.Checkbox");
+        this.addHtmlComponent("selectManyCheckbox", "javax.faces.HtmlSelectManyCheckbox", "javax.faces.Checkbox");
 
-        this.addHtmlComponent("selectManyListbox",
-                "javax.faces.HtmlSelectManyListbox", "javax.faces.Listbox");
+        this.addHtmlComponent("selectManyListbox", "javax.faces.HtmlSelectManyListbox", "javax.faces.Listbox");
 
-        this.addHtmlComponent("selectManyMenu",
-                "javax.faces.HtmlSelectManyMenu", "javax.faces.Menu");
+        this.addHtmlComponent("selectManyMenu", "javax.faces.HtmlSelectManyMenu", "javax.faces.Menu");
 
-        this.addHtmlComponent("selectOneListbox",
-                "javax.faces.HtmlSelectOneListbox", "javax.faces.Listbox");
+        this.addHtmlComponent("selectOneListbox", "javax.faces.HtmlSelectOneListbox", "javax.faces.Listbox");
 
-        this.addHtmlComponent("selectOneMenu", "javax.faces.HtmlSelectOneMenu",
-                "javax.faces.Menu");
+        this.addHtmlComponent("selectOneMenu", "javax.faces.HtmlSelectOneMenu", "javax.faces.Menu");
 
-        this.addHtmlComponent("selectOneRadio",
-                "javax.faces.HtmlSelectOneRadio", "javax.faces.Radio");
+        this.addHtmlComponent("selectOneRadio", "javax.faces.HtmlSelectOneRadio", "javax.faces.Radio");
     }
 
     @Override
-    public void addHtmlComponent(String name, String componentType,
-            String rendererType) {
-        super.addComponent(name, componentType, rendererType,
-                GenericHtmlComponentHandler.class);
+    public void addHtmlComponent(String name, String componentType, String rendererType) {
+        super.addComponent(name, componentType, rendererType, GenericHtmlComponentHandler.class);
     }
 
 }

@@ -20,7 +20,6 @@ import org.nuxeo.ecm.webengine.jaxrs.session.impl.PerRequestCoreProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SessionFactory {
 
@@ -41,11 +40,11 @@ public class SessionFactory {
     }
 
     public static CoreSessionProvider<?> getCoreProvider(HttpServletRequest request) {
-        CoreSessionProvider<?> provider = (CoreSessionProvider<?>)request.getAttribute(SESSION_FACTORY_KEY);
+        CoreSessionProvider<?> provider = (CoreSessionProvider<?>) request.getAttribute(SESSION_FACTORY_KEY);
         if (provider == null) {
             HttpSession s = request.getSession(false);
             if (s != null) {
-                provider = (CoreSessionProvider<?>)s.getAttribute(SESSION_FACTORY_KEY);
+                provider = (CoreSessionProvider<?>) s.getAttribute(SESSION_FACTORY_KEY);
             }
             if (provider == null) {
                 provider = new PerRequestCoreProvider();
@@ -56,7 +55,7 @@ public class SessionFactory {
     }
 
     public static void dispose(HttpServletRequest request) {
-        CoreSessionProvider<?> provider = (CoreSessionProvider<?>)request.getAttribute(SESSION_FACTORY_KEY);
+        CoreSessionProvider<?> provider = (CoreSessionProvider<?>) request.getAttribute(SESSION_FACTORY_KEY);
         if (provider != null) {
             request.removeAttribute(SESSION_FACTORY_KEY);
             provider.onRequestDone(request);
@@ -66,7 +65,8 @@ public class SessionFactory {
     public static CoreSession getSession() {
         RequestContext ctx = RequestContext.getActiveContext();
         if (ctx == null) {
-            throw new IllegalStateException("You are trying to acces RequestContext data but you are not in web request a context. Make sure you have the RequestContextFilter installed and you call this method from the HTTP request thread");
+            throw new IllegalStateException(
+                    "You are trying to acces RequestContext data but you are not in web request a context. Make sure you have the RequestContextFilter installed and you call this method from the HTTP request thread");
         }
         return getSession(ctx.getRequest());
     }
@@ -74,7 +74,8 @@ public class SessionFactory {
     public static CoreSession getSession(String repositoryName) {
         RequestContext ctx = RequestContext.getActiveContext();
         if (ctx == null) {
-            throw new IllegalStateException("You are trying to acces RequestContext data but you are not in web request a context. Make sure you have the RequestContextFilter installed and you call this method from the HTTP request thread");
+            throw new IllegalStateException(
+                    "You are trying to acces RequestContext data but you are not in web request a context. Make sure you have the RequestContextFilter installed and you call this method from the HTTP request thread");
         }
         return getSession(ctx.getRequest(), repositoryName);
     }

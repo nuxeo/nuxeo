@@ -37,23 +37,15 @@ import com.google.inject.Binder;
 import com.google.inject.Scopes;
 import com.google.inject.name.Names;
 
-@Deploy({
-    "org.nuxeo.ecm.core.schema",
-    "org.nuxeo.ecm.core.query",
-    "org.nuxeo.ecm.core.api",
-    "org.nuxeo.ecm.core.event",
-    "org.nuxeo.ecm.core",
-    "org.nuxeo.ecm.core.convert",
-    "org.nuxeo.ecm.core.storage.sql",
-    "org.nuxeo.ecm.core.storage.sql.test"
-})
+@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.query", "org.nuxeo.ecm.core.api",
+        "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.convert",
+        "org.nuxeo.ecm.core.storage.sql", "org.nuxeo.ecm.core.storage.sql.test" })
 @Features(RuntimeFeature.class)
 public class MultiRepositoriesCoreFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(CoreFeature.class);
 
-    private final Map<String,RepositorySettings> repositories =
-        new HashMap<String,RepositorySettings>();
+    private final Map<String, RepositorySettings> repositories = new HashMap<String, RepositorySettings>();
 
     public RepositorySettings getRepository(String name) {
         return repositories.get(name);
@@ -69,7 +61,7 @@ public class MultiRepositoriesCoreFeature extends SimpleFeature {
             RepositorySettings repo = new RepositorySettings(runner);
             repositories.put(repo.repositoryName, repo);
         } else {
-            for (RepositoryConfig config:configs.value()) {
+            for (RepositoryConfig config : configs.value()) {
                 RepositorySettings repository = new RepositorySettings(runner, config);
                 repositories.put(repository.repositoryName, repository);
             }
@@ -77,53 +69,49 @@ public class MultiRepositoriesCoreFeature extends SimpleFeature {
     }
 
     @Override
-    public void initialize(FeaturesRunner runner)
-            throws Exception {
+    public void initialize(FeaturesRunner runner) throws Exception {
         setupRepos(runner);
-//        for (RepositorySettings repo:repositories.values()) {
-//            runner.getFeature(RuntimeFeature.class).addServiceProvider(CoreSession.class, repo);
-//        }
+        // for (RepositorySettings repo:repositories.values()) {
+        // runner.getFeature(RuntimeFeature.class).addServiceProvider(CoreSession.class, repo);
+        // }
     }
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
-        for (RepositorySettings repository:repositories.values()) {
+        for (RepositorySettings repository : repositories.values()) {
             repository.initialize();
         }
     }
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        for (RepositorySettings repository:repositories.values()) {
-            binder.bind(RepositorySettings.class).
-                annotatedWith(Names.named(repository.repositoryName)).
-                toInstance(repository);
-            binder.bind(CoreSession.class).
-                annotatedWith(Names.named(repository.repositoryName)).
-                toProvider(repository).in(Scopes.SINGLETON);
+        for (RepositorySettings repository : repositories.values()) {
+            binder.bind(RepositorySettings.class).annotatedWith(Names.named(repository.repositoryName)).toInstance(
+                    repository);
+            binder.bind(CoreSession.class).annotatedWith(Names.named(repository.repositoryName)).toProvider(repository).in(
+                    Scopes.SINGLETON);
         }
     }
 
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
-        for (RepositorySettings repository:repositories.values()) {
+        for (RepositorySettings repository : repositories.values()) {
             initializeSession(runner, repository);
         }
     }
 
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
-        //TODO cleanupSession(runner);
+        // TODO cleanupSession(runner);
         Framework.getService(EventService.class).waitForAsyncCompletion();
-        for (RepositorySettings repository:repositories.values()) {
+        for (RepositorySettings repository : repositories.values()) {
             repository.shutdown();
         }
     }
 
     @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
-        for (RepositorySettings repository:repositories.values()) {
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        for (RepositorySettings repository : repositories.values()) {
             if (repository.getGranularity() == Granularity.METHOD) {
                 cleanupSession(runner, repository);
             }

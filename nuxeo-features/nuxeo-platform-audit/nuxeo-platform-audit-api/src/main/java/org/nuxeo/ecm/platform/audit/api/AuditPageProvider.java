@@ -37,14 +37,12 @@ import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * {@link PageProvider} implementation that returns {@link LogEntry} from Audit
- * Service
+ * {@link PageProvider} implementation that returns {@link LogEntry} from Audit Service
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
  */
-public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
-        PageProvider<LogEntry> {
+public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements PageProvider<LogEntry> {
 
     private static final long serialVersionUID = 1L;
 
@@ -76,10 +74,8 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
 
     protected void preprocessCommentsIfNeeded(List<LogEntry> entries) {
         Serializable preprocess = getProperties().get(UICOMMENTS_PROPERTY);
-        CoreSession session = (CoreSession) getProperties().get(
-                CORE_SESSION_PROPERTY);
-        if (session != null && preprocess != null
-                && "true".equalsIgnoreCase(preprocess.toString())) {
+        CoreSession session = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
+        if (session != null && preprocess != null && "true".equalsIgnoreCase(preprocess.toString())) {
             CommentProcessorHelper cph = new CommentProcessorHelper(session);
             cph.processComments(entries);
         }
@@ -90,9 +86,8 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
     public List<LogEntry> getCurrentPage() {
         AuditReader reader = Framework.getService(AuditReader.class);
         buildAuditQuery(true);
-        List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery(
-                auditQuery, auditQueryParams, (int) getCurrentPageIndex() + 1,
-                (int) getMinMaxPageSize());
+        List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery(auditQuery, auditQueryParams,
+                (int) getCurrentPageIndex() + 1, (int) getMinMaxPageSize());
         preprocessCommentsIfNeeded(entries);
         return entries;
     }
@@ -171,8 +166,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
             // Simple Pattern
 
             if (!allowSimplePattern()) {
-                throw new UnsupportedOperationException(
-                        "This page provider requires a explicit Where Clause");
+                throw new UnsupportedOperationException("This page provider requires a explicit Where Clause");
             }
 
             String baseQuery = def.getPattern();
@@ -201,10 +195,8 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
             int idxParam = 0;
             if (fixedPart != null && !fixedPart.isEmpty()) {
                 while (fixedPart.indexOf("?") > 0) {
-                    fixedPart = fixedPart.replaceFirst("\\?", ":param"
-                            + idxParam);
-                    qParams.put("param" + idxParam,
-                            convertParam(params[idxParam]));
+                    fixedPart = fixedPart.replaceFirst("\\?", ":param" + idxParam);
+                    qParams.put("param" + idxParam, convertParam(params[idxParam]));
                     idxParam++;
                 }
                 baseQuery.append(" where ");
@@ -229,8 +221,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                             if (fieldDef[fidx].getXpath() != null) {
                                 val[fidx] = searchDocumentModel.getPropertyValue(fieldDef[fidx].getXpath());
                             } else {
-                                val[fidx] = searchDocumentModel.getProperty(
-                                        fieldDef[fidx].getSchema(),
+                                val[fidx] = searchDocumentModel.getProperty(fieldDef[fidx].getSchema(),
                                         fieldDef[fidx].getName());
                             }
                         }
@@ -286,8 +277,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                             }
                         }
                         baseQuery.append(" ) ");
-                    } else if (predicate.getOperator().equalsIgnoreCase(
-                            "BETWEEN")) {
+                    } else if (predicate.getOperator().equalsIgnoreCase("BETWEEN")) {
                         Object startValue = convertParam(val[0]);
                         Object endValue = null;
                         if (val.length > 1) {
@@ -340,8 +330,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         if (resultsCount == AbstractPageProvider.UNKNOWN_SIZE) {
             buildAuditQuery(false);
             AuditReader reader = Framework.getService(AuditReader.class);
-            List<Long> res = (List<Long>) reader.nativeQuery(
-                    "select count(log.id) " + auditQuery, auditQueryParams, 1,
+            List<Long> res = (List<Long>) reader.nativeQuery("select count(log.id) " + auditQuery, auditQueryParams, 1,
                     20);
             resultsCount = res.get(0).longValue();
         }

@@ -33,22 +33,24 @@ import com.google.inject.Inject;
 
 /**
  * @author matic
- *
  */
 @RunWith(FeaturesRunner.class)
-@Features( JtajcaManagementFeature.class )
+@Features(JtajcaManagementFeature.class)
 public class CanMonitorConnectionPoolTest {
 
-    @Inject @Named("repository/test")
+    @Inject
+    @Named("repository/test")
     protected ConnectionPoolMonitor repo;
 
-    @Inject @Named("jdbc/repository_test")
+    @Inject
+    @Named("jdbc/repository_test")
     protected ConnectionPoolMonitor db;
 
     @Inject
     CoreSession repository;
 
-    @Test public void areMonitorsInstalled() {
+    @Test
+    public void areMonitorsInstalled() {
         isMonitorInstalled(repo);
         isMonitorInstalled(db);
     }
@@ -68,6 +70,5 @@ public class CanMonitorConnectionPoolTest {
         int count = monitor.getConnectionCount();
         assertThat(count, greaterThan(0));
     }
-
 
 }

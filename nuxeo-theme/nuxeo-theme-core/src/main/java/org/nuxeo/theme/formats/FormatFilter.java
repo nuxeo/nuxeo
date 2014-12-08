@@ -70,8 +70,8 @@ public class FormatFilter extends AbstractFilter {
         final Format format = info.getFormat();
 
         // look for a view by model type and by view name
-        final View view = getView(format.getName(), engine, viewMode,
-                elementType, modelType, formatType, templateEngineType);
+        final View view = getView(format.getName(), engine, viewMode, elementType, modelType, formatType,
+                templateEngineType);
 
         if (view == null) {
             // Sanity check
@@ -80,17 +80,14 @@ public class FormatFilter extends AbstractFilter {
                     Fragment fragment = (Fragment) element;
                     ModelType expectedModelType = fragment.getFragmentType().getModelType();
                     if (expectedModelType != null) {
-                        log.warn(String.format(
-                                "Fragment %s should have returned a model of type: %s",
-                                fragment.computeXPath(),
-                                expectedModelType.getTypeName()));
+                        log.warn(String.format("Fragment %s should have returned a model of type: %s",
+                                fragment.computeXPath(), expectedModelType.getTypeName()));
                     }
                 }
             } else {
-                log.warn(String.format(
-                        "No %s view named '%s' found for element %s (theme URL is: %s)",
-                        formatType.getTypeName(), format.getName(),
-                        element.computeXPath(), info.getThemeUrl().toString()));
+                log.warn(String.format("No %s view named '%s' found for element %s (theme URL is: %s)",
+                        formatType.getTypeName(), format.getName(), element.computeXPath(),
+                        info.getThemeUrl().toString()));
             }
         } else {
 
@@ -107,85 +104,67 @@ public class FormatFilter extends AbstractFilter {
         return info;
     }
 
-    private View getView(final String viewName, final EngineType engine,
-            final String viewMode, final ElementType elementType,
-            final ModelType modelType, final FormatType formatType,
+    private View getView(final String viewName, final EngineType engine, final String viewMode,
+            final ElementType elementType, final ModelType modelType, final FormatType formatType,
             final TemplateEngineType templateEngineType) {
 
         // allow to fall back on no specific view name
-        final String effectiveViewName = (viewName == null || viewName.equals("")) ? "*"
-                : viewName;
+        final String effectiveViewName = (viewName == null || viewName.equals("")) ? "*" : viewName;
         final String effectiveViewMode = viewMode == null ? "*" : viewMode;
         final String engineName = engine == null ? "default" : engine.getName();
-        final String templateEngineName = templateEngineType == null ? null
-                : templateEngineType.getName();
+        final String templateEngineName = templateEngineType == null ? null : templateEngineType.getName();
 
-        final String elementTypeName = elementType == null ? "*"
-                : elementType.getTypeName();
-        final String modelTypeName = modelType == null ? "*"
-                : modelType.getTypeName();
-        final String formatTypeName = formatType == null ? "*"
-                : formatType.getTypeName();
+        final String elementTypeName = elementType == null ? "*" : elementType.getTypeName();
+        final String modelTypeName = modelType == null ? "*" : modelType.getTypeName();
+        final String formatTypeName = formatType == null ? "*" : formatType.getTypeName();
 
-        View view = getViewFor(formatTypeName, elementTypeName,
-                effectiveViewName, modelTypeName, engineName,
+        View view = getViewFor(formatTypeName, elementTypeName, effectiveViewName, modelTypeName, engineName,
                 effectiveViewMode, templateEngineName);
 
         // fall back to unspecified element type
         if (view == null && !"*".equals(elementTypeName)) {
-            view = getViewFor(formatTypeName, "*", effectiveViewName,
-                    modelTypeName, engineName, effectiveViewMode,
+            view = getViewFor(formatTypeName, "*", effectiveViewName, modelTypeName, engineName, effectiveViewMode,
                     templateEngineName);
         }
 
         // fall back to unspecified model type
         if (view == null && !"*".equals(modelTypeName)) {
-            view = getViewFor(formatTypeName, elementTypeName,
-                    effectiveViewName, "*", engineName, effectiveViewMode,
+            view = getViewFor(formatTypeName, elementTypeName, effectiveViewName, "*", engineName, effectiveViewMode,
                     templateEngineName);
         }
 
         // fall back to unspecified element and model type
-        if (view == null && !"*".equals(elementTypeName)
-                && !"*".equals(modelTypeName)) {
-            view = getViewFor(formatTypeName, "*", effectiveViewName, "*",
-                    engineName, effectiveViewMode, templateEngineName);
+        if (view == null && !"*".equals(elementTypeName) && !"*".equals(modelTypeName)) {
+            view = getViewFor(formatTypeName, "*", effectiveViewName, "*", engineName, effectiveViewMode,
+                    templateEngineName);
         }
 
         // fall back to unspecified view name and unspecified model type
         if (view == null && !"*".equals(effectiveViewName)) {
-            view = getViewFor(formatTypeName, elementTypeName, "*", "*",
-                    engineName, effectiveViewMode, templateEngineName);
+            view = getViewFor(formatTypeName, elementTypeName, "*", "*", engineName, effectiveViewMode,
+                    templateEngineName);
         }
         return view;
     }
 
-    private View getViewFor(final String formatTypeName,
-            final String elementTypeName, final String viewName,
-            final String modelTypeName, final String engineName,
-            final String viewMode, final String templateEngineName) {
+    private View getViewFor(final String formatTypeName, final String elementTypeName, final String viewName,
+            final String modelTypeName, final String engineName, final String viewMode, final String templateEngineName) {
 
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
 
-        ViewType viewType = (ViewType) typeRegistry.lookup(
-                TypeFamily.VIEW,
-                ViewType.computeName(formatTypeName, elementTypeName, viewName,
-                        modelTypeName, engineName, viewMode, templateEngineName));
+        ViewType viewType = (ViewType) typeRegistry.lookup(TypeFamily.VIEW, ViewType.computeName(formatTypeName,
+                elementTypeName, viewName, modelTypeName, engineName, viewMode, templateEngineName));
 
         // Any view mode
         if (viewType == null && !"*".equals(viewMode)) {
-            viewType = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
-                    ViewType.computeName(formatTypeName, elementTypeName,
-                            viewName, modelTypeName, engineName, "*",
-                            templateEngineName));
+            viewType = (ViewType) typeRegistry.lookup(TypeFamily.VIEW, ViewType.computeName(formatTypeName,
+                    elementTypeName, viewName, modelTypeName, engineName, "*", templateEngineName));
         }
 
         // Any view mode, default engine
         if (viewType == null && !"default".equals(engineName)) {
-            viewType = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
-                    ViewType.computeName(formatTypeName, elementTypeName,
-                            viewName, modelTypeName, "default", "*",
-                            templateEngineName));
+            viewType = (ViewType) typeRegistry.lookup(TypeFamily.VIEW, ViewType.computeName(formatTypeName,
+                    elementTypeName, viewName, modelTypeName, "default", "*", templateEngineName));
         }
 
         return viewType == null ? null : viewType.getView();

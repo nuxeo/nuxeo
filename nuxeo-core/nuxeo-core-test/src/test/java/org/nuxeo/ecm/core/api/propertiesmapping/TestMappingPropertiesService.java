@@ -39,8 +39,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Deploy({
-        "org.nuxeo.ecm.core.test.tests:test-CoreExtensions.xml",
+@Deploy({ "org.nuxeo.ecm.core.test.tests:test-CoreExtensions.xml",
         "org.nuxeo.ecm.core.test.tests:test-propertiesmapping-contrib.xml" })
 @Features(CoreFeature.class)
 public class TestMappingPropertiesService {
@@ -62,8 +61,7 @@ public class TestMappingPropertiesService {
         List<String> contributors = new ArrayList<String>();
         contributors.add("contrib1");
         contributors.add("contrib2");
-        doc1.setPropertyValue("dc:contributors",
-                contributors.toArray(new String[1]));
+        doc1.setPropertyValue("dc:contributors", contributors.toArray(new String[1]));
         List<Map<String, Serializable>> comments = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> comment = new HashMap<String, Serializable>();
         comment.put("author", "testAuthor");
@@ -89,8 +87,7 @@ public class TestMappingPropertiesService {
         // test mapping on a invalid xpath
         Exception e = null;
         try {
-            mappingService.mapProperties(session, doc1, doc2,
-                    "testMappingInvalidXpath");
+            mappingService.mapProperties(session, doc1, doc2, "testMappingInvalidXpath");
         } catch (ClientException e1) {
             e = e1;
         }
@@ -99,8 +96,7 @@ public class TestMappingPropertiesService {
         // test mapping wrong types
         e = null;
         try {
-            mappingService.mapProperties(session, doc1, doc2,
-                    "testMappingWrongTypes");
+            mappingService.mapProperties(session, doc1, doc2, "testMappingWrongTypes");
 
         } catch (ClientException e1) {
             e = e1;
@@ -108,8 +104,7 @@ public class TestMappingPropertiesService {
         assertNotNull(e);
     }
 
-    protected DocumentModel createDocument(String parentPath, String id,
-            String type) throws ClientException {
+    protected DocumentModel createDocument(String parentPath, String id, String type) throws ClientException {
         DocumentModel doc = session.createDocumentModel(parentPath, id, type);
         doc = session.createDocument(doc);
         return session.saveDocument(doc);

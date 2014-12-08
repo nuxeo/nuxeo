@@ -42,8 +42,7 @@ public class SeamJsfSessionManager extends DefaultSessionManager {
     public void onBeforeSessionInvalidate(ServletRequest request) {
         try {
             Seam.invalidateSession();
-        }
-        catch (Exception e) { // TODO what is caught here?
+        } catch (Exception e) { // TODO what is caught here?
             ExceptionUtils.checkInterrupt(e);
             super.onBeforeSessionInvalidate(request);
         }

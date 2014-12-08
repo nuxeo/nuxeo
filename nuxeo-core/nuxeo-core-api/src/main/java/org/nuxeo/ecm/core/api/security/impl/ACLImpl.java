@@ -23,17 +23,15 @@ import org.nuxeo.ecm.core.api.security.ACL;
 /**
  * An ACL implementation.
  *
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ACLImpl extends ArrayList<ACE> implements ACL {
 
     private static final long serialVersionUID = 5332101749929771434L;
 
     private final String name;
-    private final boolean isReadOnly;
 
+    private final boolean isReadOnly;
 
     public ACLImpl(String name, boolean isReadOnly) {
         this.name = name;
@@ -72,7 +70,7 @@ public class ACLImpl extends ArrayList<ACE> implements ACL {
     public Object clone() {
         ACLImpl copy = new ACLImpl(name, isReadOnly);
         ACE[] aces = new ACE[size()];
-        for (int i=0; i<size(); i++) {
+        for (int i = 0; i < size(); i++) {
             aces[i] = (ACE) get(i).clone();
         }
         copy.setACEs(aces);

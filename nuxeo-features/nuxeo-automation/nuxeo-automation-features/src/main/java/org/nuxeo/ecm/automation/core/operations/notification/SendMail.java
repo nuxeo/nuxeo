@@ -126,9 +126,8 @@ public class SendMail {
     protected String viewId = "view_documents";
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws TemplateException,
-            RenderingException, OperationException, MessagingException,
-            IOException {
+    public DocumentModel run(DocumentModel doc) throws TemplateException, RenderingException, OperationException,
+            MessagingException, IOException {
         send(doc);
         return doc;
     }
@@ -148,9 +147,8 @@ public class SendMail {
         }
     }
 
-    protected void send(DocumentModel doc) throws TemplateException,
-            RenderingException, OperationException, MessagingException,
-            IOException {
+    protected void send(DocumentModel doc) throws TemplateException, RenderingException, OperationException,
+            MessagingException, IOException {
         // TODO should sent one by one to each recipient? and have the template
         // rendered for each recipient? Use: "mailto" var name?
         try {
@@ -162,18 +160,15 @@ public class SendMail {
             map.put("to", to);
             map.put("toResolved", MailBox.fetchPersonsFromList(to, isStrict));
             map.put("from", from);
-            map.put("fromResolved",
-                    MailBox.fetchPersonsFromString(from, isStrict));
+            map.put("fromResolved", MailBox.fetchPersonsFromString(from, isStrict));
             map.put("from", cc);
             map.put("fromResolved", MailBox.fetchPersonsFromList(cc, isStrict));
             map.put("from", bcc);
             map.put("fromResolved", MailBox.fetchPersonsFromList(bcc, isStrict));
             map.put("from", replyto);
-            map.put("fromResolved",
-                    MailBox.fetchPersonsFromList(replyto, isStrict));
+            map.put("fromResolved", MailBox.fetchPersonsFromList(replyto, isStrict));
             map.put("viewId", viewId);
-            map.put("baseUrl",
-                    NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
+            map.put("baseUrl", NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
             map.put("Runtime", Framework.getRuntime());
             Mailer.Message msg = createMessage(doc, getContent(), map);
             msg.setSubject(subject, "UTF-8");
@@ -181,8 +176,8 @@ public class SendMail {
             addMailBoxInfo(msg);
 
             msg.send();
-        } catch (ClientException | TemplateException | RenderingException
-                | OperationException | MessagingException | IOException e) {
+        } catch (ClientException | TemplateException | RenderingException | OperationException | MessagingException
+                | IOException e) {
             if (rollbackOnError) {
                 throw e;
             } else {
@@ -197,8 +192,7 @@ public class SendMail {
     /**
      * @since 5.9.1
      */
-    private void addMailBoxInfo(Mailer.Message msg) throws MessagingException,
-            ClientException {
+    private void addMailBoxInfo(Mailer.Message msg) throws MessagingException, ClientException {
         List<MailBox> persons = MailBox.fetchPersonsFromString(from, isStrict);
         addMailBoxInfoInMessageHeader(msg, AS.FROM, persons);
 
@@ -221,16 +215,14 @@ public class SendMail {
     /**
      * @since 5.9.1
      */
-    private void addMailBoxInfoInMessageHeader(Message msg, AS as,
-            List<MailBox> persons) throws MessagingException {
+    private void addMailBoxInfoInMessageHeader(Message msg, AS as, List<MailBox> persons) throws MessagingException {
         for (MailBox person : persons) {
             msg.addInfoInMessageHeader(person.toString(), as);
         }
     }
 
-    protected Mailer.Message createMessage(DocumentModel doc, String message,
-            Map<String, Object> map) throws MessagingException,
-            TemplateException, RenderingException, IOException {
+    protected Mailer.Message createMessage(DocumentModel doc, String message, Map<String, Object> map)
+            throws MessagingException, TemplateException, RenderingException, IOException {
         if (blobXpath == null) {
             if (asHtml) {
                 return COMPOSER.newHtmlMessage(message, map);
@@ -264,17 +256,14 @@ public class SendMail {
                     continue;
                 }
             }
-            return COMPOSER.newMixedMessage(message, map, asHtml ? "html"
-                    : "plain", blobs);
+            return COMPOSER.newMixedMessage(message, map, asHtml ? "html" : "plain", blobs);
         }
     }
 
     /**
-     *
      * @since 5.7
      * @param o: the object to introspect to find a blob
-     * @param blobs: the Blob list where the blobs are put during property
-     *            introspection
+     * @param blobs: the Blob list where the blobs are put during property introspection
      */
     @SuppressWarnings("unchecked")
     private void getBlob(Object o, List<Blob> blobs) {

@@ -15,15 +15,13 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Service with a method generating a path segment (name) given a
- * {@link DocumentModel} about to be created. Usually the title is used to
- * derive the path segment.
+ * Service with a method generating a path segment (name) given a {@link DocumentModel} about to be created. Usually the
+ * title is used to derive the path segment.
  */
 public interface PathSegmentService {
 
     /**
-     * Generate the path segment to use for a {@link DocumentModel} that's about
-     * to be created.
+     * Generate the path segment to use for a {@link DocumentModel} that's about to be created.
      *
      * @param doc the document
      * @return the path segment, which must not contain any {@code /} character

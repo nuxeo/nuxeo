@@ -34,8 +34,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class ContentTemplateServiceImpl extends DefaultComponent implements
-        ContentTemplateService {
+public class ContentTemplateServiceImpl extends DefaultComponent implements ContentTemplateService {
 
     public static final String NAME = "org.nuxeo.ecm.platform.content.template.service.TemplateService";
 
@@ -76,8 +75,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (extensionPoint.equals(FACTORY_DECLARATION_EP)) {
             // store factories
@@ -106,12 +104,10 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                 ContentFactoryDescriptor factoryDescriptor = factories.get(descriptor.getFactoryName());
                 try {
                     ContentFactory factory = factoryDescriptor.getClassName().newInstance();
-                    Boolean factoryOK = factory.initFactory(
-                            descriptor.getOptions(), descriptor.getRootAcl(),
+                    Boolean factoryOK = factory.initFactory(descriptor.getOptions(), descriptor.getRootAcl(),
                             descriptor.getTemplate());
                     if (!factoryOK) {
-                        log.error("Error while initializing instance of factory "
-                                + factoryDescriptor.getName());
+                        log.error("Error while initializing instance of factory " + factoryDescriptor.getName());
                         return;
                     }
 
@@ -123,17 +119,14 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                     }
 
                 } catch (InstantiationException e) {
-                    log.error("Error while creating instance of factory "
-                            + factoryDescriptor.getName() + " :"
+                    log.error("Error while creating instance of factory " + factoryDescriptor.getName() + " :"
                             + e.getMessage());
                 } catch (IllegalAccessException e) {
-                    log.error("Error while creating instance of factory "
-                            + factoryDescriptor.getName() + " :"
+                    log.error("Error while creating instance of factory " + factoryDescriptor.getName() + " :"
                             + e.getMessage());
                 }
             } else {
-                log.error("Factory Binding" + descriptor.getName()
-                        + " can not be registered since Factory "
+                log.error("Factory Binding" + descriptor.getName() + " can not be registered since Factory "
                         + descriptor.getFactoryName() + " is not registered");
             }
         } else if (POST_CONTENT_CREATION_HANDLERS_EP.equals(extensionPoint)) {
@@ -142,8 +135,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
         }
     }
 
-    private FactoryBindingDescriptor mergeFactoryBindingDescriptor(
-            FactoryBindingDescriptor newOne) {
+    private FactoryBindingDescriptor mergeFactoryBindingDescriptor(FactoryBindingDescriptor newOne) {
         FactoryBindingDescriptor old = null;
         if (null != newOne.getTargetType()) {
             old = factoryBindings.get(newOne.getTargetType());
@@ -152,8 +144,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
         }
 
         if (old != null) {
-            log.info("FactoryBinding " + old.getName() + " is merging with "
-                    + newOne.getName());
+            log.info("FactoryBinding " + old.getName() + " is merging with " + newOne.getName());
             old.getOptions().putAll(newOne.getOptions());
             old.getRootAcl().addAll(newOne.getRootAcl());
             old.getTemplate().addAll(newOne.getTemplate());
@@ -172,8 +163,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
         return factoryInstancesByFacet.get(facet);
     }
 
-    public void executeFactoryForType(DocumentModel createdDocument)
-            throws ClientException {
+    public void executeFactoryForType(DocumentModel createdDocument) throws ClientException {
         ContentFactory factory = getFactoryForType(createdDocument.getType());
         if (factory != null) {
             factory.createContentStructure(createdDocument);

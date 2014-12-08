@@ -29,8 +29,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
- * JSF Converter used for rendering, transforming a user id into the user
- * display name.
+ * JSF Converter used for rendering, transforming a user id into the user display name.
  * <p>
  * Sample usage:
  *
@@ -48,7 +47,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
  * </pre>
  *
  * @author Anahide Tchertchian
- *
  */
 public class UserDisplayConverter implements Converter {
 
@@ -56,14 +54,13 @@ public class UserDisplayConverter implements Converter {
      * Returns given value (does not do any reverse conversion)
      */
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component,
-            String value) {
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
         return value;
     }
 
     /**
-     * Tries to build the user display name according to information passed as
-     * attribute to the component holding the converter.
+     * Tries to build the user display name according to information passed as attribute to the component holding the
+     * converter.
      * <p>
      * Handled attributes are:
      * <ul>
@@ -74,41 +71,34 @@ public class UserDisplayConverter implements Converter {
      * </ul>
      */
     @Override
-    public String getAsString(FacesContext context, UIComponent component,
-            Object value) {
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value instanceof String && !StringUtils.isEmpty((String) value)) {
-            String isPrefixed = (String) ComponentUtils.getAttributeOrExpressionValue(
-                    context, component, "prefixed", "false");
+            String isPrefixed = (String) ComponentUtils.getAttributeOrExpressionValue(context, component, "prefixed",
+                    "false");
             String username;
             if (Boolean.valueOf(isPrefixed)) {
                 username = ((String) value).substring(NuxeoPrincipal.PREFIX.length());
             } else {
                 username = (String) value;
             }
-            String directory = (String) ComponentUtils.getAttributeOrExpressionValue(
-                    context, component, "userDirectory", null);
-            String firstName = (String) ComponentUtils.getAttributeOrExpressionValue(
-                    context, component, "firstNameField", null);
-            String lastName = (String) ComponentUtils.getAttributeOrExpressionValue(
-                    context, component, "lastNameField", null);
-            String email = (String) ComponentUtils.getAttributeOrExpressionValue(
-                    context, component, "emailField", null);
-            String schema = (String) ComponentUtils.getAttributeOrExpressionValue(
-                    context, component, "userSchema", null);
+            String directory = (String) ComponentUtils.getAttributeOrExpressionValue(context, component,
+                    "userDirectory", null);
+            String firstName = (String) ComponentUtils.getAttributeOrExpressionValue(context, component,
+                    "firstNameField", null);
+            String lastName = (String) ComponentUtils.getAttributeOrExpressionValue(context, component,
+                    "lastNameField", null);
+            String email = (String) ComponentUtils.getAttributeOrExpressionValue(context, component, "emailField", null);
+            String schema = (String) ComponentUtils.getAttributeOrExpressionValue(context, component, "userSchema",
+                    null);
 
             if (schema != null) {
                 try {
-                    DocumentModel doc = DirectoryFunctions.getDirectoryEntry(
-                            directory, username);
+                    DocumentModel doc = DirectoryFunctions.getDirectoryEntry(directory, username);
                     if (doc != null) {
-                        String firstNameValue = firstName != null ? (String) doc.getProperty(
-                                schema, firstName) : null;
-                        String lastNameValue = lastName != null ? (String) doc.getProperty(
-                                schema, lastName) : null;
-                        String emailValue = email != null ? (String) doc.getProperty(
-                                schema, email) : null;
-                        return Functions.userDisplayNameAndEmail(username,
-                                firstNameValue, lastNameValue, emailValue);
+                        String firstNameValue = firstName != null ? (String) doc.getProperty(schema, firstName) : null;
+                        String lastNameValue = lastName != null ? (String) doc.getProperty(schema, lastName) : null;
+                        String emailValue = email != null ? (String) doc.getProperty(schema, email) : null;
+                        return Functions.userDisplayNameAndEmail(username, firstNameValue, lastNameValue, emailValue);
 
                     }
                 } catch (ClientException e) {

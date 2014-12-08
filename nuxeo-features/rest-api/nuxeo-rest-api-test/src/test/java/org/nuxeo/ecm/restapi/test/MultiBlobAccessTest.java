@@ -51,8 +51,6 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.multipart.file.StreamDataBodyPart;
 
 /**
- *
- *
  * @since 5.8
  */
 @RunWith(FeaturesRunner.class)
@@ -83,15 +81,14 @@ public class MultiBlobAccessTest extends BaseTest {
     public void itCanAccessBlobs() throws Exception {
 
         // When i call the rest api
-        ClientResponse response = getResponse(RequestType.GET,
-                "path" + doc.getPathAsString() + "/@blob/mb:blobs/0/content");
+        ClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString()
+                + "/@blob/mb:blobs/0/content");
 
         // Then i receive the content of the blob
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
         assertEquals("one", response.getEntity(String.class));
 
-        response = getResponse(RequestType.GET, "path" + doc.getPathAsString()
-                + "/@blob/mb:blobs/1/content");
+        response = getResponse(RequestType.GET, "path" + doc.getPathAsString() + "/@blob/mb:blobs/1/content");
 
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
         assertEquals("two", response.getEntity(String.class));
@@ -104,11 +101,9 @@ public class MultiBlobAccessTest extends BaseTest {
 
         // When i send a PUT with a new value on the blob
         FormDataMultiPart form = new FormDataMultiPart();
-        BodyPart fdp = new StreamDataBodyPart("content",
-                new ByteArrayInputStream("modifiedData".getBytes()));
+        BodyPart fdp = new StreamDataBodyPart("content", new ByteArrayInputStream("modifiedData".getBytes()));
         form.bodyPart(fdp);
-        getResponse(RequestType.PUT, "path" + doc.getPathAsString()
-                + "/@blob/mb:blobs/0/content", form);
+        getResponse(RequestType.PUT, "path" + doc.getPathAsString() + "/@blob/mb:blobs/0/content", form);
         form.close();
 
         // The the blob is updated
@@ -126,8 +121,7 @@ public class MultiBlobAccessTest extends BaseTest {
         // Given a doc with a blob
 
         // When i send A DELETE command on its blob
-        getResponse(RequestType.DELETE, "path" + doc.getPathAsString()
-                + "/@blob/mb:blobs/0/content");
+        getResponse(RequestType.DELETE, "path" + doc.getPathAsString() + "/@blob/mb:blobs/0/content");
 
         // The the blob is reset
         fetchInvalidations();
@@ -144,7 +138,6 @@ public class MultiBlobAccessTest extends BaseTest {
      * @param doc
      * @param stringBlob
      * @throws ClientException
-     *
      */
     private void addBlob(DocumentModel doc, Blob blob) throws ClientException {
         Map<String, Serializable> blobProp = new HashMap<>();

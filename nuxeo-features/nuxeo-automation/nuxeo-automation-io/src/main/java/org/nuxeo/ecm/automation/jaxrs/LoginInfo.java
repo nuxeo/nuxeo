@@ -24,8 +24,7 @@ public class LoginInfo {
 
     protected boolean isAdministrator;
 
-    public LoginInfo(String username, Set<String> groups,
-            boolean isAdministrator) {
+    public LoginInfo(String username, Set<String> groups, boolean isAdministrator) {
         this.username = username;
         this.groups = groups;
         this.isAdministrator = isAdministrator;

@@ -48,7 +48,6 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePub
  * Test marshaling with real {@link DocumentModel}
  *
  * @author tiry
- *
  */
 public class TestMashalingWithCore extends SQLRepositoryTestCase {
 
@@ -78,16 +77,13 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
 
     protected void createInitialDocs() throws Exception {
 
-        DocumentModel wsRoot = session.getDocument(new PathRef(
-                "default-domain/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
 
-        DocumentModel ws = session.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
+        DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");
         ws = session.createDocument(ws);
 
-        doc2Export = session.createDocumentModel(ws.getPathAsString(), "file",
-                "File");
+        doc2Export = session.createDocumentModel(ws.getPathAsString(), "file", "File");
         doc2Export.setProperty("dublincore", "title", "MyDoc");
 
         Blob blob = new StringBlob("SomeDummyContent");
@@ -130,19 +126,16 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         List<Object> params = new ArrayList<Object>();
 
         params.add("SessionId");
-        params.add(new BasicPublicationNode("myType", "/some/path",
-                "nodeTitle", "treeName"));
-        params.add(new BasicPublishedDocument(new IdRef("id0"), "demorepo",
-                "remoteServer", "version1", "path0", "parentPath0", false));
+        params.add(new BasicPublicationNode("myType", "/some/path", "nodeTitle", "treeName"));
+        params.add(new BasicPublishedDocument(new IdRef("id0"), "demorepo", "remoteServer", "version1", "path0",
+                "parentPath0", false));
 
         List<PublicationNode> nodeList = new ArrayList<PublicationNode>();
         List<PublishedDocument> pubDocList = new ArrayList<PublishedDocument>();
         for (int i = 0; i < 5; i++) {
-            nodeList.add(new BasicPublicationNode("myType", "/some/path/" + i,
-                    "nodeTitle" + i, "treeName"));
-            pubDocList.add(new BasicPublishedDocument(new IdRef("id0" + i),
-                    "demorepo", "remoteServer", "version1", "path0" + i,
-                    "parentPath0" + i, false));
+            nodeList.add(new BasicPublicationNode("myType", "/some/path/" + i, "nodeTitle" + i, "treeName"));
+            pubDocList.add(new BasicPublishedDocument(new IdRef("id0" + i), "demorepo", "remoteServer", "version1",
+                    "path0" + i, "parentPath0" + i, false));
         }
 
         params.add(nodeList);
@@ -168,21 +161,17 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         assertEquals(params.get(0), params2.get(0));
         assertEquals(((BasicPublicationNode) params.get(1)).getPath(),
                 ((BasicPublicationNode) params2.get(1)).getPath());
-        assertEquals(
-                ((BasicPublishedDocument) params.get(2)).getSourceDocumentRef(),
+        assertEquals(((BasicPublishedDocument) params.get(2)).getSourceDocumentRef(),
                 ((BasicPublishedDocument) params2.get(2)).getSourceDocumentRef());
         assertEquals(((BasicPublishedDocument) params.get(2)).isPending(),
                 ((BasicPublishedDocument) params2.get(2)).isPending());
         for (int i = 0; i < 5; i++) {
-            assertEquals(
-                    ((BasicPublicationNode) ((List) params.get(3)).get(i)).getPath(),
+            assertEquals(((BasicPublicationNode) ((List) params.get(3)).get(i)).getPath(),
                     ((BasicPublicationNode) ((List) params2.get(3)).get(i)).getPath());
-            assertEquals(
-                    ((BasicPublishedDocument) ((List) params.get(4)).get(i)).getSourceDocumentRef(),
+            assertEquals(((BasicPublishedDocument) ((List) params.get(4)).get(i)).getSourceDocumentRef(),
                     ((BasicPublishedDocument) ((List) params2.get(4)).get(i)).getSourceDocumentRef());
         }
-        assertEquals(((DocumentModel) params.get(5)).getTitle(),
-                ((DocumentModel) params2.get(5)).getTitle());
+        assertEquals(((DocumentModel) params.get(5)).getTitle(), ((DocumentModel) params2.get(5)).getTitle());
         assertEquals(((Map<String, String>) params.get(6)).get("key2"),
                 ((Map<String, String>) params2.get(6)).get("key2"));
 
@@ -196,19 +185,15 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         assertEquals(params.get(0), params3.get(0));
         assertEquals(((BasicPublicationNode) params.get(1)).getPath(),
                 ((BasicPublicationNode) params3.get(1)).getPath());
-        assertEquals(
-                ((BasicPublishedDocument) params.get(2)).getSourceDocumentRef(),
+        assertEquals(((BasicPublishedDocument) params.get(2)).getSourceDocumentRef(),
                 ((BasicPublishedDocument) params3.get(2)).getSourceDocumentRef());
         for (int i = 0; i < 5; i++) {
-            assertEquals(
-                    ((BasicPublicationNode) ((List) params.get(3)).get(i)).getPath(),
+            assertEquals(((BasicPublicationNode) ((List) params.get(3)).get(i)).getPath(),
                     ((BasicPublicationNode) ((List) params3.get(3)).get(i)).getPath());
-            assertEquals(
-                    ((BasicPublishedDocument) ((List) params.get(4)).get(i)).getSourceDocumentRef(),
+            assertEquals(((BasicPublishedDocument) ((List) params.get(4)).get(i)).getSourceDocumentRef(),
                     ((BasicPublishedDocument) ((List) params3.get(4)).get(i)).getSourceDocumentRef());
         }
-        assertEquals(((DocumentModel) params.get(5)).getTitle(),
-                ((DocumentModel) params3.get(5)).getTitle());
+        assertEquals(((DocumentModel) params.get(5)).getTitle(), ((DocumentModel) params3.get(5)).getTitle());
         assertEquals(((Map<String, String>) params.get(6)).get("key2"),
                 ((Map<String, String>) params3.get(6)).get("key2"));
 

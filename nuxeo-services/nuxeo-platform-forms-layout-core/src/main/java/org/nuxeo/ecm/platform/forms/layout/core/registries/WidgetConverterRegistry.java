@@ -25,8 +25,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
 /**
  * @since 5.5
  */
-public class WidgetConverterRegistry extends
-        SimpleContributionRegistry<WidgetConverterDescriptor> {
+public class WidgetConverterRegistry extends SimpleContributionRegistry<WidgetConverterDescriptor> {
 
     protected final String category;
 

@@ -49,6 +49,7 @@ import com.google.inject.Inject;
 public class RenderingServiceTest {
 
     protected DocumentModel src;
+
     protected DocumentModel dst;
 
     @Inject
@@ -85,7 +86,7 @@ public class RenderingServiceTest {
         OperationChain chain = new OperationChain("testRenderingFm");
         chain.add(FetchContextDocument.ID);
         chain.add(RenderDocument.ID).set("template", "Hello ${This.title}");
-        Blob blob = (Blob)service.run(ctx, chain);
+        Blob blob = (Blob) service.run(ctx, chain);
         assertEquals("Hello Source", blob.getString());
 
         // again but with mvel
@@ -94,7 +95,7 @@ public class RenderingServiceTest {
         chain = new OperationChain("testRenderingMvel");
         chain.add(FetchContextDocument.ID);
         chain.add(RenderDocument.ID).set("template", "Hello ${This.title} ${CurrentUser.name}").set("type", "mvel");
-        blob = (Blob)service.run(ctx, chain);
+        blob = (Blob) service.run(ctx, chain);
         assertEquals("Hello Source Administrator", blob.getString());
 
         // same test but using a list of docs
@@ -105,7 +106,7 @@ public class RenderingServiceTest {
         ctx.setInput(list);
         chain = new OperationChain("testRenderingMvel2");
         chain.add(RenderDocument.ID).set("template", "${This.title}").set("type", "mvel");
-        BlobList blobs = (BlobList)service.run(ctx, chain);
+        BlobList blobs = (BlobList) service.run(ctx, chain);
         assertEquals(2, blobs.size());
         assertEquals("Source", blobs.get(0).getString());
         assertEquals("Destination", blobs.get(1).getString());
@@ -114,7 +115,7 @@ public class RenderingServiceTest {
         ctx.setInput(list);
         chain = new OperationChain("testRenderingFtl2");
         chain.add(RenderDocument.ID).set("template", "${This.title}");
-        blobs = (BlobList)service.run(ctx, chain);
+        blobs = (BlobList) service.run(ctx, chain);
         assertEquals(2, blobs.size());
         assertEquals("Source", blobs.get(0).getString());
         assertEquals("Destination", blobs.get(1).getString());
@@ -134,8 +135,8 @@ public class RenderingServiceTest {
         list.add(dst);
         ctx.setInput(list);
         OperationChain chain = new OperationChain("testRenderingFeed");
-        chain.add(RenderDocumentFeed.ID).set("template", Renderer.TEMPLATE_PREFIX+"render.mvel").set("type", "mvel");
-        Blob blob = (Blob)service.run(ctx, chain);
+        chain.add(RenderDocumentFeed.ID).set("template", Renderer.TEMPLATE_PREFIX + "render.mvel").set("type", "mvel");
+        Blob blob = (Blob) service.run(ctx, chain);
         String r = blob.getString();
         r = r.replaceAll("\\s+", "");
         assertEquals("SourceDestination", r);
@@ -143,8 +144,8 @@ public class RenderingServiceTest {
         ctx = new OperationContext(session);
         ctx.setInput(list);
         chain = new OperationChain("testRenderingFeed2");
-        chain.add(RenderDocumentFeed.ID).set("template", Renderer.TEMPLATE_PREFIX+"render.ftl");
-        blob = (Blob)service.run(ctx, chain);
+        chain.add(RenderDocumentFeed.ID).set("template", Renderer.TEMPLATE_PREFIX + "render.ftl");
+        blob = (Blob) service.run(ctx, chain);
         r = blob.getString();
         r = r.replaceAll("\\s+", "");
         assertEquals("SourceDestination", r);

@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.audit.ws.delegate;
 public class JNDILocations {
 
     public static final String nxauditWsAuditLocalLocation = "nuxeo/WSAuditBean/local";
+
     public static final String nxauditWsAuditRemoteLocation = "nuxeo/WSAuditBean/remote";
 
     private JNDILocations() {

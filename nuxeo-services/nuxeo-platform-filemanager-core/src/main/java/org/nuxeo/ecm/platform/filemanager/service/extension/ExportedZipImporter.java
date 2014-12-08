@@ -39,8 +39,7 @@ import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.platform.types.TypeManager;
 
 /**
- * Simple Plugin that imports IO Zip archive into Nuxeo using the IO core
- * service.
+ * Simple Plugin that imports IO Zip archive into Nuxeo using the IO core service.
  *
  * @author tiry
  */
@@ -73,9 +72,8 @@ public class ExportedZipImporter extends AbstractFileImporter {
         }
     }
 
-    public DocumentModel create(CoreSession documentManager, Blob content,
-            String path, boolean overwrite, String filename,
-            TypeManager typeService) throws ClientException, IOException {
+    public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
+            String filename, TypeManager typeService) throws ClientException, IOException {
         File tmp = null;
         try {
             tmp = File.createTempFile("xml-importer", null);
@@ -98,8 +96,7 @@ public class ExportedZipImporter extends AbstractFileImporter {
                 }
             }
 
-            DocumentWriter writer = new DocumentModelWriter(documentManager, path,
-                    10);
+            DocumentWriter writer = new DocumentModelWriter(documentManager, path, 10);
             reader.close();
             reader = new NuxeoArchiveReader(tmp);
 

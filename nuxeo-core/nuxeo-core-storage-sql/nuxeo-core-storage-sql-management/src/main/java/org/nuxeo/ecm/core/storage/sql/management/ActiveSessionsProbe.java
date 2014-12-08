@@ -18,8 +18,8 @@ import org.nuxeo.ecm.core.management.api.ProbeStatus;
 
 /**
  * Simple probes that returns the number of active session
- * @author Tiry (tdelprat@nuxeo.com)
  *
+ * @author Tiry (tdelprat@nuxeo.com)
  */
 public class ActiveSessionsProbe implements Probe {
 

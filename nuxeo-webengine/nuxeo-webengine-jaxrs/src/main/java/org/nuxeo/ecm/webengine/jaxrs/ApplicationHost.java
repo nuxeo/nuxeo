@@ -34,7 +34,6 @@ import org.osgi.framework.Bundle;
  * A composite JAX-RS application that can receive fragments from outside.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ApplicationHost extends Application {
 
@@ -54,9 +53,8 @@ public class ApplicationHost extends Application {
     protected Map<String, ResourceExtension> extensions;
 
     /**
-     * Root resource classes to owner bundles.
-     * This is a fall-back for FrameworkUtils.getBundle(class)
-     * since is not supported in all OSGi like frameworks
+     * Root resource classes to owner bundles. This is a fall-back for FrameworkUtils.getBundle(class) since is not
+     * supported in all OSGi like frameworks
      */
     protected HashMap<Class<?>, Bundle> class2Bundles;
 
@@ -69,8 +67,7 @@ public class ApplicationHost extends Application {
     }
 
     public BundleResource getExtension(BundleResource target, String segment) {
-        ResourceExtension xt = getExtension(target.getClass().getName() + "#"
-                + segment);
+        ResourceExtension xt = getExtension(target.getClass().getName() + "#" + segment);
         if (xt != null) {
             BundleResource res = target.getResource(xt.getResourceClass());
             if (res != null && res.accept(target)) {
@@ -110,8 +107,7 @@ public class ApplicationHost extends Application {
     }
 
     public synchronized ResourceExtension[] getExtensions(ResourceExtension xt) {
-        return extensions.values().toArray(
-                new ResourceExtension[extensions.size()]);
+        return extensions.values().toArray(new ResourceExtension[extensions.size()]);
     }
 
     public String getName() {
@@ -153,11 +149,9 @@ public class ApplicationHost extends Application {
     }
 
     /**
-     * Get the bundle declaring the given root class.
-     * This method is not synchronized since it is assumed to be called
+     * Get the bundle declaring the given root class. This method is not synchronized since it is assumed to be called
      * after the application was created and before it was destroyed. <br>
-     * When a bundle is refreshing this method may throw
-     * exceptions but it is not usual to refresh bundles at runtime
+     * When a bundle is refreshing this method may throw exceptions but it is not usual to refresh bundles at runtime
      * and making requests in same time.
      *
      * @param clazz

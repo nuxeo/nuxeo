@@ -18,14 +18,11 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 
 /**
- * A simple callback handler that can be used to get authentication credentials
- * as a Java Object.
+ * A simple callback handler that can be used to get authentication credentials as a Java Object.
  * <p>
- * The type of object is specific to each {@link CallbackHandler} that is
- * accepting this callback.
+ * The type of object is specific to each {@link CallbackHandler} that is accepting this callback.
  *
- * @author  eionica@nuxeo.com
- *
+ * @author eionica@nuxeo.com
  */
 public class CredentialsCallback implements Callback {
 
@@ -41,5 +38,5 @@ public class CredentialsCallback implements Callback {
     public void setCredentials(Object credentials) {
         this.credentials = credentials;
     }
-    
+
 }

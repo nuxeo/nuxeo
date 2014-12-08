@@ -38,13 +38,12 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
 
     protected List<ACEDescriptor> acl;
 
-    protected boolean isTargetEmpty(DocumentModel eventDoc) throws ClientException  {
+    protected boolean isTargetEmpty(DocumentModel eventDoc) throws ClientException {
         // If we already have children : exit !!!
         return session.getChildren(eventDoc.getRef()).isEmpty();
     }
 
-    public void createContentStructure(DocumentModel eventDoc)
-            throws ClientException {
+    public void createContentStructure(DocumentModel eventDoc) throws ClientException {
         initSession(eventDoc);
 
         if (eventDoc.isVersion() || !isTargetEmpty(eventDoc)) {
@@ -58,19 +57,16 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
             if (item.getPath() != null) {
                 itemPath += "/" + item.getPath();
             }
-            DocumentModel newChild = session.createDocumentModel(itemPath,
-                    item.getId(), item.getTypeName());
+            DocumentModel newChild = session.createDocumentModel(itemPath, item.getId(), item.getTypeName());
             newChild.setProperty("dublincore", "title", item.getTitle());
-            newChild.setProperty("dublincore", "description",
-                    item.getDescription());
+            newChild.setProperty("dublincore", "description", item.getDescription());
             setProperties(item.getProperties(), newChild);
             newChild = session.createDocument(newChild);
             setAcl(item.getAcl(), newChild.getRef());
         }
     }
 
-    protected void setProperties(List<PropertyDescriptor> properties,
-            DocumentModel doc) throws ClientException {
+    protected void setProperties(List<PropertyDescriptor> properties, DocumentModel doc) throws ClientException {
         if (properties != null && !properties.isEmpty()) {
             for (PropertyDescriptor property : properties) {
                 doc.setPropertyValue(property.getXpath(), property.getValue());
@@ -78,8 +74,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
         }
     }
 
-    protected void setAcl(List<ACEDescriptor> aces, DocumentRef ref)
-            throws ClientException {
+    protected void setAcl(List<ACEDescriptor> aces, DocumentRef ref) throws ClientException {
         if (aces != null && !aces.isEmpty()) {
             ACP acp = session.getACP(ref);
             ACL existingACL = acp.getOrCreateACL();
@@ -90,8 +85,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
 
             // add the the ACL defined in the descriptor
             for (ACEDescriptor ace : aces) {
-                existingACL.add(new ACE(ace.getPrincipal(),
-                        ace.getPermission(), ace.getGranted()));
+                existingACL.add(new ACE(ace.getPrincipal(), ace.getPermission(), ace.getGranted()));
             }
             // read the acl to invalidate the ACPImpl cache
             acp.addACL(existingACL);
@@ -99,8 +93,8 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
         }
     }
 
-    public boolean initFactory(Map<String, String> options,
-            List<ACEDescriptor> rootAcl, List<TemplateItemDescriptor> template) {
+    public boolean initFactory(Map<String, String> options, List<ACEDescriptor> rootAcl,
+            List<TemplateItemDescriptor> template) {
         this.template = template;
         acl = rootAcl;
         return true;

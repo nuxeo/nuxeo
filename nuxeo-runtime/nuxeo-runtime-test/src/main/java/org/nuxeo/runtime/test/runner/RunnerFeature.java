@@ -24,21 +24,18 @@ import com.google.inject.Binder;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface RunnerFeature {
 
-
     /**
-     * Called when preparing to run the test class. Framework is not started at this point.
-     * Here is time for the feature to configure the runner from annotations on the test class.
+     * Called when preparing to run the test class. Framework is not started at this point. Here is time for the feature
+     * to configure the runner from annotations on the test class.
      */
     void initialize(FeaturesRunner runner) throws Exception;
 
     /**
-     * Configures Guice bindings if any is required by the feature.
-     * This is called after the framework is started and before Guice module is built.
-     * The tests are launched after guice module is built.
+     * Configures Guice bindings if any is required by the feature. This is called after the framework is started and
+     * before Guice module is built. The tests are launched after guice module is built.
      */
     void configure(FeaturesRunner runner, Binder binder);
 
@@ -58,8 +55,8 @@ public interface RunnerFeature {
     void start(FeaturesRunner runner) throws Exception;
 
     /**
-     * Notification that a test instance was created. Can be used by features to
-     * make custom injection or other preparation of the test instance.
+     * Notification that a test instance was created. Can be used by features to make custom injection or other
+     * preparation of the test instance.
      *
      * @param test
      * @throws Exception
@@ -73,12 +70,14 @@ public interface RunnerFeature {
 
     /**
      * Before entering in the @Before methods
+     *
      * @param runner
      */
     void beforeSetup(FeaturesRunner runner) throws Exception;
 
     /**
      * After the call of the @After methods
+     *
      * @param runner
      */
     void afterTeardown(FeaturesRunner runner) throws Exception;

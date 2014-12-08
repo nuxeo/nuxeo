@@ -21,12 +21,10 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FreemarkerComponent extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName(
-            FreemarkerComponent.class.getName());
+    public static final ComponentName NAME = new ComponentName(FreemarkerComponent.class.getName());
 
     @Override
     public void activate(ComponentContext context) {
@@ -37,8 +35,7 @@ public class FreemarkerComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
     public FreemarkerEngine newEngine() {
@@ -46,8 +43,7 @@ public class FreemarkerComponent extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
     @Override

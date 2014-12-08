@@ -41,8 +41,7 @@ public class BankManager {
 
     private static File BANKS_DIR;
 
-    private static List<String> FOLDER_NAMES = Arrays.asList("style", "preset",
-            "image");
+    private static List<String> FOLDER_NAMES = Arrays.asList("style", "preset", "image");
 
     private static final String CUSTOM_COLLECTION_DIRNAME = "custom";
 
@@ -88,8 +87,7 @@ public class BankManager {
 
     public static void setupBankStructure(String bankName) throws IOException {
         for (String folderName : FOLDER_NAMES) {
-            String folderPath = String.format("/%s/%s",
-                    CUSTOM_COLLECTION_DIRNAME, folderName);
+            String folderPath = String.format("/%s/%s", CUSTOM_COLLECTION_DIRNAME, folderName);
             createFolder(bankName, folderPath);
         }
     }
@@ -108,8 +106,7 @@ public class BankManager {
         return names;
     }
 
-    public static List<String> getItemsInCollection(String bank,
-            String collection, String typeName) throws IOException {
+    public static List<String> getItemsInCollection(String bank, String collection, String typeName) throws IOException {
         List<String> names = new ArrayList<String>();
         String path = String.format("%s/%s/%s", bank, collection, typeName);
         File file = getFile(path);
@@ -125,17 +122,13 @@ public class BankManager {
         return names;
     }
 
-    public static File getStyleFile(String bank, String collection,
-            String resource) throws IOException {
-        String path = String.format("%s/%s/style/%s", bank, collection,
-                resource);
+    public static File getStyleFile(String bank, String collection, String resource) throws IOException {
+        String path = String.format("%s/%s/style/%s", bank, collection, resource);
         return getFile(path);
     }
 
-    public static File getImageFile(String bank, String collection,
-            String resource) throws IOException {
-        String path = String.format("%s/%s/image/%s", bank, collection,
-                resource);
+    public static File getImageFile(String bank, String collection, String resource) throws IOException {
+        String path = String.format("%s/%s/image/%s", bank, collection, resource);
         return getFile(path);
     }
 
@@ -145,8 +138,7 @@ public class BankManager {
     }
 
     @SuppressWarnings("rawtypes")
-    public static File getStylePreviewFile(String bank, String collection,
-            String resource) throws IOException {
+    public static File getStylePreviewFile(String bank, String collection, String resource) throws IOException {
         Map<String, Object> info = getInfo(bank, collection, "style");
 
         if (!info.containsKey(resource)) {
@@ -168,16 +160,13 @@ public class BankManager {
         return file;
     }
 
-    public static File getInfoFile(String bank, String collection,
-            String typeName) throws IOException {
-        String path = String.format("%s/%s/%s/info.txt", bank, collection,
-                typeName);
+    public static File getInfoFile(String bank, String collection, String typeName) throws IOException {
+        String path = String.format("%s/%s/%s/info.txt", bank, collection, typeName);
         return getFile(path);
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> getInfo(String bank, String collection,
-            String typeName) throws IOException {
+    public static Map<String, Object> getInfo(String bank, String collection, String typeName) throws IOException {
         File file = getInfoFile(bank, collection, typeName);
         Yaml yaml = new Yaml();
         String content = "";
@@ -190,11 +179,9 @@ public class BankManager {
     /*
      * I/O
      */
-    public static void importBankData(String bankName, String collection,
-            URL srcFileUrl) throws IOException {
+    public static void importBankData(String bankName, String collection, URL srcFileUrl) throws IOException {
         if (CUSTOM_COLLECTION_DIRNAME.equals(collection)) {
-            throw new IOException("Bank collection name not allowed: "
-                    + CUSTOM_COLLECTION_DIRNAME);
+            throw new IOException("Bank collection name not allowed: " + CUSTOM_COLLECTION_DIRNAME);
         }
         InputStream in = null;
         in = srcFileUrl.openStream();
@@ -210,8 +197,7 @@ public class BankManager {
         }
     }
 
-    public static byte[] exportBankData(String bankName, String collection)
-            throws IOException {
+    public static byte[] exportBankData(String bankName, String collection) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         String path = String.format("%s/%s", bankName, collection);
         File folder = getFile(path);
@@ -223,8 +209,7 @@ public class BankManager {
         return out.toByteArray();
     }
 
-    public static File createFolder(String path, String folderName)
-            throws IOException {
+    public static File createFolder(String path, String folderName) throws IOException {
         String folderPath = String.format("%s/%s", path, folderName);
         File file = getFile(folderPath);
         if (!file.exists()) {
@@ -233,21 +218,18 @@ public class BankManager {
         return file;
     }
 
-    public static File createFile(String path, String fileName, String content)
-            throws IOException {
+    public static File createFile(String path, String fileName, String content) throws IOException {
         return createFile(path, fileName, content.getBytes());
     }
 
-    public static File createFile(String path, String fileName, byte[] data)
-            throws IOException {
+    public static File createFile(String path, String fileName, byte[] data) throws IOException {
         File file = new File(getFile(path), fileName);
         file.createNewFile();
         FileUtils.writeFile(file, data);
         return file;
     }
 
-    public static void editFile(String path, String fileName, String content)
-            throws IOException {
+    public static void editFile(String path, String fileName, String content) throws IOException {
         File file = new File(getFile(path), fileName);
         FileUtils.writeFile(file, content);
     }

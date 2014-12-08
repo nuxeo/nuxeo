@@ -36,8 +36,8 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
-public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker
-        implements PostCommitFilteringEventListener {
+public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker implements
+        PostCommitFilteringEventListener {
 
     private static final Log log = LogFactory.getLog(AsynchronousUnicityCheckListener.class);
 
@@ -77,8 +77,8 @@ public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker
     }
 
     @Override
-    protected void onDuplicatedDoc(CoreSession session, Principal principal,
-            DocumentModel newDoc, List<DocumentLocation> existingDocs, Event event) {
+    protected void onDuplicatedDoc(CoreSession session, Principal principal, DocumentModel newDoc,
+            List<DocumentLocation> existingDocs, Event event) {
         // simply send a message
         log.info("Duplicated file detected");
         raiseDuplicatedFileEvent(session, principal, newDoc, existingDocs);

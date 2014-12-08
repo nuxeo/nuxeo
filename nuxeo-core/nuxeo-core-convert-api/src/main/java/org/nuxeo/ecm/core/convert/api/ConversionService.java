@@ -38,14 +38,13 @@ public interface ConversionService {
     /**
      * Converts a Blob given a converter name.
      */
-    BlobHolder convert(String converterName, BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException;
+    BlobHolder convert(String converterName, BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException;
 
     /**
      * Converts a Blob given a target destination MimeType.
      */
-    BlobHolder convertToMimeType(String destinationMimeType,
-            BlobHolder blobHolder, Map<String, Serializable> parameters)
+    BlobHolder convertToMimeType(String destinationMimeType, BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException;
 
     /**
@@ -59,12 +58,10 @@ public interface ConversionService {
      * Result can be:
      * <ul>
      * <li>{@link ConverterNotRegistered} if converter is not registered.
-     * <li>Error Message / Installation message if converter dependencies are
-     * not available an successful check.
+     * <li>Error Message / Installation message if converter dependencies are not available an successful check.
      * </ul>
      */
-    ConverterCheckResult isConverterAvailable(String converterName,
-            boolean refresh) throws ConversionException;
+    ConverterCheckResult isConverterAvailable(String converterName, boolean refresh) throws ConversionException;
 
     /**
      * Checks for converter availability.
@@ -72,22 +69,18 @@ public interface ConversionService {
      * Result can be:
      * <ul>
      * <li>{@link ConverterNotRegistered} if converter is not registered.
-     * <li>Error Message / Installation message if converter dependencies are
-     * not available an successful check.
+     * <li>Error Message / Installation message if converter dependencies are not available an successful check.
      * </ul>
      * <p>
      * Result can be taken from an internal cache.
      */
-    ConverterCheckResult isConverterAvailable(String converterName)
-            throws ConversionException;
+    ConverterCheckResult isConverterAvailable(String converterName) throws ConversionException;
 
     /**
-     * Returns true if the converter supports the given {@code sourceMimeType},
-     * false otherwise.
+     * Returns true if the converter supports the given {@code sourceMimeType}, false otherwise.
      *
      * @since 5.8
      */
-    boolean isSourceMimeTypeSupported(String converterName,
-            String sourceMimeType);
+    boolean isSourceMimeTypeSupported(String converterName, String sourceMimeType);
 
 }

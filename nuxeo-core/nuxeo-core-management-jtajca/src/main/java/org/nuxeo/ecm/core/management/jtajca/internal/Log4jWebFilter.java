@@ -52,8 +52,8 @@ public class Log4jWebFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         try {
             putProperty(request, "RemoteAddr");
             putProperty(request, "PathInfo");
@@ -79,8 +79,7 @@ public class Log4jWebFilter implements Filter {
     protected void putProperty(Object object, String propertyName) {
         try {
             if (object != null) {
-                String name = propertyName.substring(0, 1).toLowerCase()
-                        + propertyName.substring(1);
+                String name = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
                 Object prop = PropertyUtils.getProperty(object, name);
                 if (prop != null) {
                     MDC.put(propertyName, prop);

@@ -80,14 +80,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.sun.star.uno.RuntimeException;
 
 /**
- * Implementation of the {@link AuditBackend} interface using Elasticsearch
- * persistence
+ * Implementation of the {@link AuditBackend} interface using Elasticsearch persistence
  *
  * @author tiry
- *
  */
-public class ESAuditBackend extends AbstractAuditBackend implements
-        AuditBackend {
+public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend {
 
     public static final String IDX_NAME = "audit";
 
@@ -118,11 +115,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     }
 
     @Override
-    public List<LogEntry> getLogEntriesFor(String uuid,
-            Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
+    public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
 
-        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(
-                IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH);
 
         if (filterMap == null || filterMap.size() == 0) {
             builder.setQuery(QueryBuilders.matchQuery("docUUID", uuid));
@@ -130,11 +126,9 @@ public class ESAuditBackend extends AbstractAuditBackend implements
             BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
             for (String key : filterMap.keySet()) {
                 FilterMapEntry entry = filterMap.get(key);
-                filterBuilder.must(FilterBuilders.termFilter(
-                        entry.getColumnName(), entry.getObject()));
+                filterBuilder.must(FilterBuilders.termFilter(entry.getColumnName(), entry.getObject()));
             }
-            builder.setQuery(QueryBuilders.filteredQuery(
-                    QueryBuilders.matchQuery("docUUID", uuid), filterBuilder));
+            builder.setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchQuery("docUUID", uuid), filterBuilder));
         }
 
         SearchResponse searchResponse = builder.setFrom(0).setSize(60).execute().actionGet();
@@ -153,15 +147,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     @Override
     public LogEntry getLogEntryByID(long id) {
 
-        SearchResponse searchResponse = getClient().prepareSearch(IDX_NAME).setTypes(
-                IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.idsQuery(String.valueOf(id))).setFrom(0).setSize(
+        SearchResponse searchResponse = getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.idsQuery(String.valueOf(id))).setFrom(0).setSize(
                 10).execute().actionGet();
 
         SearchHits hits = searchResponse.getHits();
         if (hits.getTotalHits() > 1) {
-            throw new RuntimeException(
-                    "Found several match for the same ID : there is something wrong");
+            throw new RuntimeException("Found several match for the same ID : there is something wrong");
         }
         try {
             return AuditEntryJSONReader.read(hits.getAt(0).getSourceAsString());
@@ -175,8 +167,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements
             query = expandQueryVariables(query, params);
         }
 
-        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(
-                IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH);
         builder.setQuery(query);
 
         return builder;
@@ -196,14 +188,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements
             TextTemplate tmpl = new TextTemplate();
             for (String key : params.keySet()) {
                 Object val = params.get(key);
-                if (val==null) {
+                if (val == null) {
                     continue;
                 } else if (val instanceof Calendar) {
-                    tmpl.setVariable(key,ISODateTimeFormat.dateTime().print(
-                            new DateTime((Calendar)val)));
+                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime((Calendar) val)));
                 } else if (val instanceof Date) {
-                    tmpl.setVariable(key,ISODateTimeFormat.dateTime().print(
-                            new DateTime((Date)val)));
+                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime((Date) val)));
                 } else {
                     tmpl.setVariable(key, val.toString());
                 }
@@ -214,8 +204,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     }
 
     @Override
-    public List<?> nativeQuery(String query, Map<String, Object> params,
-            int pageNb, int pageSize) {
+    public List<?> nativeQuery(String query, Map<String, Object> params, int pageNb, int pageSize) {
 
         SearchRequestBuilder builder = buildQuery(query, params);
 
@@ -240,11 +229,11 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     }
 
     @Override
-    public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
-            String[] categories, String path, int pageNb, int pageSize) {
+    public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] categories, String path, int pageNb,
+            int pageSize) {
 
-        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(
-                IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH);
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
@@ -253,24 +242,20 @@ public class ESAuditBackend extends AbstractAuditBackend implements
 
         if (eventIds != null && eventIds.length > 0) {
             if (eventIds.length == 1) {
-                queryBuilder.must(QueryBuilders.matchQuery("eventId",
-                        eventIds[0]));
+                queryBuilder.must(QueryBuilders.matchQuery("eventId", eventIds[0]));
                 nbClauses++;
             } else {
-                filterBuilder.must(FilterBuilders.termsFilter("eventId",
-                        eventIds));
+                filterBuilder.must(FilterBuilders.termsFilter("eventId", eventIds));
                 nbFilters++;
             }
         }
 
         if (categories != null && categories.length > 0) {
             if (categories.length == 1) {
-                queryBuilder.must(QueryBuilders.matchQuery("category",
-                        categories[0]));
+                queryBuilder.must(QueryBuilders.matchQuery("category", categories[0]));
                 nbClauses++;
             } else {
-                filterBuilder.must(FilterBuilders.termsFilter("category",
-                        categories));
+                filterBuilder.must(FilterBuilders.termsFilter("category", categories));
                 nbFilters++;
             }
         }
@@ -300,8 +285,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
             targetFilter = FilterBuilders.matchAllFilter();
         }
 
-        builder.setQuery(QueryBuilders.filteredQuery(targetBuilder,
-                targetFilter));
+        builder.setQuery(QueryBuilders.filteredQuery(targetBuilder, targetFilter));
 
         if (pageNb > 0) {
             builder.setFrom(pageNb * pageSize);
@@ -324,21 +308,18 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     }
 
     @Override
-    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
-            String[] categories, String path, int pageNb, int pageSize) {
+    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String[] categories, String path,
+            int pageNb, int pageSize) {
 
         Date limit = null;
         if (dateRange != null) {
             try {
-                limit = DateRangeParser.parseDateRangeQuery(new Date(),
-                        dateRange);
+                limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
             } catch (AuditQueryException aqe) {
-                throw new AuditRuntimeException(
-                        "Wrong date range query. Query was " + dateRange, aqe);
+                throw new AuditRuntimeException("Wrong date range query. Query was " + dateRange, aqe);
             }
         }
-        return queryLogsByPage(eventIds, limit, categories, path, pageNb,
-                pageSize);
+        return queryLogsByPage(eventIds, limit, categories, path, pageNb, pageSize);
     }
 
     @Override
@@ -356,16 +337,15 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                 XContentBuilder builder = jsonBuilder();
                 JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
                 AuditEntryJSONWriter.asJSON(jsonGen, entry);
-                bulkRequest.add(getClient().prepareIndex(IDX_NAME, IDX_TYPE,
-                        String.valueOf(entry.getId())).setSource(builder));
+                bulkRequest.add(getClient().prepareIndex(IDX_NAME, IDX_TYPE, String.valueOf(entry.getId())).setSource(
+                        builder));
             }
 
             BulkResponse bulkResponse = bulkRequest.execute().actionGet();
             if (bulkResponse.hasFailures()) {
                 for (BulkItemResponse response : bulkResponse.getItems()) {
                     if (response.isFailed()) {
-                        log.error("Unable to index audit entry "
-                                + response.getItemId() + " :"
+                        log.error("Unable to index audit entry " + response.getItemId() + " :"
                                 + response.getFailureMessage());
                     }
                 }
@@ -378,8 +358,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements
 
     @Override
     public Long getEventsCount(String eventId) {
-        CountResponse res = getClient().prepareCount(IDX_NAME).setTypes(
-                IDX_TYPE).setQuery(QueryBuilders.matchQuery("eventId", eventId)).execute().actionGet();
+        CountResponse res = getClient().prepareCount(IDX_NAME).setTypes(IDX_TYPE).setQuery(
+                QueryBuilders.matchQuery("eventId", eventId)).execute().actionGet();
         return res.getCount();
     }
 
@@ -390,8 +370,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
 
                 @Override
                 public int removeEntries(String eventId, String pathPattern) {
-                    throw new UnsupportedOperationException(
-                            "Not implemented yet!");
+                    throw new UnsupportedOperationException("Not implemented yet!");
                 }
 
                 @Override
@@ -406,15 +385,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     }
 
     @Override
-    public long syncLogCreationEntries(final String repoId, final String path,
-            final Boolean recurs) {
+    public long syncLogCreationEntries(final String repoId, final String path, final Boolean recurs) {
         return syncLogCreationEntries(getProvider(), repoId, path, recurs);
     }
 
-    protected FilterBuilder buildFilter(PredicateDefinition[] predicates,
-            DocumentModel searchDocumentModel) {
+    protected FilterBuilder buildFilter(PredicateDefinition[] predicates, DocumentModel searchDocumentModel) {
 
-        if (searchDocumentModel==null) {
+        if (searchDocumentModel == null) {
             return FilterBuilders.matchAllFilter();
         }
 
@@ -434,8 +411,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                     if (fieldDef[fidx].getXpath() != null) {
                         val[fidx] = searchDocumentModel.getPropertyValue(fieldDef[fidx].getXpath());
                     } else {
-                        val[fidx] = searchDocumentModel.getProperty(
-                                fieldDef[fidx].getSchema(),
+                        val[fidx] = searchDocumentModel.getProperty(fieldDef[fidx].getSchema(),
                                 fieldDef[fidx].getName());
                     }
                 }
@@ -470,51 +446,40 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                 } else if (val[0] instanceof Object[]) {
                     values = (String[]) val[0];
                 }
-                filterBuilder.must(FilterBuilders.termsFilter(
-                        predicate.getParameter(), values));
+                filterBuilder.must(FilterBuilders.termsFilter(predicate.getParameter(), values));
             } else if (op.equalsIgnoreCase("BETWEEN")) {
-                filterBuilder.must(FilterBuilders.rangeFilter(
-                        predicate.getParameter()).gt(val[0]));
+                filterBuilder.must(FilterBuilders.rangeFilter(predicate.getParameter()).gt(val[0]));
                 if (val.length > 1) {
-                    filterBuilder.must(FilterBuilders.rangeFilter(
-                            predicate.getParameter()).lt(val[1]));
+                    filterBuilder.must(FilterBuilders.rangeFilter(predicate.getParameter()).lt(val[1]));
                 }
             } else if (">".equals(op)) {
-                filterBuilder.must(FilterBuilders.rangeFilter(
-                        predicate.getParameter()).gt(val[0]));
+                filterBuilder.must(FilterBuilders.rangeFilter(predicate.getParameter()).gt(val[0]));
             } else if (">=".equals(op)) {
-                filterBuilder.must(FilterBuilders.rangeFilter(
-                        predicate.getParameter()).gte(val[0]));
+                filterBuilder.must(FilterBuilders.rangeFilter(predicate.getParameter()).gte(val[0]));
             } else if ("<".equals(op)) {
-                filterBuilder.must(FilterBuilders.rangeFilter(
-                        predicate.getParameter()).lt(val[0]));
+                filterBuilder.must(FilterBuilders.rangeFilter(predicate.getParameter()).lt(val[0]));
             } else if ("<=".equals(op)) {
-                filterBuilder.must(FilterBuilders.rangeFilter(
-                        predicate.getParameter()).lte(val[0]));
+                filterBuilder.must(FilterBuilders.rangeFilter(predicate.getParameter()).lte(val[0]));
             } else {
-                filterBuilder.must(FilterBuilders.termFilter(
-                        predicate.getParameter(), val[0]));
+                filterBuilder.must(FilterBuilders.termFilter(predicate.getParameter(), val[0]));
             }
         }
 
-        if (nbFilters==0) {
+        if (nbFilters == 0) {
             return FilterBuilders.matchAllFilter();
         }
         return filterBuilder;
     }
 
-    public SearchRequestBuilder buildSearchQuery(String fixedPart,
-            PredicateDefinition[] predicates,
+    public SearchRequestBuilder buildSearchQuery(String fixedPart, PredicateDefinition[] predicates,
             DocumentModel searchDocumentModel) {
 
-        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(
-                IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH);
 
         QueryBuilder queryBuilder = QueryBuilders.wrapperQuery(fixedPart);
-        FilterBuilder filterBuilder = buildFilter(predicates,
-                searchDocumentModel);
-        builder.setQuery(QueryBuilders.filteredQuery(queryBuilder,
-                filterBuilder));
+        FilterBuilder filterBuilder = buildFilter(predicates, searchDocumentModel);
+        builder.setQuery(QueryBuilders.filteredQuery(queryBuilder, filterBuilder));
         return builder;
     }
 
@@ -545,16 +510,16 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         final AuditBackend sourceBackend = new DefaultAuditBackend();
         sourceBackend.activate(component);
 
-        final String MIGRATION_WORK_ID="AuditMigration";
+        final String MIGRATION_WORK_ID = "AuditMigration";
 
         WorkManager wm = Framework.getService(WorkManager.class);
 
         State migrationState = wm.getWorkState(MIGRATION_WORK_ID);
-        if (migrationState!=null) {
+        if (migrationState != null) {
             return "Migration already scheduled : " + migrationState.toString();
         }
 
-        List<Long> res = (List<Long>) sourceBackend.nativeQuery("select count(*) from LogEntry", 1,20);
+        List<Long> res = (List<Long>) sourceBackend.nativeQuery("select count(*) from LogEntry", 1, 20);
 
         final long nbEntriesToMigrate = res.get(0).longValue();
 
@@ -571,24 +536,25 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                 try {
 
                     long t0 = System.currentTimeMillis();
-                    long nbEntriesMigrated=0;
-                    int pageIdx =  0;
+                    long nbEntriesMigrated = 0;
+                    int pageIdx = 0;
 
                     while (nbEntriesMigrated < nbEntriesToMigrate) {
-                        List<LogEntry> entries = (List<LogEntry>)sourceBackend.nativeQuery("from LogEntry log order by log.id asc", pageIdx, batchSize);
+                        List<LogEntry> entries = (List<LogEntry>) sourceBackend.nativeQuery(
+                                "from LogEntry log order by log.id asc", pageIdx, batchSize);
 
-                        if (entries.size()==0) {
+                        if (entries.size() == 0) {
                             log.warn("Migration ending after " + nbEntriesMigrated + " entries");
                             break;
                         }
                         setProgress(new Progress(nbEntriesMigrated, nbEntriesToMigrate));
                         addLogEntries(entries);
                         pageIdx++;
-                        nbEntriesMigrated+=entries.size();
+                        nbEntriesMigrated += entries.size();
                         log.info("migrated " + nbEntriesMigrated + " log entries on " + nbEntriesToMigrate);
-                        double dt = (System.currentTimeMillis()-t0)/1000.0;
-                        if (dt!=0) {
-                            log.info("migration speed " + (nbEntriesMigrated/dt) + " entries/s");
+                        double dt = (System.currentTimeMillis() - t0) / 1000.0;
+                        if (dt != 0) {
+                            log.info("migration speed " + (nbEntriesMigrated / dt) + " entries/s");
                         }
                     }
                 } finally {
@@ -597,7 +563,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
             }
         };
 
-        wm.schedule (migrationWork);
+        wm.schedule(migrationWork);
 
         return "Migration work started : " + MIGRATION_WORK_ID;
 

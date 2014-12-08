@@ -46,30 +46,21 @@ public class Column implements Serializable {
     private final ColumnType type;
 
     /**
-     * The JDBC {@link java.sql.Types} type. Used for:
-     *
-     * - comparison with database introspected type
-     *
-     * - switch() to get from result set or set to prepared statement
-     *
-     * - setNull to prepared statement
+     * The JDBC {@link java.sql.Types} type. Used for: - comparison with database introspected type - switch() to get
+     * from result set or set to prepared statement - setNull to prepared statement
      */
     private int jdbcType;
 
     /** The JDBC type string. */
     private final String jdbcTypeString;
-    
+
     /*
-     * {@see java.sql.Array.getBaseType()
-     * 
-     * value is 0 if this is not an array column
+     * {@see java.sql.Array.getBaseType() value is 0 if this is not an array column
      */
     private int jdbcBaseType;
-    
+
     /*
-     * {@see java.sql.Array.getBaseTypeName()
-     * 
-     * value is null if this is not an array column
+     * {@see java.sql.Array.getBaseTypeName() value is null if this is not an array column
      */
     private final String jdbcBaseTypeString;
 
@@ -137,7 +128,7 @@ public class Column implements Serializable {
     public int getJdbcType() {
         return jdbcType;
     }
-    
+
     public int getJdbcBaseType() {
         return jdbcBaseType;
     }
@@ -169,7 +160,7 @@ public class Column implements Serializable {
         }
         return baseType;
     }
-    
+
     public String getFreeVariableSetter() {
         return freeVariableSetter;
     }
@@ -187,8 +178,7 @@ public class Column implements Serializable {
         if (actual == expected) {
             return true;
         }
-        if (dialect.isAllowedConversion(expected, actual, actualName,
-                actualSize)) {
+        if (dialect.isAllowedConversion(expected, actual, actualName, actualSize)) {
             return true;
         }
         return false;
@@ -246,13 +236,12 @@ public class Column implements Serializable {
     public String getSqlTypeString() {
         return jdbcTypeString;
     }
-    
+
     public String getSqlBaseTypeString() {
         return jdbcBaseTypeString;
     }
 
-    public void setToPreparedStatement(PreparedStatement ps, int index,
-            Serializable value) throws SQLException {
+    public void setToPreparedStatement(PreparedStatement ps, int index, Serializable value) throws SQLException {
         if (value == null) {
             ps.setNull(index, jdbcType);
             return;
@@ -263,8 +252,7 @@ public class Column implements Serializable {
         dialect.setToPreparedStatement(ps, index, value, this);
     }
 
-    public Serializable getFromResultSet(ResultSet rs, int index)
-            throws SQLException {
+    public Serializable getFromResultSet(ResultSet rs, int index) throws SQLException {
         Serializable result = dialect.getFromResultSet(rs, index, this);
         if (rs.wasNull()) {
             result = null;

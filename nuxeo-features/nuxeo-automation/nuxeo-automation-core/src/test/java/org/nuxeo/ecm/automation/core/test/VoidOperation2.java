@@ -38,8 +38,7 @@ public class VoidOperation2 {
     public DocumentModel printInfo1() throws Exception {
         // System.out.println("O1:doc:doc: "+doc.getId()+". Session:
         // "+session+". message: "+message);
-        Helper.updateContext(ctx, "V2:void:doc", message,
-                ((DocumentModel) ctx.getInput()).getPathAsString());
+        Helper.updateContext(ctx, "V2:void:doc", message, ((DocumentModel) ctx.getInput()).getPathAsString());
         return session.getRootDocument();
     }
 

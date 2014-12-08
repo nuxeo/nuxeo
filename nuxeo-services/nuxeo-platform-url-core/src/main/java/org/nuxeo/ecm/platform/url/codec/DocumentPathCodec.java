@@ -38,8 +38,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
 /**
- * Codec handling a document repository, path, view and additional request
- * parameters.
+ * Codec handling a document repository, path, view and additional request parameters.
  *
  * @author Anahide Tchertchian
  */
@@ -108,8 +107,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
                 uri += "@" + viewId;
             }
 
-            String uriWithParam = URIUtils.addParametersToURIQuery(uri,
-                    docView.getParameters());
+            String uriWithParam = URIUtils.addParametersToURIQuery(uri, docView.getParameters());
 
             // If the URL with the Path codec is to long, it use the URL with
             // the Id Codec.
@@ -133,8 +131,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
     }
 
     /**
-     * Extracts document location from a Zope-like URL, eg:
-     * server/path_or_docId/view_id/tab_id .
+     * Extracts document location from a Zope-like URL, eg: server/path_or_docId/view_id/tab_id .
      */
     @Override
     public DocumentView getDocumentViewFromUrl(String url) {
@@ -159,8 +156,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
             String query = m.group(4);
             Map<String, String> params = URIUtils.getRequestParameters(query);
 
-            final DocumentLocation docLoc = new DocumentLocationImpl(server,
-                    docRef);
+            final DocumentLocation docLoc = new DocumentLocationImpl(server, docRef);
 
             return new DocumentViewImpl(docLoc, viewId, params);
         }

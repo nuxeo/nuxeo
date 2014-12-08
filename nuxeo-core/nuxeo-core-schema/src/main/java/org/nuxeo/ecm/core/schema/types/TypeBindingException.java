@@ -16,14 +16,12 @@ package org.nuxeo.ecm.core.schema.types;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TypeBindingException extends TypeException {
 
     private static final long serialVersionUID = 3412654918664885706L;
 
     private final String typeName;
-
 
     public TypeBindingException(String typeName) {
         super("Type could not be resolved: " + typeName);

@@ -26,8 +26,8 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 /**
  * Document information describing a document context.
  * <p>
- * Some information is required (document location). Other information (like the
- * currently selected tab) are handled through parameters.*
+ * Some information is required (document location). Other information (like the currently selected tab) are handled
+ * through parameters.*
  * <p>
  * This interface is used to map a url to a document context.
  */

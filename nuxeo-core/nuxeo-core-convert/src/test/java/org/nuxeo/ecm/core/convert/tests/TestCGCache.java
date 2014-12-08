@@ -39,8 +39,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(ConvertFeature.class)
-@LocalDeploy({
-        "org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-enabled-gc.xml",
+@LocalDeploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-enabled-gc.xml",
         "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml" })
 public class TestCGCache {
 
@@ -65,8 +64,7 @@ public class TestCGCache {
         // wait for the GCThread to run
         int retryCount = 0;
         int noRuns = ConversionCacheGCManager.getGCRuns();
-        while (ConversionCacheGCManager.getGCRuns() == noRuns
-                && retryCount++ < 5) {
+        while (ConversionCacheGCManager.getGCRuns() == noRuns && retryCount++ < 5) {
             Thread.sleep(1100);
         }
         assertTrue(ConversionCacheGCManager.getGCRuns() > 0);

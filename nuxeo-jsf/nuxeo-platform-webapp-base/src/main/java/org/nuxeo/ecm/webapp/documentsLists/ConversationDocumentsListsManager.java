@@ -34,8 +34,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 @Name("conversationDocumentsListsManager")
 @Scope(CONVERSATION)
-public class ConversationDocumentsListsManager extends
-        BaseDocumentsListsManager implements Serializable {
+public class ConversationDocumentsListsManager extends BaseDocumentsListsManager implements Serializable {
 
     private static final long serialVersionUID = 9876098763432L;
 
@@ -53,8 +52,7 @@ public class ConversationDocumentsListsManager extends
         if (!initialized) {
             List<String> listContribNames = getService().getDocumentsListDescriptorsName();
             for (String listName : listContribNames) {
-                DocumentsListDescriptor desc = getService().getDocumentsListDescriptor(
-                        listName);
+                DocumentsListDescriptor desc = getService().getDocumentsListDescriptor(listName);
                 if (!desc.getIsSession()) {
                     createWorkingList(listName, desc);
                 }
@@ -68,8 +66,7 @@ public class ConversationDocumentsListsManager extends
     public void refreshLists(DocumentModel selectedDocument) {
 
         if (selectedDocument != null) {
-            refreshLists(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
-                    selectedDocument);
+            refreshLists(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED, selectedDocument);
         }
     }
 
@@ -77,12 +74,10 @@ public class ConversationDocumentsListsManager extends
      * @since 5.6
      */
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)
-    public void refreshListsOnDocumentSelectionChanged(
-            DocumentModel selectedDocument) {
+    public void refreshListsOnDocumentSelectionChanged(DocumentModel selectedDocument) {
 
         if (selectedDocument != null) {
-            refreshLists(EventNames.DOCUMENT_SELECTION_CHANGED,
-                    selectedDocument);
+            refreshLists(EventNames.DOCUMENT_SELECTION_CHANGED, selectedDocument);
         }
     }
 
@@ -91,8 +86,7 @@ public class ConversationDocumentsListsManager extends
      */
     public void refreshLists(String eventName, DocumentModel selectedDocument) {
 
-        if (lastDocumentRef != null
-                && lastDocumentRef.equals(selectedDocument.getRef())) {
+        if (lastDocumentRef != null && lastDocumentRef.equals(selectedDocument.getRef())) {
             return;
         }
 

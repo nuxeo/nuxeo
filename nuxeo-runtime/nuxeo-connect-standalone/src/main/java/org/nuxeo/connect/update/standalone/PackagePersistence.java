@@ -42,12 +42,10 @@ import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageUpdateService;
 
 /**
- * The file {@code nxserver/data/packages/.packages} stores the state of all
- * local features.
+ * The file {@code nxserver/data/packages/.packages} stores the state of all local features.
  * <p>
- * Each local package have a corresponding directory in
- * {@code nxserver/data/features/store} which is named: {@code <package_uid>}
- * ("id-version")
+ * Each local package have a corresponding directory in {@code nxserver/data/features/store} which is named:
+ * {@code <package_uid>} ("id-version")
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -69,8 +67,7 @@ public class PackagePersistence {
 
     public PackagePersistence(PackageUpdateService pus) throws IOException {
         Environment env = Environment.getDefault();
-        File mpDir = new File(env.getProperty(Environment.NUXEO_MP_DIR,
-                Environment.DEFAULT_MP_DIR));
+        File mpDir = new File(env.getProperty(Environment.NUXEO_MP_DIR, Environment.DEFAULT_MP_DIR));
         if (mpDir.isAbsolute()) {
             root = mpDir;
         } else {
@@ -133,8 +130,7 @@ public class PackagePersistence {
     protected void writeStates() throws IOException {
         StringBuilder buf = new StringBuilder();
         for (Entry<String, PackageState> entry : states.entrySet()) {
-            buf.append(entry.getKey()).append('=').append(entry.getValue()).append(
-                    "\n");
+            buf.append(entry.getKey()).append('=').append(entry.getValue()).append("\n");
         }
         File file = new File(root, ".packages");
         FileUtils.writeFile(file, buf.toString());
@@ -148,8 +144,7 @@ public class PackagePersistence {
         return null;
     }
 
-    public synchronized LocalPackage addPackage(File file)
-            throws PackageException {
+    public synchronized LocalPackage addPackage(File file) throws PackageException {
         if (file.isDirectory()) {
             return addPackageFromDir(file);
         } else if (file.isFile()) {
@@ -158,8 +153,7 @@ public class PackagePersistence {
                 ZipUtils.unzip(file, tmp);
                 return addPackageFromDir(tmp);
             } catch (IOException e) {
-                throw new PackageException("Failed to unzip package: "
-                        + file.getName());
+                throw new PackageException("Failed to unzip package: " + file.getName());
             } finally {
                 // cleanup if tmp still exists (should not happen)
                 org.apache.commons.io.FileUtils.deleteQuietly(tmp);
@@ -170,31 +164,25 @@ public class PackagePersistence {
     }
 
     /**
-     * Add unzipped packaged to local cache. It replaces SNAPSHOT packages if
-     * not installed
+     * Add unzipped packaged to local cache. It replaces SNAPSHOT packages if not installed
      *
      * @throws PackageException
-     * @throws AlreadyExistsPackageException If not replacing a SNAPSHOT or if
-     *             the existing package is installed
+     * @throws AlreadyExistsPackageException If not replacing a SNAPSHOT or if the existing package is installed
      */
     protected LocalPackage addPackageFromDir(File file) throws PackageException {
-        LocalPackageImpl pkg = new LocalPackageImpl(file,
-                PackageState.DOWNLOADED, service);
+        LocalPackageImpl pkg = new LocalPackageImpl(file, PackageState.DOWNLOADED, service);
         File dir = null;
         try {
             dir = new File(store, pkg.getId());
             if (dir.exists()) {
                 LocalPackage oldpkg = getPackage(pkg.getId());
                 if (!pkg.getVersion().isSnapshot()) {
-                    throw new AlreadyExistsPackageException("Package "
-                            + pkg.getId() + " already exists");
+                    throw new AlreadyExistsPackageException("Package " + pkg.getId() + " already exists");
                 }
                 if (oldpkg.getPackageState().isInstalled()) {
-                    throw new AlreadyExistsPackageException("Package "
-                            + pkg.getId() + " is already installed");
+                    throw new AlreadyExistsPackageException("Package " + pkg.getId() + " is already installed");
                 }
-                log.info(String.format("Replacement of %s in local cache...",
-                        oldpkg));
+                log.info(String.format("Replacement of %s in local cache...", oldpkg));
                 org.apache.commons.io.FileUtils.deleteQuietly(dir);
             }
             org.apache.commons.io.FileUtils.moveDirectory(file, dir);
@@ -202,8 +190,7 @@ public class PackagePersistence {
             updateState(pkg.getId(), pkg.state);
             return pkg;
         } catch (IOException e) {
-            throw new PackageException(String.format("Failed to move %s to %s",
-                    file, dir), e);
+            throw new PackageException(String.format("Failed to move %s to %s", file, dir), e);
         }
     }
 
@@ -216,8 +203,7 @@ public class PackagePersistence {
     }
 
     /**
-     * Get the local package having the given name and which is in either one
-     * of the following states:
+     * Get the local package having the given name and which is in either one of the following states:
      * <ul>
      * <li> {@link PackageState#INSTALLING}
      * <li> {@link PackageState#INSTALLED}
@@ -237,27 +223,23 @@ public class PackagePersistence {
     public synchronized String getActivePackageId(String name) {
         name = name + '-';
         for (Entry<String, PackageState> entry : states.entrySet()) {
-            if (entry.getKey().startsWith(name)
-                    && entry.getValue().isInstalled()) {
+            if (entry.getKey().startsWith(name) && entry.getValue().isInstalled()) {
                 return entry.getKey();
             }
         }
         return null;
     }
 
-    public synchronized List<LocalPackage> getPackages()
-            throws PackageException {
+    public synchronized List<LocalPackage> getPackages() throws PackageException {
         File[] list = store.listFiles();
         if (list != null) {
             List<LocalPackage> pkgs = new ArrayList<>(list.length);
             for (File file : list) {
                 if (!file.isDirectory()) {
-                    log.warn("Ignoring file '" + file.getName()
-                            + "' in package store");
+                    log.warn("Ignoring file '" + file.getName() + "' in package store");
                     continue;
                 }
-                pkgs.add(new LocalPackageImpl(file, getState(file.getName()),
-                        service));
+                pkgs.add(new LocalPackageImpl(file, getState(file.getName()), service));
             }
             return pkgs;
         }
@@ -276,12 +258,10 @@ public class PackagePersistence {
     }
 
     /**
-     * @deprecated Since 5.7. Use {@link #updateState(String, PackageState)}
-     *             instead.
+     * @deprecated Since 5.7. Use {@link #updateState(String, PackageState)} instead.
      */
     @Deprecated
-    public synchronized void updateState(String id, int state)
-            throws PackageException {
+    public synchronized void updateState(String id, int state) throws PackageException {
         states.put(id, PackageState.getByValue(state));
         try {
             writeStates();
@@ -293,8 +273,7 @@ public class PackagePersistence {
     /**
      * @since 5.7
      */
-    public synchronized void updateState(String id, PackageState state)
-            throws PackageException {
+    public synchronized void updateState(String id, PackageState state) throws PackageException {
         states.put(id, state);
         try {
             writeStates();
@@ -334,8 +313,7 @@ public class PackagePersistence {
         if (file.isDirectory()) {
             Path path = file.toPath();
             try {
-                FileTime lastModifiedTime = Files.readAttributes(path,
-                        BasicFileAttributes.class).lastModifiedTime();
+                FileTime lastModifiedTime = Files.readAttributes(path, BasicFileAttributes.class).lastModifiedTime();
                 return lastModifiedTime;
             } catch (IOException e) {
                 log.error(e);

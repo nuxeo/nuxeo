@@ -27,7 +27,9 @@ import org.nuxeo.ecm.core.api.security.ACE;
 public class WsACE {
 
     private String username;
+
     private String permission;
+
     private boolean isGranted;
 
     public WsACE(String username, String permission, boolean isGranted) {

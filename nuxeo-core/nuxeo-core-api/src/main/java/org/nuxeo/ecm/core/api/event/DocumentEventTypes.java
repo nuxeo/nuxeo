@@ -94,16 +94,14 @@ public final class DocumentEventTypes {
     public static final String ABOUT_TO_CHECKOUT = "aboutToCheckout";
 
     /**
-     * Document checked out. Listeners can increment version numbers. Listeners
-     * will be passed a pristine DocumentModel where changes will not be seen by
-     * the main DocumentModel being saved.
+     * Document checked out. Listeners can increment version numbers. Listeners will be passed a pristine DocumentModel
+     * where changes will not be seen by the main DocumentModel being saved.
      */
     public static final String DOCUMENT_CHECKEDOUT = "documentCheckedOut";
 
     /**
-     * Listeners can increment version numbers. Listeners will be passed a
-     * pristine DocumentModel where changes will not be seen by the main
-     * DocumentModel being saved.
+     * Listeners can increment version numbers. Listeners will be passed a pristine DocumentModel where changes will not
+     * be seen by the main DocumentModel being saved.
      */
     public static final String INCREMENT_BEFORE_UPDATE = "incrementBeforeUpdate";
 

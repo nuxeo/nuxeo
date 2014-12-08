@@ -34,10 +34,8 @@ public class ClearWorklist {
     @OperationMethod
     public void run() {
         if (OperationHelper.isSeamContextAvailable()) {
-            OperationHelper.getDocumentListManager().resetWorkingList(
-                    DocumentsListsManager.DEFAULT_WORKING_LIST);
-        }
-        else {
+            OperationHelper.getDocumentListManager().resetWorkingList(DocumentsListsManager.DEFAULT_WORKING_LIST);
+        } else {
             DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
             pm.clearPersistentList(ctx.getPrincipal().getName(), DocumentsListsManager.DEFAULT_WORKING_LIST);
         }

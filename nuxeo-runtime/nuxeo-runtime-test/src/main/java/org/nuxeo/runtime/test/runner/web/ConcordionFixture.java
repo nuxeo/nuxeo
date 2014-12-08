@@ -33,7 +33,8 @@ public class ConcordionFixture {
 
     protected final ConcordionBuilder concordionBuilder = new ConcordionBuilder();
 
-    @Test public void test() throws IOException {
+    @Test
+    public void test() throws IOException {
         ResultSummary resultSummary = concordionBuilder.build().process(this);
         resultSummary.print(System.out);
         resultSummary.assertIsSatisfied();

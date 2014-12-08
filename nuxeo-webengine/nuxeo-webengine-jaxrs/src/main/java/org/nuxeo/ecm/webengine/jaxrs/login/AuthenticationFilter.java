@@ -34,7 +34,6 @@ import org.nuxeo.runtime.api.Framework;
  * Filter using the {@link SimpleLoginModule} to authenticate a request.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AuthenticationFilter extends HttpFilter {
 
@@ -43,8 +42,8 @@ public class AuthenticationFilter extends HttpFilter {
     protected String domain = DEFAULT_SECURITY_DOMAIN;
 
     protected boolean autoPrompt = true;
-    protected String realmName = "Nuxeo";
 
+    protected String realmName = "Nuxeo";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -59,8 +58,8 @@ public class AuthenticationFilter extends HttpFilter {
     }
 
     @Override
-    public void run(HttpServletRequest request, HttpServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void run(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         LoginContext lc = null;
         if (request.getUserPrincipal() == null) {
@@ -117,11 +116,11 @@ public class AuthenticationFilter extends HttpFilter {
         // TODO no login provided - use anonymous ?
         // for now no anonymous user supported - we require a login
         throw new LoginException("User must login");
-        //return null;
+        // return null;
     }
 
     protected void handleLoginFailure(HttpServletRequest request, HttpServletResponse response, LoginException e) {
-        String s = "Basic realm=\""+realmName+"\"";
+        String s = "Basic realm=\"" + realmName + "\"";
         response.setHeader("WWW-Authenticate", s);
         response.setStatus(401);
     }
@@ -130,12 +129,12 @@ public class AuthenticationFilter extends HttpFilter {
         Set<Principal> set = lc.getSubject().getPrincipals();
         if (!set.isEmpty()) {
             final Principal principal = set.iterator().next();
-        return new HttpServletRequestWrapper(request) {
-            @Override
-            public Principal getUserPrincipal() {
-                return principal;
-            }
-        };
+            return new HttpServletRequestWrapper(request) {
+                @Override
+                public Principal getUserPrincipal() {
+                    return principal;
+                }
+            };
         }
         return request;
     }

@@ -35,11 +35,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Imports the string content of a blob as text for the content of the "note"
- * field of a new Note document.
+ * Imports the string content of a blob as text for the content of the "note" field of a new Note document.
  * <p>
- * If an existing document with the same title is found the existing Note
- * document is updated instead.
+ * If an existing document with the same title is found the existing Note document is updated instead.
  */
 public class NoteImporter extends AbstractFileImporter {
 
@@ -68,16 +66,14 @@ public class NoteImporter extends AbstractFileImporter {
     @Override
     public boolean updateDocumentIfPossible(DocumentModel doc, Blob content) {
         if (!doc.hasSchema(NOTE_SCHEMA)) {
-            log.warn("Schema '" + NOTE_SCHEMA
-                    + "' is not available for document " + doc);
+            log.warn("Schema '" + NOTE_SCHEMA + "' is not available for document " + doc);
             return false;
         }
         return super.updateDocumentIfPossible(doc, content);
     }
 
     @Override
-    public void updateDocument(DocumentModel doc, Blob content)
-            throws ClientException {
+    public void updateDocument(DocumentModel doc, Blob content) throws ClientException {
         String string;
         try {
             string = getString(content);
@@ -107,8 +103,7 @@ public class NoteImporter extends AbstractFileImporter {
         if (mimeType == null) {
             return null;
         }
-        if (!mimeType.startsWith("text/")
-                && !mimeType.startsWith("application/xhtml")) {
+        if (!mimeType.startsWith("text/") && !mimeType.startsWith("application/xhtml")) {
             // not a text file, we shouldn't be in the Note importer
             return null;
         }
@@ -137,8 +132,7 @@ public class NoteImporter extends AbstractFileImporter {
         for (String charset : charsets) {
             try {
                 Charset cs = Charset.forName(charset);
-                CharsetDecoder d = cs.newDecoder().onMalformedInput(
-                        CodingErrorAction.REPORT).onUnmappableCharacter(
+                CharsetDecoder d = cs.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(
                         CodingErrorAction.REPORT);
                 CharBuffer cb = d.decode(ByteBuffer.wrap(bytes));
                 return cb.toString();

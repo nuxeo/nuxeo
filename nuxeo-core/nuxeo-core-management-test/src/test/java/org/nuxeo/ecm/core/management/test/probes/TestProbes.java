@@ -41,8 +41,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.management", //
-    "org.nuxeo.ecm.core.management", //
-    "org.nuxeo.ecm.core.management.test" })
+        "org.nuxeo.ecm.core.management", //
+        "org.nuxeo.ecm.core.management.test" })
 public class TestProbes {
 
     @Test
@@ -67,17 +67,13 @@ public class TestProbes {
         assertNotNull(info);
 
         Collection<String> names = pm.getProbeNames();
-        assertTrue("admin status shortcut not listed",
-                names.contains("administrativeStatus"));
-        assertNotNull("admin status probe not published",
-                info.getQualifiedName());
+        assertTrue("admin status shortcut not listed", names.contains("administrativeStatus"));
+        assertNotNull("admin status probe not published", info.getQualifiedName());
 
         assertEquals(1, info.getRunnedCount());
         assertFalse("not a success", info.isInError());
-        assertFalse("wrong success value",
-                info.getStatus().getAsString().equals("[unavailable]"));
-        assertEquals("wrong default value", "[unavailable]",
-                info.getLastFailureStatus().getAsString());
+        assertFalse("wrong success value", info.getStatus().getAsString().equals("[unavailable]"));
+        assertEquals("wrong default value", "[unavailable]", info.getLastFailureStatus().getAsString());
 
     }
 

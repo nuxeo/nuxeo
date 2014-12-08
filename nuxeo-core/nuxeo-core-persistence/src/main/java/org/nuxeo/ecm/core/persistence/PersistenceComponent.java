@@ -29,11 +29,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
  */
-public class PersistenceComponent extends DefaultComponent
-        implements HibernateConfigurator, PersistenceProviderFactory {
+public class PersistenceComponent extends DefaultComponent implements HibernateConfigurator, PersistenceProviderFactory {
 
-    protected final Map<String, HibernateConfiguration> registry =
-            new HashMap<String, HibernateConfiguration>();
+    protected final Map<String, HibernateConfiguration> registry = new HashMap<String, HibernateConfiguration>();
 
     @Override
     public int getApplicationStartedOrder() {
@@ -43,11 +41,9 @@ public class PersistenceComponent extends DefaultComponent
     @Override
     public void applicationStarted(ComponentContext context) {
         /*
-         * Initialize all the persistence units synchronously at startup,
-         * otherwise init may end up being called during the first asynchronous
-         * event, which means hibernate init may happen in parallel with the
-         * main Nuxeo startup thread which may be doing the hibernate init for
-         * someone else (JBPM for instance).
+         * Initialize all the persistence units synchronously at startup, otherwise init may end up being called during
+         * the first asynchronous event, which means hibernate init may happen in parallel with the main Nuxeo startup
+         * thread which may be doing the hibernate init for someone else (JBPM for instance).
          */
         for (String name : registry.keySet()) {
             PersistenceProvider pp = newProvider(name);
@@ -57,18 +53,15 @@ public class PersistenceComponent extends DefaultComponent
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("hibernate".equals(extensionPoint)) {
             registerHibernateContribution((HibernateConfiguration) contribution, contributor.getName());
         }
     }
 
-    protected void registerHibernateContribution(HibernateConfiguration contribution,
-            ComponentName contributorName) {
+    protected void registerHibernateContribution(HibernateConfiguration contribution, ComponentName contributorName) {
         if (contribution.name == null) {
-            throw new PersistenceError(
-                    contributorName + " should set the 'name' attribute of hibernate configurations");
+            throw new PersistenceError(contributorName + " should set the 'name' attribute of hibernate configurations");
         }
         if (contribution.hibernateProperties != null) {
             doPatchForTests(contribution.hibernateProperties);
@@ -92,8 +85,7 @@ public class PersistenceComponent extends DefaultComponent
     public PersistenceProvider newProvider(String name) {
         EntityManagerFactoryProvider emfProvider = registry.get(name);
         if (emfProvider == null) {
-            throw new PersistenceError(
-                    "no hibernate configuration identified by '" + name + "' is available");
+            throw new PersistenceError("no hibernate configuration identified by '" + name + "' is available");
         }
         return new PersistenceProvider(emfProvider);
     }
@@ -102,8 +94,7 @@ public class PersistenceComponent extends DefaultComponent
     public HibernateConfiguration getHibernateConfiguration(String name) {
         HibernateConfiguration config = registry.get(name);
         if (config == null) {
-            throw new PersistenceError(
-                    "no hibernate configuration identified by '" + name + "' is available");
+            throw new PersistenceError("no hibernate configuration identified by '" + name + "' is available");
         }
         return config;
     }

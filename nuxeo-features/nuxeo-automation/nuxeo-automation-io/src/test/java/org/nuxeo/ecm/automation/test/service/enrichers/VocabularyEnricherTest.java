@@ -60,9 +60,7 @@ public class VocabularyEnricherTest extends BaseRestTest {
         // Multiple values
         doc = session.createDocumentModel("/folder", "doc2", "Note");
         doc.setPropertyValue("dc:title", "Note2");
-        doc.setPropertyValue("dc:subjects", new String[]{
-            "parent/subject1", "parent/subject2"
-        });
+        doc.setPropertyValue("dc:subjects", new String[] { "parent/subject1", "parent/subject2" });
         session.createDocument(doc);
         session.save();
     }
@@ -137,12 +135,11 @@ public class VocabularyEnricherTest extends BaseRestTest {
 
         // Then i get a list of labels
         JsonNode node = parseJson(jsonDoc);
-        JsonNode l10nsubjects = node.get("contextParameters").get(
-            "l10nsubjects");
+        JsonNode l10nsubjects = node.get("contextParameters").get("l10nsubjects");
         assertNotNull(l10nsubjects);
         assertTrue(l10nsubjects.isObject());
 
-        String[] languages = {"en", "fr"};
+        String[] languages = { "en", "fr" };
         JsonNode labels = l10nsubjects.get("dc:subjects");
         assertNotNull(labels);
         assertTrue(labels.isArray());
@@ -156,8 +153,7 @@ public class VocabularyEnricherTest extends BaseRestTest {
             String parentKey = keyParts[0], childKey = keyParts[1];
 
             for (String lang : languages) {
-                String expected = parentKey + "_" + lang +
-                    VocabularyEnricher.KEY_SEPARATOR + childKey + "_" + lang;
+                String expected = parentKey + "_" + lang + VocabularyEnricher.KEY_SEPARATOR + childKey + "_" + lang;
                 String label = entry.get("label_" + lang).getTextValue();
                 assertEquals(expected, label);
             }

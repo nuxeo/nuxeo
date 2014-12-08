@@ -49,9 +49,8 @@ public class FileWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final long serialVersionUID = 1495841177711755669L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
@@ -68,36 +67,28 @@ public class FileWidgetTypeHandler extends AbstractWidgetTypeHandler {
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 1) {
             FieldDefinition filenameField = fields[1];
-            TagAttribute filenameAttr = helper.createAttribute(
-                    "filename",
-                    ValueExpressionHelper.createExpressionString(
-                            widget.getValueName(), filenameField));
-            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                    filenameAttr);
+            TagAttribute filenameAttr = helper.createAttribute("filename",
+                    ValueExpressionHelper.createExpressionString(widget.getValueName(), filenameField));
+            attributes = FaceletHandlerHelper.addTagAttribute(attributes, filenameAttr);
         }
         // file components do not support client behaviors => do not add input
         // slot
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
-                subHandlers, helper, false);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper, false);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+            ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     UIInputFile.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(
-                    widgetTagConfigId, msgId, widgetId, null);
+            ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
             // TODO: handle PLAIN and PDF mode better?
-            ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+            ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     UIOutputFile.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributesImpl(new TagAttribute[0]), output,
-                        UIHtmlText.class.getName(), null);
+                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
+                        output, UIHtmlText.class.getName(), null);
             } else {
                 return output;
             }

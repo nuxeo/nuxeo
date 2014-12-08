@@ -23,7 +23,6 @@ import org.nuxeo.ecm.automation.client.Session;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BlobRef extends Blob {
 
@@ -62,7 +61,5 @@ public class BlobRef extends Blob {
         }
         return blob.getStream();
     }
-
-
 
 }

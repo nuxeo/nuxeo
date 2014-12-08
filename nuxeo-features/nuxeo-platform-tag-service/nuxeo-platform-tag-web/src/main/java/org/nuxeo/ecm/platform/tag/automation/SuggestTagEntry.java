@@ -77,8 +77,7 @@ public class SuggestTagEntry {
                     return null;
                 } else {
                     String docId = currentDocument.getId();
-                    List<Tag> tags = tagService.getDocumentTags(
-                            documentManager, docId, null);
+                    List<Tag> tags = tagService.getDocumentTags(documentManager, docId, null);
                     Collections.sort(tags, Tag.LABEL_COMPARATOR);
                     for (Tag tag : tags) {
                         JSONObject obj = new JSONObject();
@@ -89,8 +88,7 @@ public class SuggestTagEntry {
                 }
             } else {
                 if (!StringUtils.isBlank(searchTerm)) {
-                    List<Tag> tags = tagService.getSuggestions(documentManager,
-                            searchTerm, null);
+                    List<Tag> tags = tagService.getSuggestions(documentManager, searchTerm, null);
                     Collections.sort(tags, Tag.LABEL_COMPARATOR);
                     for (int i = 0; i < 10 && i < tags.size(); i++) {
                         JSONObject obj = new JSONObject();

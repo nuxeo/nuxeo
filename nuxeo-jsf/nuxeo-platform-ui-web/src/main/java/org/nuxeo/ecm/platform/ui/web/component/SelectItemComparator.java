@@ -34,8 +34,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
-public class SelectItemComparator implements Comparator<SelectItem>,
-        Serializable {
+public class SelectItemComparator implements Comparator<SelectItem>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,8 +46,7 @@ public class SelectItemComparator implements Comparator<SelectItem>,
 
     private final Locale locale;
 
-    public SelectItemComparator(String ordering, Boolean caseSentitive,
-            Locale locale) {
+    public SelectItemComparator(String ordering, Boolean caseSentitive, Locale locale) {
         this.ordering = StringUtils.split(ordering, ",");
         this.caseSensitive = caseSentitive;
         if (locale == null) {

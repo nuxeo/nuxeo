@@ -23,7 +23,6 @@ import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Test {
 
@@ -35,7 +34,7 @@ public class Test {
             data.putString("age", "40");
             data.putString("number", "10");
             data.putList("emails", "a@b.com", "a@abc.com");
-            //data.putString("id", "theid");
+            // data.putString("id", "theid");
             data.putString("password", "xxx");
             data.putString("verifyPassword", "xx");
             data.putString("other", "some value");
@@ -48,7 +47,7 @@ public class Test {
             System.out.println(form.unknownKeys());
         } catch (ValidationException e) {
             if (e.hasFieldErrors()) {
-                System.err.println("Errors:\n"+e.getMessage());
+                System.err.println("Errors:\n" + e.getMessage());
             }
         }
     }

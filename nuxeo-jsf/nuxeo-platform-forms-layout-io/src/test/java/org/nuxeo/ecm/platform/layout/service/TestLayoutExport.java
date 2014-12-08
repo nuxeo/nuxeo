@@ -69,17 +69,14 @@ public class TestLayoutExport extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client",
-                "OSGI-INF/layouts-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.export.tests",
-                "layouts-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client", "OSGI-INF/layouts-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.export.tests", "layouts-test-contrib.xml");
         service = Framework.getService(LayoutStore.class);
         assertNotNull(service);
     }
 
     @SuppressWarnings("deprecation")
-    protected void checkEquals(InputStream expected, InputStream actual)
-            throws Exception {
+    protected void checkEquals(InputStream expected, InputStream actual) throws Exception {
         String expectedString = FileUtils.read(expected).replaceAll("\r?\n", "");
         String actualString = FileUtils.read(actual).replaceAll("\r?\n", "");
         JSONAssert.assertEquals(expectedString, actualString, true);
@@ -87,8 +84,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
     @Test
     public void testLayoutTypeExport() throws Exception {
-        LayoutTypeDefinition lTypeDef = service.getLayoutTypeDefinition(
-                WebLayoutManager.JSF_CATEGORY, "listing");
+        LayoutTypeDefinition lTypeDef = service.getLayoutTypeDefinition(WebLayoutManager.JSF_CATEGORY, "listing");
         assertNotNull(lTypeDef);
 
         File file = File.createTempFile("layouttype-export", ".json");
@@ -96,8 +92,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         JSONLayoutExporter.exportLayoutType(lTypeDef, out);
 
         InputStream written = new FileInputStream(file);
-        InputStream expected = new FileInputStream(
-                FileUtils.getResourcePathFromContext("layouttype-export.json"));
+        InputStream expected = new FileInputStream(FileUtils.getResourcePathFromContext("layouttype-export.json"));
 
         checkEquals(expected, written);
     }
@@ -107,11 +102,9 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         checkLayoutTypeImport("layouttype-export.json", false);
     }
 
-    protected void checkLayoutTypeImport(String filename, boolean isCompat)
-            throws Exception {
+    protected void checkLayoutTypeImport(String filename, boolean isCompat) throws Exception {
         JSONObject json = null;
-        InputStream in = new FileInputStream(
-                FileUtils.getResourcePathFromContext(filename));
+        InputStream in = new FileInputStream(FileUtils.getResourcePathFromContext(filename));
         try {
             byte[] bytes = FileUtils.readBytes(in);
             if (bytes.length != 0) {
@@ -132,15 +125,13 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertNotNull(conf);
         assertNotNull(conf.getDefaultPropertyValues());
         assertEquals(3, conf.getDefaultPropertyValues().size());
-        assertEquals("Test layout type for a custom type category",
-                conf.getTitle());
+        assertEquals("Test layout type for a custom type category", conf.getTitle());
         assertEquals("6.0", conf.getSinceVersion());
     }
 
     @Test
     public void testWidgetTypeExport() throws Exception {
-        WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(
-                WebLayoutManager.JSF_CATEGORY, "test");
+        WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(WebLayoutManager.JSF_CATEGORY, "test");
         assertNotNull(wTypeDef);
 
         File file = File.createTempFile("widgettype-export", ".json");
@@ -148,16 +139,14 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         JSONLayoutExporter.export(wTypeDef, out);
 
         InputStream written = new FileInputStream(file);
-        InputStream expected = new FileInputStream(
-                FileUtils.getResourcePathFromContext("widgettype-export.json"));
+        InputStream expected = new FileInputStream(FileUtils.getResourcePathFromContext("widgettype-export.json"));
 
         checkEquals(expected, written);
     }
 
     @Test
     public void testWidgetTypesExport() throws Exception {
-        WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(
-                WebLayoutManager.JSF_CATEGORY, "test");
+        WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(WebLayoutManager.JSF_CATEGORY, "test");
         assertNotNull(wTypeDef);
 
         File file = File.createTempFile("widgettypes-export", ".json");
@@ -167,8 +156,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         JSONLayoutExporter.export(wTypeDefs, out);
 
         InputStream written = new FileInputStream(file);
-        InputStream expected = new FileInputStream(
-                FileUtils.getResourcePathFromContext("widgettypes-export.json"));
+        InputStream expected = new FileInputStream(FileUtils.getResourcePathFromContext("widgettypes-export.json"));
 
         checkEquals(expected, written);
     }
@@ -180,11 +168,9 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         checkWidgetTypeImport("widgettype-old-export.json", true);
     }
 
-    protected void checkWidgetTypeImport(String filename, boolean isCompat)
-            throws Exception {
+    protected void checkWidgetTypeImport(String filename, boolean isCompat) throws Exception {
         JSONObject json = null;
-        InputStream in = new FileInputStream(
-                FileUtils.getResourcePathFromContext(filename));
+        InputStream in = new FileInputStream(FileUtils.getResourcePathFromContext(filename));
         try {
             byte[] bytes = FileUtils.readBytes(in);
             if (bytes.length != 0) {
@@ -198,9 +184,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
         WidgetTypeDefinition def = JSONLayoutExporter.importWidgetTypeDefinition(json);
         assertEquals("test", def.getName());
-        assertEquals(
-                "org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler",
-                def.getHandlerClassName());
+        assertEquals("org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler", def.getHandlerClassName());
         Map<String, String> defProps = def.getProperties();
         assertNotNull(defProps);
         assertEquals(2, defProps.size());
@@ -307,12 +291,9 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals("Required", requiredWidget.getLabel(BuiltinModes.ANY));
         assertEquals("text", requiredWidget.getType());
         assertEquals(1, requiredWidget.getFieldDefinitions().length);
-        assertEquals("foo",
-                requiredWidget.getFieldDefinitions()[0].getSchemaName());
-        assertEquals("bar",
-                requiredWidget.getFieldDefinitions()[0].getFieldName());
-        assertEquals("foo:bar",
-                requiredWidget.getFieldDefinitions()[0].getPropertyName());
+        assertEquals("foo", requiredWidget.getFieldDefinitions()[0].getSchemaName());
+        assertEquals("bar", requiredWidget.getFieldDefinitions()[0].getFieldName());
+        assertEquals("foo:bar", requiredWidget.getFieldDefinitions()[0].getPropertyName());
         assertEquals(0, requiredWidget.getHelpLabels().size());
         assertEquals(0, requiredWidget.getModes().size());
         assertEquals(0, requiredWidget.getProperties().size());
@@ -364,16 +345,12 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals("Rendered", renderedWidget.getLabel(BuiltinModes.ANY));
         assertEquals("text", renderedWidget.getType());
         assertEquals(1, renderedWidget.getFieldDefinitions().length);
-        assertEquals("foo",
-                renderedWidget.getFieldDefinitions()[0].getSchemaName());
-        assertEquals("bar",
-                renderedWidget.getFieldDefinitions()[0].getFieldName());
-        assertEquals("foo:bar",
-                renderedWidget.getFieldDefinitions()[0].getPropertyName());
+        assertEquals("foo", renderedWidget.getFieldDefinitions()[0].getSchemaName());
+        assertEquals("bar", renderedWidget.getFieldDefinitions()[0].getFieldName());
+        assertEquals("foo:bar", renderedWidget.getFieldDefinitions()[0].getPropertyName());
         assertEquals(0, renderedWidget.getHelpLabels().size());
         assertEquals(1, renderedWidget.getModes().size());
-        assertEquals(BuiltinModes.VIEW,
-                renderedWidget.getMode(BuiltinModes.ANY));
+        assertEquals(BuiltinModes.VIEW, renderedWidget.getMode(BuiltinModes.ANY));
         assertEquals(0, renderedWidget.getProperties().size());
         assertEquals(0, renderedWidget.getWidgetModeProperties().size());
         Map<String, Map<String, Serializable>> controls = renderedWidget.getControls();
@@ -384,9 +361,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         } else {
             assertNotNull(controls.get(BuiltinModes.ANY));
             assertEquals(1, controls.get(BuiltinModes.ANY).size());
-            assertEquals(
-                    "true",
-                    controls.get(BuiltinModes.ANY).get("requireSurroundingForm"));
+            assertEquals("true", controls.get(BuiltinModes.ANY).get("requireSurroundingForm"));
         }
         assertEquals(0, renderedWidget.getSelectOptions().length);
         assertEquals(1, renderedWidget.getSubWidgetDefinitions().length);
@@ -399,8 +374,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(1, subWidget.getFieldDefinitions().length);
         assertEquals("foo", subWidget.getFieldDefinitions()[0].getSchemaName());
         assertEquals("bar", subWidget.getFieldDefinitions()[0].getFieldName());
-        assertEquals("foo:bar",
-                subWidget.getFieldDefinitions()[0].getPropertyName());
+        assertEquals("foo:bar", subWidget.getFieldDefinitions()[0].getPropertyName());
         assertEquals(0, subWidget.getHelpLabels().size());
         assertEquals(0, subWidget.getModes().size());
         assertEquals(0, subWidget.getProperties().size());
@@ -422,12 +396,9 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals("Selection", selectionWidget.getLabel(BuiltinModes.ANY));
         assertEquals("selectOneListbox", selectionWidget.getType());
         assertEquals(1, selectionWidget.getFieldDefinitions().length);
-        assertEquals("foo2",
-                selectionWidget.getFieldDefinitions()[0].getSchemaName());
-        assertEquals("bar2",
-                selectionWidget.getFieldDefinitions()[0].getFieldName());
-        assertEquals("foo2:bar2",
-                selectionWidget.getFieldDefinitions()[0].getPropertyName());
+        assertEquals("foo2", selectionWidget.getFieldDefinitions()[0].getSchemaName());
+        assertEquals("bar2", selectionWidget.getFieldDefinitions()[0].getFieldName());
+        assertEquals("foo2:bar2", selectionWidget.getFieldDefinitions()[0].getPropertyName());
         assertEquals(0, selectionWidget.getHelpLabels().size());
         assertEquals(0, selectionWidget.getModes().size());
         assertEquals(0, selectionWidget.getProperties().size());
@@ -436,22 +407,18 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertNotNull(options);
         assertEquals(5, options.length);
         assertFalse(options[0] instanceof WidgetSelectOptions);
-        checkCommonSelectOption(options[0], null, null, "bar", "foo", null,
-                null);
+        checkCommonSelectOption(options[0], null, null, "bar", "foo", null, null);
         assertFalse(options[1] instanceof WidgetSelectOptions);
-        checkCommonSelectOption(options[1], "#{currentDocument}", "doc",
-                "#{doc.id}", "#{doc.dc.title}", "false", "true");
+        checkCommonSelectOption(options[1], "#{currentDocument}", "doc", "#{doc.id}", "#{doc.dc.title}", "false",
+                "true");
         assertTrue(options[2] instanceof WidgetSelectOptions);
-        checkMultipleSelectOption((WidgetSelectOptions) options[2],
-                "#{myBean.myList}", "item", "#{item.id}", "#{item.title}",
-                null, null, null, null);
+        checkMultipleSelectOption((WidgetSelectOptions) options[2], "#{myBean.myList}", "item", "#{item.id}",
+                "#{item.title}", null, null, null, null);
         assertTrue(options[3] instanceof WidgetSelectOptions);
-        checkMultipleSelectOption((WidgetSelectOptions) options[3],
-                "#{documentList}", "doc", "#{doc.id}", "#{doc.dc.title}",
-                "false", "true", "label", Boolean.TRUE);
+        checkMultipleSelectOption((WidgetSelectOptions) options[3], "#{documentList}", "doc", "#{doc.id}",
+                "#{doc.dc.title}", "false", "true", "label", Boolean.TRUE);
         assertFalse(options[4] instanceof WidgetSelectOptions);
-        checkCommonSelectOption(options[4], null, null, "bar2", "foo2", null,
-                null);
+        checkCommonSelectOption(options[4], null, null, "bar2", "foo2", null, null);
         if (!isCompat) {
             Map<String, String> itemLabels = options[4].getItemLabels();
             assertNotNull(itemLabels);
@@ -480,12 +447,9 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals("Selection", withSubwidgets.getLabel(BuiltinModes.ANY));
         assertEquals("test", withSubwidgets.getType());
         assertEquals(1, withSubwidgets.getFieldDefinitions().length);
-        assertEquals("foo2",
-                withSubwidgets.getFieldDefinitions()[0].getSchemaName());
-        assertEquals("bar2",
-                withSubwidgets.getFieldDefinitions()[0].getFieldName());
-        assertEquals("foo2:bar2",
-                withSubwidgets.getFieldDefinitions()[0].getPropertyName());
+        assertEquals("foo2", withSubwidgets.getFieldDefinitions()[0].getSchemaName());
+        assertEquals("bar2", withSubwidgets.getFieldDefinitions()[0].getFieldName());
+        assertEquals("foo2:bar2", withSubwidgets.getFieldDefinitions()[0].getPropertyName());
         assertEquals(0, withSubwidgets.getHelpLabels().size());
         assertEquals(0, withSubwidgets.getModes().size());
         assertEquals(0, withSubwidgets.getProperties().size());
@@ -501,12 +465,9 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(1, subWidgetDef.getLabels().size());
         assertEquals("subwidget label", subWidgetDef.getLabel(BuiltinModes.ANY));
         assertEquals(1, subWidgetDef.getFieldDefinitions().length);
-        assertEquals("foo",
-                subWidgetDef.getFieldDefinitions()[0].getSchemaName());
-        assertEquals("bar",
-                subWidgetDef.getFieldDefinitions()[0].getFieldName());
-        assertEquals("foo:bar",
-                subWidgetDef.getFieldDefinitions()[0].getPropertyName());
+        assertEquals("foo", subWidgetDef.getFieldDefinitions()[0].getSchemaName());
+        assertEquals("bar", subWidgetDef.getFieldDefinitions()[0].getFieldName());
+        assertEquals("foo:bar", subWidgetDef.getFieldDefinitions()[0].getPropertyName());
         assertEquals(0, subWidgetDef.getHelpLabels().size());
         assertEquals(0, subWidgetDef.getModes().size());
         assertEquals(0, subWidgetDef.getProperties().size());
@@ -547,18 +508,14 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         WidgetDefinition clone = withSubwidgetRefs.clone();
         assertEquals(1, clone.getSubWidgetReferences().length);
         assertNotNull(clone.getSubWidgetReferences()[0]);
-        assertEquals("localSubWidget",
-                clone.getSubWidgetReferences()[0].getName());
+        assertEquals("localSubWidget", clone.getSubWidgetReferences()[0].getName());
 
         WidgetDefinition subWidgetRefDef = editLayout.getWidgetDefinition("localSubWidget");
         assertNotNull(subWidgetRefDef);
         assertEquals("localSubWidget", subWidgetRefDef.getName());
-        assertEquals("foo3",
-                subWidgetRefDef.getFieldDefinitions()[0].getSchemaName());
-        assertEquals("bar3",
-                subWidgetRefDef.getFieldDefinitions()[0].getFieldName());
-        assertEquals("foo3:bar3",
-                subWidgetRefDef.getFieldDefinitions()[0].getPropertyName());
+        assertEquals("foo3", subWidgetRefDef.getFieldDefinitions()[0].getSchemaName());
+        assertEquals("bar3", subWidgetRefDef.getFieldDefinitions()[0].getFieldName());
+        assertEquals("foo3:bar3", subWidgetRefDef.getFieldDefinitions()[0].getPropertyName());
         assertEquals(0, subWidgetRefDef.getLabels().size());
         assertNull(subWidgetRefDef.getLabel(BuiltinModes.ANY));
         assertEquals("test", subWidgetRefDef.getType());
@@ -573,9 +530,8 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(0, subWidgetRefDef.getSubWidgetReferences().length);
     }
 
-    protected void checkCommonSelectOption(WidgetSelectOption option,
-            Object value, String var, String itemValue, String itemLabel,
-            Object itemDisabled, Object itemRendered) {
+    protected void checkCommonSelectOption(WidgetSelectOption option, Object value, String var, String itemValue,
+            String itemLabel, Object itemDisabled, Object itemRendered) {
         assertEquals(value, option.getValue());
         assertEquals(var, option.getVar());
         assertEquals(itemValue, option.getItemValue());
@@ -584,33 +540,26 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(itemRendered, option.getItemRendered());
     }
 
-    protected void checkMultipleSelectOption(WidgetSelectOptions option,
-            Object value, String var, String itemValue, String itemLabel,
-            Object itemDisabled, Object itemRendered, String ordering,
-            Boolean caseSensitive) {
-        checkCommonSelectOption(option, value, var, itemValue, itemLabel,
-                itemDisabled, itemRendered);
+    protected void checkMultipleSelectOption(WidgetSelectOptions option, Object value, String var, String itemValue,
+            String itemLabel, Object itemDisabled, Object itemRendered, String ordering, Boolean caseSensitive) {
+        checkCommonSelectOption(option, value, var, itemValue, itemLabel, itemDisabled, itemRendered);
         assertEquals(ordering, option.getOrdering());
         assertEquals(caseSensitive, option.getCaseSensitive());
     }
 
     @Test
     public void testLayoutExport() throws Exception {
-        LayoutDefinition lDef = service.getLayoutDefinition(
-                WebLayoutManager.JSF_CATEGORY, "layoutColumnsTest");
+        LayoutDefinition lDef = service.getLayoutDefinition(WebLayoutManager.JSF_CATEGORY, "layoutColumnsTest");
         assertNotNull(lDef);
 
         File file = File.createTempFile("layout-export", ".json");
-        JSONObject obj = JSONLayoutExporter.exportToJson(
-                WebLayoutManager.JSF_CATEGORY, lDef, null, null);
+        JSONObject obj = JSONLayoutExporter.exportToJson(WebLayoutManager.JSF_CATEGORY, lDef, null, null);
 
         FileOutputStream out = new FileOutputStream(file);
-        out.write(obj.toString(2).getBytes(
-                JSONLayoutExporter.ENCODED_VALUES_ENCODING));
+        out.write(obj.toString(2).getBytes(JSONLayoutExporter.ENCODED_VALUES_ENCODING));
 
         InputStream written = new FileInputStream(file);
-        InputStream expected = new FileInputStream(
-                FileUtils.getResourcePathFromContext("layout-export.json"));
+        InputStream expected = new FileInputStream(FileUtils.getResourcePathFromContext("layout-export.json"));
 
         checkEquals(expected, written);
     }

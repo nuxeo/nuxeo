@@ -14,16 +14,15 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
-
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class SelectClause extends Clause {
 
     private static final long serialVersionUID = -3786932682733679665L;
 
     public final SelectList elements;
+
     public final boolean distinct;
 
     public SelectClause() {
@@ -43,7 +42,6 @@ public class SelectClause extends Clause {
         this.elements = elements;
         this.distinct = distinct;
     }
-
 
     public void add(String alias, Operand element) {
         elements.add(alias, element);

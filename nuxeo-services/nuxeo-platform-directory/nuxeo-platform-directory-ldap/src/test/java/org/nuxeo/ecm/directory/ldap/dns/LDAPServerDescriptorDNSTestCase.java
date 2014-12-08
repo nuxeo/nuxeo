@@ -32,8 +32,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import com.sun.jndi.ldap.LdapURL;
 
 /**
- * Test case to ensure LDAPServerDescriptor correctly handles entries returned
- * from DNSService implementation
+ * Test case to ensure LDAPServerDescriptor correctly handles entries returned from DNSService implementation
  *
  * @author Bob Browning
  */
@@ -43,8 +42,7 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
 
     private final class MockDNSService implements DNSServiceResolver {
 
-        public List<DNSServiceEntry> resolveLDAPDomainServers(String domain,
-                String prefix) {
+        public List<DNSServiceEntry> resolveLDAPDomainServers(String domain, String prefix) {
             List<DNSServiceEntry> entries = new ArrayList<DNSServiceEntry>();
             if (prefix.equals("_gc._tcp")) {
                 entries.add(new DNSServiceEntry("localhost", 3268, 0, 100));
@@ -145,8 +143,7 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
         d.setLdapUrls(new LDAPUrlDescriptor[] { u });
 
         /*
-         * Assert that when run using empty hostname in URI we get the same
-         * result as passing in the list of servers
+         * Assert that when run using empty hostname in URI we get the same result as passing in the list of servers
          */
         assertEquals(testA, d.getLdapUrls());
     }

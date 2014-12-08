@@ -133,9 +133,8 @@ public class LDAPServerDescriptor {
         }
 
         /*
-         * If the configuration does not contain any domain entries then cache
-         * the urls, domain entries should always be re-queried however as the
-         * LDAP server list should change dynamically
+         * If the configuration does not contain any domain entries then cache the urls, domain entries should always be
+         * re-queried however as the LDAP server list should change dynamically
          */
         if (!isDynamicServerList) {
             return ldapUrls = calculatedLdapUrls.toString().trim();
@@ -144,11 +143,9 @@ public class LDAPServerDescriptor {
     }
 
     @XNodeList(value = "ldapUrl", componentType = LDAPUrlDescriptor.class, type = LDAPUrlDescriptor[].class)
-    public void setLdapUrls(LDAPUrlDescriptor[] ldapUrls)
-            throws DirectoryException {
+    public void setLdapUrls(LDAPUrlDescriptor[] ldapUrls) throws DirectoryException {
         if (ldapUrls == null) {
-            throw new DirectoryException(
-                    "At least one <ldapUrl/> server declaration is required");
+            throw new DirectoryException("At least one <ldapUrl/> server declaration is required");
         }
         ldapEntries = new LinkedHashSet<LdapEntry>();
 
@@ -181,16 +178,13 @@ public class LDAPServerDescriptor {
             useSsl = useSsl || ldapUrl.useSsl();
 
             /*
-             * RFC-2255 - The "ldap" prefix indicates an entry or entries
-             * residing in the LDAP server running on the given hostname at the
-             * given port number. The default LDAP port is TCP port 389. If no
-             * hostport is given, the client must have some apriori knowledge of
-             * an appropriate LDAP server to contact.
+             * RFC-2255 - The "ldap" prefix indicates an entry or entries residing in the LDAP server running on the
+             * given hostname at the given port number. The default LDAP port is TCP port 389. If no hostport is given,
+             * the client must have some apriori knowledge of an appropriate LDAP server to contact.
              */
             if (ldapUrl.getHost() == null) {
                 /*
-                 * RFC-2782 - Check to see if an LDAP SRV record is defined in
-                 * the DNS server
+                 * RFC-2782 - Check to see if an LDAP SRV record is defined in the DNS server
                  */
                 String domain = convertDNtoFQDN(ldapUrl.getDN());
                 if (domain != null) {
@@ -199,31 +193,25 @@ public class LDAPServerDescriptor {
                      */
                     List<String> discoveredUrls;
                     try {
-                        discoveredUrls = discoverLdapServers(domain,
-                                ldapUrl.useSsl(), url.getSrvPrefix());
+                        discoveredUrls = discoverLdapServers(domain, ldapUrl.useSsl(), url.getSrvPrefix());
                     } catch (NamingException e) {
-                        throw new DirectoryException(String.format(
-                                "SRV record DNS lookup failed for %s.%s: %s",
+                        throw new DirectoryException(String.format("SRV record DNS lookup failed for %s.%s: %s",
                                 url.getSrvPrefix(), domain, e.getMessage()), e);
                     }
 
                     /*
-                     * Discovered URLs could be empty, lets check at the end
-                     * though
+                     * Discovered URLs could be empty, lets check at the end though
                      */
                     urls.addAll(discoveredUrls);
 
                     /*
-                     * Store entries in an ordered set and remember that we were
-                     * dynamic
+                     * Store entries in an ordered set and remember that we were dynamic
                      */
-                    ldapEntries.add(new LdapEntryDomain(url, domain,
-                            ldapUrl.useSsl()));
+                    ldapEntries.add(new LdapEntryDomain(url, domain, ldapUrl.useSsl()));
                     isDynamicServerList = true;
                 } else {
-                    throw new DirectoryException(
-                            "Invalid LDAP SRV reference, this should be of the form"
-                                    + " ldap:///dc=example,dc=org");
+                    throw new DirectoryException("Invalid LDAP SRV reference, this should be of the form"
+                            + " ldap:///dc=example,dc=org");
                 }
             } else {
                 /*
@@ -242,8 +230,7 @@ public class LDAPServerDescriptor {
          * Oops no valid URLs to connect to :(
          */
         if (urls.isEmpty()) {
-            throw new DirectoryException(
-                    "No valid server urls returned from DNS query");
+            throw new DirectoryException("No valid server urls returned from DNS query");
         }
     }
 
@@ -262,18 +249,16 @@ public class LDAPServerDescriptor {
      * @return List of servers or empty list
      * @throws NamingException if DNS lookup fails
      */
-    protected List<String> discoverLdapServers(String domain, boolean useSsl,
-            String srvPrefix) throws NamingException {
+    protected List<String> discoverLdapServers(String domain, boolean useSsl, String srvPrefix) throws NamingException {
         List<String> result = new ArrayList<String>();
-        List<DNSServiceEntry> servers = getSRVResolver().resolveLDAPDomainServers(
-                domain, srvPrefix);
+        List<DNSServiceEntry> servers = getSRVResolver().resolveLDAPDomainServers(domain, srvPrefix);
 
         for (DNSServiceEntry serviceEntry : servers) {
             /*
              * Rebuild the URL
              */
-            StringBuilder realUrl = (useSsl) ? new StringBuilder(LDAPS_SCHEME
-                    + "://") : new StringBuilder(LDAP_SCHEME + "://");
+            StringBuilder realUrl = (useSsl) ? new StringBuilder(LDAPS_SCHEME + "://") : new StringBuilder(LDAP_SCHEME
+                    + "://");
             realUrl.append(serviceEntry);
             result.add(realUrl.toString());
         }
@@ -281,8 +266,7 @@ public class LDAPServerDescriptor {
     }
 
     /**
-     * Convert domain from the ldap form dc=nuxeo,dc=org to the DNS domain name
-     * form nuxeo.org
+     * Convert domain from the ldap form dc=nuxeo,dc=org to the DNS domain name form nuxeo.org
      *
      * @param dn base DN of the domain
      * @return the FQDN or null is DN is not matching the expected structure
@@ -390,8 +374,7 @@ public class LDAPServerDescriptor {
 
         protected final boolean useSsl;
 
-        public LdapEntryDomain(LDAPUrlDescriptor descriptor,
-                final String domain, boolean useSsl) {
+        public LdapEntryDomain(LDAPUrlDescriptor descriptor, final String domain, boolean useSsl) {
             super(descriptor);
             this.domain = domain;
             this.useSsl = useSsl;
@@ -399,16 +382,14 @@ public class LDAPServerDescriptor {
 
         @Override
         public String getUrl() throws NamingException {
-            List<DNSServiceEntry> servers = getSRVResolver().resolveLDAPDomainServers(
-                    domain, url.getSrvPrefix());
+            List<DNSServiceEntry> servers = getSRVResolver().resolveLDAPDomainServers(domain, url.getSrvPrefix());
 
             StringBuilder result = new StringBuilder();
             for (DNSServiceEntry serviceEntry : servers) {
                 /*
                  * Rebuild the URL
                  */
-                result.append(useSsl ? LDAPS_SCHEME + "://" : LDAP_SCHEME
-                        + "://");
+                result.append(useSsl ? LDAPS_SCHEME + "://" : LDAP_SCHEME + "://");
                 result.append(serviceEntry);
                 result.append(' ');
             }
@@ -424,8 +405,7 @@ public class LDAPServerDescriptor {
             final int prime = 31;
             int result = super.hashCode();
             result = prime * result + getOuterType().hashCode();
-            result = prime * result
-                    + ((domain == null) ? 0 : domain.hashCode());
+            result = prime * result + ((domain == null) ? 0 : domain.hashCode());
             result = prime * result + (useSsl ? 1231 : 1237);
             return result;
         }

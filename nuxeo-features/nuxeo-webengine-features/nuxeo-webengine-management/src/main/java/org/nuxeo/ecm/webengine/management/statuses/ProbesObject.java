@@ -33,22 +33,21 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * List and run probes
  *
  * @author matic
- *
  */
 @WebObject(type = "Probes")
 @Produces("text/html; charset=UTF-8")
 public class ProbesObject extends ManagementObject {
 
     protected ProbeManager probeMgr;
+
     protected Collection<ProbeInfo> infos;
 
     public static ProbesObject newProbes(DefaultObject parent) {
-        return (ProbesObject)parent.newObject("Probes");
+        return (ProbesObject) parent.newObject("Probes");
     }
 
     @Override

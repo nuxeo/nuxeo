@@ -58,8 +58,7 @@ public class TestDirectorySelectItemComparator {
 
         // Items will be correctly sorted, but without looking at the case
         dupItems = (ArrayList<DirectorySelectItem>) items.clone();
-        Collections.sort(dupItems, new DirectorySelectItemComparator("label",
-                false, new Locale("fr", "FR")));
+        Collections.sort(dupItems, new DirectorySelectItemComparator("label", false, new Locale("fr", "FR")));
         assertEquals("Tache", dupItems.get(0).getLabel());
         assertEquals("tache", dupItems.get(1).getLabel()); // this item is
                                                            // between the other
@@ -73,8 +72,7 @@ public class TestDirectorySelectItemComparator {
 
         // Now items will be correctly sorted, taking into account the case and
         // the accents as expected
-        Collections.sort(items, new DirectorySelectItemComparator("label",
-                true, new Locale("fr", "FR")));
+        Collections.sort(items, new DirectorySelectItemComparator("label", true, new Locale("fr", "FR")));
         assertEquals("tache", items.get(0).getLabel());
         assertEquals("Tache", items.get(1).getLabel());
         assertEquals("Tache", items.get(2).getLabel());

@@ -40,8 +40,7 @@ public abstract class AbstractActionContext implements ActionContext {
 
     protected Map<String, Object> localVariables = new HashMap<String, Object>();
 
-    public abstract boolean checkCondition(String expression)
-            throws ELException;
+    public abstract boolean checkCondition(String expression) throws ELException;
 
     public final void setCurrentDocument(DocumentModel doc) {
         currentDocument = doc;

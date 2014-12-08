@@ -117,8 +117,8 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
-    public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config,
-            boolean managedSQLSession) throws DirectoryException {
+    public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config, boolean managedSQLSession)
+            throws DirectoryException {
         this.directory = directory;
         schemaName = config.getSchemaName();
         table = directory.getTable();
@@ -152,8 +152,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
         String id = String.valueOf(fieldMap.get(idFieldName));
         try {
-            DocumentModel docModel = BaseSession.createEntryModel(sid,
-                    schemaName, id, fieldMap, isReadOnly());
+            DocumentModel docModel = BaseSession.createEntryModel(sid, schemaName, id, fieldMap, isReadOnly());
             return docModel;
         } catch (PropertyException e) {
             log.error(e, e);
@@ -170,20 +169,19 @@ public class SQLSession extends BaseSession implements EntrySource {
                 }
             }
         } catch (SQLException e) {
-            throw new DirectoryException("Cannot connect to SQL directory '"
-                    + directory.getName() + "': " + e.getMessage(), e);
+            throw new DirectoryException("Cannot connect to SQL directory '" + directory.getName() + "': "
+                    + e.getMessage(), e);
         }
     }
 
     @Override
-    public DocumentModel createEntry(Map<String, Object> fieldMap)
-            throws ClientException {
-        
+    public DocumentModel createEntry(Map<String, Object> fieldMap) throws ClientException {
+
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
             return null;
         }
-        if(!isCurrentUserAllowed(SecurityConstants.WRITE)){
+        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
             return null;
         }
         Field schemaIdField = schemaFieldMap.get(idField);
@@ -201,8 +199,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
             String id = String.valueOf(rawId);
             if (hasEntry(id)) {
-                throw new DirectoryException(String.format(
-                        "Entry with id %s already exists", id));
+                throw new DirectoryException(String.format("Entry with id %s already exists", id));
             }
 
             if (isMultiTenant()) {
@@ -210,8 +207,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 if (!StringUtils.isBlank(tenantId)) {
                     fieldMap.put(TENANT_ID_FIELD, tenantId);
                     if (computeMultiTenantId) {
-                        fieldMap.put(idFieldName,
-                                computeMultiTenantDirectoryId(tenantId, id));
+                        fieldMap.put(idFieldName, computeMultiTenantDirectoryId(tenantId, id));
                     }
                 }
             }
@@ -232,8 +228,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         String sql = insert.getStatement();
 
         if (logger.isLogEnabled()) {
-            List<Serializable> values = new ArrayList<Serializable>(
-                    columnList.size());
+            List<Serializable> values = new ArrayList<Serializable>(columnList.size());
             for (Column column : columnList) {
                 String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
                 Object value = fieldMap.get(prefixField);
@@ -247,8 +242,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         Statement st = null;
         try {
             if (autoincrementIdField && dialect.hasIdentityGeneratedKey()) {
-                ps = sqlConnection.prepareStatement(sql,
-                        new String[] { idField });
+                ps = sqlConnection.prepareStatement(sql, new String[] { idField });
             } else {
                 ps = sqlConnection.prepareStatement(sql);
             }
@@ -300,8 +294,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         // second step: add references fields
         String sourceId = entry.getId();
         for (Reference reference : getDirectory().getReferences()) {
-            String referenceFieldName = schemaFieldMap.get(
-                    reference.getFieldName()).getName().getPrefixedName();
+            String referenceFieldName = schemaFieldMap.get(reference.getFieldName()).getName().getPrefixedName();
             @SuppressWarnings("unchecked")
             List<String> targetIds = (List<String>) fieldMap.get(referenceFieldName);
             if (reference instanceof TableReference) {
@@ -324,16 +317,14 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModel getEntry(String id, boolean fetchReferences)
-            throws DirectoryException {
+    public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
         if (isCurrentUserAllowed(SecurityConstants.READ)) {
             return directory.getCache().getEntry(id, this, fetchReferences);
         }
         return null;
     }
 
-    protected String addFilterWhereClause(String whereClause)
-            throws DirectoryException {
+    protected String addFilterWhereClause(String whereClause) throws DirectoryException {
         if (staticFilters.length == 0) {
             return whereClause;
         }
@@ -344,8 +335,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
         for (int i = 0; i < staticFilters.length; i++) {
             SQLStaticFilter filter = staticFilters[i];
-            whereClause += filter.getDirectoryColumn(table,
-                    directory.useNativeCase()).getQuotedName();
+            whereClause += filter.getDirectoryColumn(table, directory.useNativeCase()).getQuotedName();
             whereClause += " " + filter.getOperator() + " ";
             whereClause += "? ";
 
@@ -356,14 +346,10 @@ public class SQLSession extends BaseSession implements EntrySource {
         return whereClause;
     }
 
-    protected void addFilterValues(PreparedStatement ps, int startIdx)
-            throws DirectoryException {
+    protected void addFilterValues(PreparedStatement ps, int startIdx) throws DirectoryException {
         for (int i = 0; i < staticFilters.length; i++) {
             SQLStaticFilter filter = staticFilters[i];
-            setFieldValue(
-                    ps,
-                    startIdx + i,
-                    filter.getDirectoryColumn(table, directory.useNativeCase()),
+            setFieldValue(ps, startIdx + i, filter.getDirectoryColumn(table, directory.useNativeCase()),
                     filter.getValue());
         }
     }
@@ -375,8 +361,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModel getEntryFromSource(String id, boolean fetchReferences)
-            throws DirectoryException {
+    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
         acquireConnection();
         // String sql = String.format("SELECT * FROM %s WHERE %s = ?",
         // tableName, idField);
@@ -436,8 +421,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 for (Reference reference : directory.getReferences()) {
                     List<String> targetIds = reference.getTargetIdsForSource(entry.getId());
                     try {
-                        entry.setProperty(schemaName, reference.getFieldName(),
-                                targetIds);
+                        entry.setProperty(schemaName, reference.getFieldName(), targetIds);
                     } catch (ClientException e) {
                         throw new DirectoryException(e);
                     }
@@ -466,10 +450,10 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public void updateEntry(DocumentModel docModel) throws ClientException {
 
-        if(!isCurrentUserAllowed(SecurityConstants.WRITE)){
-            return ;
+        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
+            return;
         }
-        
+
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
             return;
@@ -485,17 +469,13 @@ public class SQLSession extends BaseSession implements EntrySource {
             String tenantId = getCurrentTenantId();
             if (!StringUtils.isBlank(tenantId)) {
                 String entryTenantId = (String) dataModel.getValue(TENANT_ID_FIELD);
-                if (StringUtils.isBlank(entryTenantId)
-                        || !entryTenantId.equals(tenantId)) {
+                if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Trying to update entry '%s' not part of current tenant '%s'",
+                        log.debug(String.format("Trying to update entry '%s' not part of current tenant '%s'",
                                 docModel.getId(), tenantId));
                     }
-                    throw new OperationNotAllowedException(
-                            "Operation not allowed in the current tenant context",
-                            "label.directory.error.multi.tenant.operationNotAllowed",
-                            null);
+                    throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
+                            "label.directory.error.multi.tenant.operationNotAllowed", null);
                 }
             }
         }
@@ -525,14 +505,12 @@ public class SQLSession extends BaseSession implements EntrySource {
 
             Update update = new Update(table);
             update.setUpdatedColumns(storedColumnList);
-            String whereString = table.getPrimaryColumn().getQuotedName()
-                    + " = ?";
+            String whereString = table.getPrimaryColumn().getQuotedName() + " = ?";
             update.setWhere(whereString);
             String sql = update.getStatement();
 
             if (logger.isLogEnabled()) {
-                List<Serializable> values = new ArrayList<Serializable>(
-                        storedColumnList.size());
+                List<Serializable> values = new ArrayList<Serializable>(storedColumnList.size());
                 for (Column column : storedColumnList) {
                     Object value = dataModel.getData(column.getKey());
                     values.add((Serializable) value);
@@ -552,12 +530,10 @@ public class SQLSession extends BaseSession implements EntrySource {
                     setFieldValue(ps, index, column, value);
                     index++;
                 }
-                setFieldValue(ps, index, table.getPrimaryColumn(),
-                        docModel.getId());
+                setFieldValue(ps, index, table.getPrimaryColumn(), docModel.getId());
                 ps.execute();
             } catch (SQLException e) {
-                throw new DirectoryException("updateEntry failed for "
-                        + docModel.getId(), e);
+                throw new DirectoryException("updateEntry failed for " + docModel.getId(), e);
             } finally {
                 try {
                     if (ps != null) {
@@ -573,13 +549,11 @@ public class SQLSession extends BaseSession implements EntrySource {
         for (String referenceFieldName : referenceFieldList) {
             Reference reference = directory.getReference(referenceFieldName);
             @SuppressWarnings("unchecked")
-            List<String> targetIds = (List<String>) docModel.getProperty(
-                    schemaName, referenceFieldName);
+            List<String> targetIds = (List<String>) docModel.getProperty(schemaName, referenceFieldName);
             if (reference instanceof TableReference) {
                 // optim: reuse current session
                 TableReference tableReference = (TableReference) reference;
-                tableReference.setTargetIdsForSource(docModel.getId(),
-                        targetIds, this);
+                tableReference.setTargetIdsForSource(docModel.getId(), targetIds, this);
             } else {
                 reference.setTargetIdsForSource(docModel.getId(), targetIds);
             }
@@ -596,20 +570,18 @@ public class SQLSession extends BaseSession implements EntrySource {
     public void deleteEntry(String id) throws ClientException {
         acquireConnection();
 
-        if(!isCurrentUserAllowed(SecurityConstants.WRITE)){
+        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
             return;
         }
-        
+
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
             return;
         }
 
         if (!canDeleteMultiTenantEntry(id)) {
-            throw new OperationNotAllowedException(
-                    "Operation not allowed in the current tenant context",
-                    "label.directory.error.multi.tenant.operationNotAllowed",
-                    null);
+            throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
+                    "label.directory.error.multi.tenant.operationNotAllowed", null);
         }
 
         // first step: remove references for this entry
@@ -627,8 +599,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         PreparedStatement ps = null;
         try {
             Delete delete = new Delete(table);
-            String whereString = table.getPrimaryColumn().getQuotedName()
-                    + " = ?";
+            String whereString = table.getPrimaryColumn().getQuotedName() + " = ?";
             delete.setWhere(whereString);
             String sql = delete.getStatement();
             if (logger.isLogEnabled()) {
@@ -651,8 +622,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         directory.invalidateCaches();
     }
 
-    protected boolean canDeleteMultiTenantEntry(String entryId)
-            throws DirectoryException {
+    protected boolean canDeleteMultiTenantEntry(String entryId) throws DirectoryException {
         if (isMultiTenant()) {
             // can only delete entry from the current tenant
             String tenantId = getCurrentTenantId();
@@ -661,11 +631,9 @@ public class SQLSession extends BaseSession implements EntrySource {
                     DocumentModel entry = getEntry(entryId);
                     DataModel dataModel = entry.getDataModel(schemaName);
                     String entryTenantId = (String) dataModel.getValue(TENANT_ID_FIELD);
-                    if (StringUtils.isBlank(entryTenantId)
-                            || !entryTenantId.equals(tenantId)) {
+                    if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format(
-                                    "Trying to delete entry '%s' not part of current tenant '%s'",
+                            log.debug(String.format("Trying to delete entry '%s' not part of current tenant '%s'",
                                     entryId, tenantId));
                         }
                         return false;
@@ -679,8 +647,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public void deleteEntry(String id, Map<String, String> map)
-            throws DirectoryException {
+    public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
 
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
@@ -690,8 +657,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         acquireConnection();
 
         if (!canDeleteMultiTenantEntry(id)) {
-            throw new DirectoryException(
-                    "Operation not allowed in the current tenant context");
+            throw new DirectoryException("Operation not allowed in the current tenant context");
         }
 
         // Assume in this case that there are no References to this entry.
@@ -699,8 +665,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         try {
             Delete delete = new Delete(table);
             StringBuilder whereClause = new StringBuilder();
-            List<Serializable> values = new ArrayList<Serializable>(
-                    1 + map.size());
+            List<Serializable> values = new ArrayList<Serializable>(1 + map.size());
 
             whereClause.append(table.getPrimaryColumn().getQuotedName());
             whereClause.append(" = ?");
@@ -731,8 +696,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             ps = sqlConnection.prepareStatement(sql);
             for (int i = 0; i < values.size(); i++) {
                 if (i == 0) {
-                    setFieldValue(ps, 1, table.getPrimaryColumn(),
-                            values.get(i));
+                    setFieldValue(ps, 1, table.getPrimaryColumn(), values.get(i));
                 } else {
                     ps.setString(1 + i, (String) values.get(i));
                 }
@@ -753,32 +717,27 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy)
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
             throws ClientException {
         // XXX not fetch references by default: breaks current behavior
         return query(filter, fulltext, orderBy, false);
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy,
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws ClientException {
         return query(filter, fulltext, orderBy, fetchReferences, -1, -1);
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset)
-            throws ClientException, DirectoryException {
-        
-        if(!isCurrentUserAllowed(SecurityConstants.READ)){
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences, int limit, int offset) throws ClientException, DirectoryException {
+
+        if (!isCurrentUserAllowed(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
         acquireConnection();
-        Map<String, Object> filterMap = new LinkedHashMap<String, Object>(
-                filter);
+        Map<String, Object> filterMap = new LinkedHashMap<String, Object>(filter);
 
         if (isMultiTenant()) {
             // filter entries on the tenantId field also
@@ -796,8 +755,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             for (String columnName : filterMap.keySet()) {
 
                 if (directory.isReference(columnName)) {
-                    log.warn(columnName + " is a reference and will be ignored"
-                            + " as a query criterion");
+                    log.warn(columnName + " is a reference and will be ignored" + " as a query criterion");
                     continue;
                 }
 
@@ -806,16 +764,13 @@ public class SQLSession extends BaseSession implements EntrySource {
                 if (null == column) {
                     // this might happen if we have a case like a chain
                     // selection and a directory without parent column
-                    throw new ClientException("cannot find column '"
-                            + columnName + "' for table: " + table);
+                    throw new ClientException("cannot find column '" + columnName + "' for table: " + table);
                 }
                 String leftSide = column.getQuotedName();
                 String rightSide = "?";
                 String operator;
-                boolean substring = fulltext != null
-                        && fulltext.contains(columnName);
-                if ("".equals(value) && dialect.hasNullEmptyString()
-                        && !substring) {
+                boolean substring = fulltext != null && fulltext.contains(columnName);
+                if ("".equals(value) && dialect.hasNullEmptyString() && !substring) {
                     // see NXP-6172, empty values are Null in Oracle
                     value = null;
                 }
@@ -884,8 +839,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                     rs.next();
                     int count = rs.getInt(1);
                     if (count > queryLimitSize) {
-                        throw new SizeLimitExceededException(
-                                "too many rows in result: " + count);
+                        throw new SizeLimitExceededException("too many rows in result: " + count);
                     }
                 } finally {
                     if (ps != null) {
@@ -911,8 +865,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             if (orderBy != null) {
                 for (Iterator<Map.Entry<String, String>> it = orderBy.entrySet().iterator(); it.hasNext();) {
                     Entry<String, String> entry = it.next();
-                    orderby.append(dialect.openQuote()).append(entry.getKey()).append(
-                            dialect.closeQuote()).append(' ').append(
+                    orderby.append(dialect.openQuote()).append(entry.getKey()).append(dialect.closeQuote()).append(' ').append(
                             entry.getValue());
                     if (it.hasNext()) {
                         orderby.append(',');
@@ -923,9 +876,8 @@ public class SQLSession extends BaseSession implements EntrySource {
             String query = select.getStatement();
             if (limit > 0) {
                 if (!dialect.supportsPaging()) {
-                    throw new UnsupportedOperationException(
-                            "Trying to use paging with an unsupported dialect: "
-                                    + dialect.getClass().getName());
+                    throw new UnsupportedOperationException("Trying to use paging with an unsupported dialect: "
+                            + dialect.getClass().getName());
                 }
 
                 if (offset < 0) {
@@ -936,8 +888,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
 
             if (logger.isLogEnabled()) {
-                List<Serializable> values = new ArrayList<Serializable>(
-                        orderedColumns.size());
+                List<Serializable> values = new ArrayList<Serializable>(orderedColumns.size());
                 for (Column column : orderedColumns) {
                     Object value = filterMap.get(column.getKey());
                     values.add((Serializable) value);
@@ -969,8 +920,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                     if (fetchReferences) {
                         for (Reference reference : directory.getReferences()) {
                             List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
-                            docModel.setProperty(schemaName,
-                                    reference.getFieldName(), targetIds);
+                            docModel.setProperty(schemaName, reference.getFieldName(), targetIds);
                         }
                     }
                     list.add(docModel);
@@ -991,16 +941,14 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
     }
 
-    protected void fillPreparedStatementFields(Map<String, Object> filterMap,
-            List<Column> orderedColumns, PreparedStatement ps)
-            throws DirectoryException {
+    protected void fillPreparedStatementFields(Map<String, Object> filterMap, List<Column> orderedColumns,
+            PreparedStatement ps) throws DirectoryException {
         int index = 1;
         for (Column column : orderedColumns) {
             Object value = filterMap.get(column.getKey());
 
             if (value instanceof SQLComplexFilter) {
-                index = ((SQLComplexFilter) value).setFieldValue(ps, index,
-                        column);
+                index = ((SQLComplexFilter) value).setFieldValue(ps, index, column);
             } else {
                 setFieldValue(ps, index, column, value);
                 index++;
@@ -1010,18 +958,15 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter)
-            throws ClientException {
+    public DocumentModelList query(Map<String, Serializable> filter) throws ClientException {
         return query(filter, emptySet);
     }
 
-    private Object getFieldValue(ResultSet rs, String fieldName)
-            throws DirectoryException {
+    private Object getFieldValue(ResultSet rs, String fieldName) throws DirectoryException {
         try {
             Column column = table.getColumn(fieldName);
             if (column == null) {
-                throw new DirectoryException(String.format(
-                        "Column '%s' does not exist in table '%s'", fieldName,
+                throw new DirectoryException(String.format("Column '%s' does not exist in table '%s'", fieldName,
                         table.getKey()));
             }
             int index = rs.findColumn(column.getPhysicalName());
@@ -1031,11 +976,9 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
     }
 
-    private void setFieldValue(PreparedStatement ps, int index, Column column,
-            Object value) throws DirectoryException {
+    private void setFieldValue(PreparedStatement ps, int index, Column column, Object value) throws DirectoryException {
         try {
-            column.setToPreparedStatement(ps, index,
-                    fieldValueForWrite(value, column));
+            column.setToPreparedStatement(ps, index, fieldValueForWrite(value, column));
         } catch (SQLException e) {
             throw new DirectoryException("setFieldValue failed", e);
         }
@@ -1052,8 +995,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 // hash password if not already hashed
                 String password = (String) value;
                 if (!PasswordHelper.isHashed(password)) {
-                    password = PasswordHelper.hashPassword(password,
-                            passwordHashAlgorithm);
+                    password = PasswordHelper.hashPassword(password, passwordHashAlgorithm);
                 }
                 return password;
             }
@@ -1093,14 +1035,13 @@ public class SQLSession extends BaseSession implements EntrySource {
         try {
             return !sqlConnection.isClosed();
         } catch (SQLException e) {
-            throw new DirectoryException("Cannot check connection status of "
-                    + this, e);
+            throw new DirectoryException("Cannot check connection status of " + this, e);
         }
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter,
-            Set<String> fulltext, String columnName) throws ClientException {
+    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
+            throws ClientException {
         DocumentModelList docList = query(filter, fulltext);
         List<String> result = new ArrayList<String>();
         for (DocumentModel docModel : docList) {
@@ -1117,20 +1058,17 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter,
-            String columnName) throws ClientException {
+    public List<String> getProjection(Map<String, Serializable> filter, String columnName) throws ClientException {
         return getProjection(filter, emptySet, columnName);
     }
 
     @Override
-    public boolean authenticate(String username, String password)
-            throws ClientException {
+    public boolean authenticate(String username, String password) throws ClientException {
         DocumentModel entry = getEntry(username);
         if (entry == null) {
             return false;
         }
-        String storedPassword = (String) entry.getProperty(schemaName,
-                getPasswordField());
+        String storedPassword = (String) entry.getProperty(schemaName, getPasswordField());
         return PasswordHelper.verifyPassword(password, storedPassword);
     }
 
@@ -1155,14 +1093,12 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext) throws ClientException {
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws ClientException {
         return query(filter, fulltext, new HashMap<String, String>());
     }
 
     @Override
-    public DocumentModel createEntry(DocumentModel entry)
-            throws ClientException {
+    public DocumentModel createEntry(DocumentModel entry) throws ClientException {
         Map<String, Object> fieldMap = entry.getProperties(schemaName);
         return createEntry(fieldMap);
     }
@@ -1200,9 +1136,8 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     /**
-     * Public getter to allow custom {@link Reference} implementation to access
-     * the current connection even if it lives in a separate java package,
-     * typically: com.company.custom.nuxeo.project.MyCustomReference
+     * Public getter to allow custom {@link Reference} implementation to access the current connection even if it lives
+     * in a separate java package, typically: com.company.custom.nuxeo.project.MyCustomReference
      *
      * @return the current {@link Connection} instance
      */
@@ -1211,8 +1146,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     /**
-     * Returns {@code true} if this directory supports multi tenancy,
-     * {@code false} otherwise.
+     * Returns {@code true} if this directory supports multi tenancy, {@code false} otherwise.
      */
     protected boolean isMultiTenant() {
         return directory.isMultiTenant();
@@ -1228,8 +1162,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public String toString() {
-        return "SQLSession [directory=" + directory.getName() + ", sid=" + sid
-                + "]";
+        return "SQLSession [directory=" + directory.getName() + ", sid=" + sid + "]";
     }
 
 }

@@ -13,7 +13,7 @@ package org.nuxeo.ecm.core.test.annotations;
 
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 
-public interface DatabaseHelperFactory  {
+public interface DatabaseHelperFactory {
 
     DatabaseHelper getHelper(String databaseName, String repositoyName);
 

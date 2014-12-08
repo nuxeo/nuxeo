@@ -73,8 +73,7 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
     @OperationMethod
     public Blob run() {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(UserTaskPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);
 
         Long targetPage = null;
@@ -86,11 +85,9 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
             targetPageSize = Long.valueOf(pageSize.longValue());
         }
         PageProvider<DashBoardItem> pageProvider = (PageProvider<DashBoardItem>) pps.getPageProvider(
-                USER_TASKS_PAGE_PROVIDER, null, targetPageSize, targetPage,
-                props);
+                USER_TASKS_PAGE_PROVIDER, null, targetPageSize, targetPage, props);
 
-        Locale locale = language != null && !language.isEmpty() ? new Locale(
-                language) : Locale.ENGLISH;
+        Locale locale = language != null && !language.isEmpty() ? new Locale(language) : Locale.ENGLISH;
 
         JSONArray processes = new JSONArray();
         for (DashBoardItem dashBoardItem : pageProvider.getCurrentPage()) {
@@ -108,8 +105,7 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
 
         json.put("entries", processes);
         try {
-            return new InputStreamBlob(new ByteArrayInputStream(
-                    json.toString().getBytes("UTF-8")), "application/json");
+            return new InputStreamBlob(new ByteArrayInputStream(json.toString().getBytes("UTF-8")), "application/json");
         } catch (UnsupportedEncodingException e) {
             // cannot happen
             throw new RuntimeException(e);

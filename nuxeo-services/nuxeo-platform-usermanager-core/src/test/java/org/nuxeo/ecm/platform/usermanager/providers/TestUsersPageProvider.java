@@ -49,12 +49,10 @@ public class TestUsersPageProvider extends UserManagerTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.query.api",
-                "OSGI-INF/pageprovider-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
         deployBundle("org.nuxeo.ecm.platform.usermanager.api");
 
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/directory-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
 
         ppService = Framework.getService(PageProviderService.class);
         assertNotNull(ppService);
@@ -86,8 +84,7 @@ public class TestUsersPageProvider extends UserManagerTestCase {
     @Test
     public void testUsersPageProviderAllMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY,
-                UsersPageProvider.ALL_MODE);
+        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.ALL_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                 PROVIDER_NAME, null, null, null, properties, "");
         List<DocumentModel> users = usersProvider.getCurrentPage();
@@ -111,8 +108,7 @@ public class TestUsersPageProvider extends UserManagerTestCase {
     @Test
     public void testUsersPageProviderSearchMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY,
-                UsersPageProvider.SEARCH_ONLY_MODE);
+        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.SEARCH_ONLY_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                 PROVIDER_NAME, null, null, null, properties, "j");
         List<DocumentModel> users = usersProvider.getCurrentPage();
@@ -127,8 +123,7 @@ public class TestUsersPageProvider extends UserManagerTestCase {
     @Test
     public void testUsersPageProviderTabbedMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY,
-                UsersPageProvider.TABBED_MODE);
+        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.TABBED_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                 PROVIDER_NAME, null, null, null, properties, "B");
         List<DocumentModel> users = usersProvider.getCurrentPage();

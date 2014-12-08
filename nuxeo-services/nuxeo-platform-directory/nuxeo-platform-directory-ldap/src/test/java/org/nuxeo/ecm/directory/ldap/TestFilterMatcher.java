@@ -97,30 +97,20 @@ public class TestFilterMatcher {
 
         // check conjunctions
         assertTrue(matcher.match(attributes, "(&(attribute1=*)(attribute2=*))"));
-        assertTrue(matcher.match(attributes,
-                "(&(attribute1=value1)(attribute2=value2))"));
-        assertTrue(matcher.match(attributes,
-                "(&(attribute1=value1)(attribute2=value2)(attribute1=val*))"));
-        assertFalse(matcher.match(attributes,
-                "(&(attribute1=value1)(attribute2=value3))"));
-        assertFalse(matcher.match(attributes,
-                "(&(attribute1=value1)(attribute2=value1))"));
+        assertTrue(matcher.match(attributes, "(&(attribute1=value1)(attribute2=value2))"));
+        assertTrue(matcher.match(attributes, "(&(attribute1=value1)(attribute2=value2)(attribute1=val*))"));
+        assertFalse(matcher.match(attributes, "(&(attribute1=value1)(attribute2=value3))"));
+        assertFalse(matcher.match(attributes, "(&(attribute1=value1)(attribute2=value1))"));
 
         // check disjunctions
-        assertTrue(matcher.match(attributes,
-                "(|(attribute1=value2)(attribute2=*))"));
-        assertTrue(matcher.match(attributes,
-                "(|(attribute1=value2)(attribute2=value2))"));
-        assertTrue(matcher.match(attributes,
-                "(|(attribute1=value2)(attribute2=val*)(attribute1=value3))"));
-        assertFalse(matcher.match(attributes,
-                "(|(attribute1=value3)(attribute2=value3))"));
+        assertTrue(matcher.match(attributes, "(|(attribute1=value2)(attribute2=*))"));
+        assertTrue(matcher.match(attributes, "(|(attribute1=value2)(attribute2=value2))"));
+        assertTrue(matcher.match(attributes, "(|(attribute1=value2)(attribute2=val*)(attribute1=value3))"));
+        assertFalse(matcher.match(attributes, "(|(attribute1=value3)(attribute2=value3))"));
 
         // check nested boolean operator
+        assertTrue(matcher.match(attributes, "(&(|(attribute1=value2)(attribute2=*))(attribute1=val*))"));
         assertTrue(matcher.match(attributes,
-                "(&(|(attribute1=value2)(attribute2=*))(attribute1=val*))"));
-        assertTrue(matcher.match(
-                attributes,
                 "(&(|(attribute1=value2)(attribute2=*))(attribute1=val*)(!(attribute1=value2)))"));
     }
 

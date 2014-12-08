@@ -27,11 +27,11 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Scanner {
 
     public final static String PATH_ANNO = "Ljavax/ws/rs/Path;";
+
     public final static String PROVIDER_ANNO = "Ljavax/ws/rs/ext/Provider;";
 
     protected Bundle bundle;
@@ -41,14 +41,14 @@ public class Scanner {
     protected Map<String, Collection<Class<?>>> collectors;
 
     public Scanner(Bundle bundle, String packageBase) {
-        this (bundle, packageBase, PATH_ANNO, PROVIDER_ANNO);
+        this(bundle, packageBase, PATH_ANNO, PROVIDER_ANNO);
     }
 
-    public Scanner(Bundle bundle, String packageBase, String ... annotations) {
+    public Scanner(Bundle bundle, String packageBase, String... annotations) {
         this.bundle = bundle;
         this.packageBase = packageBase == null ? "/" : packageBase;
         this.collectors = new HashMap<String, Collection<Class<?>>>();
-        for (String annotation  : annotations) {
+        for (String annotation : annotations) {
             addCollector(annotation);
         }
     }
@@ -82,8 +82,7 @@ public class Scanner {
             try {
                 ClassReader cr = new ClassReader(in);
                 AnnotationReader reader = new AnnotationReader(annotations);
-                cr.accept(reader, null,
-                        ClassReader.SKIP_DEBUG | ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
+                cr.accept(reader, null, ClassReader.SKIP_DEBUG | ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
                 if (reader.hasResults()) {
                     String cname = reader.getClassName();
                     for (String anno : reader.getResults()) {

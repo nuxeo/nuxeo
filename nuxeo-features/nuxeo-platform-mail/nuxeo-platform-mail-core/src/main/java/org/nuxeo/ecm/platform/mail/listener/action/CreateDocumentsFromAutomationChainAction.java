@@ -43,16 +43,12 @@ import org.nuxeo.ecm.platform.mail.listener.action.AbstractMailAction;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Creates a MailMessage document for every new email found in the INBOX.
- *
- * The creation is handled by an AutomationChain
+ * Creates a MailMessage document for every new email found in the INBOX. The creation is handled by an AutomationChain
  *
  * @since 6.0
  * @author tiry
- *
  */
-public class CreateDocumentsFromAutomationChainAction extends
-        AbstractMailAction {
+public class CreateDocumentsFromAutomationChainAction extends AbstractMailAction {
 
     private static final Log log = LogFactory.getLog(CreateDocumentsFromAutomationChainAction.class);
 
@@ -67,14 +63,12 @@ public class CreateDocumentsFromAutomationChainAction extends
 
     protected String getChainName() {
         if (chainName == null) {
-            return Framework.getProperty("org.nuxeo.mail.automation.chain",
-                    "CreateMailDocumentFromAutomation");
+            return Framework.getProperty("org.nuxeo.mail.automation.chain", "CreateMailDocumentFromAutomation");
         }
         return chainName;
     }
 
-    protected final int maxSize = Integer.parseInt(Framework.getProperty(
-            "nuxeo.path.segment.maxsize", "24"));
+    protected final int maxSize = Integer.parseInt(Framework.getProperty("nuxeo.path.segment.maxsize", "24"));
 
     protected String generatePathSegment(String s) {
         if (s == null) {

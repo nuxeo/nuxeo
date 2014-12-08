@@ -44,7 +44,6 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- *
  */
 public class NXThemesFragmentDirective implements TemplateDirectiveModel {
 
@@ -53,12 +52,11 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
     final String templateEngine = "freemarker";
 
     @SuppressWarnings("unchecked")
-    public void execute(Environment env, Map params, TemplateModel[] loopVars,
-            TemplateDirectiveBody body) throws TemplateException, IOException {
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+            throws TemplateException, IOException {
 
         if (loopVars.length != 0) {
-            throw new TemplateModelException(
-                    "This directive doesn't allow loop variables.");
+            throw new TemplateModelException("This directive doesn't allow loop variables.");
         }
         if (body != null) {
             throw new TemplateModelException("Didn't expect a body");
@@ -69,12 +67,10 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
             throw new IllegalStateException("Not In a Web Context");
         }
 
-        env.setVariable("nxthemesInfo",
-                BeansWrapper.getDefaultInstance().wrap(InfoPool.getInfoMap()));
+        env.setVariable("nxthemesInfo", BeansWrapper.getDefaultInstance().wrap(InfoPool.getInfoMap()));
 
         Map<String, String> attributes = Utils.getTemplateDirectiveParameters(params);
-        final URL elementUrl = new URL(String.format(
-                "nxtheme://element/%s/%s/%s/%s", attributes.get("engine"),
+        final URL elementUrl = new URL(String.format("nxtheme://element/%s/%s/%s/%s", attributes.get("engine"),
                 attributes.get("mode"), templateEngine, attributes.get("uid")));
 
         String rendered = "";
@@ -86,8 +82,8 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
         }
         StringReader sr = new StringReader(rendered);
         BufferedReader reader = new BufferedReader(sr);
-        Template tpl = new Template(elementUrl.toString(), reader,
-                env.getConfiguration(), env.getTemplate().getEncoding());
+        Template tpl = new Template(elementUrl.toString(), reader, env.getConfiguration(),
+                env.getTemplate().getEncoding());
 
         try {
             env.include(tpl);

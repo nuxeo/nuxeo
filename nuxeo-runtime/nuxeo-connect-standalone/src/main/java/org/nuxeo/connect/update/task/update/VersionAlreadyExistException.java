@@ -18,7 +18,6 @@ package org.nuxeo.connect.update.task.update;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class VersionAlreadyExistException extends RuntimeException {
 

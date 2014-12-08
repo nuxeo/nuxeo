@@ -13,8 +13,7 @@
 package org.nuxeo.ecm.core.schema.types;
 
 /**
- * Implementation of a simple type that is not primitive (and therefore has
- * constraints).
+ * Implementation of a simple type that is not primitive (and therefore has constraints).
  */
 public class SimpleTypeImpl extends AbstractType implements SimpleType {
 

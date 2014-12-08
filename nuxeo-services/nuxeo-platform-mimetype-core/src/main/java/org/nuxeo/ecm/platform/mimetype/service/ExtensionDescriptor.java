@@ -24,9 +24,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * Filename extension definition.
  * <p>
- * Allow the mimetype service to guess which mimetype to use for each extension.
- * Ambiguous extensions (such as xml) tell the service that a binary sniffing
- * operation is advised to guess the right mimetype.
+ * Allow the mimetype service to guess which mimetype to use for each extension. Ambiguous extensions (such as xml) tell
+ * the service that a binary sniffing operation is advised to guess the right mimetype.
  *
  * @author <a href="mailto:og@nuxeo.com">Olivier Grisel</a>
  */
@@ -41,8 +40,8 @@ public class ExtensionDescriptor {
 
     protected boolean ambiguous = false;
 
-
-    public ExtensionDescriptor() { }
+    public ExtensionDescriptor() {
+    }
 
     public ExtensionDescriptor(String name) {
         this.name = name;

@@ -32,7 +32,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @Features(AuditFeature.class)
 @RunWith(FeaturesRunner.class)
-public class TestServiceAccess  {
+public class TestServiceAccess {
 
     @Test
     public void testFullAccess() {

@@ -86,8 +86,7 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
         if (lastPublishedPost == null) {
             GregorianCalendar lastPostDate = null;
             for (DocumentModel post : getPublishedPosts()) {
-                GregorianCalendar postDate = (GregorianCalendar) post.getProperty(
-                        "post", "creationDate");
+                GregorianCalendar postDate = (GregorianCalendar) post.getProperty("post", "creationDate");
 
                 if (lastPostDate == null || postDate.after(lastPostDate)) {
                     lastPostDate = postDate;
@@ -98,8 +97,7 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
         return lastPublishedPost;
     }
 
-    protected List<DocumentModel> getSubComments(DocumentModel doc)
-            throws ClientException {
+    protected List<DocumentModel> getSubComments(DocumentModel doc) throws ClientException {
         List<DocumentModel> allSubPosts = new ArrayList<DocumentModel>();
         CommentableDocument commentDoc = doc.getAdapter(CommentableDocument.class);
 

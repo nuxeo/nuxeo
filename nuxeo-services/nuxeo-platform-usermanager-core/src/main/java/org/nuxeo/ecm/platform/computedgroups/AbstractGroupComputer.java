@@ -28,11 +28,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Base class for {@link GroupComputer} implementation. Provides a naive
- * implementation for searchGroups method.
+ * Base class for {@link GroupComputer} implementation. Provides a naive implementation for searchGroups method.
  *
  * @author Thierry Delprat
- *
  */
 public abstract class AbstractGroupComputer implements GroupComputer {
 
@@ -43,8 +41,7 @@ public abstract class AbstractGroupComputer implements GroupComputer {
     /**
      * Default implementation that searches on all ids for a match.
      */
-    public List<String> searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext) {
+    public List<String> searchGroups(Map<String, Serializable> filter, Set<String> fulltext) {
 
         List<String> result = new ArrayList<String>();
         String grpName = (String) filter.get(getUM().getGroupIdField());
@@ -64,8 +61,8 @@ public abstract class AbstractGroupComputer implements GroupComputer {
     }
 
     /**
-     * Default implementation that returns true if method
-     * {@link GroupComputer#getAllGroupIds()} contains given group name.
+     * Default implementation that returns true if method {@link GroupComputer#getAllGroupIds()} contains given group
+     * name.
      */
     public boolean hasGroup(String name) {
         List<String> allGroupIds = getAllGroupIds();

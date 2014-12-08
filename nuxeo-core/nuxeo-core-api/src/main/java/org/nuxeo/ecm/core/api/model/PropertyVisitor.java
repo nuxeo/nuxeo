@@ -20,7 +20,6 @@ import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface PropertyVisitor {
 

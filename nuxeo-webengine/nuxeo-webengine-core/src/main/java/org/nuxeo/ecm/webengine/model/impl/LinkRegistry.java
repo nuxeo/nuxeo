@@ -31,9 +31,8 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescriptor>{
+public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescriptor> {
 
     // type to view bindings
     protected final Map<String, LinkDescriptor[]> links; // category to links mapping
@@ -88,8 +87,7 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
     }
 
     @Override
-    protected void applySuperFragment(LinkDescriptor object,
-            LinkDescriptor superFragment) {
+    protected void applySuperFragment(LinkDescriptor object, LinkDescriptor superFragment) {
         // links are not using inheritance
     }
 
@@ -120,9 +118,9 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
     protected void installLink(String category, LinkDescriptor link) {
         LinkDescriptor[] descriptors = links.get(category);
         if (descriptors == null) {
-            descriptors = new LinkDescriptor[] {link};
+            descriptors = new LinkDescriptor[] { link };
         } else {
-            LinkDescriptor[] ar = new LinkDescriptor[descriptors.length+1];
+            LinkDescriptor[] ar = new LinkDescriptor[descriptors.length + 1];
             System.arraycopy(descriptors, 0, ar, 0, descriptors.length);
             ar[descriptors.length] = link;
             descriptors = ar;
@@ -142,19 +140,19 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
         if (descriptors == null) {
             return;
         }
-        for (int i=0; i<descriptors.length; i++) {
+        for (int i = 0; i < descriptors.length; i++) {
             // FIXME: this can't work, comparison between a String and a LinkDescriptor
             if (link.getId().equals(descriptors[i])) {
                 if (descriptors.length == 1 && i == 0) {
                     links.remove(category);
                     return;
                 } else {
-                    LinkDescriptor[] tmp = new LinkDescriptor[descriptors.length-1];
+                    LinkDescriptor[] tmp = new LinkDescriptor[descriptors.length - 1];
                     if (i > 0) {
                         System.arraycopy(descriptors, 0, tmp, 0, i);
                     }
-                    if (i < descriptors.length-1) {
-                        System.arraycopy(descriptors, i+1, tmp, i, descriptors.length-i-1);
+                    if (i < descriptors.length - 1) {
+                        System.arraycopy(descriptors, i + 1, tmp, i, descriptors.length - i - 1);
                     }
                     links.put(category, tmp);
                     return;

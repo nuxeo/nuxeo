@@ -12,22 +12,21 @@
 package org.nuxeo.ecm.automation.client;
 
 /**
- * A factory for adapters. Adapters can be used to adapt client and session objects.
- * For example you can contribute an adapter on the session to have an API suited
- * for your needs.
+ * A factory for adapters. Adapters can be used to adapt client and session objects. For example you can contribute an
+ * adapter on the session to have an API suited for your needs.
  * <p>
  * To register adapters use {@link AutomationClient#registerAdapter(AdapterFactory)}.
- *
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface AdapterFactory<T> {
-	
+
     /**
      * Adapt the given object and return the adapter instance.
+     *
      * @param toAdapt
      * @return
      */
-    	T getAdapter(Session session, Class<T> clazz);
+    T getAdapter(Session session, Class<T> clazz);
 
 }

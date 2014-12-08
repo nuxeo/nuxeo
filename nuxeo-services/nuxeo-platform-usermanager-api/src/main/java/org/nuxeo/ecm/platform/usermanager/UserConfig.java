@@ -19,8 +19,8 @@ package org.nuxeo.ecm.platform.usermanager;
 import java.io.Serializable;
 
 /**
- * A class containing the configuration of an user principal instance. This
- * class keeps the keys of the basic user fields.
+ * A class containing the configuration of an user principal instance. This class keeps the keys of the basic user
+ * fields.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -31,14 +31,12 @@ public class UserConfig implements Serializable {
     public static final UserConfig DEFAULT = new UserConfig();
 
     /**
-     * The default key name for user id, configurable on the UserManager
-     * service
+     * The default key name for user id, configurable on the UserManager service
      */
     public static final String USERNAME_COLUMN = "username";
 
     /**
-     * The default key name for user email, configurable on the UserManager
-     * service
+     * The default key name for user email, configurable on the UserManager service
      */
     public static final String EMAIL_COLUMN = "email";
 

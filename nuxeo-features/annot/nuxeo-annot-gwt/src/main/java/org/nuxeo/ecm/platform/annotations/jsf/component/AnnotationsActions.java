@@ -73,11 +73,11 @@ public class AnnotationsActions implements Serializable {
         DocumentView docView = new DocumentViewImpl(doc);
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-        String documentUrl = documentViewCodecManager.getUrlFromDocumentView(
-                "docpath", docView, true, VirtualHostHelper.getBaseURL(request));
+        String documentUrl = documentViewCodecManager.getUrlFromDocumentView("docpath", docView, true,
+                VirtualHostHelper.getBaseURL(request));
         try {
-            List<Annotation> annotations = annotationsService.queryAnnotations(
-                    new URI(documentUrl), null, (NuxeoPrincipal) currentUser);
+            List<Annotation> annotations = annotationsService.queryAnnotations(new URI(documentUrl), null,
+                    (NuxeoPrincipal) currentUser);
             return annotations.size();
         } catch (AnnotationException e) {
             log.error("Unable to get annotations graph", e);
@@ -95,8 +95,7 @@ public class AnnotationsActions implements Serializable {
             return false;
         }
 
-        return Framework.isBooleanPropertyTrue(TEXT_ANNOTATIONS_KEY)
-                || blob.getMimeType().startsWith("image");
+        return Framework.isBooleanPropertyTrue(TEXT_ANNOTATIONS_KEY) || blob.getMimeType().startsWith("image");
     }
 
 }

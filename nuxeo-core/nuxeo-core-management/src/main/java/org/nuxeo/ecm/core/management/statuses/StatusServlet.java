@@ -58,8 +58,7 @@ public class StatusServlet extends HttpServlet {
     private OSGiRuntimeService runtimeService;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String param = req.getParameter(PARAM);
         if (param != null) {
             doPost(req, resp);
@@ -69,16 +68,14 @@ public class StatusServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         StringBuilder response = new StringBuilder();
         String requestedInfo = req.getParameter(PARAM);
         if (requestedInfo.equals(PARAM_STARTED)) {
             getStartedInfo(response);
         } else if (requestedInfo.equals(PARAM_SUMMARY)) {
             String givenKey = req.getParameter(PARAM_SUMMARY_KEY);
-            if (getRuntimeService().getProperty(PARAM_STATUS_KEY).equals(
-                    givenKey)) {
+            if (getRuntimeService().getProperty(PARAM_STATUS_KEY).equals(givenKey)) {
                 getSummaryInfo(response);
             } else {
                 resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -93,8 +90,7 @@ public class StatusServlet extends HttpServlet {
         sendResponse(resp, response.toString());
     }
 
-    protected void sendResponse(HttpServletResponse resp, String response)
-            throws IOException {
+    protected void sendResponse(HttpServletResponse resp, String response) throws IOException {
         resp.setContentType("text/plain");
         resp.setContentLength(response.getBytes().length);
         OutputStream out = resp.getOutputStream();

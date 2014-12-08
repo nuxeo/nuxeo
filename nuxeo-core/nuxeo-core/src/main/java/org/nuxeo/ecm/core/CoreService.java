@@ -92,19 +92,16 @@ public class CoreService extends DefaultComponent {
     private void registerVersionRemovalPolicy(CoreServicePolicyDescriptor desc) {
         String klass = desc.getKlass();
         try {
-            versionRemovalPolicy = (VersionRemovalPolicy) context.getRuntimeContext().loadClass(
-                    klass).newInstance();
+            versionRemovalPolicy = (VersionRemovalPolicy) context.getRuntimeContext().loadClass(klass).newInstance();
         } catch (ReflectiveOperationException e) {
             log.error("Failed to instantiate versionRemovalPolicy: " + klass, e);
         }
     }
 
-    private void registerOrphanVersionRemovalFilter(
-            CoreServiceOrphanVersionRemovalFilterDescriptor desc) {
+    private void registerOrphanVersionRemovalFilter(CoreServiceOrphanVersionRemovalFilterDescriptor desc) {
         String klass = desc.getKlass();
         try {
-            orphanVersionRemovalFilters.add((OrphanVersionRemovalFilter) context.getRuntimeContext().loadClass(
-                    klass).newInstance());
+            orphanVersionRemovalFilters.add((OrphanVersionRemovalFilter) context.getRuntimeContext().loadClass(klass).newInstance());
         } catch (ReflectiveOperationException e) {
             log.error("Failed to instantiate versionRemovalPolicy: " + klass, e);
         }

@@ -47,8 +47,7 @@ public class Uninstall extends UninstallPlaceholder {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         BundleContext ctx = PackageUpdateComponent.getContext().getBundle().getBundleContext();
         JarFile jar = null;
         try {
@@ -74,8 +73,7 @@ public class Uninstall extends UninstallPlaceholder {
                 }
             }
         } catch (IOException e) {
-            throw new PackageException("Failed to uninstall bundle: "
-                    + file.getName(), e);
+            throw new PackageException("Failed to uninstall bundle: " + file.getName(), e);
         } finally {
             if (jar != null) {
                 try {

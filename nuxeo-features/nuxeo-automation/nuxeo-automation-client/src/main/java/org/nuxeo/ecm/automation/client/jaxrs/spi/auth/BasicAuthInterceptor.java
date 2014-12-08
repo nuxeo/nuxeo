@@ -46,8 +46,7 @@ public class BasicAuthInterceptor extends RequestInterceptor {
     }
 
     @Override
-    public ClientResponse handle(ClientRequest cr)
-            throws ClientHandlerException {
+    public ClientResponse handle(ClientRequest cr) throws ClientHandlerException {
         if (!cr.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
             cr.getHeaders().add(HttpHeaders.AUTHORIZATION, token);
         }

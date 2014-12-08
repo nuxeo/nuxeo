@@ -35,8 +35,7 @@ public class DatabaseOracle extends DatabaseHelper {
 
     private static final String DEF_SERVER = "localhost";
 
-    private static final String DEF_URL = "jdbc:oracle:thin:@" + DEF_SERVER
-            + ":1521:XE";
+    private static final String DEF_URL = "jdbc:oracle:thin:@" + DEF_SERVER + ":1521:XE";
 
     private static final String DEF_USER = "nuxeo";
 
@@ -61,10 +60,8 @@ public class DatabaseOracle extends DatabaseHelper {
         Class.forName(DRIVER);
         setProperties();
         Connection connection = getConnection(Framework.getProperty(URL_PROPERTY),
-                Framework.getProperty(USER_PROPERTY),
-                Framework.getProperty(PASSWORD_PROPERTY));
-        doOnAllTables(connection, null,
-                Framework.getProperty(USER_PROPERTY).toUpperCase(),
+                Framework.getProperty(USER_PROPERTY), Framework.getProperty(PASSWORD_PROPERTY));
+        doOnAllTables(connection, null, Framework.getProperty(USER_PROPERTY).toUpperCase(),
                 "DROP TABLE \"%s\" CASCADE CONSTRAINTS PURGE");
         dropSequences(connection);
         connection.close();

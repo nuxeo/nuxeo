@@ -35,12 +35,10 @@ import com.google.inject.Inject;
 
 /**
  * @author btatar
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
-@LocalDeploy({
-        "org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-framework.xml",
+@LocalDeploy({ "org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-framework.xml",
         "org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-contrib.xml" })
 public class TestImagingService {
 
@@ -49,8 +47,7 @@ public class TestImagingService {
 
     @Test
     public void testConfigurationContrib() throws Exception {
-        String conversionFormat = imagingService.getConfigurationValue(
-                "conversionFormat", "png");
+        String conversionFormat = imagingService.getConfigurationValue("conversionFormat", "png");
 
         assertEquals("jpg", conversionFormat);
         assertNotSame("png", conversionFormat);
@@ -61,10 +58,8 @@ public class TestImagingService {
         String testConfiguration = imagingService.getConfigurationValue("testConfiguration");
         assertNull(testConfiguration);
 
-        imagingService.setConfigurationValue("testConfiguration",
-                "testConfigurationValue");
-        testConfiguration = imagingService.getConfigurationValue(
-                "testConfiguration", "testConfiguration");
+        imagingService.setConfigurationValue("testConfiguration", "testConfigurationValue");
+        testConfiguration = imagingService.getConfigurationValue("testConfiguration", "testConfiguration");
 
         assertEquals("testConfigurationValue", testConfiguration);
         assertNotSame("testConfiguration", testConfiguration);

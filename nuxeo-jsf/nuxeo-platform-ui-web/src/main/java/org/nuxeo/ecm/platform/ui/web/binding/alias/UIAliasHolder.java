@@ -38,14 +38,12 @@ import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 /**
  * Holder component for value expressions.
  * <p>
- * Since 6.0 and JSF2 migration, exposed values are now stored in a view-scoped
- * managed bean and do not need to be exposed again at render time.
+ * Since 6.0 and JSF2 migration, exposed values are now stored in a view-scoped managed bean and do not need to be
+ * exposed again at render time.
  * <p>
- * This component is still interesting to anchor the component in the tree, and
- * make sure its children are reset on ajax requests, when the value it holds
- * can have an impact on the underlying components. In this case, it is
- * instantiated by the {@link AliasTagHandler} or {@link SetTagHandler} facelet
- * handlers, depending on their instantiation criteria.
+ * This component is still interesting to anchor the component in the tree, and make sure its children are reset on ajax
+ * requests, when the value it holds can have an impact on the underlying components. In this case, it is instantiated
+ * by the {@link AliasTagHandler} or {@link SetTagHandler} facelet handlers, depending on their instantiation criteria.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -61,8 +59,8 @@ public class UIAliasHolder extends UIOutput {
     public static final String COMPONENT_FAMILY = UIAliasHolder.class.getName();
 
     /**
-     * Keep the alias transient: it's supposed to be set at build time by
-     * facelet handlers and does not need to be restored/saved.
+     * Keep the alias transient: it's supposed to be set at build time by facelet handlers and does not need to be
+     * restored/saved.
      *
      * @since 6.0
      */
@@ -110,8 +108,7 @@ public class UIAliasHolder extends UIOutput {
                 origEvent.getComponent().broadcast(origEvent);
             } finally {
                 if (alias != null) {
-                    AliasVariableMapper.removeAliasesExposedToRequest(context,
-                            alias.getId());
+                    AliasVariableMapper.removeAliasesExposedToRequest(context, alias.getId());
                 }
             }
         } else {
@@ -125,16 +122,15 @@ public class UIAliasHolder extends UIOutput {
         super.queueEvent(event);
     }
 
-    public boolean invokeOnComponent(FacesContext context, String clientId,
-            ContextCallback callback) throws FacesException {
+    public boolean invokeOnComponent(FacesContext context, String clientId, ContextCallback callback)
+            throws FacesException {
         AliasVariableMapper alias = getAliasVariableMapper();
         try {
             AliasVariableMapper.exposeAliasesToRequest(context, alias);
             return super.invokeOnComponent(context, clientId, callback);
         } finally {
             if (alias != null) {
-                AliasVariableMapper.removeAliasesExposedToRequest(context,
-                        alias.getId());
+                AliasVariableMapper.removeAliasesExposedToRequest(context, alias.getId());
             }
         }
     }
@@ -156,53 +152,45 @@ public class UIAliasHolder extends UIOutput {
     public void encodeEnd(FacesContext context) throws IOException {
         AliasVariableMapper alias = getAliasVariableMapper();
         if (alias != null) {
-            AliasVariableMapper.removeAliasesExposedToRequest(context,
-                    alias.getId());
+            AliasVariableMapper.removeAliasesExposedToRequest(context, alias.getId());
         }
     }
 
     @Override
     public void processDecodes(FacesContext context) {
-        processFacetsAndChildrenWithVariables(context,
-                PhaseId.APPLY_REQUEST_VALUES);
+        processFacetsAndChildrenWithVariables(context, PhaseId.APPLY_REQUEST_VALUES);
     }
 
     @Override
     public void processValidators(FacesContext context) {
-        processFacetsAndChildrenWithVariables(context,
-                PhaseId.PROCESS_VALIDATIONS);
+        processFacetsAndChildrenWithVariables(context, PhaseId.PROCESS_VALIDATIONS);
     }
 
     @Override
     public void processUpdates(FacesContext context) {
-        processFacetsAndChildrenWithVariables(context,
-                PhaseId.UPDATE_MODEL_VALUES);
+        processFacetsAndChildrenWithVariables(context, PhaseId.UPDATE_MODEL_VALUES);
     }
 
-    protected final void processFacetsAndChildren(final FacesContext context,
-            final PhaseId phaseId) {
+    protected final void processFacetsAndChildren(final FacesContext context, final PhaseId phaseId) {
         List<UIComponent> stamps = getChildren();
         for (UIComponent stamp : stamps) {
             processComponent(context, stamp, phaseId);
         }
     }
 
-    protected final void processFacetsAndChildrenWithVariables(
-            final FacesContext context, final PhaseId phaseId) {
+    protected final void processFacetsAndChildrenWithVariables(final FacesContext context, final PhaseId phaseId) {
         AliasVariableMapper alias = getAliasVariableMapper();
         try {
             AliasVariableMapper.exposeAliasesToRequest(context, alias);
             processFacetsAndChildren(context, phaseId);
         } finally {
             if (alias != null) {
-                AliasVariableMapper.removeAliasesExposedToRequest(context,
-                        alias.getId());
+                AliasVariableMapper.removeAliasesExposedToRequest(context, alias.getId());
             }
         }
     }
 
-    protected final void processComponent(FacesContext context,
-            UIComponent component, PhaseId phaseId) {
+    protected final void processComponent(FacesContext context, UIComponent component, PhaseId phaseId) {
         if (component != null) {
             if (phaseId == PhaseId.APPLY_REQUEST_VALUES) {
                 component.processDecodes(context);
@@ -249,8 +237,7 @@ public class UIAliasHolder extends UIOutput {
             return super.visitTree(visitContext, callback);
         } finally {
             if (alias != null) {
-                AliasVariableMapper.removeAliasesExposedToRequest(facesContext,
-                        alias.getId());
+                AliasVariableMapper.removeAliasesExposedToRequest(facesContext, alias.getId());
             }
         }
     }

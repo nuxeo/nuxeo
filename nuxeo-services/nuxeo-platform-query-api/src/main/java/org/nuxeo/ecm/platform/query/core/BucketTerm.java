@@ -20,17 +20,20 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
 
 /**
  * Immutable Bucket for terms.
+ *
  * @since 6.0
  */
 public final class BucketTerm implements Bucket {
 
     private final String key;
+
     private final long docCount;
 
     public BucketTerm(String key, long docCount) {
-         if (key == null) {
+        if (key == null) {
             throw new IllegalArgumentException("key is null");
-        };
+        }
+        ;
         this.key = key;
         this.docCount = docCount;
     }

@@ -17,11 +17,10 @@ package org.nuxeo.runtime.model;
 /**
  * Defines an extensible object.
  * <p>
- * Extensible objects are accepting extensions through extension points.
- * They provide methods for registering and unregistering extensions.
+ * Extensible objects are accepting extensions through extension points. They provide methods for registering and
+ * unregistering extensions.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface Extensible {
 

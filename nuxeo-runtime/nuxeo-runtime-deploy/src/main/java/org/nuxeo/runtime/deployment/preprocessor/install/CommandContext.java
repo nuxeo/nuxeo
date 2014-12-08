@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface CommandContext extends Map<String, String> {
 

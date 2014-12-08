@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.relations.api.Resource;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class AnnotationServiceImplTest extends AbstractAnnotationTest {
 
@@ -45,8 +44,7 @@ public class AnnotationServiceImplTest extends AbstractAnnotationTest {
     public void testAddAnnotation() throws AnnotationException {
         assertNotNull(annotation);
 
-        Annotation result = service.addAnnotation(annotation, user,
-                "http://myexemple.com/nuxeo/Annotations/");
+        Annotation result = service.addAnnotation(annotation, user, "http://myexemple.com/nuxeo/Annotations/");
         assertNotNull(result);
 
         Resource subject = result.getSubject();

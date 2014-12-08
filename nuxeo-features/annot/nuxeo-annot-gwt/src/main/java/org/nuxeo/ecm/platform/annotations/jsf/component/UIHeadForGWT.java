@@ -36,8 +36,7 @@ public class UIHeadForGWT extends UIHead {
 
         // GWT locale
         final String locale = LocaleSelector.instance().getLocaleString();
-        writer.write(String.format(
-                "<meta name=\"gwt:property\" content=\"locale=%s\" />", locale));
+        writer.write(String.format("<meta name=\"gwt:property\" content=\"locale=%s\" />", locale));
     }
 
 }

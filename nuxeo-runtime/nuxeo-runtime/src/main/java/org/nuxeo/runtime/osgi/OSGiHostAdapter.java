@@ -14,10 +14,8 @@
 
 package org.nuxeo.runtime.osgi;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class OSGiHostAdapter {
 
@@ -31,7 +29,7 @@ public abstract class OSGiHostAdapter {
         return instance;
     }
 
-    public abstract Object invoke(Object ... args);
+    public abstract Object invoke(Object... args);
 
     public abstract Object getProperty(String key);
 

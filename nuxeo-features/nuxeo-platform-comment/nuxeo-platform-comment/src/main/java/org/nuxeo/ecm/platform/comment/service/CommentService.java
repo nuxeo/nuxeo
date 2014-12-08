@@ -28,7 +28,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class CommentService extends DefaultComponent {
 
@@ -43,8 +42,7 @@ public class CommentService extends DefaultComponent {
     private CommentServiceConfig config;
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("config".equals(extensionPoint)) {
             config = (CommentServiceConfig) contribution;
             log.debug("registered service config: " + config);
@@ -54,8 +52,7 @@ public class CommentService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         // do nothing
     }
 

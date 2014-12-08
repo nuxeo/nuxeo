@@ -48,8 +48,7 @@ public class WebEngineModuleFactory {
         return admin.getFragments(bundle);
     }
 
-    public static WebEngineModule getApplication(WebEngineModule app,
-            Bundle bundle, Map<String, String> attrs)
+    public static WebEngineModule getApplication(WebEngineModule app, Bundle bundle, Map<String, String> attrs)
             throws ReflectiveOperationException, IOException {
         WebEngine engine = Framework.getLocalService(WebEngine.class);
 
@@ -76,14 +75,12 @@ public class WebEngineModuleFactory {
                 BundleManifestReader.ALLOW_HOST_OVERRIDE));
         engine.addApplication(app);
 
-        log.info("Deployed web module found in bundle: "
-                + bundle.getSymbolicName());
+        log.info("Deployed web module found in bundle: " + bundle.getSymbolicName());
 
         return app;
     }
 
-    private static File locateModuleDir(Bundle bundle, WebEngine engine,
-            boolean explode) throws IOException {
+    private static File locateModuleDir(Bundle bundle, WebEngine engine, boolean explode) throws IOException {
         File moduleDir = null;
         File bundleFile = Framework.getRuntime().getBundleFile(bundle);
         if (explode) {
@@ -96,13 +93,11 @@ public class WebEngineModuleFactory {
         return moduleDir;
     }
 
-    private static File explodeBundle(WebEngine engine, Bundle bundle,
-            File bundleFile) throws IOException {
+    private static File explodeBundle(WebEngine engine, Bundle bundle, File bundleFile) throws IOException {
         if (bundleFile.isDirectory()) { // exploded jar - deploy it as is.
             return bundleFile;
         } else { // should be a JAR - we copy the bundle module content
-            File moduleRoot = new File(engine.getRootDirectory(), "modules/"
-                    + bundle.getSymbolicName());
+            File moduleRoot = new File(engine.getRootDirectory(), "modules/" + bundle.getSymbolicName());
             if (moduleRoot.exists()) {
                 if (bundleFile.lastModified() < moduleRoot.lastModified()) {
                     // already deployed and JAR was not modified since.

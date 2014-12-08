@@ -32,15 +32,13 @@ import javax.faces.view.facelets.FaceletHandler;
  * <p>
  * Facelet handler that does nothing.
  * <p>
- * Used when there is no next handler to apply, as next handler can never be
- * null.
+ * Used when there is no next handler to apply, as next handler can never be null.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class LeafFaceletHandler implements FaceletHandler {
 
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
     }
 
     @Override

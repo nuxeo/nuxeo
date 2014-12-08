@@ -82,20 +82,17 @@ import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
- * Implementation of a {@link Document} for Document-Based Storage.
- *
- * The document is stored as a JSON-like Map. The keys of the Map are the
- * property names (including special names for system properties), and the
- * values Map are Serializable values, either:
+ * Implementation of a {@link Document} for Document-Based Storage. The document is stored as a JSON-like Map. The keys
+ * of the Map are the property names (including special names for system properties), and the values Map are
+ * Serializable values, either:
  * <ul>
  * <li>a scalar (String, Long, Double, Boolean, Calendar, Binary),
  * <li>an array of scalars,
  * <li>a List of Maps, recursively,
  * <li>or another Map, recursively.
  * </ul>
- * An ACP value is stored as a list of maps. Each map has a keys for the ACL
- * name and the actual ACL which is a list of ACEs. An ACE is a map having as
- * keys username, permission, and grant.
+ * An ACP value is stored as a list of maps. Each map has a keys for the ACL name and the actual ACL which is a list of
+ * ACEs. An ACE is a map having as keys username, permission, and grant.
  *
  * @since 5.9.4
  */
@@ -213,8 +210,7 @@ public class DBSDocument implements Document {
 
     protected boolean readonly;
 
-    public DBSDocument(DBSDocumentState docState, DocumentType type,
-            DBSSession session, boolean readonly) {
+    public DBSDocument(DBSDocumentState docState, DocumentType type, DBSSession session, boolean readonly) {
         // no state for NullDocument (parent of placeless children)
         this.id = docState == null ? null : (String) docState.get(KEY_ID);
         this.docState = docState;
@@ -327,8 +323,7 @@ public class DBSDocument implements Document {
     }
 
     @Override
-    public Document addChild(String name, String typeName)
-            throws DocumentException {
+    public Document addChild(String name, String typeName) throws DocumentException {
         if (!isFolder()) {
             throw new IllegalArgumentException("Not a folder");
         }
@@ -339,8 +334,7 @@ public class DBSDocument implements Document {
     public void orderBefore(String src, String dest) throws DocumentException {
         Document srcDoc = getChild(src);
         if (srcDoc == null) {
-            throw new DocumentException("Document " + this + " has no child: "
-                    + src);
+            throw new DocumentException("Document " + this + " has no child: " + src);
         }
         Document destDoc;
         if (dest == null) {
@@ -348,12 +342,10 @@ public class DBSDocument implements Document {
         } else {
             destDoc = getChild(dest);
             if (destDoc == null) {
-                throw new DocumentException("Document " + this
-                        + " has no child: " + dest);
+                throw new DocumentException("Document " + this + " has no child: " + dest);
             }
         }
-        session.orderBefore(id, srcDoc.getUUID(), destDoc == null ? null
-                : destDoc.getUUID());
+        session.orderBefore(id, srcDoc.getUUID(), destDoc == null ? null : destDoc.getUUID());
     }
 
     // simple property only
@@ -365,15 +357,13 @@ public class DBSDocument implements Document {
 
     // simple property only
     @Override
-    public void setPropertyValue(String name, Serializable value)
-            throws DocumentException {
+    public void setPropertyValue(String name, Serializable value) throws DocumentException {
         DBSDocumentState docState = getStateMaybeProxyTarget(name);
         docState.put(name, value);
     }
 
     @Override
-    public Document checkIn(String label, String checkinComment)
-            throws DocumentException {
+    public Document checkIn(String label, String checkinComment) throws DocumentException {
         if (isProxy()) {
             throw new DocumentException("Proxies cannot be checked in");
         } else if (isVersion()) {
@@ -424,8 +414,7 @@ public class DBSDocument implements Document {
     @Override
     public void restore(Document version) throws DocumentException {
         if (!version.isVersion()) {
-            throw new DocumentException("Cannot restore a non-version: "
-                    + version);
+            throw new DocumentException("Cannot restore a non-version: " + version);
         }
         session.restoreVersion(this, version);
     }
@@ -530,8 +519,7 @@ public class DBSDocument implements Document {
     public Document getWorkingCopy() throws DocumentException {
         if (isProxy() || isVersion()) {
             String versionSeriesId = getVersionSeriesId();
-            return versionSeriesId == null ? null
-                    : session.getDocument(versionSeriesId);
+            return versionSeriesId == null ? null : session.getDocument(versionSeriesId);
         } else {
             return this;
         }
@@ -551,9 +539,7 @@ public class DBSDocument implements Document {
     public Lock removeLock(String owner) throws DocumentException {
         Lock oldLock = getLock();
         if (owner != null) {
-            if (oldLock != null
-                    && !AbstractLockManager.canLockBeRemovedStatic(oldLock,
-                            owner)) {
+            if (oldLock != null && !AbstractLockManager.canLockBeRemovedStatic(oldLock, owner)) {
                 // existing mismatched lock, flag failure
                 return new Lock(oldLock, true);
             }
@@ -601,8 +587,7 @@ public class DBSDocument implements Document {
     }
 
     @Override
-    public void setCurrentLifeCycleState(String lifeCycleState)
-            throws LifeCycleException {
+    public void setCurrentLifeCycleState(String lifeCycleState) throws LifeCycleException {
         docState.put(KEY_LIFECYCLE_STATE, lifeCycleState);
     }
 
@@ -628,8 +613,7 @@ public class DBSDocument implements Document {
 
     // TODO generic
     @Override
-    public Collection<String> getAllowedStateTransitions()
-            throws LifeCycleException {
+    public Collection<String> getAllowedStateTransitions() throws LifeCycleException {
         LifeCycleService service = NXCore.getLifeCycleService();
         if (service == null) {
             throw new LifeCycleException("LifeCycleService not available");
@@ -642,8 +626,7 @@ public class DBSDocument implements Document {
     }
 
     @Override
-    public void setSystemProp(String name, Serializable value)
-            throws DocumentException {
+    public void setSystemProp(String name, Serializable value) throws DocumentException {
         String propertyName;
         if (name.equals(SYSPROP_FULLTEXT_SIMPLE)) {
             propertyName = KEY_FULLTEXT_SIMPLE;
@@ -658,8 +641,7 @@ public class DBSDocument implements Document {
     }
 
     @Override
-    public <T extends Serializable> T getSystemProp(String name, Class<T> type)
-            throws DocumentException {
+    public <T extends Serializable> T getSystemProp(String name, Class<T> type) throws DocumentException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -667,8 +649,7 @@ public class DBSDocument implements Document {
     /**
      * Checks if the given schema should be resolved on the proxy or the target.
      */
-    protected DBSDocumentState getStateMaybeProxyTarget(Type type)
-            throws PropertyException {
+    protected DBSDocumentState getStateMaybeProxyTarget(Type type) throws PropertyException {
         if (isProxy() && !isSchemaForProxy(type.getName())) {
             try {
                 return ((DBSDocument) getTargetDocument()).docState;
@@ -680,8 +661,7 @@ public class DBSDocument implements Document {
         }
     }
 
-    protected DBSDocumentState getStateMaybeProxyTarget(String xpath)
-            throws DocumentException {
+    protected DBSDocumentState getStateMaybeProxyTarget(String xpath) throws DocumentException {
         if (isProxy() && !isSchemaForProxy(getSchema(xpath))) {
             return ((DBSDocument) getTargetDocument()).docState;
         } else {
@@ -727,8 +707,7 @@ public class DBSDocument implements Document {
         return name;
     }
 
-    protected void readComplexProperty(ComplexProperty complexProperty,
-            State state) throws PropertyException {
+    protected void readComplexProperty(ComplexProperty complexProperty, State state) throws PropertyException {
         if (state == null) {
             complexProperty.init(null);
             return;
@@ -764,12 +743,11 @@ public class DBSDocument implements Document {
                         property.init(null);
                     } else {
                         Field listField = listType.getField();
-                        List<Serializable> value = new ArrayList<Serializable>(
-                                list.size());
+                        List<Serializable> value = new ArrayList<Serializable>(list.size());
                         for (Serializable subMapSer : list) {
                             State childMap = (State) subMapSer;
-                            ComplexProperty p = (ComplexProperty) complexProperty.getRoot().createProperty(
-                                    property, listField, 0);
+                            ComplexProperty p = (ComplexProperty) complexProperty.getRoot().createProperty(property,
+                                    listField, 0);
                             readComplexProperty(p, childMap);
                             value.add(p.getValue());
                         }
@@ -803,14 +781,12 @@ public class DBSDocument implements Document {
         } else if (type instanceof BinaryType) {
             klass = Binary.class;
         } else if (type instanceof IntegerType) {
-            throw new RuntimeException("Unimplemented primitive type: "
-                    + type.getClass().getName());
+            throw new RuntimeException("Unimplemented primitive type: " + type.getClass().getName());
         } else if (type instanceof SimpleTypeImpl) {
             // simple type with constraints -- ignore constraints XXX
             return typedArray(type.getSuperType(), array);
         } else {
-            throw new RuntimeException("Invalid primitive type: "
-                    + type.getClass().getName());
+            throw new RuntimeException("Invalid primitive type: " + type.getClass().getName());
         }
         int len = array.length;
         Object[] copy = (Object[]) Array.newInstance(klass, len);
@@ -832,12 +808,10 @@ public class DBSDocument implements Document {
         String encoding = (String) state.get(KEY_BLOB_ENCODING);
         String digest = (String) state.get(KEY_BLOB_DIGEST);
         Long length = (Long) state.get(KEY_BLOB_LENGTH);
-        return new StorageBlob(binary, name, mimeType, encoding, digest,
-                length.longValue());
+        return new StorageBlob(binary, name, mimeType, encoding, digest, length.longValue());
     }
 
-    protected void writeBlobProperty(BlobProperty blobProperty, State state)
-            throws PropertyException {
+    protected void writeBlobProperty(BlobProperty blobProperty, State state) throws PropertyException {
         Serializable value = blobProperty.getValueForWrite();
         String data;
         String name;
@@ -854,8 +828,7 @@ public class DBSDocument implements Document {
             length = null;
         } else {
             if (!(value instanceof Blob)) {
-                throw new PropertyException("Setting a non-Blob value: "
-                        + value);
+                throw new PropertyException("Setting a non-Blob value: " + value);
             }
             Blob blob = (Blob) value;
             Binary binary;
@@ -926,24 +899,21 @@ public class DBSDocument implements Document {
     }
 
     @Override
-    public Map<String, Serializable> readPrefetch(ComplexType complexType,
-            Set<String> xpaths) throws PropertyException {
+    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) throws PropertyException {
         DBSDocumentState docState = getStateMaybeProxyTarget(complexType);
         Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
         for (String xpath : xpaths) {
             try {
-                readPrefetch(complexType, docState.getState(), xpath, 0,
-                        prefetch);
+                readPrefetch(complexType, docState.getState(), xpath, 0, prefetch);
             } catch (IllegalStateException e) {
-                throw new IllegalStateException(e.getMessage() + " xpath="
-                        + xpath + ", data=" + docState, e);
+                throw new IllegalStateException(e.getMessage() + " xpath=" + xpath + ", data=" + docState, e);
             }
         }
         return prefetch;
     }
 
-    protected static void readPrefetch(ComplexType type, State state,
-            String xpath, int start, Map<String, Serializable> prefetch) {
+    protected static void readPrefetch(ComplexType type, State state, String xpath, int start,
+            Map<String, Serializable> prefetch) {
         int i = xpath.indexOf('/', start);
         boolean last = i == -1;
         String prop = xpath.substring(start, last ? xpath.length() : i);
@@ -951,8 +921,7 @@ public class DBSDocument implements Document {
         Field propType = type.getField(prop);
         if (last) {
             if (v instanceof State || v instanceof List) {
-                throw new IllegalStateException("xpath=" + xpath + " start="
-                        + start + " last element is not scalar");
+                throw new IllegalStateException("xpath=" + xpath + " start=" + start + " last element is not scalar");
             }
             if (v instanceof Object[]) {
                 // convert to typed array
@@ -962,22 +931,18 @@ public class DBSDocument implements Document {
             prefetch.put(xpath, v);
         } else {
             int len = xpath.length();
-            if (i + 3 < len && xpath.charAt(i + 1) == '*'
-                    && xpath.charAt(i + 2) == '/') {
+            if (i + 3 < len && xpath.charAt(i + 1) == '*' && xpath.charAt(i + 2) == '/') {
                 // list
                 if (v != null && !(v instanceof List)) {
-                    throw new IllegalStateException("xpath=" + xpath
-                            + " start=" + start + " not a List");
+                    throw new IllegalStateException("xpath=" + xpath + " start=" + start + " not a List");
                 }
-                List<?> list = v == null ? Collections.emptyList()
-                        : (List<?>) v;
+                List<?> list = v == null ? Collections.emptyList() : (List<?>) v;
                 String base = xpath.substring(0, i + 1);
                 for (int n = 0; n < list.size(); n++) {
                     String xp = base + n;
                     Object elem = list.get(n);
                     if (!(elem instanceof State)) {
-                        throw new IllegalStateException("xp=" + xp
-                                + " not a Map");
+                        throw new IllegalStateException("xp=" + xp + " not a Map");
                     }
                     State subMap = (State) elem;
                     Type lt = ((ListType) propType.getType()).getFieldType();
@@ -986,12 +951,10 @@ public class DBSDocument implements Document {
             } else {
                 // map
                 if (v != null && !(v instanceof State)) {
-                    throw new IllegalStateException("xpath=" + xpath
-                            + " start=" + start + " not a Map");
+                    throw new IllegalStateException("xpath=" + xpath + " start=" + start + " not a Map");
                 }
                 State subMap = (State) v;
-                readPrefetch((ComplexType) propType.getType(), subMap, xpath,
-                        i + 1, prefetch);
+                readPrefetch((ComplexType) propType.getType(), subMap, xpath, i + 1, prefetch);
             }
         }
     }
@@ -1007,8 +970,7 @@ public class DBSDocument implements Document {
                 docState.markDirty();
             }
         };
-        writeComplexProperty((ComplexProperty) dp, docState.getState(),
-                markDirty);
+        writeComplexProperty((ComplexProperty) dp, docState.getState(), markDirty);
         clearDirtyFlags(dp);
     }
 
@@ -1021,8 +983,8 @@ public class DBSDocument implements Document {
         property.clearDirtyFlags();
     }
 
-    protected void writeComplexProperty(ComplexProperty complexProperty,
-            State state, Runnable markDirty) throws PropertyException {
+    protected void writeComplexProperty(ComplexProperty complexProperty, State state, Runnable markDirty)
+            throws PropertyException {
         if (complexProperty instanceof BlobProperty) {
             writeBlobProperty((BlobProperty) complexProperty, state);
             return;
@@ -1059,12 +1021,10 @@ public class DBSDocument implements Document {
                 } else {
                     // complex list
                     Collection<Property> children = property.getChildren();
-                    List<Serializable> childMaps = new ArrayList<Serializable>(
-                            children.size());
+                    List<Serializable> childMaps = new ArrayList<Serializable>(children.size());
                     for (Property childProperty : children) {
                         State childMap = new State();
-                        writeComplexProperty((ComplexProperty) childProperty,
-                                childMap, markDirty);
+                        writeComplexProperty((ComplexProperty) childProperty, childMap, markDirty);
                         childMaps.add(childMap);
                     }
                     markDirty.run();
@@ -1078,8 +1038,7 @@ public class DBSDocument implements Document {
                     markDirty.run();
                     state.put(name, childMap);
                 }
-                writeComplexProperty((ComplexProperty) property, childMap,
-                        markDirty);
+                writeComplexProperty((ComplexProperty) property, childMap, markDirty);
             }
         }
     }
@@ -1173,8 +1132,7 @@ public class DBSDocument implements Document {
                 throw new DocumentException("Cannot write proxy: " + this);
             }
             if (!target.getVersionSeriesId().equals(getVersionSeriesId())) {
-                throw new DocumentException(
-                        "Cannot set proxy target to different version series");
+                throw new DocumentException("Cannot set proxy target to different version series");
             }
             session.setProxyTarget(this, target);
         } else {
@@ -1184,8 +1142,7 @@ public class DBSDocument implements Document {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + getName() + ',' + getUUID()
-                + ')';
+        return getClass().getSimpleName() + '(' + getName() + ',' + getUUID() + ')';
     }
 
     @Override

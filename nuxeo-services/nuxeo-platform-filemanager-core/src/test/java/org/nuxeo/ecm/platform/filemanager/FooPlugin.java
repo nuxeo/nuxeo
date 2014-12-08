@@ -29,9 +29,8 @@ public class FooPlugin extends AbstractFileImporter {
 
     private static final long serialVersionUID = 1L;
 
-    public DocumentModel create(CoreSession documentManager, Blob content,
-            String path, boolean overwrite, String filename,
-            TypeManager typService) {
+    public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
+            String filename, TypeManager typService) {
         return null;
     }
 

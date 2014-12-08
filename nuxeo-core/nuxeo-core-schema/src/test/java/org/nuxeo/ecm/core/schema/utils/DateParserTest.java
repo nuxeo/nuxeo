@@ -26,39 +26,35 @@ import org.junit.Test;
 
 /**
  * @author dmetzler
- *
  */
 public class DateParserTest {
 
     @Test
     public void parseTestDate() throws Exception {
-        //SUPNXP-7186 that threw an exception
+        // SUPNXP-7186 that threw an exception
         Calendar cal = DateParser.parse("2012-11-29T13:15:18.176+0000");
-        assertEquals(13,cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(13, cal.get(Calendar.HOUR_OF_DAY));
 
         cal = DateParser.parse("2012-11-29T13:15:18.176+0200");
-        assertEquals(11,cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(11, cal.get(Calendar.HOUR_OF_DAY));
     }
-
 
     @Test
     public void parseTimeZone() throws Exception {
         Calendar cal = DateParser.parse("2012-11-29T13:15:18.176Z");
-        assertEquals(13,cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(13, cal.get(Calendar.HOUR_OF_DAY));
 
         cal = DateParser.parse("2012-11-29T13:15:18.176+0100");
-        assertEquals(12,cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(12, cal.get(Calendar.HOUR_OF_DAY));
 
         cal = DateParser.parse("2012-11-29T13:15:18.176+01:00");
-        assertEquals(12,cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(12, cal.get(Calendar.HOUR_OF_DAY));
 
         cal = DateParser.parse("2012-11-29T13:15:18.176+01");
-        assertEquals(12,cal.get(Calendar.HOUR_OF_DAY));
-
+        assertEquals(12, cal.get(Calendar.HOUR_OF_DAY));
 
         cal = DateParser.parse("2012-11-29T13:15:18.176-0100");
-        assertEquals(14,cal.get(Calendar.HOUR_OF_DAY));
-
+        assertEquals(14, cal.get(Calendar.HOUR_OF_DAY));
 
     }
 }

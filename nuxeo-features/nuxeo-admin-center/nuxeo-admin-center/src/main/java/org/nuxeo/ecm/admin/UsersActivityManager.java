@@ -70,12 +70,10 @@ public class UsersActivityManager implements Serializable {
             ranges.add(new SelectItem(i + "h", "label.timerange." + i + "h"));
         }
         for (int i = 1; i < 8; i++) {
-            ranges.add(new SelectItem(i * 24 + "h", "label.timerange." + i
-                    + "d"));
+            ranges.add(new SelectItem(i * 24 + "h", "label.timerange." + i + "d"));
         }
         for (int i = 2; i < 6; i++) {
-            ranges.add(new SelectItem(24 * 7 * i + "h", "label.timerange." + i
-                    + "w"));
+            ranges.add(new SelectItem(24 * 7 * i + "h", "label.timerange." + i + "w"));
         }
         return ranges;
     }
@@ -138,12 +136,11 @@ public class UsersActivityManager implements Serializable {
 
         AuditReader reader = Framework.getService(AuditReader.class);
 
-        String[] cat = {getSelectedAuditCategory()};
+        String[] cat = { getSelectedAuditCategory() };
         if (getSelectedAuditCategory().equals("all")) {
             cat = new String[0];
         }
-        return reader.queryLogsByPage(new String[0], selectedAuditTimeRange,
-                cat, null, currentAuditPage, pageSize);
+        return reader.queryLogsByPage(new String[0], selectedAuditTimeRange, cat, null, currentAuditPage, pageSize);
     }
 
     // **********************
@@ -152,13 +149,13 @@ public class UsersActivityManager implements Serializable {
     public List<SelectItem> getHttpSessionsTimeRanges() {
         List<SelectItem> ranges = new ArrayList<SelectItem>();
 
-        ranges.add(new SelectItem(5*60 + "s", "label.timerange." + 5 + "m"));
-        ranges.add(new SelectItem(10*60 + "s", "label.timerange." + 10 + "m"));
-        ranges.add(new SelectItem(20*60 + "s", "label.timerange." + 20 + "m"));
-        ranges.add(new SelectItem(30*60 + "s", "label.timerange." + 30 + "m"));
-        ranges.add(new SelectItem(60*60 + "s", "label.timerange." + 1 + "h"));
-        ranges.add(new SelectItem(2*60*60 + "s", "label.timerange." + 2 + "h"));
-        ranges.add(new SelectItem(4*60*60 + "s", "label.timerange." + 4 + "h"));
+        ranges.add(new SelectItem(5 * 60 + "s", "label.timerange." + 5 + "m"));
+        ranges.add(new SelectItem(10 * 60 + "s", "label.timerange." + 10 + "m"));
+        ranges.add(new SelectItem(20 * 60 + "s", "label.timerange." + 20 + "m"));
+        ranges.add(new SelectItem(30 * 60 + "s", "label.timerange." + 30 + "m"));
+        ranges.add(new SelectItem(60 * 60 + "s", "label.timerange." + 1 + "h"));
+        ranges.add(new SelectItem(2 * 60 * 60 + "s", "label.timerange." + 2 + "h"));
+        ranges.add(new SelectItem(4 * 60 * 60 + "s", "label.timerange." + 4 + "h"));
         ranges.add(new SelectItem("all", "label.timerange.all"));
 
         return ranges;

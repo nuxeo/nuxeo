@@ -18,8 +18,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
 /**
- * The Schema Manager manages core document types, schemas, facets and field
- * types.
+ * The Schema Manager manages core document types, schemas, facets and field types.
  */
 public interface SchemaManager extends TypeProvider {
 
@@ -44,8 +43,7 @@ public interface SchemaManager extends TypeProvider {
     Set<String> getDocumentTypeNamesForFacet(String facet);
 
     /**
-     * Return the names of all document types extending the given one, which
-     * is included.
+     * Return the names of all document types extending the given one, which is included.
      *
      * @param docType
      * @return null or the set of names.
@@ -55,8 +53,7 @@ public interface SchemaManager extends TypeProvider {
     int getDocumentTypesCount();
 
     /**
-     * Returns true if {@code docType} is or extends {@code superType}, false
-     * otherwise.
+     * Returns true if {@code docType} is or extends {@code superType}, false otherwise.
      *
      * @since 5.9.4
      */

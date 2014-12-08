@@ -41,54 +41,42 @@ public interface MimetypeRegistry {
      * Returns the mime type from a given stream.
      *
      * @return String mimetype name.
-     * @throws MimetypeNotFoundException if mimetype sniffing failed to identify
-     *             a registered mime type
-     * @throws MimetypeDetectionException if unexpected problem prevent the
-     *             detection to work as expected
+     * @throws MimetypeNotFoundException if mimetype sniffing failed to identify a registered mime type
+     * @throws MimetypeDetectionException if unexpected problem prevent the detection to work as expected
      */
-    String getMimetypeFromStream(InputStream stream)
-            throws MimetypeNotFoundException, MimetypeDetectionException;
+    String getMimetypeFromStream(InputStream stream) throws MimetypeNotFoundException, MimetypeDetectionException;
 
     /**
      * Returns the mime type from a given stream.
      *
      * @return String mimetype name.
-     * @throws MimetypeNotFoundException if mimetype sniffing failed to identify
-     *             a registered mime type
-     * @throws MimetypeDetectionException if unexpected problem prevent the
-     *             detection to work as expected
+     * @throws MimetypeNotFoundException if mimetype sniffing failed to identify a registered mime type
+     * @throws MimetypeDetectionException if unexpected problem prevent the detection to work as expected
      */
-    String getMimetypeFromBlob(Blob blob) throws MimetypeNotFoundException,
-            MimetypeDetectionException;
+    String getMimetypeFromBlob(Blob blob) throws MimetypeNotFoundException, MimetypeDetectionException;
 
     /**
-     * Returns the mime type from a given blob or provided default if not
-     * possible.
+     * Returns the mime type from a given blob or provided default if not possible.
      *
      * @throws MimetypeDetectionException
      */
-    String getMimetypeFromBlobWithDefault(Blob blob, String defaultMimetype)
-            throws MimetypeDetectionException;
+    String getMimetypeFromBlobWithDefault(Blob blob, String defaultMimetype) throws MimetypeDetectionException;
 
     /**
-     * Returns the mime type from a given stream or provided default if not
-     * possible.
+     * Returns the mime type from a given stream or provided default if not possible.
      *
      * @throws MimetypeDetectionException
      */
-    String getMimetypeFromStreamWithDefault(InputStream is,
-            String defaultMimetype) throws MimetypeDetectionException;
+    String getMimetypeFromStreamWithDefault(InputStream is, String defaultMimetype) throws MimetypeDetectionException;
 
     /**
      * Returns the mime type given a file.
      *
      * @return string containing the mime type
      * @throws MimetypeNotFoundException if mimetype sniffing failed
-     * @throws MimetypeDetectionException if unexpected problem prevent the
-     *             detection to work as expected
+     * @throws MimetypeDetectionException if unexpected problem prevent the detection to work as expected
      */
-    String getMimetypeFromFile(File file) throws MimetypeNotFoundException,
-            MimetypeDetectionException;
+    String getMimetypeFromFile(File file) throws MimetypeNotFoundException, MimetypeDetectionException;
 
     /**
      * Returns the extension for given mimetype.
@@ -115,8 +103,7 @@ public interface MimetypeRegistry {
     MimetypeEntry getMimetypeEntryByMimeType(String mimetype);
 
     /**
-     * Finds the mimetype of some content according to its filename and / or
-     * binary content.
+     * Finds the mimetype of some content according to its filename and / or binary content.
      *
      * @param filename extension to analyze
      * @param blob content to be analyzed if filename is ambiguous
@@ -124,32 +111,24 @@ public interface MimetypeRegistry {
      * @return the string mimetype
      * @throws MimetypeDetectionException
      */
-    String getMimetypeFromFilenameAndBlobWithDefault(String filename,
-            Blob blob, String defaultMimetype)
+    String getMimetypeFromFilenameAndBlobWithDefault(String filename, Blob blob, String defaultMimetype)
             throws MimetypeDetectionException;
 
     /**
-     * Update the mimetype field of a Blob based on the provided filename with
-     * fallback to binary sniffing.
-     *
-     * If the embedded filename is null, the provided filename is embedded into
-     * the blob as well.
+     * Update the mimetype field of a Blob based on the provided filename with fallback to binary sniffing. If the
+     * embedded filename is null, the provided filename is embedded into the blob as well.
      *
      * @param blob content to be analyzed if filename is ambiguous
      * @param filename with extension to analyze
      * @return updated blob (persisted if necessary)
      * @throws MimetypeDetectionException
      */
-    Blob updateMimetype(Blob blob, String filename)
-            throws MimetypeDetectionException;
+    Blob updateMimetype(Blob blob, String filename) throws MimetypeDetectionException;
 
     /**
-     * Update the mimetype field of a Blob based on the embedded filename with
-     * fallback to binary sniffing.
-     *
-     * This method should not be called if the embedded filename is null for
-     * performance reasons (+ the fact that binary sniffing is no very
-     * reliable).
+     * Update the mimetype field of a Blob based on the embedded filename with fallback to binary sniffing. This method
+     * should not be called if the embedded filename is null for performance reasons (+ the fact that binary sniffing is
+     * no very reliable).
      *
      * @param blob content to be analyzed if filename is ambiguous
      * @return updated blob (persisted if necessary)

@@ -33,8 +33,7 @@ public interface TreeActions {
     String DEFAULT_TREE_PLUGIN_NAME = "navigation";
 
     /**
-     * Returns tree roots according to current document first accessible
-     * parent.
+     * Returns tree roots according to current document first accessible parent.
      */
     List<DocumentTreeNode> getTreeRoots() throws ClientException;
 

@@ -57,8 +57,7 @@ public class DocumentProperty implements Serializable {
     /**
      * Returns the field value as a string.
      * <p>
-     * Here, we will always return string for the moment. Request from the
-     * <i>Intuition</i> team.
+     * Here, we will always return string for the moment. Request from the <i>Intuition</i> team.
      *
      * @return the field value as a string
      */

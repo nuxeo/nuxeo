@@ -38,9 +38,7 @@ public class MvelExpression implements Expression {
             compiled = MVEL.compileExpression(expr);
         }
         Object result = MVEL.executeExpression(compiled, getBindings(ctx));
-        return result != null
-                && result.getClass().isAssignableFrom(BlankLiteral.class) ? ""
-                : result;
+        return result != null && result.getClass().isAssignableFrom(BlankLiteral.class) ? "" : result;
     }
 
     /**

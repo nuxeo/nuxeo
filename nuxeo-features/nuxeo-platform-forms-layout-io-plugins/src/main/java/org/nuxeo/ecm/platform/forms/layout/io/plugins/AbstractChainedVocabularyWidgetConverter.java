@@ -32,8 +32,7 @@ import org.nuxeo.ecm.platform.forms.layout.io.plugins.helpers.VocabularyHelper;
  *
  * @since 5.5
  */
-public abstract class AbstractChainedVocabularyWidgetConverter extends
-        AbstractWidgetDefinitionConverter {
+public abstract class AbstractChainedVocabularyWidgetConverter extends AbstractWidgetDefinitionConverter {
 
     protected List<String> getAcceptedWidgetTypes() {
         return Arrays.asList(new String[] { "template" });
@@ -46,17 +45,15 @@ public abstract class AbstractChainedVocabularyWidgetConverter extends
     protected abstract String getChildDirectoryName();
 
     @Override
-    public WidgetDefinition getWidgetDefinition(WidgetDefinition widgetDef,
-            LayoutConversionContext ctx) {
+    public WidgetDefinition getWidgetDefinition(WidgetDefinition widgetDef, LayoutConversionContext ctx) {
         String wType = widgetDef.getType();
         String wName = widgetDef.getName();
-        if (getAcceptedWidgetNames().contains(wName)
-                && getAcceptedWidgetTypes().contains(wType)) {
+        if (getAcceptedWidgetNames().contains(wName) && getAcceptedWidgetTypes().contains(wType)) {
             WidgetDefinition clone = getClonedWidget(widgetDef);
             // change select options on new widget
             WidgetSelectOption[] selectOptions = VocabularyHelper.getChainSelectVocabularySelectOptions(
-                    getParentDirectoryName(), getChildDirectoryName(),
-                    ctx.getLanguage()).toArray(new WidgetSelectOption[] {});
+                    getParentDirectoryName(), getChildDirectoryName(), ctx.getLanguage()).toArray(
+                    new WidgetSelectOption[] {});
             clone.setSelectOptions(selectOptions);
             return clone;
         }

@@ -47,8 +47,7 @@ public abstract class UserManagerMultiTenantTestCase extends NXRuntimeTestCase {
         }
         fireFrameworkStarted();
 
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/userservice-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/userservice-config.xml");
     }
 
 }

@@ -21,13 +21,13 @@ import java.io.Serializable;
  * <p>
  * An AST method accepts a visitor and that's all.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface ASTNode extends Serializable {
 
     /**
      * Accept the given visitor.
+     *
      * @param visitor the AST node visitor
      */
     void accept(IVisitor visitor);

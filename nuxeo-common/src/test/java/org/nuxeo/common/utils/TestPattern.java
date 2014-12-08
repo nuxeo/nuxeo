@@ -39,7 +39,6 @@ public class TestPattern {
         Assert.assertTrue(pattern.match("abc.txt"));
         Assert.assertFalse(pattern.match("ac.txt"));
 
-
         pattern = new FileNamePattern("?");
         Assert.assertTrue(pattern.match("a"));
         Assert.assertFalse(pattern.match("ab"));
@@ -228,6 +227,5 @@ public class TestPattern {
         Assert.assertTrue(FileNamePattern.containsAt("abc".toCharArray(), 1, "??".toCharArray()));
 
     }
-
 
 }

@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
  * <p>
  * For more specific exceptions see derived classes.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class SecurityException extends DocumentException {
 

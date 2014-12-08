@@ -37,20 +37,19 @@ import org.xml.sax.XMLReader;
  * Base class that contains SAX based text extractor fallback
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public abstract class BaseOfficeXMLTextConverter implements Converter {
 
     public static final String MAX_SIZE = "MAX_SIZE";
 
-    protected long maxSize4POI = 5*1024*1014;
+    protected long maxSize4POI = 5 * 1024 * 1014;
 
-    protected BlobHolder runFallBackConverter(BlobHolder blobHolder, final String prefix) throws ConversionException{
+    protected BlobHolder runFallBackConverter(BlobHolder blobHolder, final String prefix) throws ConversionException {
 
         Converter fallback = new XmlZip2TextConverter() {
             @Override
-            protected void readXmlZipContent(ZipInputStream zis, XMLReader reader,
-                    StringBuilder sb) throws IOException, SAXException {
+            protected void readXmlZipContent(ZipInputStream zis, XMLReader reader, StringBuilder sb)
+                    throws IOException, SAXException {
                 ZipEntry zipEntry = zis.getNextEntry();
 
                 while (zipEntry != null) {
@@ -59,7 +58,7 @@ public abstract class BaseOfficeXMLTextConverter implements Converter {
                         try {
                             xml2text = new Xml2TextHandler();
                             sb.append(xml2text.parse(new InputSource(zis)));
-                        } catch (ParserConfigurationException    e) {
+                        } catch (ParserConfigurationException e) {
                             throw new IOException("Error during raw XML Text extraction", e);
                         }
                     }
@@ -73,7 +72,7 @@ public abstract class BaseOfficeXMLTextConverter implements Converter {
     @Override
     public void init(ConverterDescriptor descriptor) {
         String max = descriptor.getParameters().get(MAX_SIZE);
-        if (max!=null) {
+        if (max != null) {
             maxSize4POI = Long.parseLong(max);
         }
     }

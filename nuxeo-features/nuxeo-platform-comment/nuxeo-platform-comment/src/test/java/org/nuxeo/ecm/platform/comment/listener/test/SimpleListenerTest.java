@@ -50,8 +50,7 @@ public class SimpleListenerTest extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.platform.comment.api");
         deployBundle("org.nuxeo.ecm.platform.comment");
-        deployContrib("org.nuxeo.ecm.platform.comment.tests",
-                "OSGI-INF/comment-jena-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.comment.tests", "OSGI-INF/comment-jena-contrib.xml");
         openSession();
     }
 
@@ -132,8 +131,7 @@ public class SimpleListenerTest extends SQLRepositoryTestCase {
 
         // Get the comments
         CommentService commentService = CommentServiceHelper.getCommentService();
-        List<DocumentModel> comments = commentService.getCommentManager().getComments(
-                doc);
+        List<DocumentModel> comments = commentService.getCommentManager().getComments(doc);
 
         // Delete the first comment
         session.removeDocument(comments.get(0).getRef());

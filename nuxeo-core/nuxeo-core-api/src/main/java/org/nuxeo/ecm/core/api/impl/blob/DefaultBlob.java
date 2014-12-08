@@ -16,18 +16,19 @@ package org.nuxeo.ecm.core.api.impl.blob;
 
 import java.io.Serializable;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class DefaultBlob extends AbstractBlob implements Serializable {
 
     private static final long serialVersionUID = 3437124433900977491L;
 
     protected String digest;
+
     protected String filename;
+
     protected String encoding;
+
     protected String mimeType;
 
     @Override

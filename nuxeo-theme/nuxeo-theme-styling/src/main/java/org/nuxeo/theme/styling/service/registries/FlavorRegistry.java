@@ -29,8 +29,7 @@ import org.nuxeo.theme.styling.service.descriptors.Logo;
 import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
 
 /**
- * Registry for theme flavors, handling merge of registered {@link Flavor}
- * elements.
+ * Registry for theme flavors, handling merge of registered {@link Flavor} elements.
  *
  * @since 5.5
  */
@@ -44,8 +43,7 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
     }
 
     @Override
-    public void contributionUpdated(String id, Flavor contrib,
-            Flavor newOrigContrib) {
+    public void contributionUpdated(String id, Flavor contrib, Flavor newOrigContrib) {
         themePageFlavors.put(id, contrib);
     }
 
@@ -103,8 +101,7 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
         if (newPresets != null) {
             List<FlavorPresets> merged = new ArrayList<FlavorPresets>();
             merged.addAll(newPresets);
-            boolean keepOld = src.getAppendPresets()
-                    || (newPresets.isEmpty() && !src.getAppendPresets());
+            boolean keepOld = src.getAppendPresets() || (newPresets.isEmpty() && !src.getAppendPresets());
             if (keepOld) {
                 // add back old contributions
                 List<FlavorPresets> oldPresets = dst.getPresets();
@@ -125,8 +122,7 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
         for (Flavor f : themePageFlavors.values()) {
             if (f != null) {
                 String extendsFlavor = f.getExtendsFlavor();
-                if (!StringUtils.isBlank(extendsFlavor)
-                        && extendsFlavor.equals(flavor)) {
+                if (!StringUtils.isBlank(extendsFlavor) && extendsFlavor.equals(flavor)) {
                     res.add(f);
                 }
             }

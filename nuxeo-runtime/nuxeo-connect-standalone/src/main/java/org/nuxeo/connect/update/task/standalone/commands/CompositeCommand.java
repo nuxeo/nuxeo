@@ -58,8 +58,7 @@ public class CompositeCommand extends AbstractCommand {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         CompositeCommand rollbackCommand = new CompositeCommand();
         for (Command command : commands) {
             rollbackCommand.addCommand(command.run(task, prefs));
@@ -68,8 +67,7 @@ public class CompositeCommand extends AbstractCommand {
     }
 
     @Override
-    protected void doValidate(Task task, ValidationStatus status)
-            throws PackageException {
+    protected void doValidate(Task task, ValidationStatus status) throws PackageException {
         for (Command command : commands) {
             command.validate(task, status);
         }
@@ -77,8 +75,7 @@ public class CompositeCommand extends AbstractCommand {
 
     @Override
     public void readFrom(Element element) throws PackageException {
-        throw new UnsupportedOperationException(
-                "Composite command is for internal use only.");
+        throw new UnsupportedOperationException("Composite command is for internal use only.");
     }
 
     public void addCommand(Command command) {

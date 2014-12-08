@@ -28,38 +28,32 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class UserPreferencesServiceImpl extends DefaultComponent implements
-        UserPreferencesService {
+public class UserPreferencesServiceImpl extends DefaultComponent implements UserPreferencesService {
 
     UserWorkspaceService userWorkspaceService;
 
     LocalConfigurationService localConfigurationService;
 
     @Override
-    public SimpleUserPreferences getSimpleUserPreferences(CoreSession session)
-            throws ClientException {
-        DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(
-                session, null);
+    public SimpleUserPreferences getSimpleUserPreferences(CoreSession session) throws ClientException {
+        DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(session, null);
         if (!userWorkspace.hasFacet(SIMPLE_CONFIGURATION_FACET)) {
             userWorkspace.addFacet(SIMPLE_CONFIGURATION_FACET);
             userWorkspace = session.saveDocument(userWorkspace);
         }
         SimpleConfiguration simpleConfiguration = getLocalConfigurationService().getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                userWorkspace);
-        SimpleUserPreferences userPref = new SimpleUserPreferences(session.getDocument(simpleConfiguration.getDocumentRef()));
+                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET, userWorkspace);
+        SimpleUserPreferences userPref = new SimpleUserPreferences(
+                session.getDocument(simpleConfiguration.getDocumentRef()));
         return userPref;
     }
 
     @Override
     @SuppressWarnings("rawtypes")
-    public <T extends UserPreferences> T getUserPreferences(
-            CoreSession session, Class<T> userPrefClass, String userPrefFacet)
-            throws ClientException {
-        DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(
-                session, null);
-        return getLocalConfigurationService().getConfiguration(userPrefClass,
-                userPrefFacet, userWorkspace);
+    public <T extends UserPreferences> T getUserPreferences(CoreSession session, Class<T> userPrefClass,
+            String userPrefFacet) throws ClientException {
+        DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(session, null);
+        return getLocalConfigurationService().getConfiguration(userPrefClass, userPrefFacet, userWorkspace);
     }
 
     protected UserWorkspaceService getUserWorkspaceService() {

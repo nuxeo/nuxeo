@@ -26,20 +26,22 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WizardSession extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 1L;
 
     protected String id;
+
     protected Object data;
+
     protected ValidationException error;
 
     protected WizardPage lastPage;
-    protected Map<String, WizardPage> pages;
-    protected WizardPage[] orderedPages;
 
+    protected Map<String, WizardPage> pages;
+
+    protected WizardPage[] orderedPages;
 
     public WizardSession(String wizardId, WizardPage[] pages) {
         if (pages == null || pages.length == 0) {
@@ -48,7 +50,7 @@ public class WizardSession extends HashMap<String, Object> {
         this.id = wizardId;
         this.lastPage = pages[0];
         this.pages = new HashMap<String, WizardPage>();
-        for (int i = 0; i<pages.length; i++) {
+        for (int i = 0; i < pages.length; i++) {
             WizardPage p = pages[i];
             p.setIndex(i);
             this.pages.put(p.getId(), p);
@@ -59,7 +61,7 @@ public class WizardSession extends HashMap<String, Object> {
     public WizardPage pushPage(String pageId) {
         WizardPage page = pages.get(pageId);
         if (page == null) {
-            throw new WebResourceNotFoundException("No such wizard page: "+pageId);
+            throw new WebResourceNotFoundException("No such wizard page: " + pageId);
         }
         if (lastPage == null) {
             lastPage = page;
@@ -115,7 +117,7 @@ public class WizardSession extends HashMap<String, Object> {
         WizardPage p = lastPage;
         while (p != null) {
             if (formType == p.getFormType()) {
-                return (T)p.getForm();
+                return (T) p.getForm();
             }
             p = p.prev;
         }

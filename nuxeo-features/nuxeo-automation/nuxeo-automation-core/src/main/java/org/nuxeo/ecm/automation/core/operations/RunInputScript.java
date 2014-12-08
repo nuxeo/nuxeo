@@ -27,9 +27,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
- * Run a script given as the input of the operation (as a blob).
- *
- * Note that this operation is available only as administrator
+ * Run a script given as the input of the operation (as a blob). Note that this operation is available only as
+ * administrator
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -47,8 +46,7 @@ public class RunInputScript {
     @OperationMethod
     public Blob run(Blob blob) throws OperationException, IOException {
         if (!((NuxeoPrincipal) ctx.getPrincipal()).isAdministrator()) {
-            throw new OperationException(
-                    "Not allowed. You must be administrator to run scripts");
+            throw new OperationException("Not allowed. You must be administrator to run scripts");
         }
         Object r = null;
         if (type.equals("mvel")) {

@@ -110,9 +110,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     public UserMultiTenantManagement multiTenantManagement = new DefaultUserMultiTenantManagement();
 
     /**
-     * A structure used to inject field name configuration of users schema into
-     * a NuxeoPrincipalImpl instance. TODO not all fields inside are
-     * configurable for now - they will use default values
+     * A structure used to inject field name configuration of users schema into a NuxeoPrincipalImpl instance. TODO not
+     * all fields inside are configurable for now - they will use default values
      */
     protected UserConfig userConfig;
 
@@ -176,8 +175,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public void setConfiguration(UserManagerDescriptor descriptor)
-            throws ClientException {
+    public void setConfiguration(UserManagerDescriptor descriptor) throws ClientException {
         defaultGroup = descriptor.defaultGroup;
         administratorIds = descriptor.defaultAdministratorIds;
         disableDefaultAdministratorsGroup = false;
@@ -227,8 +225,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     }
 
-    protected void setUserDirectoryName(String userDirectoryName)
-            throws ClientException {
+    protected void setUserDirectoryName(String userDirectoryName) throws ClientException {
         this.userDirectoryName = userDirectoryName;
         userSchemaName = dirService.getDirectorySchema(userDirectoryName);
         userIdField = dirService.getDirectoryIdField(userDirectoryName);
@@ -270,8 +267,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             groupSchemaName = dirService.getDirectorySchema(groupDirectoryName);
             groupIdField = dirService.getDirectoryIdField(groupDirectoryName);
         } catch (ClientException e) {
-            throw new RuntimeException("Unkown group directory "
-                    + groupDirectoryName, e);
+            throw new RuntimeException("Unkown group directory " + groupDirectoryName, e);
         }
     }
 
@@ -342,8 +338,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return anonymousUserId;
     }
 
-    protected void setVirtualUsers(
-            Map<String, VirtualUserDescriptor> virtualUsers) {
+    protected void setVirtualUsers(Map<String, VirtualUserDescriptor> virtualUsers) {
         this.virtualUsers.clear();
         if (virtualUsers != null) {
             this.virtualUsers.putAll(virtualUsers);
@@ -351,8 +346,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public boolean checkUsernamePassword(String username, String password)
-            throws ClientException {
+    public boolean checkUsernamePassword(String username, String password) throws ClientException {
 
         if (username == null || password == null) {
             log.warn("Trying to authenticate against null username or password");
@@ -362,9 +356,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         // deal with anonymous user
         String anonymousUserId = getAnonymousUserId();
         if (username.equals(anonymousUserId)) {
-            log.warn(String.format(
-                    "Trying to authenticate anonymous user (%s)",
-                    anonymousUserId));
+            log.warn(String.format("Trying to authenticate anonymous user (%s)", anonymousUserId));
             return false;
         }
 
@@ -382,8 +374,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         try {
             String userDirName;
             // BBB backward compat for userDirectory + userAuthentication
-            if ("userDirectory".equals(userDirectoryName)
-                    && dirService.getDirectory("userAuthentication") != null) {
+            if ("userDirectory".equals(userDirectoryName) && dirService.getDirectory("userAuthentication") != null) {
                 userDirName = "userAuthentication";
             } else {
                 userDirName = userDirectoryName;
@@ -391,8 +382,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
             userDir = dirService.open(userDirName);
             if (!userDir.isAuthenticating()) {
-                log.error("Trying to authenticate against a non authenticating "
-                        + "directory: " + userDirName);
+                log.error("Trying to authenticate against a non authenticating " + "directory: " + userDirName);
                 return false;
             }
 
@@ -408,16 +398,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
     }
 
-    protected void syncDigestAuthPassword(String username, String password)
-            throws ClientException {
-        if (StringUtils.isEmpty(digestAuthDirectory)
-                || StringUtils.isEmpty(digestAuthRealm) || username == null
+    protected void syncDigestAuthPassword(String username, String password) throws ClientException {
+        if (StringUtils.isEmpty(digestAuthDirectory) || StringUtils.isEmpty(digestAuthRealm) || username == null
                 || password == null) {
             return;
         }
 
-        String ha1 = encodeDigestAuthPassword(username, digestAuthRealm,
-                password);
+        String ha1 = encodeDigestAuthPassword(username, digestAuthRealm, password);
         Session dir = null;
         try {
             dir = dirService.open(digestAuthDirectory);
@@ -430,19 +417,15 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 dir.createEntry(entry);
                 log.debug("Created digest auth password for user:" + username);
             } else {
-                String storedHa1 = (String) entry.getProperty(schema,
-                        dir.getPasswordField());
+                String storedHa1 = (String) entry.getProperty(schema, dir.getPasswordField());
                 if (!ha1.equals(storedHa1)) {
                     entry.setProperty(schema, dir.getPasswordField(), ha1);
                     dir.updateEntry(entry);
-                    log.debug("Updated digest auth password for user:"
-                            + username);
+                    log.debug("Updated digest auth password for user:" + username);
                 }
             }
         } catch (DirectoryException e) {
-            log.warn(
-                    "Digest auth password not synchronized, check your configuration",
-                    e);
+            log.warn("Digest auth password not synchronized, check your configuration", e);
         } finally {
             if (dir != null) {
                 dir.close();
@@ -455,8 +438,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return BaseSession.createEntryModel(null, schema, null, null);
     }
 
-    public static String encodeDigestAuthPassword(String username,
-            String realm, String password) {
+    public static String encodeDigestAuthPassword(String username, String realm, String password) {
         String a1 = username + ":" + realm + ":" + password;
         return DigestUtils.md5Hex(a1);
     }
@@ -482,44 +464,38 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     protected NuxeoPrincipal makeAnonymousPrincipal() throws ClientException {
-        DocumentModel userEntry = makeVirtualUserEntry(getAnonymousUserId(),
-                anonymousUser);
+        DocumentModel userEntry = makeVirtualUserEntry(getAnonymousUserId(), anonymousUser);
         // XXX: pass anonymous user groups, but they will be ignored
         return makePrincipal(userEntry, true, anonymousUser.getGroups());
     }
 
-    protected NuxeoPrincipal makeVirtualPrincipal(VirtualUser user)
-            throws ClientException {
+    protected NuxeoPrincipal makeVirtualPrincipal(VirtualUser user) throws ClientException {
         DocumentModel userEntry = makeVirtualUserEntry(user.getId(), user);
         return makePrincipal(userEntry, false, user.getGroups());
     }
 
-    protected DocumentModel makeVirtualUserEntry(String id, VirtualUser user)
-            throws ClientException {
-        final DocumentModel userEntry = BaseSession.createEntryModel(null,
-                userSchemaName, id, null);
+    protected DocumentModel makeVirtualUserEntry(String id, VirtualUser user) throws ClientException {
+        final DocumentModel userEntry = BaseSession.createEntryModel(null, userSchemaName, id, null);
         // at least fill id field
         userEntry.setProperty(userSchemaName, userIdField, id);
         for (Entry<String, Serializable> prop : user.getProperties().entrySet()) {
             try {
-                userEntry.setProperty(userSchemaName, prop.getKey(),
-                        prop.getValue());
+                userEntry.setProperty(userSchemaName, prop.getKey(), prop.getValue());
             } catch (ClientException ce) {
-                log.error("Property: " + prop.getKey()
-                        + " does not exists. Check your "
-                        + "UserService configuration.", ce);
+                log.error(
+                        "Property: " + prop.getKey() + " does not exists. Check your " + "UserService configuration.",
+                        ce);
             }
         }
         return userEntry;
     }
 
-    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry)
-            throws ClientException {
+    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry) throws ClientException {
         return makePrincipal(userEntry, false, null);
     }
 
-    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry,
-            boolean anonymous, List<String> groups) throws ClientException {
+    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry, boolean anonymous, List<String> groups)
+            throws ClientException {
         boolean admin = false;
         String username = userEntry.getId();
 
@@ -540,8 +516,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             }
         }
 
-        NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(username,
-                anonymous, admin, false);
+        NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(username, anonymous, admin, false);
         principal.setConfig(userConfig);
 
         principal.setModel(userEntry, false);
@@ -595,8 +570,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return getGroup(groupName, null);
     }
 
-    protected NuxeoGroup getGroup(String groupName, DocumentModel context)
-            throws ClientException {
+    protected NuxeoGroup getGroup(String groupName, DocumentModel context) throws ClientException {
         DocumentModel groupEntry = getGroupModel(groupName, context);
         if (groupEntry != null) {
             return makeGroup(groupEntry);
@@ -615,8 +589,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         NuxeoGroup group = new NuxeoGroupImpl(groupEntry.getId());
         List<String> list;
         try {
-            list = (List<String>) groupEntry.getProperty(groupSchemaName,
-                    groupMembersField);
+            list = (List<String>) groupEntry.getProperty(groupSchemaName, groupMembersField);
         } catch (ClientException e) {
             list = null;
         }
@@ -624,8 +597,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             group.setMemberUsers(list);
         }
         try {
-            list = (List<String>) groupEntry.getProperty(groupSchemaName,
-                    groupSubGroupsField);
+            list = (List<String>) groupEntry.getProperty(groupSchemaName, groupSubGroupsField);
         } catch (ClientException e) {
             list = null;
         }
@@ -633,8 +605,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             group.setMemberGroups(list);
         }
         try {
-            list = (List<String>) groupEntry.getProperty(groupSchemaName,
-                    groupParentGroupsField);
+            list = (List<String>) groupEntry.getProperty(groupSchemaName, groupParentGroupsField);
         } catch (ClientException e) {
             list = null;
         }
@@ -642,8 +613,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             group.setParentGroups(list);
         }
         try {
-            String label = (String) groupEntry.getProperty(groupSchemaName,
-                    groupLabelField);
+            String label = (String) groupEntry.getProperty(groupSchemaName, groupLabelField);
             if (label != null) {
                 group.setLabel(label);
             }
@@ -659,8 +629,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public List<String> getGroupsInGroup(String parentId)
-            throws ClientException {
+    public List<String> getGroupsInGroup(String parentId) throws ClientException {
         return getGroupsInGroup(parentId, null);
     }
 
@@ -670,13 +639,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public List<String> getUsersInGroupAndSubGroups(String groupId)
-            throws ClientException {
+    public List<String> getUsersInGroupAndSubGroups(String groupId) throws ClientException {
         return getUsersInGroupAndSubGroups(groupId, null);
     }
 
-    protected void appendSubgroups(String groupId, Set<String> groups,
-            DocumentModel context) throws ClientException {
+    protected void appendSubgroups(String groupId, Set<String> groups, DocumentModel context) throws ClientException {
         List<String> groupsToAppend = getGroupsInGroup(groupId, context);
         groups.addAll(groupsToAppend);
         for (String subgroupId : groupsToAppend) {
@@ -689,8 +656,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     }
 
-    protected boolean isAnonymousMatching(Map<String, Serializable> filter,
-            Set<String> fulltext) {
+    protected boolean isAnonymousMatching(Map<String, Serializable> filter, Set<String> fulltext) {
         String anonymousUserId = getAnonymousUserId();
         if (anonymousUserId == null) {
             return false;
@@ -710,8 +676,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 }
             } else {
                 if (fulltext != null && fulltext.contains(fieldName)) {
-                    if (!value.toString().toLowerCase().startsWith(
-                            expected.toString().toLowerCase())) {
+                    if (!value.toString().toLowerCase().startsWith(expected.toString().toLowerCase())) {
                         return false;
                     }
                 } else {
@@ -725,11 +690,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public List<NuxeoPrincipal> searchPrincipals(String pattern)
-            throws ClientException {
+    public List<NuxeoPrincipal> searchPrincipals(String pattern) throws ClientException {
         DocumentModelList entries = searchUsers(pattern);
-        List<NuxeoPrincipal> principals = new ArrayList<NuxeoPrincipal>(
-                entries.size());
+        List<NuxeoPrincipal> principals = new ArrayList<NuxeoPrincipal>(entries.size());
         for (DocumentModel entry : entries) {
             principals.add(makePrincipal(entry));
         }
@@ -737,8 +700,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModelList searchGroups(String pattern)
-            throws ClientException {
+    public DocumentModelList searchGroups(String pattern) throws ClientException {
         return searchGroups(pattern, null);
     }
 
@@ -755,25 +717,20 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return getDirectorySortMap(groupSortField, groupIdField);
     }
 
-    protected Map<String, String> getDirectorySortMap(
-            String descriptorSortField, String fallBackField) {
-        String sortField = descriptorSortField != null ? descriptorSortField
-                : fallBackField;
+    protected Map<String, String> getDirectorySortMap(String descriptorSortField, String fallBackField) {
+        String sortField = descriptorSortField != null ? descriptorSortField : fallBackField;
         Map<String, String> orderBy = new HashMap<String, String>();
         orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
         return orderBy;
     }
 
-    protected void notify(String userOrGroupName, String eventId)
-            throws ClientException {
+    protected void notify(String userOrGroupName, String eventId) throws ClientException {
         EventService eventService = Framework.getService(EventService.class);
-        eventService.sendEvent(new Event(USERMANAGER_TOPIC, eventId, this,
-                userOrGroupName));
+        eventService.sendEvent(new Event(USERMANAGER_TOPIC, eventId, this, userOrGroupName));
     }
 
     /**
-     * Notifies user has changed so that the JaasCacheFlusher listener can make
-     * sure principals cache is reset.
+     * Notifies user has changed so that the JaasCacheFlusher listener can make sure principals cache is reset.
      */
     protected void notifyUserChanged(String userName) throws ClientException {
         invalidatePrincipal(userName);
@@ -791,8 +748,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     /**
-     * Notifies group has changed so that the JaasCacheFlusher listener can make
-     * sure principals cache is reset.
+     * Notifies group has changed so that the JaasCacheFlusher listener can make sure principals cache is reset.
      */
     protected void notifyGroupChanged(String groupName) throws ClientException {
         invalidateAllPrincipals();
@@ -851,18 +807,14 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     protected void checkGrouId(DocumentModel groupModel) throws ClientException {
         // be sure the name does not contains trailing spaces
-        Object groupIdValue = groupModel.getProperty(groupSchemaName,
-                groupIdField);
+        Object groupIdValue = groupModel.getProperty(groupSchemaName, groupIdField);
         if (groupIdValue != null) {
-            groupModel.setProperty(groupSchemaName, groupIdField,
-                    groupIdValue.toString().trim());
+            groupModel.setProperty(groupSchemaName, groupIdField, groupIdValue.toString().trim());
         }
     }
 
-    protected String getGroupId(DocumentModel groupModel)
-            throws ClientException {
-        Object groupIdValue = groupModel.getProperty(groupSchemaName,
-                groupIdField);
+    protected String getGroupId(DocumentModel groupModel) throws ClientException {
+        Object groupIdValue = groupModel.getProperty(groupSchemaName, groupIdField);
         if (groupIdValue != null && !(groupIdValue instanceof String)) {
             throw new ClientException("Invalid group id " + groupIdValue);
         }
@@ -872,8 +824,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     protected void checkUserId(DocumentModel userModel) throws ClientException {
         Object userIdValue = userModel.getProperty(userSchemaName, userIdField);
         if (userIdValue != null) {
-            userModel.setProperty(userSchemaName, userIdField,
-                    userIdValue.toString().trim());
+            userModel.setProperty(userSchemaName, userIdField, userIdValue.toString().trim());
         }
     }
 
@@ -886,14 +837,12 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModel createGroup(DocumentModel groupModel)
-            throws ClientException {
+    public DocumentModel createGroup(DocumentModel groupModel) throws ClientException {
         return createGroup(groupModel, null);
     }
 
     @Override
-    public DocumentModel createUser(DocumentModel userModel)
-            throws ClientException {
+    public DocumentModel createUser(DocumentModel userModel) throws ClientException {
         return createUser(userModel, null);
     }
 
@@ -923,8 +872,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         Session groupDir = null;
         try {
             groupDir = dirService.open(groupDirectoryName);
-            List<String> groupIds = groupDir.getProjection(
-                    Collections.<String, Serializable> emptyMap(),
+            List<String> groupIds = groupDir.getProjection(Collections.<String, Serializable> emptyMap(),
                     groupDir.getIdField());
             Collections.sort(groupIds);
             return groupIds;
@@ -953,8 +901,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext) throws ClientException {
+    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext)
+            throws ClientException {
         return searchGroups(filter, fulltext, null);
     }
 
@@ -964,8 +912,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModelList searchUsers(Map<String, Serializable> filter,
-            Set<String> fulltext) throws ClientException {
+    public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext) throws ClientException {
         return searchUsers(filter, fulltext, getUserSortMap(), null);
     }
 
@@ -988,20 +935,15 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     @Override
     public void createGroup(NuxeoGroup group) throws ClientException {
         DocumentModel newGroupModel = getBareGroupModel();
-        newGroupModel.setProperty(groupSchemaName, groupIdField,
-                group.getName());
-        newGroupModel.setProperty(groupSchemaName, groupLabelField,
-                group.getLabel());
-        newGroupModel.setProperty(groupSchemaName, groupMembersField,
-                group.getMemberUsers());
-        newGroupModel.setProperty(groupSchemaName, groupSubGroupsField,
-                group.getMemberGroups());
+        newGroupModel.setProperty(groupSchemaName, groupIdField, group.getName());
+        newGroupModel.setProperty(groupSchemaName, groupLabelField, group.getLabel());
+        newGroupModel.setProperty(groupSchemaName, groupMembersField, group.getMemberUsers());
+        newGroupModel.setProperty(groupSchemaName, groupSubGroupsField, group.getMemberGroups());
         createGroup(newGroupModel);
     }
 
     @Override
-    public void createPrincipal(NuxeoPrincipal principal)
-            throws ClientException {
+    public void createPrincipal(NuxeoPrincipal principal) throws ClientException {
         createUser(principal.getModel());
     }
 
@@ -1011,15 +953,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public void deletePrincipal(NuxeoPrincipal principal)
-            throws ClientException {
+    public void deletePrincipal(NuxeoPrincipal principal) throws ClientException {
         deleteUser(principal.getName());
     }
 
     @Override
     public List<NuxeoGroup> getAvailableGroups() throws ClientException {
-        DocumentModelList groupModels = searchGroups(
-                Collections.<String, Serializable> emptyMap(), null);
+        DocumentModelList groupModels = searchGroups(Collections.<String, Serializable> emptyMap(), null);
         List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>(groupModels.size());
         for (DocumentModel groupModel : groupModels) {
             groups.add(makeGroup(groupModel));
@@ -1029,10 +969,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     @Override
     public List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException {
-        DocumentModelList userModels = searchUsers(
-                Collections.<String, Serializable> emptyMap(), null);
-        List<NuxeoPrincipal> users = new ArrayList<NuxeoPrincipal>(
-                userModels.size());
+        DocumentModelList userModels = searchUsers(Collections.<String, Serializable> emptyMap(), null);
+        List<NuxeoPrincipal> users = new ArrayList<NuxeoPrincipal>(userModels.size());
         for (DocumentModel userModel : userModels) {
             users.add(makePrincipal(userModel));
         }
@@ -1045,16 +983,15 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter,
-            Set<String> pattern) throws ClientException {
+    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter, Set<String> pattern)
+            throws ClientException {
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName);
             removeVirtualFilters(filter);
 
             DocumentModelList entries = userDir.query(filter, pattern);
-            List<NuxeoPrincipal> principals = new ArrayList<NuxeoPrincipal>(
-                    entries.size());
+            List<NuxeoPrincipal> principals = new ArrayList<NuxeoPrincipal>(entries.size());
             for (DocumentModel entry : entries) {
                 principals.add(makePrincipal(entry));
             }
@@ -1074,20 +1011,15 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         // XXX: need to refetch it for tests to pass, i don't get why (session
         // id is used maybe?)
         DocumentModel newGroupModel = getGroupModel(group.getName());
-        newGroupModel.setProperty(groupSchemaName, groupIdField,
-                group.getName());
-        newGroupModel.setProperty(groupSchemaName, groupLabelField,
-                group.getLabel());
-        newGroupModel.setProperty(groupSchemaName, groupMembersField,
-                group.getMemberUsers());
-        newGroupModel.setProperty(groupSchemaName, groupSubGroupsField,
-                group.getMemberGroups());
+        newGroupModel.setProperty(groupSchemaName, groupIdField, group.getName());
+        newGroupModel.setProperty(groupSchemaName, groupLabelField, group.getLabel());
+        newGroupModel.setProperty(groupSchemaName, groupMembersField, group.getMemberUsers());
+        newGroupModel.setProperty(groupSchemaName, groupSubGroupsField, group.getMemberGroups());
         updateGroup(newGroupModel);
     }
 
     @Override
-    public void updatePrincipal(NuxeoPrincipal principal)
-            throws ClientException {
+    public void updatePrincipal(NuxeoPrincipal principal) throws ClientException {
         updateUser(principal.getModel());
     }
 
@@ -1096,8 +1028,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return administratorGroups;
     }
 
-    protected List<String> getLeafPermissions(String perm)
-            throws ClientException {
+    protected List<String> getLeafPermissions(String perm) throws ClientException {
         ArrayList<String> permissions = new ArrayList<String>();
         PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
         String[] subpermissions = permissionProvider.getSubPermissions(perm);
@@ -1118,17 +1049,14 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public Principal authenticate(String name, String password)
-            throws ClientException {
-        return checkUsernamePassword(name, password) ? getPrincipal(name)
-                : null;
+    public Principal authenticate(String name, String password) throws ClientException {
+        return checkUsernamePassword(name, password) ? getPrincipal(name) : null;
     }
 
     /*************** MULTI-TENANT-IMPLEMENTATION ************************/
 
-    public DocumentModelList searchUsers(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy,
-            DocumentModel context) throws ClientException {
+    public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext,
+            Map<String, String> orderBy, DocumentModel context) throws ClientException {
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName, context);
@@ -1136,19 +1064,16 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             removeVirtualFilters(filter);
 
             // XXX: do not fetch references, can be costly
-            DocumentModelList entries = userDir.query(filter, fulltext, null,
-                    false);
+            DocumentModelList entries = userDir.query(filter, fulltext, null, false);
             if (isAnonymousMatching(filter, fulltext)) {
-                entries.add(makeVirtualUserEntry(getAnonymousUserId(),
-                        anonymousUser));
+                entries.add(makeVirtualUserEntry(getAnonymousUserId(), anonymousUser));
             }
 
             // TODO: match searchable virtual users
 
             if (orderBy != null && !orderBy.isEmpty()) {
                 // sort: cannot sort before virtual users are added
-                Collections.sort(entries, new DocumentModelComparator(
-                        userSchemaName, orderBy));
+                Collections.sort(entries, new DocumentModelComparator(userSchemaName, orderBy));
             }
 
             return entries;
@@ -1160,20 +1085,16 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public List<String> getUsersInGroup(String groupId, DocumentModel context)
-            throws ClientException {
-        String storeGroupId = multiTenantManagement.groupnameTranformer(this,
-                groupId, context);
+    public List<String> getUsersInGroup(String groupId, DocumentModel context) throws ClientException {
+        String storeGroupId = multiTenantManagement.groupnameTranformer(this, groupId, context);
         return getGroup(storeGroupId).getMemberUsers();
     }
 
     @Override
-    public DocumentModelList searchUsers(String pattern, DocumentModel context)
-            throws ClientException {
+    public DocumentModelList searchUsers(String pattern, DocumentModel context) throws ClientException {
         DocumentModelList entries = new DocumentModelListImpl();
         if (pattern == null || pattern.length() == 0) {
-            entries = searchUsers(
-                    Collections.<String, Serializable> emptyMap(), null);
+            entries = searchUsers(Collections.<String, Serializable> emptyMap(), null);
         } else {
             pattern = pattern.trim();
             Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
@@ -1183,8 +1104,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 filter.put(fieldEntry.getKey(), pattern);
                 DocumentModelList fetchedEntries;
                 if (fieldEntry.getValue() == MatchType.SUBSTRING) {
-                    fetchedEntries = searchUsers(filter, filter.keySet(), null,
-                            context);
+                    fetchedEntries = searchUsers(filter, filter.keySet(), null, context);
                 } else {
                     fetchedEntries = searchUsers(filter, null, null, context);
                 }
@@ -1192,46 +1112,39 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                     uniqueEntries.put(entry.getId(), entry);
                 }
             }
-            log.debug(String.format("found %d unique entries",
-                    uniqueEntries.size()));
+            log.debug(String.format("found %d unique entries", uniqueEntries.size()));
             entries.addAll(uniqueEntries.values());
         }
         // sort
-        Collections.sort(entries, new DocumentModelComparator(userSchemaName,
-                getUserSortMap()));
+        Collections.sort(entries, new DocumentModelComparator(userSchemaName, getUserSortMap()));
 
         return entries;
     }
 
     @Override
-    public DocumentModelList searchUsers(Map<String, Serializable> filter,
-            Set<String> fulltext, DocumentModel context) throws ClientException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<String> getGroupIds(DocumentModel context)
+    public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context)
             throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext, DocumentModel context) throws ClientException {
-        filter = filter != null ? cloneMap(filter)
-                : new HashMap<String, Serializable>();
-        HashSet<String> fulltextClone = fulltext != null ? cloneSet(fulltext)
-                : new HashSet<String>();
-        multiTenantManagement.queryTransformer(this, filter, fulltextClone,
-                context);
+    public List<String> getGroupIds(DocumentModel context) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context)
+            throws ClientException {
+        filter = filter != null ? cloneMap(filter) : new HashMap<String, Serializable>();
+        HashSet<String> fulltextClone = fulltext != null ? cloneSet(fulltext) : new HashSet<String>();
+        multiTenantManagement.queryTransformer(this, filter, fulltextClone, context);
 
         Session groupDir = null;
         try {
             removeVirtualFilters(filter);
             groupDir = dirService.open(groupDirectoryName, context);
 
-            return groupDir.query(filter, fulltextClone, getGroupSortMap(),
-                    false);
+            return groupDir.query(filter, fulltextClone, getGroupSortMap(), false);
         } finally {
             if (groupDir != null) {
                 groupDir.close();
@@ -1240,11 +1153,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModel createGroup(DocumentModel groupModel,
-            DocumentModel context) throws ClientException,
+    public DocumentModel createGroup(DocumentModel groupModel, DocumentModel context) throws ClientException,
             GroupAlreadyExistsException {
-        groupModel = multiTenantManagement.groupTransformer(this, groupModel,
-                context);
+        groupModel = multiTenantManagement.groupTransformer(this, groupModel, context);
 
         // be sure the name does not contains trailing spaces
         checkGrouId(groupModel);
@@ -1271,10 +1182,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModel getGroupModel(String groupIdValue,
-            DocumentModel context) throws ClientException {
-        String groupName = multiTenantManagement.groupnameTranformer(this,
-                groupIdValue, context);
+    public DocumentModel getGroupModel(String groupIdValue, DocumentModel context) throws ClientException {
+        String groupName = multiTenantManagement.groupnameTranformer(this, groupIdValue, context);
         Session groupDir = null;
         if (groupName != null) {
             groupName = groupName.trim();
@@ -1290,8 +1199,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModel getUserModel(String userName, DocumentModel context)
-            throws ClientException {
+    public DocumentModel getUserModel(String userName, DocumentModel context) throws ClientException {
         if (userName == null) {
             return null;
         }
@@ -1330,8 +1238,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public NuxeoPrincipal getPrincipal(String username, DocumentModel context)
-            throws ClientException {
+    public NuxeoPrincipal getPrincipal(String username, DocumentModel context) throws ClientException {
         if (username == null) {
             return null;
         }
@@ -1350,12 +1257,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModelList searchGroups(String pattern, DocumentModel context)
-            throws ClientException {
+    public DocumentModelList searchGroups(String pattern, DocumentModel context) throws ClientException {
         DocumentModelList entries = new DocumentModelListImpl();
         if (pattern == null || pattern.length() == 0) {
-            entries = searchGroups(
-                    Collections.<String, Serializable> emptyMap(), null);
+            entries = searchGroups(Collections.<String, Serializable> emptyMap(), null);
         } else {
             pattern = pattern.trim();
             Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
@@ -1365,8 +1270,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 filter.put(fieldEntry.getKey(), pattern);
                 DocumentModelList fetchedEntries;
                 if (fieldEntry.getValue() == MatchType.SUBSTRING) {
-                    fetchedEntries = searchGroups(filter, filter.keySet(),
-                            context);
+                    fetchedEntries = searchGroups(filter, filter.keySet(), context);
                 } else {
                     fetchedEntries = searchGroups(filter, null, context);
                 }
@@ -1374,25 +1278,21 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                     uniqueEntries.put(entry.getId(), entry);
                 }
             }
-            log.debug(String.format("found %d unique group entries",
-                    uniqueEntries.size()));
+            log.debug(String.format("found %d unique group entries", uniqueEntries.size()));
             entries.addAll(uniqueEntries.values());
         }
         // sort
-        Collections.sort(entries, new DocumentModelComparator(groupSchemaName,
-                getGroupSortMap()));
+        Collections.sort(entries, new DocumentModelComparator(groupSchemaName, getGroupSortMap()));
 
         return entries;
     }
 
     @Override
-    public List<String> getUserIds(DocumentModel context)
-            throws ClientException {
+    public List<String> getUserIds(DocumentModel context) throws ClientException {
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName, context);
-            List<String> userIds = userDir.getProjection(
-                    Collections.<String, Serializable> emptyMap(),
+            List<String> userIds = userDir.getProjection(Collections.<String, Serializable> emptyMap(),
                     userDir.getIdField());
             Collections.sort(userIds);
             return userIds;
@@ -1404,8 +1304,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModel createUser(DocumentModel userModel,
-            DocumentModel context) throws ClientException,
+    public DocumentModel createUser(DocumentModel userModel, DocumentModel context) throws ClientException,
             UserAlreadyExistsException {
         Session userDir = null;
 
@@ -1422,10 +1321,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             }
 
             String schema = dirService.getDirectorySchema(userDirectoryName);
-            String clearUsername = (String) userModel.getProperty(schema,
-                    userDir.getIdField());
-            String clearPassword = (String) userModel.getProperty(schema,
-                    userDir.getPasswordField());
+            String clearUsername = (String) userModel.getProperty(schema, userDir.getIdField());
+            String clearPassword = (String) userModel.getProperty(schema, userDir.getPasswordField());
 
             userModel = userDir.createEntry(userModel);
 
@@ -1443,8 +1340,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public void updateUser(DocumentModel userModel, DocumentModel context)
-            throws ClientException {
+    public void updateUser(DocumentModel userModel, DocumentModel context) throws ClientException {
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName, context);
@@ -1455,10 +1351,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             }
 
             String schema = dirService.getDirectorySchema(userDirectoryName);
-            String clearUsername = (String) userModel.getProperty(schema,
-                    userDir.getIdField());
-            String clearPassword = (String) userModel.getProperty(schema,
-                    userDir.getPasswordField());
+            String clearUsername = (String) userModel.getProperty(schema, userDir.getIdField());
+            String clearPassword = (String) userModel.getProperty(schema, userDir.getPasswordField());
 
             userDir.updateEntry(userModel);
 
@@ -1475,15 +1369,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public void deleteUser(DocumentModel userModel, DocumentModel context)
-            throws ClientException {
+    public void deleteUser(DocumentModel userModel, DocumentModel context) throws ClientException {
         String userId = getUserId(userModel);
         deleteUser(userId, context);
     }
 
     @Override
-    public void deleteUser(String userId, DocumentModel context)
-            throws ClientException {
+    public void deleteUser(String userId, DocumentModel context) throws ClientException {
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName, context);
@@ -1503,8 +1395,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public void updateGroup(DocumentModel groupModel, DocumentModel context)
-            throws ClientException {
+    public void updateGroup(DocumentModel groupModel, DocumentModel context) throws ClientException {
         Session groupDir = null;
         try {
             groupDir = dirService.open(groupDirectoryName, context);
@@ -1524,15 +1415,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public void deleteGroup(DocumentModel groupModel, DocumentModel context)
-            throws ClientException {
+    public void deleteGroup(DocumentModel groupModel, DocumentModel context) throws ClientException {
         String groupId = getGroupId(groupModel);
         deleteGroup(groupId, context);
     }
 
     @Override
-    public void deleteGroup(String groupId, DocumentModel context)
-            throws ClientException {
+    public void deleteGroup(String groupId, DocumentModel context) throws ClientException {
         Session groupDir = null;
         try {
             groupDir = dirService.open(groupDirectoryName, context);
@@ -1550,26 +1439,21 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public List<String> getGroupsInGroup(String parentId, DocumentModel context)
-            throws ClientException {
+    public List<String> getGroupsInGroup(String parentId, DocumentModel context) throws ClientException {
         return getGroup(parentId, null).getMemberGroups();
     }
 
     @Override
-    public List<String> getTopLevelGroups(DocumentModel context)
-            throws ClientException {
+    public List<String> getTopLevelGroups(DocumentModel context) throws ClientException {
         Session groupDir = null;
         try {
             List<String> topLevelGroups = new LinkedList<String>();
             groupDir = dirService.open(groupDirectoryName, context);
             // XXX retrieve all entries with references, can be costly.
-            DocumentModelList groups = groupDir.query(
-                    Collections.<String, Serializable> emptyMap(), null, null,
-                    true);
+            DocumentModelList groups = groupDir.query(Collections.<String, Serializable> emptyMap(), null, null, true);
             for (DocumentModel group : groups) {
                 @SuppressWarnings("unchecked")
-                List<String> parents = (List<String>) group.getProperty(
-                        groupSchemaName, groupParentGroupsField);
+                List<String> parents = (List<String>) group.getProperty(groupSchemaName, groupParentGroupsField);
 
                 if (parents == null || parents.isEmpty()) {
                     topLevelGroups.add(group.getId());
@@ -1584,8 +1468,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public List<String> getUsersInGroupAndSubGroups(String groupId,
-            DocumentModel context) throws ClientException {
+    public List<String> getUsersInGroupAndSubGroups(String groupId, DocumentModel context) throws ClientException {
         Set<String> groups = new HashSet<String>();
         groups.add(groupId);
         appendSubgroups(groupId, groups, context);
@@ -1599,8 +1482,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public String[] getUsersForPermission(String perm, ACP acp,
-            DocumentModel context) {
+    public String[] getUsersForPermission(String perm, ACP acp, DocumentModel context) {
         PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
         // using a hashset to avoid duplicates
         HashSet<String> usernames = new HashSet<String>();
@@ -1630,8 +1512,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 if (acePermissions.containsAll(currentPermissions)) {
                     // special case: everybody perm grant false, don't take in
                     // account the previous ace
-                    if (SecurityConstants.EVERYONE.equals(ace.getUsername())
-                            && !ace.isGranted()) {
+                    if (SecurityConstants.EVERYONE.equals(ace.getUsername()) && !ace.isGranted()) {
                         filteredACEbyPerm.clear();
                     } else {
                         filteredACEbyPerm.add(ace);
@@ -1656,8 +1537,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                     NuxeoGroup group;
                     group = getGroup(aceUsername, context);
                     if (group != null) {
-                        users = getUsersInGroupAndSubGroups(aceUsername,
-                                context);
+                        users = getUsersInGroupAndSubGroups(aceUsername, context);
                     }
 
                 }
@@ -1673,8 +1553,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 }
             } catch (ClientException e) {
                 // Unexpected: throwing a runtime exception
-                throw new Error(
-                        "An unexpected error occured while getting user ids", e);
+                throw new Error("An unexpected error occured while getting user ids", e);
             }
 
         }

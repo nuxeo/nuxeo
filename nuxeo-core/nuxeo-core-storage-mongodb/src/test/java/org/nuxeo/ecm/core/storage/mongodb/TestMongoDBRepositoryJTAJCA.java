@@ -51,17 +51,16 @@ public class TestMongoDBRepositoryJTAJCA extends MongoDBRepositoryTXTestCase {
     }
 
     /**
-     * Test that connection sharing allows use of several sessions at the same
-     * time.
+     * Test that connection sharing allows use of several sessions at the same time.
      */
     @Test
     public void testSessionSharing() throws Exception {
         RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
         Repository repo = repositoryManager.getRepository(repositoryName);
-//        assertEquals(1, repo.getActiveSessionsCount());
+        // assertEquals(1, repo.getActiveSessionsCount());
 
         CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
-//        assertEquals(1, repo.getActiveSessionsCount());
+        // assertEquals(1, repo.getActiveSessionsCount());
         try {
             DocumentModel doc = new DocumentModelImpl("/", "doc", "Document");
             doc = session.createDocument(doc);
@@ -72,7 +71,7 @@ public class TestMongoDBRepositoryJTAJCA extends MongoDBRepositoryTXTestCase {
         } finally {
             closeSession(session2);
         }
-//        assertEquals(1, repo.getActiveSessionsCount());
+        // assertEquals(1, repo.getActiveSessionsCount());
     }
 
     /**
@@ -128,8 +127,7 @@ public class TestMongoDBRepositoryJTAJCA extends MongoDBRepositoryTXTestCase {
 
         /*
          * (non-Javadoc)
-         * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.
-         * LoggingEvent)
+         * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi. LoggingEvent)
          */
         @Override
         protected void append(LoggingEvent event) {
@@ -157,15 +155,13 @@ public class TestMongoDBRepositoryJTAJCA extends MongoDBRepositoryTXTestCase {
             session.getRootDocument();
             fail("should throw");
         } catch (ClientRuntimeException e) {
-            assertTrue(e.getMessage(),
-                    e.getMessage().contains(NO_TX_CANNOT_RECONN));
+            assertTrue(e.getMessage(), e.getMessage().contains(NO_TX_CANNOT_RECONN));
         }
     }
 
     /**
-     * Testing that if 2 modifications are done at the same time on the same
-     * document on 2 separate transactions, one is rejected
-     * (TransactionRuntimeException)
+     * Testing that if 2 modifications are done at the same time on the same document on 2 separate transactions, one is
+     * rejected (TransactionRuntimeException)
      */
     // not working as is
     @Ignore
@@ -271,14 +267,12 @@ public class TestMongoDBRepositoryJTAJCA extends MongoDBRepositoryTXTestCase {
             closedSession.getRootDocument();
             fail("should throw");
         } catch (ClientRuntimeException e) {
-            assertTrue(e.getMessage(),
-                    e.getMessage().contains(NO_TX_CANNOT_RECONN));
+            assertTrue(e.getMessage(), e.getMessage().contains(NO_TX_CANNOT_RECONN));
         }
     }
 
     /**
-     * DocumentModel.getCoreSession cannot reconnect through a sid that does
-     * not exist anymore.
+     * DocumentModel.getCoreSession cannot reconnect through a sid that does not exist anymore.
      */
     @Test
     public void testReconnectAfterCloseThroughSessionId() throws Exception {

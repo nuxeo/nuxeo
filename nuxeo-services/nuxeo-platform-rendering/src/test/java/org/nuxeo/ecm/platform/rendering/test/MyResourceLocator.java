@@ -21,7 +21,6 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MyResourceLocator implements ResourceLocator {
 

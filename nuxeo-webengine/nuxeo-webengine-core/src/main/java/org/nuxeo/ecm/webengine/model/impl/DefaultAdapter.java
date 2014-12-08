@@ -28,7 +28,6 @@ import org.nuxeo.ecm.webengine.model.Resource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultAdapter extends AbstractResource<ResourceTypeImpl> implements AdapterResource {
 
@@ -46,11 +45,12 @@ public class DefaultAdapter extends AbstractResource<ResourceTypeImpl> implement
 
     /**
      * TODO: is this wanted? Adapter of adapters?
+     *
      * @param adapterName
      * @return
      * @throws WebException
      */
-    @Path(value="@{segment}")
+    @Path(value = "@{segment}")
     public AdapterResource disptachAdapter(@PathParam("segment") String adapterName) {
         return ctx.newAdapter(this, adapterName);
     }

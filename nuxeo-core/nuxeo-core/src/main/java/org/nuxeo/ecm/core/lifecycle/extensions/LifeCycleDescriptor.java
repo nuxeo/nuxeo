@@ -28,7 +28,6 @@ import org.w3c.dom.Element;
  *
  * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycle
- *
  * @author Julien Anguenot
  * @author Florent Guillaume
  */
@@ -42,8 +41,8 @@ public class LifeCycleDescriptor {
 
     @XNode("@lifecyclemanager")
     public void setLifeCycleManager(String lifeCycleManager) {
-        log.warn("Ignoring deprecated lifecyclemanager attribute '"
-                + lifeCycleManager + "' for lifecycle '" + name + "'");
+        log.warn("Ignoring deprecated lifecyclemanager attribute '" + lifeCycleManager + "' for lifecycle '" + name
+                + "'");
     }
 
     @XNode("@initial")
@@ -82,8 +81,7 @@ public class LifeCycleDescriptor {
     }
 
     public Collection<LifeCycleState> getStates() {
-        LifeCycleStateConfiguration conf = new LifeCycleStateConfiguration(
-                states);
+        LifeCycleStateConfiguration conf = new LifeCycleStateConfiguration(states);
         return conf.getStates();
     }
 

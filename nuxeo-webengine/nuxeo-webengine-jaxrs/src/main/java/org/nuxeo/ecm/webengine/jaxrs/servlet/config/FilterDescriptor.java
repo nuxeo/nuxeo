@@ -24,7 +24,6 @@ import org.nuxeo.ecm.webengine.jaxrs.Utils.ClassRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("filter")
 public class FilterDescriptor {
@@ -32,7 +31,7 @@ public class FilterDescriptor {
     @XNode("@class")
     protected String classRef;
 
-    @XNodeMap(value="property", key="@name", type=HashMap.class, componentType=String.class, trim=true, nullByDefault=false)
+    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class, trim = true, nullByDefault = false)
     protected HashMap<String, String> initParams;
 
     private ClassRef ref;
@@ -48,8 +47,7 @@ public class FilterDescriptor {
         return classRef;
     }
 
-    public Filter getFilter() throws ReflectiveOperationException,
-            BundleNotFoundException {
+    public Filter getFilter() throws ReflectiveOperationException, BundleNotFoundException {
         return (Filter) getClassRef().get().newInstance();
     }
 
@@ -59,6 +57,6 @@ public class FilterDescriptor {
 
     @Override
     public String toString() {
-        return classRef+" "+initParams;
+        return classRef + " " + initParams;
     }
 }

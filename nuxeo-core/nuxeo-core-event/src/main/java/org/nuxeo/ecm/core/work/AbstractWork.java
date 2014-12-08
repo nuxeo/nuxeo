@@ -38,21 +38,17 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
- * A base implementation for a {@link Work} instance, dealing with most of the
- * details around state change.
+ * A base implementation for a {@link Work} instance, dealing with most of the details around state change.
  * <p>
- * It also deals with transaction management, and prevents running work
- * instances that are suspending.
+ * It also deals with transaction management, and prevents running work instances that are suspending.
  * <p>
- * Actual implementations must at a minimum implement the {@link #work()}
- * method. A method {@link #cleanUp} is available.
+ * Actual implementations must at a minimum implement the {@link #work()} method. A method {@link #cleanUp} is
+ * available.
  * <p>
- * To deal with suspension, {@link #work()} should periodically check for
- * {@link #isSuspending()} and if true save its state and call
- * {@link #suspended()}.
+ * To deal with suspension, {@link #work()} should periodically check for {@link #isSuspending()} and if true save its
+ * state and call {@link #suspended()}.
  * <p>
- * Specific information about the work can be returned by {@link #getDocument()}
- * or {@link #getDocuments()}.
+ * Specific information about the work can be returned by {@link #getDocument()} or {@link #getDocuments()}.
  *
  * @since 5.6
  */
@@ -80,24 +76,23 @@ public abstract class AbstractWork implements Work {
     protected String repositoryName;
 
     /**
-     * Doc id for the Work instance, if relevant. This describes for the
-     * WorkManager a document on which this Work instance will act.
+     * Doc id for the Work instance, if relevant. This describes for the WorkManager a document on which this Work
+     * instance will act.
      * <p>
      * Either docId or docIds is set. Not both.
      */
     protected String docId;
 
     /**
-     * Doc ids for the Work instance, if relevant. This describes for the
-     * WorkManager the documents on which this Work instance will act.
+     * Doc ids for the Work instance, if relevant. This describes for the WorkManager the documents on which this Work
+     * instance will act.
      * <p>
      * Either docId or docIds is set. Not both.
      */
     protected List<String> docIds;
 
     /**
-     * If {@code true}, the docId is only the root of a set of documents on
-     * which this Work instance will act.
+     * If {@code true}, the docId is only the root of a set of documents on which this Work instance will act.
      */
     protected boolean isTree;
 
@@ -229,8 +224,7 @@ public abstract class AbstractWork implements Work {
     }
 
     /**
-     * May be called by implementing classes to open a session on the
-     * repository.
+     * May be called by implementing classes to open a session on the repository.
      *
      * @return the session (also available in {@code session} field)
      */
@@ -239,14 +233,12 @@ public abstract class AbstractWork implements Work {
     }
 
     /**
-     * May be called by implementing classes to open a session on the given
-     * repository.
+     * May be called by implementing classes to open a session on the given repository.
      *
      * @param repositoryName the repository name
      * @return the session (also available in {@code session} field)
      */
-    public CoreSession initSession(String repositoryName)
-            throws ClientException {
+    public CoreSession initSession(String repositoryName) throws ClientException {
         session = CoreInstance.openCoreSessionSystem(repositoryName);
         return session;
     }
@@ -275,8 +267,7 @@ public abstract class AbstractWork implements Work {
         int retryCount = getRetryCount(); // may be 0
         for (int i = 0; i <= retryCount; i++) {
             if (i > 0) {
-                log.debug("Retrying work due to concurrent update (" + i
-                        + "): " + this);
+                log.debug("Retrying work due to concurrent update (" + i + "): " + this);
                 log.trace("Concurrent update", suppressed);
             }
             Exception e = runWorkWithTransactionAndCheckExceptions();
@@ -301,8 +292,7 @@ public abstract class AbstractWork implements Work {
     }
 
     /**
-     * Does work under a transaction, and collects exception and suppressed
-     * exceptions that may lead to a retry.
+     * Does work under a transaction, and collects exception and suppressed exceptions that may lead to a retry.
      *
      * @since 5.9.4
      */
@@ -384,8 +374,7 @@ public abstract class AbstractWork implements Work {
     public abstract void work();
 
     /**
-     * Gets the number of times that this Work instance can be retried in case
-     * of concurrent update exceptions.
+     * Gets the number of times that this Work instance can be retried in case of concurrent update exceptions.
      *
      * @return 0 for no retry, or more if some retries are possible
      * @see #work
@@ -396,8 +385,8 @@ public abstract class AbstractWork implements Work {
     }
 
     /**
-     * This method is called after {@link #work} is done in a finally block,
-     * whether work completed normally or was in error or was interrupted.
+     * This method is called after {@link #work} is done in a finally block, whether work completed normally or was in
+     * error or was interrupted.
      *
      * @param ok {@code true} if the work completed normally
      * @param e the exception, if available
@@ -411,8 +400,7 @@ public abstract class AbstractWork implements Work {
                 if (!(e instanceof ConcurrentUpdateException)) {
                     log.error("Exception during work: " + this, e);
                     if (WorkSchedulePath.captureStack) {
-                        WorkSchedulePath.log.error("Work schedule path",
-                                getSchedulePath().getStack());
+                        WorkSchedulePath.log.error("Work schedule path", getSchedulePath().getStack());
                     }
                 }
             }
@@ -487,8 +475,7 @@ public abstract class AbstractWork implements Work {
     @Override
     public List<DocumentLocation> getDocuments() {
         if (docIds != null) {
-            List<DocumentLocation> res = new ArrayList<DocumentLocation>(
-                    docIds.size());
+            List<DocumentLocation> res = new ArrayList<DocumentLocation>(docIds.size());
             for (String docId : docIds) {
                 res.add(newDocumentLocation(docId));
             }
@@ -510,8 +497,8 @@ public abstract class AbstractWork implements Work {
     }
 
     /**
-     * Releases the transaction resources by committing the existing transaction
-     * (if any). This is recommended before running a long process.
+     * Releases the transaction resources by committing the existing transaction (if any). This is recommended before
+     * running a long process.
      */
     public void commitOrRollbackTransaction() {
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
@@ -522,8 +509,8 @@ public abstract class AbstractWork implements Work {
     /**
      * Starts a new transaction.
      * <p>
-     * Usually called after {@code commitOrRollbackTransaction()}, for instance
-     * for saving back the results of a long process.
+     * Usually called after {@code commitOrRollbackTransaction()}, for instance for saving back the results of a long
+     * process.
      *
      * @return true if a new transaction was started
      */

@@ -16,7 +16,7 @@ import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
-public class WorksQueueMonitoring implements WorksQueueMonitoringMBean  {
+public class WorksQueueMonitoring implements WorksQueueMonitoringMBean {
 
     protected final String queueId;
 
@@ -27,7 +27,6 @@ public class WorksQueueMonitoring implements WorksQueueMonitoringMBean  {
     protected WorkManager manager() {
         return Framework.getLocalService(WorkManager.class);
     }
-
 
     @Override
     public int getScheduledCount() {
@@ -56,7 +55,7 @@ public class WorksQueueMonitoring implements WorksQueueMonitoringMBean  {
 
     protected String[] listWorks(State state) {
         List<String> works = new ArrayList<String>();
-        for (Work work:manager().listWork(queueId, state)) {
+        for (Work work : manager().listWork(queueId, state)) {
             works.add(work.toString());
         }
         return works.toArray(new String[works.size()]);

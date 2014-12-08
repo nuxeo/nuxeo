@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CoreExceptionMapper implements ExceptionMapper<Throwable> {
 
@@ -34,7 +33,7 @@ public class CoreExceptionMapper implements ExceptionMapper<Throwable> {
     public Response toResponse(Throwable t) {
         log.error("Exception in JAX-RS processing", t);
         if (t instanceof WebApplicationException) {
-            return ((WebApplicationException)t).getResponse();
+            return ((WebApplicationException) t).getResponse();
         } else if (t instanceof DocumentSecurityException
                 || "javax.ejb.EJBAccessException".equals(t.getClass().getName())) {
             return getResponse(t, 401);
@@ -61,7 +60,5 @@ public class CoreExceptionMapper implements ExceptionMapper<Throwable> {
         pw.close();
         return sw.toString();
     }
-
-
 
 }

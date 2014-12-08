@@ -46,30 +46,33 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- * The test of this class is commented out because it should not
- * be run in CI environement. To test the mail service remove the _
- * infront of the testTest method.
+ * The test of this class is commented out because it should not be run in CI environement. To test the mail service
+ * remove the _ infront of the testTest method.
  *
  * @author Alexandre Russel
- *
  */
 public class TestMailService extends NXRuntimeTestCase {
     private static final String VERY_SMALL_MAIL = "very small mail";
+
     private static final String A_DEAD_SIMPLE_MAIL = "a dead simple mail";
+
     private static final String A_GREAT_TEMPLATE_MAIL = "A great template mail";
+
     private static final String TEST_FACTORY = "testFactory";
+
     private InternetAddress internetAddress;
+
     MailService mailService;
 
     @Before
     public void setUp() throws Exception {
-//        Server.start();
+        // Server.start();
         super.setUp();
         deployBundle("org.nuxeo.ecm.webapp.base");
-//        deployBundle("org.nuxeo.ecm.platform.mail");
-//        deployBundle("org.nuxeo.ecm.platform.mail.test");
-//        mailService = Framework.getService(MailService.class);
-//        internetAddress = new InternetAddress("alex@localhost");
+        // deployBundle("org.nuxeo.ecm.platform.mail");
+        // deployBundle("org.nuxeo.ecm.platform.mail.test");
+        // mailService = Framework.getService(MailService.class);
+        // internetAddress = new InternetAddress("alex@localhost");
     }
 
     @After
@@ -82,6 +85,7 @@ public class TestMailService extends NXRuntimeTestCase {
     public void testTrueTest() {
         assertTrue(true);
     }
+
     public void _testTest() throws Exception {
         assertNotNull(mailService);
         Session session = mailService.getSession(TEST_FACTORY);
@@ -101,7 +105,7 @@ public class TestMailService extends NXRuntimeTestCase {
         Folder rootFolder = store.getFolder("INBOX");
         assertNotNull(rootFolder);
         int count = 0;
-        int maxIteration = 100000; //not get into infinity if doing CI.
+        int maxIteration = 100000; // not get into infinity if doing CI.
         while (count != 1 && maxIteration-- > 0) {
             rootFolder.open(Folder.READ_ONLY);
             count = rootFolder.getMessageCount();
@@ -117,20 +121,19 @@ public class TestMailService extends NXRuntimeTestCase {
         store.close();
         Map<String, Object> variablesMap = new HashMap<String, Object>();
         variablesMap.put("sender", "alex");
-        mailService.sendMail("templates/SimpleMail.tpl", A_GREAT_TEMPLATE_MAIL,
-                TEST_FACTORY, new Address[]{internetAddress});
-        mailService.sendMail(VERY_SMALL_MAIL, A_DEAD_SIMPLE_MAIL, TEST_FACTORY,
-                new Address[]{internetAddress});
+        mailService.sendMail("templates/SimpleMail.tpl", A_GREAT_TEMPLATE_MAIL, TEST_FACTORY,
+                new Address[] { internetAddress });
+        mailService.sendMail(VERY_SMALL_MAIL, A_DEAD_SIMPLE_MAIL, TEST_FACTORY, new Address[] { internetAddress });
         MailBoxActions mba = mailService.getMailBoxActions(TEST_FACTORY, "INBOX");
         assertNotNull(mba);
         mba.addAction(new TestMailAction());
         mba.execute();
         assertEquals(1, TestMailAction.counter);
         store = mailService.getConnectedStore(TEST_FACTORY);
-        //doing some clean up before leaving
+        // doing some clean up before leaving
         rootFolder = store.getFolder("INBOX");
         count = 0;
-        maxIteration = 100; //not get into infinity if doing CI.
+        maxIteration = 100; // not get into infinity if doing CI.
         while (count != 2 && maxIteration-- > 0) {
             rootFolder.open(Folder.READ_ONLY);
             count = rootFolder.getMessageCount();
@@ -154,7 +157,7 @@ public class TestMailService extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testServiceRegistration() throws Exception{
+    public void testServiceRegistration() throws Exception {
         deployBundle("org.nuxeo.ecm.platform.mail");
         MailService mailService = Framework.getLocalService(MailService.class);
         assertNotNull(mailService);
@@ -165,7 +168,7 @@ public class TestMailService extends NXRuntimeTestCase {
         assertEquals(pipe.get(1).getClass().getSimpleName(), "ExtractMessageInformationAction");
         assertEquals(pipe.get(2).getClass().getSimpleName(), "CheckMailUnicity");
         assertEquals(pipe.get(3).getClass().getSimpleName(), "CreateDocumentsAction");
-        //assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
+        // assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
         // test contribution merge
         deployContrib("org.nuxeo.ecm.platform.mail.test", "OSGI-INF/mailService-test-contrib.xml");
         pipe = mailService.getPipe("nxmail");
@@ -175,7 +178,7 @@ public class TestMailService extends NXRuntimeTestCase {
         assertEquals(pipe.get(1).getClass().getSimpleName(), "ExtractMessageInformationAction");
         assertEquals(pipe.get(2).getClass().getSimpleName(), "CreateDocumentsAction");
         assertEquals(pipe.get(3).getClass().getSimpleName(), "CreateDocumentsAction");
-        //assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
+        // assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
         // test contribution override
         deployContrib("org.nuxeo.ecm.platform.mail.test", "OSGI-INF/mailService-override-test-contrib.xml");
         pipe = mailService.getPipe("nxmail");

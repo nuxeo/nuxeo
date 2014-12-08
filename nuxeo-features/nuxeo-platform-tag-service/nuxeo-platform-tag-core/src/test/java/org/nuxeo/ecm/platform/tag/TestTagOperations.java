@@ -68,8 +68,7 @@ public class TestTagOperations {
     @Test
     public void testTagOperationsSuite() throws Exception {
         // quick init
-        document = session.createDocumentModel
-                ("/", "File", "File");
+        document = session.createDocumentModel("/", "File", "File");
         document = session.createDocument(document);
         docId = document.getId();
 
@@ -84,8 +83,7 @@ public class TestTagOperations {
         Map<String, Object> params = new HashMap<>();
         params.put("tags", TAGS);
         automationService.run(ctx, TagDocument.ID, params);
-        List<Tag> tags = tagService.getDocumentTags(session, docId,
-                "Administrator");
+        List<Tag> tags = tagService.getDocumentTags(session, docId, "Administrator");
         assertEquals(TAG_1, tags.get(0).getLabel());
         assertEquals(3, tags.size());
     }
@@ -96,8 +94,7 @@ public class TestTagOperations {
         Map<String, Object> params = new HashMap<>();
         params.put("tags", TAG_1);
         automationService.run(ctx, UntagDocument.ID, params);
-        List<Tag> tags = tagService.getDocumentTags(session, docId,
-                "Administrator");
+        List<Tag> tags = tagService.getDocumentTags(session, docId, "Administrator");
         assertEquals(TAG_2, tags.get(0).getLabel());
         assertEquals(2, tags.size());
     }
@@ -106,8 +103,7 @@ public class TestTagOperations {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(document);
         automationService.run(ctx, RemoveDocumentTags.ID);
-        List<Tag> tags = tagService.getDocumentTags(session, docId,
-                "Administrator");
+        List<Tag> tags = tagService.getDocumentTags(session, docId, "Administrator");
         assertEquals(0, tags.size());
     }
 

@@ -26,8 +26,7 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 
-public class MetricsServiceImpl extends DefaultComponent implements
-        MetricsService {
+public class MetricsServiceImpl extends DefaultComponent implements MetricsService {
 
     protected static final Log log = LogFactory.getLog(MetricsServiceImpl.class);
 
@@ -44,10 +43,8 @@ public class MetricsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
-        if (CONFIGURATION_EP.equals(extensionPoint)
-                && contribution instanceof MetricsDescriptor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (CONFIGURATION_EP.equals(extensionPoint) && contribution instanceof MetricsDescriptor) {
             log.debug("Registering metrics contribution");
             config = (MetricsDescriptor) contribution;
         } else {

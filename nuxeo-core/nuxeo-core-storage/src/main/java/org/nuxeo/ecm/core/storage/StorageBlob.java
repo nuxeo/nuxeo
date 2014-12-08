@@ -31,8 +31,7 @@ public class StorageBlob extends DefaultStreamBlob implements SQLBlob {
 
     protected final long length;
 
-    public StorageBlob(Binary binary, String filename, String mimeType,
-            String encoding, String digest, long length) {
+    public StorageBlob(Binary binary, String filename, String mimeType, String encoding, String digest, long length) {
         this.binary = binary;
         this.length = length;
         setFilename(filename);

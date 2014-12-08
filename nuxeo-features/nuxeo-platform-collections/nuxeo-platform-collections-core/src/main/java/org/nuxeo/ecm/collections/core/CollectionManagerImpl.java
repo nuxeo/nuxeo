@@ -69,29 +69,24 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * @since 5.9.3
  */
-public class CollectionManagerImpl extends DefaultComponent implements
-        CollectionManager {
+public class CollectionManagerImpl extends DefaultComponent implements CollectionManager {
 
     private static final String PERMISSION_ERROR_MESSAGE = "Privilege '%s' is not granted to '%s'";
 
     protected static void disableEvents(final DocumentModel doc) {
         doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
-        doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
-                true);
+        doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
         doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
         doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, true);
     }
 
     @Override
-    public void addToCollection(final DocumentModel collection,
-            final DocumentModel documentToBeAdded, final CoreSession session)
-            throws ClientException, DocumentSecurityException {
+    public void addToCollection(final DocumentModel collection, final DocumentModel documentToBeAdded,
+            final CoreSession session) throws ClientException, DocumentSecurityException {
         checkCanAddToCollection(collection, documentToBeAdded, session);
         final Map<String, Serializable> props = new HashMap<>();
-        props.put(CollectionConstants.COLLECTION_REF_EVENT_CTX_PROP,
-                collection.getRef());
-        fireEvent(documentToBeAdded, session,
-                CollectionConstants.BEFORE_ADDED_TO_COLLECTION, props);
+        props.put(CollectionConstants.COLLECTION_REF_EVENT_CTX_PROP, collection.getRef());
+        fireEvent(documentToBeAdded, session, CollectionConstants.BEFORE_ADDED_TO_COLLECTION, props);
         Collection colAdapter = collection.getAdapter(Collection.class);
         colAdapter.addDocument(documentToBeAdded.getId());
         collection.getCoreSession().saveDocument(colAdapter.getDocument());
@@ -116,16 +111,14 @@ public class CollectionManagerImpl extends DefaultComponent implements
                 CollectionMember docAdapter = temp.getAdapter(CollectionMember.class);
                 docAdapter.addToCollection(collection.getId());
                 DocumentModel addedDoc = session.saveDocument(docAdapter.getDocument());
-                fireEvent(addedDoc, session,
-                        CollectionConstants.ADDED_TO_COLLECTION, props);
+                fireEvent(addedDoc, session, CollectionConstants.ADDED_TO_COLLECTION, props);
             }
 
         }.runUnrestricted();
     }
 
     @Override
-    public void addToCollection(final DocumentModel collection,
-            final List<DocumentModel> documentListToBeAdded,
+    public void addToCollection(final DocumentModel collection, final List<DocumentModel> documentListToBeAdded,
             final CoreSession session) throws ClientException {
         for (DocumentModel documentToBeAdded : documentListToBeAdded) {
             addToCollection(collection, documentToBeAdded, session);
@@ -133,87 +126,65 @@ public class CollectionManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void addToNewCollection(final String newTitle,
-            final String newDescription, final DocumentModel documentToBeAdded,
-            final CoreSession session) throws ClientException {
-        addToCollection(
-                createCollection(newTitle, newDescription, documentToBeAdded,
-                        session), documentToBeAdded, session);
+    public void addToNewCollection(final String newTitle, final String newDescription,
+            final DocumentModel documentToBeAdded, final CoreSession session) throws ClientException {
+        addToCollection(createCollection(newTitle, newDescription, documentToBeAdded, session), documentToBeAdded,
+                session);
     }
 
     @Override
-    public void addToNewCollection(final String newTitle,
-            final String newDescription,
-            final List<DocumentModel> documentListToBeAdded, CoreSession session)
-            throws ClientException {
-        DocumentModel newCollection = createCollection(newTitle,
-                newDescription, documentListToBeAdded.get(0), session);
+    public void addToNewCollection(final String newTitle, final String newDescription,
+            final List<DocumentModel> documentListToBeAdded, CoreSession session) throws ClientException {
+        DocumentModel newCollection = createCollection(newTitle, newDescription, documentListToBeAdded.get(0), session);
         for (DocumentModel documentToBeAdded : documentListToBeAdded) {
             addToCollection(newCollection, documentToBeAdded, session);
         }
     }
 
     @Override
-    public boolean canAddToCollection(final DocumentModel collection,
-            final CoreSession session) throws ClientException {
+    public boolean canAddToCollection(final DocumentModel collection, final CoreSession session) throws ClientException {
         return isCollection(collection)
-                && session.hasPermission(collection.getRef(),
-                        SecurityConstants.WRITE_PROPERTIES);
+                && session.hasPermission(collection.getRef(), SecurityConstants.WRITE_PROPERTIES);
     }
 
     @Override
-    public boolean canManage(final DocumentModel collection,
-            final CoreSession session) throws ClientException {
-        return isCollection(collection)
-                && session.hasPermission(collection.getRef(),
-                        SecurityConstants.EVERYTHING);
+    public boolean canManage(final DocumentModel collection, final CoreSession session) throws ClientException {
+        return isCollection(collection) && session.hasPermission(collection.getRef(), SecurityConstants.EVERYTHING);
     }
 
-    public void checkCanAddToCollection(final DocumentModel collection,
-            final DocumentModel documentToBeAdded, final CoreSession session)
-            throws ClientException {
+    public void checkCanAddToCollection(final DocumentModel collection, final DocumentModel documentToBeAdded,
+            final CoreSession session) throws ClientException {
         if (!isCollectable(documentToBeAdded)) {
-            throw new IllegalArgumentException(String.format(
-                    "Document %s is not collectable",
+            throw new IllegalArgumentException(String.format("Document %s is not collectable",
                     documentToBeAdded.getTitle()));
         }
         if (!isCollection(collection)) {
-            throw new IllegalArgumentException(String.format(
-                    "Document %s is not a collection",
+            throw new IllegalArgumentException(String.format("Document %s is not a collection",
                     documentToBeAdded.getTitle()));
         }
-        if (!session.hasPermission(collection.getRef(),
-                SecurityConstants.WRITE_PROPERTIES)) {
-            throw new DocumentSecurityException(String.format(
-                    PERMISSION_ERROR_MESSAGE,
-                    CollectionConstants.CAN_COLLECT_PERMISSION,
-                    session.getPrincipal().getName()));
+        if (!session.hasPermission(collection.getRef(), SecurityConstants.WRITE_PROPERTIES)) {
+            throw new DocumentSecurityException(String.format(PERMISSION_ERROR_MESSAGE,
+                    CollectionConstants.CAN_COLLECT_PERMISSION, session.getPrincipal().getName()));
         }
     }
 
-    protected DocumentModel createCollection(final String newTitle,
-            final String newDescription, final DocumentModel context,
-            final CoreSession session) throws ClientException {
-        DocumentModel defaultCollections = getUserDefaultCollections(context,
-                session);
-        DocumentModel newCollection = session.createDocumentModel(
-                defaultCollections.getPath().toString(), newTitle,
+    protected DocumentModel createCollection(final String newTitle, final String newDescription,
+            final DocumentModel context, final CoreSession session) throws ClientException {
+        DocumentModel defaultCollections = getUserDefaultCollections(context, session);
+        DocumentModel newCollection = session.createDocumentModel(defaultCollections.getPath().toString(), newTitle,
                 CollectionConstants.COLLECTION_TYPE);
         newCollection.setPropertyValue("dc:title", newTitle);
         newCollection.setPropertyValue("dc:description", newDescription);
         return session.createDocument(newCollection);
     }
 
-    protected DocumentModel createDefaultCollections(final CoreSession session,
-            DocumentModel userWorkspace) throws ClientException {
-        DocumentModel doc = session.createDocumentModel(
-                userWorkspace.getPath().toString(),
-                CollectionConstants.DEFAULT_COLLECTIONS_NAME,
-                CollectionConstants.COLLECTIONS_TYPE);
+    protected DocumentModel createDefaultCollections(final CoreSession session, DocumentModel userWorkspace)
+            throws ClientException {
+        DocumentModel doc = session.createDocumentModel(userWorkspace.getPath().toString(),
+                CollectionConstants.DEFAULT_COLLECTIONS_NAME, CollectionConstants.COLLECTIONS_TYPE);
         String title = null;
         try {
-            title = I18NUtils.getMessageString("messages",
-                    CollectionConstants.DEFAULT_COLLECTIONS_TITLE,
+            title = I18NUtils.getMessageString("messages", CollectionConstants.DEFAULT_COLLECTIONS_TITLE,
                     new Object[0], getLocale(session));
         } catch (MissingResourceException e) {
             title = CollectionConstants.DEFAULT_COLLECTIONS_TITLE;
@@ -223,10 +194,8 @@ public class CollectionManagerImpl extends DefaultComponent implements
         doc = session.createDocument(doc);
 
         ACP acp = new ACPImpl();
-        ACE denyEverything = new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false);
-        ACE allowEverything = new ACE(session.getPrincipal().getName(),
-                SecurityConstants.EVERYTHING, true);
+        ACE denyEverything = new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
+        ACE allowEverything = new ACE(session.getPrincipal().getName(), SecurityConstants.EVERYTHING, true);
         ACL acl = new ACLImpl();
         acl.setACEs(new ACE[] { allowEverything, denyEverything });
         acp.addACL(acl);
@@ -236,17 +205,14 @@ public class CollectionManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public DocumentModel getUserDefaultCollections(final DocumentModel context,
-            final CoreSession session) throws ClientException {
+    public DocumentModel getUserDefaultCollections(final DocumentModel context, final CoreSession session)
+            throws ClientException {
         final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
-        final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session, context);
-        final DocumentRef lookupRef = new PathRef(
-                userWorkspace.getPath().toString(),
+        final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, context);
+        final DocumentRef lookupRef = new PathRef(userWorkspace.getPath().toString(),
                 CollectionConstants.DEFAULT_COLLECTIONS_NAME);
         if (session.exists(lookupRef)) {
-            return session.getChild(userWorkspace.getRef(),
-                    CollectionConstants.DEFAULT_COLLECTIONS_NAME);
+            return session.getChild(userWorkspace.getRef(), CollectionConstants.DEFAULT_COLLECTIONS_NAME);
         } else {
             // does not exist yet, let's create it
             synchronized (this) {
@@ -270,16 +236,13 @@ public class CollectionManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<DocumentModel> getVisibleCollection(
-            final DocumentModel collectionMember, final CoreSession session)
+    public List<DocumentModel> getVisibleCollection(final DocumentModel collectionMember, final CoreSession session)
             throws ClientException {
-        return getVisibleCollection(collectionMember,
-                CollectionConstants.MAX_COLLECTION_RETURNED, session);
+        return getVisibleCollection(collectionMember, CollectionConstants.MAX_COLLECTION_RETURNED, session);
     }
 
     @Override
-    public List<DocumentModel> getVisibleCollection(
-            final DocumentModel collectionMember, int maxResult,
+    public List<DocumentModel> getVisibleCollection(final DocumentModel collectionMember, int maxResult,
             CoreSession session) throws ClientException {
         List<DocumentModel> result = new ArrayList<DocumentModel>();
         CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
@@ -287,9 +250,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
         for (int i = 0; i < collectionIds.size() && result.size() < maxResult; i++) {
             final String collectionId = collectionIds.get(i);
             DocumentRef documentRef = new IdRef(collectionId);
-            if (session.exists(documentRef)
-                    && session.hasPermission(documentRef,
-                            SecurityConstants.READ)
+            if (session.exists(documentRef) && session.hasPermission(documentRef, SecurityConstants.READ)
                     && !LifeCycleConstants.DELETED_STATE.equals(session.getCurrentLifeCycleState(documentRef))) {
                 result.add(session.getDocument(documentRef));
             }
@@ -298,15 +259,13 @@ public class CollectionManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean hasVisibleCollection(final DocumentModel collectionMember,
-            CoreSession session) throws ClientException {
+    public boolean hasVisibleCollection(final DocumentModel collectionMember, CoreSession session)
+            throws ClientException {
         CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
         List<String> collectionIds = collectionMemberAdapter.getCollectionIds();
         for (final String collectionId : collectionIds) {
             DocumentRef documentRef = new IdRef(collectionId);
-            if (session.exists(documentRef)
-                    && session.hasPermission(documentRef,
-                            SecurityConstants.READ)) {
+            if (session.exists(documentRef) && session.hasPermission(documentRef, SecurityConstants.READ)) {
                 return true;
             }
         }
@@ -315,8 +274,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
     @Override
     public boolean isCollectable(final DocumentModel doc) {
-        return !doc.hasFacet(CollectionConstants.NOT_COLLECTABLE_FACET)
-                && !doc.isVersion() && !doc.isProxy();
+        return !doc.hasFacet(CollectionConstants.NOT_COLLECTABLE_FACET) && !doc.isVersion() && !doc.isProxy();
     }
 
     @Override
@@ -330,19 +288,17 @@ public class CollectionManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean isInCollection(DocumentModel collection,
-            DocumentModel document, CoreSession session) throws ClientException {
+    public boolean isInCollection(DocumentModel collection, DocumentModel document, CoreSession session)
+            throws ClientException {
         if (isCollected(document)) {
             final CollectionMember collectionMemberAdapter = document.getAdapter(CollectionMember.class);
-            return collectionMemberAdapter.getCollectionIds().contains(
-                    collection.getId());
+            return collectionMemberAdapter.getCollectionIds().contains(collection.getId());
         }
         return false;
     }
 
     @Override
-    public void processCopiedCollection(final DocumentModel collection)
-            throws ClientException {
+    public void processCopiedCollection(final DocumentModel collection) throws ClientException {
         Collection collectionAdapter = collection.getAdapter(Collection.class);
         List<String> documentIds = collectionAdapter.getCollectedDocumentIds();
 
@@ -350,12 +306,10 @@ public class CollectionManagerImpl extends DefaultComponent implements
         while (i < documentIds.size()) {
             int limit = (int) (((i + CollectionAsynchrnonousQuery.MAX_RESULT) > documentIds.size()) ? documentIds.size()
                     : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
-            DuplicateCollectionMemberWork work = new DuplicateCollectionMemberWork(
-                    collection.getRepositoryName(), collection.getId(),
-                    documentIds.subList(i, limit), i);
+            DuplicateCollectionMemberWork work = new DuplicateCollectionMemberWork(collection.getRepositoryName(),
+                    collection.getId(), documentIds.subList(i, limit), i);
             WorkManager workManager = Framework.getLocalService(WorkManager.class);
-            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
-                    true);
+            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
 
             i = limit;
         }
@@ -366,40 +320,32 @@ public class CollectionManagerImpl extends DefaultComponent implements
         final WorkManager workManager = Framework.getLocalService(WorkManager.class);
         final RemovedAbstractWork work = new RemovedCollectionWork();
         work.setDocument(collection.getRepositoryName(), collection.getId());
-        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
-                true);
+        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
     }
 
     @Override
-    public void processRemovedCollectionMember(
-            final DocumentModel collectionMember) {
+    public void processRemovedCollectionMember(final DocumentModel collectionMember) {
         final WorkManager workManager = Framework.getLocalService(WorkManager.class);
         final RemovedAbstractWork work = new RemovedCollectionMemberWork();
-        work.setDocument(collectionMember.getRepositoryName(),
-                collectionMember.getId());
-        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
-                true);
+        work.setDocument(collectionMember.getRepositoryName(), collectionMember.getId());
+        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
     }
 
     @Override
     public void removeAllFromCollection(final DocumentModel collection,
-            final List<DocumentModel> documentListToBeRemoved,
-            final CoreSession session) throws ClientException {
+            final List<DocumentModel> documentListToBeRemoved, final CoreSession session) throws ClientException {
         for (DocumentModel documentToBeRemoved : documentListToBeRemoved) {
             removeFromCollection(collection, documentToBeRemoved, session);
         }
     }
 
     @Override
-    public void removeFromCollection(final DocumentModel collection,
-            final DocumentModel documentToBeRemoved, final CoreSession session)
-            throws ClientException {
+    public void removeFromCollection(final DocumentModel collection, final DocumentModel documentToBeRemoved,
+            final CoreSession session) throws ClientException {
         checkCanAddToCollection(collection, documentToBeRemoved, session);
         Map<String, Serializable> props = new HashMap<>();
-        props.put(CollectionConstants.COLLECTION_REF_EVENT_CTX_PROP, new IdRef(
-                collection.getId()));
-        fireEvent(documentToBeRemoved, session,
-                CollectionConstants.BEFORE_REMOVED_FROM_COLLECTION, props);
+        props.put(CollectionConstants.COLLECTION_REF_EVENT_CTX_PROP, new IdRef(collection.getId()));
+        fireEvent(documentToBeRemoved, session, CollectionConstants.BEFORE_REMOVED_FROM_COLLECTION, props);
         Collection colAdapter = collection.getAdapter(Collection.class);
         colAdapter.removeDocument(documentToBeRemoved.getId());
         collection.getCoreSession().saveDocument(colAdapter.getDocument());
@@ -408,16 +354,14 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
             @Override
             public void run() throws ClientException {
-                doRemoveFromCollection(documentToBeRemoved, collection.getId(),
-                        session);
+                doRemoveFromCollection(documentToBeRemoved, collection.getId(), session);
             }
 
         }.runUnrestricted();
     }
 
     @Override
-    public void doRemoveFromCollection(DocumentModel documentToBeRemoved,
-            String collectionId, CoreSession session) {
+    public void doRemoveFromCollection(DocumentModel documentToBeRemoved, String collectionId, CoreSession session) {
         // We want to disable the following listener on a
         // collection member when it is removed from a collection
         disableEvents(documentToBeRemoved);
@@ -426,15 +370,12 @@ public class CollectionManagerImpl extends DefaultComponent implements
         docAdapter.removeFromCollection(collectionId);
         DocumentModel removedDoc = session.saveDocument(docAdapter.getDocument());
         Map<String, Serializable> props = new HashMap<>();
-        props.put(CollectionConstants.COLLECTION_REF_EVENT_CTX_PROP, new IdRef(
-                collectionId));
-        fireEvent(removedDoc, session,
-                CollectionConstants.REMOVED_FROM_COLLECTION, props);
+        props.put(CollectionConstants.COLLECTION_REF_EVENT_CTX_PROP, new IdRef(collectionId));
+        fireEvent(removedDoc, session, CollectionConstants.REMOVED_FROM_COLLECTION, props);
     }
 
     @Override
-    public DocumentModel createCollection(final CoreSession session,
-            String title, String description, String path)
+    public DocumentModel createCollection(final CoreSession session, String title, String description, String path)
             throws ClientException {
         DocumentModel newCollection = null;
         // Test if the path is null or empty
@@ -444,12 +385,11 @@ public class CollectionManagerImpl extends DefaultComponent implements
         } else {
             // If the path does not exist, an exception is thrown
             if (!session.exists(new PathRef(path))) {
-                throw new ClientException(String.format(
-                        "Path \"%s\" specified in parameter not found", path));
+                throw new ClientException(String.format("Path \"%s\" specified in parameter not found", path));
             }
             // Create a new collection in the given path
-            DocumentModel collectionModel = session.createDocumentModel(path,
-                    title, CollectionConstants.COLLECTION_TYPE);
+            DocumentModel collectionModel = session.createDocumentModel(path, title,
+                    CollectionConstants.COLLECTION_TYPE);
             collectionModel.setPropertyValue("dc:title", title);
             collectionModel.setPropertyValue("dc:description", description);
             newCollection = session.createDocument(collectionModel);
@@ -457,28 +397,22 @@ public class CollectionManagerImpl extends DefaultComponent implements
         return newCollection;
     }
 
-    protected Locale getLocale(final CoreSession session)
-            throws ClientException {
+    protected Locale getLocale(final CoreSession session) throws ClientException {
         Locale locale = null;
-        locale = Framework.getLocalService(LocaleProvider.class).getLocale(
-                session);
+        locale = Framework.getLocalService(LocaleProvider.class).getLocale(session);
         if (locale == null) {
             locale = Locale.getDefault();
         }
         return new Locale(Locale.getDefault().getLanguage());
     }
 
-    protected void fireEvent(DocumentModel doc, CoreSession session,
-            String eventName, Map<String, Serializable> props)
+    protected void fireEvent(DocumentModel doc, CoreSession session, String eventName, Map<String, Serializable> props)
             throws ClientException {
         EventService eventService = Framework.getService(EventService.class);
-        DocumentEventContext ctx = new DocumentEventContext(session,
-                session.getPrincipal(), doc);
-        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME,
-                session.getRepositoryName());
+        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
         ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
-        ctx.setProperty("category",
-                DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
+        ctx.setProperty("category", DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
         ctx.setProperties(props);
         Event event = ctx.newEvent(eventName);
         eventService.fireEvent(event);

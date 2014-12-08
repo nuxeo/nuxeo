@@ -19,12 +19,10 @@
 
 package org.nuxeo.ecm.platform.preview.adapter;
 
-
 /**
  * @author Alexandre Russel
  */
-public class HtmlPreviewer extends PlainTextPreviewer implements
-        MimeTypePreviewer {
+public class HtmlPreviewer extends PlainTextPreviewer implements MimeTypePreviewer {
 
     @Override
     protected String htmlContent(String content) {

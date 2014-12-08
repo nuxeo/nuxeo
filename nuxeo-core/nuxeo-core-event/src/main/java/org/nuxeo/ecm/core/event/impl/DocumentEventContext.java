@@ -30,14 +30,14 @@ public class DocumentEventContext extends EventContextImpl {
     private static final long serialVersionUID = 1L;
 
     public static final String CATEGORY_PROPERTY_KEY = "category";
+
     public static final String COMMENT_PROPERTY_KEY = "comment";
 
     public DocumentEventContext(CoreSession session, Principal principal, DocumentModel source) {
         super(session, principal, source, null);
     }
 
-    public DocumentEventContext(CoreSession session, Principal principal, DocumentModel source,
-            DocumentRef destDoc) {
+    public DocumentEventContext(CoreSession session, Principal principal, DocumentModel source, DocumentRef destDoc) {
         super(session, principal, source, destDoc);
     }
 

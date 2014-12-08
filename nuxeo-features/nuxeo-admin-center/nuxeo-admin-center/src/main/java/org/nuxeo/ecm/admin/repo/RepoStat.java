@@ -28,8 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- * This class holds and manage the threads used to compute stats on the
- * document repository
+ * This class holds and manage the threads used to compute stats on the document repository
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
@@ -49,8 +48,8 @@ public class RepoStat {
         this.nbThreads = nbThreads;
         this.repoName = repoName;
         this.includeBlob = includeBlob;
-        pool = new ThreadPoolExecutor(nbThreads, nbThreads, 500L,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100),new DaemonThreadFactory());
+        pool = new ThreadPoolExecutor(nbThreads, nbThreads, 500L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(100), new DaemonThreadFactory());
     }
 
     public void exec(StatsTask task) {
@@ -87,8 +86,7 @@ public class RepoStat {
 
         public DaemonThreadFactory() {
             SecurityManager s = System.getSecurityManager();
-            group = (s != null) ? s.getThreadGroup()
-                    : Thread.currentThread().getThreadGroup();
+            group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
             namePrefix = "RepoStatThread-" + poolNumber.incrementAndGet() + '-';
         }
 

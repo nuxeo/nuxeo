@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.component.list;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public enum EditableListModificationType {
 

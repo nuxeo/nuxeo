@@ -24,11 +24,9 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerHook;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @description the related thread of comments is retrieved for sending to its
- *              subscribers
+ * @description the related thread of comments is retrieved for sending to its subscribers
  * @since 5.5
  * @author vpasquier
- *
  */
 public class CommentNotificationListener implements NotificationListenerHook {
 
@@ -40,7 +38,7 @@ public class CommentNotificationListener implements NotificationListenerHook {
                 || docCtx.getSourceDocument().getType().equals(CommentsConstants.COMMENT_DOC_TYPE)) {
             CommentManager commentManager = Framework.getService(CommentManager.class);
             DocumentModel thread = commentManager.getThreadForComment(docCtx.getSourceDocument());
-            if (thread !=null) {
+            if (thread != null) {
                 Object[] args = { thread, null };
                 docCtx.setArgs(args);
             }

@@ -16,17 +16,15 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * High-level service to get to a
- * {@link org.nuxeo.ecm.core.api.repository.Repository Repository} and from
- * there to {@link org.nuxeo.ecm.core.api.CoreSession CoreSession} objects.
+ * High-level service to get to a {@link org.nuxeo.ecm.core.api.repository.Repository Repository} and from there to
+ * {@link org.nuxeo.ecm.core.api.CoreSession CoreSession} objects.
  */
 public interface RepositoryManager {
 
     /**
      * Gets all registered repositories.
      *
-     * @return a read-only collection of repositories or an empty one if no
-     *         repositories was defined
+     * @return a read-only collection of repositories or an empty one if no repositories was defined
      */
     Collection<Repository> getRepositories();
 
@@ -65,11 +63,9 @@ public interface RepositoryManager {
     /**
      * Gets the default repository.
      * <p>
-     * If there is not a default repository returns the first registered.
-     * repository
+     * If there is not a default repository returns the first registered. repository
      * <p>
-     * This is a convenient method to get the repository for application having
-     * a single repository.
+     * This is a convenient method to get the repository for application having a single repository.
      *
      * @return the default repository
      */
@@ -78,8 +74,7 @@ public interface RepositoryManager {
     /**
      * Gets the name of the default repository.
      * <p>
-     * If there is not a default repository, returns the name of the first
-     * registered repository.
+     * If there is not a default repository, returns the name of the first registered repository.
      *
      * @return the default repository name
      */

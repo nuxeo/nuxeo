@@ -39,8 +39,7 @@ import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Seam Bean that wraps {@link AdministrativeStatusManager} and
- * {@link ProbeManager} services to provide a JSF UI.
+ * Seam Bean that wraps {@link AdministrativeStatusManager} and {@link ProbeManager} services to provide a JSF UI.
  *
  * @author tiry
  */
@@ -80,8 +79,7 @@ public class MonitoringActionBean implements Serializable {
     }
 
     public List<String> listNuxeoInstances() {
-        return Framework.getLocalService(
-                GlobalAdministrativeStatusManager.class).listInstanceIds();
+        return Framework.getLocalService(GlobalAdministrativeStatusManager.class).listInstanceIds();
     }
 
     @Factory(value = "isMultiServerInstallation", scope = ScopeType.EVENT)
@@ -126,8 +124,7 @@ public class MonitoringActionBean implements Serializable {
     }
 
     public void changeStatus(String serviceId, String message, String state) {
-        getStatusManager().setStatus(serviceId, state, message,
-                currentNuxeoPrincipal.getName());
+        getStatusManager().setStatus(serviceId, state, message, currentNuxeoPrincipal.getName());
     }
 
     public List<ProbeInfo> getProbeInfos() {

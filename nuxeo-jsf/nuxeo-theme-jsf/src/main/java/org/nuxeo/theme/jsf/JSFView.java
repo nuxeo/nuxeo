@@ -21,11 +21,9 @@ import org.nuxeo.theme.rendering.RenderingInfo;
 public class JSFView extends HTMLView {
 
     @Override
-    public String replaceModelExpressions(final RenderingInfo info,
-            final String html) {
+    public String replaceModelExpressions(final RenderingInfo info, final String html) {
         final String infoId = InfoPool.computeInfoId(info);
-        return html.replaceAll("nxthemesInfo", String.format(
-                "nxthemesInfo\\.map\\.%s", infoId));
+        return html.replaceAll("nxthemesInfo", String.format("nxthemesInfo\\.map\\.%s", infoId));
     }
 
 }

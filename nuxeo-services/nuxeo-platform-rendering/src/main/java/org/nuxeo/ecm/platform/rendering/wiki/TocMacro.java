@@ -22,22 +22,18 @@ import org.wikimodel.wem.WikiParameters;
  * Build the Table of Contents of a wiki page
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TocMacro implements WikiMacro {
-
 
     public String getName() {
         return "toc";
     }
 
-    public void eval(WikiParameters params, String content,
-            WikiSerializerHandler serializer) throws IOException {
+    public void eval(WikiParameters params, String content, WikiSerializerHandler serializer) throws IOException {
         evalInline(params, content, serializer);
     }
 
-    public void evalInline(WikiParameters params, String content,
-            WikiSerializerHandler serializer) throws IOException {
+    public void evalInline(WikiParameters params, String content, WikiSerializerHandler serializer) throws IOException {
         serializer.writer.writeText(new TocText(content));
     }
 

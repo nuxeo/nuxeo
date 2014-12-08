@@ -32,8 +32,8 @@ import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsFulltext
 import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsRepositoryComponent;
 
 /**
- * Extract the text of the body of the annotation to register it as a related
- * text resource on the document for full-text indexing by the repository.
+ * Extract the text of the body of the annotation to register it as a related text resource on the document for
+ * full-text indexing by the repository.
  */
 public class AnnotationFulltextEventListener implements EventListener {
 

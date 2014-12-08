@@ -20,7 +20,7 @@ import java.util.Comparator;
 /**
  * A sorting function for data models.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface Sorter extends Comparator<DocumentModel>, Serializable {
 

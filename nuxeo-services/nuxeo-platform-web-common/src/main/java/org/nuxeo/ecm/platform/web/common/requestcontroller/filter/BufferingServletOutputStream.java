@@ -34,8 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 
 /**
- * A {@link ServletOutputStream} that buffers everything until
- * {@link #stopBuffering()} is called.
+ * A {@link ServletOutputStream} that buffers everything until {@link #stopBuffering()} is called.
  * <p>
  * There may only be one such instance per thread.
  * <p>
@@ -74,11 +73,10 @@ public class BufferingServletOutputStream extends ServletOutputStream {
     protected File tmp;
 
     /**
-     * A {@link ServletOutputStream} wrapper that buffers everything until
-     * {@link #stopBuffering()} is called.
+     * A {@link ServletOutputStream} wrapper that buffers everything until {@link #stopBuffering()} is called.
      * <p>
-     * {@link #stopBuffering()} <b>MUST</b> be called in a {@code finally}
-     * statement in order for resources to be closed properly.
+     * {@link #stopBuffering()} <b>MUST</b> be called in a {@code finally} statement in order for resources to be closed
+     * properly.
      *
      * @param outputStream the underlying output stream
      */
@@ -153,8 +151,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
     }
 
     /**
-     * This implementation does nothing, we still want to keep buffering and
-     * not flush.
+     * This implementation does nothing, we still want to keep buffering and not flush.
      * <p>
      * {@inheritDoc}
      */
@@ -168,8 +165,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
     }
 
     /**
-     * This implementation does nothing, we still want to keep the buffer until
-     * {@link #stopBuffering()} time.
+     * This implementation does nothing, we still want to keep the buffer until {@link #stopBuffering()} time.
      * <p>
      * {@inheritDoc}
      */
@@ -184,8 +180,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
     }
 
     /**
-     * Writes any buffered data to the underlying {@link OutputStream} and from
-     * now on don't buffer anymore.
+     * Writes any buffered data to the underlying {@link OutputStream} and from now on don't buffer anymore.
      */
     public void stopBuffering() throws IOException {
         threadLocal.remove();
@@ -223,8 +218,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
                     } catch (IOException e) {
                         Throwable unwrappedError = ExceptionHelper.unwrapException(e);
                         if (ExceptionHelper.isClientAbortError(unwrappedError)) {
-                            log.warn("Client disconnected: "
-                                    + unwrappedError.getMessage());
+                            log.warn("Client disconnected: " + unwrappedError.getMessage());
                         } else {
                             throw e;
                         }
@@ -253,8 +247,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
             } catch (IOException e) {
                 Throwable unwrappedError = ExceptionHelper.unwrapException(e);
                 if (ExceptionHelper.isClientAbortError(unwrappedError)) {
-                    log.warn("Client disconnected : "
-                            + unwrappedError.getMessage());
+                    log.warn("Client disconnected : " + unwrappedError.getMessage());
                 } else {
                     throw e;
                 }

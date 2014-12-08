@@ -26,15 +26,13 @@ import freemarker.template.TemplateSequenceModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class ListPropertyTemplate extends PropertyWrapper implements
-        TemplateCollectionModel, TemplateSequenceModel, AdapterTemplateModel {
+public class ListPropertyTemplate extends PropertyWrapper implements TemplateCollectionModel, TemplateSequenceModel,
+        AdapterTemplateModel {
 
     protected final ListProperty property;
 
-    public ListPropertyTemplate(DocumentObjectWrapper wrapper,
-            ListProperty property) {
+    public ListPropertyTemplate(DocumentObjectWrapper wrapper, ListProperty property) {
         super(wrapper);
         this.property = property;
     }

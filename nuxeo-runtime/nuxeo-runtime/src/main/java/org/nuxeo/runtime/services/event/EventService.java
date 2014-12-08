@@ -28,12 +28,10 @@ import org.nuxeo.runtime.model.Extension;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class EventService extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.runtime.EventService");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.EventService");
 
     private static final Log log = LogFactory.getLog(EventService.class);
 
@@ -96,8 +94,7 @@ public class EventService extends DefaultComponent {
         if (list == null) {
             // enqeueEvent(event);
             if (log.isTraceEnabled()) {
-                log.trace("Event sent to topic " + event.getTopic()
-                        + ". Ingnoring");
+                log.trace("Event sent to topic " + event.getTopic() + ". Ingnoring");
             }
         } else {
             sendEvent(list, event);

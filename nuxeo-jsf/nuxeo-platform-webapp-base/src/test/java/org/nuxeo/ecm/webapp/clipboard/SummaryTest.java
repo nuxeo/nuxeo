@@ -41,8 +41,7 @@ public class SummaryTest extends NXRuntimeTestCase {
         super.setUp();
         summary = new SummaryImpl();
 
-        SummaryEntry rootEntry = new SummaryEntry("0", "root", getDate(), "",
-                "");
+        SummaryEntry rootEntry = new SummaryEntry("0", "root", getDate(), "", "");
         rootEntry.setDocumentRef(new IdRef("0"));
         summary.put(new IdRef("0").toString(), rootEntry);
     }
@@ -52,8 +51,7 @@ public class SummaryTest extends NXRuntimeTestCase {
         assertFalse(summary.hasChild(summary.getSummaryRoot()));
 
         // Add new child to root
-        SummaryEntry childEntry = new SummaryEntry("1", "child 2", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry = new SummaryEntry("1", "child 2", getDate(), "attached file", "1.0");
         childEntry.setDocumentRef(new IdRef("1"));
         childEntry.setParent(summary.getSummaryRoot());
         summary.put(childEntry.getPath(), childEntry);
@@ -62,8 +60,7 @@ public class SummaryTest extends NXRuntimeTestCase {
         assertTrue(summary.hasChild(summary.getSummaryRoot()));
 
         // Add new child to childEntry1
-        SummaryEntry childEntry2 = new SummaryEntry("2", "child 1", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry2 = new SummaryEntry("2", "child 1", getDate(), "attached file", "1.0");
         childEntry2.setDocumentRef(new IdRef("2"));
         childEntry2.setParent(childEntry);
         summary.put(childEntry2.getPath(), childEntry2);
@@ -75,15 +72,13 @@ public class SummaryTest extends NXRuntimeTestCase {
     @Test
     public void testGetChildren() {
         // Add new child to root
-        SummaryEntry childEntry = new SummaryEntry("1", "child 1", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry = new SummaryEntry("1", "child 1", getDate(), "attached file", "1.0");
         childEntry.setDocumentRef(new IdRef("1"));
         childEntry.setParent(summary.getSummaryRoot());
         summary.put(childEntry.getPath(), childEntry);
 
         // Add new child to root
-        SummaryEntry childEntry2 = new SummaryEntry("2", "child 2", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry2 = new SummaryEntry("2", "child 2", getDate(), "attached file", "1.0");
         childEntry2.setDocumentRef(new IdRef("3"));
         childEntry2.setParent(summary.getSummaryRoot());
         summary.put(childEntry2.getPath(), childEntry2);
@@ -97,20 +92,17 @@ public class SummaryTest extends NXRuntimeTestCase {
     @Test
     public void testGetPath() {
         // Add new child to root
-        SummaryEntry childEntry = new SummaryEntry("1", "child 1", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry = new SummaryEntry("1", "child 1", getDate(), "attached file", "1.0");
         childEntry.setDocumentRef(new IdRef("1"));
         childEntry.setParent(summary.getSummaryRoot());
 
         // Add new child to root
-        SummaryEntry childEntry2 = new SummaryEntry("2", "child 2", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry2 = new SummaryEntry("2", "child 2", getDate(), "attached file", "1.0");
         childEntry2.setDocumentRef(new IdRef("2"));
         childEntry2.setParent(summary.getSummaryRoot());
 
         // Add new child to child 2
-        SummaryEntry childEntry3 = new SummaryEntry("3", "child 3", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry3 = new SummaryEntry("3", "child 3", getDate(), "attached file", "1.0");
         childEntry3.setDocumentRef(new IdRef("3"));
         childEntry3.setParent(childEntry2);
 
@@ -122,32 +114,27 @@ public class SummaryTest extends NXRuntimeTestCase {
     @Test
     public void testCompareSummaryEntry() {
         // Add new child to root
-        SummaryEntry childEntry = new SummaryEntry("1", "child 1", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry = new SummaryEntry("1", "child 1", getDate(), "attached file", "1.0");
         childEntry.setDocumentRef(new IdRef("1"));
         childEntry.setParent(summary.getSummaryRoot());
 
         // Add new child to root
-        SummaryEntry childEntry2 = new SummaryEntry("2", "child 2", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry2 = new SummaryEntry("2", "child 2", getDate(), "attached file", "1.0");
         childEntry2.setDocumentRef(new IdRef("2"));
         childEntry2.setParent(summary.getSummaryRoot());
 
         // Add new child to child 2
-        SummaryEntry childEntry3 = new SummaryEntry("3", "child 3", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry3 = new SummaryEntry("3", "child 3", getDate(), "attached file", "1.0");
         childEntry3.setDocumentRef(new IdRef("3"));
         childEntry3.setParent(childEntry2);
 
         // Add new child to root with same param as child 3
-        SummaryEntry childEntry4 = new SummaryEntry("3", "child 3", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry4 = new SummaryEntry("3", "child 3", getDate(), "attached file", "1.0");
         childEntry4.setDocumentRef(new IdRef("3"));
         childEntry4.setParent(summary.getSummaryRoot());
 
         // Add new child child 2 with same param as child 3
-        SummaryEntry childEntry5 = new SummaryEntry("3", "child 3", getDate(),
-                "attached file", "1.0");
+        SummaryEntry childEntry5 = new SummaryEntry("3", "child 3", getDate(), "attached file", "1.0");
         childEntry5.setDocumentRef(new IdRef("3"));
         childEntry5.setParent(childEntry2);
 

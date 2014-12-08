@@ -24,12 +24,10 @@ import java.io.Serializable;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * This class represents a list of directory items { item1, item2, item3, .. },
- * where item &lt;i&gt; represents the item selected for combo with index i
- * in a chain. The value of a chain select is a list of Selection objects.
+ * This class represents a list of directory items { item1, item2, item3, .. }, where item &lt;i&gt; represents the item
+ * selected for combo with index i in a chain. The value of a chain select is a list of Selection objects.
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 
 public class Selection implements Serializable {
@@ -93,8 +91,8 @@ public class Selection implements Serializable {
             for (int i = 0; i < index; i++) {
                 keys[i] = getColumnValue(i);
             }
-            parentValue = StringUtils.join(keys,
-                    keySeparator != null ? keySeparator : ChainSelect.DEFAULT_KEY_SEPARATOR);
+            parentValue = StringUtils.join(keys, keySeparator != null ? keySeparator
+                    : ChainSelect.DEFAULT_KEY_SEPARATOR);
         } else {
             parentValue = getColumnValue(index - 1);
         }

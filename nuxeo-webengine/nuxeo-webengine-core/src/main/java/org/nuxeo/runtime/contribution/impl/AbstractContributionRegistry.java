@@ -29,29 +29,30 @@ import org.nuxeo.runtime.contribution.Contribution;
 import org.nuxeo.runtime.contribution.ContributionRegistry;
 
 /**
- * The parent provider is read only. It is never modified by the registry.
- * It serves only to resolve dependencies. This allows greater flexibility in managing dependencies.
- * This registry may have a parent registry that can be used only read only.
+ * The parent provider is read only. It is never modified by the registry. It serves only to resolve dependencies. This
+ * allows greater flexibility in managing dependencies. This registry may have a parent registry that can be used only
+ * read only.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // TODO need to implement a visibility (PRIVATE, PROTECTED, PUBLIC etc)
 // on contributions when extending other registries
-public abstract class AbstractContributionRegistry<K, T> implements
-        ContributionRegistry<K, T> {
+public abstract class AbstractContributionRegistry<K, T> implements ContributionRegistry<K, T> {
 
     protected final Map<Object, Contribution<K, T>> registry;
-    protected final AbstractContributionRegistry<K,T> parent;
+
+    protected final AbstractContributionRegistry<K, T> parent;
+
     protected final List<AbstractContributionRegistry<K, T>> listeners;
 
     protected AbstractContributionRegistry() {
         this(null);
     }
 
-    protected AbstractContributionRegistry(AbstractContributionRegistry<K,T> parent) {
+    protected AbstractContributionRegistry(AbstractContributionRegistry<K, T> parent) {
         registry = new HashMap<Object, Contribution<K, T>>();
         this.parent = parent;
-        listeners = new ArrayList<AbstractContributionRegistry<K,T>>();
+        listeners = new ArrayList<AbstractContributionRegistry<K, T>>();
         // subclasses may call importParentContributions(); after initializing the registry
         // this will import all resolved contributions from the parent
     }
@@ -62,13 +63,13 @@ public abstract class AbstractContributionRegistry<K, T> implements
 
     protected synchronized void importParentContributions() {
         AbstractContributionRegistry<K, T> pParent = parent;
-        List<AbstractContributionRegistry<K, T>> parents = new ArrayList<AbstractContributionRegistry<K,T>>();
+        List<AbstractContributionRegistry<K, T>> parents = new ArrayList<AbstractContributionRegistry<K, T>>();
         while (pParent != null) {
             parents.add(pParent);
             pParent = pParent.parent;
         }
         Collections.reverse(parents);
-        for (AbstractContributionRegistry<K,T> p : parents) {
+        for (AbstractContributionRegistry<K, T> p : parents) {
             p.listeners.add(this);
             for (Contribution<K, T> contrib : p.registry.values().toArray(new Contribution[p.registry.size()])) {
                 if (contrib.isResolved()) {
@@ -80,7 +81,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
     }
 
     public synchronized Contribution<K, T> getContribution(K primaryKey) {
-        Contribution<K,T> contrib = registry.get(primaryKey);
+        Contribution<K, T> contrib = registry.get(primaryKey);
         if (contrib == null && parent != null) {
             contrib = parent.getContribution(primaryKey);
         }
@@ -88,7 +89,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
     }
 
     public T getObject(K key) {
-        Contribution<K,T> contrib = getContribution(key);
+        Contribution<K, T> contrib = getContribution(key);
         if (contrib != null) {
             if (contrib.isResolved()) {
                 return contrib.getValue();
@@ -113,8 +114,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
         }
     }
 
-    public synchronized Contribution<K, T> addFragment(K key, T fragment,
-            K... superKeys) {
+    public synchronized Contribution<K, T> addFragment(K key, T fragment, K... superKeys) {
         Contribution<K, T> contrib = registry.get(key);
         if (contrib == null) {
             contrib = new ContributionImpl<K, T>(this, key);
@@ -137,8 +137,8 @@ public abstract class AbstractContributionRegistry<K, T> implements
     public void fireUnresolved(Contribution<K, T> contrib, T value) {
         K key = contrib.getId();
         uninstallContribution(key, value);
-        if(!listeners.isEmpty()) {
-            for (AbstractContributionRegistry<K,T> reg : listeners) {
+        if (!listeners.isEmpty()) {
+            for (AbstractContributionRegistry<K, T> reg : listeners) {
                 reg.uninstallContribution(key, value);
             }
         }
@@ -151,8 +151,8 @@ public abstract class AbstractContributionRegistry<K, T> implements
             throw new IllegalStateException("contribution is null");
         }
         installContribution(key, value);
-        if(!listeners.isEmpty()) {
-            for (AbstractContributionRegistry<K,T> reg : listeners) {
+        if (!listeners.isEmpty()) {
+            for (AbstractContributionRegistry<K, T> reg : listeners) {
                 reg.installContribution(key, value);
             }
         }

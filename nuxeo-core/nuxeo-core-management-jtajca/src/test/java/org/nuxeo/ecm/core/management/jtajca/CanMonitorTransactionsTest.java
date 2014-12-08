@@ -51,12 +51,15 @@ import com.google.inject.Inject;
  * @author matic
  */
 @RunWith(FeaturesRunner.class)
-@Features({ JtajcaManagementFeature.class, LogCaptureFeature.class})
+@Features({ JtajcaManagementFeature.class, LogCaptureFeature.class })
 public class CanMonitorTransactionsTest {
 
-    @Inject @Named("default") protected TransactionMonitor monitor;
+    @Inject
+    @Named("default")
+    protected TransactionMonitor monitor;
 
-    @Inject protected TransactionManager tm;
+    @Inject
+    protected TransactionManager tm;
 
     protected ExecutorService executor;
 
@@ -128,11 +131,9 @@ public class CanMonitorTransactionsTest {
     }
 
     @Test
-    public void isTotalRollbacksCorrect() throws InterruptedException,
-            ExecutionException {
+    public void isTotalRollbacksCorrect() throws InterruptedException, ExecutionException {
         assertThat(monitor.getActiveCount(), is(1L));
-        FutureTask<Boolean> rollback = new FutureTask<Boolean>(
-                new TestTotalRollbacks());
+        FutureTask<Boolean> rollback = new FutureTask<Boolean>(new TestTotalRollbacks());
         executor.execute(rollback);
         assertThat(rollback.get(), is(true));
     }
@@ -151,10 +152,8 @@ public class CanMonitorTransactionsTest {
     }
 
     @Test
-    public void isTotalCommitsCorrect() throws InterruptedException,
-            ExecutionException {
-        FutureTask<Boolean> commit = new FutureTask<Boolean>(
-                new TestTotalCommits());
+    public void isTotalCommitsCorrect() throws InterruptedException, ExecutionException {
+        FutureTask<Boolean> commit = new FutureTask<Boolean>(new TestTotalCommits());
         executor.execute(commit);
         assertThat(commit.get(), is(true));
     }
@@ -172,8 +171,8 @@ public class CanMonitorTransactionsTest {
                 stats = monitor.getActiveStatistics();
                 assertThat((long) stats.size(), is(0L));
             } catch (Exception cause) {
-                LogFactory.getLog(CanMonitorTransactionsTest.class).error(
-                        "Caught error while collecting statistics", cause);
+                LogFactory.getLog(CanMonitorTransactionsTest.class).error("Caught error while collecting statistics",
+                        cause);
             }
 
             return Boolean.TRUE;
@@ -182,10 +181,8 @@ public class CanMonitorTransactionsTest {
     }
 
     @Test
-    public void isActiveStatisticsCollected() throws InterruptedException,
-            ExecutionException {
-        FutureTask<Boolean> task = new FutureTask<Boolean>(
-                new TestCollectStatistics());
+    public void isActiveStatisticsCollected() throws InterruptedException, ExecutionException {
+        FutureTask<Boolean> task = new FutureTask<Boolean>(new TestCollectStatistics());
         executor.execute(task);
         assertThat(task.get(), is(true));
     }
@@ -195,10 +192,8 @@ public class CanMonitorTransactionsTest {
 
     @Test
     @LogCaptureFeature.FilterWith(value = CanMonitorTransactionsTest.LogRollbackTraceFilter.class)
-    public void logContainsRollbackTrace() throws InterruptedException,
-            ExecutionException, NoLogCaptureFilterException {
-        FutureTask<Boolean> task = new FutureTask<Boolean>(
-                new TestLogRollbackTrace());
+    public void logContainsRollbackTrace() throws InterruptedException, ExecutionException, NoLogCaptureFilterException {
+        FutureTask<Boolean> task = new FutureTask<Boolean>(new TestLogRollbackTrace());
         executor.execute(task);
         assertThat(task.get(), is(true));
         logCaptureResults.assertHasEvent();
@@ -213,8 +208,7 @@ public class CanMonitorTransactionsTest {
         }
     }
 
-    public static class LogRollbackTraceFilter implements
-            LogCaptureFeature.Filter {
+    public static class LogRollbackTraceFilter implements LogCaptureFeature.Filter {
         @Override
         public boolean accept(LoggingEvent event) {
             if (event.getLevel() != Level.TRACE) {
@@ -234,10 +228,8 @@ public class CanMonitorTransactionsTest {
 
     @Test
     @LogCaptureFeature.FilterWith(value = CanMonitorTransactionsTest.LogMessageFilter.class)
-    public void logContainsTxKey() throws InterruptedException,
-            ExecutionException, NoLogCaptureFilterException {
-        FutureTask<Boolean> task = new FutureTask<Boolean>(
-                new TestLogRollbackTrace());
+    public void logContainsTxKey() throws InterruptedException, ExecutionException, NoLogCaptureFilterException {
+        FutureTask<Boolean> task = new FutureTask<Boolean>(new TestLogRollbackTrace());
         executor.execute(task);
         assertThat(task.get(), is(true));
         logCaptureResults.assertHasEvent();

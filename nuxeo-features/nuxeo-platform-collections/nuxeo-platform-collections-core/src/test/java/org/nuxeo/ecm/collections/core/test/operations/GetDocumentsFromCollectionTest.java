@@ -38,8 +38,7 @@ import com.google.inject.Inject;
  *
  * @since 5.9.4
  */
-public class GetDocumentsFromCollectionTest extends
-        CollectionOperationsTestCase {
+public class GetDocumentsFromCollectionTest extends CollectionOperationsTestCase {
 
     @Inject
     CollectionManager collectionManager;
@@ -50,12 +49,11 @@ public class GetDocumentsFromCollectionTest extends
 
     @Before
     public void setUp() throws ClientException {
-        testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         // Create a new collection
-        collection = collectionManager.createCollection(session,
-                COLLECTION_NAME, COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
+        collection = collectionManager.createCollection(session, COLLECTION_NAME, COLLECTION_DESCRIPTION,
+                testWorkspace.getPathAsString());
         // Create a list of test documents
         listDocuments = createTestFiles(session, 5);
         // Add them in the collection

@@ -38,52 +38,48 @@ import org.nuxeo.ecm.core.api.ClientException;
 public interface PictureBookManager {
 
     /**
-     * Sets the title. This is the title of the PictureBook as defined in the
-     * Dublincore schema
+     * Sets the title. This is the title of the PictureBook as defined in the Dublincore schema
      *
      * @param title a String holding the title
      */
     void setTitle(String title);
 
     /**
-     * Gets the title. This is the title of the PictureBook as defined in the
-     * Dublincore schema.
+     * Gets the title. This is the title of the PictureBook as defined in the Dublincore schema.
      *
      * @return a String holding the title
      */
     String getTitle();
 
     /**
-     * Gets the views. The views are Map that contains different information
-     * about each type of picture you might want. It has the 3 default following
-     * views: Original View, Medium View, used for the slideShow Thumbnail View,
-     * used For the PictureBook.
+     * Gets the views. The views are Map that contains different information about each type of picture you might want.
+     * It has the 3 default following views: Original View, Medium View, used for the slideShow Thumbnail View, used For
+     * the PictureBook.
      *
      * @return an ArrayList of Map<String, Object> holding the views
      */
     ArrayList<Map<String, Object>> getViews();
 
     /**
-     * Sets the views. The views are Map that contains different information
-     * about each type of picture you might want. It has the 3 default following
-     * views: Original View, Medium View, used for the slideShow Thumbnail View,
-     * used For the PictureBook
+     * Sets the views. The views are Map that contains different information about each type of picture you might want.
+     * It has the 3 default following views: Original View, Medium View, used for the slideShow Thumbnail View, used For
+     * the PictureBook
      *
      * @param views an ArrayList of Map<String, Object> holding the views
      */
     void setViews(ArrayList<Map<String, Object>> views);
 
     /**
-     * Sets the viewtitle. viewtitle is the property title of a view. For
-     * example the default title For the Original view is 'Original'.
+     * Sets the viewtitle. viewtitle is the property title of a view. For example the default title For the Original
+     * view is 'Original'.
      *
      * @param viewtitle a String holding the title of a view
      */
     void setViewtitle(String viewtitle);
 
     /**
-     * Gets the viewtitle. viewtitle is the property title of a view. For
-     * example the default title For the Original view is 'Original'
+     * Gets the viewtitle. viewtitle is the property title of a view. For example the default title For the Original
+     * view is 'Original'
      *
      * @return a String holding the title of a view.
      */
@@ -118,30 +114,28 @@ public interface PictureBookManager {
     String getTag();
 
     /**
-     * Sets the maxsize. maxsize is a property of a view. Maximum size of the
-     * longest side of a picture. It is used to create the file of a view.
+     * Sets the maxsize. maxsize is a property of a view. Maximum size of the longest side of a picture. It is used to
+     * create the file of a view.
      *
      * @param maxsize an Integer holding the maximum size
      */
     void setMaxsize(Integer maxsize);
 
     /**
-     * Gets the maxsize. maxsize is a property of a view. Maximum size of the
-     * longest side of a picture. It is used to create the file of a view.
+     * Gets the maxsize. maxsize is a property of a view. Maximum size of the longest side of a picture. It is used to
+     * create the file of a view.
      *
      * @return an Integer holding the maximum size
      */
     Integer getMaxsize();
 
     /**
-     * Adds the current view to the views ArrayList using viewtitle,
-     * description, tag and maxsize.
+     * Adds the current view to the views ArrayList using viewtitle, description, tag and maxsize.
      */
     void addView();
 
     /**
-     * Creates and saves a Picture Book DocumentModel using views, timeinterval,
-     * description and title.
+     * Creates and saves a Picture Book DocumentModel using views, timeinterval, description and title.
      */
     String createPictureBook();
 

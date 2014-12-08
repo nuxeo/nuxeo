@@ -22,9 +22,8 @@ package org.nuxeo.ecm.platform.ui.web.directory;
 import java.io.Serializable;
 
 /**
- * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- * This class is used for setting the values of a select box dynamically,
- * i.e. not from a directory.
+ * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a> This class is used for setting the values of a select
+ *         box dynamically, i.e. not from a directory.
  */
 public class VocabularyEntry implements Serializable {
 
@@ -45,10 +44,10 @@ public class VocabularyEntry implements Serializable {
     }
 
     public VocabularyEntry(String id, String label, String parent) {
-        if(id == null) {
+        if (id == null) {
             throw new IllegalArgumentException("id is null");
         }
-        if(label == null) {
+        if (label == null) {
             throw new IllegalArgumentException("label is null");
         }
         this.id = id;

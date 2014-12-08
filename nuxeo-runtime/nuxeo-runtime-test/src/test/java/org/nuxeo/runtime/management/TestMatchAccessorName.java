@@ -26,7 +26,6 @@ import org.junit.Test;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
 public class TestMatchAccessorName {
 

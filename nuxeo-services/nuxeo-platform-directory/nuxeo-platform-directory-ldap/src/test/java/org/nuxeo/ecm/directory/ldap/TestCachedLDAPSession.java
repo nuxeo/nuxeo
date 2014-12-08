@@ -55,8 +55,7 @@ public class TestCachedLDAPSession extends TestLDAPSession {
             deployTestContrib(TEST_BUNDLE, CACHE_CONFIG);
         }
         fireFrameworkStarted();
-        List<String> directories = Arrays.asList("userDirectory",
-                "groupDirectory");
+        List<String> directories = Arrays.asList("userDirectory", "groupDirectory");
         for (String directoryName : directories) {
             LDAPDirectory dir = getLDAPDirectory(directoryName);
             DirectoryCache cache = dir.getCache();
@@ -64,19 +63,18 @@ public class TestCachedLDAPSession extends TestLDAPSession {
             cache.setEntryCacheWithoutReferencesName(ENTRY_CACHE_WITHOUT_REFERENCES_NAME);
         }
     }
-    
+
     @Test
     public void testGetFromCache() {
         Session ldapSession = getLDAPDirectory("userDirectory").getSession();
-        
-        //First call will update cache
+
+        // First call will update cache
         DocumentModel entry = ldapSession.getEntry("user1");
         Assert.isNotNull(entry);
-        
-        //Second call will use the cache
+
+        // Second call will use the cache
         entry = ldapSession.getEntry("user1");
         Assert.isNotNull(entry);
     }
-    
 
 }

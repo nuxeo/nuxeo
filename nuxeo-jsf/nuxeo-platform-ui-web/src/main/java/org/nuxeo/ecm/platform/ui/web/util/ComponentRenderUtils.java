@@ -39,8 +39,7 @@ import javax.faces.context.FacesContext;
  */
 public class ComponentRenderUtils {
 
-    public static String getComponentAbsoluteId(UIComponent base,
-            String targetId) {
+    public static String getComponentAbsoluteId(UIComponent base, String targetId) {
         if (targetId == null || targetId.startsWith(":")) {
             return targetId;
         }
@@ -80,8 +79,7 @@ public class ComponentRenderUtils {
         return target;
     }
 
-    protected static UIComponent findUIComponentBelow(UIComponent root,
-            String id) {
+    protected static UIComponent findUIComponentBelow(UIComponent root, String id) {
         UIComponent target = null;
         for (Iterator<UIComponent> iter = root.getFacetsAndChildren(); iter.hasNext();) {
             UIComponent child = iter.next();

@@ -64,16 +64,13 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = LocalConfigurationRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core" })
+@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core" })
 @LocalDeploy("org.nuxeo.ecm.platform.types.core:test-ui-types-local-configuration.xml")
 public class TestLocalConfiguration {
 
-    public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef(
-            "/default-domain/workspaces/workspace");
+    public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace");
 
-    public static final DocumentRef CHILD_WORKSPACE_REF = new PathRef(
-            "/default-domain/workspaces/workspace/workspace2");
+    public static final DocumentRef CHILD_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace/workspace2");
 
     public static final String WORKSPACE_TYPE = "Workspace";
 
@@ -102,26 +99,21 @@ public class TestLocalConfiguration {
     protected LocalConfigurationService localConfigurationService;
 
     @Test
-    public void shouldNotTakeIntoAccountConfigurationIfNoCurrentDocumentIsGiven()
-            throws ClientException {
+    public void shouldNotTakeIntoAccountConfigurationIfNoCurrentDocumentIsGiven() throws ClientException {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         setDeniedTypes(workspace, FOLDER_TYPE, FILE_TYPE);
 
-        assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE,
-                workspace.getType()));
-        assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE,
-                workspace.getType()));
+        assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE, workspace.getType()));
+        assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE, workspace.getType()));
         assertTrue(typeManager.isAllowedSubType(FILE_TYPE, workspace.getType()));
         assertTrue(typeManager.isAllowedSubType(NOTE_TYPE, workspace.getType()));
-        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE,
-                workspace.getType(), workspace));
+        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE, workspace.getType(), workspace));
 
         assertTrue(typeManager.canCreate(WORKSPACE_TYPE, workspace.getType()));
         assertTrue(typeManager.canCreate(FOLDER_TYPE, workspace.getType()));
         assertTrue(typeManager.canCreate(FILE_TYPE, workspace.getType()));
         assertTrue(typeManager.canCreate(NOTE_TYPE, workspace.getType()));
-        assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(),
-                workspace));
+        assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(), workspace));
     }
 
     @Test
@@ -130,54 +122,37 @@ public class TestLocalConfiguration {
         setDenyAllTypes(workspace, true);
 
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-        UITypesConfiguration configuration = localConfigurationService.getConfiguration(
-                UITypesConfiguration.class, UI_TYPES_CONFIGURATION_FACET,
-                workspace);
+        UITypesConfiguration configuration = localConfigurationService.getConfiguration(UITypesConfiguration.class,
+                UI_TYPES_CONFIGURATION_FACET, workspace);
         assertTrue(configuration.denyAllTypes());
 
-        assertFalse(typeManager.isAllowedSubType(WORKSPACE_TYPE,
-                workspace.getType(), workspace));
-        assertFalse(typeManager.isAllowedSubType(FOLDER_TYPE,
-                workspace.getType(), workspace));
-        assertFalse(typeManager.isAllowedSubType(FILE_TYPE,
-                workspace.getType(), workspace));
-        assertFalse(typeManager.isAllowedSubType(NOTE_TYPE,
-                workspace.getType(), workspace));
-        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE,
-                workspace.getType(), workspace));
+        assertFalse(typeManager.isAllowedSubType(WORKSPACE_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.isAllowedSubType(FOLDER_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.isAllowedSubType(FILE_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.isAllowedSubType(NOTE_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE, workspace.getType(), workspace));
 
-        assertFalse(typeManager.canCreate(WORKSPACE_TYPE, workspace.getType(),
-                workspace));
-        assertFalse(typeManager.canCreate(FOLDER_TYPE, workspace.getType(),
-                workspace));
-        assertFalse(typeManager.canCreate(FILE_TYPE, workspace.getType(),
-                workspace));
-        assertFalse(typeManager.canCreate(NOTE_TYPE, workspace.getType(),
-                workspace));
-        assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(),
-                workspace));
+        assertFalse(typeManager.canCreate(WORKSPACE_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.canCreate(FOLDER_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.canCreate(FILE_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.canCreate(NOTE_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(), workspace));
     }
 
-    protected void setDenyAllTypes(DocumentModel doc, boolean denyAllTypes)
-            throws ClientException {
-        doc.setPropertyValue(UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY,
-                Boolean.valueOf(denyAllTypes));
+    protected void setDenyAllTypes(DocumentModel doc, boolean denyAllTypes) throws ClientException {
+        doc.setPropertyValue(UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY, Boolean.valueOf(denyAllTypes));
         session.saveDocument(doc);
         session.save();
     }
 
-    protected void setAllowedTypes(DocumentModel doc, String... allowedTypes)
-            throws ClientException {
-        doc.setPropertyValue(UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY,
-                (Serializable) Arrays.asList(allowedTypes));
+    protected void setAllowedTypes(DocumentModel doc, String... allowedTypes) throws ClientException {
+        doc.setPropertyValue(UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY, (Serializable) Arrays.asList(allowedTypes));
         session.saveDocument(doc);
         session.save();
     }
 
-    protected void setDeniedTypes(DocumentModel doc, String... deniedTypes)
-            throws ClientException {
-        doc.setPropertyValue(UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY,
-                (Serializable) Arrays.asList(deniedTypes));
+    protected void setDeniedTypes(DocumentModel doc, String... deniedTypes) throws ClientException {
+        doc.setPropertyValue(UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY, (Serializable) Arrays.asList(deniedTypes));
         session.saveDocument(doc);
         session.save();
     }
@@ -187,27 +162,17 @@ public class TestLocalConfiguration {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         setDeniedTypes(workspace, FOLDER_TYPE);
 
-        assertFalse(typeManager.isAllowedSubType(FOLDER_TYPE,
-                workspace.getType(), workspace));
-        assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE,
-                workspace.getType(), workspace));
-        assertTrue(typeManager.isAllowedSubType(FILE_TYPE, workspace.getType(),
-                workspace));
-        assertTrue(typeManager.isAllowedSubType(NOTE_TYPE, workspace.getType(),
-                workspace));
-        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE,
-                workspace.getType(), workspace));
+        assertFalse(typeManager.isAllowedSubType(FOLDER_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.isAllowedSubType(FILE_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.isAllowedSubType(NOTE_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE, workspace.getType(), workspace));
 
-        assertFalse(typeManager.canCreate(FOLDER_TYPE, workspace.getType(),
-                workspace));
-        assertTrue(typeManager.canCreate(WORKSPACE_TYPE, workspace.getType(),
-                workspace));
-        assertTrue(typeManager.canCreate(FILE_TYPE, workspace.getType(),
-                workspace));
-        assertTrue(typeManager.canCreate(NOTE_TYPE, workspace.getType(),
-                workspace));
-        assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(),
-                workspace));
+        assertFalse(typeManager.canCreate(FOLDER_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.canCreate(WORKSPACE_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.canCreate(FILE_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.canCreate(NOTE_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(), workspace));
     }
 
     @Test
@@ -216,74 +181,48 @@ public class TestLocalConfiguration {
         setAllowedTypes(workspace, FOLDER_TYPE);
         setDeniedTypes(workspace, FOLDER_TYPE);
 
-        assertFalse(typeManager.isAllowedSubType(FOLDER_TYPE,
-                workspace.getType(), workspace));
-        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE,
-                workspace.getType(), workspace));
+        assertFalse(typeManager.isAllowedSubType(FOLDER_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE, workspace.getType(), workspace));
 
-        assertFalse(typeManager.canCreate(FOLDER_TYPE, workspace.getType(),
-                workspace));
-        assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(),
-                workspace));
+        assertFalse(typeManager.canCreate(FOLDER_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(), workspace));
     }
 
     @Test
-    public void noConfigurationShouldAllowEveryRegisteredSubTypes()
-            throws ClientException {
+    public void noConfigurationShouldAllowEveryRegisteredSubTypes() throws ClientException {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
 
-        assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE,
-                workspace.getType(), workspace));
-        assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE,
-                workspace.getType(), workspace));
-        assertTrue(typeManager.isAllowedSubType(FILE_TYPE, workspace.getType(),
-                workspace));
-        assertTrue(typeManager.isAllowedSubType(NOTE_TYPE, workspace.getType(),
-                workspace));
-        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE,
-                workspace.getType(), workspace));
+        assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.isAllowedSubType(FILE_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.isAllowedSubType(NOTE_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE, workspace.getType(), workspace));
 
-        assertTrue(typeManager.canCreate(WORKSPACE_TYPE, workspace.getType(),
-                workspace));
-        assertTrue(typeManager.canCreate(FOLDER_TYPE, workspace.getType(),
-                workspace));
-        assertTrue(typeManager.canCreate(FILE_TYPE, workspace.getType(),
-                workspace));
-        assertTrue(typeManager.canCreate(NOTE_TYPE, workspace.getType(),
-                workspace));
-        assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(),
-                workspace));
+        assertTrue(typeManager.canCreate(WORKSPACE_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.canCreate(FOLDER_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.canCreate(FILE_TYPE, workspace.getType(), workspace));
+        assertTrue(typeManager.canCreate(NOTE_TYPE, workspace.getType(), workspace));
+        assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(), workspace));
     }
 
     @Test
-    public void shouldNotAllowAnyTypeIfParentConfigurationDoNotAllowAnyType()
-            throws ClientException {
+    public void shouldNotAllowAnyTypeIfParentConfigurationDoNotAllowAnyType() throws ClientException {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         setDenyAllTypes(parentWorkspace, true);
         DocumentModel childWorkspace = session.getDocument(CHILD_WORKSPACE_REF);
         setAllowedTypes(childWorkspace, FOLDER_TYPE, FILE_TYPE);
 
-        assertFalse(typeManager.isAllowedSubType(WORKSPACE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.isAllowedSubType(FOLDER_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.isAllowedSubType(FILE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.isAllowedSubType(NOTE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE,
-                childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(WORKSPACE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(FOLDER_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(FILE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(NOTE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE, childWorkspace.getType(), childWorkspace));
 
-        assertFalse(typeManager.canCreate(WORKSPACE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.canCreate(FOLDER_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.canCreate(FILE_TYPE, childWorkspace.getType(),
-                childWorkspace));
-        assertFalse(typeManager.canCreate(NOTE_TYPE, childWorkspace.getType(),
-                childWorkspace));
-        assertFalse(typeManager.canCreate(SECTION_TYPE,
-                childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.canCreate(WORKSPACE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.canCreate(FOLDER_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.canCreate(FILE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.canCreate(NOTE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.canCreate(SECTION_TYPE, childWorkspace.getType(), childWorkspace));
     }
 
     @Test
@@ -293,27 +232,17 @@ public class TestLocalConfiguration {
         DocumentModel childWorkspace = session.getDocument(CHILD_WORKSPACE_REF);
         setDeniedTypes(childWorkspace, FOLDER_TYPE);
 
-        assertFalse(typeManager.isAllowedSubType(FOLDER_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.isAllowedSubType(FILE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertTrue(typeManager.isAllowedSubType(NOTE_TYPE,
-                childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(FOLDER_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(FILE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE, childWorkspace.getType(), childWorkspace));
+        assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertTrue(typeManager.isAllowedSubType(NOTE_TYPE, childWorkspace.getType(), childWorkspace));
 
-        assertFalse(typeManager.canCreate(FOLDER_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.canCreate(FILE_TYPE, childWorkspace.getType(),
-                childWorkspace));
-        assertFalse(typeManager.canCreate(SECTION_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertTrue(typeManager.canCreate(WORKSPACE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertTrue(typeManager.canCreate(NOTE_TYPE, childWorkspace.getType(),
-                childWorkspace));
+        assertFalse(typeManager.canCreate(FOLDER_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.canCreate(FILE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.canCreate(SECTION_TYPE, childWorkspace.getType(), childWorkspace));
+        assertTrue(typeManager.canCreate(WORKSPACE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertTrue(typeManager.canCreate(NOTE_TYPE, childWorkspace.getType(), childWorkspace));
     }
 
     @Test
@@ -323,33 +252,22 @@ public class TestLocalConfiguration {
         DocumentModel childWorkspace = session.getDocument(CHILD_WORKSPACE_REF);
         setAllowedTypes(childWorkspace, FOLDER_TYPE);
 
-        assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.isAllowedSubType(FILE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.isAllowedSubType(WORKSPACE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.isAllowedSubType(NOTE_TYPE,
-                childWorkspace.getType(), childWorkspace));
+        assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(FILE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(SECTION_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(WORKSPACE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(NOTE_TYPE, childWorkspace.getType(), childWorkspace));
 
-        assertTrue(typeManager.canCreate(FOLDER_TYPE, childWorkspace.getType(),
-                childWorkspace));
-        assertFalse(typeManager.canCreate(FILE_TYPE, childWorkspace.getType(),
-                childWorkspace));
-        assertFalse(typeManager.canCreate(SECTION_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.canCreate(WORKSPACE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.canCreate(NOTE_TYPE, childWorkspace.getType(),
-                childWorkspace));
+        assertTrue(typeManager.canCreate(FOLDER_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.canCreate(FILE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.canCreate(SECTION_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.canCreate(WORKSPACE_TYPE, childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.canCreate(NOTE_TYPE, childWorkspace.getType(), childWorkspace));
     }
 
     @Test
     public void validateTypeMapForWorkspace() {
-        Map<String, List<Type>> typeMapForDocumentType = typeManager.getTypeMapForDocumentType(
-                WORKSPACE_TYPE, null);
+        Map<String, List<Type>> typeMapForDocumentType = typeManager.getTypeMapForDocumentType(WORKSPACE_TYPE, null);
         assertNotNull(typeMapForDocumentType);
         assertFalse(typeMapForDocumentType.isEmpty());
 
@@ -379,11 +297,9 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void shouldFindAllAllowedSubtypesWithoutConfiguration()
-            throws ClientException {
+    public void shouldFindAllAllowedSubtypesWithoutConfiguration() throws ClientException {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
-        Collection<Type> allowedSubTypes = typeManager.findAllAllowedSubTypesFrom(
-                WORKSPACE_TYPE, workspace);
+        Collection<Type> allowedSubTypes = typeManager.findAllAllowedSubTypesFrom(WORKSPACE_TYPE, workspace);
 
         assertNotNull(allowedSubTypes);
         assertFalse(allowedSubTypes.isEmpty());
@@ -398,8 +314,7 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void userWithoutReadRightOnWorkspaceShouldRetrieveConfiguration()
-            throws ClientException {
+    public void userWithoutReadRightOnWorkspaceShouldRetrieveConfiguration() throws ClientException {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         setDeniedTypes(workspace, FILE_TYPE);
 
@@ -407,14 +322,10 @@ public class TestLocalConfiguration {
 
         try (CoreSession newSession = openSessionAs("user1")) {
             DocumentModel childWorkspace = newSession.getDocument(CHILD_WORKSPACE_REF);
-            assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE,
-                    childWorkspace.getType(), childWorkspace));
-            assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE,
-                    childWorkspace.getType(), childWorkspace));
-            assertTrue(typeManager.isAllowedSubType(NOTE_TYPE,
-                    childWorkspace.getType(), childWorkspace));
-            assertFalse(typeManager.isAllowedSubType(FILE_TYPE,
-                    childWorkspace.getType(), childWorkspace));
+            assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE, childWorkspace.getType(), childWorkspace));
+            assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE, childWorkspace.getType(), childWorkspace));
+            assertTrue(typeManager.isAllowedSubType(NOTE_TYPE, childWorkspace.getType(), childWorkspace));
+            assertFalse(typeManager.isAllowedSubType(FILE_TYPE, childWorkspace.getType(), childWorkspace));
         }
     }
 
@@ -423,8 +334,7 @@ public class TestLocalConfiguration {
         ACP acp = childWorkspace.getACP();
         ACL acl = acp.getOrCreateACL();
         acl.clear();
-        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ,
-                true));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true));
         childWorkspace.setACP(acp, true);
         session.saveDocument(childWorkspace);
         session.save();

@@ -30,7 +30,9 @@ import java.util.List;
 public class FileNamePattern {
 
     private boolean wstart = false;
+
     private boolean wend = false;
+
     private char[][] parts;
 
     public FileNamePattern(String pattern) {
@@ -93,7 +95,6 @@ public class FileNamePattern {
 
         return match(text.toCharArray(), 0, 0, !wstart);
     }
-
 
     private boolean match(char[] text, int offset, int part, boolean exactMatch) {
         if (part >= parts.length) {
@@ -165,8 +166,7 @@ public class FileNamePattern {
     }
 
     /**
-     * Tests whether the given array match the pattern at the given position.
-     * Matching allows ? wildcards.
+     * Tests whether the given array match the pattern at the given position. Matching allows ? wildcards.
      */
     public static boolean containsAt(char[] array, int offset, char[] pattern) {
         if (offset + pattern.length > array.length) {

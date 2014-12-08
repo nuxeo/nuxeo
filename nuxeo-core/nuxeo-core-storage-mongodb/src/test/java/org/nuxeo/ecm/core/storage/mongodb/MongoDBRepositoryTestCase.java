@@ -49,8 +49,7 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
     protected int initialSingleConnections;
 
     /**
-     * Query of NOT (something) matches docs where (something) did not match
-     * because the field was null. field.
+     * Query of NOT (something) matches docs where (something) did not match because the field was null. field.
      */
     public boolean notMatchesNull() {
         return true;
@@ -67,8 +66,7 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.storage");
         deployBundle("org.nuxeo.ecm.core.storage.mongodb");
-        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests",
-                "OSGI-INF/test-repo-types.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests", "OSGI-INF/test-repo-types.xml");
         initRepository();
         setUpTx();
         openSession();
@@ -104,12 +102,10 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
     protected void clearMongoDb() throws UnknownHostException {
         MongoClient mongoClient = MongoDBRepository.newMongoClient(descriptor);
         try {
-            DBCollection coll = MongoDBRepository.getCollection(descriptor,
-                    mongoClient);
+            DBCollection coll = MongoDBRepository.getCollection(descriptor, mongoClient);
             coll.dropIndexes();
             coll.remove(new BasicDBObject());
-            coll = MongoDBRepository.getCountersCollection(descriptor,
-                    mongoClient);
+            coll = MongoDBRepository.getCountersCollection(descriptor, mongoClient);
             coll.dropIndexes();
             coll.remove(new BasicDBObject());
         } finally {
@@ -132,23 +128,18 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         int finalOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
         int leakedOpenSessions = finalOpenSessions - initialOpenSessions;
         if (leakedOpenSessions != 0) {
-            log.error(String.format(
-                    "There are %s open session(s) at tear down; it seems "
-                            + "the test leaked %s session(s).",
-                    Integer.valueOf(finalOpenSessions),
+            log.error(String.format("There are %s open session(s) at tear down; it seems "
+                    + "the test leaked %s session(s).", Integer.valueOf(finalOpenSessions),
                     Integer.valueOf(leakedOpenSessions)));
             for (CoreInstance.RegistrationInfo info : CoreInstance.getInstance().getRegistrationInfos()) {
                 log.warn("Leaking session", info);
             }
         }
         int finalSingleConnections = ConnectionHelper.countConnectionReferences();
-        int leakedSingleConnections = finalSingleConnections
-                - initialSingleConnections;
+        int leakedSingleConnections = finalSingleConnections - initialSingleConnections;
         if (leakedSingleConnections > 0) {
-            log.error(String.format(
-                    "There are %s single datasource connection(s) open at tear down; "
-                            + "the test leaked %s connection(s).",
-                    Integer.valueOf(finalSingleConnections),
+            log.error(String.format("There are %s single datasource connection(s) open at tear down; "
+                    + "the test leaked %s connection(s).", Integer.valueOf(finalSingleConnections),
                     Integer.valueOf(leakedSingleConnections)));
         }
         ConnectionHelper.clearConnectionReferences();
@@ -176,8 +167,7 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         return CoreInstance.openCoreSession(repositoryName, username);
     }
 
-    public CoreSession openSessionAs(NuxeoPrincipal principal)
-            throws ClientException {
+    public CoreSession openSessionAs(NuxeoPrincipal principal) throws ClientException {
         return CoreInstance.openCoreSession(repositoryName, principal);
     }
 

@@ -49,13 +49,12 @@ public abstract class AbstractProperty implements Property {
     /**
      * Sets the given normalized value.
      * <p>
-     * This applies only for nodes that physically store a value (that means non
-     * container nodes). Container nodes does nothing.
+     * This applies only for nodes that physically store a value (that means non container nodes). Container nodes does
+     * nothing.
      *
      * @param value
      */
-    public abstract void internalSetValue(Serializable value)
-            throws PropertyException;
+    public abstract void internalSetValue(Serializable value) throws PropertyException;
 
     public abstract Serializable internalGetValue() throws PropertyException;
 
@@ -247,8 +246,7 @@ public abstract class AbstractProperty implements Property {
 
     protected void setIsNew() {
         if (isDirty()) {
-            throw new IllegalStateException(
-                    "Cannot set IS_NEW flag on a dirty property");
+            throw new IllegalStateException("Cannot set IS_NEW flag on a dirty property");
         }
         // clear dirty + phantom flag if any
         setDirtyFlags(IS_NEW); // this clear any dirty flag and set the new
@@ -260,8 +258,7 @@ public abstract class AbstractProperty implements Property {
 
     protected void setIsRemoved() {
         if (isPhantom() || parent == null || parent.isList()) {
-            throw new IllegalStateException(
-                    "Cannot set IS_REMOVED on removed or properties that are not map elements");
+            throw new IllegalStateException("Cannot set IS_REMOVED on removed or properties that are not map elements");
         }
         if ((flags & IS_REMOVED) == 0) { // if not already removed
             // clear dirty + phatom flag if any
@@ -272,8 +269,7 @@ public abstract class AbstractProperty implements Property {
 
     protected void setIsMoved() {
         if (parent == null || !parent.isList()) {
-            throw new IllegalStateException(
-                    "Cannot set IS_MOVED on removed or properties that are not map elements");
+            throw new IllegalStateException("Cannot set IS_MOVED on removed or properties that are not map elements");
         }
         if ((flags & IS_MOVED) == 0) {
             flags |= IS_MOVED;
@@ -378,15 +374,14 @@ public abstract class AbstractProperty implements Property {
         for (int i = start; i < segments.length; i++) {
             String segment = segments[i];
             if (property.isScalar()) {
-                throw new PropertyNotFoundException(path.toString(), "segment "
-                        + segment + " points to a scalar property");
+                throw new PropertyNotFoundException(path.toString(), "segment " + segment
+                        + " points to a scalar property");
             }
             String index = null;
             if (segment.endsWith("]")) {
                 int p = segment.lastIndexOf('[');
                 if (p == -1) {
-                    throw new PropertyNotFoundException(path.toString(),
-                            "Parse error: no matching '[' was found");
+                    throw new PropertyNotFoundException(path.toString(), "Parse error: no matching '[' was found");
                 }
                 index = segment.substring(p + 1, segment.length() - 1);
                 segment = segment.substring(0, p);
@@ -394,8 +389,8 @@ public abstract class AbstractProperty implements Property {
             if (index == null) {
                 property = property.get(segment);
                 if (property == null) {
-                    throw new PropertyNotFoundException(path.toString(),
-                            "segment " + segments[i] + " cannot be resolved");
+                    throw new PropertyNotFoundException(path.toString(), "segment " + segments[i]
+                            + " cannot be resolved");
                 }
             } else {
                 property = property.get(index);
@@ -405,13 +400,11 @@ public abstract class AbstractProperty implements Property {
     }
 
     @Override
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
             return (Serializable) value;
         }
-        throw new PropertyConversionException(value.getClass(),
-                Serializable.class, getPath());
+        throw new PropertyConversionException(value.getClass(), Serializable.class, getPath());
     }
 
     @Override
@@ -420,8 +413,7 @@ public abstract class AbstractProperty implements Property {
     }
 
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType)
-            throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
         // TODO FIXME XXX make it abstract at this level
         throw new UnsupportedOperationException("Not implemented");
     }

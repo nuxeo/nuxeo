@@ -24,14 +24,11 @@ import org.nuxeo.theme.views.AbstractView;
 
 public class DefaultLayoutView extends AbstractView {
 
-    static final Pattern firstTagPattern = Pattern.compile("<(.*?)>",
-            Pattern.DOTALL);
+    static final Pattern firstTagPattern = Pattern.compile("<(.*?)>", Pattern.DOTALL);
 
-    static final Pattern otherTagsPattern = Pattern.compile("<.*?>(.*)",
-            Pattern.DOTALL);
+    static final Pattern otherTagsPattern = Pattern.compile("<.*?>(.*)", Pattern.DOTALL);
 
-    static final Pattern styleAttrPattern = Pattern.compile(" style=\"(.*?)\"",
-            Pattern.DOTALL);
+    static final Pattern styleAttrPattern = Pattern.compile(" style=\"(.*?)\"", Pattern.DOTALL);
 
     @Override
     public String render(final RenderingInfo info) {
@@ -79,12 +76,10 @@ public class DefaultLayoutView extends AbstractView {
 
         // write the final markup
         if (inBrackets.endsWith("/")) {
-            return String.format("<%s style=\"%s\" />%s",
-                    inBrackets.replaceAll("/$", "").trim(),
+            return String.format("<%s style=\"%s\" />%s", inBrackets.replaceAll("/$", "").trim(),
                     styleAttributes.toString(), othersMatcher.group(1));
         }
-        return String.format("<%s style=\"%s\">%s", inBrackets,
-                styleAttributes.toString(), othersMatcher.group(1));
+        return String.format("<%s style=\"%s\">%s", inBrackets, styleAttributes.toString(), othersMatcher.group(1));
     }
 
 }

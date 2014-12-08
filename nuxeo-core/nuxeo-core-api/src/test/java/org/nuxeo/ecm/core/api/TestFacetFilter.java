@@ -42,8 +42,8 @@ public class TestFacetFilter extends NXRuntimeTestCase {
         facets.add("A");
         facets.add("B");
         facets.add("C");
-        DocumentModel model = new DocumentModelImpl("sid", "my type", "id",
-                null, null, null, null, null, facets, null, null);
+        DocumentModel model = new DocumentModelImpl("sid", "my type", "id", null, null, null, null, null, facets, null,
+                null);
 
         // One facet statements
         assertTrue(new FacetFilter("A", true).accept(model));
@@ -72,8 +72,7 @@ public class TestFacetFilter extends NXRuntimeTestCase {
     public void testAnd() {
         FacetFilter f1, f2;
 
-        f1 = new FacetFilter(Collections.<String> emptyList(),
-                Collections.<String> emptyList());
+        f1 = new FacetFilter(Collections.<String> emptyList(), Collections.<String> emptyList());
         assertEquals(Boolean.TRUE, f1.shortcut);
 
         f1 = new FacetFilter(Arrays.asList("B"), Arrays.asList("B"));
@@ -109,8 +108,7 @@ public class TestFacetFilter extends NXRuntimeTestCase {
         return new HashSet<String>(Arrays.asList(strings));
     }
 
-    protected void checkAnd(FacetFilter f1, FacetFilter f2, Set<String> req,
-            Set<String> exc, Boolean sc) {
+    protected void checkAnd(FacetFilter f1, FacetFilter f2, Set<String> req, Set<String> exc, Boolean sc) {
         FacetFilter f = new FacetFilter(f1, f2);
         assertEquals(req, f.required);
         assertEquals(exc, f.excluded);

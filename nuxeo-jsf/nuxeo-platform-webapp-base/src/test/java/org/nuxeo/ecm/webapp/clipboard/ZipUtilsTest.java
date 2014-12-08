@@ -18,7 +18,6 @@
 
 package org.nuxeo.ecm.webapp.clipboard;
 
-
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -66,8 +65,7 @@ public class ZipUtilsTest {
     }
 
     protected DocumentModel createHeavyFile() throws ClientException {
-        DocumentModel heavyFile = session.createDocumentModel("/", "heavyFile",
-                "File");
+        DocumentModel heavyFile = session.createDocumentModel("/", "heavyFile", "File");
         heavyFile.setPropertyValue("dc:title", "Heavy File");
 
         StringBlob blob1 = new StringBlob("abc");
@@ -101,8 +99,7 @@ public class ZipUtilsTest {
         assertNotNull(file);
         ZipFile zipFile = new ZipFile(file);
         assertNotNull(zipFile.getEntry("Parent/éèà"));
-        Framework.getProperties().setProperty(
-                DocumentListZipExporter.ZIP_ENTRY_ENCODING_PROPERTY,
+        Framework.getProperties().setProperty(DocumentListZipExporter.ZIP_ENTRY_ENCODING_PROPERTY,
                 DocumentListZipExporter.ZIP_ENTRY_ENCODING_OPTIONS.ascii.name());
         file = zipExporter.exportWorklistAsZip(documents, session, true);
         assertNotNull(file);

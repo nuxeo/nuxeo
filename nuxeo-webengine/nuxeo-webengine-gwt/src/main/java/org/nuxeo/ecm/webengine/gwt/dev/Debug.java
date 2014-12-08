@@ -21,32 +21,30 @@ package org.nuxeo.ecm.webengine.gwt.dev;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Debug {
 
     final static String REDIRECT_HOST = "localhost";
+
     final static int REDIRECT_PORT = 8081;
+
     final static String REDIRECT_PREFIX = "/redirect";
-    final static String REDIRECT_PATTERN = REDIRECT_PREFIX+"/(.*)";
+
+    final static String REDIRECT_PATTERN = REDIRECT_PREFIX + "/(.*)";
+
     final static String REDIRECT_REPLACEMENT = "/$1";
+
     final static boolean REDIRECT_TRACE = false;
+
     final static boolean REDIRECT_TRACE_CONTENT = false;
 
     /*
      * Add this code in tomcat/webapps/ROOT/WEB-INF/web.xml
      */
 
-     /*
-<servlet>
-    <servlet-name>redirect</servlet-name>
-    <servlet-class>org.nuxeo.ecm.webengine.gwt.debug.RedirectServlet</servlet-class>
-</servlet>
-
-<servlet-mapping>
-    <servlet-name>redirect</servlet-name>
-    <url-pattern>/redirect/*</url-pattern>
-</servlet-mapping>
-
-    */
+    /*
+     * <servlet> <servlet-name>redirect</servlet-name>
+     * <servlet-class>org.nuxeo.ecm.webengine.gwt.debug.RedirectServlet</servlet-class> </servlet> <servlet-mapping>
+     * <servlet-name>redirect</servlet-name> <url-pattern>/redirect/*</url-pattern> </servlet-mapping>
+     */
 }

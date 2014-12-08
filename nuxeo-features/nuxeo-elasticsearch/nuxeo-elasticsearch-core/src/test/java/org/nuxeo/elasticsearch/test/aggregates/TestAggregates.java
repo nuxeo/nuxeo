@@ -94,8 +94,7 @@ public class TestAggregates {
             doc.setPropertyValue("dc:nature", "Nature" + i % 2);
             doc.setPropertyValue("dc:coverage", "Coverage" + i % 3);
             doc.setPropertyValue("common:size", 1024 * i);
-            doc.setPropertyValue("dc:created", new Date(new DateTime()
-                    .minusWeeks(i).getMillis()));
+            doc.setPropertyValue("dc:created", new Date(new DateTime().minusWeeks(i).getMillis()));
             doc = session.createDocument(doc);
         }
         TransactionHelper.commitOrRollbackTransaction();
@@ -114,19 +113,16 @@ public class TestAggregates {
         aggDef.setType("terms");
         aggDef.setId("source");
         aggDef.setDocumentField("dc:source");
-        aggDef.setSearchField(new FieldDescriptor("advanced_search",
-                "source_agg"));
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "source_agg"));
         aggDef.setProperty("minDocCount", "10");
         aggDef.setProperty("size", "10");
         aggDef.setProperty("exclude", "foo*");
         aggDef.setProperty("include", "bar*");
         aggDef.setProperty("order", "count asc");
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document").addAggregate(
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
                 AggregateFactory.create(aggDef, null));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME);
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" //
@@ -166,13 +162,10 @@ public class TestAggregates {
         aggDef.setType("terms");
         aggDef.setId("fulltext");
         aggDef.setDocumentField("ecm:fulltext");
-        aggDef.setSearchField(new FieldDescriptor("advanced_search",
-                "fulltext_agg"));
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document").addAggregate(
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "fulltext_agg"));
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
                 AggregateFactory.create(aggDef, null));
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME);
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows("{\n" //
                 + "  \"from\" : 0,\n" //
@@ -204,16 +197,13 @@ public class TestAggregates {
         aggDef.setType("significant_terms");
         aggDef.setId("source");
         aggDef.setDocumentField("dc:source");
-        aggDef.setSearchField(new FieldDescriptor("advanced_search",
-                "source_agg"));
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "source_agg"));
         aggDef.setProperty("minDocCount", "10");
 
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document").addAggregate(
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
                 AggregateFactory.create(aggDef, null));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME);
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" //
@@ -253,12 +243,10 @@ public class TestAggregates {
         ranges.add(new AggregateRangeDescriptor("medium", 2048.0, 6144.0));
         ranges.add(new AggregateRangeDescriptor("big", 6144.0, null));
         aggDef.setRanges(ranges);
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document").addAggregate(
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
                 AggregateFactory.create(aggDef, null));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME);
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" //
@@ -302,44 +290,28 @@ public class TestAggregates {
         aggDef.setType("date_range");
         aggDef.setId("created");
         aggDef.setDocumentField("dc:created");
-        aggDef.setSearchField(new FieldDescriptor("advanced_search",
-                "created_agg"));
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "created_agg"));
         List<AggregateRangeDateDefinition> ranges = new ArrayList<AggregateRangeDateDefinition>();
-        ranges.add(new AggregateRangeDateDescriptor("10monthAgo", null,
-                "now-10M/M"));
-        ranges.add(new AggregateRangeDateDescriptor("1monthAgo", "now-10M/M",
-                "now-1M/M"));
-        ranges.add(new AggregateRangeDateDescriptor("thisMonth", "now-1M/M",
-                null));
+        ranges.add(new AggregateRangeDateDescriptor("10monthAgo", null, "now-10M/M"));
+        ranges.add(new AggregateRangeDateDescriptor("1monthAgo", "now-10M/M", "now-1M/M"));
+        ranges.add(new AggregateRangeDateDescriptor("thisMonth", "now-1M/M", null));
         aggDef.setDateRanges(ranges);
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document").addAggregate(
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
                 AggregateFactory.create(aggDef, null));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME);
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows("{\n" + "  \"from\" : 0,\n"
-                + "  \"size\" : 10,\n" + "  \"query\" : {\n"
-                + "    \"match_all\" : { }\n" + "  },\n"
-                + "  \"aggregations\" : {\n" + "    \"created_filter\" : {\n"
-                + "      \"filter\" : {\n" + "        \"match_all\" : { }\n"
-                + "      },\n" + "      \"aggregations\" : {\n"
-                + "        \"created\" : {\n"
-                + "          \"date_range\" : {\n"
-                + "            \"field\" : \"dc:created\",\n"
-                + "            \"ranges\" : [ {\n"
-                + "              \"key\" : \"10monthAgo\",\n"
-                + "              \"to\" : \"now-10M/M\"\n"
-                + "            }, {\n"
-                + "              \"key\" : \"1monthAgo\",\n"
-                + "              \"from\" : \"now-10M/M\",\n"
-                + "              \"to\" : \"now-1M/M\"\n"
-                + "            }, {\n"
-                + "              \"key\" : \"thisMonth\",\n"
-                + "              \"from\" : \"now-1M/M\"\n"
-                + "            } ]\n" + "          }\n" + "        }\n"
+        assertEqualsEvenUnderWindows("{\n" + "  \"from\" : 0,\n" + "  \"size\" : 10,\n" + "  \"query\" : {\n"
+                + "    \"match_all\" : { }\n" + "  },\n" + "  \"aggregations\" : {\n" + "    \"created_filter\" : {\n"
+                + "      \"filter\" : {\n" + "        \"match_all\" : { }\n" + "      },\n"
+                + "      \"aggregations\" : {\n" + "        \"created\" : {\n" + "          \"date_range\" : {\n"
+                + "            \"field\" : \"dc:created\",\n" + "            \"ranges\" : [ {\n"
+                + "              \"key\" : \"10monthAgo\",\n" + "              \"to\" : \"now-10M/M\"\n"
+                + "            }, {\n" + "              \"key\" : \"1monthAgo\",\n"
+                + "              \"from\" : \"now-10M/M\",\n" + "              \"to\" : \"now-1M/M\"\n"
+                + "            }, {\n" + "              \"key\" : \"thisMonth\",\n"
+                + "              \"from\" : \"now-1M/M\"\n" + "            } ]\n" + "          }\n" + "        }\n"
                 + "      }\n" + "    }\n" + "  }\n" + "}", //
                 request.toString());
     }
@@ -354,11 +326,9 @@ public class TestAggregates {
         aggDef.setProperty("interval", "1024");
         aggDef.setProperty("extendedBoundsMin", "0");
         aggDef.setProperty("extendedBoundsMax", "10240");
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document").addAggregate(
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
                 AggregateFactory.create(aggDef, null));
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME);
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows("{\n" //
                 + "  \"from\" : 0,\n" //
@@ -395,16 +365,13 @@ public class TestAggregates {
         aggDef.setType("date_histogram");
         aggDef.setId("created");
         aggDef.setDocumentField("dc:created");
-        aggDef.setSearchField(new FieldDescriptor("advanced_search",
-                "created_agg"));
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "created_agg"));
         aggDef.setProperty("interval", "month");
         aggDef.setProperty("order", "count desc");
         aggDef.setProperty("minDocCounts", "5");
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document").addAggregate(
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
                 AggregateFactory.create(aggDef, null));
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME);
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" //
@@ -442,30 +409,24 @@ public class TestAggregates {
         aggDef1.setType("terms");
         aggDef1.setId("source");
         aggDef1.setDocumentField("dc:source");
-        aggDef1.setSearchField(new FieldDescriptor("advanced_search",
-                "source_agg"));
+        aggDef1.setSearchField(new FieldDescriptor("advanced_search", "source_agg"));
 
         AggregateDefinition aggDef2 = new AggregateDescriptor();
         aggDef2.setType("terms");
         aggDef2.setId("nature");
         aggDef2.setDocumentField("dc:nature");
-        aggDef2.setSearchField(new FieldDescriptor("advanced_search",
-                "nature_agg"));
+        aggDef2.setSearchField(new FieldDescriptor("advanced_search", "nature_agg"));
         aggDef2.setProperty("size", "10");
 
-        DocumentModel model = new DocumentModelImpl("/", "doc",
-                "AdvancedSearch");
+        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         String[] sources = { "foo", "bar" };
         model.setProperty("advanced_search", "source_agg", sources);
         // String[] natures = { "foobar" };
         // model.setProperty("advanced_search", "nature_agg", natures);
-        NxQueryBuilder qb = new NxQueryBuilder(session)
-                .nxql("SELECT * FROM Document")
-                .addAggregate(AggregateFactory.create(aggDef1, model))
-                .addAggregate(AggregateFactory.create(aggDef2, model));
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
+                AggregateFactory.create(aggDef1, model)).addAggregate(AggregateFactory.create(aggDef2, model));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME);
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" + "  \"from\" : 0,\n" //
@@ -525,40 +486,37 @@ public class TestAggregates {
         aggDef.setType("significant_terms");
         aggDef.setId("source");
         aggDef.setDocumentField("prefix:foo/bar");
-        aggDef.setSearchField(new FieldDescriptor("advanced_search",
-                "source_agg"));
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "source_agg"));
         aggDef.setProperty("minDocCount", "10");
 
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document").addAggregate(
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
                 AggregateFactory.create(aggDef, null));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME);
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" //
-                        + "  \"from\" : 0,\n" //
-                        + "  \"size\" : 10,\n" //
-                        + "  \"query\" : {\n" //
-                        + "    \"match_all\" : { }\n" //
-                        + "  },\n" //
-                        + "  \"aggregations\" : {\n" //
-                        + "    \"source_filter\" : {\n" //
-                        + "      \"filter\" : {\n" //
-                        + "        \"match_all\" : { }\n" //
-                        + "      },\n" //
-                        + "      \"aggregations\" : {\n" //
-                        + "        \"source\" : {\n" //
-                        + "          \"significant_terms\" : {\n" //
-                        + "            \"field\" : \"prefix:foo.bar\",\n" //
-                        + "            \"minDocCount\" : 10\n" //
-                        + "          }\n" //
-                        + "        }\n" //
-                        + "      }\n" //
-                        + "    }\n" //
-                        + "  }\n" //
-                        + "}", //
+                + "  \"from\" : 0,\n" //
+                + "  \"size\" : 10,\n" //
+                + "  \"query\" : {\n" //
+                + "    \"match_all\" : { }\n" //
+                + "  },\n" //
+                + "  \"aggregations\" : {\n" //
+                + "    \"source_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"match_all\" : { }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"source\" : {\n" //
+                + "          \"significant_terms\" : {\n" //
+                + "            \"field\" : \"prefix:foo.bar\",\n" //
+                + "            \"minDocCount\" : 10\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", //
                 request.toString());
     }
 
@@ -566,25 +524,20 @@ public class TestAggregates {
     public void testPageProvider() throws Exception {
         buildDocs();
 
-        PageProviderService pps = Framework
-                .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         Assert.assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps
-                .getPageProviderDefinition("aggregates_1");
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
 
-        DocumentModel model = new DocumentModelImpl("/", "doc",
-                "AdvancedSearch");
+        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         String[] sources = { "Source1", "Source2" };
         model.setProperty("advanced_search", "source_agg", sources);
 
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
-                null, null, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, (long) 0, props);
 
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(2, pp.getResultsCount());
@@ -603,10 +556,8 @@ public class TestAggregates {
         Assert.assertEquals(
                 "Aggregate(size_histo, histogram, common:size, [], [BucketRange(1024, 1, 1024.00, 2048.00), BucketRange(2048, 1, 2048.00, 3072.00)])",
                 pp.getAggregates().get("size_histo").toString());
-        Assert.assertEquals(3, pp.getAggregates().get("created").getBuckets()
-                .size());
-        Assert.assertEquals(2, pp.getAggregates().get("created_histo")
-                .getBuckets().size());
+        Assert.assertEquals(3, pp.getAggregates().get("created").getBuckets().size());
+        Assert.assertEquals(2, pp.getAggregates().get("created_histo").getBuckets().size());
         // output depends on current date
         // Assert.assertEquals("Aggregate(created, date_range, dc:created, [], [BucketRangeDate(long_time_ago, 0, null, 2014-07-11T14:26:32.590+02:00), BucketRangeDate(some_time_ago, 0, 2014-07-11T14:26:32.590+02:00, 2014-08-29T14:26:32.590+02:00), BucketRangeDate(last_month, 2, 2014-08-29T14:26:32.590+02:00, null)])",
         // pp.getAggregates().get("created").toString());
@@ -618,25 +569,20 @@ public class TestAggregates {
     public void testPageProviderWithRangeSelection() throws Exception {
         buildDocs();
 
-        PageProviderService pps = Framework
-                .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         Assert.assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps
-                .getPageProviderDefinition("aggregates_1");
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
 
-        DocumentModel model = new DocumentModelImpl("/", "doc",
-                "AdvancedSearch");
+        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         String[] sizes = { "big", "medium" };
         model.setProperty("advanced_search", "size_agg", sizes);
 
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
-                null, null, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, (long) 0, props);
 
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(8, pp.getResultsCount());
@@ -659,25 +605,20 @@ public class TestAggregates {
     public void testPageProviderWithDateRangeSelection() throws Exception {
         buildDocs();
 
-        PageProviderService pps = Framework
-                .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         Assert.assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps
-                .getPageProviderDefinition("aggregates_1");
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
 
-        DocumentModel model = new DocumentModelImpl("/", "doc",
-                "AdvancedSearch");
+        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         String[] created = { "long_time_ago", "some_time_ago" };
         model.setProperty("advanced_search", "created_agg", created);
 
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
-                null, null, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, (long) 0, props);
 
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(7, pp.getResultsCount());
@@ -688,8 +629,7 @@ public class TestAggregates {
                 "Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature1, 4), BucketTerm(Nature0, 3)])",
                 pp.getAggregates().get("nature").toString());
         @SuppressWarnings("unchecked")
-        List<BucketRangeDate> buckets = pp.getAggregates().get("created")
-                .getBuckets();
+        List<BucketRangeDate> buckets = pp.getAggregates().get("created").getBuckets();
         Assert.assertEquals(3, buckets.size());
         Assert.assertEquals("long_time_ago", buckets.get(0).getKey());
         Assert.assertEquals(0, buckets.get(0).getDocCount());
@@ -702,24 +642,19 @@ public class TestAggregates {
     public void testPageProviderWithHistogramSelection() throws Exception {
         buildDocs();
 
-        PageProviderService pps = Framework
-                .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         Assert.assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps
-                .getPageProviderDefinition("aggregates_1");
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
-        DocumentModel model = new DocumentModelImpl("/", "doc",
-                "AdvancedSearch");
+        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         String[] sizes = { "1024", "4096" };
         model.setProperty("advanced_search", "size_histo_agg", sizes);
 
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
-                null, null, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, (long) 0, props);
 
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(2, pp.getResultsCount());
@@ -735,26 +670,20 @@ public class TestAggregates {
     public void testPageProviderWithDateHistogramSelection() throws Exception {
         buildDocs();
 
-        PageProviderService pps = Framework
-                .getService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         Assert.assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps
-                .getPageProviderDefinition("aggregates_1");
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
-        DocumentModel model = new DocumentModelImpl("/", "doc",
-                "AdvancedSearch");
+        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyy");
-        String[] created = {
-                fmt.print(new DateTime().minusWeeks(3).getMillis()),
+        String[] created = { fmt.print(new DateTime().minusWeeks(3).getMillis()),
                 fmt.print(new DateTime().minusWeeks(6).getMillis()) };
         model.setProperty("advanced_search", "created_histo_agg", created);
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
-                null, null, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, (long) 0, props);
 
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(2, pp.getResultsCount());

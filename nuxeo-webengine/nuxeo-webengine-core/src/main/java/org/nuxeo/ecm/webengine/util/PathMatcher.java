@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PathMatcher {
 

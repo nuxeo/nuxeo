@@ -43,8 +43,7 @@ public class DocumentModelChildrenIterator implements DocumentModelIterator {
 
     private DocumentModel next;
 
-    public DocumentModelChildrenIterator(CoreSession session,
-            DocumentRef parentRef, String type, Filter filter)
+    public DocumentModelChildrenIterator(CoreSession session, DocumentRef parentRef, String type, Filter filter)
             throws ClientException {
         this.session = session;
         this.type = type;

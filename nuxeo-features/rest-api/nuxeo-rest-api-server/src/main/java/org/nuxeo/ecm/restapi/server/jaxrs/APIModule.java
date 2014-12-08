@@ -59,8 +59,6 @@ import org.nuxeo.ecm.webengine.app.JsonExceptionWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
 /**
- *
- *
  * @since 5.8
  */
 public class APIModule extends WebEngineModule {

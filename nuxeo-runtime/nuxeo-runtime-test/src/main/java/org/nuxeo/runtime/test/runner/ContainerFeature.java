@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.nuxeo.runtime.test.runner;
 
-@Deploy({"org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource" })
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource" })
 @Features(RuntimeFeature.class)
 public class ContainerFeature extends SimpleFeature {
 

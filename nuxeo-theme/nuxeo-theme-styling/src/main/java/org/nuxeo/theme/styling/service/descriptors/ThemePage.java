@@ -57,8 +57,7 @@ public class ThemePage {
     List<String> resources;
 
     /**
-     * boolean handling the descriptor status: has it been already loaded to
-     * the {@link ThemeService}?
+     * boolean handling the descriptor status: has it been already loaded to the {@link ThemeService}?
      */
     boolean loaded = false;
 
@@ -142,8 +141,7 @@ public class ThemePage {
             String[] nameEl = themePage.split("/");
             return nameEl[1];
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException(String.format(
-                    "Invalid theme page name '%s': cannot retrieve page name",
+            throw new RuntimeException(String.format("Invalid theme page name '%s': cannot retrieve page name",
                     themePage));
         }
     }
@@ -156,8 +154,7 @@ public class ThemePage {
             String[] nameEl = themePage.split("/");
             return nameEl[0];
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException(String.format(
-                    "Invalid theme page name '%s': cannot retrieve theme name",
+            throw new RuntimeException(String.format("Invalid theme page name '%s': cannot retrieve theme name",
                     themePage));
         }
     }

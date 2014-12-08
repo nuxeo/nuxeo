@@ -33,15 +33,14 @@ import org.nuxeo.ecm.platform.annotations.service.MetadataMapper;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class DefaultNuxeoMetadataMapper implements MetadataMapper {
 
     private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
     private final TimeZone timezone = TimeZone.getDefault();
 
-    public void updateMetadata(Annotation annotation, NuxeoPrincipal user)
-            throws AnnotationException {
+    public void updateMetadata(Annotation annotation, NuxeoPrincipal user) throws AnnotationException {
         Calendar calendar = Calendar.getInstance();
         calendar.toString();
         annotation.addMetadata(AnnotationsConstants.D_DATE, getStringUTCDate());
@@ -54,8 +53,7 @@ public class DefaultNuxeoMetadataMapper implements MetadataMapper {
 
     private String getStringUTCDate() {
         Date now = new Date();
-        return format.format(new Date(now.getTime()
-                - timezone.getOffset(new Date().getTime())));
+        return format.format(new Date(now.getTime() - timezone.getOffset(new Date().getTime())));
     }
 
 }

@@ -41,26 +41,20 @@ public class FSPublishedDocument implements PublishedDocument {
 
     private static final long serialVersionUID = 1L;
 
-    public static final Namespace nxfspub = new Namespace("nxfspub",
-            "http://www.nuxeo.org/publisher/filesystem");
+    public static final Namespace nxfspub = new Namespace("nxfspub", "http://www.nuxeo.org/publisher/filesystem");
 
-    public static final QName pubInfoQN = DocumentFactory.getInstance().createQName(
-            "publicationInfo", nxfspub);
+    public static final QName pubInfoQN = DocumentFactory.getInstance().createQName("publicationInfo", nxfspub);
 
-    public static final QName sourceDocRefQN = DocumentFactory.getInstance().createQName(
-            "sourceDocumentRef", nxfspub);
+    public static final QName sourceDocRefQN = DocumentFactory.getInstance().createQName("sourceDocumentRef", nxfspub);
 
     public static final QName sourceRepositoryNameQN = DocumentFactory.getInstance().createQName(
             "sourceRepositoryName", nxfspub);
 
-    public static final QName sourceServerQN = DocumentFactory.getInstance().createQName(
-            "sourceServer", nxfspub);
+    public static final QName sourceServerQN = DocumentFactory.getInstance().createQName("sourceServer", nxfspub);
 
-    public static final QName sourceVersionQN = DocumentFactory.getInstance().createQName(
-            "sourceVersion", nxfspub);
+    public static final QName sourceVersionQN = DocumentFactory.getInstance().createQName("sourceVersion", nxfspub);
 
-    public static final QName isPendingQN = DocumentFactory.getInstance().createQName(
-            "isPending", nxfspub);
+    public static final QName isPendingQN = DocumentFactory.getInstance().createQName("isPending", nxfspub);
 
     protected DocumentRef sourceDocumentRef;
 
@@ -78,8 +72,7 @@ public class FSPublishedDocument implements PublishedDocument {
 
     protected String xmlRepresentation;
 
-    public FSPublishedDocument(File file)
-            throws NotFSPublishedDocumentException {
+    public FSPublishedDocument(File file) throws NotFSPublishedDocumentException {
         parseXML(file);
         persistPath = file.getAbsolutePath();
         parentPath = file.getParent();
@@ -94,8 +87,7 @@ public class FSPublishedDocument implements PublishedDocument {
                 // valid xml file, but not a published document
                 throw new NotFSPublishedDocumentException();
             }
-            sourceDocumentRef = new IdRef(
-                    info.element(sourceDocRefQN).getTextTrim());
+            sourceDocumentRef = new IdRef(info.element(sourceDocRefQN).getTextTrim());
             sourceRepositoryName = info.element(sourceRepositoryNameQN).getTextTrim();
             sourceServer = info.element(sourceServerQN).getTextTrim();
             sourceVersion = info.element(sourceVersionQN).getTextTrim();
@@ -111,14 +103,13 @@ public class FSPublishedDocument implements PublishedDocument {
         persistPath = output.getAbsolutePath();
     }
 
-    public FSPublishedDocument(String server, DocumentModel doc)
-            throws PublishingMarshalingException, DocumentException {
+    public FSPublishedDocument(String server, DocumentModel doc) throws PublishingMarshalingException,
+            DocumentException {
         this(server, doc, false);
     }
 
-    public FSPublishedDocument(String server, DocumentModel doc,
-            boolean isPending) throws PublishingMarshalingException,
-            DocumentException {
+    public FSPublishedDocument(String server, DocumentModel doc, boolean isPending)
+            throws PublishingMarshalingException, DocumentException {
 
         sourceRepositoryName = doc.getRepositoryName();
         sourceDocumentRef = doc.getRef();

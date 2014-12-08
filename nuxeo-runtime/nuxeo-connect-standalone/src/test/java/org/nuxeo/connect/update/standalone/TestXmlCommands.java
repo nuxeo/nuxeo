@@ -39,8 +39,7 @@ public class TestXmlCommands extends PackageTestCase {
 
     protected File createPackage() throws Exception {
         PackageBuilder builder = new PackageBuilder();
-        builder.name("nuxeo-automation").version("5.3.2").type(
-                PackageType.ADDON);
+        builder.name("nuxeo-automation").version("5.3.2").type(PackageType.ADDON);
         builder.platform("dm-5.3.2");
         builder.platform("dam-5.3.2");
         builder.dependency("nuxeo-core:5.3.1:5.3.2");
@@ -56,10 +55,8 @@ public class TestXmlCommands extends PackageTestCase {
         Framework.trackFile(file, this);
         File tofile = File.createTempFile("nxinstall-tofile-", ".tmp");
         Framework.trackFile(tofile, this);
-        builder.addInstallScript("<install>\n  <copy file=\""
-                + file.getAbsolutePath() + "\" tofile=\""
-                + tofile.getAbsolutePath()
-                + "\" overwrite=\"true\"/>\n</install>\n");
+        builder.addInstallScript("<install>\n  <copy file=\"" + file.getAbsolutePath() + "\" tofile=\""
+                + tofile.getAbsolutePath() + "\" overwrite=\"true\"/>\n</install>\n");
         return builder.build();
     }
 
@@ -83,8 +80,7 @@ public class TestXmlCommands extends PackageTestCase {
         task.run(null);
         assertEquals(1, task.getCommands().size());
         assertEquals(1, task.getCommandLog().size());
-        assertTrue("uninstall file was not generated",
-                pkg.getUninstallFile().isFile());
+        assertTrue("uninstall file was not generated", pkg.getUninstallFile().isFile());
     }
 
 }

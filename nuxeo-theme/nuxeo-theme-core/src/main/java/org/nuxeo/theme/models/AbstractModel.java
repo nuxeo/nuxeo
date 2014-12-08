@@ -39,12 +39,11 @@ public abstract class AbstractModel implements Model {
     public Model addItem(Model model) throws ModelException {
         ModelType modelType = getModelType();
         if (modelType == null) {
-            throw new ModelException("Model type not found: "
-                    + getModelTypeName());
+            throw new ModelException("Model type not found: " + getModelTypeName());
         }
         if (!getModelType().getAllowedTypes().contains(model.getModelTypeName())) {
-            throw new ModelException("Model type: " + model.getModelTypeName()
-                    + " not allowed in: " + getModelTypeName());
+            throw new ModelException("Model type: " + model.getModelTypeName() + " not allowed in: "
+                    + getModelTypeName());
         }
         items.add(model);
         return model;
@@ -52,8 +51,8 @@ public abstract class AbstractModel implements Model {
 
     public Model insertItem(int index, Model model) throws ModelException {
         if (!getModelType().getAllowedTypes().contains(model.getModelTypeName())) {
-            throw new ModelException("Model type: " + model.getModelTypeName()
-                    + " not allowed in: " + getModelTypeName());
+            throw new ModelException("Model type: " + model.getModelTypeName() + " not allowed in: "
+                    + getModelTypeName());
         }
         items.add(index, model);
         return model;

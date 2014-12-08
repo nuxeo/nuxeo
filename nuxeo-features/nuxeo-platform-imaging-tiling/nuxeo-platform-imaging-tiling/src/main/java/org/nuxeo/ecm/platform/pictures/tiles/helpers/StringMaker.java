@@ -20,21 +20,17 @@
 package org.nuxeo.ecm.platform.pictures.tiles.helpers;
 
 /**
- *
  * Simple helper to generate the directory names in the cache structure
  *
  * @author tiry
- *
  */
 public class StringMaker {
 
-    public static String getTileFormatString(int tileWidth, int tileHeight,
-            int maxTiles) {
+    public static String getTileFormatString(int tileWidth, int tileHeight, int maxTiles) {
         return tileWidth + "x" + tileHeight + "x" + maxTiles;
     }
 
-    public static String getTileFileName(int x, int y, String prefix,
-            String suffix, long lastModificationTime) {
+    public static String getTileFileName(int x, int y, String prefix, String suffix, long lastModificationTime) {
         if (prefix == null) {
             prefix = "tile";
         }

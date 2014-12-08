@@ -20,12 +20,10 @@ import java.io.InputStream;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StringSource extends AbstractStreamSource {
 
     protected final String string;
-
 
     public StringSource(String string) {
         this.string = string;

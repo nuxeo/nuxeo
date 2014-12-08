@@ -23,23 +23,29 @@ import org.nuxeo.common.utils.Path;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TreeItemImpl implements TreeItem {
 
     private static final long serialVersionUID = 5252830785508229998L;
 
     public static final int F_CONTAINER = 4;
+
     public static final int F_EXPANDED = 8;
 
     public static final TreeItem[] EMPTY_CHILDREN = new TreeItem[0];
+
     public static final TreeItem[] HAS_CHILDREN = new TreeItem[0];
 
     protected final ContentProvider provider;
+
     protected final TreeItem parent;
+
     protected final Path path;
+
     protected String label;
+
     protected String[] facets;
+
     protected TreeItem[] children = EMPTY_CHILDREN;
 
     protected final Object obj;
@@ -47,7 +53,7 @@ public class TreeItemImpl implements TreeItem {
     protected volatile int state = BOTH;
 
     // TODO: use a map?
-    //protected Map<String, TreeItem> childrenMap;
+    // protected Map<String, TreeItem> childrenMap;
 
     public TreeItemImpl(TreeItem parent, ContentProvider provider, Object data) {
         this.parent = parent;
@@ -71,7 +77,6 @@ public class TreeItemImpl implements TreeItem {
     public TreeItemImpl(TreeItem parent, Object data) {
         this(parent, parent.getContentProvider(), data);
     }
-
 
     public boolean hasChildren() {
         return children.length > 0;
@@ -118,7 +123,7 @@ public class TreeItemImpl implements TreeItem {
 
     public TreeItem find(Path path) {
         TreeItem item = this;
-        for (int i=0,len=path.segmentCount()-1; i<len; i++) {
+        for (int i = 0, len = path.segmentCount() - 1; i < len; i++) {
             if (!item.hasChildren()) {
                 return null;
             }
@@ -137,7 +142,7 @@ public class TreeItemImpl implements TreeItem {
         // we expand only parents and not the last segment
         TreeItem item = this;
         int len = path.segmentCount();
-        for (int i=0; i<len; i++) {
+        for (int i = 0; i < len; i++) {
             item.expand();
             item = item.getChild(path.segment(i));
             if (item == null) {
@@ -196,8 +201,7 @@ public class TreeItemImpl implements TreeItem {
         if (!isContainer()) {
             return;
         }
-        Object[] objects = parent == null ? provider.getElements(obj)
-                : provider.getChildren(obj);
+        Object[] objects = parent == null ? provider.getElements(obj) : provider.getChildren(obj);
         if (objects == null) {
             children = null;
         } else {

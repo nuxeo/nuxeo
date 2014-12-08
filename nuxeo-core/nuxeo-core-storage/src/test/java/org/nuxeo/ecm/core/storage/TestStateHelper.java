@@ -63,8 +63,7 @@ public class TestStateHelper {
         assertEqualsStrict(a + "!=" + b, a, b);
     }
 
-    private static void assertEqualsStrict(String message, Serializable a,
-            Serializable b) {
+    private static void assertEqualsStrict(String message, Serializable a, Serializable b) {
         assertTrue(message, StateHelper.equalsStrict(a, b));
     }
 
@@ -171,8 +170,7 @@ public class TestStateHelper {
         assertEqualsLoose(c, null);
     }
 
-    private static void assertDiff(Serializable expected, Serializable a,
-            Serializable b) {
+    private static void assertDiff(Serializable expected, Serializable a, Serializable b) {
         Serializable diff = StateHelper.diff(a, b);
         assertEqualsStrict(diff.toString(), expected, diff);
     }
@@ -243,14 +241,10 @@ public class TestStateHelper {
         assertDiff(stateDiff("A", "C"), //
                 state("1", "2", "A", "B"), state("1", "2", "A", "C"));
         // changed values which are diffs
-        assertDiff(
-                stateDiff("A", rpush("C")), //
-                state("A", (Serializable) list("B")),
-                state("A", (Serializable) list("B", "C")));
-        assertDiff(
-                stateDiff("A", stateDiff("B", "D")), //
-                state("A", state("1", "2", "B", "C")),
-                state("A", state("1", "2", "B", "D")));
+        assertDiff(stateDiff("A", rpush("C")), //
+                state("A", (Serializable) list("B")), state("A", (Serializable) list("B", "C")));
+        assertDiff(stateDiff("A", stateDiff("B", "D")), //
+                state("A", state("1", "2", "B", "C")), state("A", state("1", "2", "B", "D")));
     }
 
     @Test

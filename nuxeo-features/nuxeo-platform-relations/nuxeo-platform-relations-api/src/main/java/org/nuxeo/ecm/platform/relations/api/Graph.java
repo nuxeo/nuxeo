@@ -30,8 +30,7 @@ import java.util.Map;
  * <p>
  * New types of graphs will be registered using extension points.
  * <p>
- * Graphs have to be serializable has they will be kept as references in the
- * RelationService bean.
+ * Graphs have to be serializable has they will be kept as references in the RelationService bean.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -39,6 +38,7 @@ public interface Graph extends Serializable {
 
     /**
      * Sets the graph description.
+     *
      * @param graphDescription
      */
     void setDescription(GraphDescription graphDescription);
@@ -46,8 +46,7 @@ public interface Graph extends Serializable {
     /**
      * Returns namespaces for the graph.
      * <p>
-     * Namespaces are prefix/namespace bindings, as rdf for
-     * http://www.w3.org/1999/02/22-rdf-syntax-ns#.
+     * Namespaces are prefix/namespace bindings, as rdf for http://www.w3.org/1999/02/22-rdf-syntax-ns#.
      *
      * @returns namespaces map of namespace bindings for the graph
      */
@@ -57,7 +56,6 @@ public interface Graph extends Serializable {
      * Adds the statement object to the graph.
      *
      * @param statement statement to add
-     *
      * @since 5.5
      */
     void add(Statement statement);
@@ -73,7 +71,6 @@ public interface Graph extends Serializable {
      * Removes the statement object from the graph.
      *
      * @param statement statement to remove
-     *
      * @since 5.5
      */
     void remove(Statement statement);
@@ -105,7 +102,6 @@ public interface Graph extends Serializable {
      *
      * @param statement pattern to match, can hold null nodes as wildcards
      * @return list of Statement instances matching the pattern
-     *
      * @since 5.5
      */
     List<Statement> getStatements(Node subject, Node predicate, Node object);
@@ -181,12 +177,10 @@ public interface Graph extends Serializable {
      * Parses source into the graph.
      *
      * @param path path on file system where to take the serialization file
-     * @param lang format for the input serialization, may be "RDF/XML",
-     *            "RDF/XML-ABBREV", "N-TRIPLE" and "N3". The default value,
-     *            represented by null, is "RDF/XML".
-     * @param base base uri to be used when converting relative uris to absolute
-     *            uris, may be null. If set to "", allows relative uris to be
-     *            used in the model.
+     * @param lang format for the input serialization, may be "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE" and "N3". The
+     *            default value, represented by null, is "RDF/XML".
+     * @param base base uri to be used when converting relative uris to absolute uris, may be null. If set to "", allows
+     *            relative uris to be used in the model.
      * @return true on success, else false
      */
     boolean read(String path, String lang, String base);
@@ -195,12 +189,10 @@ public interface Graph extends Serializable {
      * Parses source into the graph.
      *
      * @param in input stream
-     * @param lang format for the input serialization, may be "RDF/XML",
-     *            "RDF/XML-ABBREV", "N-TRIPLE" and "N3". The default value,
-     *            represented by null, is "RDF/XML".
-     * @param base base uri to be used when converting relative uris to absolute
-     *            uris, may be null. If set to "", allows relative uris to be
-     *            used in the model.
+     * @param lang format for the input serialization, may be "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE" and "N3". The
+     *            default value, represented by null, is "RDF/XML".
+     * @param base base uri to be used when converting relative uris to absolute uris, may be null. If set to "", allows
+     *            relative uris to be used in the model.
      * @return true on success, else false
      */
     boolean read(InputStream in, String lang, String base);
@@ -209,12 +201,10 @@ public interface Graph extends Serializable {
      * Serializes graph.
      *
      * @param path path on file system where to put the serialization file
-     * @param lang format for the input serialization, may be "RDF/XML",
-     *            "RDF/XML-ABBREV", "N-TRIPLE" and "N3". The default value,
-     *            represented by null, is "RDF/XML".
-     * @param base base uri to be used when converting relative uris to absolute
-     *            uris, may be null. If set to "", allows relative uris to be
-     *            used in the model.
+     * @param lang format for the input serialization, may be "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE" and "N3". The
+     *            default value, represented by null, is "RDF/XML".
+     * @param base base uri to be used when converting relative uris to absolute uris, may be null. If set to "", allows
+     *            relative uris to be used in the model.
      * @return true on success, else false
      */
     boolean write(String path, String lang, String base);
@@ -223,12 +213,10 @@ public interface Graph extends Serializable {
      * Serializes graph.
      *
      * @param out output stream
-     * @param lang format for the input serialization, may be "RDF/XML",
-     *            "RDF/XML-ABBREV", "N-TRIPLE" and "N3". The default value,
-     *            represented by null, is "RDF/XML".
-     * @param base base uri to be used when converting relative uris to absolute
-     *            uris, may be null. If set to "", allows relative uris to be
-     *            used in the model.
+     * @param lang format for the input serialization, may be "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE" and "N3". The
+     *            default value, represented by null, is "RDF/XML".
+     * @param base base uri to be used when converting relative uris to absolute uris, may be null. If set to "", allows
+     *            relative uris to be used in the model.
      * @return true on success, else false
      */
     boolean write(OutputStream out, String lang, String base);

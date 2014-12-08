@@ -27,8 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- * DocumentModel-based implementation of ImageResource.
- * Supports clean digest and modification date to have a clean invalidation system.
+ * DocumentModel-based implementation of ImageResource. Supports clean digest and modification date to have a clean
+ * invalidation system.
  *
  * @author tiry
  */
@@ -37,11 +37,15 @@ public class DocumentImageResource implements ImageResource {
     private static final long serialVersionUID = 1L;
 
     protected Blob blob;
+
     protected String hash;
+
     protected Calendar modified;
 
     protected DocumentModel doc;
+
     protected String xPath;
+
     protected String fileName;
 
     public DocumentImageResource(DocumentModel doc, String xPath) {
@@ -64,8 +68,7 @@ public class DocumentImageResource implements ImageResource {
 
         hash = blob.getDigest();
         if (hash == null) {
-            hash = doc.getRepositoryName() + "_" + doc.getId() + "_"
-                    + getEscapedxPath(xPath);
+            hash = doc.getRepositoryName() + "_" + doc.getId() + "_" + getEscapedxPath(xPath);
             if (modified != null) {
                 hash = hash + "_" + modified.getTimeInMillis();
             }
@@ -76,7 +79,7 @@ public class DocumentImageResource implements ImageResource {
         if (blob == null) {
             compute();
         }
-        if (fileName!=null) {
+        if (fileName != null) {
             blob.setFilename(fileName);
         }
         return blob;
@@ -97,7 +100,7 @@ public class DocumentImageResource implements ImageResource {
     }
 
     public void setFileName(String name) {
-        this.fileName=name;
+        this.fileName = name;
     }
 
 }

@@ -30,9 +30,8 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
- * A type loader which is loading types from META-INF/web-types file. This
- * loader is also checking the web module nature. If the project has for example
- * a Groovy nature it will call at end the {@link GroovyTypeLoader}
+ * A type loader which is loading types from META-INF/web-types file. This loader is also checking the web module
+ * nature. If the project has for example a Groovy nature it will call at end the {@link GroovyTypeLoader}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -75,8 +74,7 @@ public class DefaultTypeLoader {
                 try {
                     loadTypesFile(file);
                 } catch (IOException | ClassNotFoundException e) {
-                    log.error("Failed to load web types from file "
-                            + WEB_TYPES_FILE, e);
+                    log.error("Failed to load web types from file " + WEB_TYPES_FILE, e);
                 }
             }
             if (gLoader != null) {
@@ -103,8 +101,7 @@ public class DefaultTypeLoader {
     /**
      * Old method to load types from a web-types file generated at build time
      */
-    protected void loadTypesFile(File file) throws IOException,
-            ClassNotFoundException {
+    protected void loadTypesFile(File file) throws IOException, ClassNotFoundException {
         List<String> lines = FileUtils.readLines(file);
         for (String line : lines) {
             line = line.trim();
@@ -122,8 +119,7 @@ public class DefaultTypeLoader {
         }
     }
 
-    protected TypeDescriptor loadType(String className)
-            throws ClassNotFoundException {
+    protected TypeDescriptor loadType(String className) throws ClassNotFoundException {
         return loadType(loader.getClassProxy(className));
     }
 

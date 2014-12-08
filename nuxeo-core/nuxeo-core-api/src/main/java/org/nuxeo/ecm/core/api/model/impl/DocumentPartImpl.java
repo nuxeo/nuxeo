@@ -26,9 +26,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
 
@@ -67,8 +65,7 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
 
     @Override
     public Field getField() {
-        throw new UnsupportedOperationException(
-                "Document parts are not bound to schema fields");
+        throw new UnsupportedOperationException("Document parts are not bound to schema fields");
     }
 
     @Override
@@ -110,17 +107,14 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
             return false;
         }
         if (dp instanceof ComplexProperty) {
-            return getNonPhantomChildren().equals(
-                    ((ComplexProperty) dp).getNonPhantomChildren());
+            return getNonPhantomChildren().equals(((ComplexProperty) dp).getNonPhantomChildren());
         }
         return false;
     }
 
-
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + getName()
-                + (isDirty() ? "*" : "") + ", " + children + ')';
+        return getClass().getSimpleName() + '(' + getName() + (isDirty() ? "*" : "") + ", " + children + ')';
     }
 
 }

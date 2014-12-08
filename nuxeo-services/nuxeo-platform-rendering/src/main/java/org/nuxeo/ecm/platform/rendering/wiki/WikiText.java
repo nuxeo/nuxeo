@@ -21,7 +21,6 @@ import java.io.Writer;
  * Dynamic wiki text that is generated after the serialization end
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface WikiText {
 

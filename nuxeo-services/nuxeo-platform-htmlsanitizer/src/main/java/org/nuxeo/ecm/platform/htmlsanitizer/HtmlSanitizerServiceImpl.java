@@ -38,11 +38,9 @@ import org.owasp.validator.html.PolicyException;
 import org.owasp.validator.html.ScanException;
 
 /**
- * Service that sanitizes some HMTL fields to remove potential cross-site
- * scripting attacks in them.
+ * Service that sanitizes some HMTL fields to remove potential cross-site scripting attacks in them.
  */
-public class HtmlSanitizerServiceImpl extends DefaultComponent implements
-        HtmlSanitizerService {
+public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSanitizerService {
 
     private static final Log log = LogFactory.getLog(HtmlSanitizerServiceImpl.class);
 
@@ -57,16 +55,13 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
     public Policy policy;
 
     /** All sanitizers registered. */
-    public List<HtmlSanitizerDescriptor> allSanitizers = new ArrayList<HtmlSanitizerDescriptor>(
-            1);
+    public List<HtmlSanitizerDescriptor> allSanitizers = new ArrayList<HtmlSanitizerDescriptor>(1);
 
     /** Effective sanitizers. */
-    public List<HtmlSanitizerDescriptor> sanitizers = new ArrayList<HtmlSanitizerDescriptor>(
-            1);
+    public List<HtmlSanitizerDescriptor> sanitizers = new ArrayList<HtmlSanitizerDescriptor>(1);
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (ANTISAMY_XP.equals(extensionPoint)) {
             if (!(contribution instanceof HtmlSanitizerAntiSamyDescriptor)) {
                 log.error("Contribution " + contribution + " is not of type "
@@ -78,22 +73,19 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
             addAntiSamy(desc);
         } else if (SANITIZER_XP.equals(extensionPoint)) {
             if (!(contribution instanceof HtmlSanitizerDescriptor)) {
-                log.error("Contribution " + contribution + " is not of type "
-                        + HtmlSanitizerDescriptor.class.getName());
+                log.error("Contribution " + contribution + " is not of type " + HtmlSanitizerDescriptor.class.getName());
                 return;
             }
             HtmlSanitizerDescriptor desc = (HtmlSanitizerDescriptor) contribution;
             log.info("Registering HTML sanitizer: " + desc);
             addSanitizer(desc);
         } else {
-            log.error("Contribution extension point should be '" + SANITIZER_XP
-                    + "' but is: " + extensionPoint);
+            log.error("Contribution extension point should be '" + SANITIZER_XP + "' but is: " + extensionPoint);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (ANTISAMY_XP.equals(extensionPoint)) {
             if (!(contribution instanceof HtmlSanitizerAntiSamyDescriptor)) {
                 return;
@@ -112,8 +104,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
     }
 
     protected void addAntiSamy(HtmlSanitizerAntiSamyDescriptor desc) {
-        if (Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                desc.policy) == null) {
+        if (Thread.currentThread().getContextClassLoader().getResourceAsStream(desc.policy) == null) {
             log.error("Cannot find AntiSamy policy: " + desc.policy);
             return;
         }
@@ -131,14 +122,12 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
             policy = null;
         } else {
             HtmlSanitizerAntiSamyDescriptor desc = allPolicies.removeLast();
-            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                    desc.policy);
+            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(desc.policy);
             try {
                 policy = Policy.getInstance(is);
             } catch (PolicyException e) {
                 policy = null;
-                throw new RuntimeException("Cannot parse AntiSamy policy: "
-                        + desc.policy, e);
+                throw new RuntimeException("Cannot parse AntiSamy policy: " + desc.policy, e);
             }
         }
     }
@@ -193,8 +182,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
             return;
         }
         for (HtmlSanitizerDescriptor sanitizer : sanitizers) {
-            if (!sanitizer.types.isEmpty()
-                    && !sanitizer.types.contains(doc.getType())) {
+            if (!sanitizer.types.isEmpty() && !sanitizer.types.contains(doc.getType())) {
                 continue;
             }
             for (FieldDescriptor field : sanitizer.fields) {
@@ -225,8 +213,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
                     log.debug("Cannot sanitize non-string field: " + field);
                     continue;
                 }
-                String info = "doc " + doc.getPathAsString() + " ("
-                        + doc.getId() + ") field " + field;
+                String info = "doc " + doc.getPathAsString() + " (" + doc.getId() + ") field " + field;
                 String newValue = sanitizeString((String) value, info);
                 if (!newValue.equals(value)) {
                     prop.setValue(newValue);
@@ -244,13 +231,11 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
         try {
             CleanResults cr = new AntiSamy().scan(string, policy);
             for (Object err : cr.getErrorMessages()) {
-                log.debug(String.format("Sanitizing %s: %s", info == null ? ""
-                        : info, err));
+                log.debug(String.format("Sanitizing %s: %s", info == null ? "" : info, err));
             }
             return cr.getCleanHTML();
         } catch (ScanException | PolicyException e) {
-            log.error(String.format("Cannot sanitize %s: %s", info == null ? ""
-                    : info, e));
+            log.error(String.format("Cannot sanitize %s: %s", info == null ? "" : info, e));
             return string;
         }
     }

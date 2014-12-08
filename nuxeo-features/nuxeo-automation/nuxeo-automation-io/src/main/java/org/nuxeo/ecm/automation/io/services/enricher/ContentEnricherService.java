@@ -35,21 +35,18 @@ public interface ContentEnricherService {
      * <p>
      * Only contributors available in the given context are returned
      */
-    List<ContentEnricher> getEnrichers(String category,
-            RestEvaluationContext context);
+    List<ContentEnricher> getEnrichers(String category, RestEvaluationContext context);
 
     /**
      * Write some JSon for a given evaluation context.
      *
      * @param jg
      * @param ec
-     *
      * @throws IOException
      * @throws JsonGenerationException
      * @throws ClientException
-     *
      */
-    void writeContext(JsonGenerator jg, RestEvaluationContext ec)
-            throws JsonGenerationException, IOException, ClientException;
+    void writeContext(JsonGenerator jg, RestEvaluationContext ec) throws JsonGenerationException, IOException,
+            ClientException;
 
 }

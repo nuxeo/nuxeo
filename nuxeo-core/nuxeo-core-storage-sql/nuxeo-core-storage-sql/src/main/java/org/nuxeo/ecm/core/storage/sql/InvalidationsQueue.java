@@ -14,8 +14,7 @@ package org.nuxeo.ecm.core.storage.sql;
 /**
  * Queue of invalidations.
  * <p>
- * All invalidations added are accumulated (from multiple threads), then
- * returned when asked for.
+ * All invalidations added are accumulated (from multiple threads), then returned when asked for.
  */
 public class InvalidationsQueue {
 

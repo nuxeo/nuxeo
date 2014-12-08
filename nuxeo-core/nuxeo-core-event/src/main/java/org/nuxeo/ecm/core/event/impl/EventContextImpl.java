@@ -25,6 +25,7 @@ public class EventContextImpl extends AbstractEventContext {
     private static final long serialVersionUID = 1L;
 
     protected CoreSession session;
+
     protected Principal principal;
 
     /**

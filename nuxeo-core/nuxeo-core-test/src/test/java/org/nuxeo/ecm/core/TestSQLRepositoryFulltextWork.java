@@ -37,8 +37,7 @@ public class TestSQLRepositoryFulltextWork extends TXSQLRepositoryTestCase {
     }
 
     private void createFolder() throws PropertyException, ClientException {
-        DocumentModel folder = new DocumentModelImpl("/", "testfolder",
-                "Folder");
+        DocumentModel folder = new DocumentModelImpl("/", "testfolder", "Folder");
         folder.setPropertyValue("dc:title", "folder Title");
         folder = session.createDocument(folder);
     }
@@ -49,8 +48,7 @@ public class TestSQLRepositoryFulltextWork extends TXSQLRepositoryTestCase {
         createAndDeleteFile("testfile");
     }
 
-    private void createAndDeleteFile(String name) throws PropertyException,
-            ClientException {
+    private void createAndDeleteFile(String name) throws PropertyException, ClientException {
         DocumentModel file = new DocumentModelImpl("/testfolder", name, "File");
         file.setPropertyValue("dc:title", "testfile Title");
         file = session.createDocument(file);

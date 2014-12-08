@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(init=DefaultRepositoryInit.class)
+@RepositoryConfig(init = DefaultRepositoryInit.class)
 public class DefaultRepoFactoryTest {
 
     @Inject

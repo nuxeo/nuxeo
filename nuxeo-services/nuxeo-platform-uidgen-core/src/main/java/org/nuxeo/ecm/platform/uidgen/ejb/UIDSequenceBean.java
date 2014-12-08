@@ -35,16 +35,10 @@ import org.apache.commons.logging.LogFactory;
  * UID entity - keeps last indexes of all generated UIDs.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
- *
  */
 @Entity
-@NamedQueries( {
-    @NamedQuery(name = "UIDSequence.findByKey",
-            query = "from UIDSequenceBean seq where seq.key = :key" )
-            })
-
+@NamedQueries({ @NamedQuery(name = "UIDSequence.findByKey", query = "from UIDSequenceBean seq where seq.key = :key") })
 @Table(name = "NXP_UIDSEQ")
-
 public class UIDSequenceBean {
 
     public static final Log log = LogFactory.getLog(UIDSequenceBean.class);
@@ -62,14 +56,12 @@ public class UIDSequenceBean {
 
     /**
      * Default constructor needed for EJB container instantiation.
-     *
      */
     public UIDSequenceBean() {
     }
 
     /**
-     * Constructor taking as argument the key for which this sequence is
-     * created. The index is defaulted to 1.
+     * Constructor taking as argument the key for which this sequence is created. The index is defaulted to 1.
      *
      * @param key
      */
@@ -99,11 +91,12 @@ public class UIDSequenceBean {
     }
 
     public static String stringify(UIDSequenceBean bean) {
-        return "UIDSeq(" + bean.key + "," + bean.index +")";
+        return "UIDSeq(" + bean.key + "," + bean.index + ")";
     }
+
     @Override
     public String toString() {
-       return stringify(this);
+        return stringify(this);
     }
 
     public int nextIndex() {

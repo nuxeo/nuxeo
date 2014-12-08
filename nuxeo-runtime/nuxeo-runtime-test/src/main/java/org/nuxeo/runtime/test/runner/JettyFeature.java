@@ -28,12 +28,10 @@ import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Deploy("org.nuxeo.runtime.jetty")
 @Features(RuntimeFeature.class)
-public class JettyFeature extends SimpleFeature implements
-        WorkingDirectoryConfigurator {
+public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
@@ -43,8 +41,7 @@ public class JettyFeature extends SimpleFeature implements
         }
         configureJetty(jetty);
 
-        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(
-                this);
+        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
     }
 
     protected void configureJetty(Jetty jetty) {
@@ -76,13 +73,12 @@ public class JettyFeature extends SimpleFeature implements
         if (config.length() > 0) {
             System.setProperty("org.nuxeo.jetty.config", config);
         }
-        
+
         System.setProperty("org.nuxeo.jetty.propagateNaming", Boolean.toString(jetty.propagateNaming()));
     }
 
     @Override
-    public void configure(RuntimeHarness harness, File workingDir)
-            throws IOException {
+    public void configure(RuntimeHarness harness, File workingDir) throws IOException {
         File dest = new File(workingDir, "config");
         dest.mkdirs();
 

@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.annotations.service.PermissionManager;
 
 /**
  * @author Alexandre Russel
- *
  */
 @XObject("permissionManager")
 public class PermissionManagerDescriptor {

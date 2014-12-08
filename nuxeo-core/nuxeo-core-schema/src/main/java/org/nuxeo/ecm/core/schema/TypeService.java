@@ -21,8 +21,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
 /**
- * The TypeService is the component dealing with registration of schemas and
- * document types (and facets and prefetch configuration).
+ * The TypeService is the component dealing with registration of schemas and document types (and facets and prefetch
+ * configuration).
  * <p>
  * The implementation is delegated to the SchemaManager.
  */
@@ -32,8 +32,7 @@ public class TypeService extends DefaultComponent {
      * @deprecated since 5.7 (unused)
      */
     @Deprecated
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.core.schema.TypeService");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.schema.TypeService");
 
     private static final Log log = LogFactory.getLog(TypeService.class);
 
@@ -46,9 +45,7 @@ public class TypeService extends DefaultComponent {
     private SchemaManagerImpl schemaManager;
 
     /**
-     * @deprecated since 5.7, use
-     *             {@code Framework.getLocalService(SchemaManager.class)}
-     *             instead.
+     * @deprecated since 5.7, use {@code Framework.getLocalService(SchemaManager.class)} instead.
      */
     @Deprecated
     public static SchemaManager getSchemaManager() {
@@ -56,9 +53,7 @@ public class TypeService extends DefaultComponent {
     }
 
     /**
-     * @deprecated since 5.7, use
-     *             {@code Framework.getLocalService(SchemaManager.class)}
-     *             instead.
+     * @deprecated since 5.7, use {@code Framework.getLocalService(SchemaManager.class)} instead.
      */
     @Deprecated
     public SchemaManager getTypeManager() {

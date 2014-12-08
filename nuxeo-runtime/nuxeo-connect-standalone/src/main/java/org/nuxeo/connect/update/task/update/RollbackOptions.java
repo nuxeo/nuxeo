@@ -21,7 +21,6 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RollbackOptions {
 
@@ -76,8 +75,7 @@ public class RollbackOptions {
      */
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this,
-                ToStringStyle.SHORT_PREFIX_STYLE);
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
 }

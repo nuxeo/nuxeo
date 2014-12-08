@@ -56,22 +56,14 @@ public class TestConfig extends AbstractCommandTest {
         super.setUp();
 
         URL url = locator.getTargetTestResource("config/nuxeo.conf");
-        File nuxeoConf = new File(
-                org.nuxeo.common.Environment.getDefault().getServerHome(),
-                "nuxeo.conf");
-        FileUtils.copyFile(new File(URLDecoder.decode(url.getPath(), "UTF-8")),
-                nuxeoConf);
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF,
-                nuxeoConf.getPath());
-        System.setProperty(
-                TomcatConfigurator.TOMCAT_HOME,
+        File nuxeoConf = new File(org.nuxeo.common.Environment.getDefault().getServerHome(), "nuxeo.conf");
+        FileUtils.copyFile(new File(URLDecoder.decode(url.getPath(), "UTF-8")), nuxeoConf);
+        System.setProperty(ConfigurationGenerator.NUXEO_CONF, nuxeoConf.getPath());
+        System.setProperty(TomcatConfigurator.TOMCAT_HOME,
                 org.nuxeo.common.Environment.getDefault().getServerHome().getPath());
         url = locator.getTargetTestResource("templates");
-        FileUtils.copyDirectory(
-                new File(URLDecoder.decode(url.getPath(), "UTF-8")),
-                new File(
-                        org.nuxeo.common.Environment.getDefault().getServerHome(),
-                        "templates"));
+        FileUtils.copyDirectory(new File(URLDecoder.decode(url.getPath(), "UTF-8")), new File(
+                org.nuxeo.common.Environment.getDefault().getServerHome(), "templates"));
 
         configurationGenerator = new ConfigurationGenerator();
         assertTrue(configurationGenerator.init());
@@ -113,8 +105,7 @@ public class TestConfig extends AbstractCommandTest {
         assertTrue(configurationGenerator.init());
 
         log.info("Install done. nuxeo.conf content:");
-        BufferedReader reader = new BufferedReader(new FileReader(
-                configurationGenerator.getNuxeoConf()));
+        BufferedReader reader = new BufferedReader(new FileReader(configurationGenerator.getNuxeoConf()));
         String line;
         while ((line = reader.readLine()) != null) {
             log.info(line);
@@ -124,20 +115,12 @@ public class TestConfig extends AbstractCommandTest {
 
         String templates = configurationGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME);
-        assertTrue("newtemplate was not added",
-                templates != null && templates.contains("newtemplate"));
-        assertTrue("oldtemplate was not removed", templates != null
-                && !templates.contains("oldtemplate"));
-        assertEquals(
-                "test.property was not set to some.value",
-                "some.value",
-                configurationGenerator.getUserConfig().getProperty(
-                        "test.property"));
-        assertEquals(
-                "alreadyset.property was not set to its new value",
-                "new.value",
-                configurationGenerator.getUserConfig().getProperty(
-                        "alreadyset.property"));
+        assertTrue("newtemplate was not added", templates != null && templates.contains("newtemplate"));
+        assertTrue("oldtemplate was not removed", templates != null && !templates.contains("oldtemplate"));
+        assertEquals("test.property was not set to some.value", "some.value",
+                configurationGenerator.getUserConfig().getProperty("test.property"));
+        assertEquals("alreadyset.property was not set to its new value", "new.value",
+                configurationGenerator.getUserConfig().getProperty("alreadyset.property"));
     }
 
     @Override
@@ -147,8 +130,7 @@ public class TestConfig extends AbstractCommandTest {
         assertTrue(configurationGenerator.init());
 
         log.info("Uninstall done. nuxeo.conf content:");
-        BufferedReader reader = new BufferedReader(new FileReader(
-                configurationGenerator.getNuxeoConf()));
+        BufferedReader reader = new BufferedReader(new FileReader(configurationGenerator.getNuxeoConf()));
         String line;
         while ((line = reader.readLine()) != null) {
             log.info(line);
@@ -158,19 +140,11 @@ public class TestConfig extends AbstractCommandTest {
 
         String templates = configurationGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME);
-        assertTrue("newtemplate was not removed", templates != null
-                && !templates.contains("newtemplate"));
-        assertTrue("oldtemplate was not reset",
-                templates != null && templates.contains("oldtemplate"));
-        assertNull(
-                "test.property was not removed",
-                configurationGenerator.getUserConfig().getProperty(
-                        "test.property"));
-        assertEquals(
-                "alreadyset.property was not set to its old value",
-                "old.value",
-                configurationGenerator.getUserConfig().getProperty(
-                        "alreadyset.property"));
+        assertTrue("newtemplate was not removed", templates != null && !templates.contains("newtemplate"));
+        assertTrue("oldtemplate was not reset", templates != null && templates.contains("oldtemplate"));
+        assertNull("test.property was not removed", configurationGenerator.getUserConfig().getProperty("test.property"));
+        assertEquals("alreadyset.property was not set to its old value", "old.value",
+                configurationGenerator.getUserConfig().getProperty("alreadyset.property"));
     }
 
     @Override

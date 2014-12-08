@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = GetDocumentChild.ID, category = Constants.CAT_DOCUMENT, label = "Get Child", description = "Get a child document given its name. Take as input the parent document and return the child document.")
@@ -36,12 +35,12 @@ public class GetDocumentChild {
     @Param(name = "name", required = true)
     protected String name;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
         return session.getChild(doc.getRef(), name);
     }
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef doc) {
         return session.getChild(doc, name);
     }

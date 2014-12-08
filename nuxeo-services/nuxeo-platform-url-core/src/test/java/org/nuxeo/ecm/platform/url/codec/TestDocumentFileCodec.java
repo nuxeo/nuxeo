@@ -33,15 +33,13 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class TestDocumentFileCodec {
 
     @Test
     public void testGetUrlFromDocumentView() {
         DocumentFileCodec codec = new DocumentFileCodec();
-        DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef(
-                "dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
+        DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
         Map<String, String> params = new HashMap<String, String>();
         params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, "file:content");
         params.put(DocumentFileCodec.FILENAME_KEY, "mydoc.odt");
@@ -55,8 +53,7 @@ public class TestDocumentFileCodec {
     @Test
     public void testGetUrlFromDocumentViewEncoding() {
         DocumentFileCodec codec = new DocumentFileCodec();
-        DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef(
-                "dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
+        DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
         Map<String, String> params = new HashMap<String, String>();
         params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, "file:content");
         params.put(DocumentFileCodec.FILENAME_KEY, "my doc \u00e9.odt");
@@ -70,8 +67,7 @@ public class TestDocumentFileCodec {
     @Test
     public void testGetUrlFromDocumentViewWithReservedAndParams() {
         DocumentFileCodec codec = new DocumentFileCodec();
-        DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef(
-                "dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
+        DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
         Map<String, String> params = new HashMap<String, String>();
         params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, "file:content");
         params.put(DocumentFileCodec.FILENAME_KEY, "my [doc]? \u00e9.odt");
@@ -90,14 +86,12 @@ public class TestDocumentFileCodec {
 
         DocumentLocation docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerName());
-        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
-                docLoc.getDocRef());
+        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"), docLoc.getDocRef());
         assertNull(docView.getViewId());
         assertNull(docView.getSubURI());
 
         Map<String, String> params = docView.getParameters();
-        assertEquals("file:content",
-                params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
+        assertEquals("file:content", params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
         assertEquals("mydoc.odt", params.get(DocumentFileCodec.FILENAME_KEY));
     }
 
@@ -109,14 +103,12 @@ public class TestDocumentFileCodec {
 
         DocumentLocation docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerName());
-        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
-                docLoc.getDocRef());
+        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"), docLoc.getDocRef());
         assertNull(docView.getViewId());
         assertNull(docView.getSubURI());
 
         Map<String, String> params = docView.getParameters();
-        assertEquals("file:content",
-                params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
+        assertEquals("file:content", params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
         assertEquals("mydoc.odt", params.get(DocumentFileCodec.FILENAME_KEY));
     }
 
@@ -129,16 +121,13 @@ public class TestDocumentFileCodec {
 
         DocumentLocation docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerName());
-        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
-                docLoc.getDocRef());
+        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"), docLoc.getDocRef());
         assertNull(docView.getViewId());
         assertNull(docView.getSubURI());
 
         Map<String, String> params = docView.getParameters();
-        assertEquals("file:content",
-                params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
-        assertEquals("my doc \u00e9.odt",
-                params.get(DocumentFileCodec.FILENAME_KEY));
+        assertEquals("file:content", params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
+        assertEquals("my doc \u00e9.odt", params.get(DocumentFileCodec.FILENAME_KEY));
     }
 
     // same with reserved characters in file name and params
@@ -150,16 +139,13 @@ public class TestDocumentFileCodec {
 
         DocumentLocation docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerName());
-        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
-                docLoc.getDocRef());
+        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"), docLoc.getDocRef());
         assertNull(docView.getViewId());
         assertNull(docView.getSubURI());
 
         Map<String, String> params = docView.getParameters();
-        assertEquals("file:content",
-                params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
-        assertEquals("my [doc]? \u00e9.odt",
-                params.get(DocumentFileCodec.FILENAME_KEY));
+        assertEquals("file:content", params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
+        assertEquals("my [doc]? \u00e9.odt", params.get(DocumentFileCodec.FILENAME_KEY));
         assertEquals("bar", params.get("foo"));
     }
 
@@ -172,17 +158,14 @@ public class TestDocumentFileCodec {
 
         DocumentLocation docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerName());
-        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
-                docLoc.getDocRef());
+        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"), docLoc.getDocRef());
         assertNull(docView.getViewId());
         assertNull(docView.getSubURI());
 
         Map<String, String> params = docView.getParameters();
-        assertEquals("file:content",
-                params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
+        assertEquals("file:content", params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
         assertEquals("mydoc.odt", params.get(DocumentFileCodec.FILENAME_KEY));
-        assertEquals("file:filename",
-                params.get(DocumentFileCodec.FILENAME_PROPERTY_PATH_KEY));
+        assertEquals("file:filename", params.get(DocumentFileCodec.FILENAME_PROPERTY_PATH_KEY));
     }
 
 }

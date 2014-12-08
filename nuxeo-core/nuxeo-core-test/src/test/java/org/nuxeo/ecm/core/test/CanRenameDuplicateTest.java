@@ -70,8 +70,7 @@ public class CanRenameDuplicateTest {
     EventServiceAdmin admin;
 
     @Test
-    public void profileUnderLoadWithoutDuplicateChecker()
-            throws ClientException {
+    public void profileUnderLoadWithoutDuplicateChecker() throws ClientException {
         Assume.assumeTrue(Boolean.parseBoolean(Framework.getProperty("profile", "false")));
         admin.setListenerEnabledFlag("duplicatedNameFixer", false);
         profileUnderLoad();

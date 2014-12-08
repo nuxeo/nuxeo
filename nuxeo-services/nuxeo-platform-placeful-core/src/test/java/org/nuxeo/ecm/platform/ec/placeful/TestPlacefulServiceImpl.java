@@ -47,10 +47,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class,
-        CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.persistence",
-        "org.nuxeo.ecm.platform.placeful.core" })
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.placeful.core" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.placeful.core:nxplaceful-ds.xml",
         "org.nuxeo.ecm.platform.placeful.core:nxplaceful-config.xml" })
 public class TestPlacefulServiceImpl {
@@ -65,8 +63,7 @@ public class TestPlacefulServiceImpl {
         Map<String, String> registry = placefulService.getAnnotationRegistry();
         assertEquals(1, registry.size());
         assertTrue(registry.containsKey("SubscriptionConfig"));
-        assertEquals("org.nuxeo.ecm.platform.ec.placeful.SubscriptionConfig",
-                registry.get("SubscriptionConfig"));
+        assertEquals("org.nuxeo.ecm.platform.ec.placeful.SubscriptionConfig", registry.get("SubscriptionConfig"));
     }
 
     @Test
@@ -81,13 +78,11 @@ public class TestPlacefulServiceImpl {
         paramMap.put("event", "deleted");
         paramMap.put("id", "000123-023405-045697");
 
-        List<Annotation> annotations = placefulService.getAnnotationListByParamMap(
-                paramMap, "SubscriptionConfig");
+        List<Annotation> annotations = placefulService.getAnnotationListByParamMap(paramMap, "SubscriptionConfig");
         log.info("Nombre d'annotations en bases : " + annotations.size());
         assertTrue(annotations.size() > 0);
 
-        Annotation annotation = placefulService.getAnnotation(
-                "000123-023405-045697", "SubscriptionConfig");
+        Annotation annotation = placefulService.getAnnotation("000123-023405-045697", "SubscriptionConfig");
         assertNotNull(annotation);
     }
 

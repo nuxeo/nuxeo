@@ -26,8 +26,7 @@ public class PropertyConversionException extends InvalidPropertyValueException {
     }
 
     public PropertyConversionException(Class<?> fromClass, Class<?> toClass, String message) {
-        super("Property Conversion failed from " + fromClass + " to " + toClass
-                + ": " + message);
+        super("Property Conversion failed from " + fromClass + " to " + toClass + ": " + message);
     }
 
     public PropertyConversionException(String message) {

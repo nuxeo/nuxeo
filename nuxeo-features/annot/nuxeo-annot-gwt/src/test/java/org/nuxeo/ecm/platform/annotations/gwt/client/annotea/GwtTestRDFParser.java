@@ -30,7 +30,6 @@ import com.google.gwt.xml.client.XMLParser;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class GwtTestRDFParser extends GWTTestCase {
     private final RDFParser parser = new RDFParser();
@@ -55,13 +54,9 @@ public class GwtTestRDFParser extends GWTTestCase {
         assertNotNull(list);
         Annotation annotation = parser.getAnnotation(null, list);
         assertNotNull(annotation);
-        assertEquals("http://www.w3.org/2000/10/annotationType#Comment",
-                annotation.getType());
-        assertEquals(
-                "http://serv1.example.com/some/page.html#xpointer(id(\"Main\")/p[2])",
-                annotation.getXpointer());
-        assertEquals("http://annotea.example.org/Annotation/body/3ACF6D754",
-                annotation.getBody());
+        assertEquals("http://www.w3.org/2000/10/annotationType#Comment", annotation.getType());
+        assertEquals("http://serv1.example.com/some/page.html#xpointer(id(\"Main\")/p[2])", annotation.getXpointer());
+        assertEquals("http://annotea.example.org/Annotation/body/3ACF6D754", annotation.getBody());
     }
 
     public void testGetAnnotationWithBodyLiteral() {
@@ -90,80 +85,49 @@ public class GwtTestRDFParser extends GWTTestCase {
 
     private final String annotation = "    <r:Description xmlns:r=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" "
             + "    xmlns:a=\"http://www.w3.org/2000/10/annotation-ns#\" "
-            + "    xmlns:d=\"http://purl.org/dc/elements/1.1/\" >"
-            + "        <r:type "
-            + "            r:resource=\"http://www.w3.org/2000/10/annotation-ns#Annotation\" /> "
-            + "        <r:type "
+            + "    xmlns:d=\"http://purl.org/dc/elements/1.1/\" >" + "        <r:type "
+            + "            r:resource=\"http://www.w3.org/2000/10/annotation-ns#Annotation\" /> " + "        <r:type "
             + "            r:resource=\"http://www.w3.org/2000/10/annotationType#Comment\" /> "
-            + "        <a:annotates "
-            + "       r:resource=\"http://serv1.example.com/some/page.html\" />"
-            + "        <d:title>Annotation of Sample Page 1</d:title>"
-            + "        <a:context>"
+            + "        <a:annotates " + "       r:resource=\"http://serv1.example.com/some/page.html\" />"
+            + "        <d:title>Annotation of Sample Page 1</d:title>" + "        <a:context>"
             + "            http://serv1.example.com/some/page.html#xpointer(id(\"Main\")/p[2])"
-            + "        </a:context>"
-            + "        <d:creator>Ralph Swick</d:creator>"
-            + "        <a:created>1999-10-14T12:10Z</a:created>"
-            + "        <d:date>1999-10-14T12:10Z</d:date>"
-            + "        <a:body"
-            + "            r:resource=\"http://annotea.example.org/Annotation/body/3ACF6D754\" />"
+            + "        </a:context>" + "        <d:creator>Ralph Swick</d:creator>"
+            + "        <a:created>1999-10-14T12:10Z</a:created>" + "        <d:date>1999-10-14T12:10Z</d:date>"
+            + "        <a:body" + "            r:resource=\"http://annotea.example.org/Annotation/body/3ACF6D754\" />"
             + "    </r:Description>";
 
     private final String response = "<?xml version=\"1.0\" ?> "
             + " <r:RDF xmlns:r=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" "
             + "    xmlns:a=\"http://www.w3.org/2000/10/annotation-ns#\" "
-            + "    xmlns:d=\"http://purl.org/dc/elements/1.1/\"> "
-            + "    <r:Description "
-            + "        r:about=\"http://annotea.example.org/Annotation/3ACF6D756\"> "
-            + "        <r:type "
-            + "            r:resource=\"http://www.w3.org/2000/10/annotation-ns#Annotation\" /> "
-            + "        <r:type "
+            + "    xmlns:d=\"http://purl.org/dc/elements/1.1/\"> " + "    <r:Description "
+            + "        r:about=\"http://annotea.example.org/Annotation/3ACF6D756\"> " + "        <r:type "
+            + "            r:resource=\"http://www.w3.org/2000/10/annotation-ns#Annotation\" /> " + "        <r:type "
             + "            r:resource=\"http://www.w3.org/2000/10/annotationType#Comment\" /> "
-            + "        <a:annotates "
-            + "       r:resource=\"http://serv1.example.com/some/page.html\" />"
-            + "        <d:title>Annotation of Sample Page 1</d:title>"
-            + "        <a:context>"
+            + "        <a:annotates " + "       r:resource=\"http://serv1.example.com/some/page.html\" />"
+            + "        <d:title>Annotation of Sample Page 1</d:title>" + "        <a:context>"
             + "            http://serv1.example.com/some/page.html#xpointer(id(\"Main\")/p[2])"
-            + "        </a:context>"
-            + "        <d:creator>Ralph Swick</d:creator>"
-            + "        <a:created>1999-10-14T12:10Z</a:created>"
-            + "        <d:date>1999-10-14T12:10Z</d:date>"
-            + "        <a:body"
-            + "            r:resource=\"http://annotea.example.org/Annotation/body/3ACF6D754\" />"
-            + "    </r:Description>"
-            + "    <r:Description"
-            + "        r:about=\"http://annotea.example.org/Annotation/3ACF6D757\">"
-            + "        <r:type"
-            + "            r:resource=\"http://www.w3.org/2000/10/annotation-ns#Annotation\" />"
-            + "        <r:type"
-            + "            r:resource=\"http://www.w3.org/2000/10/annotationType#Comment\" />"
-            + "        <a:annotates"
+            + "        </a:context>" + "        <d:creator>Ralph Swick</d:creator>"
+            + "        <a:created>1999-10-14T12:10Z</a:created>" + "        <d:date>1999-10-14T12:10Z</d:date>"
+            + "        <a:body" + "            r:resource=\"http://annotea.example.org/Annotation/body/3ACF6D754\" />"
+            + "    </r:Description>" + "    <r:Description"
+            + "        r:about=\"http://annotea.example.org/Annotation/3ACF6D757\">" + "        <r:type"
+            + "            r:resource=\"http://www.w3.org/2000/10/annotation-ns#Annotation\" />" + "        <r:type"
+            + "            r:resource=\"http://www.w3.org/2000/10/annotationType#Comment\" />" + "        <a:annotates"
             + "            r:resource=\"http://serv1.example.com/some/page.html\" />"
-            + "        <d:title>Annotation of Sample Page 2</d:title>"
-            + "        <a:context>"
+            + "        <d:title>Annotation of Sample Page 2</d:title>" + "        <a:context>"
             + "            http://serv1.example.com/some/page.html#xpointer(id(\"Main\")/p[3])"
-            + "        </a:context>"
-            + "        <d:creator>Ralph Swick</d:creator>"
-            + "        <a:created>1999-10-14T12:10Z</a:created>"
-            + "        <d:date>1999-10-14T12:10Z</d:date>"
-            + "        <a:body"
-            + "            r:resource=\"http://annotea.example.org/Annotation/body/3ACF6D754\" />"
-            + "    </r:Description>"
-            + "    <r:Description"
-            + "        r:about=\"http://annotea.example.org/Annotation/3ACF6D758\">"
-            + "        <r:type"
-            + "            r:resource=\"http://www.w3.org/2000/10/annotation-ns#Annotation\" />"
-            + "        <r:type"
-            + "            r:resource=\"http://www.w3.org/2000/10/annotationType#Comment\" />"
-            + "        <a:annotates"
+            + "        </a:context>" + "        <d:creator>Ralph Swick</d:creator>"
+            + "        <a:created>1999-10-14T12:10Z</a:created>" + "        <d:date>1999-10-14T12:10Z</d:date>"
+            + "        <a:body" + "            r:resource=\"http://annotea.example.org/Annotation/body/3ACF6D754\" />"
+            + "    </r:Description>" + "    <r:Description"
+            + "        r:about=\"http://annotea.example.org/Annotation/3ACF6D758\">" + "        <r:type"
+            + "            r:resource=\"http://www.w3.org/2000/10/annotation-ns#Annotation\" />" + "        <r:type"
+            + "            r:resource=\"http://www.w3.org/2000/10/annotationType#Comment\" />" + "        <a:annotates"
             + "            r:resource=\"http://serv1.example.com/some/page.html\" />"
-            + "        <d:title>Annotation of Sample Page 3</d:title>"
-            + "        <a:context>"
+            + "        <d:title>Annotation of Sample Page 3</d:title>" + "        <a:context>"
             + "            http://serv1.example.com/some/page.html#xpointer(id(\"Main\")/p[4])"
-            + "        </a:context>"
-            + "        <d:creator>Ralph Swick</d:creator>"
-            + "        <a:created>1999-10-14T12:10Z</a:created>"
-            + "        <d:date>1999-10-14T12:10Z</d:date>"
-            + "        <a:body"
-            + "            r:resource=\"http://annotea.example.org/Annotation/body/3ACF6D754\" />"
+            + "        </a:context>" + "        <d:creator>Ralph Swick</d:creator>"
+            + "        <a:created>1999-10-14T12:10Z</a:created>" + "        <d:date>1999-10-14T12:10Z</d:date>"
+            + "        <a:body" + "            r:resource=\"http://annotea.example.org/Annotation/body/3ACF6D754\" />"
             + "    </r:Description>" + "</r:RDF>";
 }

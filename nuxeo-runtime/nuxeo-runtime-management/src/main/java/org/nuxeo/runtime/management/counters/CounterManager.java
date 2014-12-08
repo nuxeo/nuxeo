@@ -19,13 +19,10 @@
 package org.nuxeo.runtime.management.counters;
 
 /**
- * Service interface to manage Counters.
- *
- * This services hides the Counters implementation so that Counters's updated
+ * Service interface to manage Counters. This services hides the Counters implementation so that Counters's updated
  * don't have to be dependent on Simon
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public interface CounterManager {
 
@@ -35,7 +32,6 @@ public interface CounterManager {
      * @param counterName
      */
     void increaseCounter(String counterName);
-
 
     void increaseCounter(String counterName, long value);
 
@@ -58,21 +54,19 @@ public interface CounterManager {
 
     /**
      * Get recorder values of the counter over time
+     *
      * @param counterName
      * @return
      */
     CounterHistoryStack getCounterHistory(String counterName);
 
-
     /**
      * Enables all counters
-     *
      */
     void enableCounters();
 
     /**
      * Desable all couters
-     *
      */
     void disableCounters();
 

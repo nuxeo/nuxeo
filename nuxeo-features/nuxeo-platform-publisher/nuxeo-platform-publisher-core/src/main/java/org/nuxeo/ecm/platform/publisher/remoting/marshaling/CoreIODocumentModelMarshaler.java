@@ -47,14 +47,12 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
     protected String originatingServer;
 
     @Override
-    public String marshalDocument(DocumentModel doc)
-            throws PublishingMarshalingException {
+    public String marshalDocument(DocumentModel doc) throws PublishingMarshalingException {
 
         // load the datamodel
         if (originatingServer != null) {
             /*
-             * String source = doc.getRepositoryName() + "@" + originatingServer
-             * + ":" + doc.getRef().toString();
+             * String source = doc.getRepositoryName() + "@" + originatingServer + ":" + doc.getRef().toString();
              */
             String source = new ExtendedDocumentLocation(originatingServer, doc).toString();
             try {
@@ -65,8 +63,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
         }
 
         CoreSession coreSession = doc.getCoreSession();
-        DocumentReader reader = new SingleDocumentReaderWithInLineBlobs(
-                coreSession, doc);
+        DocumentReader reader = new SingleDocumentReaderWithInLineBlobs(coreSession, doc);
 
         File tmpFile = null;
         try {
@@ -88,8 +85,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
             br.close();
             return sb.toString();
         } catch (IOException e) {
-            throw new PublishingMarshalingException(
-                    "Unable to marshal DocumentModel", e);
+            throw new PublishingMarshalingException("Unable to marshal DocumentModel", e);
         } finally {
             if (tmpFile != null) {
                 tmpFile.delete();
@@ -98,20 +94,17 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
     }
 
     @Override
-    public DocumentModel unMarshalDocument(String data, CoreSession coreSession)
-            throws PublishingMarshalingException {
+    public DocumentModel unMarshalDocument(String data, CoreSession coreSession) throws PublishingMarshalingException {
         try {
             DocumentReader reader = new SingleXMlDocumentReader(data);
-            DocumentWriter writer = new SingleShadowDocumentWriter(coreSession,
-                    null);
+            DocumentWriter writer = new SingleShadowDocumentWriter(coreSession, null);
             DocumentPipe pipe = new DocumentPipeImpl();
             pipe.setReader(reader);
             pipe.setWriter(writer);
             pipe.run();
             return ((SingleShadowDocumentWriter) writer).getShadowDocument();
         } catch (IOException | DocumentException e) {
-            throw new PublishingMarshalingException(
-                    "Unable to unmarshal DocumentModel", e);
+            throw new PublishingMarshalingException("Unable to unmarshal DocumentModel", e);
         }
     }
 

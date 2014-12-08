@@ -108,21 +108,17 @@ public class WidgetTypeResource {
     /**
      * Returns widget types definitions for given categories
      * <p>
-     * If the category is null, the filter does not check the category. Widget
-     * types without a configuration are included if boolean 'all' is set to
-     * true. Mutliple categories are extracted from the query parameter by
-     * splitting on the space character.
+     * If the category is null, the filter does not check the category. Widget types without a configuration are
+     * included if boolean 'all' is set to true. Mutliple categories are extracted from the query parameter by splitting
+     * on the space character.
      * <p>
-     * If not null, the version parameter will exclude all widget types that
-     * did not exist before this version.
+     * If not null, the version parameter will exclude all widget types that did not exist before this version.
      */
     @GET
     @Path("widgetTypes")
-    public Object getWidgetTypeDefinitions(@Context
-    HttpServletRequest request, @QueryParam("categories")
-    String categories, @QueryParam("version")
-    String version, @QueryParam("all")
-    Boolean all) {
+    public Object getWidgetTypeDefinitions(@Context HttpServletRequest request,
+            @QueryParam("categories") String categories, @QueryParam("version") String version,
+            @QueryParam("all") Boolean all) {
         // TODO: refactor so that's cached
         List<String> catsList = new ArrayList<String>();
         if (categories != null) {
@@ -154,8 +150,7 @@ public class WidgetTypeResource {
                         }
                     }
                 }
-                if (!hasCats && catsList.size() == 1
-                        && catsList.contains("unknown")) {
+                if (!hasCats && catsList.size() == 1 && catsList.contains("unknown")) {
                     res.add(def);
                 }
             } else {
@@ -171,30 +166,23 @@ public class WidgetTypeResource {
     /**
      * Returns widget types definitions for given category.
      * <p>
-     * If the category is null, the filter does not check the category. Widget
-     * types without a configuration are included if boolean 'all' is set to
-     * true.
+     * If the category is null, the filter does not check the category. Widget types without a configuration are
+     * included if boolean 'all' is set to true.
      * <p>
-     * If not null, the version parameter will exclude all widget types that
-     * did not exist before this version.
+     * If not null, the version parameter will exclude all widget types that did not exist before this version.
      */
     @GET
     @Path("widgetTypes/{category}")
-    public Object getWidgetTypeDefinitionsForCategory(@Context
-    HttpServletRequest request, @PathParam("category")
-    String category, @QueryParam("version")
-    String version, @QueryParam("all")
-    Boolean all) {
+    public Object getWidgetTypeDefinitionsForCategory(@Context HttpServletRequest request,
+            @PathParam("category") String category, @QueryParam("version") String version,
+            @QueryParam("all") Boolean all) {
         return getWidgetTypeDefinitions(request, category, version, all);
     }
 
     @GET
     @Path("widgetType/{name}")
-    public Object getWidgetTypeDefinition(@Context
-    HttpServletRequest request, @PathParam("name")
-    String name) {
-        WidgetTypeDefinition def = service.getWidgetTypeDefinition(category,
-                name);
+    public Object getWidgetTypeDefinition(@Context HttpServletRequest request, @PathParam("name") String name) {
+        WidgetTypeDefinition def = service.getWidgetTypeDefinition(category, name);
         if (def != null) {
             return def;
         } else {
@@ -202,15 +190,13 @@ public class WidgetTypeResource {
         }
     }
 
-    public TemplateView getTemplate(@Context
-    UriInfo uriInfo) {
+    public TemplateView getTemplate(@Context UriInfo uriInfo) {
         return getTemplate("widget-types.ftl", uriInfo);
     }
 
     @GET
     @Path("wiki")
-    public Object getWikiDocumentation(@Context
-    UriInfo uriInfo) {
+    public Object getWikiDocumentation(@Context UriInfo uriInfo) {
         return getTemplate("widget-types-wiki.ftl", uriInfo);
     }
 
@@ -238,17 +224,13 @@ public class WidgetTypeResource {
     }
 
     @GET
-    public Object doGet(@QueryParam("widgetType")
-    String widgetTypeName, @Context
-    UriInfo uriInfo) {
+    public Object doGet(@QueryParam("widgetType") String widgetTypeName, @Context UriInfo uriInfo) {
         if (widgetTypeName == null) {
             return getTemplate(uriInfo);
         } else {
-            WidgetTypeDefinition wType = service.getWidgetTypeDefinition(
-                    category, widgetTypeName);
+            WidgetTypeDefinition wType = service.getWidgetTypeDefinition(category, widgetTypeName);
             if (wType == null) {
-                throw new WebResourceNotFoundException(
-                        "No widget type found with name: " + widgetTypeName);
+                throw new WebResourceNotFoundException("No widget type found with name: " + widgetTypeName);
             }
             TemplateView tpl = getTemplate(uriInfo);
             tpl.arg("widgetType", wType);

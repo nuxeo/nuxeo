@@ -48,8 +48,7 @@ public final class FormatFilterType extends FilterType {
     public FormatFilterType() {
     }
 
-    public FormatFilterType(@SuppressWarnings("unused") final String name,
-            final String formatName) {
+    public FormatFilterType(@SuppressWarnings("unused") final String name, final String formatName) {
         this.formatName = formatName;
     }
 
@@ -58,8 +57,7 @@ public final class FormatFilterType extends FilterType {
         if (filters.containsKey(formatName)) {
             return filters.get(formatName);
         }
-        FormatType formatType = (FormatType) Manager.getTypeRegistry().lookup(
-                TypeFamily.FORMAT, formatName);
+        FormatType formatType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, formatName);
         FormatFilter filter = new FormatFilter();
         filter.setFormatType(formatType);
         filters.put(formatName, filter);

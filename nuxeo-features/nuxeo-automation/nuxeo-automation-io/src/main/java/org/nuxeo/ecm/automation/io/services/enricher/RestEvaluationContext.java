@@ -22,8 +22,7 @@ import javax.ws.rs.core.HttpHeaders;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Evaluation context from where to get information in order to generate
- * additional JSON.
+ * Evaluation context from where to get information in order to generate additional JSON.
  *
  * @since 5.7.3
  */
@@ -33,16 +32,13 @@ public interface RestEvaluationContext {
      * Gives the contextual document
      *
      * @return
-     *
      */
     DocumentModel getDocumentModel();
 
     /**
-     * Returns the request headers. It may be used by contributors to refine
-     * their writing strategies.
+     * Returns the request headers. It may be used by contributors to refine their writing strategies.
      *
      * @return
-     *
      */
     HttpHeaders getHeaders();
 

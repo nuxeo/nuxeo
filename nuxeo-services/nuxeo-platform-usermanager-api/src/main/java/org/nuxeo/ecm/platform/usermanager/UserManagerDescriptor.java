@@ -34,9 +34,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 
 /**
- * APG-240 All attributes are defined public because the user manager service do
- * not get access to the fields. OSGI don't allow splitted packages having
- * access to public members defined from an another package provider.
+ * APG-240 All attributes are defined public because the user manager service do not get access to the fields. OSGI
+ * don't allow splitted packages having access to public members defined from an another package provider.
  *
  * @author matic
  */
@@ -84,8 +83,7 @@ public class UserManagerDescriptor implements Serializable {
     public boolean userSearchFieldsPresent = false;
 
     @XNode("users/searchFields")
-    public void setUserSearchFieldsPresent(
-            @SuppressWarnings("unused") String text) {
+    public void setUserSearchFieldsPresent(@SuppressWarnings("unused") String text) {
         userSearchFieldsPresent = true;
     }
 
@@ -151,8 +149,7 @@ public class UserManagerDescriptor implements Serializable {
     public boolean groupSearchFieldsPresent = false;
 
     @XNode("groups/searchFields")
-    public void setGroupSearchFieldsPresent(
-            @SuppressWarnings("unused") String text) {
+    public void setGroupSearchFieldsPresent(@SuppressWarnings("unused") String text) {
         groupSearchFieldsPresent = true;
     }
 
@@ -282,8 +279,7 @@ public class UserManagerDescriptor implements Serializable {
                 virtualUsers = other.virtualUsers;
             } else {
                 for (VirtualUserDescriptor otherVirtualUser : other.virtualUsers.values()) {
-                    if (virtualUsers.containsKey(otherVirtualUser.id)
-                            && otherVirtualUser.remove) {
+                    if (virtualUsers.containsKey(otherVirtualUser.id) && otherVirtualUser.remove) {
                         virtualUsers.remove(otherVirtualUser.id);
                     } else {
                         virtualUsers.put(otherVirtualUser.id, otherVirtualUser);

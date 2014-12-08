@@ -27,7 +27,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@RepositoryConfig(init=DefaultRepositoryInit.class, cleanup=Granularity.METHOD)
+@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Features(CoreFeature.class)
 public class CleanUpWithInitializerTest {
 
@@ -36,20 +36,17 @@ public class CleanUpWithInitializerTest {
 
     @Test
     public void iCreateADoc() throws Exception {
-        DocumentModel doc = session.createDocumentModel(
-                "/default-domain/workspaces/", "myWorkspace", "Workspace");
+        DocumentModel doc = session.createDocumentModel("/default-domain/workspaces/", "myWorkspace", "Workspace");
         doc.setProperty("dublincore", "title", "My Workspace");
         doc = session.createDocument(doc);
         session.save();
-        assertTrue(session.exists(new PathRef(
-                "/default-domain/workspaces/myWorkspace")));
+        assertTrue(session.exists(new PathRef("/default-domain/workspaces/myWorkspace")));
     }
 
     @Test
     public void myWorkspaceIsNotHereAnymore() throws Exception {
         assertTrue(session.exists(new PathRef("/default-domain/workspaces/")));
-        assertFalse(session.exists(new PathRef(
-                "/default-domain/workspaces/myWorkspace")));
+        assertFalse(session.exists(new PathRef("/default-domain/workspaces/myWorkspace")));
     }
 
 }

@@ -94,8 +94,8 @@ import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
- * This class is the bridge between the Nuxeo SPI Session and the actual
- * low-level implementation of the SQL storage session.
+ * This class is the bridge between the Nuxeo SPI Session and the actual low-level implementation of the SQL storage
+ * session.
  *
  * @author Florent Guillaume
  */
@@ -132,18 +132,17 @@ public class SQLSession implements Session {
 
     public static final String RELATED_TEXT = "relatedtext";
 
-    protected static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(
-            Arrays.asList( //
-                    Model.FULLTEXT_JOBID_PROP, //
-                    Model.FULLTEXT_BINARYTEXT_PROP, //
-                    Model.MISC_LIFECYCLE_STATE_PROP, //
-                    Model.LOCK_OWNER_PROP, //
-                    Model.LOCK_CREATED_PROP, //
-                    DC_ISSUED, //
-                    RELATED_TEXT_RESOURCES, //
-                    RELATED_TEXT_ID, //
-                    RELATED_TEXT //
-            ));
+    protected static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(Arrays.asList( //
+            Model.FULLTEXT_JOBID_PROP, //
+            Model.FULLTEXT_BINARYTEXT_PROP, //
+            Model.MISC_LIFECYCLE_STATE_PROP, //
+            Model.LOCK_OWNER_PROP, //
+            Model.LOCK_CREATED_PROP, //
+            DC_ISSUED, //
+            RELATED_TEXT_RESOURCES, //
+            RELATED_TEXT_ID, //
+            RELATED_TEXT //
+    ));
 
     private final Repository repository;
 
@@ -155,8 +154,8 @@ public class SQLSession implements Session {
 
     private final boolean negativeAclAllowed;
 
-    public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session,
-            Repository repository, String sessionId) throws DocumentException {
+    public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session, Repository repository, String sessionId)
+            throws DocumentException {
         this.session = session;
         this.repository = repository;
         Node rootNode;
@@ -247,10 +246,8 @@ public class SQLSession implements Session {
     @Override
     public Document getDocumentByUUID(String uuid) throws DocumentException {
         /*
-         * Document ids coming from higher level have been turned into
-         * strings (by {@link SQLDocument#getUUID}) but the backend may
-         * actually expect them to be Longs (for database-generated integer
-         * ids).
+         * Document ids coming from higher level have been turned into strings (by {@link SQLDocument#getUUID}) but the
+         * backend may actually expect them to be Longs (for database-generated integer ids).
          */
         Document doc = getDocumentById(idFromString(uuid));
         if (doc == null) {
@@ -278,8 +275,7 @@ public class SQLSession implements Session {
         return doc;
     }
 
-    protected void orderBefore(Node node, Node src, Node dest)
-            throws DocumentException {
+    protected void orderBefore(Node node, Node src, Node dest) throws DocumentException {
         try {
             session.orderBefore(node, src, dest);
         } catch (StorageException e) {
@@ -288,16 +284,14 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public Document move(Document source, Document parent, String name)
-            throws DocumentException {
+    public Document move(Document source, Document parent, String name) throws DocumentException {
         assert source instanceof SQLDocument;
         assert parent instanceof SQLDocument;
         try {
             if (name == null) {
                 name = source.getName();
             }
-            Node result = session.move(((SQLDocument) source).getNode(),
-                    ((SQLDocument) parent).getNode(), name);
+            Node result = session.move(((SQLDocument) source).getNode(), ((SQLDocument) parent).getNode(), name);
             return newDocument(result);
         } catch (StorageException e) {
             throw new DocumentException(e);
@@ -306,8 +300,7 @@ public class SQLSession implements Session {
 
     private static final Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
 
-    protected String findFreeName(Node parentNode, String name)
-            throws StorageException {
+    protected String findFreeName(Node parentNode, String name) throws StorageException {
         if (session.hasChildNode(parentNode, name, false)) {
             Matcher m = dotDigitsPattern.matcher(name);
             if (m.matches()) {
@@ -321,8 +314,7 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public Document copy(Document source, Document parent, String name)
-            throws DocumentException {
+    public Document copy(Document source, Document parent, String name) throws DocumentException {
         assert source instanceof SQLDocument;
         assert parent instanceof SQLDocument;
         try {
@@ -331,8 +323,7 @@ public class SQLSession implements Session {
             }
             Node parentNode = ((SQLDocument) parent).getNode();
             name = findFreeName(parentNode, name);
-            Node copy = session.copy(((SQLDocument) source).getNode(),
-                    parentNode, name);
+            Node copy = session.copy(((SQLDocument) source).getNode(), parentNode, name);
             return newDocument(copy);
         } catch (StorageException e) {
             throw new DocumentException(e);
@@ -340,19 +331,15 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public Document getVersion(String versionableId, VersionModel versionModel)
-            throws DocumentException {
+    public Document getVersion(String versionableId, VersionModel versionModel) throws DocumentException {
         try {
             Serializable vid = idFromString(versionableId);
-            Node versionNode = session.getVersionByLabel(vid,
-                    versionModel.getLabel());
+            Node versionNode = session.getVersionByLabel(vid, versionModel.getLabel());
             if (versionNode == null) {
                 return null;
             }
-            versionModel.setDescription(versionNode.getSimpleProperty(
-                    Model.VERSION_DESCRIPTION_PROP).getString());
-            versionModel.setCreated((Calendar) versionNode.getSimpleProperty(
-                    Model.VERSION_CREATED_PROP).getValue());
+            versionModel.setDescription(versionNode.getSimpleProperty(Model.VERSION_DESCRIPTION_PROP).getString());
+            versionModel.setCreated((Calendar) versionNode.getSimpleProperty(Model.VERSION_CREATED_PROP).getValue());
             return newDocument(versionNode);
         } catch (StorageException e) {
             throw new DocumentException(e);
@@ -360,29 +347,24 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public Document createProxy(Document doc, Document folder)
-            throws DocumentException {
+    public Document createProxy(Document doc, Document folder) throws DocumentException {
         try {
             Node folderNode = ((SQLDocument) folder).getNode();
             Node targetNode = ((SQLDocument) doc).getNode();
             Serializable targetId = targetNode.getId();
             Serializable versionableId;
             if (doc.isVersion()) {
-                versionableId = targetNode.getSimpleProperty(
-                        Model.VERSION_VERSIONABLE_PROP).getValue();
+                versionableId = targetNode.getSimpleProperty(Model.VERSION_VERSIONABLE_PROP).getValue();
             } else if (doc.isProxy()) {
                 // copy the proxy
-                targetId = targetNode.getSimpleProperty(
-                        Model.PROXY_TARGET_PROP).getValue();
-                versionableId = targetNode.getSimpleProperty(
-                        Model.PROXY_VERSIONABLE_PROP).getValue();
+                targetId = targetNode.getSimpleProperty(Model.PROXY_TARGET_PROP).getValue();
+                versionableId = targetNode.getSimpleProperty(Model.PROXY_VERSIONABLE_PROP).getValue();
             } else {
                 // working copy (live document)
                 versionableId = targetId;
             }
             String name = findFreeName(folderNode, doc.getName());
-            Node proxy = session.addProxy(targetId, versionableId, folderNode,
-                    name, null);
+            Node proxy = session.addProxy(targetId, versionableId, folderNode, name, null);
             return newDocument(proxy);
         } catch (StorageException e) {
             throw new DocumentException(e);
@@ -390,12 +372,11 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public Collection<Document> getProxies(Document document, Document parent)
-            throws DocumentException {
+    public Collection<Document> getProxies(Document document, Document parent) throws DocumentException {
         Collection<Node> proxyNodes;
         try {
-            proxyNodes = session.getProxies(((SQLDocument) document).getNode(),
-                    parent == null ? null : ((SQLDocument) parent).getNode());
+            proxyNodes = session.getProxies(((SQLDocument) document).getNode(), parent == null ? null
+                    : ((SQLDocument) parent).getNode());
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -407,8 +388,7 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public void setProxyTarget(Document proxy, Document target)
-            throws DocumentException {
+    public void setProxyTarget(Document proxy, Document target) throws DocumentException {
         Node proxyNode = ((SQLDocument) proxy).getNode();
         Serializable targetId = idFromString(target.getUUID());
         try {
@@ -421,19 +401,16 @@ public class SQLSession implements Session {
     // returned document is r/w even if a version or a proxy, so that normal
     // props can be set
     @Override
-    public Document importDocument(String uuid, Document parent, String name,
-            String typeName, Map<String, Serializable> properties)
-            throws DocumentException {
+    public Document importDocument(String uuid, Document parent, String name, String typeName,
+            Map<String, Serializable> properties) throws DocumentException {
         assert Model.PROXY_TYPE == CoreSession.IMPORT_PROXY_TYPE;
         boolean isProxy = typeName.equals(Model.PROXY_TYPE);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         Long pos = null; // TODO pos
         if (!isProxy) {
             // version & live document
-            props.put(Model.MISC_LIFECYCLE_POLICY_PROP,
-                    properties.get(CoreSession.IMPORT_LIFECYCLE_POLICY));
-            props.put(Model.MISC_LIFECYCLE_STATE_PROP,
-                    properties.get(CoreSession.IMPORT_LIFECYCLE_STATE));
+            props.put(Model.MISC_LIFECYCLE_POLICY_PROP, properties.get(CoreSession.IMPORT_LIFECYCLE_POLICY));
+            props.put(Model.MISC_LIFECYCLE_STATE_PROP, properties.get(CoreSession.IMPORT_LIFECYCLE_STATE));
             // compat with old lock import
             @SuppressWarnings("deprecation")
             String key = (String) properties.get(CoreSession.IMPORT_LOCK);
@@ -443,8 +420,7 @@ public class SQLSession implements Session {
                     String owner = values[0];
                     Calendar created = new GregorianCalendar();
                     try {
-                        created.setTimeInMillis(DateFormat.getDateInstance(
-                                DateFormat.MEDIUM).parse(values[1]).getTime());
+                        created.setTimeInMillis(DateFormat.getDateInstance(DateFormat.MEDIUM).parse(values[1]).getTime());
                     } catch (ParseException e) {
                         // use current date
                     }
@@ -462,63 +438,48 @@ public class SQLSession implements Session {
                 props.put(Model.LOCK_CREATED_PROP, importLockCreatedProp);
             }
 
-            props.put(Model.MAIN_MAJOR_VERSION_PROP,
-                    properties.get(CoreSession.IMPORT_VERSION_MAJOR));
-            props.put(Model.MAIN_MINOR_VERSION_PROP,
-                    properties.get(CoreSession.IMPORT_VERSION_MINOR));
-            props.put(Model.MAIN_IS_VERSION_PROP,
-                    properties.get(CoreSession.IMPORT_IS_VERSION));
+            props.put(Model.MAIN_MAJOR_VERSION_PROP, properties.get(CoreSession.IMPORT_VERSION_MAJOR));
+            props.put(Model.MAIN_MINOR_VERSION_PROP, properties.get(CoreSession.IMPORT_VERSION_MINOR));
+            props.put(Model.MAIN_IS_VERSION_PROP, properties.get(CoreSession.IMPORT_IS_VERSION));
         }
         Node parentNode;
         if (parent == null) {
             // version
             parentNode = null;
-            props.put(
-                    Model.VERSION_VERSIONABLE_PROP,
+            props.put(Model.VERSION_VERSIONABLE_PROP,
                     idFromString((String) properties.get(CoreSession.IMPORT_VERSION_VERSIONABLE_ID)));
-            props.put(Model.VERSION_CREATED_PROP,
-                    properties.get(CoreSession.IMPORT_VERSION_CREATED));
-            props.put(Model.VERSION_LABEL_PROP,
-                    properties.get(CoreSession.IMPORT_VERSION_LABEL));
-            props.put(Model.VERSION_DESCRIPTION_PROP,
-                    properties.get(CoreSession.IMPORT_VERSION_DESCRIPTION));
-            props.put(Model.VERSION_IS_LATEST_PROP,
-                    properties.get(CoreSession.IMPORT_VERSION_IS_LATEST));
-            props.put(Model.VERSION_IS_LATEST_MAJOR_PROP,
-                    properties.get(CoreSession.IMPORT_VERSION_IS_LATEST_MAJOR));
+            props.put(Model.VERSION_CREATED_PROP, properties.get(CoreSession.IMPORT_VERSION_CREATED));
+            props.put(Model.VERSION_LABEL_PROP, properties.get(CoreSession.IMPORT_VERSION_LABEL));
+            props.put(Model.VERSION_DESCRIPTION_PROP, properties.get(CoreSession.IMPORT_VERSION_DESCRIPTION));
+            props.put(Model.VERSION_IS_LATEST_PROP, properties.get(CoreSession.IMPORT_VERSION_IS_LATEST));
+            props.put(Model.VERSION_IS_LATEST_MAJOR_PROP, properties.get(CoreSession.IMPORT_VERSION_IS_LATEST_MAJOR));
         } else {
             parentNode = ((SQLDocument) parent).getNode();
             if (isProxy) {
                 // proxy
-                props.put(
-                        Model.PROXY_TARGET_PROP,
+                props.put(Model.PROXY_TARGET_PROP,
                         idFromString((String) properties.get(CoreSession.IMPORT_PROXY_TARGET_ID)));
-                props.put(
-                        Model.PROXY_VERSIONABLE_PROP,
+                props.put(Model.PROXY_VERSIONABLE_PROP,
                         idFromString((String) properties.get(CoreSession.IMPORT_PROXY_VERSIONABLE_ID)));
             } else {
                 // live document
-                props.put(
-                        Model.MAIN_BASE_VERSION_PROP,
+                props.put(Model.MAIN_BASE_VERSION_PROP,
                         idFromString((String) properties.get(CoreSession.IMPORT_BASE_VERSION_ID)));
-                props.put(Model.MAIN_CHECKED_IN_PROP,
-                        properties.get(CoreSession.IMPORT_CHECKED_IN));
+                props.put(Model.MAIN_CHECKED_IN_PROP, properties.get(CoreSession.IMPORT_CHECKED_IN));
             }
         }
         return importChild(uuid, parentNode, name, pos, typeName, props);
     }
 
-    protected static final Pattern ORDER_BY_PATH_ASC = Pattern.compile(
-            "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s*$",
-            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    protected static final Pattern ORDER_BY_PATH_ASC = Pattern.compile("(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH
+            + "\\s*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    protected static final Pattern ORDER_BY_PATH_DESC = Pattern.compile(
-            "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s+DESC\\s*$",
-            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    protected static final Pattern ORDER_BY_PATH_DESC = Pattern.compile("(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH
+            + "\\s+DESC\\s*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     @Override
-    public DocumentModelList query(String query, String queryType,
-            QueryFilter queryFilter, long countUpTo) throws QueryException {
+    public DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
+            throws QueryException {
         try {
             // do ORDER BY ecm:path by hand in SQLQueryResult as we can't
             // do it in SQL (and has to do limit/offset as well)
@@ -542,8 +503,7 @@ public class SQLSession implements Session {
                 offset = queryFilter.getOffset();
                 queryFilter = QueryFilter.withoutLimitOffset(queryFilter);
             }
-            PartialList<Serializable> pl = session.query(query,
-                    queryType, queryFilter, countUpTo);
+            PartialList<Serializable> pl = session.query(query, queryType, queryFilter, countUpTo);
             List<Serializable> ids = pl.list;
 
             // get Documents in bulk
@@ -568,8 +528,7 @@ public class SQLSession implements Session {
 
             // order / limit
             if (orderByPath != null) {
-                Collections.sort(list,
-                        new PathComparator(orderByPath.booleanValue()));
+                Collections.sort(list, new PathComparator(orderByPath.booleanValue()));
             }
             if (limit != 0) {
                 // do limit/offset by hand
@@ -610,8 +569,8 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, Object[] params) throws QueryException {
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params)
+            throws QueryException {
         try {
             return session.queryAndFetch(query, queryType, queryFilter, params);
         } catch (StorageException e) {
@@ -628,8 +587,7 @@ public class SQLSession implements Session {
     }
 
     // "readonly" meaningful for proxies and versions, used for import
-    private Document newDocument(Node node, boolean readonly)
-            throws DocumentException {
+    private Document newDocument(Node node, boolean readonly) throws DocumentException {
         if (node == null) {
             // root's parent
             return null;
@@ -639,8 +597,7 @@ public class SQLSession implements Session {
         String typeName = node.getPrimaryType();
         if (node.isProxy()) {
             try {
-                Serializable targetId = node.getSimpleProperty(
-                        Model.PROXY_TARGET_PROP).getValue();
+                Serializable targetId = node.getSimpleProperty(Model.PROXY_TARGET_PROP).getValue();
                 if (targetId == null) {
                     throw new DocumentException("Proxy has null target");
                 }
@@ -669,8 +626,7 @@ public class SQLSession implements Session {
     }
 
     // called by SQLQueryResult iterator & others
-    protected Document getDocumentById(Serializable id)
-            throws DocumentException {
+    protected Document getDocumentById(Serializable id) throws DocumentException {
         try {
             Node node = session.getNodeById(id);
             return node == null ? null : newDocument(node);
@@ -680,8 +636,7 @@ public class SQLSession implements Session {
     }
 
     // called by SQLQueryResult iterator
-    protected List<Document> getDocumentsById(List<Serializable> ids)
-            throws DocumentException {
+    protected List<Document> getDocumentsById(List<Serializable> ids) throws DocumentException {
         List<Document> docs = new ArrayList<Document>(ids.size());
         try {
             List<Node> nodes = session.getNodesByIds(ids);
@@ -716,8 +671,7 @@ public class SQLSession implements Session {
         }
     }
 
-    protected Document getChild(Node node, String name)
-            throws DocumentException {
+    protected Document getChild(Node node, String name) throws DocumentException {
         Node childNode;
         try {
             childNode = session.getChildNode(node, name, false);
@@ -731,8 +685,7 @@ public class SQLSession implements Session {
         return doc;
     }
 
-    protected Node getChildProperty(Node node, String name, String typeName)
-            throws StorageException {
+    protected Node getChildProperty(Node node, String name, String typeName) throws StorageException {
         Node childNode = session.getChildNode(node, name, true);
         if (childNode == null) {
             // create the needed complex property immediately
@@ -777,23 +730,19 @@ public class SQLSession implements Session {
         }
     }
 
-    protected Document addChild(Node parent, String name, Long pos,
-            String typeName) throws DocumentException {
+    protected Document addChild(Node parent, String name, Long pos, String typeName) throws DocumentException {
         try {
-            return newDocument(session.addChildNode(parent, name, pos,
-                    typeName, false));
+            return newDocument(session.addChildNode(parent, name, pos, typeName, false));
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
     }
 
-    protected Document importChild(String uuid, Node parent, String name,
-            Long pos, String typeName, Map<String, Serializable> props)
-            throws DocumentException {
+    protected Document importChild(String uuid, Node parent, String name, Long pos, String typeName,
+            Map<String, Serializable> props) throws DocumentException {
         try {
             Serializable id = idFromString(uuid);
-            Node node = session.addChildNode(id, parent, name, pos, typeName,
-                    false);
+            Node node = session.addChildNode(id, parent, name, pos, typeName, false);
             for (Entry<String, Serializable> entry : props.entrySet()) {
                 node.setSimpleProperty(entry.getKey(), entry.getValue());
             }
@@ -803,8 +752,7 @@ public class SQLSession implements Session {
         }
     }
 
-    protected boolean addMixinType(Node node, String mixin)
-            throws DocumentException {
+    protected boolean addMixinType(Node node, String mixin) throws DocumentException {
         try {
             return session.addMixinType(node, mixin);
         } catch (StorageException e) {
@@ -812,8 +760,7 @@ public class SQLSession implements Session {
         }
     }
 
-    protected boolean removeMixinType(Node node, String mixin)
-            throws DocumentException {
+    protected boolean removeMixinType(Node node, String mixin) throws DocumentException {
         try {
             return session.removeMixinType(node, mixin);
         } catch (StorageException e) {
@@ -821,8 +768,7 @@ public class SQLSession implements Session {
         }
     }
 
-    protected List<Node> getComplexList(Node node, String name)
-            throws DocumentException {
+    protected List<Node> getComplexList(Node node, String name) throws DocumentException {
         List<Node> nodes;
         try {
             nodes = session.getChildren(node, name, true);
@@ -850,8 +796,7 @@ public class SQLSession implements Session {
         }
     }
 
-    protected Document checkIn(Node node, String label, String checkinComment)
-            throws DocumentException {
+    protected Document checkIn(Node node, String label, String checkinComment) throws DocumentException {
         try {
             Node versionNode = session.checkIn(node, label, checkinComment);
             return versionNode == null ? null : newDocument(versionNode);
@@ -876,8 +821,7 @@ public class SQLSession implements Session {
         }
     }
 
-    protected Document getVersionByLabel(String versionSeriesId,
-            String label) throws DocumentException {
+    protected Document getVersionByLabel(String versionSeriesId, String label) throws DocumentException {
         try {
             Serializable vid = idFromString(versionSeriesId);
             Node versionNode = session.getVersionByLabel(vid, label);
@@ -887,8 +831,7 @@ public class SQLSession implements Session {
         }
     }
 
-    protected List<Document> getVersions(String versionSeriesId)
-            throws DocumentException {
+    protected List<Document> getVersions(String versionSeriesId) throws DocumentException {
         List<Node> versionNodes;
         try {
             Serializable vid = idFromString(versionSeriesId);
@@ -903,8 +846,7 @@ public class SQLSession implements Session {
         return versions;
     }
 
-    public Document getLastVersion(String versionSeriesId)
-            throws DocumentException {
+    public Document getLastVersion(String versionSeriesId) throws DocumentException {
         try {
             Serializable vid = idFromString(versionSeriesId);
             Node versionNode = session.getLastVersion(vid);
@@ -958,16 +900,14 @@ public class SQLSession implements Session {
      *
      * @since 5.9.4
      */
-    protected void readComplexProperty(ComplexProperty complexProperty, Node node)
-            throws PropertyException {
+    protected void readComplexProperty(ComplexProperty complexProperty, Node node) throws PropertyException {
         if (complexProperty instanceof BlobProperty) {
             try {
                 StorageBlob value = readBlob(node);
                 complexProperty.init(value);
                 return;
             } catch (StorageException e) {
-                throw new PropertyException("Property: "
-                        + complexProperty.getName(), e);
+                throw new PropertyException("Property: " + complexProperty.getName(), e);
             }
         }
         for (Property property : complexProperty) {
@@ -996,11 +936,10 @@ public class SQLSession implements Session {
                             throw new PropertyException("Property: " + name, e);
                         }
                         Field listField = listType.getField();
-                        ArrayList<Serializable> value = new ArrayList<Serializable>(
-                                childNodes.size());
+                        ArrayList<Serializable> value = new ArrayList<Serializable>(childNodes.size());
                         for (Node childNode : childNodes) {
-                            ComplexProperty p = (ComplexProperty) complexProperty.getRoot().createProperty(
-                                    property, listField, 0);
+                            ComplexProperty p = (ComplexProperty) complexProperty.getRoot().createProperty(property,
+                                    listField, 0);
                             readComplexProperty(p, childNode);
                             value.add(p.getValue());
                         }
@@ -1008,8 +947,7 @@ public class SQLSession implements Session {
                     }
                 } else {
                     // complex property
-                    Node childNode = getChildProperty(node, name,
-                            type.getName());
+                    Node childNode = getChildProperty(node, name, type.getName());
                     readComplexProperty((ComplexProperty) property, childNode);
                     ((ComplexProperty) property).removePhantomFlag();
                 }
@@ -1024,17 +962,15 @@ public class SQLSession implements Session {
      *
      * @since 5.9.4
      */
-    public Map<String, Serializable> readPrefetch(Node node,
-            ComplexType complexType, Set<String> xpaths)
+    public Map<String, Serializable> readPrefetch(Node node, ComplexType complexType, Set<String> xpaths)
             throws PropertyException {
         Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
         readPrefetch(node, complexType, xpaths, null, null, prefetch);
         return prefetch;
     }
 
-    protected void readPrefetch(Node node, ComplexType complexType,
-            Set<String> xpaths, String xpathGeneric, String xpath,
-            Map<String, Serializable> prefetch) throws PropertyException {
+    protected void readPrefetch(Node node, ComplexType complexType, Set<String> xpaths, String xpathGeneric,
+            String xpath, Map<String, Serializable> prefetch) throws PropertyException {
         if (TypeConstants.isContentType(complexType)) {
             if (!xpaths.contains(xpathGeneric)) {
                 return;
@@ -1081,17 +1017,14 @@ public class SQLSession implements Session {
                         xpg += "/*";
                         int n = 0;
                         for (Node childNode : childNodes) {
-                            readPrefetch(childNode,
-                                    (ComplexType) listField.getType(),
-                                    xpaths, xpg, xp + "/" + n++, prefetch);
+                            readPrefetch(childNode, (ComplexType) listField.getType(), xpaths, xpg, xp + "/" + n++,
+                                    prefetch);
                         }
                     }
                 } else {
                     // complex property
-                    Node childNode = getChildProperty(node, name,
-                            type.getName());
-                    readPrefetch(childNode, (ComplexType) type, xpaths,
-                            xpg, xp, prefetch);
+                    Node childNode = getChildProperty(node, name, type.getName());
+                    readPrefetch(childNode, (ComplexType) type, xpaths, xpg, xp, prefetch);
                 }
             } catch (StorageException e) {
                 throw new PropertyException("Property: " + name, e);
@@ -1104,14 +1037,13 @@ public class SQLSession implements Session {
      *
      * @since 5.9.4
      */
-    protected void writeComplexProperty(ComplexProperty complexProperty,
-            Node node, SQLDocument doc) throws PropertyException {
+    protected void writeComplexProperty(ComplexProperty complexProperty, Node node, SQLDocument doc)
+            throws PropertyException {
         if (complexProperty instanceof BlobProperty) {
             try {
                 writeBlobProperty((BlobProperty) complexProperty, node, doc);
             } catch (StorageException e) {
-                throw new PropertyException("Property: "
-                        + complexProperty.getName(), e);
+                throw new PropertyException("Property: " + complexProperty.getName(), e);
             }
             return;
         }
@@ -1158,16 +1090,14 @@ public class SQLSession implements Session {
                                 try {
                                     removeProperty(childNodes.remove(i));
                                 } catch (DocumentException e) {
-                                    throw new PropertyException("Property: "
-                                            + name + '[' + i + ']', e);
+                                    throw new PropertyException("Property: " + name + '[' + i + ']', e);
                                 }
                             }
                         }
                         // add new list elements
                         if (oldSize < newSize) {
                             for (int i = oldSize; i < newSize; i++) {
-                                Node childNode = session.addChildNode(node,
-                                        name, Long.valueOf(i),
+                                Node childNode = session.addChildNode(node, name, Long.valueOf(i),
                                         listType.getFieldType().getName(), true);
                                 childNodes.add(childNode);
                             }
@@ -1177,17 +1107,13 @@ public class SQLSession implements Session {
                         int i = 0;
                         for (Property childProperty : childProperties) {
                             Node childNode = childNodes.get(i++);
-                            writeComplexProperty(
-                                    (ComplexProperty) childProperty, childNode,
-                                    doc);
+                            writeComplexProperty((ComplexProperty) childProperty, childNode, doc);
                         }
                     }
                 } else {
                     // complex property
-                    Node childNode = getChildProperty(node, name,
-                            type.getName());
-                    writeComplexProperty((ComplexProperty) property, childNode,
-                            doc);
+                    Node childNode = getChildProperty(node, name, type.getName());
+                    writeComplexProperty((ComplexProperty) property, childNode, doc);
                 }
             } catch (StorageException e) {
                 throw new PropertyException("Property: " + name, e);
@@ -1205,12 +1131,11 @@ public class SQLSession implements Session {
         String encoding = node.getSimpleProperty(BLOB_ENCODING).getString();
         String digest = node.getSimpleProperty(BLOB_DIGEST).getString();
         Long length = node.getSimpleProperty(BLOB_LENGTH).getLong();
-        return new StorageBlob(binary, name, mimeType, encoding, digest,
-                length.longValue());
+        return new StorageBlob(binary, name, mimeType, encoding, digest, length.longValue());
     }
 
-    protected void writeBlobProperty(BlobProperty blobProperty, Node node,
-            SQLDocument doc) throws StorageException, PropertyException {
+    protected void writeBlobProperty(BlobProperty blobProperty, Node node, SQLDocument doc) throws StorageException,
+            PropertyException {
         Serializable value = blobProperty.getValueForWrite();
         Binary binary;
         String name;
@@ -1227,8 +1152,7 @@ public class SQLSession implements Session {
             length = null;
         } else {
             if (!(value instanceof Blob)) {
-                throw new PropertyException("Setting a non-Blob value: "
-                        + value);
+                throw new PropertyException("Setting a non-Blob value: " + value);
             }
             Blob blob = (Blob) value;
             try {
@@ -1267,21 +1191,18 @@ public class SQLSession implements Session {
      *
      * @since 5.9.4
      */
-    protected boolean checkReadOnlyIgnoredWrite(SQLDocument doc,
-            Property property, Node node) throws PropertyException,
-            StorageException {
+    protected boolean checkReadOnlyIgnoredWrite(SQLDocument doc, Property property, Node node)
+            throws PropertyException, StorageException {
         String name = property.getField().getName().getPrefixedName();
         if (!doc.isReadOnly() || isVersionWritableProperty(name)) {
             // do write
             return false;
         }
         if (!doc.isVersion()) {
-            throw new PropertyException("Cannot write readonly property: "
-                    + name);
+            throw new PropertyException("Cannot write readonly property: " + name);
         }
         if (!name.startsWith("dc:")) {
-            throw new VersionNotModifiableException(
-                    "Cannot set property on a version: " + name);
+            throw new VersionNotModifiableException("Cannot set property on a version: " + name);
         }
         // ignore if value is unchanged (only for dublincore)
         // dublincore contains only scalars and arrays
@@ -1315,7 +1236,7 @@ public class SQLSession implements Session {
                 StreamingBlob sb = (StreamingBlob) blob;
                 source = sb.getStreamSource();
                 if (source instanceof FileSource && sb.isTemporary()) {
-                    return session.getBinary((FileSource)source);
+                    return session.getBinary((FileSource) source);
                 }
             }
             InputStream stream;
@@ -1336,8 +1257,7 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public void setACP(Document doc, ACP acp, boolean overwrite)
-            throws SecurityException {
+    public void setACP(Document doc, ACP acp, boolean overwrite) throws SecurityException {
         if (!overwrite && acp == null) {
             return;
         }
@@ -1382,8 +1302,7 @@ public class SQLSession implements Session {
                 if (permission.equals(SecurityConstants.WRITE)) {
                     continue;
                 }
-                throw new IllegalArgumentException("Negative ACL not allowed: "
-                        + ace);
+                throw new IllegalArgumentException("Negative ACL not allowed: " + ace);
             }
         }
     }
@@ -1401,8 +1320,7 @@ public class SQLSession implements Session {
             }
             // get inherited acls only if no blocking inheritance ACE exists in the top level acp.
             ACL acl = null;
-            if (acp == null || acp.getAccess(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING) != Access.DENY) {
+            if (acp == null || acp.getAccess(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING) != Access.DENY) {
                 acl = getInheritedACLs(doc);
             }
             if (acp == null) {
@@ -1427,8 +1345,7 @@ public class SQLSession implements Session {
     protected ACP getACP(Document doc) throws SecurityException {
         try {
             Node node = ((SQLDocument) doc).getNode();
-            ACLRow[] aclrows = (ACLRow[]) node.getCollectionProperty(
-                    Model.ACL_PROP).getValue();
+            ACLRow[] aclrows = (ACLRow[]) node.getCollectionProperty(Model.ACL_PROP).getValue();
             return aclRowsToACP(aclrows);
         } catch (StorageException e) {
             throw new SecurityException(e.getMessage(), e);
@@ -1501,8 +1418,7 @@ public class SQLSession implements Session {
                 // start next round
                 name = aclrow.name;
                 ACL acl = aclmap.remove(name);
-                aces = acl == null ? Collections.<ACE> emptyList()
-                        : new LinkedList<ACE>(Arrays.asList(acl.getACEs()));
+                aces = acl == null ? Collections.<ACE> emptyList() : new LinkedList<ACE>(Arrays.asList(acl.getACEs()));
                 aceKeys = new HashSet<String>();
                 for (ACE ace : aces) {
                     aceKeys.add(getACEkey(ace));
@@ -1510,8 +1426,7 @@ public class SQLSession implements Session {
             }
             if (!aceKeys.contains(getACLrowKey(aclrow))) {
                 // no match, keep the aclrow info instead of the ace
-                newaclrows.add(new ACLRow(newaclrows.size(), name,
-                        aclrow.grant, aclrow.permission, aclrow.user,
+                newaclrows.add(new ACLRow(newaclrows.size(), name, aclrow.grant, aclrow.permission, aclrow.user,
                         aclrow.group));
             }
         }
@@ -1554,8 +1469,7 @@ public class SQLSession implements Session {
             return;
         }
         String group = null; // XXX all in user for now
-        aclrows.add(new ACLRow(aclrows.size(), name, ace.isGranted(),
-                ace.getPermission(), user, group));
+        aclrows.add(new ACLRow(aclrows.size(), name, ace.isGranted(), ace.getPermission(), user, group));
     }
 
     protected ACL getInheritedACLs(Document doc) throws DocumentException {
@@ -1570,8 +1484,7 @@ public class SQLSession implements Session {
                 } else {
                     merged.addAll(acl);
                 }
-                if (acp.getAccess(SecurityConstants.EVERYONE,
-                        SecurityConstants.EVERYTHING) == Access.DENY) {
+                if (acp.getAccess(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING) == Access.DENY) {
                     break;
                 }
             }
@@ -1581,8 +1494,7 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(String id)
-            throws DocumentException {
+    public Map<String, String> getBinaryFulltext(String id) throws DocumentException {
         try {
             return session.getBinaryFulltext(idFromString(id));
         } catch (StorageException e) {

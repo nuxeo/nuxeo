@@ -52,7 +52,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(init = LocalConfRepositoryInit.class, user = "Administrator", cleanup=Granularity.METHOD )
+@RepositoryConfig(init = LocalConfRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.localconf" })
 public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
 
@@ -60,54 +60,48 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     public void shouldNotRetrieveSimpleConfiguration() throws ClientException {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                workspace);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, workspace);
 
         assertNull(simpleConfiguration);
     }
 
     @Test
-    public void shouldRetrieveSimpleConfigurationOnWorkspace()
-            throws ClientException {
+    public void shouldRetrieveSimpleConfigurationOnWorkspace() throws ClientException {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(workspace);
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                workspace);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, workspace);
 
         assertNotNull(simpleConfiguration);
         assertEquals(workspace.getRef(), simpleConfiguration.getDocumentRef());
     }
 
     @Test
-    public void shouldRetrieveSimpleConfigurationFromChildDocument()
-            throws ClientException {
+    public void shouldRetrieveSimpleConfigurationFromChildDocument() throws ClientException {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(workspace);
 
         DocumentModel folder = session.getDocument(FOLDER_REF);
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET, folder);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, folder);
 
         assertNotNull(simpleConfiguration);
         assertEquals(workspace.getRef(), simpleConfiguration.getDocumentRef());
     }
 
     @Test
-    public void shouldRetrieveParametersFromSimpleConfiguration()
-            throws ClientException {
+    public void shouldRetrieveParametersFromSimpleConfiguration() throws ClientException {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("key1", "value1");
         parameters.put("key2", "value2");
         initializeSimpleConfiguration(workspace, parameters);
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                workspace);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, workspace);
 
         assertNotNull(simpleConfiguration);
         assertEquals(workspace.getRef(), simpleConfiguration.getDocumentRef());
@@ -134,13 +128,11 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
         childParameters.put("key4", "value4");
         initializeSimpleConfiguration(childWorkspace, childParameters);
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                childWorkspace);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, childWorkspace);
 
         assertNotNull(simpleConfiguration);
-        assertEquals(parentWorkspace.getRef(),
-                simpleConfiguration.getDocumentRef());
+        assertEquals(parentWorkspace.getRef(), simpleConfiguration.getDocumentRef());
 
         assertEquals("value1", simpleConfiguration.get("key1"));
         assertEquals("value2", simpleConfiguration.get("key2"));
@@ -153,8 +145,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test
-    public void childSimpleConfigurationShouldOverriderParentSimpleConfiguration()
-            throws ClientException {
+    public void childSimpleConfigurationShouldOverriderParentSimpleConfiguration() throws ClientException {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         Map<String, String> parentParameters = new HashMap<String, String>();
         parentParameters.put("key1", "parentValue1");
@@ -167,13 +158,11 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
         childParameters.put("key4", "childValue4");
         initializeSimpleConfiguration(childWorkspace, childParameters);
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                childWorkspace);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, childWorkspace);
 
         assertNotNull(simpleConfiguration);
-        assertEquals(parentWorkspace.getRef(),
-                simpleConfiguration.getDocumentRef());
+        assertEquals(parentWorkspace.getRef(), simpleConfiguration.getDocumentRef());
 
         assertEquals("parentValue1", simpleConfiguration.get("key1"));
         assertEquals("childValue2", simpleConfiguration.get("key2"));
@@ -190,9 +179,8 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(parentWorkspace);
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                parentWorkspace);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, parentWorkspace);
 
         SimpleConfigurationAdapter adapter = (SimpleConfigurationAdapter) simpleConfiguration;
         assertEquals(0, adapter.parameters.size());
@@ -212,9 +200,8 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(parentWorkspace);
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                parentWorkspace);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, parentWorkspace);
 
         SimpleConfigurationAdapter adapter = (SimpleConfigurationAdapter) simpleConfiguration;
         assertEquals(0, adapter.parameters.size());
@@ -235,14 +222,12 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test
-    public void newParametersShouldBeSavedOnTheDocument()
-            throws ClientException {
+    public void newParametersShouldBeSavedOnTheDocument() throws ClientException {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(parentWorkspace);
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                parentWorkspace);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, parentWorkspace);
 
         SimpleConfigurationAdapter adapter = (SimpleConfigurationAdapter) simpleConfiguration;
         assertEquals(0, adapter.parameters.size());
@@ -266,13 +251,11 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
         assertEquals("value2", savedParameters.get("key2"));
     }
 
-    protected Map<String, String> convertParametersListToMap(
-            List<Map<String, String>> parametersList) {
+    protected Map<String, String> convertParametersListToMap(List<Map<String, String>> parametersList) {
         Map<String, String> parameters = new HashMap<String, String>();
         if (parametersList != null) {
             for (Map<String, String> parameter : parametersList) {
-                parameters.put(
-                        parameter.get(SIMPLE_CONFIGURATION_PARAMETER_KEY),
+                parameters.put(parameter.get(SIMPLE_CONFIGURATION_PARAMETER_KEY),
                         parameter.get(SIMPLE_CONFIGURATION_PARAMETER_VALUE));
             }
         }
@@ -280,8 +263,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test(expected = DocumentSecurityException.class)
-    public void nonAuthorizedUserShouldNotBeAbleToSaveConfiguration()
-            throws ClientException {
+    public void nonAuthorizedUserShouldNotBeAbleToSaveConfiguration() throws ClientException {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(parentWorkspace);
 
@@ -290,8 +272,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
         try (CoreSession newSession = openSessionAs("user1")) {
             DocumentModel childWorkspace = newSession.getDocument(CHILD_WORKSPACE_REF);
             SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                    SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                    childWorkspace);
+                    SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET, childWorkspace);
 
             SimpleConfigurationAdapter adapter = (SimpleConfigurationAdapter) simpleConfiguration;
             assertEquals(0, adapter.parameters.size());

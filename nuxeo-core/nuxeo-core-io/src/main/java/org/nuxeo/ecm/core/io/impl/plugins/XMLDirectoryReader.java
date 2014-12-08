@@ -34,9 +34,7 @@ import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
- *
  * @author bs@nuxeo.com
- *
  */
 public class XMLDirectoryReader extends AbstractDocumentReader {
 
@@ -88,16 +86,15 @@ public class XMLDirectoryReader extends AbstractDocumentReader {
                     if (ExportConstants.DOCUMENT_FILE.equals(name)) {
                         Document doc = loadXML(file);
                         xdoc.setDocument(doc);
-                        /*NXP-1688 Rux: the path was somehow left over when migrated from
-                          core 1.3.4 to 1.4.0. Pull back.*/
+                        /*
+                         * NXP-1688 Rux: the path was somehow left over when migrated from core 1.3.4 to 1.4.0. Pull
+                         * back.
+                         */
                         xdoc.setPath(computeRelativePath(dir));
                     } else if (name.endsWith(".xml")) {
-                        xdoc.putDocument(
-                                FileUtils.getFileNameNoExt(file.getName()),
-                                loadXML(file));
+                        xdoc.putDocument(FileUtils.getFileNameNoExt(file.getName()), loadXML(file));
                     } else { // presume a blob
-                        xdoc.putBlob(file.getName(), new StreamingBlob(
-                                new FileSource(file)));
+                        xdoc.putBlob(file.getName(), new StreamingBlob(new FileSource(file)));
                     }
                 }
             }
@@ -106,16 +103,15 @@ public class XMLDirectoryReader extends AbstractDocumentReader {
         return null;
     }
 
-    /*NXP-1688 Rux: the path was somehow left over when migrated from
-    core 1.3.4 to 1.4.0. Pull back.*/
+    /*
+     * NXP-1688 Rux: the path was somehow left over when migrated from core 1.3.4 to 1.4.0. Pull back.
+     */
     private Path computeRelativePath(File file) {
-        /*NXP-2507 Rux: preserve directory structure with slashes instead OS name separator*/
-        String subPathS =
-            file.getAbsolutePath().substring(source.getAbsolutePath().length());
+        /* NXP-2507 Rux: preserve directory structure with slashes instead OS name separator */
+        String subPathS = file.getAbsolutePath().substring(source.getAbsolutePath().length());
         subPathS = subPathS.replace(File.separatorChar, '/');
         return new Path(subPathS);
     }
-
 
     private static Document loadXML(File file) throws IOException {
         BufferedInputStream in = null;
@@ -123,8 +119,7 @@ public class XMLDirectoryReader extends AbstractDocumentReader {
             in = new BufferedInputStream(new FileInputStream(file));
             return new SAXReader().read(in);
         } catch (DocumentException e) {
-            IOException ioe = new IOException("Failed to read file document "
-                    + file + ": " + e.getMessage());
+            IOException ioe = new IOException("Failed to read file document " + file + ": " + e.getMessage());
             ioe.setStackTrace(e.getStackTrace());
             throw ioe;
         } finally {

@@ -56,8 +56,7 @@ public class VersioningDocumentAdapter implements VersioningDocument {
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
-        return (propVal == null || !(propVal instanceof Long)) ? 0
-                : ((Long) propVal).longValue();
+        return (propVal == null || !(propVal instanceof Long)) ? 0 : ((Long) propVal).longValue();
     }
 
 }

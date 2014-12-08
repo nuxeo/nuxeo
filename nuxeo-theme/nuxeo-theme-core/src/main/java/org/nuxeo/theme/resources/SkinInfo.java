@@ -18,8 +18,7 @@ public class SkinInfo extends StyleInfo {
 
     private boolean base;
 
-    public SkinInfo(String name, String bank, String collection,
-            String resource, String preview, boolean base) {
+    public SkinInfo(String name, String bank, String collection, String resource, String preview, boolean base) {
         super(name, bank, collection, resource, preview);
         this.base = base;
     }

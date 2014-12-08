@@ -41,16 +41,14 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * 
  */
 public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
 
-    public void execute(Environment env, Map params, TemplateModel[] loopVars,
-            TemplateDirectiveBody body) throws TemplateException, IOException {
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+            throws TemplateException, IOException {
 
         if (loopVars.length != 0) {
-            throw new TemplateModelException(
-                    "This directive doesn't allow loop variables.");
+            throw new TemplateModelException("This directive doesn't allow loop variables.");
         }
         if (body != null) {
             throw new TemplateModelException("Didn't expect a body");
@@ -89,7 +87,6 @@ public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
         attributes.put("collection", collectionName);
 
         Boolean virtualHosting = Utils.isWebEngineVirtualHosting(request);
-        writer.write(ThemeStyles.render(attributes, cache, inline,
-                virtualHosting));
+        writer.write(ThemeStyles.render(attributes, cache, inline, virtualHosting));
     }
 }

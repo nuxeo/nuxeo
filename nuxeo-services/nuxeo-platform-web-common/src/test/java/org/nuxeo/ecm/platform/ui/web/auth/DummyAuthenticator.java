@@ -29,13 +29,12 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
  */
 public class DummyAuthenticator implements NuxeoAuthenticationPlugin {
 
-    public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         return null;
     }
 
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
         return null;
     }
 

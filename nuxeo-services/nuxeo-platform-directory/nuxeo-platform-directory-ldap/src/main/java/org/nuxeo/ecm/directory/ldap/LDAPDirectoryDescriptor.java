@@ -152,18 +152,16 @@ public class LDAPDirectoryDescriptor {
     }
 
     @XNode("entryAdaptor")
-    public void setEntryAdaptor(EntryAdaptorDescriptor adaptorDescriptor)
-            throws InstantiationException, IllegalAccessException {
+    public void setEntryAdaptor(EntryAdaptorDescriptor adaptorDescriptor) throws InstantiationException,
+            IllegalAccessException {
         entryAdaptor = adaptorDescriptor.adaptorClass.newInstance();
         for (Map.Entry<String, String> paramEntry : adaptorDescriptor.parameters.entrySet()) {
-            entryAdaptor.setParameter(paramEntry.getKey(),
-                    paramEntry.getValue());
+            entryAdaptor.setParameter(paramEntry.getKey(), paramEntry.getValue());
         }
     }
 
     /**
-     * @since 5.7 : allow to contribute custom Exception Handler to extract LDAP
-     *        validation error messages
+     * @since 5.7 : allow to contribute custom Exception Handler to extract LDAP validation error messages
      */
     @XNode("ldapExceptionHandler")
     protected Class<? extends LdapExceptionProcessor> exceptionProcessorClass;
@@ -374,8 +372,7 @@ public class LDAPDirectoryDescriptor {
                 try {
                     exceptionProcessor = exceptionProcessorClass.newInstance();
                 } catch (ReflectiveOperationException e) {
-                    log.error("Unable to instanciate custom Exception handler",
-                            e);
+                    log.error("Unable to instanciate custom Exception handler", e);
                     exceptionProcessor = new DefaultLdapExceptionProcessor();
                 }
             }

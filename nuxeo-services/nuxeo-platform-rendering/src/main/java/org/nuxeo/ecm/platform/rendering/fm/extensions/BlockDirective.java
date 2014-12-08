@@ -26,14 +26,13 @@ import freemarker.template.TemplateModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BlockDirective implements TemplateDirectiveModel {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public void execute(Environment env, Map params, TemplateModel[] loopVars,
-            TemplateDirectiveBody body) throws TemplateException, IOException {
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+            throws TemplateException, IOException {
 
         String name = null;
         SimpleScalar scalar = (SimpleScalar) params.get("name");

@@ -39,16 +39,14 @@ public class ReverseXMapTest {
     public void testReverse() throws Exception {
         XMap xmap = new XMap();
         xmap.register(Author.class);
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                "test-xmap.xml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap.xml");
         Author author = (Author) xmap.load(url);
         try {
             xmap.toXML(new String());
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             String msg = e.getMessage();
-            assertTrue(msg,
-                    msg.contains("java.lang.String is NOT registred in xmap"));
+            assertTrue(msg, msg.contains("java.lang.String is NOT registred in xmap"));
         }
 
         // save the object

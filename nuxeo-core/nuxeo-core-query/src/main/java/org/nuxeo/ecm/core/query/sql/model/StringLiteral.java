@@ -15,8 +15,7 @@
 package org.nuxeo.ecm.core.query.sql.model;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class StringLiteral extends Literal {
 
@@ -40,8 +39,7 @@ public class StringLiteral extends Literal {
 
     @Override
     public String toString() {
-        return new StringBuffer(value.length() + 2)
-            .append("\'").append(value).append("\'").toString();
+        return new StringBuffer(value.length() + 2).append("\'").append(value).append("\'").toString();
     }
 
     @Override

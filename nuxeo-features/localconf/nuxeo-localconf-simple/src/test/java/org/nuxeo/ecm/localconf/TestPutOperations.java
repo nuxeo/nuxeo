@@ -68,18 +68,15 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
         OperationContext ctx = new OperationContext(session);
         assertNotNull(ctx);
 
-        OperationChain chain = new OperationChain(
-                "testSimpleConfigurationChain");
+        OperationChain chain = new OperationChain("testSimpleConfigurationChain");
         chain.add(FetchDocument.ID).set("value", PARENT_WORKSPACE_REF);
-        chain.add(PutSimpleConfParam.ID).set("key", "key2").set(
-                "value", "value2");
+        chain.add(PutSimpleConfParam.ID).set("key", "key2").set("value", "value2");
         service.run(ctx, chain);
 
         workspace = session.getDocument(workspace.getRef());
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                workspace);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, workspace);
 
         assertEquals("value1", simpleConfiguration.get("key1"));
         assertEquals("value2", simpleConfiguration.get("key2"));
@@ -100,18 +97,15 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
         Map<String, String> newParameters = new HashMap<String, String>();
         newParameters.put("key2", "newValue2");
         newParameters.put("key3", "newValue3");
-        OperationChain chain = new OperationChain(
-                "testSimpleConfigurationChain");
+        OperationChain chain = new OperationChain("testSimpleConfigurationChain");
         chain.add(FetchDocument.ID).set("value", PARENT_WORKSPACE_REF);
-        chain.add(PutSimpleConfParams.ID).set("parameters",
-                new Properties(newParameters));
+        chain.add(PutSimpleConfParams.ID).set("parameters", new Properties(newParameters));
         service.run(ctx, chain);
 
         workspace = session.getDocument(workspace.getRef());
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                workspace);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, workspace);
 
         assertEquals("value1", simpleConfiguration.get("key1"));
         assertEquals("newValue2", simpleConfiguration.get("key2"));
@@ -127,18 +121,15 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("key1", "value1");
         parameters.put("key3", "value3");
-        OperationChain chain = new OperationChain(
-                "testPutSimpleConfigurationParametersChain");
+        OperationChain chain = new OperationChain("testPutSimpleConfigurationParametersChain");
         chain.add(FetchDocument.ID).set("value", PARENT_WORKSPACE_REF);
-        chain.add(PutSimpleConfParams.ID).set("parameters",
-                new Properties(parameters));
+        chain.add(PutSimpleConfParams.ID).set("parameters", new Properties(parameters));
         service.run(ctx, chain);
 
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                workspace);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, workspace);
 
         assertEquals("value1", simpleConfiguration.get("key1"));
         assertEquals("value3", simpleConfiguration.get("key3"));
@@ -146,20 +137,17 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
         // PutSimpleConfigurationParameter
         chain = new OperationChain("testPutSimpleConfigurationParametersChain");
         chain.add(FetchDocument.ID).set("value", CHILD_WORKSPACE_REF);
-        chain.add(PutSimpleConfParam.ID).set("key", "key1").set(
-                "value", "value1");
+        chain.add(PutSimpleConfParam.ID).set("key", "key1").set("value", "value1");
         service.run(ctx, chain);
 
         workspace = session.getDocument(CHILD_WORKSPACE_REF);
-        simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                workspace);
+        simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, workspace);
         assertEquals("value1", simpleConfiguration.get("key1"));
     }
 
     @Test(expected = OperationException.class)
-    public void nonAuthorizedUserShouldNotBeAbleToPutNewParameter()
-            throws Exception {
+    public void nonAuthorizedUserShouldNotBeAbleToPutNewParameter() throws Exception {
         addReadForEveryone(CHILD_WORKSPACE_REF);
 
         try (CoreSession newSession = openSessionAs("user1")) {
@@ -167,11 +155,9 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
             assertNotNull(ctx);
 
             // PutSimpleConfigurationParameter
-            OperationChain chain = new OperationChain(
-                    "testPutSimpleConfigurationParametersChain");
+            OperationChain chain = new OperationChain("testPutSimpleConfigurationParametersChain");
             chain.add(FetchDocument.ID).set("value", CHILD_WORKSPACE_REF);
-            chain.add(PutSimpleConfParam.ID).set("key", "key1").set("value",
-                    "value1");
+            chain.add(PutSimpleConfParam.ID).set("key", "key1").set("value", "value1");
             service.run(ctx, chain);
         }
     }

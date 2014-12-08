@@ -40,10 +40,8 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib(CoreUTConstants.CORE_BUNDLE,
-                "OSGI-INF/LifeCycleService.xml");
-        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE,
-                "LifeCycleManagerTestExtensions.xml");
+        deployContrib(CoreUTConstants.CORE_BUNDLE, "OSGI-INF/LifeCycleService.xml");
+        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE, "LifeCycleManagerTestExtensions.xml");
 
         lifeCycleService = NXCore.getLifeCycleService();
         assertNotNull(lifeCycleService);
@@ -92,8 +90,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         expectedInitialStates.add("work");
         expectedInitialStates.add("approved");
         Collections.sort(expectedInitialStates);
-        List<String> initialStates = new ArrayList<String>(
-                lcd.getInitialStateNames());
+        List<String> initialStates = new ArrayList<String>(lcd.getInitialStateNames());
         Collections.sort(initialStates);
         assertEquals(expectedInitialStates, initialStates);
 
@@ -212,8 +209,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     @Test
     public void testLifeCycleReverse() throws Exception {
 
-        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE,
-                "LifeCycleManagerReverseTestExtensions.xml");
+        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE, "LifeCycleManagerReverseTestExtensions.xml");
 
         LifeCycle lifeCycle = lifeCycleService.getLifeCycleByName("defaultReverse");
 

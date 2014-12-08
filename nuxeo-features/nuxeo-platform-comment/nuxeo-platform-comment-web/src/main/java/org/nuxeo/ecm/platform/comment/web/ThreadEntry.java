@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:frederic.baude@gmail.com">Frederic Baude</a>
- *
  */
 public class ThreadEntry implements Serializable {
 

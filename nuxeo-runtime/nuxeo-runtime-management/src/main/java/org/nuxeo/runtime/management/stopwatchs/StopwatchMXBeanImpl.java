@@ -26,30 +26,29 @@ import org.javasimon.StopwatchSample;
 
 /**
  * @author matic
- *
  */
 public class StopwatchMXBeanImpl extends org.javasimon.jmx.StopwatchMXBeanImpl implements StopwatchMXBean {
 
-	public StopwatchMXBeanImpl(Stopwatch stopwatch) {
-		super(stopwatch);
-	}
+    public StopwatchMXBeanImpl(Stopwatch stopwatch) {
+        super(stopwatch);
+    }
 
     @Override
     public String sampleAsString() {
         return sample().toString();
     }
 
-        protected void doFillMap(StopwatchSample sample, Map<String,Serializable> map, Class<?> clazz) {
+    protected void doFillMap(StopwatchSample sample, Map<String, Serializable> map, Class<?> clazz) {
         if (clazz == null) {
             return;
         }
         if (Object.class.equals(clazz)) {
             return;
         }
-        for (Field f:clazz.getDeclaredFields()) {
+        for (Field f : clazz.getDeclaredFields()) {
             try {
                 f.setAccessible(true);
-                map.put(f.getName(), (Serializable)f.get(sample));
+                map.put(f.getName(), (Serializable) f.get(sample));
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
@@ -59,11 +58,10 @@ public class StopwatchMXBeanImpl extends org.javasimon.jmx.StopwatchMXBeanImpl i
 
     @Override
     public Map<String, Serializable> sampleAsMap() {
-        Map<String,Serializable> map = new HashMap<String,Serializable>();
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
         StopwatchSample sample = sample();
         doFillMap(sample, map, sample.getClass());
         return map;
     }
-
 
 }

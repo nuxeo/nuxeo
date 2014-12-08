@@ -46,8 +46,8 @@ public class Request extends HashMap<String, String> {
 
     private static final long serialVersionUID = 1L;
 
-    protected static Pattern ATTR_PATTERN = Pattern.compile(
-            ";?\\s*filename\\s*=\\s*([^;]+)\\s*", Pattern.CASE_INSENSITIVE);
+    protected static Pattern ATTR_PATTERN = Pattern.compile(";?\\s*filename\\s*=\\s*([^;]+)\\s*",
+            Pattern.CASE_INSENSITIVE);
 
     protected final int method;
 
@@ -56,7 +56,6 @@ public class Request extends HashMap<String, String> {
     protected final boolean isMultiPart;
 
     protected Object entity;
-
 
     public Request(int method, String url) {
         this.method = method;
@@ -103,11 +102,11 @@ public class Request extends HashMap<String, String> {
     }
 
     /**
-     * Must read the object from the server response and return it or throw a
-     * {@link RemoteException} if server sent an error.
+     * Must read the object from the server response and return it or throw a {@link RemoteException} if server sent an
+     * error.
      */
-    public Object handleResult(int status, String ctype, String disp,
-            InputStream stream) throws RemoteException, IOException {
+    public Object handleResult(int status, String ctype, String disp, InputStream stream) throws RemoteException,
+            IOException {
         if (status == 204) { // no content
             return null;
         } else if (status >= 400) {
@@ -119,7 +118,7 @@ public class Request extends HashMap<String, String> {
         } else if (lctype.startsWith(CTYPE_AUTOMATION)) {
             return JsonMarshalling.readRegistry(IOUtils.read(stream));
         } else if (lctype.startsWith(CTYPE_MULTIPART_MIXED)) { // list of
-                                                                // blobs
+                                                               // blobs
             return readBlobs(ctype, stream);
         } else { // a blob?
             String fname = null;
@@ -130,21 +129,18 @@ public class Request extends HashMap<String, String> {
         }
     }
 
-    protected static Blobs readBlobs(String ctype, InputStream in)
-            throws IOException {
+    protected static Blobs readBlobs(String ctype, InputStream in) throws IOException {
         Blobs files = new Blobs();
         // save the stream to a temporary file
         File file = IOUtils.copyToTempFile(in);
         FileInputStream fin = new FileInputStream(file);
         try {
-            MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(fin,
-                    ctype));
+            MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(fin, ctype));
             int size = mp.getCount();
             for (int i = 0; i < size; i++) {
                 BodyPart part = mp.getBodyPart(i);
                 String fname = part.getFileName();
-                files.add(readBlob(part.getContentType(), fname,
-                        part.getInputStream()));
+                files.add(readBlob(part.getContentType(), fname, part.getInputStream()));
             }
         } catch (MessagingException e) {
             throw new IOException(e);
@@ -158,8 +154,7 @@ public class Request extends HashMap<String, String> {
         return files;
     }
 
-    protected static Blob readBlob(String ctype, String fileName, InputStream in)
-            throws IOException {
+    protected static Blob readBlob(String ctype, String fileName, InputStream in) throws IOException {
         File file = IOUtils.copyToTempFile(in);
         file.deleteOnExit();
         FileBlob blob = new FileBlob(file);
@@ -178,21 +173,18 @@ public class Request extends HashMap<String, String> {
         return null;
     }
 
-    protected void handleException(int status, String ctype, InputStream stream)
-            throws RemoteException, IOException {
+    protected void handleException(int status, String ctype, InputStream stream) throws RemoteException, IOException {
         if (CTYPE_ENTITY.equalsIgnoreCase(ctype)) {
             String content = IOUtils.read(stream);
             RemoteException e = null;
             try {
                 e = ExceptionMarshaller.readException(content);
             } catch (IOException t) {
-                throw new RemoteException(status, "ServerError",
-                        "Server Error", content);
+                throw new RemoteException(status, "ServerError", "Server Error", content);
             }
             throw e;
         } else {
-            throw new RemoteException(status, "ServerError", "Server Error",
-                    IOUtils.read(stream));
+            throw new RemoteException(status, "ServerError", "Server Error", IOUtils.read(stream));
         }
     }
 

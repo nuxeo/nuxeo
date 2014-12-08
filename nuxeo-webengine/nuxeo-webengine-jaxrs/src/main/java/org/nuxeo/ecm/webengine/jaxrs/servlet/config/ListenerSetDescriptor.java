@@ -23,12 +23,11 @@ import org.nuxeo.ecm.webengine.jaxrs.BundleNotFoundException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("listeners")
 public class ListenerSetDescriptor {
 
-    @XNodeList(value="listener", type=ArrayList.class, componentType=ListenerDescriptor.class, trim=true, nullByDefault=false)
+    @XNodeList(value = "listener", type = ArrayList.class, componentType = ListenerDescriptor.class, trim = true, nullByDefault = false)
     protected ArrayList<ListenerDescriptor> listenerDescriptors;
 
     private ServletContextListener[] listeners;
@@ -39,12 +38,11 @@ public class ListenerSetDescriptor {
         return event != null;
     }
 
-    public synchronized void init(ServletConfig config)
-            throws ReflectiveOperationException, BundleNotFoundException {
+    public synchronized void init(ServletConfig config) throws ReflectiveOperationException, BundleNotFoundException {
         if (event == null && !listenerDescriptors.isEmpty()) {
             event = new ServletContextEvent(config.getServletContext());
             listeners = new ServletContextListener[listenerDescriptors.size()];
-            for (int i=0; i<listeners.length; i++) {
+            for (int i = 0; i < listeners.length; i++) {
                 ListenerDescriptor ld = listenerDescriptors.get(i);
                 listeners[i] = ld.getListener();
                 listeners[i].contextInitialized(event);

@@ -25,8 +25,7 @@ import org.nuxeo.ecm.automation.jsf.OperationHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Cancels a document creation in UI (equivalent to clicking on the 'cancel'
- * button on a document creation form).
+ * Cancels a document creation in UI (equivalent to clicking on the 'cancel' button on a document creation form).
  *
  * @since 5.4.2
  */
@@ -42,8 +41,7 @@ public class CancelCreateDocumentInUI {
 
     @OperationMethod
     public DocumentModel run() {
-        ctx.put(SeamOperation.OUTCOME,
-                OperationHelper.getNavigationContext().goBack());
+        ctx.put(SeamOperation.OUTCOME, OperationHelper.getNavigationContext().goBack());
         return OperationHelper.getNavigationContext().getCurrentDocument();
     }
 

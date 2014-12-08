@@ -37,7 +37,6 @@ public class TestImportContentTemplateFactory extends SQLRepositoryTestCase {
         assertNull(null);
     }
 
-
     protected ContentTemplateService service;
 
     @Before
@@ -72,16 +71,11 @@ public class TestImportContentTemplateFactory extends SQLRepositoryTestCase {
         service = Framework.getLocalService(ContentTemplateService.class);
         service.executeFactoryForType(root);
         assertNotNull(session);
-        assertNotNull(session.getDocument(new PathRef(
-                "/default-domain/workspaces/workspace/test1")));
-        assertNotNull(session.getDocument(new PathRef(
-                "/default-domain/workspaces/workspace/test1/testFile.txt")));
-        assertNotNull(session.getDocument(new PathRef(
-                "/default-domain/workspaces/workspace/test1/testFile2.txt")));
-        assertNotNull(session.getDocument(new PathRef(
-                "/default-domain/workspaces/workspace/test1/testFile3.txt")));
-        assertNotNull(session.getDocument(new PathRef(
-                "/default-domain/workspaces/workspace/test1/nestedFolder/")));
+        assertNotNull(session.getDocument(new PathRef("/default-domain/workspaces/workspace/test1")));
+        assertNotNull(session.getDocument(new PathRef("/default-domain/workspaces/workspace/test1/testFile.txt")));
+        assertNotNull(session.getDocument(new PathRef("/default-domain/workspaces/workspace/test1/testFile2.txt")));
+        assertNotNull(session.getDocument(new PathRef("/default-domain/workspaces/workspace/test1/testFile3.txt")));
+        assertNotNull(session.getDocument(new PathRef("/default-domain/workspaces/workspace/test1/nestedFolder/")));
         assertNotNull(session.getDocument(new PathRef(
                 "/default-domain/workspaces/workspace/test1/nestedFolder/nestedFile.txt")));
     }
@@ -118,8 +112,7 @@ public class TestImportContentTemplateFactory extends SQLRepositoryTestCase {
         service = Framework.getLocalService(ContentTemplateService.class);
         service.executeFactoryForType(root);
 
-        DocumentModel helloDoc = session.getDocument(new PathRef(
-                "/default-domain/workspaces/workspace/hello.pdf"));
+        DocumentModel helloDoc = session.getDocument(new PathRef("/default-domain/workspaces/workspace/hello.pdf"));
         assertNotNull(helloDoc);
         assertEquals(helloDoc.getType(), "File");
     }

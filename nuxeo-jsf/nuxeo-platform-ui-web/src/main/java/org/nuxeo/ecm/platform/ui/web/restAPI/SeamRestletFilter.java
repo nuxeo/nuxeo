@@ -45,7 +45,6 @@ import com.noelios.restlet.ext.servlet.ServletCall;
 import com.noelios.restlet.http.HttpCall;
 import com.noelios.restlet.http.HttpRequest;
 
-
 /**
  * Restlet Filter to initialized Seam context
  *
@@ -70,7 +69,7 @@ public class SeamRestletFilter extends Filter {
     protected void beforeHandle(Request request, Response response) {
         FacesLifecycle.setPhaseId(PhaseId.INVOKE_APPLICATION);
         if (useConversation && (request instanceof HttpRequest)) {
-             // Complete HTTP call with conversation
+            // Complete HTTP call with conversation
             HttpCall httpCall = ((HttpRequest) request).getHttpCall();
             if (httpCall instanceof ServletCall) {
                 HttpServletRequest httpServletRequest = ((ServletCall) httpCall).getRequest();
@@ -109,7 +108,7 @@ public class SeamRestletFilter extends Filter {
                 Manager.instance().endRequest(new ServletRequestSessionMap(httpServletRequest));
                 ServletLifecycle.endRequest(httpServletRequest);
                 return;
-               }
+            }
         }
         Lifecycle.endCall();
     }
@@ -130,9 +129,8 @@ public class SeamRestletFilter extends Filter {
                 } catch (Exception e) { // deals with interrupt below
                     ExceptionUtils.checkInterrupt(e);
                     log.error("Restlet handling error", e);
-                    response.setEntity(
-                            "Error while calling Seam aware Restlet: "
-                                    + e.getMessage(), MediaType.TEXT_PLAIN);
+                    response.setEntity("Error while calling Seam aware Restlet: " + e.getMessage(),
+                            MediaType.TEXT_PLAIN);
                 }
             }
         } else {

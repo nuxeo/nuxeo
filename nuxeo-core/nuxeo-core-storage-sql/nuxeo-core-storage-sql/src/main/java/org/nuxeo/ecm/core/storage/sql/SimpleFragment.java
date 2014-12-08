@@ -21,8 +21,8 @@ import java.util.List;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * A type of fragment corresponding to a single row in a table and its
- * associated in-memory information (state, dirty fields, attached context).
+ * A type of fragment corresponding to a single row in a table and its associated in-memory information (state, dirty
+ * fields, attached context).
  */
 public final class SimpleFragment extends Fragment {
 
@@ -30,16 +30,14 @@ public final class SimpleFragment extends Fragment {
 
     private static final Row UNKNOWN_ROW = new Row(null, (Serializable) null);
 
-    public static final SimpleFragment UNKNOWN = new SimpleFragment(
-            UNKNOWN_ROW, State.DETACHED, null);
+    public static final SimpleFragment UNKNOWN = new SimpleFragment(UNKNOWN_ROW, State.DETACHED, null);
 
     /**
      * Constructs a {@link SimpleFragment} from a {@link Row}.
      *
      * @param row the row, or {@code null}
      * @param state the initial state for the fragment
-     * @param context the persistence context to which the fragment is tied, or
-     *            {@code null}
+     * @param context the persistence context to which the fragment is tied, or {@code null}
      */
     public SimpleFragment(Row row, State state, PersistenceContext context) {
         super(row, state, context);

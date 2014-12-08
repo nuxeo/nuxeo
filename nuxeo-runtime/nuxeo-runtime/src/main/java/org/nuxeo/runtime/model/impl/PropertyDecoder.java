@@ -26,14 +26,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Bogdan Stefanescu
- *
  */
 public abstract class PropertyDecoder {
 
     private static final Log log = LogFactory.getLog(PropertyDecoder.class);
 
     private static final Map<String, PropertyDecoder> decoders = new HashMap<String, PropertyDecoder>();
-
 
     public static Serializable decode(String type, String value) {
         // expand value if needed
@@ -58,7 +56,6 @@ public abstract class PropertyDecoder {
     }
 
     public abstract Serializable decode(String value);
-
 
     public static final PropertyDecoder STRING = new PropertyDecoder() {
         @Override
@@ -146,7 +143,6 @@ public abstract class PropertyDecoder {
             return null; // TODO not yet impl
         }
     };
-
 
     public static final PropertyDecoder CLASS = new PropertyDecoder() {
         @Override

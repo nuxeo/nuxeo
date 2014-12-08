@@ -25,22 +25,18 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.connect.update.PackageException;
 
 /**
- * Copy a file to the given target directory or file. If the target is a
- * directory the file name is preserved. If the target file exists it will be
- * replaced if overwrite is true otherwise the command validation fails.
+ * Copy a file to the given target directory or file. If the target is a directory the file name is preserved. If the
+ * target file exists it will be replaced if overwrite is true otherwise the command validation fails.
  * <p>
- * If md5 is set then the copy command will be validated only if the target file
- * has the same md5 as the one specified in the command.
+ * If md5 is set then the copy command will be validated only if the target file has the same md5 as the one specified
+ * in the command.
  * <p>
- * The Copy command has as inverse either Delete either another Copy command. If
- * the file was copied without overwriting then Delete is the inverse (with a
- * md5 set to the one of the copied file). If the file was overwritten then the
- * Copy command has an inverse another copy command with the md5 to the one of
- * the copied file and the overwrite flag to true. The file to copy will be the
- * backup of the overwritten file.
+ * The Copy command has as inverse either Delete either another Copy command. If the file was copied without overwriting
+ * then Delete is the inverse (with a md5 set to the one of the copied file). If the file was overwritten then the Copy
+ * command has an inverse another copy command with the md5 to the one of the copied file and the overwrite flag to
+ * true. The file to copy will be the backup of the overwritten file.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ParameterizedCopy extends Copy {
 
@@ -51,8 +47,7 @@ public class ParameterizedCopy extends Copy {
         super(ID);
     }
 
-    public ParameterizedCopy(File file, File tofile, String md5,
-            boolean overwrite) {
+    public ParameterizedCopy(File file, File tofile, String md5, boolean overwrite) {
         this();
         this.file = file;
         this.tofile = tofile;
@@ -61,14 +56,12 @@ public class ParameterizedCopy extends Copy {
     }
 
     @Override
-    protected String getContentToCopy(File fileToCopy, Map<String, String> prefs)
-            throws PackageException {
+    protected String getContentToCopy(File fileToCopy, Map<String, String> prefs) throws PackageException {
         try {
             String content = FileUtils.readFile(fileToCopy);
             return StringUtils.expandVars(content, prefs);
         } catch (IOException e) {
-            throw new PackageException("Failed to run parameterized copy for: "
-                    + fileToCopy.getName(), e);
+            throw new PackageException("Failed to run parameterized copy for: " + fileToCopy.getName(), e);
         }
     }
 

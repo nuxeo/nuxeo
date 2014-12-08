@@ -58,8 +58,8 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
     /**
      * Constructor used when a CoreSession is available.
      */
-    public ResultSetImpl(String query, CoreSession session, int offset,
-            int range, List<ResultItem> resultItems, int totalHits, int pageHits) {
+    public ResultSetImpl(String query, CoreSession session, int offset, int range, List<ResultItem> resultItems,
+            int totalHits, int pageHits) {
         this.query = query;
         sqlQuery = null;
         this.session = session;
@@ -141,10 +141,8 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
     public ResultSet replay(int offset, int range) throws SearchException {
         if (session != null) {
             try {
-                DocumentModelList list = session.query(query, null, range,
-                        offset, true);
-                List<ResultItem> resultItems = new ArrayList<ResultItem>(
-                        list.size());
+                DocumentModelList list = session.query(query, null, range, offset, true);
+                List<ResultItem> resultItems = new ArrayList<ResultItem>(list.size());
                 for (DocumentModel doc : list) {
                     if (doc == null) {
                         continue;
@@ -161,8 +159,8 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
                     }
                     resultItems.add(new DocumentModelResultItem(doc));
                 }
-                return new ResultSetImpl(query, session, offset, range,
-                        resultItems, (int) list.totalSize(), list.size());
+                return new ResultSetImpl(query, session, offset, range, resultItems, (int) list.totalSize(),
+                        list.size());
             } catch (ClientException e) {
                 throw new SearchException("QueryException for: " + query, e);
             }

@@ -41,7 +41,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource" })
-public class TestDataSourceComponent  {
+public class TestDataSourceComponent {
 
     protected static final ClassLoader LOADER = TestDataSourceComponent.class.getClassLoader();
 
@@ -61,15 +61,12 @@ public class TestDataSourceComponent  {
 
     private static final String COUNT_SQL_PG = "SELECT COUNT(*) FROM PG_STAT_ACTIVITY";
 
-
     @Test
     public void testJNDIName() throws Exception {
-        assertEquals("java:comp/env/jdbc/foo",
-                DataSourceHelper.getDataSourceJNDIName("foo"));
+        assertEquals("java:comp/env/jdbc/foo", DataSourceHelper.getDataSourceJNDIName("foo"));
     }
 
-    protected static void checkDataSourceOk(String name, boolean autocommit)
-            throws Exception {
+    protected static void checkDataSourceOk(String name, boolean autocommit) throws Exception {
         DataSource ds = DataSourceHelper.getDataSource(name);
         Connection conn = ds.getConnection();
         assertEquals(autocommit, conn.getAutoCommit());
@@ -123,7 +120,8 @@ public class TestDataSourceComponent  {
     }
 
     @Test
-    @Ignore // NXP12086
+    @Ignore
+    // NXP12086
     @LocalDeploy(XADATASOURCE_CONTRIB)
     public void testXANoLeak() throws Exception {
         dotestXANoLeak(COUNT_SQL);
@@ -164,8 +162,7 @@ public class TestDataSourceComponent  {
 
     }
 
-    public int countPhysicalConnections(Connection conn, String statement)
-            throws SQLException {
+    public int countPhysicalConnections(Connection conn, String statement) throws SQLException {
         Statement st = conn.createStatement();
         try {
             ResultSet rs = st.executeQuery(statement);

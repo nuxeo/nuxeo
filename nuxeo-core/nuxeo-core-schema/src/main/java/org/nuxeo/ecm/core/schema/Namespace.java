@@ -16,9 +16,8 @@ package org.nuxeo.ecm.core.schema;
 
 import java.io.Serializable;
 
-
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Namespace implements Serializable {
 
@@ -27,17 +26,17 @@ public class Namespace implements Serializable {
     private static final long serialVersionUID = -3069469489908062592L;
 
     private static final String DEFAULT_PREFIX = "";
+
     private static final String DEFAULT_URI = "";
 
     public final String uri;
-    public final String prefix;
 
+    public final String prefix;
 
     public Namespace(String uri, String prefix) {
         assert uri != null;
         if (uri.length() == 0 && prefix.length() > 0) {
-            throw new IllegalArgumentException(
-                    "prefix cannot be not empty if the uri is empty");
+            throw new IllegalArgumentException("prefix cannot be not empty if the uri is empty");
         }
         this.uri = uri;
         this.prefix = prefix == null ? "" : prefix;
@@ -46,7 +45,6 @@ public class Namespace implements Serializable {
     private Namespace() {
         this(DEFAULT_URI, DEFAULT_PREFIX);
     }
-
 
     public boolean hasPrefix() {
         return prefix.length() > 0;
@@ -59,8 +57,7 @@ public class Namespace implements Serializable {
         }
         if (obj instanceof Namespace) {
             Namespace ns = (Namespace) obj;
-            return ns.uri.equals(uri)
-                && ns.prefix.equals(prefix);
+            return ns.uri.equals(uri) && ns.prefix.equals(prefix);
         }
         return false;
     }

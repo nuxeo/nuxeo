@@ -30,65 +30,49 @@ import javax.faces.view.facelets.ValidatorConfig;
  * Helper for generating configs outside of a library context.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * @deprecated since 5.7: use
- *             {@link org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory}
- *             instead
+ * @deprecated since 5.7: use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory} instead
  */
 @Deprecated
 public final class TagConfigFactory {
 
     /**
-     * @deprecated since 5.7: use
-     *             {@link org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory}
-     *             instead
+     * @deprecated since 5.7: use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory} instead
      **/
     @Deprecated
-    public static TagConfig createTagConfig(TagConfig tagConfig,
-            String tagConfigId, TagAttributes attributes,
+    public static TagConfig createTagConfig(TagConfig tagConfig, String tagConfigId, TagAttributes attributes,
             FaceletHandler nextHandler) {
-        return org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory.createTagConfig(
-                tagConfig, tagConfigId, attributes, nextHandler);
+        return org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory.createTagConfig(tagConfig, tagConfigId,
+                attributes, nextHandler);
     }
 
     /**
-     * @deprecated since 5.7: use
-     *             {@link org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory}
-     *             instead
+     * @deprecated since 5.7: use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory} instead
      **/
     @Deprecated
-    public static ComponentConfig createComponentConfig(TagConfig tagConfig,
-            String tagConfigId, TagAttributes attributes,
-            FaceletHandler nextHandler, String componentType,
-            String rendererType) {
-        return org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory.createComponentConfig(
-                tagConfig, tagConfigId, attributes, nextHandler, componentType,
-                rendererType);
+    public static ComponentConfig createComponentConfig(TagConfig tagConfig, String tagConfigId,
+            TagAttributes attributes, FaceletHandler nextHandler, String componentType, String rendererType) {
+        return org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory.createComponentConfig(tagConfig, tagConfigId,
+                attributes, nextHandler, componentType, rendererType);
     }
 
     /**
-     * @deprecated since 5.7: use
-     *             {@link org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory}
-     *             instead
+     * @deprecated since 5.7: use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory} instead
      **/
     @Deprecated
-    public static ConverterConfig createConverterConfig(TagConfig tagConfig,
-            String tagConfigId, TagAttributes attributes,
-            FaceletHandler nextHandler, String converterId) {
-        return org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory.createConverterConfig(
-                tagConfig, tagConfigId, attributes, nextHandler, converterId);
+    public static ConverterConfig createConverterConfig(TagConfig tagConfig, String tagConfigId,
+            TagAttributes attributes, FaceletHandler nextHandler, String converterId) {
+        return org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory.createConverterConfig(tagConfig, tagConfigId,
+                attributes, nextHandler, converterId);
     }
 
     /**
-     * @deprecated since 5.7: use
-     *             {@link org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory}
-     *             instead
+     * @deprecated since 5.7: use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory} instead
      **/
     @Deprecated
-    public static ValidatorConfig createValidatorConfig(TagConfig tagConfig,
-            String tagConfigId, TagAttributes attributes,
-            FaceletHandler nextHandler, String validatorId) {
-        return org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory.createValidatorConfig(
-                tagConfig, tagConfigId, attributes, nextHandler, validatorId);
+    public static ValidatorConfig createValidatorConfig(TagConfig tagConfig, String tagConfigId,
+            TagAttributes attributes, FaceletHandler nextHandler, String validatorId) {
+        return org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory.createValidatorConfig(tagConfig, tagConfigId,
+                attributes, nextHandler, validatorId);
     }
 
 }

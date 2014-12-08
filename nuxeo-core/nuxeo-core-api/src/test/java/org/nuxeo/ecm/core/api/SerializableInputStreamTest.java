@@ -35,7 +35,6 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
@@ -43,17 +42,14 @@ public class SerializableInputStreamTest {
 
     @Test
     public void testFileBlobSerialization() throws Exception {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                "test.blob");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("test.blob");
         InputStream sin = new SerializableInputStream(url.openStream());
         File tmp = File.createTempFile("SerializableISTest-", ".tmp");
         Framework.trackFile(tmp, this);
-        try (ObjectOutputStream out = new ObjectOutputStream(
-                new FileOutputStream(tmp))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tmp))) {
             out.writeObject(sin);
         }
-        try (ObjectInputStream oin = new ObjectInputStream(new FileInputStream(
-                tmp))) {
+        try (ObjectInputStream oin = new ObjectInputStream(new FileInputStream(tmp))) {
             sin = (InputStream) oin.readObject();
         }
         byte[] bytes1 = FileUtils.readBytes(url.openStream());

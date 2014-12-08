@@ -20,8 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Pseudo contribution, to make the mapping between a directory and its
- * factory.
+ * Pseudo contribution, to make the mapping between a directory and its factory.
  *
  * @since 5.6
  */

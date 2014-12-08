@@ -16,14 +16,15 @@
  */
 package org.nuxeo.ecm.webengine.forms.validation;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class RangeValidator implements FieldValidator {
 
     protected boolean negate;
+
     protected double min = Double.MIN_VALUE;
+
     protected double max = Double.MAX_VALUE;
 
     public RangeValidator(double min, double max, boolean negate) {
@@ -39,7 +40,7 @@ public class RangeValidator implements FieldValidator {
     }
 
     public void validate(String value, Object decoded) throws ValidationException {
-        if (!validateNumber((Number)decoded)) {
+        if (!validateNumber((Number) decoded)) {
             throw new ValidationException();
         }
     }

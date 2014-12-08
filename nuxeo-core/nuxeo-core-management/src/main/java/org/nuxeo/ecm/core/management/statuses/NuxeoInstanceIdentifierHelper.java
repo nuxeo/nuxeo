@@ -33,7 +33,6 @@ import org.nuxeo.runtime.api.Framework;
  * Instance identifier (mainly imported from connect client : TechnicalInstanceIdentifier)
  *
  * @author matic
- *
  */
 public class NuxeoInstanceIdentifierHelper {
 
@@ -61,8 +60,7 @@ public class NuxeoInstanceIdentifierHelper {
                         try {
                             byte[] hwAddr = (byte[]) method.invoke(ni);
                             if (hwAddr != null) {
-                                hwUID = hwUID + "-"
-                                        + Base64.encodeBytes(hwAddr);
+                                hwUID = hwUID + "-" + Base64.encodeBytes(hwAddr);
                             }
                             break;
                         } catch (ReflectiveOperationException e) {
@@ -73,19 +71,15 @@ public class NuxeoInstanceIdentifierHelper {
             } else {
                 Enumeration<InetAddress> addrs = ni.getInetAddresses();
                 while (addrs.hasMoreElements()) {
-                    hwUID = hwUID
-                            + "-"
-                            + Base64.encodeBytes(addrs.nextElement().getAddress());
+                    hwUID = hwUID + "-" + Base64.encodeBytes(addrs.nextElement().getAddress());
                 }
             }
         }
         return hwUID;
     }
 
-    public static String summarize(String value)
-            throws NoSuchAlgorithmException {
-        byte[] digest = MessageDigest.getInstance(HASH_METHOD).digest(
-                value.getBytes());
+    public static String summarize(String value) throws NoSuchAlgorithmException {
+        byte[] digest = MessageDigest.getInstance(HASH_METHOD).digest(value.getBytes());
         BigInteger sum = new BigInteger(digest);
         return sum.toString(16);
     }
@@ -118,7 +112,7 @@ public class NuxeoInstanceIdentifierHelper {
         if (serverInstanceName == null) {
             serverInstanceName = Framework.getProperty(AdministrativeStatusManager.ADMINISTRATIVE_INSTANCE_ID);
             if (StringUtils.isEmpty(serverInstanceName)) {
-                    serverInstanceName = newServerInstanceName();
+                serverInstanceName = newServerInstanceName();
             }
         }
 

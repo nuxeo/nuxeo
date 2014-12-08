@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.mail.action;
 
 import java.util.ArrayList;
 
-
 /**
  * A list of actions being executed on a message.
  *

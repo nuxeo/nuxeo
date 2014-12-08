@@ -41,31 +41,24 @@ public interface PublisherService {
      */
     Map<String, String> getAvailablePublicationTrees();
 
-    PublicationTree getPublicationTree(String treeName,
-            CoreSession coreSession, Map<String, String> params)
+    PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params)
             throws ClientException, PublicationTreeNotAvailable;
 
-    PublicationTree getPublicationTree(String treeName,
-            CoreSession coreSession, Map<String, String> params,
-            DocumentModel currentDocument) throws ClientException,
-            PublicationTreeNotAvailable;
+    PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params,
+            DocumentModel currentDocument) throws ClientException, PublicationTreeNotAvailable;
 
-    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode)
+    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException;
+
+    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException;
 
-    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode,
-            Map<String, String> params) throws ClientException;
-
-    void unpublish(DocumentModel doc, PublicationNode targetNode)
-            throws ClientException;
+    void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException;
 
     boolean isPublishedDocument(DocumentModel documentModel);
 
-    PublicationTree getPublicationTreeFor(DocumentModel doc,
-            CoreSession coreSession) throws ClientException;
+    PublicationTree getPublicationTreeFor(DocumentModel doc, CoreSession coreSession) throws ClientException;
 
-    PublicationNode wrapToPublicationNode(DocumentModel documentModel,
-            CoreSession coreSession) throws ClientException,
+    PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession) throws ClientException,
             PublicationTreeNotAvailable;
 
     Map<String, String> getParametersFor(String treeConfigName);

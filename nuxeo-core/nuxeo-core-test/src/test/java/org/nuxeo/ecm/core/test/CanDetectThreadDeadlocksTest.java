@@ -12,7 +12,7 @@ public class CanDetectThreadDeadlocksTest {
 
     @Ignore("does not stop")
     @Test
-    public void runIntoDeadlocks()  {
+    public void runIntoDeadlocks() {
 
         new ThreadDeadlocksRunner().run();
 

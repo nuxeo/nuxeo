@@ -25,8 +25,7 @@ import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 /**
  * @author Anahide Tchertchian
  */
-public class EmptyPageProvider<T extends Serializable> extends
-        AbstractPageProvider<T> {
+public class EmptyPageProvider<T extends Serializable> extends AbstractPageProvider<T> {
 
     private static final long serialVersionUID = 1L;
 

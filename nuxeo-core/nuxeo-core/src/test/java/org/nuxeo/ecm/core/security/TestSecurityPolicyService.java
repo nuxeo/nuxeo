@@ -43,11 +43,9 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     static final String user = "Bubbles";
 
-    static final Principal creatorPrincipal = new UserPrincipal("Bodie",
-            new ArrayList<String>(), false, false);
+    static final Principal creatorPrincipal = new UserPrincipal("Bodie", new ArrayList<String>(), false, false);
 
-    static final Principal userPrincipal = new UserPrincipal("Bubbles",
-            new ArrayList<String>(), false, false);
+    static final Principal userPrincipal = new UserPrincipal("Bubbles", new ArrayList<String>(), false, false);
 
     private SecurityPolicyService service;
 
@@ -75,24 +73,18 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         Document doc = new MockDocument("Test", creator);
 
         // without lock
-        assertSame(UNKNOWN, service.checkPermission(doc, null,
-                creatorPrincipal, permission, permissions, null));
-        assertSame(UNKNOWN, service.checkPermission(doc, null, userPrincipal,
-                permission, permissions, null));
+        assertSame(UNKNOWN, service.checkPermission(doc, null, creatorPrincipal, permission, permissions, null));
+        assertSame(UNKNOWN, service.checkPermission(doc, null, userPrincipal, permission, permissions, null));
 
         // with lock
         doc.setLock(new Lock(user, new GregorianCalendar()));
-        assertSame(DENY, service.checkPermission(doc, null, creatorPrincipal,
-                permission, permissions, null));
-        assertSame(UNKNOWN, service.checkPermission(doc, null, userPrincipal,
-                permission, permissions, null));
+        assertSame(DENY, service.checkPermission(doc, null, creatorPrincipal, permission, permissions, null));
+        assertSame(UNKNOWN, service.checkPermission(doc, null, userPrincipal, permission, permissions, null));
 
         // test creator policy with lower order takes over lock
         deployContrib(CORE_TESTS_BUNDLE, "test-security-policy-contrib.xml");
-        assertSame(GRANT, service.checkPermission(doc, null, creatorPrincipal,
-                permission, permissions, null));
-        assertSame(UNKNOWN, service.checkPermission(doc, null, userPrincipal,
-                permission, permissions, null));
+        assertSame(GRANT, service.checkPermission(doc, null, creatorPrincipal, permission, permissions, null));
+        assertSame(UNKNOWN, service.checkPermission(doc, null, userPrincipal, permission, permissions, null));
     }
 
     @Test
@@ -102,17 +94,14 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         MockDocument doc = new MockDocument("uuid1", null);
 
         doc.checkedout = true;
-        assertSame(UNKNOWN, service.checkPermission(doc, null,
-                creatorPrincipal, permission, permissions, null));
+        assertSame(UNKNOWN, service.checkPermission(doc, null, creatorPrincipal, permission, permissions, null));
 
         doc.checkedout = false;
-        assertSame(UNKNOWN, service.checkPermission(doc, null,
-                creatorPrincipal, permission, permissions, null));
+        assertSame(UNKNOWN, service.checkPermission(doc, null, creatorPrincipal, permission, permissions, null));
 
         deployContrib(CORE_TESTS_BUNDLE, "test-security-policy2-contrib.xml");
 
-        assertSame(DENY, service.checkPermission(doc, null, creatorPrincipal,
-                permission, permissions, null));
+        assertSame(DENY, service.checkPermission(doc, null, creatorPrincipal, permission, permissions, null));
     }
 
 }

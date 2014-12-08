@@ -111,7 +111,6 @@ public interface DashBoardItem extends Serializable {
      */
     Task getTask();
 
-
     /**
      * Defines the {@link Locale} that will be used to generate translations
      *
@@ -120,16 +119,15 @@ public interface DashBoardItem extends Serializable {
     void setLocale(Locale locale);
 
     /**
-     * Get the Translated TaskName
-     * (Locale must be set)
+     * Get the Translated TaskName (Locale must be set)
      *
      * @return
      */
     String getI18nTaskName();
 
     /**
-     * Get the Translated Task Directive
-     * (Locale must be set)
+     * Get the Translated Task Directive (Locale must be set)
+     *
      * @return
      */
     String getI18nDirective();

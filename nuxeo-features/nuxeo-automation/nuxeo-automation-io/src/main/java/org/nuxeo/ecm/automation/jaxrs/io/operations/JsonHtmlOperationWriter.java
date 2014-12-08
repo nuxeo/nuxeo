@@ -34,30 +34,24 @@ import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
  */
 @Provider
 @Produces("text/html")
-public class JsonHtmlOperationWriter implements
-        MessageBodyWriter<OperationDocumentation> {
+public class JsonHtmlOperationWriter implements MessageBodyWriter<OperationDocumentation> {
 
     @Override
-    public long getSize(OperationDocumentation arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(OperationDocumentation arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
         return OperationDocumentation.class.isAssignableFrom(arg0);
     }
 
     @Override
-    public void writeTo(OperationDocumentation op, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream out)
-            throws IOException, WebApplicationException {
+    public void writeTo(OperationDocumentation op, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
+            MultivaluedMap<String, Object> arg5, OutputStream out) throws IOException, WebApplicationException {
         PrintStream writer = new PrintStream(out);
         writer.print("<!DOCTYPE html>\n");
-        writer.print("<html>\n<head><title>" + op.getId()
-                + "</title></head>\n<body>\n<pre>");
+        writer.print("<html>\n<head><title>" + op.getId() + "</title></head>\n<body>\n<pre>");
         JsonWriter.writeOperation(out, op, true);
         writer.print("</pre>\n</html>");
     }

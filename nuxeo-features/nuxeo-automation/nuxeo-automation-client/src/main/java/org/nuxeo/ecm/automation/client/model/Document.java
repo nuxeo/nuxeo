@@ -14,14 +14,12 @@ package org.nuxeo.ecm.automation.client.model;
 import java.util.Date;
 
 /**
- * A document. Documents are as they are returned by the server. To modify
- * documents use operations. Use {@link #getProperties()} method to fetch the
- * document properties and {@link #getDirties()} to fetch dirty properties
+ * A document. Documents are as they are returned by the server. To modify documents use operations. Use
+ * {@link #getProperties()} method to fetch the document properties and {@link #getDirties()} to fetch dirty properties
  * updated.
  * <p>
- * You need to create your own wrapper if you need to access the document
- * properties in a multi-level way. This is a flat representation of the
- * document.
+ * You need to create your own wrapper if you need to access the document properties in a multi-level way. This is a
+ * flat representation of the document.
  * <p>
  * Possible property value types:
  * <ul>
@@ -68,12 +66,10 @@ public class Document extends DocRef {
      * Deprecated now use with the constructor with versionLabel and isCheckedOut
      *
      */
-    public Document(String id, String type, PropertyList facets,
-            String changeToken, String path, String state, String lockOwner,
-            String lockCreated, String repository, PropertyMap properties,
+    public Document(String id, String type, PropertyList facets, String changeToken, String path, String state,
+            String lockOwner, String lockCreated, String repository, PropertyMap properties,
             PropertyMap contextParameters) {
-        this(id, type, facets, changeToken, path, state, lockOwner,
-                lockCreated, repository, null, null, properties,
+        this(id, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, null, null, properties,
                 contextParameters);
     }
 
@@ -82,26 +78,21 @@ public class Document extends DocRef {
      * Deprecated now use with the constructor with isCheckedOut
      *
      */
-    public Document(String id, String type, PropertyList facets,
-            String changeToken, String path, String state, String lockOwner,
-            String lockCreated, String repository, String versionLabel,
-            PropertyMap properties, PropertyMap contextParameters) {
-        this(id, type, facets, changeToken, path, state, lockOwner,
-                lockCreated, repository, versionLabel, null, properties,
-                contextParameters);
+    public Document(String id, String type, PropertyList facets, String changeToken, String path, String state,
+            String lockOwner, String lockCreated, String repository, String versionLabel, PropertyMap properties,
+            PropertyMap contextParameters) {
+        this(id, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, versionLabel, null,
+                properties, contextParameters);
     }
 
     /**
-     * Reserved to framework. Should be only called by client framework when
-     * unmarshalling documents.
+     * Reserved to framework. Should be only called by client framework when unmarshalling documents.
      *
      * @since 5.7.3
      */
-    public Document(String id, String type, PropertyList facets,
-            String changeToken, String path, String state, String lockOwner,
-            String lockCreated, String repository, String versionLabel,
-            String isCheckedOut, PropertyMap properties,
-            PropertyMap contextParameters) {
+    public Document(String id, String type, PropertyList facets, String changeToken, String path, String state,
+            String lockOwner, String lockCreated, String repository, String versionLabel, String isCheckedOut,
+            PropertyMap properties, PropertyMap contextParameters) {
         super(id);
         this.changeToken = changeToken;
         this.facets = facets;
@@ -114,15 +105,13 @@ public class Document extends DocRef {
         this.versionLabel = versionLabel;
         this.isCheckedOut = isCheckedOut;
         this.properties = properties == null ? new PropertyMap() : properties;
-        this.contextParameters = contextParameters == null ? new PropertyMap()
-                : contextParameters;
-        propertiesSetter = new PropertyMapSetter(
-                properties == null ? new PropertyMap() : properties);
+        this.contextParameters = contextParameters == null ? new PropertyMap() : contextParameters;
+        propertiesSetter = new PropertyMapSetter(properties == null ? new PropertyMap() : properties);
     }
 
     /**
-     * Minimal constructor for automation client Document. Could be instantiated
-     * when creating a document and passing to the related automation operation.
+     * Minimal constructor for automation client Document. Could be instantiated when creating a document and passing to
+     * the related automation operation.
      *
      * @since 5.7
      */
@@ -192,8 +181,7 @@ public class Document extends DocRef {
     }
 
     public Boolean isCheckedOut() {
-        return (isCheckedOut == null) ? null
-                : Boolean.parseBoolean(isCheckedOut);
+        return (isCheckedOut == null) ? null : Boolean.parseBoolean(isCheckedOut);
     }
 
     public Date getLastModified() {
@@ -290,8 +278,7 @@ public class Document extends DocRef {
     }
 
     /**
-     * This method fetch the dirty properties of the document (which have been
-     * updated during the session)
+     * This method fetch the dirty properties of the document (which have been updated during the session)
      *
      * @since 5.7
      */

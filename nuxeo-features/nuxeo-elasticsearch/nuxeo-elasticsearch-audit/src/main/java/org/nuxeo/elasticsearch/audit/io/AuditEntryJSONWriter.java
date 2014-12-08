@@ -11,8 +11,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
 public class AuditEntryJSONWriter {
 
-    public static void asJSON(JsonGenerator jg, LogEntry logEntry)
-            throws IOException {
+    public static void asJSON(JsonGenerator jg, LogEntry logEntry) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "logEntry");
 
@@ -25,15 +24,9 @@ public class AuditEntryJSONWriter {
         writeField(jg, "docUUID", logEntry.getDocUUID());
         writeField(jg, "eventId", logEntry.getEventId());
         writeField(jg, "repositoryId", logEntry.getRepositoryId());
-        jg.writeStringField(
-                "eventDate",
-                ISODateTimeFormat.dateTime().print(
-                        new DateTime(logEntry.getEventDate())));
+        jg.writeStringField("eventDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getEventDate())));
         jg.writeNumberField("id", logEntry.getId());
-        jg.writeStringField(
-                "logDate",
-                ISODateTimeFormat.dateTime().print(
-                        new DateTime(logEntry.getLogDate())));
+        jg.writeStringField("logDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getLogDate())));
         Map<String, ExtendedInfo> extended = logEntry.getExtendedInfos();
         jg.writeObjectFieldStart("extended");
         for (String key : extended.keySet()) {
@@ -50,8 +43,7 @@ public class AuditEntryJSONWriter {
         jg.flush();
     }
 
-    protected static void writeField(JsonGenerator jg, String name, String value)
-            throws IOException {
+    protected static void writeField(JsonGenerator jg, String name, String value) throws IOException {
         if (value == null) {
             jg.writeNullField(name);
         } else {

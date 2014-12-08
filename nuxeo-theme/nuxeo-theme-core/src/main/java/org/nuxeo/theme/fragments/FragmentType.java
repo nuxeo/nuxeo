@@ -39,8 +39,7 @@ public final class FragmentType implements Type {
     public FragmentType() {
     }
 
-    public FragmentType(String name, String className, String modelName,
-            boolean dynamic) {
+    public FragmentType(String name, String className, String modelName, boolean dynamic) {
         this.name = name;
         this.className = className;
         this.modelName = modelName;
@@ -64,8 +63,7 @@ public final class FragmentType implements Type {
     }
 
     public ModelType getModelType() {
-        return (ModelType) Manager.getTypeRegistry().lookup(TypeFamily.MODEL,
-                modelName);
+        return (ModelType) Manager.getTypeRegistry().lookup(TypeFamily.MODEL, modelName);
     }
 
     public boolean isDynamic() {

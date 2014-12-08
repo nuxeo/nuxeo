@@ -33,7 +33,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestHelper extends NXRuntimeTestCase {
 
     private static final String uuid = "f53fc32e-21b3-4640-9917-05e873aa1e53";
+
     private static final String targetURL1 = "restAPI/preview/default/f53fc32e-21b3-4640-9917-05e873aa1e53/default/";
+
     private static final String targetURL2 = "restAPI/preview/default/f53fc32e-21b3-4640-9917-05e873aa1e53/file:content/";
 
     @Before
@@ -45,8 +47,8 @@ public class TestHelper extends NXRuntimeTestCase {
 
     @Test
     public void testPreviewURLDefault() {
-        DocumentModel doc = new DocumentModelImpl(
-                "", "File", uuid, new Path("/"), null, null, null, null, null, null, "default");
+        DocumentModel doc = new DocumentModelImpl("", "File", uuid, new Path("/"), null, null, null, null, null, null,
+                "default");
 
         String previewURL = PreviewHelper.getPreviewURL(doc);
         assertNotNull(previewURL);
@@ -55,8 +57,8 @@ public class TestHelper extends NXRuntimeTestCase {
 
     @Test
     public void testPreviewURL() {
-        DocumentModel doc = new DocumentModelImpl(
-                "", "File", uuid, new Path("/"), null, null, null, null, null, null, "default");
+        DocumentModel doc = new DocumentModelImpl("", "File", uuid, new Path("/"), null, null, null, null, null, null,
+                "default");
 
         String previewURL = PreviewHelper.getPreviewURL(doc, "file:content");
         assertNotNull(previewURL);

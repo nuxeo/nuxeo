@@ -33,10 +33,8 @@ public class TestCSSUtils extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
     @Test
@@ -58,22 +56,19 @@ public class TestCSSUtils extends NXRuntimeTestCase {
                         false // indent
                 ));
 
-        assertEquals(
-                ".nxStyle1 div {border:1px solid #ccc;}\n.nxStyle1 a {font:12px Arial;color:red;}\n",
+        assertEquals(".nxStyle1 div {border:1px solid #ccc;}\n.nxStyle1 a {font:12px Arial;color:red;}\n",
                 CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         false, // ignoreClassName
                         false // indent
                 ));
 
-        assertEquals(
-                "div {border:1px solid #ccc;}\na {font:12px Arial;color:red;}\n",
+        assertEquals("div {border:1px solid #ccc;}\na {font:12px Arial;color:red;}\n",
                 CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         true, // ignoreClassName
                         false // indent
                 ));
 
-        assertEquals(
-                "div {\n  border: 1px solid #ccc;\n}\n\na {\n  font: 12px Arial;\n  color: red;\n}\n\n",
+        assertEquals("div {\n  border: 1px solid #ccc;\n}\n\na {\n  font: 12px Arial;\n  color: red;\n}\n\n",
                 CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         true, // ignoreClassName
                         true // indent
@@ -91,8 +86,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         properties.setProperty("font", "12px Arial");
         style.setPropertiesFor("vertical menu", "a", properties);
 
-        assertEquals(
-                ".someCollection1VerticalMenu a {font:12px Arial;color:red;}\n",
+        assertEquals(".someCollection1VerticalMenu a {font:12px Arial;color:red;}\n",
                 CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // ignoreViewName
                         false, // ignoreClassName
                         false // indent
@@ -105,8 +99,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         style.setUid(1);
         Properties properties1 = new Properties();
         properties1.setProperty("color", "red");
-        style.setPropertiesFor("vertical menu", "a, a:hover, a:active",
-                properties1);
+        style.setPropertiesFor("vertical menu", "a, a:hover, a:active", properties1);
 
         assertEquals(
                 ".nxStyle1VerticalMenu a, .nxStyle1VerticalMenu a:hover, .nxStyle1VerticalMenu a:active {color:red;}\n",
@@ -115,8 +108,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
                         false // indent
                 ));
 
-        assertEquals(
-                ".nxStyle1 a, .nxStyle1 a:hover, .nxStyle1 a:active {color:red;}\n",
+        assertEquals(".nxStyle1 a, .nxStyle1 a:hover, .nxStyle1 a:active {color:red;}\n",
                 CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         false, // ignoreClassName
                         false // indent
@@ -141,36 +133,25 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         assertEquals("#f00", CSSUtils.extractCssColors("#FF0000").get(0));
         assertEquals("#fc0", CSSUtils.extractCssColors("#FFcC00").get(0));
         assertEquals("#010203", CSSUtils.extractCssColors("rgb(1,2,3)").get(0));
-        assertEquals("#010203",
-                CSSUtils.extractCssColors("rgb( 1, 2, 3 )").get(0));
+        assertEquals("#010203", CSSUtils.extractCssColors("rgb( 1, 2, 3 )").get(0));
     }
 
     @Test
     public void testExtractCssImages() {
-        assertEquals("url(image.png)",
-                CSSUtils.extractCssImages("url(image.png)").get(0));
-        assertEquals("url(/image.png)",
-                CSSUtils.extractCssImages("url( /image.png )").get(0));
-        assertEquals("url(/image.png)",
-                CSSUtils.extractCssImages("url  ( /image.png )").get(0));
-        assertEquals("url(/image.png)",
-                CSSUtils.extractCssImages("url  ( \" /image.png \" )").get(0));
-        assertEquals("url(/image.png)",
-                CSSUtils.extractCssImages("url  ( \' /image.png \' )").get(0));
-        assertEquals("url(image1.png)",
-                CSSUtils.extractCssImages("  url(image1.png)  ").get(0));
+        assertEquals("url(image.png)", CSSUtils.extractCssImages("url(image.png)").get(0));
+        assertEquals("url(/image.png)", CSSUtils.extractCssImages("url( /image.png )").get(0));
+        assertEquals("url(/image.png)", CSSUtils.extractCssImages("url  ( /image.png )").get(0));
+        assertEquals("url(/image.png)", CSSUtils.extractCssImages("url  ( \" /image.png \" )").get(0));
+        assertEquals("url(/image.png)", CSSUtils.extractCssImages("url  ( \' /image.png \' )").get(0));
+        assertEquals("url(image1.png)", CSSUtils.extractCssImages("  url(image1.png)  ").get(0));
     }
 
     @Test
     public void testReplaceColor() {
-        assertEquals("\"orange\"",
-                CSSUtils.replaceColor("#fc0", "#fc0", "\"orange\""));
-        assertEquals("\"yellow\"",
-                CSSUtils.replaceColor("#FF0", "#ff0", "\"yellow\""));
-        assertEquals("\"yellow\"",
-                CSSUtils.replaceColor("#ffff00", "#ff0", "\"yellow\""));
-        assertEquals("\"yellow\"",
-                CSSUtils.replaceColor("rgb(255, 255,0)", "#ff0", "\"yellow\""));
+        assertEquals("\"orange\"", CSSUtils.replaceColor("#fc0", "#fc0", "\"orange\""));
+        assertEquals("\"yellow\"", CSSUtils.replaceColor("#FF0", "#ff0", "\"yellow\""));
+        assertEquals("\"yellow\"", CSSUtils.replaceColor("#ffff00", "#ff0", "\"yellow\""));
+        assertEquals("\"yellow\"", CSSUtils.replaceColor("rgb(255, 255,0)", "#ff0", "\"yellow\""));
     }
 
     @Test
@@ -184,8 +165,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         style1.setPropertiesFor("*", "a", properties1);
 
         assertEquals(".nxStyle1 a {font:12px Arial;color:red;}\n",
-                CSSUtils.styleToCss(style1, style1.getSelectorViewNames(),
-                        false, false, false));
+                CSSUtils.styleToCss(style1, style1.getSelectorViewNames(), false, false, false));
     }
 
     @Test
@@ -221,8 +201,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         String CSS_CONTEXT_PATH = "/nuxeo/css/";
         String source = Utils.readResourceAsString("resource.css");
         String expandedSource = Utils.readResourceAsString("resource-expanded.css");
-        assertEquals(expandedSource,
-                CSSUtils.expandPartialUrls(source, CSS_CONTEXT_PATH));
+        assertEquals(expandedSource, CSSUtils.expandPartialUrls(source, CSS_CONTEXT_PATH));
     }
 
 }

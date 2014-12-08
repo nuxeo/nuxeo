@@ -32,8 +32,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 /**
  * @since 5.6
  */
-public class LDAPDirectoryRegistry extends
-        ContributionFragmentRegistry<LDAPDirectoryDescriptor> {
+public class LDAPDirectoryRegistry extends ContributionFragmentRegistry<LDAPDirectoryDescriptor> {
 
     private static final Log log = LogFactory.getLog(LDAPDirectoryRegistry.class);
 
@@ -45,8 +44,7 @@ public class LDAPDirectoryRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            LDAPDirectoryDescriptor descriptor,
+    public void contributionUpdated(String id, LDAPDirectoryDescriptor descriptor,
             LDAPDirectoryDescriptor newOrigContrib) {
         String descriptorName = descriptor.getName();
         proxies.put(descriptorName, new LDAPDirectory(descriptor));
@@ -54,16 +52,14 @@ public class LDAPDirectoryRegistry extends
     }
 
     @Override
-    public void contributionRemoved(String id,
-            LDAPDirectoryDescriptor descriptor) {
+    public void contributionRemoved(String id, LDAPDirectoryDescriptor descriptor) {
         String directoryName = descriptor.getName();
         Directory dir = proxies.remove(directoryName);
         if (dir != null) {
             try {
                 dir.shutdown();
             } catch (DirectoryException e) {
-                log.error(String.format(
-                        "Error while shutting down directory '%s'", id), e);
+                log.error(String.format("Error while shutting down directory '%s'", id), e);
             }
         }
         log.info("directory unregistered: " + directoryName);

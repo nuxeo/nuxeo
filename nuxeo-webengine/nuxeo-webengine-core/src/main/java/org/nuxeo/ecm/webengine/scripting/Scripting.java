@@ -44,7 +44,6 @@ import org.nuxeo.ecm.webengine.loader.WebLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Scripting {
 
@@ -54,6 +53,7 @@ public class Scripting {
 
     // this will be lazy initialized
     private ScriptEngineManager scriptMgr;
+
     private final WebLoader loader;
 
     public Scripting(WebLoader loader) {
@@ -62,7 +62,7 @@ public class Scripting {
 
     public static CompiledScript compileScript(ScriptEngine engine, File file) throws ScriptException {
         if (engine instanceof Compilable) {
-            Compilable comp = (Compilable)engine;
+            Compilable comp = (Compilable) engine;
             try {
                 Reader reader = new FileReader(file);
                 try {
@@ -79,13 +79,10 @@ public class Scripting {
     }
 
     /**
-     * Lazy init scripting manager to avoid loading script engines when
-     * no scripting is used.
+     * Lazy init scripting manager to avoid loading script engines when no scripting is used.
      * <p>
-     * Javax Scripting is not used by default in WebWengine,
-     * we are using directly the Groovy engine.
-     * This also fixes an annoying pb on Mac in java5 due to AppleScripting
-     * which is failing to register.
+     * Javax Scripting is not used by default in WebWengine, we are using directly the Groovy engine. This also fixes an
+     * annoying pb on Mac in java5 due to AppleScripting which is failing to register.
      *
      * @return the scriptMgr
      */
@@ -100,15 +97,13 @@ public class Scripting {
         return getEngineManager().getEngineByExtension(ext) != null;
     }
 
-
     public Object runScript(ScriptFile script) throws ScriptException {
         return runScript(script, null);
     }
 
-    public Object runScript(ScriptFile script, Map<String, Object> args)
-            throws ScriptException {
+    public Object runScript(ScriptFile script, Map<String, Object> args) throws ScriptException {
         if (log.isDebugEnabled()) {
-            log.debug("## Running Script: "+script.getFile());
+            log.debug("## Running Script: " + script.getFile());
         }
         if ("groovy".equals(script.getExtension())) {
             try {
@@ -121,9 +116,8 @@ public class Scripting {
         }
     }
 
-    //TODO: add an output stream to use as arg?
-    protected Object _runScript(ScriptFile script, Map<String, Object> args)
-            throws ScriptException {
+    // TODO: add an output stream to use as arg?
+    protected Object _runScript(ScriptFile script, Map<String, Object> args) throws ScriptException {
         SimpleBindings bindings = new SimpleBindings();
         if (args != null) {
             bindings.putAll(args);
@@ -176,6 +170,7 @@ public class Scripting {
 
     class Entry {
         public CompiledScript script;
+
         public long lastModified;
 
         Entry(CompiledScript script, long lastModified) {

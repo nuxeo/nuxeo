@@ -59,14 +59,12 @@ public class RefreshUI {
             try {
                 navContext.invalidateCurrentDocument();
             } catch (ClientException e) {
-                log.error("Error invalidating current document "
-                        + "on navigation context", e);
+                log.error("Error invalidating current document " + "on navigation context", e);
             }
             DocumentModel dm = navContext.getCurrentDocument();
             if (dm != null) {
                 Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, dm);
-                Events.instance().raiseEvent(
-                        EventNames.DOCUMENT_CHILDREN_CHANGED, dm);
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, dm);
             }
             if (additionalSeamEvents != null) {
                 for (String event : additionalSeamEvents) {

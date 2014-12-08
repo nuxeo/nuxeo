@@ -40,14 +40,12 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
- *
  */
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(init=RepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core",
+@RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.filemanager.core" })
 @LocalDeploy("org.nuxeo.ecm.platform.filemanager.core:test-ui-types-local-configuration.xml")
 public class TestDefaultFileImporter {
@@ -58,16 +56,14 @@ public class TestDefaultFileImporter {
     @Test
     public void testDefautImportType() throws Exception {
         assertNotNull(session);
-        DocumentModel workspace = session.getDocument(new PathRef(
-                PATH_WORKSPACE));
+        DocumentModel workspace = session.getDocument(new PathRef(PATH_WORKSPACE));
         assertNotNull(workspace);
         DocumentModel folder = session.getDocument(new PathRef(PATH_FOLDER));
         assertNotNull(folder);
 
         assertEquals("File", DefaultFileImporter.getTypeName(folder));
 
-        workspace.setPropertyValue(UI_TYPES_CONFIGURATION_DEFAULT_TYPE,
-                "FakeFile");
+        workspace.setPropertyValue(UI_TYPES_CONFIGURATION_DEFAULT_TYPE, "FakeFile");
         session.saveDocument(workspace);
         session.save();
 

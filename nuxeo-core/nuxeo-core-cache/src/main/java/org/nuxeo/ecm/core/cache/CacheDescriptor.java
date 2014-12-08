@@ -55,8 +55,7 @@ public class CacheDescriptor {
         super();
     }
 
-    protected CacheDescriptor(String name, Class<? extends Cache> implClass,
-            Integer ttl, Map<String, String> options) {
+    protected CacheDescriptor(String name, Class<? extends Cache> implClass, Integer ttl, Map<String, String> options) {
         this.name = name;
         this.implClass = implClass;
         this.ttl = ttl;
@@ -84,13 +83,10 @@ public class CacheDescriptor {
     public void start() {
         try {
             cacheChecker = new CacheAttributesChecker(this);
-            cacheChecker.setCache(implClass.getConstructor(
-                    CacheDescriptor.class).newInstance(this));
-        } catch (InstantiationException | IllegalAccessException
-                | IllegalArgumentException | InvocationTargetException
+            cacheChecker.setCache(implClass.getConstructor(CacheDescriptor.class).newInstance(this));
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
-            throw new NuxeoException("Failed to instantiate class "
-                    + implClass, e);
+            throw new NuxeoException("Failed to instantiate class " + implClass, e);
         }
     }
 

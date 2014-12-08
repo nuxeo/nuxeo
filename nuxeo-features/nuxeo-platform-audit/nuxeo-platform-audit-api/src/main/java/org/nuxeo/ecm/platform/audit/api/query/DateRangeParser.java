@@ -30,20 +30,17 @@ public final class DateRangeParser {
     private DateRangeParser() {
     }
 
-    public static Date parseDateRangeQuery(Date now, String dateRangeQuery)
-            throws AuditQueryException {
+    public static Date parseDateRangeQuery(Date now, String dateRangeQuery) throws AuditQueryException {
         try {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(now);
             if (dateRangeQuery != null) {
                 Map<String, Integer> parsed = parseQuery(dateRangeQuery);
                 if (parsed.containsKey(DateRangeQueryConstants.HOUR)) {
-                    calendar.add(Calendar.HOUR_OF_DAY,
-                            -parsed.get(DateRangeQueryConstants.HOUR));
+                    calendar.add(Calendar.HOUR_OF_DAY, -parsed.get(DateRangeQueryConstants.HOUR));
                 }
                 if (parsed.containsKey(DateRangeQueryConstants.MIN)) {
-                    calendar.add(Calendar.MINUTE,
-                            -parsed.get(DateRangeQueryConstants.MIN));
+                    calendar.add(Calendar.MINUTE, -parsed.get(DateRangeQueryConstants.MIN));
                 }
             }
             return calendar.getTime();
@@ -52,8 +49,7 @@ public final class DateRangeParser {
         }
     }
 
-    private static Map<String, Integer> parseQuery(String query)
-            throws AuditQueryException {
+    private static Map<String, Integer> parseQuery(String query) throws AuditQueryException {
         Map<String, Integer> parsed = new HashMap<String, Integer>();
 
         query = query.trim();

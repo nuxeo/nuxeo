@@ -17,14 +17,13 @@ package org.nuxeo.ecm.core.api;
 import java.util.Iterator;
 
 /**
- * A serializable iterator of document models. Long result sets are loaded frame
- * by frame transparently by the DocumentModelIterator.
+ * A serializable iterator of document models. Long result sets are loaded frame by frame transparently by the
+ * DocumentModelIterator.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
-public interface DocumentModelIterator extends Iterator<DocumentModel>,
-        Iterable<DocumentModel> {
+public interface DocumentModelIterator extends Iterator<DocumentModel>, Iterable<DocumentModel> {
 
     int UNKNOWN_SIZE = -1;
 

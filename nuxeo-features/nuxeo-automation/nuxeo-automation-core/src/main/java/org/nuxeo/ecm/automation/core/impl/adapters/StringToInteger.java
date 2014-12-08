@@ -20,8 +20,7 @@ import org.nuxeo.ecm.automation.TypeAdapter;
  */
 public class StringToInteger implements TypeAdapter {
 
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
-            throws TypeAdaptException {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         String content = (String) objectToAdapt;
         return Integer.valueOf(content);
     }

@@ -30,19 +30,17 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Audit log stores event related to the "live" DocumentModel. This means that
- * when retrieving the Audit Log for a version or a proxy, we must merge part
- * of the "live" document history with the history of the proxy or version.
- * This helper class fetches the additional parameters that must be used to
- * retrieve history of a version or of a proxy.
+ * Audit log stores event related to the "live" DocumentModel. This means that when retrieving the Audit Log for a
+ * version or a proxy, we must merge part of the "live" document history with the history of the proxy or version. This
+ * helper class fetches the additional parameters that must be used to retrieve history of a version or of a proxy.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class DocumentAuditHelper {
 
     @SuppressWarnings({ "unchecked", "boxing" })
-    public static AdditionalDocumentAuditParams getAuditParamsForUUID(
-            String uuid, CoreSession session) throws ClientException {
+    public static AdditionalDocumentAuditParams getAuditParamsForUUID(String uuid, CoreSession session)
+            throws ClientException {
 
         AdditionalDocumentAuditParams result = null;
         IdRef ref = new IdRef(uuid);
@@ -52,8 +50,7 @@ public class DocumentAuditHelper {
             String targetUUID = null;
 
             if (doc.isProxy() || doc.isVersion()) {
-                SourceDocumentResolver resolver = new SourceDocumentResolver(
-                        session, doc);
+                SourceDocumentResolver resolver = new SourceDocumentResolver(session, doc);
                 resolver.runUnrestricted();
                 if (resolver.sourceDocument != null) {
                     targetUUID = resolver.sourceDocument.getId();
@@ -68,8 +65,7 @@ public class DocumentAuditHelper {
                     filter.setObject(DocumentEventTypes.DOCUMENT_CREATED);
                     Map<String, FilterMapEntry> filters = new HashMap<String, FilterMapEntry>();
                     filters.put("eventId", filter);
-                    List<LogEntry> entries = reader.getLogEntriesFor(uuid,
-                            filters, false);
+                    List<LogEntry> entries = reader.getLogEntriesFor(uuid, filters, false);
 
                     if (entries != null && entries.size() > 0) {
                         result = new AdditionalDocumentAuditParams();
@@ -93,20 +89,15 @@ public class DocumentAuditHelper {
                             queryString.append("from LogEntry log where log.docUUID in (");
                             queryString.append("'" + targetUUID + "'");
                             if (doc.isVersion()) {
-                                DocumentModelList proxies = session.getProxies(
-                                        doc.getRef(), null);
+                                DocumentModelList proxies = session.getProxies(doc.getRef(), null);
                                 for (DocumentModel proxy : proxies) {
-                                    queryString.append(",'" + proxy.getId()
-                                            + "'");
+                                    queryString.append(",'" + proxy.getId() + "'");
                                 }
                             }
                             queryString.append(",'" + doc.getId() + "'");
                             queryString.append(") AND log.eventId IN (");
-                            queryString.append("'"
-                                    + DocumentEventTypes.DOCUMENT_CREATED + "'");
-                            queryString.append(",'"
-                                    + DocumentEventTypes.DOCUMENT_CHECKEDIN
-                                    + "'");
+                            queryString.append("'" + DocumentEventTypes.DOCUMENT_CREATED + "'");
+                            queryString.append(",'" + DocumentEventTypes.DOCUMENT_CHECKEDIN + "'");
                             queryString.append(") AND log.eventDate >= :minDate ");
                             queryString.append(" order by log.eventId asc");
 
@@ -114,8 +105,8 @@ public class DocumentAuditHelper {
                             Map<String, Object> params = new HashMap<String, Object>();
                             params.put("minDate", estimatedDate.getTime());
 
-                            List<LogEntry> dateEntries = (List<LogEntry>) reader.nativeQuery(
-                                    queryString.toString(), params, 0, 20);
+                            List<LogEntry> dateEntries = (List<LogEntry>) reader.nativeQuery(queryString.toString(),
+                                    params, 0, 20);
                             if (dateEntries.size() > 0) {
                                 result.targetUUID = targetUUID;
                                 Calendar maxDate = new GregorianCalendar();

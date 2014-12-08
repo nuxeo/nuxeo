@@ -38,14 +38,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Implementation of the {@link OAuthServiceProviderRegistry}. The main storage
- * backend is a SQL Directory. Readonly providers (contributed directly at
- * OpenSocialService level) are managed in memory.
+ * Implementation of the {@link OAuthServiceProviderRegistry}. The main storage backend is a SQL Directory. Readonly
+ * providers (contributed directly at OpenSocialService level) are managed in memory.
  *
  * @author tiry
  */
-public class OAuthServiceProviderRegistryImpl extends DefaultComponent
-        implements OAuthServiceProviderRegistry {
+public class OAuthServiceProviderRegistryImpl extends DefaultComponent implements OAuthServiceProviderRegistry {
 
     protected static final Log log = LogFactory.getLog(OAuthServiceProviderRegistryImpl.class);
 
@@ -54,11 +52,9 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
     protected Map<String, NuxeoOAuthServiceProvider> inMemoryProviders = new HashMap<String, NuxeoOAuthServiceProvider>();
 
     @Override
-    public NuxeoOAuthServiceProvider getProvider(String gadgetUri,
-            String serviceName) {
+    public NuxeoOAuthServiceProvider getProvider(String gadgetUri, String serviceName) {
         try {
-            NuxeoOAuthServiceProvider provider = getEntry(gadgetUri,
-                    serviceName, null);
+            NuxeoOAuthServiceProvider provider = getEntry(gadgetUri, serviceName, null);
             return provider;
         } catch (ClientException e) {
             log.error("Unable to read provider from Directory backend", e);
@@ -81,12 +77,10 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
         return serviceName;
     }
 
-    protected DocumentModel getBestEntry(DocumentModelList entries,
-            String gadgetUri, String serviceName) throws PropertyException,
-            ClientException {
+    protected DocumentModel getBestEntry(DocumentModelList entries, String gadgetUri, String serviceName)
+            throws PropertyException, ClientException {
         if (entries.size() > 1) {
-            log.warn("Found several entries for gadgetUri=" + gadgetUri
-                    + " and serviceName=" + serviceName);
+            log.warn("Found several entries for gadgetUri=" + gadgetUri + " and serviceName=" + serviceName);
         }
         if (serviceName == null || serviceName.trim().isEmpty()) {
             for (DocumentModel entry : entries) {
@@ -110,8 +104,8 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
         return entries.get(0);
     }
 
-    protected NuxeoOAuthServiceProvider getEntry(String gadgetUri,
-            String serviceName, Set<String> ftFilter) throws ClientException {
+    protected NuxeoOAuthServiceProvider getEntry(String gadgetUri, String serviceName, Set<String> ftFilter)
+            throws ClientException {
 
         String id = mkStringIdx(gadgetUri, serviceName);
         if (inMemoryProviders.containsKey(id)) {
@@ -177,13 +171,12 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
     }
 
     @Override
-    public NuxeoOAuthServiceProvider addReadOnlyProvider(String gadgetUri,
-            String serviceName, String consumerKey, String consumerSecret,
-            String publicKey) {
+    public NuxeoOAuthServiceProvider addReadOnlyProvider(String gadgetUri, String serviceName, String consumerKey,
+            String consumerSecret, String publicKey) {
         String id = mkStringIdx(gadgetUri, serviceName);
         Long dummyId = new Random().nextLong();
-        NuxeoOAuthServiceProvider sp = new NuxeoOAuthServiceProvider(dummyId,
-                gadgetUri, serviceName, consumerKey, consumerSecret, publicKey);
+        NuxeoOAuthServiceProvider sp = new NuxeoOAuthServiceProvider(dummyId, gadgetUri, serviceName, consumerKey,
+                consumerSecret, publicKey);
         inMemoryProviders.put(id, sp);
         return sp;
     }

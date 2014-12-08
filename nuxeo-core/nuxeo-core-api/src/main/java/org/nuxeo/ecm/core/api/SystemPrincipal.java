@@ -44,8 +44,7 @@ public class SystemPrincipal implements NuxeoPrincipal {
     private int hash;
 
     public SystemPrincipal(String origUserName) {
-        this.origUserName = origUserName == null ? LoginComponent.SYSTEM_USERNAME
-                : origUserName;
+        this.origUserName = origUserName == null ? LoginComponent.SYSTEM_USERNAME : origUserName;
         computeHash();
     }
 
@@ -195,4 +194,3 @@ public class SystemPrincipal implements NuxeoPrincipal {
     }
 
 }
-

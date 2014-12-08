@@ -30,10 +30,8 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
- * TODO: document me.
- *
- * Used in get methods to get request params to the filter. Encapuslates the
- * request into a wrapper to do so.
+ * TODO: document me. Used in get methods to get request params to the filter. Encapuslates the request into a wrapper
+ * to do so.
  *
  * @author tiry
  */
@@ -45,8 +43,7 @@ public class FancyURLRequestWrapper extends HttpServletRequestWrapper {
         super(request);
     }
 
-    public FancyURLRequestWrapper(HttpServletRequest request,
-            DocumentView docView) {
+    public FancyURLRequestWrapper(HttpServletRequest request, DocumentView docView) {
         super(request);
         this.docView = docView;
     }
@@ -63,7 +60,7 @@ public class FancyURLRequestWrapper extends HttpServletRequestWrapper {
             result = new HashMap<String, String[]>(result);
         }
         if (docView != null) {
-            for (Map.Entry<String,String> param:docView.getParameters().entrySet()) {
+            for (Map.Entry<String, String> param : docView.getParameters().entrySet()) {
                 result.put(param.getKey(), new String[] { param.getValue() });
             }
         }

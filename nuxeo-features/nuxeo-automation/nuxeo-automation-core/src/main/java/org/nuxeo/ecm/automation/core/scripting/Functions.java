@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.automation.core.scripting;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

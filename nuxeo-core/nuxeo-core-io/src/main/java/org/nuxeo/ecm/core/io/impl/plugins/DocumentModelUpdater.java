@@ -29,8 +29,8 @@ import org.nuxeo.ecm.core.io.impl.AbstractDocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 
 /**
- * A writer that only updates existing documents. The doc ID is used to identity documents.
- * The imported tree structure is ignored.
+ * A writer that only updates existing documents. The doc ID is used to identity documents. The imported tree structure
+ * is ignored.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -42,20 +42,18 @@ public class DocumentModelUpdater extends AbstractDocumentModelWriter {
 
     /**
      * @param session the session to the repository where to write
-     * @param parentPath where to write the tree. this document will be used as
-     *            the parent of all top level documents passed as input. Note
-     *            that you may have
+     * @param parentPath where to write the tree. this document will be used as the parent of all top level documents
+     *            passed as input. Note that you may have
      */
     public DocumentModelUpdater(CoreSession session, String parentPath) {
         super(session, parentPath);
     }
 
-    public DocumentModelUpdater(CoreSession session, String parentPath,
-            int saveInterval) {
+    public DocumentModelUpdater(CoreSession session, String parentPath, int saveInterval) {
         super(session, parentPath, saveInterval);
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     @Override
     public DocumentTranslationMap write(ExportedDocument xdoc) throws IOException {
         if (xdoc.getDocument() == null) {
@@ -69,22 +67,18 @@ public class DocumentModelUpdater extends AbstractDocumentModelWriter {
         try {
             doc = session.getDocument(new IdRef(id));
         } catch (ClientException e) {
-            log.error("Cannot update document. No such document: "
-                    + id);
+            log.error("Cannot update document. No such document: " + id);
             return null;
         }
 
         try {
             doc = updateDocument(xdoc, doc);
             DocumentLocation source = xdoc.getSourceLocation();
-            DocumentTranslationMap map = new DocumentTranslationMapImpl(
-                    source.getServerName(), doc.getRepositoryName());
+            DocumentTranslationMap map = new DocumentTranslationMapImpl(source.getServerName(), doc.getRepositoryName());
             map.put(source.getDocRef(), doc.getRef());
             return map;
         } catch (ClientException e) {
-            IOException ioe = new IOException(
-                    "Failed to import document in repository: "
-                            + e.getMessage());
+            IOException ioe = new IOException("Failed to import document in repository: " + e.getMessage());
             ioe.setStackTrace(e.getStackTrace());
             log.error(e);
             return null;

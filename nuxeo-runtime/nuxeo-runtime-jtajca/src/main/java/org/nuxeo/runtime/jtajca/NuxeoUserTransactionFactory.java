@@ -27,8 +27,7 @@ import javax.transaction.UserTransaction;
 public class NuxeoUserTransactionFactory implements ObjectFactory {
 
     @Override
-    public Object getObjectInstance(Object obj, Name objName, Context nameCtx,
-            Hashtable<?, ?> env) {
+    public Object getObjectInstance(Object obj, Name objName, Context nameCtx, Hashtable<?, ?> env) {
         Reference ref = (Reference) obj;
         if (!UserTransaction.class.getName().equals(ref.getClassName())) {
             return null;

@@ -48,8 +48,7 @@ public class XL2TextConverter implements Converter {
     private static final String ROW_SEP = "\n\n";
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         InputStream stream = null;
         StringBuffer sb = new StringBuffer();

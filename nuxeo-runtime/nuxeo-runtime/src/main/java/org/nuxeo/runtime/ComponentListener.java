@@ -17,8 +17,7 @@ package org.nuxeo.runtime;
 /**
  * Listener to be notified about components life cycle events.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface ComponentListener {
 

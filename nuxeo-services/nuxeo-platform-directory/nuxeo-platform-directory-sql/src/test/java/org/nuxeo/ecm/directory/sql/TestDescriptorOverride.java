@@ -45,8 +45,7 @@ public class TestDescriptorOverride extends SQLDirectoryTestCase {
         Assert.assertNull(config.cacheEntryWithoutReferencesName);
         assertEquals("test-users.csv", config.getDataFileName());
 
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-sql-directories-override-bundle.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-override-bundle.xml");
 
         dir = getDirectory("userDirectory");
         sqlDir = (SQLDirectory) dir;
@@ -58,8 +57,7 @@ public class TestDescriptorOverride extends SQLDirectoryTestCase {
         assertTrue(config.isAutoincrementIdField());
         assertFalse(config.isComputeMultiTenantId());
         Assert.assertEquals("override-entry-cache", config.cacheEntryName);
-        Assert.assertEquals("override-entry-cache-wo-ref",
-                config.cacheEntryWithoutReferencesName);
+        Assert.assertEquals("override-entry-cache-wo-ref", config.cacheEntryWithoutReferencesName);
 
         // inherit
         assertEquals("test-users.csv", config.getDataFileName());

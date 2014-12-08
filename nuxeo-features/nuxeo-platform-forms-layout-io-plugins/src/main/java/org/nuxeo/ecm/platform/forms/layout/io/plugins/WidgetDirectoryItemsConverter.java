@@ -25,13 +25,11 @@ import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutConversionContex
 import org.nuxeo.ecm.platform.forms.layout.io.plugins.helpers.VocabularyHelper;
 
 /**
- * Converter that adds translated select options to widgets rendering directory
- * items
+ * Converter that adds translated select options to widgets rendering directory items
  *
  * @since 5.5
  */
-public class WidgetDirectoryItemsConverter extends
-        AbstractWidgetDefinitionConverter {
+public class WidgetDirectoryItemsConverter extends AbstractWidgetDefinitionConverter {
 
     public static final String DIR_NAME_PROPERTY = "directoryName";
 
@@ -45,26 +43,23 @@ public class WidgetDirectoryItemsConverter extends
     }
 
     @Override
-    public WidgetDefinition getWidgetDefinition(WidgetDefinition widgetDef,
-            LayoutConversionContext ctx) {
+    public WidgetDefinition getWidgetDefinition(WidgetDefinition widgetDef, LayoutConversionContext ctx) {
         String wType = widgetDef.getType();
         if (isDirectoryWidget(wType)) {
-            String dirName = (String) widgetDef.getProperties(BuiltinModes.ANY,
-                    BuiltinModes.ANY).get(DIR_NAME_PROPERTY);
+            String dirName = (String) widgetDef.getProperties(BuiltinModes.ANY, BuiltinModes.ANY).get(DIR_NAME_PROPERTY);
             if (dirName == null) {
-                dirName = (String) widgetDef.getProperties(BuiltinModes.ANY,
-                        BuiltinWidgetModes.EDIT).get(DIR_NAME_PROPERTY);
+                dirName = (String) widgetDef.getProperties(BuiltinModes.ANY, BuiltinWidgetModes.EDIT).get(
+                        DIR_NAME_PROPERTY);
             }
             if (dirName == null) {
-                dirName = (String) widgetDef.getProperties(BuiltinModes.ANY,
-                        BuiltinWidgetModes.VIEW).get(DIR_NAME_PROPERTY);
+                dirName = (String) widgetDef.getProperties(BuiltinModes.ANY, BuiltinWidgetModes.VIEW).get(
+                        DIR_NAME_PROPERTY);
             }
             if (dirName != null) {
                 WidgetDefinition clone = getClonedWidget(widgetDef);
                 // change select options on new widget
-                WidgetSelectOption[] selectOptions = VocabularyHelper.getVocabularySelectOptions(
-                        dirName, ctx.getLanguage()).toArray(
-                        new WidgetSelectOption[] {});
+                WidgetSelectOption[] selectOptions = VocabularyHelper.getVocabularySelectOptions(dirName,
+                        ctx.getLanguage()).toArray(new WidgetSelectOption[] {});
                 clone.setSelectOptions(selectOptions);
                 return clone;
             }

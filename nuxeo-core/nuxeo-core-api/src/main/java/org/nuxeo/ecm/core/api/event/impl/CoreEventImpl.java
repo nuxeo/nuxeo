@@ -50,8 +50,8 @@ public class CoreEventImpl implements CoreEvent {
     public static final String CATEGORY_ATTRIBUTE = "category";
 
     @SuppressWarnings("unchecked")
-    public CoreEventImpl(String eventId, Object source, Map<String, ?> info,
-            Principal principal, String category, String comment) {
+    public CoreEventImpl(String eventId, Object source, Map<String, ?> info, Principal principal, String category,
+            String comment) {
         date = new Date();
         if (eventId != null) {
             this.eventId = eventId.intern();

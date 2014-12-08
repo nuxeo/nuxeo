@@ -35,8 +35,7 @@ import org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService;
 
 public class DocUIDGeneratorListener implements EventListener {
 
-    private static final Log log = LogFactory
-            .getLog(DocUIDGeneratorListener.class);
+    private static final Log log = LogFactory.getLog(DocUIDGeneratorListener.class);
 
     public void handleEvent(Event event) throws ClientException {
 
@@ -47,7 +46,7 @@ public class DocUIDGeneratorListener implements EventListener {
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel doc = docCtx.getSourceDocument();
-            if(doc.isProxy() || doc.isVersion()) {
+            if (doc.isProxy() || doc.isVersion()) {
                 // a proxy or version keeps the uid of the document
                 // being proxied or versioned => we're not allowed
                 // to modify its field.
@@ -58,9 +57,7 @@ public class DocUIDGeneratorListener implements EventListener {
             try {
                 addUIDtoDoc(doc);
             } catch (DocumentException e) {
-                log.error(
-                        "Error occurred while generating UID for doc: " + doc,
-                        e);
+                log.error("Error occurred while generating UID for doc: " + doc, e);
             }
         }
     }

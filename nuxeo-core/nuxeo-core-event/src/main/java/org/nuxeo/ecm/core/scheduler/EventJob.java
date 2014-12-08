@@ -47,8 +47,7 @@ public class EventJob implements Job {
      * Job execution to send the configured event.
      */
     @Override
-    public void execute(JobExecutionContext context)
-            throws JobExecutionException {
+    public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
         // switch to the Nuxeo classloader so that the event listeners
@@ -61,16 +60,14 @@ public class EventJob implements Job {
             execute(dataMap);
         } catch (LoginException | ClientException e) {
             String eventId = dataMap.getString("eventId");
-            log.error("Error while processing scheduled event id: " + eventId,
-                    e);
+            log.error("Error while processing scheduled event id: " + eventId, e);
         } finally {
             Thread.currentThread().setContextClassLoader(oldCL);
         }
     }
 
     @SuppressWarnings("unchecked")
-    protected void execute(JobDataMap dataMap) throws LoginException,
-            ClientException {
+    protected void execute(JobDataMap dataMap) throws LoginException, ClientException {
         String eventId = dataMap.getString("eventId");
         String eventCategory = dataMap.getString("eventCategory");
         String username = dataMap.getString("username");
@@ -101,8 +98,7 @@ public class EventJob implements Job {
             }
 
             // set up event context
-            UserPrincipal principal = new UserPrincipal(username, null, false,
-                    false);
+            UserPrincipal principal = new UserPrincipal(username, null, false, false);
             EventContext eventContext = new EventContextImpl(null, principal);
             eventContext.setProperty("category", eventCategory);
             eventContext.setProperties(dataMap);
@@ -112,8 +108,8 @@ public class EventJob implements Job {
             boolean tx = TransactionHelper.startTransaction();
 
             // send event
-            log.debug("Sending scheduled event id=" + eventId + ", category="
-                    + eventCategory + ", username=" + username);
+            log.debug("Sending scheduled event id=" + eventId + ", category=" + eventCategory + ", username="
+                    + username);
             boolean ok = false;
             try {
                 eventService.fireEvent(event);

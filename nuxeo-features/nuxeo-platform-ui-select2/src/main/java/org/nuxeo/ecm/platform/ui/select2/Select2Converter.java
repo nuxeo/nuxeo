@@ -51,15 +51,12 @@ public class Select2Converter implements Serializable, Converter {
     }
 
     public static String getSeparator(UIComponent component) {
-        String widget_separator = (String) component.getAttributes().get(
-                SEP_ATTRIBUTE_NAME);
-        return StringUtils.isNotBlank(widget_separator) ? widget_separator
-                : getSeparator();
+        String widget_separator = (String) component.getAttributes().get(SEP_ATTRIBUTE_NAME);
+        return StringUtils.isNotBlank(widget_separator) ? widget_separator : getSeparator();
     }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component,
-            String value) {
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
         if (value == null || value.isEmpty()) {
             return null;
         } else {
@@ -74,8 +71,7 @@ public class Select2Converter implements Serializable, Converter {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public String getAsString(FacesContext context, UIComponent component,
-            Object value) {
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null) {
             return null;
         } else {
@@ -91,8 +87,7 @@ public class Select2Converter implements Serializable, Converter {
                 }
             }
             if (stringValue.endsWith(separator)) {
-                stringValue = stringValue.substring(0, stringValue.length()
-                        - separator.length());
+                stringValue = stringValue.substring(0, stringValue.length() - separator.length());
             }
             return stringValue;
         }

@@ -30,11 +30,9 @@ public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType 
     protected Map<String, Schema> schemas = new LinkedHashMap<String, Schema>();
 
     /**
-     * Constructs a composite type. Schemas must include those from the super
-     * type.
+     * Constructs a composite type. Schemas must include those from the super type.
      */
-    public CompositeTypeImpl(CompositeType superType, String schema,
-            String name, List<Schema> schemaList) {
+    public CompositeTypeImpl(CompositeType superType, String schema, String name, List<Schema> schemaList) {
         super(superType, schema, name);
         if (schemaList == null) {
             schemaList = Collections.emptyList();

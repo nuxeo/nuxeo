@@ -21,12 +21,9 @@ import java.util.Map;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
- *
  * @since 5.6
- *
  */
-public class PropertiesMappingContributionRegistry extends
-        SimpleContributionRegistry<PropertiesMappingDescriptor> {
+public class PropertiesMappingContributionRegistry extends SimpleContributionRegistry<PropertiesMappingDescriptor> {
 
     @Override
     public String getContributionId(PropertiesMappingDescriptor contrib) {

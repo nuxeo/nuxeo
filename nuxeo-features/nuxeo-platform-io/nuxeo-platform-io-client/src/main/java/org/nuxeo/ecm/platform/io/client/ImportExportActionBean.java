@@ -103,13 +103,11 @@ public class ImportExportActionBean implements Serializable {
         return null;
     }
 
-    private static void handleRedirect(HttpServletResponse response, String url)
-            throws IOException {
+    private static void handleRedirect(HttpServletResponse response, String url) throws IOException {
         response.resetBuffer();
         response.sendRedirect(url);
         response.flushBuffer();
-        getHttpServletRequest().setAttribute(
-                NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+        getHttpServletRequest().setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
         FacesContext.getCurrentInstance().responseComplete();
     }
 
@@ -134,13 +132,11 @@ public class ImportExportActionBean implements Serializable {
      *
      * @since 5.4.2
      * @param doc the document to export
-     * @param exportAsZip a boolean stating if export should be given in ZIP
-     *            format. When exporting the tree, ZIP format is forced.
-     * @param exportAsTree a boolean stating if export should include the
-     *            document children.
+     * @param exportAsZip a boolean stating if export should be given in ZIP format. When exporting the tree, ZIP format
+     *            is forced.
+     * @param exportAsTree a boolean stating if export should include the document children.
      */
-    public String getExportURL(DocumentModel doc, boolean exportAsZip,
-            boolean exportAsTree) {
+    public String getExportURL(DocumentModel doc, boolean exportAsZip, boolean exportAsTree) {
         if (doc == null) {
             return null;
         }
@@ -181,8 +177,7 @@ public class ImportExportActionBean implements Serializable {
      * @since 5.4.2
      */
     public String getDocumentXMLExportURL() {
-        return getExportURL(navigationContext.getCurrentDocument(), false,
-                false);
+        return getExportURL(navigationContext.getCurrentDocument(), false, false);
     }
 
     /**
@@ -232,8 +227,7 @@ public class ImportExportActionBean implements Serializable {
             pipe.run();
 
             String filename = "export.zip";
-            response.setHeader("Content-Disposition", "attachment; filename=\""
-                    + filename + "\";");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\";");
             response.setHeader("Content-Type", "application/zip");
             FacesContext.getCurrentInstance().responseComplete();
         } catch (ClientException | IOException e) {

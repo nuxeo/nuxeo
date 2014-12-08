@@ -26,8 +26,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**
- * Helper to manage {@link LogEntry} comment processing
- * (code was moved from the Seam bean)
+ * Helper to manage {@link LogEntry} comment processing (code was moved from the Seam bean)
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
@@ -45,7 +44,7 @@ public class CommentProcessorHelper {
             return;
         }
         for (LogEntry entry : logEntries) {
-            String comment  = getLogComment(entry);
+            String comment = getLogComment(entry);
             LinkedDocument linkedDoc = getLogLinkedDocument(entry);
             entry.setPreprocessedComment(new UIAuditComment(comment, linkedDoc));
         }
@@ -102,8 +101,7 @@ public class CommentProcessorHelper {
                 // test if strDocRef is a document uuid to continue
                 if (IdUtils.isValidUUID(strDocRef)) {
                     DocumentRef docRef = new IdRef(strDocRef);
-                    RepositoryLocation repoLoc = new RepositoryLocation(
-                            repoName);
+                    RepositoryLocation repoLoc = new RepositoryLocation(repoName);
 
                     // create linked doc, broken by default
                     linkedDoc = new LinkedDocument();

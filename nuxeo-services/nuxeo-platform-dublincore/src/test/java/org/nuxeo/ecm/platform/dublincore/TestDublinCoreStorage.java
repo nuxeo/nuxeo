@@ -56,8 +56,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.dublincore");
-        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
-                "OSGI-INF/types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.dublincore.tests", "OSGI-INF/types-contrib.xml");
         deployBundle("org.nuxeo.ecm.core.event");
 
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
@@ -83,8 +82,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     @Test
     public void testCreationDateAndCreator() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file-007", "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-007", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         assertNotNull(childFile2.getPropertyValue("dc:created"));
         assertEquals("Administrator", childFile2.getPropertyValue("dc:creator"));
@@ -92,8 +90,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     @Test
     public void testModificationDate() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file-008", "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
 
         try {
@@ -112,15 +109,13 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         Calendar modified = (Calendar) childFile2.getPropertyValue("dc:modified");
         assertNotNull(modified);
 
-        assertTrue(modified.getTime() + " !> " + created.getTime(),
-                modified.after(created));
+        assertTrue(modified.getTime() + " !> " + created.getTime(), modified.after(created));
     }
 
     // Wait until we can have a real list management
     @Test
     public void testContributors() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file-008", "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         DataModel dm = childFile2.getDataModel("dublincore");
 
@@ -149,18 +144,15 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         childFile3.setProperty("dublincore", "source", "testing");
         childFile3 = session.saveDocument(childFile3);
 
-        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
-                "contributors");
+        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Jacky"));
-        assertEquals("Administrator",
-                childFile3.getProperty("dublincore", "creator"));
+        assertEquals("Administrator", childFile3.getProperty("dublincore", "creator"));
     }
 
     @Test
     public void testLastContributor() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file-008", "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         DataModel dm = childFile2.getDataModel("dublincore");
 
@@ -190,13 +182,11 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         childFile3.setProperty("dublincore", "source", "testing");
         childFile3 = session.saveDocument(childFile3);
 
-        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
-                "contributors");
+        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Jacky"));
         assertEquals(1, contributorsList.indexOf("Jacky"));
-        assertEquals("Jacky",
-                childFile3.getProperty("dublincore", "lastContributor"));
+        assertEquals("Jacky", childFile3.getProperty("dublincore", "lastContributor"));
         session.save();
         closeSession();
 
@@ -207,12 +197,10 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         childFile3.setProperty("dublincore", "source", "testing");
         childFile3 = session.saveDocument(childFile3);
 
-        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
-                "contributors");
+        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Fredo"));
-        assertEquals("Fredo",
-                childFile3.getProperty("dublincore", "lastContributor"));
+        assertEquals("Fredo", childFile3.getProperty("dublincore", "lastContributor"));
         session.save();
         closeSession();
 
@@ -223,27 +211,22 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         childFile3.setProperty("dublincore", "source", "testing");
         childFile3 = session.saveDocument(childFile3);
 
-        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
-                "contributors");
+        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Administrator"));
-        assertEquals("Administrator",
-                childFile3.getProperty("dublincore", "lastContributor"));
+        assertEquals("Administrator", childFile3.getProperty("dublincore", "lastContributor"));
     }
 
     @Test
     public void testIssuedDate() throws ClientException {
-        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
-                "Folder");
+        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
         folder1 = session.createDocument(folder1);
-        DocumentModel file1 = new DocumentModelImpl("/testfolder1",
-                "testfile1", "File");
+        DocumentModel file1 = new DocumentModelImpl("/testfolder1", "testfile1", "File");
         file1 = session.createDocument(file1);
         DocumentModel proxyDoc = session.publishDocument(file1, folder1);
 
         getEventProducer().fireEvent(
-                new DocumentEventContext(session, session.getPrincipal(),
-                        proxyDoc).newEvent("documentPublished"));
+                new DocumentEventContext(session, session.getPrincipal(), proxyDoc).newEvent("documentPublished"));
 
         DocumentModel version = session.getSourceDocument(proxyDoc.getRef());
         Calendar issued = (Calendar) version.getPropertyValue("dc:issued");
@@ -284,16 +267,13 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     @Test
     public void testDisableListener() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file-007", "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file-007", "File");
         childFile.setPropertyValue("dc:creator", "Bender");
         Date now = new Date();
         childFile.setPropertyValue("dc:created", now);
         childFile.putContextData(DISABLE_DUBLINCORE_LISTENER, Boolean.TRUE);
         DocumentModel childFile2 = session.createDocument(childFile);
-        assertEquals(
-                now,
-                ((Calendar) childFile2.getPropertyValue("dc:created")).getTime());
+        assertEquals(now, ((Calendar) childFile2.getPropertyValue("dc:created")).getTime());
         assertEquals("Bender", childFile2.getPropertyValue("dc:creator"));
     }
 
@@ -309,8 +289,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
     public void testCreatorForUnrestrictedSessionCreatedDoc() throws Exception {
         closeSession();
         session = openSessionAs("Jacky");
-        CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(
-                session);
+        CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(session);
         runner.runUnrestricted();
         DocumentModel doc = runner.getFolder();
         String creator = (String) doc.getPropertyValue("dc:creator");

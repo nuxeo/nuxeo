@@ -69,8 +69,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(SESSION_FACTORY)) {
             SessionFactoryDescriptor descriptor = (SessionFactoryDescriptor) contribution;
             registerSessionFactory(descriptor);
@@ -84,8 +83,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         // TODO deal with other extension points
         if (extensionPoint.equals(ACTION_PIPES)) {
             MessageActionPipeDescriptor descriptor = (MessageActionPipeDescriptor) contribution;
@@ -109,14 +107,12 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     }
 
     private static void setDecodeUTFFileNamesSystemProperty() {
-        String toDecodeTheFilenames = Framework.getRuntime().getProperty(
-                "mail.mime.decodefilename");
+        String toDecodeTheFilenames = Framework.getRuntime().getProperty("mail.mime.decodefilename");
         if (toDecodeTheFilenames == null) {
             return;
         }
         toDecodeTheFilenames = toDecodeTheFilenames.trim().toLowerCase();
-        if (toDecodeTheFilenames.equals("true")
-                || toDecodeTheFilenames.equals("yes")) {
+        if (toDecodeTheFilenames.equals("true") || toDecodeTheFilenames.equals("yes")) {
             System.setProperty("mail.mime.decodefilename", "true");
             return;
         }
@@ -127,8 +123,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         return getConnectedStore(name, null);
     }
 
-    public Store getConnectedStore(String name, Map<String, Object> context)
-            throws MessagingException {
+    public Store getConnectedStore(String name, Map<String, Object> context) throws MessagingException {
         Properties props = getProperties(name, context);
         Session session = newSession(props);
         Store store = session.getStore();
@@ -140,18 +135,15 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         return getFetcher(name).getProperties(map);
     }
 
-    public Transport getConnectedTransport(String name)
-            throws MessagingException {
+    public Transport getConnectedTransport(String name) throws MessagingException {
         return getConnectedTransport(name, null);
     }
 
-    public Transport getConnectedTransport(String name,
-            Map<String, Object> context) throws MessagingException {
+    public Transport getConnectedTransport(String name, Map<String, Object> context) throws MessagingException {
         Properties props = getProperties(name, context);
         Session session = newSession(props);
         Transport transport = session.getTransport();
-        transport.connect(props.getProperty("user"),
-                props.getProperty("password"));
+        transport.connect(props.getProperty("user"), props.getProperty("password"));
         return transport;
     }
 
@@ -164,26 +156,22 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         return newSession(props);
     }
 
-    public MailBoxActions getMailBoxActions(String factoryName,
-            String folderName) throws MessagingException {
+    public MailBoxActions getMailBoxActions(String factoryName, String folderName) throws MessagingException {
         return getMailBoxActions(factoryName, folderName, null);
     }
 
-    public MailBoxActions getMailBoxActions(String factoryName,
-            String folderName, Map<String, Object> context)
+    public MailBoxActions getMailBoxActions(String factoryName, String folderName, Map<String, Object> context)
             throws MessagingException {
         Store store = getConnectedStore(factoryName, context);
         Folder folder = store.getFolder(folderName);
         return new MailBoxActionsImpl(folder, true);
     }
 
-    public void sendMail(String text, String subject, String factory,
-            Address[] recipients) {
+    public void sendMail(String text, String subject, String factory, Address[] recipients) {
         sendMail(text, subject, factory, recipients, null);
     }
 
-    public void sendMail(String text, String subject, String factory,
-            Address[] recipients, Map<String, Object> context) {
+    public void sendMail(String text, String subject, String factory, Address[] recipients, Map<String, Object> context) {
         Session session = getSession(factory, context);
         Message message = new MimeMessage(session);
         try {

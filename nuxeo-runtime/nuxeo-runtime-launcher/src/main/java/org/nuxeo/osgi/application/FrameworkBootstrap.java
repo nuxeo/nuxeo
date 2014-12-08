@@ -36,7 +36,6 @@ import java.util.zip.ZipEntry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -66,8 +65,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         this(new MutableClassLoaderDelegate(cl), home);
     }
 
-    public FrameworkBootstrap(MutableClassLoader loader, File home)
-            throws IOException {
+    public FrameworkBootstrap(MutableClassLoader loader, File home) throws IOException {
         this.home = home.getCanonicalFile();
         this.loader = loader;
         initializeEnvironment();
@@ -116,17 +114,14 @@ public class FrameworkBootstrap implements LoaderConstants {
     public void initialize() throws ReflectiveOperationException, IOException {
         startTime = System.currentTimeMillis();
         List<File> bundleFiles = buildClassPath();
-        frameworkLoaderClass = getClassLoader().loadClass(
-                "org.nuxeo.osgi.application.loader.FrameworkLoader");
-        Method init = frameworkLoaderClass.getMethod("initialize",
-                ClassLoader.class, File.class, List.class, Map.class);
+        frameworkLoaderClass = getClassLoader().loadClass("org.nuxeo.osgi.application.loader.FrameworkLoader");
+        Method init = frameworkLoaderClass.getMethod("initialize", ClassLoader.class, File.class, List.class, Map.class);
         init.invoke(null, loader.getClassLoader(), home, bundleFiles, env);
     }
 
     public void start() throws ReflectiveOperationException, IOException {
         if (frameworkLoaderClass == null) {
-            throw new IllegalStateException(
-                    "Framework Loader was not initialized. Call initialize() method first");
+            throw new IllegalStateException("Framework Loader was not initialized. Call initialize() method first");
         }
         Method start = frameworkLoaderClass.getMethod("start");
         start.invoke(null);
@@ -135,8 +130,7 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     public void stop() throws ReflectiveOperationException {
         if (frameworkLoaderClass == null) {
-            throw new IllegalStateException(
-                    "Framework Loader was not initialized. Call initialize() method first");
+            throw new IllegalStateException("Framework Loader was not initialized. Call initialize() method first");
         }
         Method stop = frameworkLoaderClass.getMethod("stop");
         stop.invoke(null);
@@ -144,8 +138,7 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     public String installBundle(File f) throws ReflectiveOperationException {
         if (frameworkLoaderClass == null) {
-            throw new IllegalStateException(
-                    "Framework Loader was not initialized. Call initialize() method first");
+            throw new IllegalStateException("Framework Loader was not initialized. Call initialize() method first");
         }
         Method install = frameworkLoaderClass.getMethod("install", File.class);
         return (String) install.invoke(null, f);
@@ -153,11 +146,9 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     public void uninstallBundle(String name) throws ReflectiveOperationException {
         if (frameworkLoaderClass == null) {
-            throw new IllegalStateException(
-                    "Framework Loader was not initialized. Call initialize() method first");
+            throw new IllegalStateException("Framework Loader was not initialized. Call initialize() method first");
         }
-        Method uninstall = frameworkLoaderClass.getMethod("uninstall",
-                String.class);
+        Method uninstall = frameworkLoaderClass.getMethod("uninstall", String.class);
         uninstall.invoke(null, name);
     }
 
@@ -192,8 +183,7 @@ public class FrameworkBootstrap implements LoaderConstants {
     }
 
     protected void printStartedMessage() {
-        log.info("Framework started in "
-                + ((System.currentTimeMillis() - startTime) / 1000) + " sec.");
+        log.info("Framework started in " + ((System.currentTimeMillis() - startTime) / 1000) + " sec.");
     }
 
     protected File newFile(String path) throws IOException {
@@ -242,8 +232,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         }
     }
 
-    protected void buildBundlesClassPath(String bundlesCp,
-            List<File> bundleFiles) throws IOException {
+    protected void buildBundlesClassPath(String bundlesCp, List<File> bundleFiles) throws IOException {
         String[] ar = bundlesCp.split(":");
         for (String entry : ar) {
             File entryFile;
@@ -253,8 +242,7 @@ public class FrameworkBootstrap implements LoaderConstants {
                 if (files != null) {
                     for (File file : files) {
                         String path = file.getPath();
-                        if (path.endsWith(".jar") || path.endsWith(".zip")
-                                || path.endsWith(".war")
+                        if (path.endsWith(".jar") || path.endsWith(".zip") || path.endsWith(".war")
                                 || path.endsWith("rar")) {
                             bundleFiles.add(file);
                             loader.addURL(file.toURI().toURL());
@@ -269,8 +257,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         }
     }
 
-    protected void extractNestedJars(List<File> bundleFiles, File dir)
-            throws IOException {
+    protected void extractNestedJars(List<File> bundleFiles, File dir) throws IOException {
         if (!scanForNestedJars) {
             return;
         }
@@ -311,8 +298,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         }
     }
 
-    protected void extractNestedJar(JarFile file, ZipEntry entry, File dest)
-            throws IOException {
+    protected void extractNestedJar(JarFile file, ZipEntry entry, File dest) throws IOException {
         InputStream in = null;
         try {
             in = file.getInputStream(entry);

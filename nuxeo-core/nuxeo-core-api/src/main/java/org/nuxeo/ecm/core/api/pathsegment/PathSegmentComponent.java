@@ -24,8 +24,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Central service for the generation of a path segment for a document.
  */
-public class PathSegmentComponent extends DefaultComponent implements
-        PathSegmentService {
+public class PathSegmentComponent extends DefaultComponent implements PathSegmentService {
 
     private static final Log log = LogFactory.getLog(PathSegmentComponent.class);
 
@@ -52,8 +51,7 @@ public class PathSegmentComponent extends DefaultComponent implements
 
     @Override
     @SuppressWarnings("unchecked")
-    public void registerContribution(Object contrib, String xp,
-            ComponentInstance contributor) {
+    public void registerContribution(Object contrib, String xp, ComponentInstance contributor) {
         if (!XP.equals(xp)) {
             log.error("Unknown extension point " + xp);
             return;
@@ -80,8 +78,7 @@ public class PathSegmentComponent extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contrib, String xp,
-            ComponentInstance contributor) {
+    public void unregisterContribution(Object contrib, String xp, ComponentInstance contributor) {
         if (!XP.equals(xp)) {
             return;
         }

@@ -26,8 +26,7 @@ import com.sun.faces.renderkit.RenderKitImpl;
  */
 public class NuxeoRenderKitImpl extends RenderKitImpl {
 
-    private ResponseStateManager responseStateManager =
-            new NuxeoResponseStateManagerImpl();
+    private ResponseStateManager responseStateManager = new NuxeoResponseStateManagerImpl();
 
     @Override
     public synchronized ResponseStateManager getResponseStateManager() {

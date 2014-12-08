@@ -25,8 +25,7 @@ public final class WebNegotiator extends AbstractNegotiator {
         return "freemarker";
     }
 
-    public WebNegotiator(final String strategy, final WebContext context,
-            final HttpServletRequest request) {
+    public WebNegotiator(final String strategy, final WebContext context, final HttpServletRequest request) {
         super(strategy, context, request);
     }
 

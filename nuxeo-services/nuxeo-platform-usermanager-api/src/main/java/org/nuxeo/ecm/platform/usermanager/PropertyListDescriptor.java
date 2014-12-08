@@ -25,11 +25,10 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Property list descriptor
+ * Property list descriptor APG-240 All attributes are defined public because the user manager service do not get access
+ * to the fields. OSGI don't allow splitted packages having access to public members defined from an another package
+ * provider.
  *
- *APG-240 All attributes are defined public because the user manager service do not get
- * access to the fields. OSGI don't allow splitted packages having access to public members defined
- * from an another package provider.
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("propertyList")

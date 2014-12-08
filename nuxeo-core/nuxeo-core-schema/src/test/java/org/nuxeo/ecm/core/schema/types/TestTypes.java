@@ -48,7 +48,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertEquals(AnyType.ID, type.getName());
         assertTrue(type.isAnyType());
         assertFalse(type.isSimpleType());
-        //assertFalse(type.isPrimitive());
+        // assertFalse(type.isPrimitive());
         assertFalse(type.isComplexType());
 
         assertNull(type.getSuperType());
@@ -78,10 +78,10 @@ public class TestTypes extends NXRuntimeTestCase {
         assertTrue(type.validate(""));
         assertTrue(type.validate(true));
 
-        //TODO: test convert method
+        // TODO: test convert method
     }
 
-    @SuppressWarnings({"SimplifiableJUnitAssertion", "AssertEqualsBetweenInconvertibleTypes"})
+    @SuppressWarnings({ "SimplifiableJUnitAssertion", "AssertEqualsBetweenInconvertibleTypes" })
     @Test
     public void testBooleanType() throws TypeException {
         SimpleType type = BooleanType.INSTANCE;
@@ -214,13 +214,13 @@ public class TestTypes extends NXRuntimeTestCase {
 
         // Conversion tests
         assertNull(type.decode(""));
-        //TODO (after the DateType class is fully implemented)
+        // TODO (after the DateType class is fully implemented)
     }
 
     // Custom types
     @Test
     public void testListType() throws TypeException {
-        ListType type = new ListTypeImpl(SchemaNames.BUILTIN,  "list type",  AnyType.INSTANCE);
+        ListType type = new ListTypeImpl(SchemaNames.BUILTIN, "list type", AnyType.INSTANCE);
 
         assertTrue(type.isListType());
         assertEquals("list type", type.getName());
@@ -238,13 +238,13 @@ public class TestTypes extends NXRuntimeTestCase {
         assertFalse(type.validate(""));
         assertFalse(type.validate(true));
 
-        //TODO: add tests for collections once this is implemented
+        // TODO: add tests for collections once this is implemented
     }
 
     @Test
     public void testCompositeType() {
-        CompositeTypeImpl type = new CompositeTypeImpl(
-                (CompositeType) null, SchemaNames.BUILTIN,  "composite type", null);
+        CompositeTypeImpl type = new CompositeTypeImpl((CompositeType) null, SchemaNames.BUILTIN, "composite type",
+                null);
 
         assertTrue(type.isCompositeType());
         assertEquals("composite type", type.getName());

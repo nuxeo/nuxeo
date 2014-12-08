@@ -25,7 +25,6 @@ import java.util.zip.ZipInputStream;
  * Wrapper used because some consumer (SAX parser) tend to close the stream
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class UnclosableZipInputStream extends ZipInputStream {
 

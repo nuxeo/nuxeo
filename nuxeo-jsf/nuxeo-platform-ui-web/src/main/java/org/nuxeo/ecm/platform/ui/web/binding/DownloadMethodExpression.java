@@ -35,8 +35,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class DownloadMethodExpression extends MethodExpression implements
-        Serializable {
+public class DownloadMethodExpression extends MethodExpression implements Serializable {
 
     private static final long serialVersionUID = 9010857019674405375L;
 
@@ -44,8 +43,7 @@ public class DownloadMethodExpression extends MethodExpression implements
 
     private final ValueExpression fileNameExpression;
 
-    public DownloadMethodExpression(ValueExpression blobExpression,
-            ValueExpression fileNameExpression) {
+    public DownloadMethodExpression(ValueExpression blobExpression, ValueExpression fileNameExpression) {
         this.blobExpression = blobExpression;
         this.fileNameExpression = fileNameExpression;
     }
@@ -63,8 +61,7 @@ public class DownloadMethodExpression extends MethodExpression implements
 
         DownloadMethodExpression other = (DownloadMethodExpression) o;
 
-        if (blobExpression != null ? !blobExpression.equals(other.blobExpression)
-                : other.blobExpression != null) {
+        if (blobExpression != null ? !blobExpression.equals(other.blobExpression) : other.blobExpression != null) {
             return false;
         }
         if (fileNameExpression != null ? !fileNameExpression.equals(other.fileNameExpression)
@@ -78,17 +75,14 @@ public class DownloadMethodExpression extends MethodExpression implements
     @Override
     public int hashCode() {
         int result = blobExpression != null ? blobExpression.hashCode() : 0;
-        result = 31 * result
-                + (fileNameExpression != null ? fileNameExpression.hashCode()
-                        : 0);
+        result = 31 * result + (fileNameExpression != null ? fileNameExpression.hashCode() : 0);
         return result;
     }
 
     @Override
     public String getExpressionString() {
         // return only the blob one
-        return blobExpression == null ? null
-                : blobExpression.getExpressionString();
+        return blobExpression == null ? null : blobExpression.getExpressionString();
     }
 
     @Override

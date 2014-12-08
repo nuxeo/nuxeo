@@ -14,11 +14,9 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 
 /**
- * The identification of a {@link Row} (table name and id) without the row
- * content itself.
+ * The identification of a {@link Row} (table name and id) without the row content itself.
  * <p>
- * This class is sometimes used as a marker for an "absent" row in the database,
- * when mixed with actual {@link Row}s.
+ * This class is sometimes used as a marker for an "absent" row in the database, when mixed with actual {@link Row}s.
  */
 public class RowId implements Serializable {
 

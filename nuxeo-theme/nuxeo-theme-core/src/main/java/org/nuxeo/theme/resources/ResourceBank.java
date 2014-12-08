@@ -84,18 +84,14 @@ public class ResourceBank implements Type {
         return status != null && "OK".equals(new String(status));
     }
 
-    public byte[] getResourceContent(String collectionName, String typeName,
-            String resourceId) {
-        String src = String.format("%s/%s/%s/%s", connectionUrl,
-                URIUtils.quoteURIPathComponent(collectionName, true),
-                URIUtils.quoteURIPathComponent(typeName, true),
-                URIUtils.quoteURIPathComponent(resourceId, true));
+    public byte[] getResourceContent(String collectionName, String typeName, String resourceId) {
+        String src = String.format("%s/%s/%s/%s", connectionUrl, URIUtils.quoteURIPathComponent(collectionName, true),
+                URIUtils.quoteURIPathComponent(typeName, true), URIUtils.quoteURIPathComponent(resourceId, true));
         log.debug("Loading THEME " + typeName + " from: " + src);
         try {
             return Utils.fetchUrl(new URL(src));
         } catch (MalformedURLException e) {
-            log.error("Could not retrieve RESOURCE: " + src
-                    + " from THEME BANK: " + name);
+            log.error("Could not retrieve RESOURCE: " + src + " from THEME BANK: " + name);
         }
         return null;
     }
@@ -107,14 +103,12 @@ public class ResourceBank implements Type {
         try {
             list = new String(Utils.fetchUrl(new URL(src)));
         } catch (MalformedURLException e) {
-            log.error("Could not retrieve image list: " + src
-                    + " from THEME BANK: " + name);
+            log.error("Could not retrieve image list: " + src + " from THEME BANK: " + name);
             return images;
         }
         for (Object object : JSONArray.fromObject(list)) {
             Map<String, Object> image = JSONObject.fromObject(object);
-            images.add(new ImageInfo((String) image.get("name"),
-                    (String) image.get("collection")));
+            images.add(new ImageInfo((String) image.get("name"), (String) image.get("collection")));
         }
         return images;
     }
@@ -126,8 +120,7 @@ public class ResourceBank implements Type {
         try {
             list = new String(Utils.fetchUrl(new URL(src)));
         } catch (MalformedURLException e) {
-            log.error("Could not retrieve collection list: " + src
-                    + " from THEME BANK: " + name);
+            log.error("Could not retrieve collection list: " + src + " from THEME BANK: " + name);
             return paths;
         }
         for (Object path : JSONArray.fromObject(list)) {
@@ -144,16 +137,14 @@ public class ResourceBank implements Type {
         try {
             list = new String(Utils.fetchUrl(new URL(src)));
         } catch (MalformedURLException e) {
-            log.error("Could not retrieve skin list: " + src
-                    + " from THEME BANK: " + name);
+            log.error("Could not retrieve skin list: " + src + " from THEME BANK: " + name);
             return skins;
         }
         for (Object object : JSONArray.fromObject(list)) {
             Map<String, Object> skin = JSONObject.fromObject(object);
-            skins.add(new SkinInfo((String) skin.get("name"),
-                    (String) skin.get("bank"), (String) skin.get("collection"),
-                    (String) skin.get("resource"),
-                    (String) skin.get("preview"), (Boolean) skin.get("base")));
+            skins.add(new SkinInfo((String) skin.get("name"), (String) skin.get("bank"),
+                    (String) skin.get("collection"), (String) skin.get("resource"), (String) skin.get("preview"),
+                    (Boolean) skin.get("base")));
         }
         return skins;
     }
@@ -166,17 +157,13 @@ public class ResourceBank implements Type {
         try {
             list = new String(Utils.fetchUrl(new URL(src)));
         } catch (MalformedURLException e) {
-            log.error("Could not retrieve the style list: " + src
-                    + " from THEME BANK: " + name);
+            log.error("Could not retrieve the style list: " + src + " from THEME BANK: " + name);
             return styles;
         }
         for (Object object : JSONArray.fromObject(list)) {
             Map<String, Object> style = JSONObject.fromObject(object);
-            styles.add(new StyleInfo((String) style.get("name"),
-                    (String) style.get("bank"),
-                    (String) style.get("collection"),
-                    (String) style.get("resource"),
-                    (String) style.get("preview")));
+            styles.add(new StyleInfo((String) style.get("name"), (String) style.get("bank"),
+                    (String) style.get("collection"), (String) style.get("resource"), (String) style.get("preview")));
         }
         return styles;
     }
@@ -189,17 +176,13 @@ public class ResourceBank implements Type {
         try {
             list = new String(Utils.fetchUrl(new URL(src)));
         } catch (MalformedURLException e) {
-            log.error("Could not retrieve the preset list: " + src
-                    + " from THEME BANK: " + name);
+            log.error("Could not retrieve the preset list: " + src + " from THEME BANK: " + name);
             return presets;
         }
         for (Object object : JSONArray.fromObject(list)) {
             Map<String, Object> preset = JSONObject.fromObject(object);
-            presets.add(new PresetInfo((String) preset.get("name"),
-                    (String) preset.get("bank"),
-                    (String) preset.get("collection"),
-                    (String) preset.get("category"),
-                    (String) preset.get("value")));
+            presets.add(new PresetInfo((String) preset.get("name"), (String) preset.get("bank"),
+                    (String) preset.get("collection"), (String) preset.get("category"), (String) preset.get("value")));
         }
         return presets;
     }
@@ -224,8 +207,7 @@ public class ResourceBank implements Type {
             String name = presetInfo.getName();
             String label = name;
             String category = presetInfo.getCategory();
-            String group = String.format("%s %s", presetInfo.getCollection(),
-                    presetInfo.getCategory());
+            String group = String.format("%s %s", presetInfo.getCollection(), presetInfo.getCategory());
             String value = presetInfo.getValue();
 
             String typeName = presetInfo.getTypeName();
@@ -248,8 +230,7 @@ public class ResourceBank implements Type {
         List<StyleInfo> bankStyles = getStyles();
         for (StyleInfo styleInfo : bankStyles) {
             String styleName = styleInfo.getName();
-            Style style = (Style) themeManager.getNamedObject(themeName,
-                    "style", styleName);
+            Style style = (Style) themeManager.getNamedObject(themeName, "style", styleName);
 
             if (style == null) {
                 style = themeManager.createStyle();
@@ -259,8 +240,7 @@ public class ResourceBank implements Type {
             }
             String collectionName = styleInfo.getCollection();
             String resourceId = styleInfo.getResource();
-            String cssSource = ResourceManager.getBankResource(name,
-                    collectionName, "style", resourceId);
+            String cssSource = ResourceManager.getBankResource(name, collectionName, "style", resourceId);
             style.setCollection(collectionName);
             Utils.loadCss(style, cssSource, "*");
         }
@@ -283,8 +263,7 @@ public class ResourceBank implements Type {
         List<StyleInfo> bankStyles = getStyles();
         for (StyleInfo styleInfo : bankStyles) {
             String styleName = styleInfo.getName();
-            Style style = (Style) themeManager.getNamedObject(themeName,
-                    "style", styleName);
+            Style style = (Style) themeManager.getNamedObject(themeName, "style", styleName);
             if (style == null || style.isCustomized()) {
                 continue;
             }

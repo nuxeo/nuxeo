@@ -46,8 +46,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author Antoine Taillefer
  * @since 5.4.2
  */
-public class BatchManagerComponent extends DefaultComponent implements
-        BatchManager {
+public class BatchManagerComponent extends DefaultComponent implements BatchManager {
 
     protected ConcurrentHashMap<String, Batch> batches = new ConcurrentHashMap<String, Batch>();
 
@@ -82,8 +81,7 @@ public class BatchManagerComponent extends DefaultComponent implements
         }
     }
 
-    public void addStream(String batchId, String idx, InputStream is,
-            String name, String mime) throws IOException {
+    public void addStream(String batchId, String idx, InputStream is, String name, String mime) throws IOException {
         Batch batch = batches.get(batchId);
         if (batch == null) {
             batch = initBatchInternal(batchId, null);
@@ -131,40 +129,32 @@ public class BatchManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public Object execute(String batchId, String chainOrOperationId,
-            CoreSession session, Map<String, Object> contextParams,
-            Map<String, Object> operationParams) throws ClientException {
+    public Object execute(String batchId, String chainOrOperationId, CoreSession session,
+            Map<String, Object> contextParams, Map<String, Object> operationParams) throws ClientException {
         List<Blob> blobs = getBlobs(batchId, getUploadWaitTimeout());
         if (blobs == null) {
-            String message = String.format(
-                    "Unable to find batch associated with id '%s'", batchId);
+            String message = String.format("Unable to find batch associated with id '%s'", batchId);
             log.error(message);
             throw new ClientException(message);
         }
-        return execute(new BlobList(blobs), chainOrOperationId, session,
-                contextParams, operationParams);
+        return execute(new BlobList(blobs), chainOrOperationId, session, contextParams, operationParams);
     }
 
     @Override
-    public Object execute(String batchId, String fileIdx,
-            String chainOrOperationId, CoreSession session,
-            Map<String, Object> contextParams,
-            Map<String, Object> operationParams) throws ClientException {
+    public Object execute(String batchId, String fileIdx, String chainOrOperationId, CoreSession session,
+            Map<String, Object> contextParams, Map<String, Object> operationParams) throws ClientException {
         Blob blob = getBlob(batchId, fileIdx, getUploadWaitTimeout());
         if (blob == null) {
             String message = String.format(
-                    "Unable to find batch associated with id '%s' or file associated with index '%s'",
-                    batchId, fileIdx);
+                    "Unable to find batch associated with id '%s' or file associated with index '%s'", batchId, fileIdx);
             log.error(message);
             throw new ClientException(message);
         }
-        return execute(blob, chainOrOperationId, session, contextParams,
-                operationParams);
+        return execute(blob, chainOrOperationId, session, contextParams, operationParams);
     }
 
-    protected Object execute(Object blobInput, String chainOrOperationId,
-            CoreSession session, Map<String, Object> contextParams,
-            Map<String, Object> operationParams) throws ClientException {
+    protected Object execute(Object blobInput, String chainOrOperationId, CoreSession session,
+            Map<String, Object> contextParams, Map<String, Object> operationParams) throws ClientException {
         if (contextParams == null) {
             contextParams = new HashMap<>();
         }
@@ -189,8 +179,7 @@ public class BatchManagerComponent extends DefaultComponent implements
     }
 
     protected int getUploadWaitTimeout() {
-        String t = Framework.getProperty("org.nuxeo.batch.upload.wait.timeout",
-                "5");
+        String t = Framework.getProperty("org.nuxeo.batch.upload.wait.timeout", "5");
         try {
             return Integer.parseInt(t);
         } catch (NumberFormatException e) {
@@ -200,12 +189,10 @@ public class BatchManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public Object executeAndClean(String batchId, String chainOrOperationId,
-            CoreSession session, Map<String, Object> contextParams,
-            Map<String, Object> operationParams) throws ClientException {
+    public Object executeAndClean(String batchId, String chainOrOperationId, CoreSession session,
+            Map<String, Object> contextParams, Map<String, Object> operationParams) throws ClientException {
         try {
-            return execute(batchId, chainOrOperationId, session, contextParams,
-                    operationParams);
+            return execute(batchId, chainOrOperationId, session, contextParams, operationParams);
         } finally {
             clean(batchId);
         }

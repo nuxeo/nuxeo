@@ -27,8 +27,7 @@ import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 
 /**
- * Generic descriptor for query where clause, accepting predicates and a fixed
- * part. A custom escaper can also be set.
+ * Generic descriptor for query where clause, accepting predicates and a fixed part. A custom escaper can also be set.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -37,8 +36,7 @@ import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 public class WhereClauseDescriptor implements WhereClauseDefinition {
 
     /**
-     * @deprecated since 6.0: doc type moved up to the page provider
-     *             descriptor.
+     * @deprecated since 6.0: doc type moved up to the page provider descriptor.
      */
     @Deprecated
     @XNode("@docType")
@@ -53,9 +51,8 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
     protected String fixedPart;
 
     /**
-     * This parameter allows to override the default select statement used by
-     * the fixed part ("select * from Document" for NXQL queries, for
-     * instance).
+     * This parameter allows to override the default select statement used by the fixed part ("select * from Document"
+     * for NXQL queries, for instance).
      *
      * @since 5.9.2
      */
@@ -69,8 +66,7 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
     protected boolean escapeFixedPartParameters = true;
 
     /**
-     * @deprecated since 6.0: use
-     *             {@link BasePageProviderDescriptor#getSearchDocumentType()}
+     * @deprecated since 6.0: use {@link BasePageProviderDescriptor#getSearchDocumentType()}
      */
     @Deprecated
     public String getDocType() {

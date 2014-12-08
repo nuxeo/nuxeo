@@ -52,12 +52,11 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
             String name = bundle.getSymbolicName();
             runtime.bundles.put(name, bundle);
             int state = bundle.getState();
-            bundleDebug("Install bundle: %s " + bundleStateAsString(state),
-                    name);
+            bundleDebug("Install bundle: %s " + bundleStateAsString(state), name);
             if ((state & mask) != 0) { // check only resolved bundles
                 if (OSGiRuntimeService.getComponentsList(bundle) != null) {
-                    bundleDebug("Install bundle: %s component list: " +
-                            OSGiRuntimeService.getComponentsList(bundle), name);
+                    bundleDebug("Install bundle: %s component list: " + OSGiRuntimeService.getComponentsList(bundle),
+                            name);
                     // check only bundles containing nuxeo comp.
                     try {
                         runtime.createContext(bundle);
@@ -65,15 +64,13 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
                         ExceptionUtils.checkInterrupt(e);
                         // except for interruptions, don't raise this exception,
                         // we want to isolate bundle errors from other bundles
-                        log.warn("Failed to load components for bundle: "
-                                + name, e);
+                        log.warn("Failed to load components for bundle: " + name, e);
                     }
                 } else {
                     bundleDebug("Install bundle: %s has no components", name);
                 }
             } else {
-                bundleDebug("Install bundle: %s is not STARTING "
-                        + "or ACTIVE, so no context was created", name);
+                bundleDebug("Install bundle: %s is not STARTING " + "or ACTIVE, so no context was created", name);
             }
         }
     }
@@ -101,27 +98,19 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
             case BundleEvent.STARTING:
             case BundleEvent.LAZY_ACTIVATION:
                 if (componentsList != null) {
-                    bundleDebug(
-                            "Bundle changed: %s STARTING with components: " +
-                                    componentsList, name);
+                    bundleDebug("Bundle changed: %s STARTING with components: " + componentsList, name);
                     runtime.createContext(bundle);
                 } else {
-                    bundleDebug(
-                            "Bundle changed: %s STARTING with no components",
-                            name);
+                    bundleDebug("Bundle changed: %s STARTING with no components", name);
                 }
                 break;
             case BundleEvent.STOPPED:
             case BundleEvent.UNRESOLVED:
                 if (componentsList != null) {
-                    bundleDebug(
-                            "Bundle changed: %s STOPPING with components: " +
-                                    componentsList, name);
+                    bundleDebug("Bundle changed: %s STOPPING with components: " + componentsList, name);
                     runtime.destroyContext(bundle);
                 } else {
-                    bundleDebug(
-                            "Bundle changed: %s STOPPING with no components",
-                            name);
+                    bundleDebug("Bundle changed: %s STOPPING with no components", name);
                 }
                 break;
             }
@@ -132,11 +121,9 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
     }
 
     /**
-     * Used for generating good debug info. Convert bit vector into printable
-     * string.
+     * Used for generating good debug info. Convert bit vector into printable string.
      *
-     * @param state bitwise-or of UNINSTALLED, INSTALLED, RESOLVED, STARTING,
-     *            STOPPING, and ACTIVE
+     * @param state bitwise-or of UNINSTALLED, INSTALLED, RESOLVED, STARTING, STOPPING, and ACTIVE
      * @return printable version of bits that are on
      */
     public static String bundleStateAsString(int state) {
@@ -163,8 +150,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
     }
 
     /**
-     * Used for generating good debug info. Convert event type into printable
-     * string.
+     * Used for generating good debug info. Convert event type into printable string.
      *
      * @param eventType INSTALLED, STARTED,STOPPED, UNINSTALLED,UPDATED
      * @return printable version of event type
@@ -199,8 +185,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
     /**
      * Prints out a debug message for debugging bundles.
      *
-     * @param msg the debug message with a %s in it which will be replaced by
-     *            the component name
+     * @param msg the debug message with a %s in it which will be replaced by the component name
      * @param name the component name
      */
     public static void bundleDebug(String msg, String name) {

@@ -46,8 +46,7 @@ public class GCTask implements Runnable {
                 } else {
                     log.debug("GC sleeps for " + gcInterval * 60 * 1000);
                     // GC Interval is stored in minutes
-                    Thread.sleep(TimeUnit.MILLISECONDS.convert(gcInterval,
-                            TimeUnit.MINUTES));
+                    Thread.sleep(TimeUnit.MILLISECONDS.convert(gcInterval, TimeUnit.MINUTES));
                 }
             } catch (InterruptedException e) {
                 GCEnabled = false;

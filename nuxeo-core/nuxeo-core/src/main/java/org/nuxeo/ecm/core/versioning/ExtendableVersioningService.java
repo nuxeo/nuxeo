@@ -14,8 +14,7 @@ package org.nuxeo.ecm.core.versioning;
 import java.util.Map;
 
 /**
- * Class implementing this interface will be able to use contribution from the
- * versioningRules extension point.
+ * Class implementing this interface will be able to use contribution from the versioningRules extension point.
  * 
  * @author Laurent Doguin
  * @since 5.4.2
@@ -32,15 +31,13 @@ public interface ExtendableVersioningService extends VersioningService {
      * 
      * @param versioningRules
      */
-    void setVersioningRules(
-            Map<String, VersioningRuleDescriptor> versioningRules);
+    void setVersioningRules(Map<String, VersioningRuleDescriptor> versioningRules);
 
     /**
      * Set the default versioning rule for all document type.
      * 
      * @param defaultVersioningRule
      */
-    void setDefaultVersioningRule(
-            DefaultVersioningRuleDescriptor defaultVersioningRule);
+    void setDefaultVersioningRule(DefaultVersioningRuleDescriptor defaultVersioningRule);
 
 }

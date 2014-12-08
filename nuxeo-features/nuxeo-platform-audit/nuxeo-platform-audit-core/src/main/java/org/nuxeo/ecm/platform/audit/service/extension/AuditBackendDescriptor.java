@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.audit.service.AuditBackend;
  * Descriptor to configure / contribute a Backend for Audit service
  *
  * @author tiry
- *
  */
 @XObject("backend")
 public class AuditBackendDescriptor implements Serializable {

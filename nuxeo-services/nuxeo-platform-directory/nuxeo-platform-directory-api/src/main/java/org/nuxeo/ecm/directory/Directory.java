@@ -20,13 +20,11 @@ package org.nuxeo.ecm.directory;
 
 import java.util.Collection;
 
-
 /**
  * The directory interface.
  * <p>
- * This interface is implemented in order to create an NXDirectory. One should
- * implement this interface in order to create either a new Directory
- * implementation or a new Directory Source.
+ * This interface is implemented in order to create an NXDirectory. One should implement this interface in order to
+ * create either a new Directory implementation or a new Directory Source.
  *
  * @author glefter@nuxeo.com
  */
@@ -50,8 +48,7 @@ public interface Directory {
     String getSchema() throws DirectoryException;
 
     /**
-     * Gets the name of the parent directory. This is used for hierarchical
-     * vocabularies.
+     * Gets the name of the parent directory. This is used for hierarchical vocabularies.
      *
      * @return the name of the parent directory, or null.
      */
@@ -120,8 +117,7 @@ public interface Directory {
     void invalidateDirectoryCache() throws DirectoryException;
 
     /**
-     * Returns {@code true} if this directory is a multi tenant directory,
-     * {@code false} otherwise.
+     * Returns {@code true} if this directory is a multi tenant directory, {@code false} otherwise.
      *
      * @since 5.6
      */

@@ -38,7 +38,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
 
@@ -55,8 +54,7 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
     protected void deployRepositoryContrib() throws Exception {
         super.deployRepositoryContrib();
         deployBundle("org.nuxeo.ecm.platform.ws");
-        deployContrib("org.nuxeo.ecm.platform.tests",
-                "login-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.tests", "login-config.xml");
     }
 
     @Test
@@ -83,8 +81,7 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
 
     @Test
     public void testCreateSession() {
-        WSRemotingSession session = service.createSession("username",
-                "password", "repository", null, null);
+        WSRemotingSession session = service.createSession("username", "password", "repository", null, null);
         assertEquals("username", session.getUsername());
         assertEquals("password", session.getPassword());
         assertEquals("repository", session.getRepository());
@@ -94,8 +91,7 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
 
     @Test
     public void testAddDelSession() throws ClientException {
-        WSRemotingSession session = service.createSession("username",
-                "password", "repository", null, null);
+        WSRemotingSession session = service.createSession("username", "password", "repository", null, null);
         service.addSession("sid0", session);
         assertNotNull(service.getSession("sid0"));
         service.delSession("sid0");
@@ -113,8 +109,7 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
     public void testSnapshotProperties() throws ClientException {
         openSession();
         DocumentModel rootDocument = session.getRootDocument();
-        DocumentModel doc = session.createDocumentModel(
-                rootDocument.getPathAsString(), "youps", "File");
+        DocumentModel doc = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
         doc.setProperty("dublincore", "title", "huum");
         doc = session.createDocument(doc);
         session.save();
@@ -138,7 +133,7 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
         assertEquals("lifeCycleState:project", props[lci].toString());
 
         // check for dublin core properties
-        int tti =  Arrays.binarySearch(props, new DocumentProperty("dc:title", null), propsComparator);
+        int tti = Arrays.binarySearch(props, new DocumentProperty("dc:title", null), propsComparator);
         assertTrue(tti > 0);
         assertEquals("dc:title:huum", props[tti].toString());
 

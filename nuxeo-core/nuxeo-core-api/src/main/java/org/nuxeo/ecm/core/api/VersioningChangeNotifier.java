@@ -27,8 +27,7 @@ public final class VersioningChangeNotifier {
     public static final String CORE_EVENT_ID_VERSIONING_CHANGE = "versioningChangeCoreEvent";
 
     /**
-     * The key in the info map pointing to the frozen document (previous
-     * version).
+     * The key in the info map pointing to the frozen document (previous version).
      */
     public static final String EVT_INFO_OLD_DOC_KEY = "oldDoc";
 

@@ -25,12 +25,13 @@ import java.util.Vector;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TypeConfigurationProvider {
 
     protected final List<TypeDescriptor> types;
+
     protected final List<AdapterDescriptor> services;
+
     protected final List<TypeRegistry> registries;
 
     public TypeConfigurationProvider() {
@@ -92,7 +93,7 @@ public class TypeConfigurationProvider {
             return;
         }
         for (TypeRegistry reg : registries.toArray(new TypeRegistry[registries.size()])) {
-           reg.registerAdapter(ad);
+            reg.registerAdapter(ad);
         }
     }
 
@@ -101,7 +102,7 @@ public class TypeConfigurationProvider {
             return;
         }
         for (TypeRegistry reg : registries.toArray(new TypeRegistry[registries.size()])) {
-           reg.unregisterAdapter(ad);
+            reg.unregisterAdapter(ad);
         }
     }
 
@@ -110,7 +111,7 @@ public class TypeConfigurationProvider {
             return;
         }
         for (TypeRegistry listener : registries.toArray(new TypeRegistry[registries.size()])) {
-           listener.registerType(td);
+            listener.registerType(td);
         }
     }
 
@@ -119,7 +120,7 @@ public class TypeConfigurationProvider {
             return;
         }
         for (TypeRegistry listener : registries.toArray(new TypeRegistry[registries.size()])) {
-           listener.unregisterType(td);
+            listener.unregisterType(td);
         }
     }
 

@@ -14,15 +14,12 @@
 
 package org.nuxeo.runtime;
 
-
 /**
  * Listener to be notified about the runtime service's life cycle events.
  * <p>
- * Should be implemented by host platforms that need control over
- * the starting and stopping of the runtime service.
+ * Should be implemented by host platforms that need control over the starting and stopping of the runtime service.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface RuntimeServiceListener {
 

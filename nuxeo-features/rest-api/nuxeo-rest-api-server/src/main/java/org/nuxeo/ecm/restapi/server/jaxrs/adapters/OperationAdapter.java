@@ -53,9 +53,8 @@ public class OperationAdapter extends DefaultAdapter {
 
     @POST
     @Path("{operationName}")
-    public Response doPost(@PathParam("operationName")
-    String oid, @Context
-    HttpServletRequest request, ExecutionRequest xreq) {
+    public Response doPost(@PathParam("operationName") String oid, @Context HttpServletRequest request,
+            ExecutionRequest xreq) {
         try {
             AutomationServer srv = Framework.getLocalService(AutomationServer.class);
             if (!srv.accept(oid, false, request)) {
@@ -70,11 +69,9 @@ public class OperationAdapter extends DefaultAdapter {
             if (operationType instanceof ChainTypeImpl) {
                 OperationChain chain = ((ChainTypeImpl) operationType).getChain();
                 if (!chain.getOperations().isEmpty()) {
-                    operationType = service.getOperation(chain.getOperations().get(
-                            0).id());
+                    operationType = service.getOperation(chain.getOperations().get(0).id());
                 } else {
-                    throw new WebException("Chain '" + oid
-                            + "' doesn't contain any operation");
+                    throw new WebException("Chain '" + oid + "' doesn't contain any operation");
                 }
             }
 
@@ -85,8 +82,7 @@ public class OperationAdapter extends DefaultAdapter {
                 }
             }
 
-            OperationContext ctx = xreq.createContext(request,
-                    getContext().getCoreSession());
+            OperationContext ctx = xreq.createContext(request, getContext().getCoreSession());
             Object result = service.run(ctx, oid, xreq.getParams());
 
             int customHttpStatus = xreq.getRestOperationContext().getHttpStatus();
@@ -96,16 +92,11 @@ public class OperationAdapter extends DefaultAdapter {
 
             return Response.ok(result).build();
         } catch (OperationException cause) {
-            if (ExceptionHelper.unwrapException(cause) instanceof
-                    RestOperationException) {
-                int customHttpStatus = ((RestOperationException) ExceptionHelper
-                        .unwrapException(cause)).getStatus();
-                throw WebException.newException(
-                        "Failed to invoke operation: " + oid, cause,
-                        customHttpStatus);
+            if (ExceptionHelper.unwrapException(cause) instanceof RestOperationException) {
+                int customHttpStatus = ((RestOperationException) ExceptionHelper.unwrapException(cause)).getStatus();
+                throw WebException.newException("Failed to invoke operation: " + oid, cause, customHttpStatus);
             }
-            throw WebException.newException(
-                    "Failed to invoke operation: " + oid, cause);
+            throw WebException.newException("Failed to invoke operation: " + oid, cause);
         }
 
     }

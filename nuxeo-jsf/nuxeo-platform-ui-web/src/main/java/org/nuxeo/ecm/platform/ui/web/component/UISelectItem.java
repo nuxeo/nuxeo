@@ -27,9 +27,8 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
- * EasySelectItem from
- * http://jsf-comp.sourceforge.net/components/easysi/index.html, adapted to
- * work with single select item.
+ * EasySelectItem from http://jsf-comp.sourceforge.net/components/easysi/index.html, adapted to work with single select
+ * item.
  *
  * @author Cagatay-Mert
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -63,20 +62,17 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
     }
 
     public boolean isResolveItemLabelTwice() {
-        return Boolean.TRUE.equals(getStateHelper().eval(
-                PropertyKeys.resolveItemLabelTwice, Boolean.FALSE));
+        return Boolean.TRUE.equals(getStateHelper().eval(PropertyKeys.resolveItemLabelTwice, Boolean.FALSE));
     }
 
     @SuppressWarnings("boxing")
     public void setResolveItemLabelTwice(boolean resolveItemLabelTwice) {
-        getStateHelper().put(PropertyKeys.resolveItemLabelTwice,
-                resolveItemLabelTwice);
+        getStateHelper().put(PropertyKeys.resolveItemLabelTwice, resolveItemLabelTwice);
     }
 
     @SuppressWarnings("unchecked")
     public Map<String, String> getItemLabels() {
-        return (Map<String, String>) getStateHelper().eval(
-                PropertyKeys.itemLabels);
+        return (Map<String, String>) getStateHelper().eval(PropertyKeys.itemLabels);
     }
 
     public void setItemLabels(Map<String, String> itemLabels) {
@@ -85,8 +81,7 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
 
     @SuppressWarnings("boxing")
     public boolean isLocalize() {
-        return (Boolean) getStateHelper().eval(PropertyKeys.localize,
-                Boolean.FALSE);
+        return (Boolean) getStateHelper().eval(PropertyKeys.localize, Boolean.FALSE);
     }
 
     @SuppressWarnings("boxing")
@@ -96,8 +91,7 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
 
     @SuppressWarnings("boxing")
     public boolean isdbl10n() {
-        return (Boolean) getStateHelper().eval(PropertyKeys.dbl10n,
-                Boolean.FALSE);
+        return (Boolean) getStateHelper().eval(PropertyKeys.dbl10n, Boolean.FALSE);
     }
 
     @SuppressWarnings("boxing")
@@ -151,10 +145,9 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
             Object labelObject = getItemLabel();
             label = labelObject != null ? labelObject.toString() : null;
         }
-        if (isResolveItemLabelTwice()
-                && ComponentTagUtils.isValueReference(label)) {
-            ValueExpression ve = ctx.getApplication().getExpressionFactory().createValueExpression(
-                    ctx.getELContext(), label, Object.class);
+        if (isResolveItemLabelTwice() && ComponentTagUtils.isValueReference(label)) {
+            ValueExpression ve = ctx.getApplication().getExpressionFactory().createValueExpression(ctx.getELContext(),
+                    label, Object.class);
             if (ve != null) {
                 Object newLabel = ve.getValue(ctx.getELContext());
                 if (newLabel instanceof String) {
@@ -179,8 +172,7 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
         if (StringUtils.isBlank(label)) {
             label = String.valueOf(value);
         }
-        return new SelectItem(value, label, null, isItemDisabled(),
-                isItemEscaped());
+        return new SelectItem(value, label, null, isItemDisabled(), isItemEscaped());
     }
 
 }

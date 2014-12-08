@@ -33,7 +33,6 @@ import com.google.gwt.user.client.Window;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class TilingInfo {
 
@@ -69,8 +68,7 @@ public class TilingInfo {
         this.contextPath = contextPath;
     }
 
-    public TilingInfo(String repoId, String docId, String contextPath, int tileWidth,
-            int tileHeight, int maxTiles) {
+    public TilingInfo(String repoId, String docId, String contextPath, int tileWidth, int tileHeight, int maxTiles) {
         this(repoId, docId, contextPath);
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
@@ -194,8 +192,7 @@ public class TilingInfo {
     }
 
     public void updateTilingInfo(final TilingInfoCallback callback) {
-        RequestBuilder getRequest = new RequestBuilder(RequestBuilder.GET,
-                getBaseUrl() + "?format=json");
+        RequestBuilder getRequest = new RequestBuilder(RequestBuilder.GET, getBaseUrl() + "?format=json");
         try {
             getRequest.sendRequest(null, new RequestCallback() {
 
@@ -248,9 +245,8 @@ public class TilingInfo {
     }
 
     public String getBaseUrl() {
-        return contextPath + "/restAPI/getTiles/" + this.getRepoId() + "/"
-                + this.getDocId() + "/" + this.getTileWidth() + "/"
-                + this.getTileHeight() + "/" + this.getMaxTiles();
+        return contextPath + "/restAPI/getTiles/" + this.getRepoId() + "/" + this.getDocId() + "/"
+                + this.getTileWidth() + "/" + this.getTileHeight() + "/" + this.getMaxTiles();
     }
 
 }

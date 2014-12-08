@@ -21,7 +21,6 @@ import org.nuxeo.ecm.core.event.Event;
  * @description ensure the event is valid to send notifications
  * @since 5.6
  * @author Thierry Martins <tm@nuxeo.com>
- *
  */
 public interface NotificationListenerVeto {
 

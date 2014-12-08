@@ -25,7 +25,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 public final class NotificationServiceHelper {
 
@@ -39,14 +38,12 @@ public final class NotificationServiceHelper {
      * Locates the notification service using NXRuntime.
      */
     public static NotificationService getNotificationService() {
-        return (NotificationService) Framework.getRuntime().getComponent(
-                NotificationService.NAME);
+        return (NotificationService) Framework.getRuntime().getComponent(NotificationService.NAME);
     }
 
     public static PlacefulService getPlacefulService() {
-        return (PlacefulService) Framework.getRuntime().getComponent(
-                PlacefulService.ID);
-//        return Framework.getService(PlacefulService.class);
+        return (PlacefulService) Framework.getRuntime().getComponent(PlacefulService.ID);
+        // return Framework.getService(PlacefulService.class);
     }
 
     public static PlacefulService getPlacefulServiceBean() {

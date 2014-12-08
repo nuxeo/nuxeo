@@ -27,7 +27,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class GwtTestCSSClassManager extends GWTTestCase {
     @Override

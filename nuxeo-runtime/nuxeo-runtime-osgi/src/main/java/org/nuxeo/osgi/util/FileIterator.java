@@ -23,13 +23,15 @@ import java.util.Queue;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileIterator implements Iterator<File>, Enumeration<File> {
 
     protected FileFilter filter;
+
     protected Queue<File> files;
+
     protected File file;
+
     protected boolean skipDirs = false;
 
     public static Iterator<URL> asUrlIterator(final Iterator<File> it) {
@@ -38,6 +40,7 @@ public class FileIterator implements Iterator<File>, Enumeration<File> {
             public boolean hasNext() {
                 return it.hasNext();
             }
+
             @Override
             public URL next() {
                 try {
@@ -46,6 +49,7 @@ public class FileIterator implements Iterator<File>, Enumeration<File> {
                     throw new RuntimeException(e);
                 }
             }
+
             @Override
             public void remove() {
                 it.remove();
@@ -59,6 +63,7 @@ public class FileIterator implements Iterator<File>, Enumeration<File> {
             public boolean hasMoreElements() {
                 return it.hasNext();
             }
+
             @Override
             public URL nextElement() {
                 try {
@@ -121,15 +126,14 @@ public class FileIterator implements Iterator<File>, Enumeration<File> {
         return f;
     }
 
-
     @Override
     public void remove() {
         throw new UnsupportedOperationException("remove ot supported");
     }
 
-
     /**
      * Feed the iterator with the given directory content if any
+     *
      * @param file
      */
     public void feed(File file) {

@@ -27,16 +27,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.model.Adaptable;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SecurityContext implements Adaptable {
 
     private static final Log log = LogFactory.getLog(SecurityContext.class);
 
     protected final CoreSession session;
+
     protected final DocumentModel doc;
 
     public SecurityContext(CoreSession session, DocumentModel doc) {
@@ -49,7 +48,7 @@ public class SecurityContext implements Adaptable {
             return adapter.cast(doc);
         } else if (adapter == CoreSession.class) {
             try {
-            return adapter.cast(session);
+                return adapter.cast(session);
             } catch (Exception e) {
                 log.error(e, e);
             }

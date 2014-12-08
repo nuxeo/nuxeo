@@ -16,14 +16,13 @@ package org.nuxeo.ecm.core.query.sql.model;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PathReference extends Reference {
 
     private static final long serialVersionUID = 1L;
 
     public PathReference(String path) {
-        super (path);
+        super(path);
     }
 
     @Override

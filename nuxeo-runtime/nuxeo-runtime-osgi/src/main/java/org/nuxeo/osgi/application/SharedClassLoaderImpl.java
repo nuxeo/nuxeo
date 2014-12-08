@@ -26,7 +26,6 @@ import java.net.URLClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SharedClassLoaderImpl extends URLClassLoader implements SharedClassLoader {
 

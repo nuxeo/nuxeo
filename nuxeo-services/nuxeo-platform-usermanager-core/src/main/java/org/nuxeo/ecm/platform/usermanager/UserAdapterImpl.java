@@ -26,11 +26,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 
 /**
-* A class that exposes the fields from user schema
-* @since 5.7
-*
-* @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
-*/
+ * A class that exposes the fields from user schema
+ *
+ * @since 5.7
+ * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
+ */
 public class UserAdapterImpl implements UserAdapter {
 
     private static final Log log = LogFactory.getLog(UserAdapterImpl.class);
@@ -51,8 +51,8 @@ public class UserAdapterImpl implements UserAdapter {
         try {
             this.dataModel = doc.getDataModel(userConfig.schemaName);
         } catch (ClientException e) {
-            log.error("Unable to get data model for schema "
-                    + userConfig.schemaName + ". Building an empty data model",
+            log.error(
+                    "Unable to get data model for schema " + userConfig.schemaName + ". Building an empty data model",
                     e);
             // empty data model to avoid error
             this.dataModel = new DataModelImpl(userConfig.schemaName);

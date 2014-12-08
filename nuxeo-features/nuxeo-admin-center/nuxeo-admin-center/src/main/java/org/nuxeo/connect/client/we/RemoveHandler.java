@@ -45,13 +45,11 @@ public class RemoveHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "start/{pkgId}")
-    public Object startInstall(@PathParam("pkgId") String pkgId,
-            @QueryParam("source") String source) {
+    public Object startInstall(@PathParam("pkgId") String pkgId, @QueryParam("source") String source) {
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
             pus.removePackage(pkgId);
-            return getView("removeDone").arg("pkgId", pkgId).arg("source",
-                    source);
+            return getView("removeDone").arg("pkgId", pkgId).arg("source", source);
         } catch (PackageException e) {
             log.error("Error during first step of installation", e);
             return getView("removeError").arg("e", e);

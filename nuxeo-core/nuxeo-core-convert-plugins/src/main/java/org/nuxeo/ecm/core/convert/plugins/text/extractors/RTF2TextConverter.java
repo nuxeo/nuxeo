@@ -40,8 +40,7 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 public class RTF2TextConverter implements Converter {
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         File f = null;
         try {

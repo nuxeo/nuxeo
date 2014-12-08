@@ -42,13 +42,11 @@ public class DefaultOperationRequest implements OperationRequest {
 
     protected Object input;
 
-    public DefaultOperationRequest(DefaultSession session,
-            OperationDocumentation op) {
+    public DefaultOperationRequest(DefaultSession session, OperationDocumentation op) {
         this(session, op, new HashMap<String, Object>());
     }
 
-    public DefaultOperationRequest(DefaultSession session,
-            OperationDocumentation op, Map<String, Object> ctx) {
+    public DefaultOperationRequest(DefaultSession session, OperationDocumentation op, Map<String, Object> ctx) {
         this.session = session;
         this.op = op;
         params = new HashMap<String, Object>();
@@ -74,8 +72,7 @@ public class DefaultOperationRequest implements OperationRequest {
 
     protected final void checkInput(String type) {
         if (!acceptInput(type)) {
-            throw new IllegalArgumentException("Input not supported: " + type
-                    + " for the operation: " + op.id);
+            throw new IllegalArgumentException("Input not supported: " + type + " for the operation: " + op.id);
         }
     }
 
@@ -117,9 +114,8 @@ public class DefaultOperationRequest implements OperationRequest {
     public OperationRequest set(String key, Object value) {
         Param param = getParam(key);
         if (param == null) {
-            throw new IllegalArgumentException("No such parameter '" + key
-                    + "' for operation " + op.id + ".\n\tAvailable params: "
-                    + getParamNames());
+            throw new IllegalArgumentException("No such parameter '" + key + "' for operation " + op.id
+                    + ".\n\tAvailable params: " + getParamNames());
         }
         if (value == null) {
             params.remove(key);
@@ -141,8 +137,7 @@ public class DefaultOperationRequest implements OperationRequest {
             for (Param parameter : parameters) {
                 // Check if one of params has the Properties type
                 if ("properties".equals(parameter.getType())) {
-                    params.put("properties",
-                            ((Document) value).getDirties().toString());
+                    params.put("properties", ((Document) value).getDirties().toString());
                 }
             }
         } else {

@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.task.dashboard.DashBoardItemImpl;
 
 /**
  * Returns tasks assigned to current user or one of its groups.
+ *
  * @since 5.5
  */
 @Operation(id = GetUserTasks.ID, category = Constants.CAT_SERVICES, label = "Get user tasks", since = "5.4", description = "List tasks assigned to this user or one of its group."
@@ -75,9 +76,7 @@ public class GetUserTasks {
                 log.warn("Cannot get doc for task " + task.getId(), e);
             }
             if (doc == null) {
-                log.warn(String.format(
-                        "User '%s' has a task of type '%s' on an "
-                                + "unexisting or invisible document",
+                log.warn(String.format("User '%s' has a task of type '%s' on an " + "unexisting or invisible document",
                         principal().getName(), task.getName()));
                 continue;
             }

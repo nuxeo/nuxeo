@@ -38,17 +38,14 @@ import org.nuxeo.ecm.platform.usermanager.UserService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This will test the filter on groups transformation to manage the Directory
- * Local Configuration. Directory Local Configuration management for group is a
- * bit different than other ones. Other Directory can be segregate per
- * directory. Groups must be defined into the same directory. The segregation is
- * managed by the suffix added to the groupname.
+ * This will test the filter on groups transformation to manage the Directory Local Configuration. Directory Local
+ * Configuration management for group is a bit different than other ones. Other Directory can be segregate per
+ * directory. Groups must be defined into the same directory. The segregation is managed by the suffix added to the
+ * groupname.
  * 
  * @author bjalon
- * 
  */
-public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagement
-        extends UserManagerTestCase {
+public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagement extends UserManagerTestCase {
 
     protected UserManagerImpl userManager;
 
@@ -65,8 +62,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl-multitenant/directory-for-context-config.xml");
 
-        userService = (UserService) Framework.getRuntime().getComponent(
-                UserService.NAME);
+        userService = (UserService) Framework.getRuntime().getComponent(UserService.NAME);
 
         userManager = (UserManagerImpl) userService.getUserManager();
         umtm = new DefaultUserMultiTenantManagementMock();
@@ -75,8 +71,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
     }
 
     @Test
-    public void testShouldThrowExceptionIfFilterOrFulltextNull()
-            throws ClientException {
+    public void testShouldThrowExceptionIfFilterOrFulltextNull() throws ClientException {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         HashSet<String> fulltext = new HashSet<String>();
 
@@ -103,8 +98,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
     }
 
     @Test
-    public void testShouldReturnAFilterNotChangedIfNoDirectoryLocalConfig()
-            throws ClientException {
+    public void testShouldReturnAFilterNotChangedIfNoDirectoryLocalConfig() throws ClientException {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         HashSet<String> fulltext = new HashSet<String>();
 

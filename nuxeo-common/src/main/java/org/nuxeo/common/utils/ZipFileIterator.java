@@ -38,18 +38,19 @@ import java.util.zip.ZipFile;
  * The iterator support filtering using {@link ZipEntryFilter}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ZipFileIterator implements Iterator<ZipEntry> {
 
     private static final Log log = LogFactory.getLog(ZipFileIterator.class);
 
     private final ZipFile zip;
+
     private final ZipEntryFilter filter;
+
     private final Enumeration<? extends ZipEntry> entries;
+
     // the current entry
     private ZipEntry zentry;
-
 
     public ZipFileIterator(ZipFile zip, ZipEntryFilter filter) {
         this.zip = zip;
@@ -69,7 +70,6 @@ public class ZipFileIterator implements Iterator<ZipEntry> {
     public ZipFileIterator(ZipFile zip) {
         this(zip, null);
     }
-
 
     public boolean hasNext() {
         return zentry != null;

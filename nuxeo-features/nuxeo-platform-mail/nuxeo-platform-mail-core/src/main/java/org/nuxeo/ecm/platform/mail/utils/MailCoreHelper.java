@@ -112,14 +112,12 @@ public final class MailCoreHelper {
         return mimeService;
     }
 
-
     /**
-     * Creates MailMessage documents for every unread mail found in the INBOX.
-     * The parameters needed to connect to the email INBOX are retrieved from
-     * the MailFolder document passed as a parameter.
+     * Creates MailMessage documents for every unread mail found in the INBOX. The parameters needed to connect to the
+     * email INBOX are retrieved from the MailFolder document passed as a parameter.
      */
-    public static void checkMail(DocumentModel currentMailFolder,
-            CoreSession coreSession) throws MessagingException, ClientException {
+    public static void checkMail(DocumentModel currentMailFolder, CoreSession coreSession) throws MessagingException,
+            ClientException {
 
         if (processingMailBoxes.addIfAbsent(currentMailFolder.getId())) {
             try {
@@ -132,8 +130,8 @@ public final class MailCoreHelper {
         }
     }
 
-    protected static void doCheckMail(DocumentModel currentMailFolder,
-            CoreSession coreSession) throws MessagingException, ClientException {
+    protected static void doCheckMail(DocumentModel currentMailFolder, CoreSession coreSession)
+            throws MessagingException, ClientException {
         String email = (String) currentMailFolder.getPropertyValue(EMAIL_PROPERTY_NAME);
         String password = (String) currentMailFolder.getPropertyValue(PASSWORD_PROPERTY_NAME);
         if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(password)) {
@@ -142,27 +140,26 @@ public final class MailCoreHelper {
             MessageActionPipe pipe = mailService.getPipe(PIPE_NAME);
 
             Visitor visitor = new Visitor(pipe);
-            Thread.currentThread().setContextClassLoader(
-                    Framework.class.getClassLoader());
+            Thread.currentThread().setContextClassLoader(Framework.class.getClassLoader());
 
             // initialize context
             ExecutionContext initialExecutionContext = new ExecutionContext();
 
             initialExecutionContext.put(MIMETYPE_SERVICE_KEY, getMimeService());
 
-            initialExecutionContext.put(PARENT_PATH_KEY,
-                    currentMailFolder.getPathAsString());
+            initialExecutionContext.put(PARENT_PATH_KEY, currentMailFolder.getPathAsString());
 
             initialExecutionContext.put(CORE_SESSION_KEY, coreSession);
 
-            initialExecutionContext.put(LEAVE_ON_SERVER_KEY, Boolean.TRUE); // TODO should be an attribute in 'protocol' schema
+            initialExecutionContext.put(LEAVE_ON_SERVER_KEY, Boolean.TRUE); // TODO should be an attribute in 'protocol'
+                                                                            // schema
 
             Folder rootFolder = null;
             Store store = null;
             try {
                 String protocolType = (String) currentMailFolder.getPropertyValue(PROTOCOL_TYPE_PROPERTY_NAME);
                 initialExecutionContext.put(PROTOCOL_TYPE_KEY, protocolType);
-//                log.debug(PROTOCOL_TYPE_KEY + ": " + (String) initialExecutionContext.get(PROTOCOL_TYPE_KEY));
+                // log.debug(PROTOCOL_TYPE_KEY + ": " + (String) initialExecutionContext.get(PROTOCOL_TYPE_KEY));
 
                 String host = (String) currentMailFolder.getPropertyValue(HOST_PROPERTY_NAME);
                 String port = (String) currentMailFolder.getPropertyValue(PORT_PROPERTY_NAME);
@@ -171,45 +168,36 @@ public final class MailCoreHelper {
                 Boolean starttlsEnable = (Boolean) currentMailFolder.getPropertyValue(STARTTLS_ENABLE_PROPERTY_NAME);
                 String sslProtocols = (String) currentMailFolder.getPropertyValue(SSL_PROTOCOLS_PROPERTY_NAME);
                 Long emailsLimit = (Long) currentMailFolder.getPropertyValue(EMAILS_LIMIT_PROPERTY_NAME);
-                long emailsLimitLongValue = emailsLimit == null ? EMAILS_LIMIT_DEFAULT
-                        : emailsLimit.longValue();
+                long emailsLimitLongValue = emailsLimit == null ? EMAILS_LIMIT_DEFAULT : emailsLimit.longValue();
 
                 String imapDebug = Framework.getProperty(IMAP_DEBUG, "false");
 
                 Properties properties = new Properties();
                 properties.put("mail.store.protocol", protocolType);
-//                properties.put("mail.host", host);
+                // properties.put("mail.host", host);
                 // Is IMAP connection
                 if (IMAP.equals(protocolType)) {
                     properties.put("mail.imap.host", host);
                     properties.put("mail.imap.port", port);
-                    properties.put("mail.imap.starttls.enable",
-                            starttlsEnable.toString());
-                    properties.put("mail.imap.debug",imapDebug);
-                    properties.put("mail.imap.partialfetch","false");
+                    properties.put("mail.imap.starttls.enable", starttlsEnable.toString());
+                    properties.put("mail.imap.debug", imapDebug);
+                    properties.put("mail.imap.partialfetch", "false");
                 } else if (IMAPS.equals(protocolType)) {
                     properties.put("mail.imaps.host", host);
                     properties.put("mail.imaps.port", port);
-                    properties.put("mail.imaps.starttls.enable",
-                            starttlsEnable.toString());
+                    properties.put("mail.imaps.starttls.enable", starttlsEnable.toString());
                     properties.put("mail.imaps.ssl.protocols", sslProtocols);
-                    properties.put("mail.imaps.socketFactory.class",
-                    "javax.net.ssl.SSLSocketFactory");
-                    properties.put("mail.imaps.socketFactory.fallback",
-                            socketFactoryFallback.toString());
-                    properties.put("mail.imaps.socketFactory.port",
-                            socketFactoryPort);
-                    properties.put("mail.imap.partialfetch","false");
-                    properties.put("mail.imaps.partialfetch","false");
+                    properties.put("mail.imaps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+                    properties.put("mail.imaps.socketFactory.fallback", socketFactoryFallback.toString());
+                    properties.put("mail.imaps.socketFactory.port", socketFactoryPort);
+                    properties.put("mail.imap.partialfetch", "false");
+                    properties.put("mail.imaps.partialfetch", "false");
                 } else if (POP3S.equals(protocolType)) {
                     properties.put("mail.pop3s.host", host);
                     properties.put("mail.pop3s.port", port);
-                    properties.put("mail.pop3s.socketFactory.class",
-                    "javax.net.ssl.SSLSocketFactory");
-                    properties.put("mail.pop3s.socketFactory.fallback",
-                            socketFactoryFallback.toString());
-                    properties.put("mail.pop3s.socketFactory.port",
-                            socketFactoryPort);
+                    properties.put("mail.pop3s.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+                    properties.put("mail.pop3s.socketFactory.fallback", socketFactoryFallback.toString());
+                    properties.put("mail.pop3s.socketFactory.port", socketFactoryPort);
                     properties.put("mail.pop3s.ssl.protocols", sslProtocols);
                 } else {
                     // Is POP3 connection
@@ -245,7 +233,7 @@ public final class MailCoreHelper {
                 rootFolder.fetch(allMessages, fetchProfile);
 
                 if (rootFolder instanceof IMAPFolder) {
-                    //((IMAPFolder)rootFolder).doCommand(FetchProfile)
+                    // ((IMAPFolder)rootFolder).doCommand(FetchProfile)
                 }
 
                 List<Message> unreadMessagesList = new ArrayList<Message>();
@@ -260,11 +248,10 @@ public final class MailCoreHelper {
                     }
                 }
 
-                Message[] unreadMessagesArray =unreadMessagesList.toArray(new Message[unreadMessagesList.size()]);
+                Message[] unreadMessagesArray = unreadMessagesList.toArray(new Message[unreadMessagesList.size()]);
 
                 // perform email import
-                visitor.visit(unreadMessagesArray,
-                        initialExecutionContext);
+                visitor.visit(unreadMessagesArray, initialExecutionContext);
 
                 // perform flag update globally
                 Flags flags = new Flags();
@@ -282,7 +269,7 @@ public final class MailCoreHelper {
                 if (rootFolder != null && rootFolder.isOpen()) {
                     rootFolder.close(true);
                 }
-                if (store!=null) {
+                if (store != null) {
                     store.close();
                 }
             }

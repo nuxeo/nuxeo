@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StringProperty extends ScalarProperty {
 
@@ -39,18 +38,16 @@ public class StringProperty extends ScalarProperty {
     }
 
     @Override
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
         throw new PropertyConversionException(value.getClass(), String.class);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType)
-            throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
         if (toType == String.class) {
             return (T) value;
         }

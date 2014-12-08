@@ -36,7 +36,6 @@ import org.nuxeo.runtime.services.streaming.URLSource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StreamingBlob extends DefaultBlob implements Serializable {
 
@@ -61,8 +60,7 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
         this(src, mimeType, encoding, null, null);
     }
 
-    public StreamingBlob(StreamSource src, String mimeType, String encoding,
-            String filename, String digest) {
+    public StreamingBlob(StreamSource src, String mimeType, String encoding, String filename, String digest) {
         this.src = src;
         this.mimeType = mimeType;
         this.encoding = encoding;
@@ -86,8 +84,7 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
         return createFromByteArray(bytes, null);
     }
 
-    public static StreamingBlob createFromByteArray(byte[] bytes,
-            String mimeType) {
+    public static StreamingBlob createFromByteArray(byte[] bytes, String mimeType) {
         if (mimeType == null) {
             mimeType = "application/octet-stream";
         }
@@ -170,11 +167,9 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
     }
 
     /**
-     * If the source is cannot be reopen, copy the binary content of the
-     * original source to a temporary file and replace the source inplace by a
-     * new FileSource instance pointing to the tmp file.
-     *
-     * return the current instance with a re-openable internal source
+     * If the source is cannot be reopen, copy the binary content of the original source to a temporary file and replace
+     * the source inplace by a new FileSource instance pointing to the tmp file. return the current instance with a
+     * re-openable internal source
      */
     @Override
     public Blob persist() throws IOException {
@@ -182,8 +177,7 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
             OutputStream out = null;
             InputStream in = null;
             try {
-                persistedTmpFile = File.createTempFile(
-                        "NXCore-persisted-StreamingBlob-", ".tmp");
+                persistedTmpFile = File.createTempFile("NXCore-persisted-StreamingBlob-", ".tmp");
                 in = src.getStream();
                 out = new FileOutputStream(persistedTmpFile);
                 copy(in, out);

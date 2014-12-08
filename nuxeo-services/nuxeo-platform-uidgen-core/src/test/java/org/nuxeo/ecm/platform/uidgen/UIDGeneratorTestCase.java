@@ -15,12 +15,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
-@Features({TransactionalFeature.class, CoreFeature.class})
-@Deploy({"org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.uidgen.core"})
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.uidgen.core" })
 @LocalDeploy("org.nuxeo.ecm.platform.uidgen.core:nxuidgenerator-test-contrib.xml")
-public abstract class UIDGeneratorTestCase  {
+public abstract class UIDGeneratorTestCase {
 
-    @Inject CoreSession session;
+    @Inject
+    CoreSession session;
 
     UIDGeneratorService service;
 

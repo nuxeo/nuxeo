@@ -19,9 +19,7 @@ import java.util.Collection;
  * Life cycle state.
  *
  * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleStateImpl
- *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface LifeCycleState {
 

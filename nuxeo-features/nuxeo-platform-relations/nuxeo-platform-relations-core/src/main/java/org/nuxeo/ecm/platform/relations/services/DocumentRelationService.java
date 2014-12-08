@@ -50,8 +50,6 @@ import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.9.2
  */
 public class DocumentRelationService implements DocumentRelationManager {
@@ -68,79 +66,61 @@ public class DocumentRelationService implements DocumentRelationManager {
     }
 
     // for consistency for callers only
-    private static void putStatements(Map<String, Serializable> options,
-            List<Statement> statements) {
-        options.put(RelationEvents.STATEMENTS_EVENT_KEY,
-                (Serializable) statements);
+    private static void putStatements(Map<String, Serializable> options, List<Statement> statements) {
+        options.put(RelationEvents.STATEMENTS_EVENT_KEY, (Serializable) statements);
     }
 
-    private static void putStatements(Map<String, Serializable> options,
-            Statement statement) {
+    private static void putStatements(Map<String, Serializable> options, Statement statement) {
         List<Statement> statements = new LinkedList<Statement>();
         statements.add(statement);
-        options.put(RelationEvents.STATEMENTS_EVENT_KEY,
-                (Serializable) statements);
+        options.put(RelationEvents.STATEMENTS_EVENT_KEY, (Serializable) statements);
     }
 
-    private QNameResource getNodeFromDocumentModel(DocumentModel model)
-            throws ClientException {
-        return (QNameResource) getRelationManager().getResource(
-                RelationConstants.DOCUMENT_NAMESPACE, model, null);
+    private QNameResource getNodeFromDocumentModel(DocumentModel model) throws ClientException {
+        return (QNameResource) getRelationManager().getResource(RelationConstants.DOCUMENT_NAMESPACE, model, null);
     }
 
     @Override
-    public void addRelation(CoreSession session, DocumentModel from,
-            DocumentModel to, String predicate, boolean inverse)
+    public void addRelation(CoreSession session, DocumentModel from, DocumentModel to, String predicate, boolean inverse)
             throws ClientException {
-        addRelation(session, from, getNodeFromDocumentModel(to), predicate,
-                inverse);
+        addRelation(session, from, getNodeFromDocumentModel(to), predicate, inverse);
     }
 
     @Override
-    public void addRelation(CoreSession session, DocumentModel from, Node to,
-            String predicate) throws ClientException {
+    public void addRelation(CoreSession session, DocumentModel from, Node to, String predicate) throws ClientException {
         addRelation(session, from, to, predicate, false);
     }
 
     @Override
-    public void addRelation(CoreSession session, DocumentModel from, Node to,
-            String predicate, boolean inverse) throws ClientException {
+    public void addRelation(CoreSession session, DocumentModel from, Node to, String predicate, boolean inverse)
+            throws ClientException {
         addRelation(session, from, to, predicate, inverse, false);
     }
 
     @Override
-    public void addRelation(CoreSession session, DocumentModel from, Node to,
-            String predicate, boolean inverse, boolean includeStatementsInEvents)
-            throws ClientException {
-        addRelation(session, from, to, predicate, inverse,
-                includeStatementsInEvents, null);
+    public void addRelation(CoreSession session, DocumentModel from, Node to, String predicate, boolean inverse,
+            boolean includeStatementsInEvents) throws ClientException {
+        addRelation(session, from, to, predicate, inverse, includeStatementsInEvents, null);
     }
 
     @Override
-    public void addRelation(CoreSession session, DocumentModel from,
-            Node toResource, String predicate, boolean inverse,
-            boolean includeStatementsInEvents, String comment)
-            throws ClientException {
-        Graph graph = getRelationManager().getGraph(
-                RelationConstants.GRAPH_NAME, session);
+    public void addRelation(CoreSession session, DocumentModel from, Node toResource, String predicate,
+            boolean inverse, boolean includeStatementsInEvents, String comment) throws ClientException {
+        Graph graph = getRelationManager().getGraph(RelationConstants.GRAPH_NAME, session);
         QNameResource fromResource = getNodeFromDocumentModel(from);
 
         Resource predicateResource = new ResourceImpl(predicate);
         Statement stmt = null;
         List<Statement> statements = null;
         if (inverse) {
-            stmt = new StatementImpl(toResource, predicateResource,
-                    fromResource);
-            statements = graph.getStatements(toResource, predicateResource,
-                    fromResource);
+            stmt = new StatementImpl(toResource, predicateResource, fromResource);
+            statements = graph.getStatements(toResource, predicateResource, fromResource);
             if (statements != null && statements.size() > 0) {
                 throw new RelationAlreadyExistsException();
             }
         } else {
-            stmt = new StatementImpl(fromResource, predicateResource,
-                    toResource);
-            statements = graph.getStatements(fromResource, predicateResource,
-                    toResource);
+            stmt = new StatementImpl(fromResource, predicateResource, toResource);
+            statements = graph.getStatements(fromResource, predicateResource, toResource);
             if (statements != null && statements.size() > 0) {
                 throw new RelationAlreadyExistsException();
             }
@@ -148,8 +128,7 @@ public class DocumentRelationService implements DocumentRelationManager {
 
         // Comment ?
         if (!StringUtils.isEmpty(comment)) {
-            stmt.addProperty(RelationConstants.COMMENT,
-                    new LiteralImpl(comment));
+            stmt.addProperty(RelationConstants.COMMENT, new LiteralImpl(comment));
         }
         Literal now = RelationDate.getLiteralDate(new Date());
         if (stmt.getProperties(RelationConstants.CREATION_DATE) == null) {
@@ -159,10 +138,8 @@ public class DocumentRelationService implements DocumentRelationManager {
             stmt.addProperty(RelationConstants.MODIFICATION_DATE, now);
         }
 
-        if (session.getPrincipal() != null
-                && stmt.getProperty(RelationConstants.AUTHOR) == null) {
-            stmt.addProperty(RelationConstants.AUTHOR, new LiteralImpl(
-                    session.getPrincipal().getName()));
+        if (session.getPrincipal() != null && stmt.getProperty(RelationConstants.AUTHOR) == null) {
+            stmt.addProperty(RelationConstants.AUTHOR, new LiteralImpl(session.getPrincipal().getName()));
         }
 
         // notifications
@@ -173,12 +150,10 @@ public class DocumentRelationService implements DocumentRelationManager {
         if (includeStatementsInEvents) {
             putStatements(options, stmt);
         }
-        options.put(RelationEvents.GRAPH_NAME_EVENT_KEY,
-                RelationConstants.GRAPH_NAME);
+        options.put(RelationEvents.GRAPH_NAME_EVENT_KEY, RelationConstants.GRAPH_NAME);
 
         // before notification
-        notifyEvent(RelationEvents.BEFORE_RELATION_CREATION, from, options,
-                comment, session);
+        notifyEvent(RelationEvents.BEFORE_RELATION_CREATION, from, options, comment, session);
 
         // add statement
         graph.add(stmt);
@@ -190,15 +165,12 @@ public class DocumentRelationService implements DocumentRelationManager {
         }
 
         // after notification
-        notifyEvent(RelationEvents.AFTER_RELATION_CREATION, from, options,
-                comment, session);
+        notifyEvent(RelationEvents.AFTER_RELATION_CREATION, from, options, comment, session);
     }
 
-    protected void notifyEvent(String eventId, DocumentModel source,
-            Map<String, Serializable> options, String comment,
+    protected void notifyEvent(String eventId, DocumentModel source, Map<String, Serializable> options, String comment,
             CoreSession session) {
-        DocumentEventContext docCtx = new DocumentEventContext(session,
-                session.getPrincipal(), source);
+        DocumentEventContext docCtx = new DocumentEventContext(session, session.getPrincipal(), source);
         options.put("category", RelationEvents.CATEGORY);
         options.put("comment", comment);
 
@@ -211,24 +183,21 @@ public class DocumentRelationService implements DocumentRelationManager {
     }
 
     @Override
-    public void deleteRelation(CoreSession session, DocumentModel from,
-            DocumentModel to, String predicate) throws ClientException {
+    public void deleteRelation(CoreSession session, DocumentModel from, DocumentModel to, String predicate)
+            throws ClientException {
         deleteRelation(session, from, to, predicate, false);
     }
 
     @Override
-    public void deleteRelation(CoreSession session, DocumentModel from,
-            DocumentModel to, String predicate,
+    public void deleteRelation(CoreSession session, DocumentModel from, DocumentModel to, String predicate,
             boolean includeStatementsInEvents) throws ClientException {
         QNameResource fromResource = (QNameResource) getRelationManager().getResource(
                 RelationConstants.DOCUMENT_NAMESPACE, from, null);
         QNameResource toResource = (QNameResource) getRelationManager().getResource(
                 RelationConstants.DOCUMENT_NAMESPACE, to, null);
         Resource predicateResource = new ResourceImpl(predicate);
-        Graph graph = getRelationManager().getGraphByName(
-                RelationConstants.GRAPH_NAME);
-        List<Statement> statements = graph.getStatements(fromResource,
-                predicateResource, toResource);
+        Graph graph = getRelationManager().getGraphByName(RelationConstants.GRAPH_NAME);
+        List<Statement> statements = graph.getStatements(fromResource, predicateResource, toResource);
         if (statements == null || statements.size() == 0) {
             // Silent ignore the deletion as it doesn't exist
             return;
@@ -239,14 +208,13 @@ public class DocumentRelationService implements DocumentRelationManager {
     }
 
     @Override
-    public void deleteRelation(CoreSession session, Statement stmt)
-            throws ClientException {
+    public void deleteRelation(CoreSession session, Statement stmt) throws ClientException {
         deleteRelation(session, stmt, false);
     }
 
     @Override
-    public void deleteRelation(CoreSession session, Statement stmt,
-            boolean includeStatementsInEvents) throws ClientException {
+    public void deleteRelation(CoreSession session, Statement stmt, boolean includeStatementsInEvents)
+            throws ClientException {
 
         // notifications
         Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -255,38 +223,31 @@ public class DocumentRelationService implements DocumentRelationManager {
         DocumentModel eventDocument = null;
         if (stmt.getSubject() instanceof QNameResource) {
             eventDocument = (DocumentModel) getRelationManager().getResourceRepresentation(
-                    RelationConstants.DOCUMENT_NAMESPACE,
-                    (QNameResource) stmt.getSubject(), null);
+                    RelationConstants.DOCUMENT_NAMESPACE, (QNameResource) stmt.getSubject(), null);
         } else if (stmt.getObject() instanceof QNameResource) {
             eventDocument = (DocumentModel) getRelationManager().getResourceRepresentation(
-                    RelationConstants.DOCUMENT_NAMESPACE,
-                    (QNameResource) stmt.getObject(), null);
+                    RelationConstants.DOCUMENT_NAMESPACE, (QNameResource) stmt.getObject(), null);
         }
 
         // Complete event info and send first event
         if (eventDocument != null) {
             String currentLifeCycleState = eventDocument.getCurrentLifeCycleState();
-            options.put(CoreEventConstants.DOC_LIFE_CYCLE,
-                    currentLifeCycleState);
-            options.put(RelationEvents.GRAPH_NAME_EVENT_KEY,
-                    RelationConstants.GRAPH_NAME);
+            options.put(CoreEventConstants.DOC_LIFE_CYCLE, currentLifeCycleState);
+            options.put(RelationEvents.GRAPH_NAME_EVENT_KEY, RelationConstants.GRAPH_NAME);
             if (includeStatementsInEvents) {
                 putStatements(options, stmt);
             }
 
             // before notification
-            notifyEvent(RelationEvents.BEFORE_RELATION_REMOVAL, eventDocument,
-                    options, null, session);
+            notifyEvent(RelationEvents.BEFORE_RELATION_REMOVAL, eventDocument, options, null, session);
         }
 
         // remove statement
-        getRelationManager().getGraphByName(RelationConstants.GRAPH_NAME).remove(
-                stmt);
+        getRelationManager().getGraphByName(RelationConstants.GRAPH_NAME).remove(stmt);
 
         if (eventDocument != null) {
             // after notification
-            notifyEvent(RelationEvents.AFTER_RELATION_REMOVAL, eventDocument,
-                    options, null, session);
+            notifyEvent(RelationEvents.AFTER_RELATION_REMOVAL, eventDocument, options, null, session);
         }
     }
 }

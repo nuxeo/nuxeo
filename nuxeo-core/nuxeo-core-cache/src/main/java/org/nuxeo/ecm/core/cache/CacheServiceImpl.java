@@ -38,8 +38,7 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
-    public static final ComponentName NAME = new ComponentName(
-            CacheServiceImpl.class.getName());
+    public static final ComponentName NAME = new ComponentName(CacheServiceImpl.class.getName());
 
     private static final Log log = LogFactory.getLog(CacheServiceImpl.class);
 
@@ -53,7 +52,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     @Override
     public void deactivate(ComponentContext context) {
         if (cacheRegistry.caches.size() > 0) {
-            Map<String,CacheDescriptor> descriptors = new HashMap<String, CacheDescriptor>(cacheRegistry.caches);
+            Map<String, CacheDescriptor> descriptors = new HashMap<String, CacheDescriptor>(cacheRegistry.caches);
             for (CacheDescriptor desc : descriptors.values()) {
                 log.warn("Unregistery leaked contribution " + desc.name);
                 cacheRegistry.contributionRemoved(desc.name, desc);
@@ -87,8 +86,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     }
 
     @Override
-    public void unregisterExtension(Extension extension)
-            throws RuntimeException {
+    public void unregisterExtension(Extension extension) throws RuntimeException {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             CacheDescriptor descriptor = (CacheDescriptor) contrib;

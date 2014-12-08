@@ -35,7 +35,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestContributionPersistence extends NXRuntimeTestCase {
 
@@ -60,8 +59,7 @@ public class TestContributionPersistence extends NXRuntimeTestCase {
 
         String xml = "<listener class=\"org.nuxeo.runtime.persistence.MyListener\"><topic>test</topic></listener>";
         cb.addXmlExtension("org.nuxeo.runtime.EventService", "listeners", xml);
-        cb.addExtension("BaseXPoint", "xp", new DummyContribution("dummy1"),
-                new DummyContribution("dummy2"));
+        cb.addExtension("BaseXPoint", "xp", new DummyContribution("dummy1"), new DummyContribution("dummy2"));
 
         Contribution c1 = mgr.addContribution(cb);
         // check the created contribution

@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.storage.binary;
 
-
 /**
  * Descriptor for a Binary Manager.
  */

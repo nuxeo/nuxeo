@@ -23,8 +23,7 @@ package org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 
 /**
- * Interface for class that provides a way to test
- * if a command is installed on the target server OS.
+ * Interface for class that provides a way to test if a command is installed on the target server OS.
  *
  * @author tiry
  */

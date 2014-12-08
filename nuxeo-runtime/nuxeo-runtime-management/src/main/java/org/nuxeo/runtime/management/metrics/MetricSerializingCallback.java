@@ -38,12 +38,12 @@ public class MetricSerializingCallback extends CallbackSkeleton {
 
     @Override
     public void stopwatchStop(Split split) {
-       toStream(split.getStopwatch().sample());
+        toStream(split.getStopwatch().sample());
     }
 
     @Override
     public void counterSet(Counter counter, long val) {
-      toStream(counter.sample());
+        toStream(counter.sample());
     }
 
     protected void toStream(Sample sample) {

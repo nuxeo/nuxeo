@@ -19,15 +19,13 @@ package org.nuxeo.runtime.management.counters;
 import java.io.Serializable;
 import java.util.Map;
 
-
 /**
  * @author matic
- *
  */
 public interface CounterMXBean extends org.javasimon.jmx.CounterMXBean {
-      
-	String  sampleAsString();
-	
-	Map<String,Serializable> sampleAsMap();
+
+    String sampleAsString();
+
+    Map<String, Serializable> sampleAsMap();
 
 }

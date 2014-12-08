@@ -45,8 +45,7 @@ public class DublinCoreStorageService extends DefaultComponent {
 
     public static final String ID = "DublinCoreStorageService";
 
-    public void setCreationDate(DocumentModel doc, Calendar creationDate,
-            Event event) {
+    public void setCreationDate(DocumentModel doc, Calendar creationDate, Event event) {
         try {
             doc.setProperty("dublincore", "created", creationDate);
         } catch (ClientException e) {
@@ -55,8 +54,7 @@ public class DublinCoreStorageService extends DefaultComponent {
         addContributor(doc, event);
     }
 
-    public void setModificationDate(DocumentModel doc,
-            Calendar modificationDate, Event event) {
+    public void setModificationDate(DocumentModel doc, Calendar modificationDate, Event event) {
         try {
             doc.setProperty("dublincore", "modified", modificationDate);
         } catch (ClientException e) {
@@ -91,8 +89,7 @@ public class DublinCoreStorageService extends DefaultComponent {
 
         String[] contributorsArray;
         try {
-            contributorsArray = (String[]) doc.getProperty("dublincore",
-                    "contributors");
+            contributorsArray = (String[]) doc.getProperty("dublincore", "contributors");
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }

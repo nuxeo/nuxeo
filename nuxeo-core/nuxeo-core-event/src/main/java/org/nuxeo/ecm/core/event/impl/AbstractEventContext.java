@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +30,9 @@ public abstract class AbstractEventContext implements EventContext {
     private static final long serialVersionUID = 1L;
 
     protected static final Object[] EMPTY = new Object[0];
+
     protected Object[] args;
+
     protected Map<String, Serializable> properties;
 
     protected String repositoryName;

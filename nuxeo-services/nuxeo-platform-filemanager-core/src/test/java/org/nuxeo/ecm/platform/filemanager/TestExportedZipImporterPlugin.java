@@ -59,10 +59,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core",
-        "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core",
+@Deploy({ "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core",
+        "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.filemanager.core" })
 public class TestExportedZipImporterPlugin {
 
@@ -78,32 +76,26 @@ public class TestExportedZipImporterPlugin {
     private File archiveFile;
 
     public void createTestDocumentsAndArchive() throws Exception {
-        wsRoot = coreSession.getDocument(new PathRef(
-                "default-domain/workspaces"));
+        wsRoot = coreSession.getDocument(new PathRef("default-domain/workspaces"));
 
-        DocumentModel ws = coreSession.createDocumentModel(
-                wsRoot.getPathAsString(), "sourceWS", "Workspace");
+        DocumentModel ws = coreSession.createDocumentModel(wsRoot.getPathAsString(), "sourceWS", "Workspace");
         ws.setProperty("dublincore", "title", "Source Workspace");
         ws = coreSession.createDocument(ws);
 
-        DocumentModel ws2 = coreSession.createDocumentModel(
-                wsRoot.getPathAsString(), "destWS", "Workspace");
+        DocumentModel ws2 = coreSession.createDocumentModel(wsRoot.getPathAsString(), "destWS", "Workspace");
         ws2.setProperty("dublincore", "title", "Destination Workspace");
         ws2 = coreSession.createDocument(ws2);
 
-        DocumentModel file = coreSession.createDocumentModel(
-                ws.getPathAsString(), "myfile", "File");
+        DocumentModel file = coreSession.createDocumentModel(ws.getPathAsString(), "myfile", "File");
         file.setProperty("dublincore", "title", "MyFile");
         file.setProperty("dublincore", "coverage", "MyFileCoverage");
         file = coreSession.createDocument(file);
 
-        DocumentModel folder = coreSession.createDocumentModel(
-                ws.getPathAsString(), "myfolder", "Folder");
+        DocumentModel folder = coreSession.createDocumentModel(ws.getPathAsString(), "myfolder", "Folder");
         folder.setProperty("dublincore", "title", "MyFolder");
         folder = coreSession.createDocument(folder);
 
-        DocumentModel subfile = coreSession.createDocumentModel(
-                folder.getPathAsString(), "mysubfile", "File");
+        DocumentModel subfile = coreSession.createDocumentModel(folder.getPathAsString(), "mysubfile", "File");
         subfile.setProperty("dublincore", "title", "MySubFile");
         subfile = coreSession.createDocument(subfile);
 
@@ -143,8 +135,7 @@ public class TestExportedZipImporterPlugin {
         createTestDocumentsAndArchive();
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new FileBlob(archiveFile);
-        fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(),
-                true, "toto.zip");
+        fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "toto.zip");
         DocumentModelList children = coreSession.getChildren(destWS.getRef());
         assertTrue(children.size() > 0);
         DocumentModel importedWS = children.get(0);
@@ -152,12 +143,10 @@ public class TestExportedZipImporterPlugin {
         DocumentModelList subChildren = coreSession.getChildren(importedWS.getRef());
         assertSame(2, subChildren.size());
 
-        DocumentModel subFolder = coreSession.getChild(importedWS.getRef(),
-                "myfolder");
+        DocumentModel subFolder = coreSession.getChild(importedWS.getRef(), "myfolder");
         assertNotNull(subFolder);
 
-        DocumentModel subFile = coreSession.getChild(importedWS.getRef(),
-                "myfile");
+        DocumentModel subFile = coreSession.getChild(importedWS.getRef(), "myfile");
         assertNotNull(subFile);
 
         DocumentModelList subSubChildren = coreSession.getChildren(subFolder.getRef());
@@ -172,15 +161,13 @@ public class TestExportedZipImporterPlugin {
         sourceWS = coreSession.saveDocument(sourceWS);
 
         // remove one children
-        DocumentModel subFile = coreSession.getChild(sourceWS.getRef(),
-                "myfile");
+        DocumentModel subFile = coreSession.getChild(sourceWS.getRef(), "myfile");
         coreSession.removeDocument(subFile.getRef());
         coreSession.save();
 
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new FileBlob(archiveFile);
-        fm.createDocumentFromBlob(coreSession, blob, wsRoot.getPathAsString(),
-                true, "toto.zip");
+        fm.createDocumentFromBlob(coreSession, blob, wsRoot.getPathAsString(), true, "toto.zip");
         sourceWS = coreSession.getChild(wsRoot.getRef(), "sourceWS");
         assertNotNull(sourceWS);
         assertEquals("Source Workspace", sourceWS.getTitle());

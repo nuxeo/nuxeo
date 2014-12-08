@@ -21,11 +21,10 @@ import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 
 /**
- * Filtering parameters that can be passed when executing a
- * {@link FilterableQuery}.
+ * Filtering parameters that can be passed when executing a {@link FilterableQuery}.
  * <p>
- * This includes filtering on the BROWSE permission for the given principal,
- * filtering on facets, and applying query transformers.
+ * This includes filtering on the BROWSE permission for the given principal, filtering on facets, and applying query
+ * transformers.
  * <p>
  * You can also include a limit and offset, to get a subset of the total.
  *
@@ -35,8 +34,7 @@ public class QueryFilter implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final QueryFilter EMPTY = new QueryFilter(null, null,
-            new String[0], null,
+    public static final QueryFilter EMPTY = new QueryFilter(null, null, new String[0], null,
             Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
 
     /** The principal. Note that this MUST be {@link Serializable}. */
@@ -59,10 +57,8 @@ public class QueryFilter implements Serializable {
      * <p>
      * Note that the principal MUST be {@link Serializable}.
      */
-    public QueryFilter(Principal principal, String[] principals,
-            String[] permissions, FacetFilter facetFilter,
-            Collection<SQLQuery.Transformer> queryTransformers, long limit,
-            long offset) {
+    public QueryFilter(Principal principal, String[] principals, String[] permissions, FacetFilter facetFilter,
+            Collection<SQLQuery.Transformer> queryTransformers, long limit, long offset) {
         this.principal = principal;
         this.principals = principals;
         this.permissions = permissions;
@@ -112,7 +108,6 @@ public class QueryFilter implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("QueryFilter(principal=%s, limit=%d, offset=%d)",
-                principal, limit, offset);
+        return String.format("QueryFilter(principal=%s, limit=%d, offset=%d)", principal, limit, offset);
     }
 }

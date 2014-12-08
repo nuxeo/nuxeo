@@ -59,8 +59,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
     protected State state;
 
-    public DBSExpressionEvaluator(DBSSession session, Expression expr,
-            String[] principals) {
+    public DBSExpressionEvaluator(DBSSession session, Expression expr, String[] principals) {
         super(new DBSPathResolver(session), principals);
         this.expr = expr;
         schemaManager = Framework.getLocalService(SchemaManager.class);
@@ -83,8 +82,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         this.state = state;
         // security check
         if (principals != null) {
-            String[] racl = (String[]) walkReference(new Reference(
-                    NXQL_ECM_READ_ACL));
+            String[] racl = (String[]) walkReference(new Reference(NXQL_ECM_READ_ACL));
             if (racl == null) {
                 log.error("NULL racl for " + state.get(DBSDocument.KEY_ID));
             } else {
@@ -161,8 +159,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                 return null;
             }
             if (!(value instanceof State)) {
-                throw new RuntimeException("Unkown property (no State): "
-                        + name);
+                throw new RuntimeException("Unkown property (no State): " + name);
             }
             value = ((State) value).get(split[i]);
         }
@@ -175,8 +172,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             if (isTrueOrNullBoolean) {
                 value = TRUE.equals(value) ? ONE : ZERO;
             } else {
-                value = value == null ? null
-                        : (((Boolean) value).booleanValue() ? ONE : ZERO);
+                value = value == null ? null : (((Boolean) value).booleanValue() ? ONE : ZERO);
             }
         }
         return value;
@@ -188,8 +184,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
         protected ExpressionEvaluator matcher;
 
-        public OrderByComparator(OrderByClause orderByClause,
-                ExpressionEvaluator matcher) {
+        public OrderByComparator(OrderByClause orderByClause, ExpressionEvaluator matcher) {
             // replace ecm:path with ecm:__path for evaluation
             // (we don't want to allow ecm:path to be usable anywhere else
             // and resolve to a null value)
@@ -197,8 +192,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             obl.clear();
             for (OrderByExpr ob : orderByClause.elements) {
                 if (ob.reference.name.equals(NXQL.ECM_PATH)) {
-                    ob = new OrderByExpr(new Reference(NXQL_ECM_PATH),
-                            ob.isDescending);
+                    ob = new OrderByExpr(new Reference(NXQL_ECM_PATH), ob.isDescending);
                 }
                 obl.add(ob);
             }

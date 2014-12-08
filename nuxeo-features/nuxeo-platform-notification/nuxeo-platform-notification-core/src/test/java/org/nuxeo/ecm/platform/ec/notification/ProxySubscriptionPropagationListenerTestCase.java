@@ -32,8 +32,7 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.runtime.api.Framework;
 
-public class ProxySubscriptionPropagationListenerTestCase extends
-        SQLRepositoryTestCase {
+public class ProxySubscriptionPropagationListenerTestCase extends SQLRepositoryTestCase {
 
     protected DocumentModel workspace;
 
@@ -64,10 +63,8 @@ public class ProxySubscriptionPropagationListenerTestCase extends
         deployBundle("org.nuxeo.ecm.platform.placeful.api");
         deployBundle("org.nuxeo.ecm.platform.placeful.core");
 
-        deployContrib("org.nuxeo.ecm.platform.placeful.core",
-                "nxplacefulservice-configs-tests.xml");
-        deployContrib("org.nuxeo.ecm.platform.placeful.core",
-                "nxplaceful-tests.xml");
+        deployContrib("org.nuxeo.ecm.platform.placeful.core", "nxplacefulservice-configs-tests.xml");
+        deployContrib("org.nuxeo.ecm.platform.placeful.core", "nxplaceful-tests.xml");
 
         deployBundle("org.nuxeo.ecm.platform.notification.api");
         deployBundle("org.nuxeo.ecm.platform.notification.core");
@@ -157,28 +154,22 @@ public class ProxySubscriptionPropagationListenerTestCase extends
 
     }
 
-    protected void addSomeSubscriptions(
-            NotificationManager notificationService, String user1,
-            String user2, DocumentModel doc) throws ClientException {
-        notificationService.addSubscription(user1, "Task assigned", doc, false,
-                null, null);
-        notificationService.addSubscription(user2,
-                "Approbation review started", doc, false, null, null);
-        notificationService.addSubscription(user2, "Task assigned", doc, false,
-                null, null);
+    protected void addSomeSubscriptions(NotificationManager notificationService, String user1, String user2,
+            DocumentModel doc) throws ClientException {
+        notificationService.addSubscription(user1, "Task assigned", doc, false, null, null);
+        notificationService.addSubscription(user2, "Approbation review started", doc, false, null, null);
+        notificationService.addSubscription(user2, "Task assigned", doc, false, null, null);
     }
 
-    protected void checkSubscriptions(NotificationManager notificationService,
-            String user1, String user2, DocumentModel doc)
-            throws ClassNotFoundException, ClientException {
-        List<String> subscriptions = notificationService.getSubscriptionsForUserOnDocument(
-                user1, doc.getRef().toString());
+    protected void checkSubscriptions(NotificationManager notificationService, String user1, String user2,
+            DocumentModel doc) throws ClassNotFoundException, ClientException {
+        List<String> subscriptions = notificationService.getSubscriptionsForUserOnDocument(user1,
+                doc.getRef().toString());
         assertNotNull(subscriptions);
         assertEquals(1, subscriptions.size());
         assertEquals(Arrays.asList("Task assigned"), subscriptions);
 
-        subscriptions = notificationService.getSubscriptionsForUserOnDocument(
-                user2, doc.getRef().toString());
+        subscriptions = notificationService.getSubscriptionsForUserOnDocument(user2, doc.getRef().toString());
         assertNotNull(subscriptions);
         assertEquals(2, subscriptions.size());
     }

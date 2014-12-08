@@ -41,7 +41,6 @@ import org.nuxeo.runtime.services.event.EventListener;
  * @author Anahide Tchertchian
  * @author Sun Seng David TAN <stan@nuxeo.com>
  * @author Benjamin Jalon <bjalon@nuxeo.com>
- *
  */
 public interface UserManager extends Authenticator, EventListener, Serializable {
 
@@ -49,17 +48,14 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
         EXACT, SUBSTRING
     }
 
-    boolean checkUsernamePassword(String username, String password)
-            throws ClientException;
+    boolean checkUsernamePassword(String username, String password) throws ClientException;
 
     boolean validatePassword(String password) throws ClientException;
 
     /**
-     * Retrieves the principal with the given username or null if it does not
-     * exist.
+     * Retrieves the principal with the given username or null if it does not exist.
      * <p>
-     * Can build principals for anonymous and virtual users as well as for users
-     * defined in the users directory.
+     * Can build principals for anonymous and virtual users as well as for users defined in the users directory.
      *
      * @throws ClientException
      */
@@ -76,8 +72,7 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @deprecated see {@link #searchUsers(String)}
      */
     @Deprecated
-    List<NuxeoPrincipal> searchPrincipals(String pattern)
-            throws ClientException;
+    List<NuxeoPrincipal> searchPrincipals(String pattern) throws ClientException;
 
     /**
      * Search matching groups through their defined search fields
@@ -101,8 +96,7 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @throws ClientException
      * @throws UserAlreadyExistsException
      */
-    DocumentModel createUser(DocumentModel userModel) throws ClientException,
-            UserAlreadyExistsException;
+    DocumentModel createUser(DocumentModel userModel) throws ClientException, UserAlreadyExistsException;
 
     /**
      * Updates user represented by given model.
@@ -142,8 +136,7 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     DocumentModel getBareUserModel() throws ClientException;
 
     /**
-     * Returns the document model representing user with given id or null if it
-     * does not exist.
+     * Returns the document model representing user with given id or null if it does not exist.
      *
      * @since 5.2M4
      * @throws ClientException
@@ -153,9 +146,8 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     /**
      * Returns users matching given pattern
      * <p>
-     * Pattern is used to fill a filter and fulltext map according to users
-     * search fields configuration. Search is performed on each of these fields
-     * (OR).
+     * Pattern is used to fill a filter and fulltext map according to users search fields configuration. Search is
+     * performed on each of these fields (OR).
      *
      * @since 5.2M4
      * @throws ClientException
@@ -170,8 +162,7 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @since 5.2M4
      * @throws ClientException
      */
-    DocumentModelList searchUsers(Map<String, Serializable> filter,
-            Set<String> fulltext) throws ClientException;
+    DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext) throws ClientException;
 
     String getUserListingMode() throws ClientException;
 
@@ -195,8 +186,7 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @since 5.2M4
      * @throws ClientException
      */
-    DocumentModelList searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext) throws ClientException;
+    DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext) throws ClientException;
 
     /**
      * Creates a group from given model
@@ -206,8 +196,7 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @throws ClientException
      * @throws GroupAlreadyExistsException
      */
-    DocumentModel createGroup(DocumentModel groupModel) throws ClientException,
-            GroupAlreadyExistsException;
+    DocumentModel createGroup(DocumentModel groupModel) throws ClientException, GroupAlreadyExistsException;
 
     /**
      * Updates group represented by given model.
@@ -249,8 +238,7 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     DocumentModel getBareGroupModel() throws ClientException;
 
     /**
-     * Return the group document model with this id or null if group does not
-     * exist.
+     * Return the group document model with this id or null if group does not exist.
      *
      * @param groupName the group identifier
      * @since 5.2M4
@@ -293,18 +281,15 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @param groupId ID of the group
      * @return
      */
-    List<String> getUsersInGroupAndSubGroups(String groupId)
-            throws ClientException;
+    List<String> getUsersInGroupAndSubGroups(String groupId) throws ClientException;
 
     /**
-     * Returns true is users referential is read only (ie : LDAP) -> can not add
-     * users -> can not delete users.
+     * Returns true is users referential is read only (ie : LDAP) -> can not add users -> can not delete users.
      */
     Boolean areGroupsReadOnly() throws ClientException;
 
     /**
-     * Returns true is groups referential is read only (ie : LDAP) -> can not
-     * add groups -> can not delete groups.
+     * Returns true is groups referential is read only (ie : LDAP) -> can not add groups -> can not delete groups.
      */
     Boolean areUsersReadOnly() throws ClientException;
 
@@ -341,8 +326,7 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     String getUserEmailField() throws ClientException;
 
     /**
-     * Gets the user search fields, the fields to use when a principal search is
-     * done.
+     * Gets the user search fields, the fields to use when a principal search is done.
      *
      * @return the search fields.
      * @throws ClientException
@@ -427,11 +411,9 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     /**
      * Sets the given configuration on the service.
      *
-     * @param descriptor the descriptor as parsed from xml, merged from the
-     *            previous one if it exists.
+     * @param descriptor the descriptor as parsed from xml, merged from the previous one if it exists.
      */
-    void setConfiguration(UserManagerDescriptor descriptor)
-            throws ClientException;
+    void setConfiguration(UserManagerDescriptor descriptor) throws ClientException;
 
     /**
      * Returns the list of administrators groups.
@@ -476,8 +458,7 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @deprecated use {@link #searchUsers(Map, Set)}
      */
     @Deprecated
-    List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter,
-            Set<String> pattern) throws ClientException;
+    List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter, Set<String> pattern) throws ClientException;
 
     /**
      * @deprecated use {@link #getGroupIds()} or {@link #searchGroups(Map, Set)}
@@ -504,9 +485,8 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     void updateGroup(NuxeoGroup group) throws ClientException;
 
     /**
-     * For an ACP, get the list of user that has a permission. This method
-     * should be use with care as it can cause performance issues while getting
-     * the list of users.
+     * For an ACP, get the list of user that has a permission. This method should be use with care as it can cause
+     * performance issues while getting the list of users.
      *
      * @since 5.4.2
      * @param perm the permission

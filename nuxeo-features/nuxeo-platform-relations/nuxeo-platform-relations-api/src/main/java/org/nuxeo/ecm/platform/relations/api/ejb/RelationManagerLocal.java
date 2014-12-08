@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.relations.api.RelationManager;
  * Local interface for RelationManager.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface RelationManagerLocal extends RelationManager {
 

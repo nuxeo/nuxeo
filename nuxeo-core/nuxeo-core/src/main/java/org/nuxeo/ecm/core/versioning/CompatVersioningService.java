@@ -49,21 +49,19 @@ public class CompatVersioningService extends StandardVersioningService {
     }
 
     @Override
-    public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty,
-            VersioningOption option, Map<String, Serializable> options)
-            throws DocumentException {
+    public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty, VersioningOption option,
+            Map<String, Serializable> options) throws DocumentException {
         option = validateOption(doc, option);
         boolean increment = option != VersioningOption.NONE;
         return increment || (isDirty && !doc.isCheckedOut());
     }
 
     /*
-     * Create a pre-save snapshot, and re-checkout the document if there's a
-     * pending save or we want to increment the version.
+     * Create a pre-save snapshot, and re-checkout the document if there's a pending save or we want to increment the
+     * version.
      */
     @Override
-    public VersioningOption doPreSave(Document doc, boolean isDirty,
-            VersioningOption option, String checkinComment,
+    public VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
             Map<String, Serializable> options) throws DocumentException {
         option = validateOption(doc, option);
         boolean increment = option != VersioningOption.NONE;
@@ -79,9 +77,8 @@ public class CompatVersioningService extends StandardVersioningService {
     }
 
     @Override
-    public Document doPostSave(Document doc, VersioningOption option,
-            String checkinComment, Map<String, Serializable> options)
-            throws DocumentException {
+    public Document doPostSave(Document doc, VersioningOption option, String checkinComment,
+            Map<String, Serializable> options) throws DocumentException {
         if (!doc.isCheckedOut()) {
             return null;
         }
@@ -92,8 +89,7 @@ public class CompatVersioningService extends StandardVersioningService {
     }
 
     @Override
-    public Document doCheckIn(Document doc, VersioningOption option,
-            String checkinComment) throws DocumentException {
+    public Document doCheckIn(Document doc, VersioningOption option, String checkinComment) throws DocumentException {
         return doc.checkIn(null, checkinComment); // auto-label
     }
 

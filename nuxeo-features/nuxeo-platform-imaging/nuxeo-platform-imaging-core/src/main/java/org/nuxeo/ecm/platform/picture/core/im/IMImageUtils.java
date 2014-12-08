@@ -76,8 +76,7 @@ public class IMImageUtils implements ImageUtils {
             }
         }
 
-        protected void makeFiles(Blob blob, String targetExt)
-                throws CommandNotAvailable, CommandException, IOException {
+        protected void makeFiles(Blob blob, String targetExt) throws CommandNotAvailable, CommandException, IOException {
             sourceFile = BlobHelper.getFileFromBlob(blob);
 
             // check extension
@@ -94,17 +93,14 @@ public class IMImageUtils implements ImageUtils {
                     sourceFile = createTempSource(blob, ext);
                 } else {
                     // rename tmp file
-                    File newTmpFile = new File(
-                            FilenameUtils.removeExtension(tmpFile.getPath())
-                                    + "." + ext);
+                    File newTmpFile = new File(FilenameUtils.removeExtension(tmpFile.getPath()) + "." + ext);
                     tmpFile.renameTo(newTmpFile);
                     tmpFile = newTmpFile;
                     sourceFile = newTmpFile;
                 }
             } else {
                 // check that extension on source is correct
-                if (sourceFile != null
-                        && !ext.equals(FilenameUtils.getExtension(sourceFile.getName()))) {
+                if (sourceFile != null && !ext.equals(FilenameUtils.getExtension(sourceFile.getName()))) {
                     sourceFile = null;
                 }
             }
@@ -116,43 +112,34 @@ public class IMImageUtils implements ImageUtils {
             if (targetExt == null) {
                 targetExt = ext;
             }
-            targetFile = File.createTempFile("nuxeoImageTarget", "."
-                    + targetExt);
+            targetFile = File.createTempFile("nuxeoImageTarget", "." + targetExt);
         }
 
-        protected File createTempSource(Blob blob, String ext)
-                throws IOException {
+        protected File createTempSource(Blob blob, String ext) throws IOException {
             tmpFile = File.createTempFile("nuxeoImageSource", "." + ext);
             blob.transferTo(tmpFile);
             return tmpFile;
         }
 
-        public abstract void callImageMagick() throws CommandNotAvailable,
-                CommandException;
+        public abstract void callImageMagick() throws CommandNotAvailable, CommandException;
     }
 
     @Override
-    public Blob crop(Blob blob, final int x, final int y, final int width,
-            final int height) {
+    public Blob crop(Blob blob, final int x, final int y, final int width, final int height) {
         return new ImageMagickCaller() {
             @Override
-            public void callImageMagick() throws CommandNotAvailable,
-                    CommandException {
-                ImageCropper.crop(sourceFile.getAbsolutePath(),
-                        targetFile.getAbsolutePath(), width, height, x, y);
+            public void callImageMagick() throws CommandNotAvailable, CommandException {
+                ImageCropper.crop(sourceFile.getAbsolutePath(), targetFile.getAbsolutePath(), width, height, x, y);
             }
         }.call(blob, null, "resizer");
     }
 
     @Override
-    public Blob resize(Blob blob, String finalFormat, final int width,
-            final int height, final int depth) {
+    public Blob resize(Blob blob, String finalFormat, final int width, final int height, final int depth) {
         return new ImageMagickCaller() {
             @Override
-            public void callImageMagick() throws CommandNotAvailable,
-                    CommandException {
-                ImageResizer.resize(sourceFile.getAbsolutePath(),
-                        targetFile.getAbsolutePath(), width, height, depth);
+            public void callImageMagick() throws CommandNotAvailable, CommandException {
+                ImageResizer.resize(sourceFile.getAbsolutePath(), targetFile.getAbsolutePath(), width, height, depth);
             }
         }.call(blob, finalFormat, "resizer");
     }
@@ -161,10 +148,8 @@ public class IMImageUtils implements ImageUtils {
     public Blob rotate(Blob blob, final int angle) {
         return new ImageMagickCaller() {
             @Override
-            public void callImageMagick() throws CommandNotAvailable,
-                    CommandException {
-                ImageRotater.rotate(sourceFile.getAbsolutePath(),
-                        targetFile.getAbsolutePath(), angle);
+            public void callImageMagick() throws CommandNotAvailable, CommandException {
+                ImageRotater.rotate(sourceFile.getAbsolutePath(), targetFile.getAbsolutePath(), angle);
             }
         }.call(blob, null, "rotate");
     }

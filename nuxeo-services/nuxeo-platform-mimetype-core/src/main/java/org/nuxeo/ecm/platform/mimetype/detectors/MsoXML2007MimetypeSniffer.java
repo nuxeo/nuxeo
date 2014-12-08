@@ -39,14 +39,12 @@ public class MsoXML2007MimetypeSniffer implements MagicDetector {
     }
 
     public String[] getHandledExtensions() {
-        return new String[] {
-                "docm", "docx", "dotm", "dotx", "ppsm", "ppsx",
-                "pptm", "pptx", "xlsb", "xlsm", "xlsx", "xps" };
+        return new String[] { "docm", "docx", "dotm", "dotx", "ppsm", "ppsx", "pptm", "pptx", "xlsb", "xlsm", "xlsx",
+                "xps" };
     }
 
     public String[] getHandledTypes() {
-        return new String[] {
-                "application/vnd.ms-word.document.macroEnabled.12",
+        return new String[] { "application/vnd.ms-word.document.macroEnabled.12",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "application/vnd.ms-word.template.macroEnabled.12",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
@@ -56,8 +54,7 @@ public class MsoXML2007MimetypeSniffer implements MagicDetector {
                 "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                 "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
                 "application/vnd.ms-excel.sheet.macroEnabled.12",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "application/vnd.ms-xpsdocument", };
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-xpsdocument", };
     }
 
     public String getName() {
@@ -68,8 +65,8 @@ public class MsoXML2007MimetypeSniffer implements MagicDetector {
         return "0.1";
     }
 
-    public String[] process(byte[] data, int offset, int length, long bitmask,
-            char comparator, String mimeType, Map params) {
+    public String[] process(byte[] data, int offset, int length, long bitmask, char comparator, String mimeType,
+            Map params) {
         String[] mimetypes = {};
         File file = null;
         try {
@@ -86,8 +83,8 @@ public class MsoXML2007MimetypeSniffer implements MagicDetector {
         return mimetypes;
     }
 
-    public String[] process(File file, int offset, int length, long bitmask,
-            char comparator, String mimeType, Map params) {
+    public String[] process(File file, int offset, int length, long bitmask, char comparator, String mimeType,
+            Map params) {
         return guessMsoXML2007(file);
     }
 

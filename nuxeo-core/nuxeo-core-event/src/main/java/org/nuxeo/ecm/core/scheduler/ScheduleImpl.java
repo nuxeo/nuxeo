@@ -93,12 +93,12 @@ public class ScheduleImpl implements Schedule {
         if (!(obj instanceof Schedule)) {
             return false;
         }
-        return id.equals(((Schedule)obj).getId());
+        return id.equals(((Schedule) obj).getId());
     }
 
     @Override
     public int hashCode() {
-       return id.hashCode();
+        return id.hashCode();
     }
 
     @Override

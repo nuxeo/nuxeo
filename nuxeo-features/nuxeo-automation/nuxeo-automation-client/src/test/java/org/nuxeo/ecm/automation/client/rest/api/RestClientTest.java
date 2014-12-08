@@ -24,17 +24,13 @@ import org.junit.Test;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 
 /**
- *
- *
  * @since 5.8
  */
 public class RestClientTest {
 
     @Test
-    public void itComputesAPIEndpointBasedOnAutomationEndpoint()
-            throws Exception {
-        String expectedTransformations[][] = new String[][] {
-                new String[] { "/automation/", "/api/v1/" },
+    public void itComputesAPIEndpointBasedOnAutomationEndpoint() throws Exception {
+        String expectedTransformations[][] = new String[][] { new String[] { "/automation/", "/api/v1/" },
                 new String[] { "/nuxeo/site/automation/", "/nuxeo/api/v1/" },
                 new String[] { "/nuxeo/api/v1/automation/", "/nuxeo/api/v1/" },
                 new String[] { "/api/v1/automation/", "/api/v1/" } };

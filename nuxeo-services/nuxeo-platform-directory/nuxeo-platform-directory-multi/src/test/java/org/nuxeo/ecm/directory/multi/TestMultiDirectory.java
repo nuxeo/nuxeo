@@ -55,7 +55,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Florent Guillaume
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ MultiDirectoryFeature.class })
@@ -75,7 +74,6 @@ public class TestMultiDirectory {
     MultiDirectory multiDir;
 
     MultiDirectorySession dir;
-    
 
     @Before
     public void setUp() throws Exception {
@@ -88,10 +86,8 @@ public class TestMultiDirectory {
         Map<String, Object> e;
 
         // dir 1
-        Set<String> schema1Set = new HashSet<String>(
-                Arrays.asList("uid", "foo"));
-        memdir1 = new MemoryDirectory("dir1", "schema1", schema1Set, "uid",
-                "foo");
+        Set<String> schema1Set = new HashSet<String>(Arrays.asList("uid", "foo"));
+        memdir1 = new MemoryDirectory("dir1", "schema1", schema1Set, "uid", "foo");
         memoryDirectoryFactory.registerDirectory(memdir1);
 
         Session dir1 = memdir1.getSession();
@@ -120,10 +116,8 @@ public class TestMultiDirectory {
         dir2.createEntry(e);
 
         // dir 3
-        Set<String> schema3Set = new HashSet<String>(Arrays.asList("uid",
-                "thefoo", "thebar"));
-        memdir3 = new MemoryDirectory("dir3", "schema3", schema3Set, "uid",
-                "thefoo");
+        Set<String> schema3Set = new HashSet<String>(Arrays.asList("uid", "thefoo", "thebar"));
+        memdir3 = new MemoryDirectory("dir3", "schema3", schema3Set, "uid", "thefoo");
         memoryDirectoryFactory.registerDirectory(memdir3);
 
         Session dir3 = memdir3.getSession();
@@ -266,8 +260,7 @@ public class TestMultiDirectory {
         assertEquals("babar1", e.getProperty("schema3", "thebar"));
 
         // check underlying directories
-        assertEquals("fffooo1",
-                dir1.getEntry("1").getProperty("schema1", "foo"));
+        assertEquals("fffooo1", dir1.getEntry("1").getProperty("schema1", "foo"));
         assertEquals("babar1", dir2.getEntry("1").getProperty("schema2", "bar"));
         assertNull(dir3.getEntry("1"));
 
@@ -286,10 +279,8 @@ public class TestMultiDirectory {
         assertNull(dir1.getEntry("3"));
         assertNull(dir2.getEntry("3"));
         assertNotNull(dir3.getEntry("3"));
-        assertEquals("fffooo3", dir3.getEntry("3").getProperty("schema3",
-                "thefoo"));
-        assertEquals("babar3", dir3.getEntry("3").getProperty("schema3",
-                "thebar"));
+        assertEquals("fffooo3", dir3.getEntry("3").getProperty("schema3", "thefoo"));
+        assertEquals("babar3", dir3.getEntry("3").getProperty("schema3", "thebar"));
     }
 
     @Test
@@ -314,8 +305,7 @@ public class TestMultiDirectory {
         assertEquals("bar1", e.getProperty("schema3", "thebar"));
 
         // neither the underlying directories
-        assertEquals("foo1",
-                dir1.getEntry("1").getProperty("schema1", "foo"));
+        assertEquals("foo1", dir1.getEntry("1").getProperty("schema1", "foo"));
         assertEquals("bar1", dir2.getEntry("1").getProperty("schema2", "bar"));
         assertNull(dir3.getEntry("1"));
     }
@@ -342,8 +332,7 @@ public class TestMultiDirectory {
 
         // check underlying directories
         // update not done on readonly dir2
-        assertEquals("fffooo1",
-                dir1.getEntry("1").getProperty("schema1", "foo"));
+        assertEquals("fffooo1", dir1.getEntry("1").getProperty("schema1", "foo"));
         assertEquals("bar1", dir2.getEntry("1").getProperty("schema2", "bar"));
         assertNull(dir3.getEntry("1"));
 
@@ -364,10 +353,8 @@ public class TestMultiDirectory {
         assertNull(dir1.getEntry("3"));
         assertNull(dir2.getEntry("3"));
         assertNotNull(dir3.getEntry("3"));
-        assertEquals("foo3", dir3.getEntry("3").getProperty("schema3",
-                "thefoo"));
-        assertEquals("bar3", dir3.getEntry("3").getProperty("schema3",
-                "thebar"));
+        assertEquals("foo3", dir3.getEntry("3").getProperty("schema3", "thefoo"));
+        assertEquals("bar3", dir3.getEntry("3").getProperty("schema3", "thebar"));
     }
 
     @Test
@@ -561,8 +548,7 @@ public class TestMultiDirectory {
     @Test
     public void testCreateFromModel() throws Exception {
         String schema = "schema3";
-        DocumentModel entry = BaseSession.createEntryModel(null, schema, null,
-                null);
+        DocumentModel entry = BaseSession.createEntryModel(null, schema, null, null);
         entry.setProperty("schema3", "uid", "yo");
 
         assertNull(dir.getEntry("yo"));
@@ -642,7 +628,7 @@ public class TestMultiDirectory {
     public void testReadOnlyEntryInQueryResults() throws Exception {
         Map<String, String> orderBy = new HashMap<String, String>();
         orderBy.put("schema3:uid", "asc");
-        DocumentModelComparator comp  = new DocumentModelComparator(orderBy);
+        DocumentModelComparator comp = new DocumentModelComparator(orderBy);
 
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         DocumentModelList results = dir.query(filter);
@@ -679,7 +665,7 @@ public class TestMultiDirectory {
     public void testReadOnlyEntryInGetEntriesResults() throws Exception {
         Map<String, String> orderBy = new HashMap<String, String>();
         orderBy.put("schema3:uid", "asc");
-        DocumentModelComparator comp  = new DocumentModelComparator(orderBy);
+        DocumentModelComparator comp = new DocumentModelComparator(orderBy);
 
         DocumentModelList results = dir.getEntries();
         Collections.sort(results, comp);

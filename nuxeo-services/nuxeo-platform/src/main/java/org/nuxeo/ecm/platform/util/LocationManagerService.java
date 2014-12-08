@@ -33,8 +33,7 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class LocationManagerService extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.platform.util.LocationManagerService");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.platform.util.LocationManagerService");
 
     private static final Log log = LogFactory.getLog(LocationManagerService.class);
 
@@ -52,11 +51,9 @@ public class LocationManagerService extends DefaultComponent {
         String locationName = pluginExtension.getLocationName();
         boolean locationEnabled = pluginExtension.getLocationEnabled();
 
-        log.info("Registering location manager: " + locationName +
-                (locationEnabled ? "" : " (disabled)"));
+        log.info("Registering location manager: " + locationName + (locationEnabled ? "" : " (disabled)"));
 
-        RepositoryLocation locationTempPlugin = new RepositoryLocation(
-                locationName);
+        RepositoryLocation locationTempPlugin = new RepositoryLocation(locationName);
 
         if (locations.containsKey(locationName)) {
             if (!locationEnabled) {

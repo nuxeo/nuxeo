@@ -31,15 +31,21 @@ import org.nuxeo.runtime.annotations.loader.Indexable;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-@Indexable({"name", "superType"})
+@Target({ ElementType.TYPE })
+@Indexable({ "name", "superType" })
 public @interface WebAdapter {
 
     String name(); // the adapter name
+
     String type(); // the type name
+
     String superType() default ResourceTypeImpl.ROOT_TYPE_NAME; // the super type name
+
     String guard() default ""; // a security guard if any
+
     String[] facets() default {};
+
     String targetType() default ResourceType.ROOT_TYPE_NAME;
+
     String[] targetFacets() default {};
 }

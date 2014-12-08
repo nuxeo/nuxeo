@@ -43,8 +43,8 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Seam Bean used to build/restore a JSF/Seam context from a REST call. This
- * bean is called when a user clicks on an installation link from MarketPlace.
+ * Seam Bean used to build/restore a JSF/Seam context from a REST call. This bean is called when a user clicks on an
+ * installation link from MarketPlace.
  *
  * @author tiry
  */
@@ -108,8 +108,7 @@ public class ExternalLinkManager implements Serializable {
         // we try to select the server to go to the next screen
         if (navigationContext.getCurrentServerLocation() == null) {
             // update location
-            RepositoryLocation repLoc = new RepositoryLocation(
-                    repositoryManager.getRepositoryNames().get(0));
+            RepositoryLocation repLoc = new RepositoryLocation(repositoryManager.getRepositoryNames().get(0));
             navigationContext.setCurrentServerLocation(repLoc);
         }
         CoreSession documentManager = navigationContext.getOrCreateDocumentManager();
@@ -119,8 +118,7 @@ public class ExternalLinkManager implements Serializable {
 
     public String confirm() throws ClientException {
         initMinimalContext();
-        webActions.setCurrentTabId(AdminViewManager.ADMIN_ACTION_CATEGORY,
-                "ConnectApps", "ConnectAppsRemote");
+        webActions.setCurrentTabId(AdminViewManager.ADMIN_ACTION_CATEGORY, "ConnectApps", "ConnectAppsRemote");
         adminViews.addExternalPackageDownloadRequest(pkg.getId());
         return AdminViewManager.VIEW_ADMIN;
     }

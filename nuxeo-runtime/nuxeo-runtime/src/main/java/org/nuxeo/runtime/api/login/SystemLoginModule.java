@@ -36,13 +36,15 @@ public class SystemLoginModule implements LoginModule {
     private static final Log log = LogFactory.getLog(SystemLoginModule.class);
 
     protected Subject subject;
+
     protected CallbackHandler callbackHandler;
+
     protected Map sharedState;
+
     protected boolean trace;
 
     @Override
-    public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map sharedState, Map options) {
+    public void initialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options) {
         this.subject = subject;
         this.sharedState = sharedState;
         this.callbackHandler = callbackHandler;
@@ -55,18 +57,16 @@ public class SystemLoginModule implements LoginModule {
         if (trace) {
             log.trace("begin system login");
         }
-        LoginService loginService = Framework.getLocalService(
-                LoginService.class);
+        LoginService loginService = Framework.getLocalService(LoginService.class);
         if (loginService == null) {
             throw new LoginException("Nuxeo Login Service is not running - cannot do system login");
         }
         CredentialsCallback cb = new CredentialsCallback();
         try {
-            callbackHandler.handle(new Callback[] {cb});
+            callbackHandler.handle(new Callback[] { cb });
         } catch (Exception e) { // deals with interrupt below
             ExceptionUtils.checkInterrupt(e);
-            LoginException ee = new LoginException(
-                    "System login failed - callback failed");
+            LoginException ee = new LoginException("System login failed - callback failed");
             ee.initCause(e);
             throw ee;
         }

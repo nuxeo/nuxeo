@@ -85,8 +85,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     protected ActionPropertiesDescriptor properties;
 
     /**
-     * Extra set of properties to be used by API, when creating actions on the
-     * fly without contributions to the service.
+     * Extra set of properties to be used by API, when creating actions on the fly without contributions to the service.
      *
      * @since 5.6
      */
@@ -102,9 +101,8 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     /**
      * Attribute that provides a hint for action ordering.
      * <p>
-     * :XXX: Action ordering remains a problem. We will continue to use the
-     * existing strategy of, by default, ordering actions by specificity of
-     * registration and order of definition.
+     * :XXX: Action ordering remains a problem. We will continue to use the existing strategy of, by default, ordering
+     * actions by specificity of registration and order of definition.
      */
     @XNode("@order")
     protected int order = 0;
@@ -129,8 +127,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     /**
-     * Returns true if the enabled element was set on the descriptor, useful
-     * for merging.
+     * Returns true if the enabled element was set on the descriptor, useful for merging.
      *
      * @since 5.8
      */
@@ -182,8 +179,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     /**
      * Returns the link for this action.
      * <p>
-     * Since 5.7.3, fallbacks on properties when link is not set and retrieve
-     * it using key "link".
+     * Since 5.7.3, fallbacks on properties when link is not set and retrieve it using key "link".
      */
     public String getLink() {
         if (link == null) {
@@ -260,8 +256,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     /**
-     * @deprecated since 5.6: useless now that EL expressions support
-     *             parameters
+     * @deprecated since 5.6: useless now that EL expressions support parameters
      */
     @Deprecated
     @SuppressWarnings("rawtypes")
@@ -270,8 +265,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     /**
-     * @deprecated since 5.6: useless now that EL expressions support
-     *             parameters
+     * @deprecated since 5.6: useless now that EL expressions support parameters
      */
     @Deprecated
     public void setLinkParams(Class<?>[] linkParams) {
@@ -281,8 +275,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     /**
      * Returns the confirm javascript for this element.
      * <p>
-     * Since 5.7.3, fallbacks on properties when link is not set and retrieve
-     * it using key "confirm".
+     * Since 5.7.3, fallbacks on properties when link is not set and retrieve it using key "confirm".
      */
     public String getConfirm() {
         if (confirm == null) {
@@ -384,8 +377,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     /**
-     * Returns an aggregate of {@link #localProperties} and {@link #properties}
-     * set via descriptors.
+     * Returns an aggregate of {@link #localProperties} and {@link #properties} set via descriptors.
      *
      * @since 5.6
      */

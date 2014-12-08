@@ -25,8 +25,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Seam component that exposes getters for all properties managements by the
- * runtime {@link Framework}
+ * Seam component that exposes getters for all properties managements by the runtime {@link Framework}
  *
  * @since 5.5
  */
@@ -44,8 +43,7 @@ public class FrameworkPropertyActions {
     }
 
     /**
-     * Returns true if given property has been setup to true (defaults to false
-     * if not set).
+     * Returns true if given property has been setup to true (defaults to false if not set).
      *
      * @since 5.8
      * @see {@link Framework#isBooleanPropertyTrue(String)}

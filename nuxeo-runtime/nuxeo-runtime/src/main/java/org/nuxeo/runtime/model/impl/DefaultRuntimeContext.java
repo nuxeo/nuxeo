@@ -40,7 +40,6 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultRuntimeContext implements RuntimeContext {
 
@@ -89,8 +88,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
 
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
-        return Thread.currentThread().getContextClassLoader().loadClass(
-                className);
+        return Thread.currentThread().getContextClassLoader().loadClass(className);
     }
 
     @Override
@@ -202,8 +200,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         return null;
     }
 
-    public RegistrationInfoImpl createRegistrationInfo(StreamRef ref)
-            throws IOException {
+    public RegistrationInfoImpl createRegistrationInfo(StreamRef ref) throws IOException {
         String source = FileUtils.read(ref.getStream());
         String expanded = Framework.expandVars(source);
         try (InputStream in = new ByteArrayInputStream(expanded.getBytes(UTF_8))) {
@@ -211,8 +208,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         }
     }
 
-    public RegistrationInfoImpl createRegistrationInfo(InputStream in)
-            throws IOException {
+    public RegistrationInfoImpl createRegistrationInfo(InputStream in) throws IOException {
         return reader.read(this, in);
     }
 

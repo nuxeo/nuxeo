@@ -38,8 +38,7 @@ import org.nuxeo.ecm.platform.pictures.tiles.helpers.StringMaker;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Wraps the needed information about tiling a picture in order to manage cache.
- * This includes:
+ * Wraps the needed information about tiling a picture in order to manage cache. This includes:
  * <ul>
  * <li>original image stored on file system</li>
  * <li>reduced images if any</li>
@@ -47,7 +46,6 @@ import org.nuxeo.runtime.api.Framework;
  * </ul>
  *
  * @author tiry
- *
  */
 public class PictureTilingCacheInfo {
 
@@ -114,8 +112,8 @@ public class PictureTilingCacheInfo {
         return diskSpaceUsage;
     }
 
-    public PictureTilingCacheInfo(String cacheKey, String workingDir,
-            String filePath) throws CommandNotAvailable, CommandException {
+    public PictureTilingCacheInfo(String cacheKey, String workingDir, String filePath) throws CommandNotAvailable,
+            CommandException {
         this.cacheKey = cacheKey;
         this.workingDir = workingDir;
         originalPictureInfos = ImageIdentifier.getInfo(filePath);
@@ -130,10 +128,8 @@ public class PictureTilingCacheInfo {
         updateAccessTime();
     }
 
-    public PictureTiles getCachedPictureTiles(int tileWidth, int tileHeight,
-            int maxTiles) {
-        String ptKey = StringMaker.getTileFormatString(tileWidth, tileHeight,
-                maxTiles);
+    public PictureTiles getCachedPictureTiles(int tileWidth, int tileHeight, int maxTiles) {
+        String ptKey = StringMaker.getTileFormatString(tileWidth, tileHeight, maxTiles);
         updateAccessTime();
         return tilesSet.get(ptKey);
     }
@@ -147,8 +143,7 @@ public class PictureTilingCacheInfo {
     }
 
     public String getTilingDir(int tileWidth, int tileHeight, int maxTiles) {
-        String dirPath = "tiles-" + tileWidth + "-" + tileHeight + "-"
-                + maxTiles;
+        String dirPath = "tiles-" + tileWidth + "-" + tileHeight + "-" + maxTiles;
         dirPath = new Path(workingDir).append(dirPath).toString();
 
         log.debug("Target tiling dir=" + dirPath);
@@ -161,8 +156,7 @@ public class PictureTilingCacheInfo {
         return dirPath;
     }
 
-    public ImageInfo getBestSourceImage(int tileWidth, int tileHeight,
-            int maxTiles) {
+    public ImageInfo getBestSourceImage(int tileWidth, int tileHeight, int maxTiles) {
         updateAccessTime();
         if ("JPEG".equals(originalPictureInfos.getFormat())) {
             // since JPEG supports it we may strip it down
@@ -192,21 +186,16 @@ public class PictureTilingCacheInfo {
                         return shrinkedImages.get(new Integer(shrinkedWidth));
                     } else {
                         String shrinkedImagePath = new Path(workingDir).append(
-                                "reduced-" + neededWidth + "x" + neededHeight
-                                        + ".jpg").toString();
+                                "reduced-" + neededWidth + "x" + neededHeight + ".jpg").toString();
                         try {
-                            ImageInfo shrinked = ImageResizer.resize(
-                                    originalPictureInfos.getFilePath(),
-                                    shrinkedImagePath, neededWidth,
-                                    neededHeight, -1);
+                            ImageInfo shrinked = ImageResizer.resize(originalPictureInfos.getFilePath(),
+                                    shrinkedImagePath, neededWidth, neededHeight, -1);
 
-                            shrinkedImagesWidths.add(new Integer(
-                                    shrinked.getWidth()));
+                            shrinkedImagesWidths.add(new Integer(shrinked.getWidth()));
                             Collections.sort(shrinkedImagesWidths);
                             Collections.reverse(shrinkedImagesWidths);
 
-                            shrinkedImages.put(
-                                    new Integer(shrinked.getWidth()), shrinked);
+                            shrinkedImages.put(new Integer(shrinked.getWidth()), shrinked);
 
                             return shrinked;
                         } catch (CommandNotAvailable | CommandException e) {

@@ -35,12 +35,10 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
 /**
- * For Groovy we are not using the javax.script API because we need more control over debug mode and
- * script class loader.
- * Groovy scritps will be processed by this class
+ * For Groovy we are not using the javax.script API because we need more control over debug mode and script class
+ * loader. Groovy scritps will be processed by this class
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class GroovyScripting {
 
@@ -81,15 +79,12 @@ public class GroovyScripting {
         return loader;
     }
 
-    //TODO add debug mode :  return new GroovyShell(new Binding(args)).evaluate(script.getFile()); ?
-    public Object eval(File file, Map<String, Object> context)
-            throws GroovyRuntimeException {
-        return eval(file, context == null ? new Binding()
-                : new Binding(context));
+    // TODO add debug mode : return new GroovyShell(new Binding(args)).evaluate(script.getFile()); ?
+    public Object eval(File file, Map<String, Object> context) throws GroovyRuntimeException {
+        return eval(file, context == null ? new Binding() : new Binding(context));
     }
 
-    public Object eval(File file, Binding context)
-            throws GroovyRuntimeException {
+    public Object eval(File file, Binding context) throws GroovyRuntimeException {
         // convenience out global variable (for compatibility with scripts on webengine 1.0 beta)
         context.setVariable("out", System.out);
         return getScript(file, context).run();
@@ -102,7 +97,7 @@ public class GroovyScripting {
         } catch (IOException e) {
             throw new GroovyRuntimeException(e);
         }
-         // do not use cache - we are maintaining our proper cache -  based on lastModified
+        // do not use cache - we are maintaining our proper cache - based on lastModified
         return loader.parseClass(codeSource, false);
     }
 
@@ -121,6 +116,7 @@ public class GroovyScripting {
 
     static class Entry {
         final long lastModified;
+
         final Class<?> klass;
 
         Entry(Class<?> klass, long lastModified) {

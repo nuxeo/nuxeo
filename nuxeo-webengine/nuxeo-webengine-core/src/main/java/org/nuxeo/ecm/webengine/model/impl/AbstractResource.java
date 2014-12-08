@@ -48,8 +48,7 @@ import org.nuxeo.ecm.webengine.security.PermissionService;
 // DO NOT MODIFY class declaration! Cannot use WebResourceType<?> since groovy
 // doesn't supports wildcards for now
 @SuppressWarnings("unchecked")
-public abstract class AbstractResource<T extends ResourceType> implements
-        Resource {
+public abstract class AbstractResource<T extends ResourceType> implements Resource {
 
     protected WebContext ctx;
 
@@ -61,8 +60,7 @@ public abstract class AbstractResource<T extends ResourceType> implements
 
     protected T type;
 
-    public Resource initialize(WebContext ctx, ResourceType type,
-            Object... args) {
+    public Resource initialize(WebContext ctx, ResourceType type, Object... args) {
         this.ctx = ctx;
         this.type = (T) type;
         path = ctx.getUriInfo().getMatchedURIs().get(0);
@@ -81,8 +79,7 @@ public abstract class AbstractResource<T extends ResourceType> implements
         }
         path = buf.append(path).toString();
         if (!this.type.getGuard().check(this)) {
-            throw new WebSecurityException("Failed to initialize object: "
-                    + path
+            throw new WebSecurityException("Failed to initialize object: " + path
                     + ". Object is not accessible in the current context", path);
         }
         initialize(args);

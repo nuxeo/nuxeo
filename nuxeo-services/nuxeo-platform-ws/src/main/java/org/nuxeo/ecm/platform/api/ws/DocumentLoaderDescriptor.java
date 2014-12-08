@@ -21,13 +21,12 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author matic
- *
  */
 @XObject("loader")
 public class DocumentLoaderDescriptor {
 
     @XNode("@name")
-    public  String name;
+    public String name;
 
     public DocumentLoader instance;
 

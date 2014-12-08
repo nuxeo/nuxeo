@@ -43,15 +43,15 @@ public class RelationCreationBean {
 
     private static final Log log = LogFactory.getLog(RelationCreationBean.class);
 
-    public void validateObject(FacesContext context, UIComponent component,
-            Object value) {
+    public void validateObject(FacesContext context, UIComponent component, Object value) {
         Map<String, Object> attributes = component.getAttributes();
         final String objectTypeInputId = (String) attributes.get("objectTypeInputId");
         final String objectLiteralValueInputId = (String) attributes.get("objectLiteralValueInputId");
         final String objectUriInputId = (String) attributes.get("objectUriInputId");
         final String objectDocumentUidInputId = (String) attributes.get("objectDocumentUidInputId");
 
-        if (StringUtils.isBlank(objectTypeInputId) || StringUtils.isBlank(objectLiteralValueInputId) || StringUtils.isBlank(objectUriInputId) || StringUtils.isBlank(objectDocumentUidInputId)) {
+        if (StringUtils.isBlank(objectTypeInputId) || StringUtils.isBlank(objectLiteralValueInputId)
+                || StringUtils.isBlank(objectUriInputId) || StringUtils.isBlank(objectDocumentUidInputId)) {
             log.error("Cannot validate relation creation: input id(s) not found");
             return;
         }
@@ -61,7 +61,8 @@ public class RelationCreationBean {
         final UIInput objectUriInput = (UIInput) component.findComponent(objectUriInputId);
         final UIInput objectDocumentUidInput = (UIInput) component.findComponent(objectDocumentUidInputId);
 
-        if (objectTypeInput == null || objectLiteralValueInput == null || objectUriInput == null || objectDocumentUidInput == null) {
+        if (objectTypeInput == null || objectLiteralValueInput == null || objectUriInput == null
+                || objectDocumentUidInput == null) {
             log.error("Cannot validate relation creation: input(s) not found");
             return;
         }
@@ -74,32 +75,25 @@ public class RelationCreationBean {
         String msg;
 
         if (objectType == null) {
-            msg = I18NUtils.getMessageString(bundleName,
-                    "error.relation.required.object.type", null, locale);
+            msg = I18NUtils.getMessageString(bundleName, "error.relation.required.object.type", null, locale);
             message = new FacesMessage(msg);
         } else if (objectType.equals("literal")) {
-            objectValue = ((String) objectLiteralValueInput.getLocalValue())
-                    .trim();
-            msg = I18NUtils.getMessageString(bundleName,
-                    "error.relation.required.object.text", null, locale);
+            objectValue = ((String) objectLiteralValueInput.getLocalValue()).trim();
+            msg = I18NUtils.getMessageString(bundleName, "error.relation.required.object.text", null, locale);
             message = new FacesMessage(msg);
         } else if (objectType.equals("uri")) {
             // XXX maybe perform better validation on uri
             objectValue = ((String) objectUriInput.getLocalValue()).trim();
-            msg = I18NUtils.getMessageString(bundleName,
-                    "error.relation.required.object.uri", null, locale);
+            msg = I18NUtils.getMessageString(bundleName, "error.relation.required.object.uri", null, locale);
             message = new FacesMessage(msg);
         } else if (objectType.equals("document")) {
             if (null != objectDocumentUidInput) {
-                objectValue = ((String) objectDocumentUidInput.getLocalValue())
-                        .trim();
+                objectValue = ((String) objectDocumentUidInput.getLocalValue()).trim();
             }
-            msg = I18NUtils.getMessageString(bundleName,
-                    "error.relation.required.object.document", null, locale);
+            msg = I18NUtils.getMessageString(bundleName, "error.relation.required.object.document", null, locale);
             message = new FacesMessage(msg);
         } else {
-            msg = I18NUtils.getMessageString(bundleName,
-                    "error.relation.invalid.object.type", null, locale);
+            msg = I18NUtils.getMessageString(bundleName, "error.relation.invalid.object.type", null, locale);
             message = new FacesMessage(msg);
         }
 

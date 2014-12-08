@@ -28,8 +28,7 @@ public final class ACE implements Serializable, Cloneable {
      *
      * @since 6.0
      */
-    public static final ACE BLOCK = new ACE(SecurityConstants.EVERYONE,
-            SecurityConstants.EVERYTHING, false);
+    public static final ACE BLOCK = new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
 
     private final String username;
 
@@ -49,8 +48,7 @@ public final class ACE implements Serializable, Cloneable {
     }
 
     /**
-     * Constructs an ACE for a given username and permission, and specifies
-     * whether to grant or deny it.
+     * Constructs an ACE for a given username and permission, and specifies whether to grant or deny it.
      */
     public ACE(String username, String permission, boolean isGranted) {
         this.username = username;
@@ -95,9 +93,7 @@ public final class ACE implements Serializable, Cloneable {
         }
         if (obj instanceof ACE) {
             ACE ace = (ACE) obj;
-            return ace.isGranted == isGranted
-                && ace.username.equals(username)
-                && ace.permission.equals(permission);
+            return ace.isGranted == isGranted && ace.username.equals(username) && ace.permission.equals(permission);
         }
         return super.equals(obj);
     }

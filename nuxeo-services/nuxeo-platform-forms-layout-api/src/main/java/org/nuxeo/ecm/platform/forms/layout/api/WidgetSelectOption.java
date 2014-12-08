@@ -21,8 +21,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * Single select option top be held by the {@link WidgetDefinition} and
- * {@link Widget} generated from the definition.
+ * Single select option top be held by the {@link WidgetDefinition} and {@link Widget} generated from the definition.
  *
  * @author Anahide Tchertchian
  * @since 5.4.2
@@ -32,26 +31,23 @@ public interface WidgetSelectOption extends Serializable {
     /**
      * Returns the value representing the option.
      * <p>
-     * This value is optional when using static label and values, it can be
-     * useful to use it in conjunction with the {@link #getVar()} method to
-     * retrieve the id and label from the object.
+     * This value is optional when using static label and values, it can be useful to use it in conjunction with the
+     * {@link #getVar()} method to retrieve the id and label from the object.
      */
     Serializable getValue();
 
     /**
      * Returns the var representing the value returned by {@link #getValue()}
      * <p>
-     * This value can be used in the potential EL expressions returned by
-     * {@link #getItemLabel()}, {@link #getItemValue()},
-     * {@link #getItemDisabled()} and {@link #getItemRendered()}.
+     * This value can be used in the potential EL expressions returned by {@link #getItemLabel()},
+     * {@link #getItemValue()}, {@link #getItemDisabled()} and {@link #getItemRendered()}.
      */
     String getVar();
 
     /**
      * Returns the item label for the select option.
      * <p>
-     * This can be an EL expression if {@link #getValue()} and
-     * {@link #getVar()} return a non-null value.
+     * This can be an EL expression if {@link #getValue()} and {@link #getVar()} return a non-null value.
      */
     String getItemLabel();
 
@@ -72,32 +68,28 @@ public interface WidgetSelectOption extends Serializable {
     /**
      * Returns the item value for the select option.
      * <p>
-     * This can be an EL expression if {@link #getValue()} and
-     * {@link #getVar()} return a non-null value.
+     * This can be an EL expression if {@link #getValue()} and {@link #getVar()} return a non-null value.
      */
     String getItemValue();
 
     /**
      * Returns the disabled behaviour for the select option.
      * <p>
-     * This value can either be an EL expression that should resolve to a
-     * boolean value, either a string representing a boolean ("true" or
-     * "false") either a Boolean value.
+     * This value can either be an EL expression that should resolve to a boolean value, either a string representing a
+     * boolean ("true" or "false") either a Boolean value.
      */
     Serializable getItemDisabled();
 
     /**
      * Returns the rendered behaviour for the select option.
      * <p>
-     * This value can either be an EL expression that should resolve to a
-     * boolean value, either a string representing a boolean ("true" or
-     * "false") either a Boolean value.
+     * This value can either be an EL expression that should resolve to a boolean value, either a string representing a
+     * boolean ("true" or "false") either a Boolean value.
      */
     Serializable getItemRendered();
 
     /**
-     * Returns the unique identifier of this select option to be used in tag
-     * configuration.
+     * Returns the unique identifier of this select option to be used in tag configuration.
      *
      * @see {@link Layout#getTagConfigId()}.
      */

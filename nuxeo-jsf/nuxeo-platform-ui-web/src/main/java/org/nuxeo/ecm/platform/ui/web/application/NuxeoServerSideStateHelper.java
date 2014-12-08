@@ -83,8 +83,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
     protected static Integer numbersOfConversationsInSession = null;
 
     /**
-     * The top level attribute name for storing the state structures within the
-     * session.
+     * The top level attribute name for storing the state structures within the session.
      */
     public static final String CONVERSATION_VIEW_MAP = NuxeoServerSideStateHelper.class.getName()
             + ".ConversationViewMap";
@@ -100,8 +99,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                     numbersOfConversationsInSession = Integer.parseInt(value);
 
                 } catch (NumberFormatException e) {
-                    throw new FacesException("Context parameter "
-                            + NUMBER_OF_CONVERSATIONS_IN_SESSION
+                    throw new FacesException("Context parameter " + NUMBER_OF_CONVERSATIONS_IN_SESSION
                             + " must have integer value");
                 }
             }
@@ -110,8 +108,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
     }
 
     @Override
-    public void writeState(FacesContext ctx, Object state,
-            StringBuilder stateCapture) throws IOException {
+    public void writeState(FacesContext ctx, Object state, StringBuilder stateCapture) throws IOException {
 
         Util.notNull("context", ctx);
 
@@ -127,29 +124,24 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
             // noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (sessionObj) {
                 String conversationId = NO_LONGRUNNING_CONVERSATION_ID;
-                if (Contexts.isConversationContextActive()
-                        && Conversation.instance().isLongRunning()) {
+                if (Contexts.isConversationContextActive() && Conversation.instance().isLongRunning()) {
                     conversationId = Conversation.instance().getId();
                 }
 
                 Map<String, Map> conversationMap = TypedCollections.dynamicallyCastMap(
-                        (Map) sessionMap.get(CONVERSATION_VIEW_MAP),
-                        String.class, Map.class);
+                        (Map) sessionMap.get(CONVERSATION_VIEW_MAP), String.class, Map.class);
                 if (conversationMap == null) {
-                    conversationMap = new LRUMap<String, Map>(
-                            getNbOfConversationsInSession(ctx));
+                    conversationMap = new LRUMap<String, Map>(getNbOfConversationsInSession(ctx));
                     sessionMap.put(CONVERSATION_VIEW_MAP, conversationMap);
                 }
 
                 Map<String, Map> logicalMap = TypedCollections.dynamicallyCastMap(
-                        (Map) conversationMap.get(conversationId),
-                        String.class, Map.class);
+                        (Map) conversationMap.get(conversationId), String.class, Map.class);
                 if (logicalMap == null) {
                     if (conversationMap.size() == getNbOfConversationsInSession(ctx)) {
                         if (log.isDebugEnabled()) {
                             log.warn("Too many conversations, dumping the least recently used conversation ("
-                                    + conversationMap.keySet().iterator().next()
-                                    + ")");
+                                    + conversationMap.keySet().iterator().next() + ")");
                         }
                     }
                     logicalMap = new LRUMap<String, Map>(numberOfLogicalViews);
@@ -159,11 +151,9 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                 Object structure = stateToWrite[0];
                 Object savedState = handleSaveState(stateToWrite[1]);
 
-                String idInLogicalMap = (String) RequestStateManager.get(ctx,
-                        RequestStateManager.LOGICAL_VIEW_MAP);
+                String idInLogicalMap = (String) RequestStateManager.get(ctx, RequestStateManager.LOGICAL_VIEW_MAP);
                 if (idInLogicalMap == null) {
-                    idInLogicalMap = ((generateUniqueStateIds) ? createRandomId()
-                            : createIncrementalRequestId(ctx));
+                    idInLogicalMap = ((generateUniqueStateIds) ? createRandomId() : createIncrementalRequestId(ctx));
                 }
                 String idInActualMap = null;
                 if (ctx.getPartialViewContext().isPartialRequest()) {
@@ -171,16 +161,13 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                     // page not actually changed.
                     // Otherwise partial requests will soon overflow cache with
                     // values that would be never used.
-                    idInActualMap = (String) RequestStateManager.get(ctx,
-                            RequestStateManager.ACTUAL_VIEW_MAP);
+                    idInActualMap = (String) RequestStateManager.get(ctx, RequestStateManager.ACTUAL_VIEW_MAP);
                 }
                 if (null == idInActualMap) {
-                    idInActualMap = ((generateUniqueStateIds) ? createRandomId()
-                            : createIncrementalRequestId(ctx));
+                    idInActualMap = ((generateUniqueStateIds) ? createRandomId() : createIncrementalRequestId(ctx));
                 }
-                Map<String, Object[]> actualMap = TypedCollections.dynamicallyCastMap(
-                        logicalMap.get(idInLogicalMap), String.class,
-                        Object[].class);
+                Map<String, Object[]> actualMap = TypedCollections.dynamicallyCastMap(logicalMap.get(idInLogicalMap),
+                        String.class, Object[].class);
                 if (actualMap == null) {
                     actualMap = new LRUMap<String, Object[]>(numberOfViews);
                     logicalMap.put(idInLogicalMap, actualMap);
@@ -194,8 +181,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                     stateArray[0] = structure;
                     stateArray[1] = savedState;
                 } else {
-                    actualMap.put(idInActualMap, new Object[] { structure,
-                            savedState });
+                    actualMap.put(idInActualMap, new Object[] { structure, savedState });
                 }
 
                 conversationMap.put(conversationId, logicalMap);
@@ -214,8 +200,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
 
             writer.startElement("input", null);
             writer.writeAttribute("type", "hidden", null);
-            writer.writeAttribute("name",
-                    ResponseStateManager.VIEW_STATE_PARAM, null);
+            writer.writeAttribute("name", ResponseStateManager.VIEW_STATE_PARAM, null);
             if (webConfig.isOptionEnabled(EnableViewStateIdRendering)) {
                 String viewStateId = Util.getViewStateId(ctx);
                 writer.writeAttribute("id", viewStateId, null);
@@ -258,16 +243,14 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
         if (sessionObj == null) {
             if (log.isTraceEnabled()) {
                 log.trace(String.format(
-                        "Unable to restore server side state for view ID %s as no session is available",
-                        viewId));
+                        "Unable to restore server side state for view ID %s as no session is available", viewId));
             }
             return null;
         }
 
         // noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (sessionObj) {
-            Map<String, Map> conversationMap = (Map) externalCtx.getSessionMap().get(
-                    CONVERSATION_VIEW_MAP);
+            Map<String, Map> conversationMap = (Map) externalCtx.getSessionMap().get(CONVERSATION_VIEW_MAP);
             if (conversationMap == null) {
                 return null;
             }
@@ -282,9 +265,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
             if (logicalMap != null) {
                 Map actualMap = (Map) logicalMap.get(idInLogicalMap);
                 if (actualMap != null) {
-                    RequestStateManager.set(ctx,
-                            RequestStateManager.LOGICAL_VIEW_MAP,
-                            idInLogicalMap);
+                    RequestStateManager.set(ctx, RequestStateManager.LOGICAL_VIEW_MAP, idInLogicalMap);
                     Object[] state = (Object[]) actualMap.get(idInActualMap);
                     Object[] restoredState = new Object[2];
 
@@ -292,9 +273,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                     restoredState[1] = state[1];
 
                     if (state != null) {
-                        RequestStateManager.set(ctx,
-                                RequestStateManager.ACTUAL_VIEW_MAP,
-                                idInActualMap);
+                        RequestStateManager.set(ctx, RequestStateManager.ACTUAL_VIEW_MAP, idInActualMap);
                         if (state.length == 2 && state[1] != null) {
                             restoredState[1] = handleRestoreState(state[1]);
                         }
@@ -311,8 +290,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
 
     /**
      * @param ctx the <code>FacesContext</code> for the current request
-     * @return a unique ID for building the keys used to store views within a
-     *         session
+     * @return a unique ID for building the keys used to store views within a session
      */
     private String createIncrementalRequestId(FacesContext ctx) {
         Map<String, Object> sm = ctx.getExternalContext().getSessionMap();

@@ -43,8 +43,7 @@ public class BinaryManagerService extends DefaultComponent {
         registry.clear();
     }
 
-    public void addBinaryManager(String repositoryName,
-            BinaryManager binaryManager) {
+    public void addBinaryManager(String repositoryName, BinaryManager binaryManager) {
         registry.put(repositoryName, binaryManager);
     }
 

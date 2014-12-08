@@ -30,7 +30,6 @@ public class URLJarFileIntrospector {
 
     Object factory;
 
-
     public URLJarFileIntrospector() throws URLJarFileIntrospectionError {
         try {
             ucpField = URLClassLoader.class.getDeclaredField("ucp");
@@ -43,22 +42,18 @@ public class URLJarFileIntrospector {
             Class<?> jarLoaderClass = loadClass("sun.misc.URLClassPath$JarLoader");
             jarField = jarLoaderClass.getDeclaredField("jar");
             jarField.setAccessible(true);
-            getJarFileMethod = jarLoaderClass.getDeclaredMethod("getJarFile",
-                    new Class<?>[] { URL.class });
+            getJarFileMethod = jarLoaderClass.getDeclaredMethod("getJarFile", new Class<?>[] { URL.class });
             getJarFileMethod.setAccessible(true);
             Class<?> jarURLConnectionClass = loadClass("sun.net.www.protocol.jar.JarURLConnection");
             jarFileFactoryField = jarURLConnectionClass.getDeclaredField("factory");
             jarFileFactoryField.setAccessible(true);
             factory = jarFileFactoryField.get(null);
             Class<?> factoryClass = loadClass("sun.net.www.protocol.jar.JarFileFactory");
-            factoryGetMethod = factoryClass.getMethod("get",
-                    new Class<?>[] { URL.class });
+            factoryGetMethod = factoryClass.getMethod("get", new Class<?>[] { URL.class });
             factoryGetMethod.setAccessible(true);
-            factoryCloseMethod = factoryClass.getMethod("close",
-                    new Class<?>[] { JarFile.class });
+            factoryCloseMethod = factoryClass.getMethod("close", new Class<?>[] { JarFile.class });
             factoryCloseMethod.setAccessible(true);
-        } catch (NoSuchFieldException | SecurityException
-                | ClassNotFoundException | NoSuchMethodException
+        } catch (NoSuchFieldException | SecurityException | ClassNotFoundException | NoSuchMethodException
                 | IllegalArgumentException | IllegalAccessException cause) {
             throw new URLJarFileIntrospectionError("Cannot introspect url class loader jar files", cause);
         }
@@ -72,8 +67,7 @@ public class URLJarFileIntrospector {
         }
     }
 
-    protected static Class<?> loadClass(String name)
-            throws ClassNotFoundException {
+    protected static Class<?> loadClass(String name) throws ClassNotFoundException {
         return URLJarFileIntrospector.class.getClassLoader().loadClass(name);
     }
 
@@ -92,19 +86,15 @@ public class URLJarFileIntrospector {
         }
     }
 
-
-  public void close(URL location) throws IOException {
+    public void close(URL location) throws IOException {
         JarFile jar = null;
         try {
-            jar = (JarFile) factoryGetMethod.invoke(factory,
-                    new Object[] { location });
+            jar = (JarFile) factoryGetMethod.invoke(factory, new Object[] { location });
             factoryCloseMethod.invoke(factory, jar);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(
-                    "Cannot use reflection on jar file factory", e);
+            throw new RuntimeException("Cannot use reflection on jar file factory", e);
         } catch (InvocationTargetException e) {
-            throw new RuntimeException(
-                    "Cannot use reflection on jar file factory", e);
+            throw new RuntimeException("Cannot use reflection on jar file factory", e);
         }
         jar.close();
     }

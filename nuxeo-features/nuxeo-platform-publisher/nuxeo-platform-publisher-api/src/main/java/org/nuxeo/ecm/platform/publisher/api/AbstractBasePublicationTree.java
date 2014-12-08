@@ -56,10 +56,8 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
 
     protected abstract PublishedDocumentFactory getDefaultFactory();
 
-    public void initTree(String sid, CoreSession coreSession,
-            Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName, String title)
-            throws ClientException {
+    public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
+            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
         this.sid = sid;
         this.coreSession = coreSession;
         if (factory != null) {
@@ -110,18 +108,15 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return treeTitle;
     }
 
-    public List<PublishedDocument> getPublishedDocumentInNode(
-            PublicationNode node) throws ClientException {
+    public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) throws ClientException {
         return node.getChildrenDocuments();
     }
 
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
         return factory.publishDocument(doc, targetNode);
     }
 
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
         return factory.publishDocument(doc, targetNode, params);
     }
@@ -146,8 +141,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return rootNode.getChildrenNodes();
     }
 
-    public List<PublishedDocument> getChildrenDocuments()
-            throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
         return rootNode.getChildrenDocuments();
     }
 
@@ -167,16 +161,14 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return iconCollapsed;
     }
 
-    public void validatorPublishDocument(PublishedDocument publishedDocument,
-            String comment) throws ClientException {
+    public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) throws ClientException {
         if (!accept(publishedDocument)) {
             return;
         }
         factory.validatorPublishDocument(publishedDocument, comment);
     }
 
-    public void validatorRejectPublication(PublishedDocument publishedDocument,
-            String comment) throws ClientException {
+    public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) throws ClientException {
         if (!accept(publishedDocument)) {
             return;
         }

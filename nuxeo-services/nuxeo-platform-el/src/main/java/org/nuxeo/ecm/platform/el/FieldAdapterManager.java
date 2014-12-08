@@ -30,22 +30,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * The FieldAdapterManager fills the gap between the storage and the display
- * structures.
+ * The FieldAdapterManager fills the gap between the storage and the display structures.
  * <p>
- * The Display representation of a DataModel is a set of JSF Beans There are
- * mainly 3 cases:
+ * The Display representation of a DataModel is a set of JSF Beans There are mainly 3 cases:
  * <p>
- * 1 - Perfect match: the JSF components generate a bean that can be directly
- * stored ie: String ...
+ * 1 - Perfect match: the JSF components generate a bean that can be directly stored ie: String ...
  * <p>
- * 2 - Type Mismatch: The JSF component generate a bean that is not of the
- * right type ie: The JSF generate a Date whereas the Core expect a Calendar
- * type.
+ * 2 - Type Mismatch: The JSF component generate a bean that is not of the right type ie: The JSF generate a Date
+ * whereas the Core expect a Calendar type.
  * <p>
- * 3 - Structure Mismatch: The JSF bean must be split in several fields ie: The
- * uploaded file is one object, but the core expect at least 2 separate fields
- * (filename and content)
+ * 3 - Structure Mismatch: The JSF bean must be split in several fields ie: The uploaded file is one object, but the
+ * core expect at least 2 separate fields (filename and content)
  *
  * @author Thierry Delprat
  */
@@ -70,8 +65,7 @@ public final class FieldAdapterManager {
             Object[] array = (Object[]) value;
             Class<?> oldType = array.getClass().getComponentType();
             Class<?> newType = getComponentTypeForStorage(oldType);
-            Object[] newArray = (Object[]) Array.newInstance(newType,
-                    array.length);
+            Object[] newArray = (Object[]) Array.newInstance(newType, array.length);
             for (int i = 0; i < array.length; i++) {
                 newArray[i] = getValueForStorage(array[i]);
             }
@@ -94,8 +88,7 @@ public final class FieldAdapterManager {
     }
 
     /**
-     * Returns component type that will be used to store objects of given
-     * component type.
+     * Returns component type that will be used to store objects of given component type.
      */
     public static Class<?> getComponentTypeForStorage(Class<?> componentType) {
         Class<?> newType = componentType;
@@ -116,8 +109,7 @@ public final class FieldAdapterManager {
             Object[] array = (Object[]) value;
             Class<?> oldType = array.getClass().getComponentType();
             Class<?> newType = getComponentTypeForDisplay(oldType);
-            Object[] newArray = (Object[]) Array.newInstance(newType,
-                    array.length);
+            Object[] newArray = (Object[]) Array.newInstance(newType, array.length);
             for (int i = 0; i < array.length; i++) {
                 newArray[i] = getValueForDisplay(array[i]);
             }
@@ -139,8 +131,7 @@ public final class FieldAdapterManager {
     }
 
     /**
-     * Returns component type that will be used to display objects of given
-     * component type.
+     * Returns component type that will be used to display objects of given component type.
      */
     public static Class<?> getComponentTypeForDisplay(Class<?> componentType) {
         Class<?> newType = componentType;

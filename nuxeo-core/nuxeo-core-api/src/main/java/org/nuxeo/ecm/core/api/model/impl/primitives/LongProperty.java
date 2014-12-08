@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LongProperty extends ScalarProperty {
 
@@ -36,33 +35,30 @@ public class LongProperty extends ScalarProperty {
 
     @Override
     public boolean isNormalized(Object value) {
-        return value == null || value instanceof Long
-                || value instanceof DeltaLong;
+        return value == null || value instanceof Long || value instanceof DeltaLong;
     }
 
     @Override
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
         if (value.getClass() == String.class) {
-            String string = (String)value;
+            String string = (String) value;
             if (string.length() == 0) {
                 return null;
             }
             return Long.valueOf(value.toString());
         }
         if (value instanceof Number) {
-            return ((Number)value).longValue();
+            return ((Number) value).longValue();
         }
         throw new PropertyConversionException(value.getClass(), Long.class);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType)
-            throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
         if (value == null || Long.class == toType) {
             return (T) value;
         }

@@ -37,11 +37,10 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
- * Manage persistent components.
- * Persistent components are located in ${nxserver_data_dir}/components directory, and can be dynamically removed
- * or registered. After framework startup (after the application was completely started) the persistent components
- * are deployed.
- * The layout of the components directory is the following:
+ * Manage persistent components. Persistent components are located in ${nxserver_data_dir}/components directory, and can
+ * be dynamically removed or registered. After framework startup (after the application was completely started) the
+ * persistent components are deployed. The layout of the components directory is the following:
+ *
  * <pre>
  * components/
  *     component1.xml
@@ -56,35 +55,37 @@ import org.xml.sax.SAXException;
  *     ...
  * </pre>
  *
- * If components are put directly under the root then they will be deployed in the runtime bundle context.
- * If they are put in a directory having as name the symbolicName of a bundle in the system,
- * then the component will be deployed in that bundle context.
+ * If components are put directly under the root then they will be deployed in the runtime bundle context. If they are
+ * put in a directory having as name the symbolicName of a bundle in the system, then the component will be deployed in
+ * that bundle context.
  * <p>
- * Any files not ending with .xml are ignored.
- * Any directory that doesn't match a bundle symbolic name will be ignored too.
+ * Any files not ending with .xml are ignored. Any directory that doesn't match a bundle symbolic name will be ignored
+ * too.
  * <p>
  * Dynamic components must use the following name convention: (it is not mandatory but it is recommended)
  * <ul>
- * <li> Components deployed in root directory must use as name the file name without the .xml extension.
- * <li> Components deployed in a bundle directory must use the relative file path without the .xml extensions.
+ * <li>Components deployed in root directory must use as name the file name without the .xml extension.
+ * <li>Components deployed in a bundle directory must use the relative file path without the .xml extensions.
  * </ul>
- * Examples:
- * Given the following component files: <code>components/mycomp1.xml</code> and <code>components/mybundle/mycomp2.xml</code>
- * the name for <code>mycomp1</code> must be: <code>comp1</code> and for <code>mycomp2</code> must be <code>mybundle/mycomp2</code>
+ * Examples: Given the following component files: <code>components/mycomp1.xml</code> and
+ * <code>components/mybundle/mycomp2.xml</code> the name for <code>mycomp1</code> must be: <code>comp1</code> and for
+ * <code>mycomp2</code> must be <code>mybundle/mycomp2</code>
  * <p>
  * This service is working only with {@link OSGiRuntimeService}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ComponentPersistence {
 
     protected final File root; // a directory to keep exploded extensions
-    protected final RuntimeContext sysrc;
-    protected final OSGiRuntimeService runtime;
-    protected final ReadWriteLock fileLock;
-    protected final Set<RegistrationInfo> persistedComponents;
 
+    protected final RuntimeContext sysrc;
+
+    protected final OSGiRuntimeService runtime;
+
+    protected final ReadWriteLock fileLock;
+
+    protected final Set<RegistrationInfo> persistedComponents;
 
     public ComponentPersistence(OSGiRuntimeService runtime) {
         this.runtime = runtime;
@@ -130,8 +131,7 @@ public class ComponentPersistence {
         }
     }
 
-    public void loadPersistedComponents(RuntimeContext rc, File root)
-            throws IOException {
+    public void loadPersistedComponents(RuntimeContext rc, File root) throws IOException {
         File[] files = root.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -184,22 +184,21 @@ public class ComponentPersistence {
         createComponent(bytes, true);
     }
 
-    public synchronized void createComponent(byte[] bytes, boolean isPersistent)
-            throws IOException {
+    public synchronized void createComponent(byte[] bytes, boolean isPersistent) throws IOException {
         Document doc = loadXml(new ByteArrayInputStream(bytes));
         Element root = doc.getDocumentElement();
         String name = root.getAttribute("name");
         int p = name.indexOf(':');
         if (p > -1) {
-            name = name.substring(p+1);
+            name = name.substring(p + 1);
         }
         p = name.indexOf('/');
         String owner = null;
         if (p > -1) {
             owner = name.substring(0, p);
         }
-        DefaultRuntimeContext rc = (DefaultRuntimeContext)getContext(owner);
-        File file = new File(this.root, name+".xml");
+        DefaultRuntimeContext rc = (DefaultRuntimeContext) getContext(owner);
+        File file = new File(this.root, name + ".xml");
         if (!isPersistent) {
             file.deleteOnExit();
         }
@@ -208,8 +207,7 @@ public class ComponentPersistence {
         rc.deploy(file.toURI().toURL());
     }
 
-    public synchronized boolean removeComponent(String compName)
-            throws IOException {
+    public synchronized boolean removeComponent(String compName) throws IOException {
         String path = compName + ".xml";
         File file = new File(root, path);
         if (!file.isFile()) {
@@ -220,12 +218,11 @@ public class ComponentPersistence {
         if (p > -1) {
             owner = compName.substring(0, p);
         }
-        DefaultRuntimeContext rc = (DefaultRuntimeContext)getContext(owner);
+        DefaultRuntimeContext rc = (DefaultRuntimeContext) getContext(owner);
         rc.undeploy(file.toURI().toURL());
         file.delete();
         return true;
     }
-
 
     protected void safeWriteFile(byte[] bytes, File file) throws IOException {
         fileLock.writeLock().lock();

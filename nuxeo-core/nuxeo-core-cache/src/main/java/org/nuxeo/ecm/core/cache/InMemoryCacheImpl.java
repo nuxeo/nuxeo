@@ -38,12 +38,10 @@ public class InMemoryCacheImpl extends AbstractCache {
         CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
         builder = builder.expireAfterWrite(desc.ttl, TimeUnit.MINUTES);
         if (desc.options.containsKey("concurrencyLevel")) {
-            builder = builder.concurrencyLevel(Integer.valueOf(
-                    desc.options.get("concurrencyLevel")).intValue());
+            builder = builder.concurrencyLevel(Integer.valueOf(desc.options.get("concurrencyLevel")).intValue());
         }
         if (desc.options.containsKey("maxSize")) {
-            builder = builder.maximumSize(Integer.valueOf(
-                    desc.options.get("maxSize")).intValue());
+            builder = builder.maximumSize(Integer.valueOf(desc.options.get("maxSize")).intValue());
         }
         cache = builder.build();
     }
@@ -76,8 +74,7 @@ public class InMemoryCacheImpl extends AbstractCache {
         if (key != null) {
             cache.invalidate(key);
         } else {
-            log.warn(String.format(
-                    "Can't invalidate a null key for the cache '%s'!", name));
+            log.warn(String.format("Can't invalidate a null key for the cache '%s'!", name));
         }
     }
 
@@ -91,9 +88,7 @@ public class InMemoryCacheImpl extends AbstractCache {
         if (key != null && value != null) {
             cache.put(key, value);
         } else {
-            log.warn(String.format(
-                    "Can't put a null key nor a null value in the cache '%s'!",
-                    name));
+            log.warn(String.format("Can't put a null key nor a null value in the cache '%s'!", name));
         }
     }
 

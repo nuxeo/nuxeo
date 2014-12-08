@@ -50,8 +50,7 @@ public class DatabaseDB2 extends DatabaseHelper {
 
     protected void setProperties() {
         databaseName = DEFAULT_DATABASE_NAME;
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY,
-                repositoryName);
+        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(DATABASE_PROPERTY, databaseName);
         setProperty(SERVER_PROPERTY, DEF_SERVER);
         setProperty(PORT_PROPERTY, DEF_PORT);
@@ -59,10 +58,8 @@ public class DatabaseDB2 extends DatabaseHelper {
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
         // for sql directory tests
         setProperty(DRIVER_PROPERTY, DRIVER);
-        String url = String.format("jdbc:db2://%s:%s/%s",
-                Framework.getProperty(SERVER_PROPERTY),
-                Framework.getProperty(PORT_PROPERTY),
-                Framework.getProperty(DATABASE_PROPERTY));
+        String url = String.format("jdbc:db2://%s:%s/%s", Framework.getProperty(SERVER_PROPERTY),
+                Framework.getProperty(PORT_PROPERTY), Framework.getProperty(DATABASE_PROPERTY));
         setProperty(URL_PROPERTY, url);
     }
 
@@ -71,13 +68,9 @@ public class DatabaseDB2 extends DatabaseHelper {
         super.setUp();
         Class.forName(DRIVER);
         setProperties();
-        Connection connection = DriverManager.getConnection(
-                Framework.getProperty(URL_PROPERTY),
-                Framework.getProperty(USER_PROPERTY),
-                Framework.getProperty(PASSWORD_PROPERTY));
-        doOnAllTables(connection, null,
-                Framework.getProperty(USER_PROPERTY).toUpperCase(),
-                "DROP TABLE \"%s\"");
+        Connection connection = DriverManager.getConnection(Framework.getProperty(URL_PROPERTY),
+                Framework.getProperty(USER_PROPERTY), Framework.getProperty(PASSWORD_PROPERTY));
+        doOnAllTables(connection, null, Framework.getProperty(USER_PROPERTY).toUpperCase(), "DROP TABLE \"%s\"");
         dropSequences(connection);
         connection.close();
     }

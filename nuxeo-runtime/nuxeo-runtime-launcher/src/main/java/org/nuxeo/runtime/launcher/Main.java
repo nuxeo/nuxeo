@@ -28,7 +28,6 @@ import java.net.URLClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Main {
 
@@ -65,13 +64,11 @@ public class Main {
             if (file.exists()) {
                 urls[0] = file.toURI().toURL();
             } else {
-                System.err.println("Could not find main class: "
-                        + args[0]
+                System.err.println("Could not find main class: " + args[0]
                         + ". Make sure you have this class on the boot class path");
                 System.exit(3);
             }
-            URLClassLoader classLoader = new URLClassLoader(urls,
-                    Main.class.getClassLoader());
+            URLClassLoader classLoader = new URLClassLoader(urls, Main.class.getClassLoader());
             Thread.currentThread().setContextClassLoader(classLoader);
 
             // set the property used by Nuxeo OSGi launcher to create the system
@@ -97,28 +94,24 @@ public class Main {
             e.printStackTrace();
             System.exit(4);
         } catch (NoSuchMethodException e) {
-            System.err.println("Could not find main class method: "
-                    + mainClassName + "." + method + "(String[] args)");
+            System.err.println("Could not find main class method: " + mainClassName + "." + method + "(String[] args)");
             e.printStackTrace();
             System.exit(5);
         } catch (SecurityException e) {
-            System.err.println("Failed to access the main class method: "
-                    + mainClassName + "." + method + "(String[] args)");
+            System.err.println("Failed to access the main class method: " + mainClassName + "." + method
+                    + "(String[] args)");
             e.printStackTrace();
             System.exit(5);
         } catch (IllegalAccessException e) {
-            System.err.println("Failed to invoke method: " + mainClassName
-                    + "." + method + "(String[] args)");
+            System.err.println("Failed to invoke method: " + mainClassName + "." + method + "(String[] args)");
             e.printStackTrace();
             System.exit(6);
         } catch (IllegalArgumentException e) {
-            System.err.println("Failed to invoke method: " + mainClassName
-                    + "." + method + "(String[] args)");
+            System.err.println("Failed to invoke method: " + mainClassName + "." + method + "(String[] args)");
             e.printStackTrace();
             System.exit(6);
         } catch (InvocationTargetException e) {
-            System.err.println("Failed to invoke method: " + mainClassName
-                    + "." + method + "(String[] args)");
+            System.err.println("Failed to invoke method: " + mainClassName + "." + method + "(String[] args)");
             e.printStackTrace();
             System.exit(6);
         }

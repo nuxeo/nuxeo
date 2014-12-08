@@ -19,8 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @since 5.7 Delegate containing data injection for PropertyMap object. Keeping
- *        dirty properties in memory.
+ * @since 5.7 Delegate containing data injection for PropertyMap object. Keeping dirty properties in memory.
  */
 public class PropertyMapSetter {
 
@@ -33,8 +32,8 @@ public class PropertyMapSetter {
     }
 
     /**
-     * @since 5.7 This method fetch all dirty properties that has been defined.
-     *        Warning: Dirty properties are not flushed when getting it.
+     * @since 5.7 This method fetch all dirty properties that has been defined. Warning: Dirty properties are not
+     *        flushed when getting it.
      * @return PropertyMap
      */
     public PropertyMap getDirties() {

@@ -25,8 +25,7 @@ import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 /**
  * Abstract implementation for codecs.
  * <p>
- * Implements methods that are not likely to be customized except for
- * optimization.
+ * Implements methods that are not likely to be customized except for optimization.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

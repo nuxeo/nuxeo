@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs;
 
-
 import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
@@ -29,7 +28,6 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Activator implements BundleActivator, ServiceTrackerCustomizer {
 
@@ -44,15 +42,15 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer {
     protected ServiceTracker httpServiceTracker;
 
     protected BundleContext context;
-    protected ServiceReference pkgAdm;
 
+    protected ServiceReference pkgAdm;
 
     @Override
     public void start(BundleContext context) {
         instance = this;
         this.context = context;
         pkgAdm = context.getServiceReference(PackageAdmin.class.getName());
-        //TODO workaround to disable service tracker on regular Nuxeo distribs until finding a better solution
+        // TODO workaround to disable service tracker on regular Nuxeo distribs until finding a better solution
         if (!"Nuxeo".equals(context.getProperty(Constants.FRAMEWORK_VENDOR))) {
             httpServiceTracker = new ServiceTracker(context, HttpService.class.getName(), this);
             httpServiceTracker.open();
@@ -81,7 +79,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer {
     }
 
     public PackageAdmin getPackageAdmin() {
-        return (PackageAdmin)context.getService(pkgAdm);
+        return (PackageAdmin) context.getService(pkgAdm);
     }
 
     @Override
@@ -89,7 +87,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer {
         Object service = context.getService(reference);
         try {
             if (service instanceof HttpService) {
-                ServletRegistry.getInstance().initHttpService((HttpService)service);
+                ServletRegistry.getInstance().initHttpService((HttpService) service);
             }
         } catch (ServletException | NamespaceException e) {
             throw new RuntimeException("Failed to initialize http service", e);
@@ -115,7 +113,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer {
         try {
             if (ServletRegistry.getInstance().getHttpService() == service) {
                 ServletRegistry.getInstance().initHttpService(null);
-                ServletRegistry.getInstance().initHttpService((HttpService)service);
+                ServletRegistry.getInstance().initHttpService((HttpService) service);
             }
         } catch (ServletException | NamespaceException e) {
             log.error("Failed to update http service", e);

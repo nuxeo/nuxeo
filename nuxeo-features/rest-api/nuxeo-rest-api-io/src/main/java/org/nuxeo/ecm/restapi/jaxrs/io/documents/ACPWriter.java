@@ -32,19 +32,16 @@ import org.nuxeo.ecm.core.api.security.ACP;
 /**
  * Json writer for ACP.
  *
- *
  * @since 5.7.3
  */
 @Provider
-@Produces({ MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class ACPWriter extends EntityWriter<ACP> {
 
     public static final String ENTITY_TYPE = "acls";
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg, ACP item)
-            throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg, ACP item) throws IOException, ClientException {
 
         jg.writeArrayFieldStart("acl");
         for (ACL acl : item.getACLs()) {

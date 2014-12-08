@@ -53,10 +53,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.picture.convert" })
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.convert" })
 public class TestPictureThumbnail {
 
     @Inject
@@ -70,8 +68,7 @@ public class TestPictureThumbnail {
         List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("title", "Original");
-        map.put("content", new FileBlob(getFileFromPath("images/cat.gif"),
-                "image/gif", null, "cat.gif", null));
+        map.put("content", new FileBlob(getFileFromPath("images/cat.gif"), "image/gif", null, "cat.gif", null));
         map.put("filename", "cat.gif");
         views.add(map);
         return views;
@@ -81,15 +78,13 @@ public class TestPictureThumbnail {
     public void testPictureThumbnail() throws Exception {
         // Init test
         DocumentModel root = session.getRootDocument();
-        DocumentModel picture = new DocumentModelImpl(root.getPathAsString(),
-                "pic", "Picture");
+        DocumentModel picture = new DocumentModelImpl(root.getPathAsString(), "pic", "Picture");
         picture.setPropertyValue("picture:views", (Serializable) createViews());
         picture = session.createDocument(picture);
         session.save();
         // Create 4 views
         BlobHolder bh = picture.getAdapter(BlobHolder.class);
-        Blob blob = new FileBlob(getFileFromPath("images/cat.gif"),
-                "image/gif", null, "cat.gif", null);
+        Blob blob = new FileBlob(getFileFromPath("images/cat.gif"), "image/gif", null, "cat.gif", null);
         bh.setBlob(blob);
         session.saveDocument(picture);
         session.save();
@@ -99,7 +94,6 @@ public class TestPictureThumbnail {
         Blob pictureUsualThumbnail = thumbnailView.getBlob();
         // Thumbnail service should return the default picture thumbnail
         ThumbnailAdapter pictureThumbnail = picture.getAdapter(ThumbnailAdapter.class);
-        Assert.assertEquals(pictureUsualThumbnail.getFilename(),
-                pictureThumbnail.getThumbnail(session).getFilename());
+        Assert.assertEquals(pictureUsualThumbnail.getFilename(), pictureThumbnail.getThumbnail(session).getFilename());
     }
 }

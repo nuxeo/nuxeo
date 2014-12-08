@@ -53,7 +53,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Alexandre Russel
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(AnnotationFeature.class)
@@ -80,8 +79,7 @@ public abstract class AbstractRepositoryTestCase {
     public void setUp() throws Exception {
         assertNotNull(viewCodecManager);
         assertNotNull(manager);
-        InputStream is = getClass().getResourceAsStream(
-                "/annotea-spec-post.xml");
+        InputStream is = getClass().getResourceAsStream("/annotea-spec-post.xml");
         assertNotNull(is);
         annotation = manager.getAnnotation(is);
     }
@@ -91,23 +89,18 @@ public abstract class AbstractRepositoryTestCase {
         assertNotNull(session);
         DocumentModel root = session.getRootDocument();
         assertNotNull(root);
-        DocumentModel model = session.createDocumentModel(
-                root.getPathAsString(), "1", "File");
-        DocumentModel sectionModel = session.createDocumentModel(
-                root.getPathAsString(), "2", "Section");
+        DocumentModel model = session.createDocumentModel(root.getPathAsString(), "1", "File");
+        DocumentModel sectionModel = session.createDocumentModel(root.getPathAsString(), "2", "Section");
         assertNotNull(sectionModel);
         DocumentModel section = session.createDocument(sectionModel);
         assertNotNull(section);
-        DocumentModel section1Model = session.createDocumentModel(
-                section.getPathAsString(), "3", "Folder");
+        DocumentModel section1Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
         DocumentModel section1 = session.createDocument(section1Model);
         assertNotNull(section1);
-        DocumentModel section2Model = session.createDocumentModel(
-                section.getPathAsString(), "3", "Folder");
+        DocumentModel section2Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
         DocumentModel section2 = session.createDocument(section2Model);
         assertNotNull(section2);
-        DocumentModel section3Model = session.createDocumentModel(
-                section.getPathAsString(), "3", "Folder");
+        DocumentModel section3Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
         DocumentModel section3 = session.createDocument(section3Model);
         assertNotNull(section3);
         DocumentModel doc = session.createDocument(model);
@@ -128,28 +121,23 @@ public abstract class AbstractRepositoryTestCase {
         List<DocumentModel> proxies = session.getProxies(doc.getRef(), null);
         assertNotNull(proxies);
         assertEquals(3, proxies.size());
-        String url = viewCodecManager.getUrlFromDocumentView(
-                new DocumentViewImpl(doc), true, "http://localhost/nuxeo/");
+        String url = viewCodecManager.getUrlFromDocumentView(new DocumentViewImpl(doc), true, "http://localhost/nuxeo/");
         assertNotNull(url);
         uri = new URI(url.toString());
         waitForAsyncExec();
     }
 
-    protected Annotation getAnnotation(String url, int x) throws IOException,
-            AnnotationException {
+    protected Annotation getAnnotation(String url, int x) throws IOException, AnnotationException {
 
-        InputStream is = getClass().getResourceAsStream(
-                "/annotation" + x + ".xml");
-        String template = IOUtils.readStringAndClose(new InputStreamReader(is),
-                -1);
+        InputStream is = getClass().getResourceAsStream("/annotation" + x + ".xml");
+        String template = IOUtils.readStringAndClose(new InputStreamReader(is), -1);
         template = template.replaceAll("docUrl", url);
         is = new ByteArrayInputStream(template.getBytes("UTF-8"));
         return manager.getAnnotation(is);
     }
 
     protected void waitForAsyncExec() {
-        EventServiceImpl evtService = (EventServiceImpl) Framework
-            .getLocalService(EventService.class);
+        EventServiceImpl evtService = (EventServiceImpl) Framework.getLocalService(EventService.class);
         evtService.waitForAsyncCompletion();
     }
 

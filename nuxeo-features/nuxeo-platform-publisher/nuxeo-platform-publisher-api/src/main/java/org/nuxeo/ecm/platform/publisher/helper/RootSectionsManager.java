@@ -42,8 +42,7 @@ public class RootSectionsManager {
         this.coreSession = coreSession;
     }
 
-    public boolean canAddSection(DocumentModel section,
-            DocumentModel currentDocument) throws ClientException {
+    public boolean canAddSection(DocumentModel section, DocumentModel currentDocument) throws ClientException {
         if (SECTION_ROOT_DOCUMENT_TYPE.equals(section.getType())) {
             return false;
         }
@@ -65,8 +64,7 @@ public class RootSectionsManager {
         return true;
     }
 
-    public String addSection(String sectionId, DocumentModel currentDocument)
-            throws ClientException {
+    public String addSection(String sectionId, DocumentModel currentDocument) throws ClientException {
 
         if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
@@ -83,16 +81,14 @@ public class RootSectionsManager {
             String[] sectionIdsListIn = new String[sectionIdsList.size()];
             sectionIdsList.toArray(sectionIdsListIn);
 
-            currentDocument.setPropertyValue(SECTIONS_PROPERTY_NAME,
-                    sectionIdsListIn);
+            currentDocument.setPropertyValue(SECTIONS_PROPERTY_NAME, sectionIdsListIn);
             coreSession.saveDocument(currentDocument);
             coreSession.save();
         }
         return null;
     }
 
-    public String removeSection(String sectionId, DocumentModel currentDocument)
-            throws ClientException {
+    public String removeSection(String sectionId, DocumentModel currentDocument) throws ClientException {
 
         if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
@@ -111,8 +107,7 @@ public class RootSectionsManager {
                 String[] sectionIdsListIn = new String[sectionIdsList.size()];
                 sectionIdsList.toArray(sectionIdsListIn);
 
-                currentDocument.setPropertyValue(SECTIONS_PROPERTY_NAME,
-                        sectionIdsListIn);
+                currentDocument.setPropertyValue(SECTIONS_PROPERTY_NAME, sectionIdsListIn);
                 coreSession.saveDocument(currentDocument);
                 coreSession.save();
             }

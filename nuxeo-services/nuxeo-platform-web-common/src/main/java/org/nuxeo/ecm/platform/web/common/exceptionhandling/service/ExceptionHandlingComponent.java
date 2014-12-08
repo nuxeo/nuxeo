@@ -35,8 +35,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * @author arussel, Benjamin JALON
  */
-public class ExceptionHandlingComponent extends DefaultComponent implements
-        ExceptionHandlingService {
+public class ExceptionHandlingComponent extends DefaultComponent implements ExceptionHandlingService {
 
     protected NuxeoExceptionHandler exceptionHandler;
 
@@ -47,8 +46,7 @@ public class ExceptionHandlingComponent extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         ExtensionPoint ep = Enum.valueOf(ExtensionPoint.class, extensionPoint);
         switch (ep) {
         case exceptionhandler:
@@ -75,8 +73,7 @@ public class ExceptionHandlingComponent extends DefaultComponent implements
             exceptionHandlerParameters.setListener(newInstance(ld.getKlass()));
             break;
         default:
-            throw new RuntimeException(
-                    "error in exception handling configuration");
+            throw new RuntimeException("error in exception handling configuration");
         }
     }
 
@@ -88,8 +85,7 @@ public class ExceptionHandlingComponent extends DefaultComponent implements
         }
     }
 
-    public void forwardToErrorPage(HttpServletRequest request,
-            HttpServletResponse response, Throwable t)
+    public void forwardToErrorPage(HttpServletRequest request, HttpServletResponse response, Throwable t)
             throws IOException, ServletException {
         exceptionHandler.handleException(request, response, t);
     }

@@ -25,8 +25,7 @@ import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("config")
 public class ConfigurationDescriptorImpl {

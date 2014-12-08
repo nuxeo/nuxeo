@@ -31,30 +31,26 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 /**
  * Default NXP validator.
  * <p>
- * Validators here will be principals having manage everything rights in the
- * sections where the document has been published.
+ * Validators here will be principals having manage everything rights in the sections where the document has been
+ * published.
  */
 public class DefaultValidatorsRule implements ValidatorsRule {
 
     private static final long serialVersionUID = 1L;
 
-    public String[] computesValidatorsFor(DocumentModel doc)
-            throws PublishingValidatorException {
+    public String[] computesValidatorsFor(DocumentModel doc) throws PublishingValidatorException {
         UnrestrictedACPGetter acpg = new UnrestrictedACPGetter(doc);
         try {
             acpg.runUnrestricted();
         } catch (ClientException e) {
             throw new PublishingValidatorException(e);
         }
-        String[] writePermissions = doc.getCoreSession().getPermissionsToCheck(
-                SecurityConstants.WRITE);
-        String[] reviewers = acpg.acp.listUsernamesForAnyPermission(new HashSet<String>(
-                Arrays.asList(writePermissions)));
+        String[] writePermissions = doc.getCoreSession().getPermissionsToCheck(SecurityConstants.WRITE);
+        String[] reviewers = acpg.acp.listUsernamesForAnyPermission(new HashSet<String>(Arrays.asList(writePermissions)));
         return reviewers;
     }
 
-    protected static class UnrestrictedACPGetter extends
-            UnrestrictedSessionRunner {
+    protected static class UnrestrictedACPGetter extends UnrestrictedSessionRunner {
 
         public final DocumentRef docRef;
 

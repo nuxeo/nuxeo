@@ -48,8 +48,7 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.ecm.core.event");
-        deployContrib("org.nuxeo.ecm.core.event.test",
-                "test-workmanager-config.xml");
+        deployContrib("org.nuxeo.ecm.core.event.test", "test-workmanager-config.xml");
         fireFrameworkStarted();
         service = Framework.getLocalService(WorkManager.class);
         assertNotNull(service);

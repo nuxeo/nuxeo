@@ -25,10 +25,9 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
- *  A scalar property that is linked to a schema field
+ * A scalar property that is linked to a schema field
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ScalarProperty extends AbstractProperty {
 
@@ -41,7 +40,6 @@ public class ScalarProperty extends AbstractProperty {
 
     protected Serializable value;
 
-
     public ScalarProperty(Property parent, Field field) {
         super(parent);
         this.field = field;
@@ -51,7 +49,6 @@ public class ScalarProperty extends AbstractProperty {
         super(parent, flags);
         this.field = field;
     }
-
 
     @Override
     public void internalSetValue(Serializable value) throws PropertyException {
@@ -95,20 +92,17 @@ public class ScalarProperty extends AbstractProperty {
 
     @Override
     public Property addValue(Object value) {
-        throw new UnsupportedOperationException(
-                "Scalar properties don't have children");
+        throw new UnsupportedOperationException("Scalar properties don't have children");
     }
 
     @Override
     public Property addValue(int index, Object value) {
-        throw new UnsupportedOperationException(
-                "Scalar properties don't have children");
+        throw new UnsupportedOperationException("Scalar properties don't have children");
     }
 
     @Override
     public Property addEmpty() {
-        throw new UnsupportedOperationException(
-                "add() operation not supported on map properties");
+        throw new UnsupportedOperationException("add() operation not supported on map properties");
     }
 
     @Override
@@ -143,14 +137,12 @@ public class ScalarProperty extends AbstractProperty {
 
     @Override
     public Iterator<Property> getDirtyChildren() {
-        throw new UnsupportedOperationException(
-                "Cannot iterate over children of scalar properties");
+        throw new UnsupportedOperationException("Cannot iterate over children of scalar properties");
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + getPath().substring(1)
-                + (isDirty() ? "*" : "") + "="
+        return getClass().getSimpleName() + '(' + getPath().substring(1) + (isDirty() ? "*" : "") + "="
                 + (value == null ? "[null]" : value) + ')';
     }
 

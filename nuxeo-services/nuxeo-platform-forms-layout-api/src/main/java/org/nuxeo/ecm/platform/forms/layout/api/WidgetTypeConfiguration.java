@@ -29,14 +29,12 @@ import java.util.Map;
 public interface WidgetTypeConfiguration extends Serializable {
 
     /**
-     * Returns the version name since the widget type has been available (5.4,
-     * 5.4.2, etc...)
+     * Returns the version name since the widget type has been available (5.4, 5.4.2, etc...)
      */
     String getSinceVersion();
 
     /**
-     * Returns the version name since the widget type has been deprecated (5.4,
-     * 5.4.2, etc...)
+     * Returns the version name since the widget type has been deprecated (5.4, 5.4.2, etc...)
      *
      * @since 5.6
      */
@@ -47,8 +45,7 @@ public interface WidgetTypeConfiguration extends Serializable {
     String getDescription();
 
     /**
-     * Returns the identifier to be used for the demo, or null if no demo is
-     * available.
+     * Returns the identifier to be used for the demo, or null if no demo is available.
      *
      * @since 5.4.2
      */
@@ -68,9 +65,8 @@ public interface WidgetTypeConfiguration extends Serializable {
     boolean isAcceptingSubWidgets();
 
     /**
-     * Returns true if widget knows how to display its label (some widget types
-     * might delegate this to their containing widget or layout, usually when
-     * defining form layouts).
+     * Returns true if widget knows how to display its label (some widget types might delegate this to their containing
+     * widget or layout, usually when defining form layouts).
      *
      * @since 5.6
      */
@@ -83,10 +79,9 @@ public interface WidgetTypeConfiguration extends Serializable {
     /**
      * Returns true if widget will be containing forms.
      * <p>
-     * Since forms cannot contains any sub forms, layouts using this widget
-     * should not be surrounded by any form. Other widgets in the same layouts
-     * not containing forms may then need a surrounding form that could be
-     * added by the layout template.
+     * Since forms cannot contains any sub forms, layouts using this widget should not be surrounded by any form. Other
+     * widgets in the same layouts not containing forms may then need a surrounding form that could be added by the
+     * layout template.
      *
      * @since 5.6
      */
@@ -114,13 +109,11 @@ public interface WidgetTypeConfiguration extends Serializable {
     /**
      * Returns the list of layouts for given mode and additional modes.
      * <p>
-     * These layouts are used to document accepted fields on the widget type,
-     * depending on the rendering mode.
+     * These layouts are used to document accepted fields on the widget type, depending on the rendering mode.
      *
      * @since 5.7.3
      * @param mode the mode to retrieve layouts for.
-     * @param additionalMode additional mode to take into account, typically
-     *            {@link BuiltinModes#ANY}
+     * @param additionalMode additional mode to take into account, typically {@link BuiltinModes#ANY}
      */
     List<LayoutDefinition> getFieldLayouts(String mode, String additionalMode);
 
@@ -140,8 +133,7 @@ public interface WidgetTypeConfiguration extends Serializable {
     Map<String, Map<String, Serializable>> getDefaultPropertyValues();
 
     /**
-     * Returns the default values for the widget type properties, for given
-     * mode.
+     * Returns the default values for the widget type properties, for given mode.
      *
      * @since 5.7.3
      */
@@ -158,8 +150,7 @@ public interface WidgetTypeConfiguration extends Serializable {
     Map<String, Serializable> getDefaultControlValues(String mode);
 
     /**
-     * Returns the list of supported controls, e.g. controls that are checked
-     * on sub-widgets definitions.
+     * Returns the list of supported controls, e.g. controls that are checked on sub-widgets definitions.
      *
      * @since 5.9.1
      */

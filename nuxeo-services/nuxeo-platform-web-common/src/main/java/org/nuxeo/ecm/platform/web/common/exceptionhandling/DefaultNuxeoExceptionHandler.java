@@ -51,15 +51,13 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
     }
 
     /**
-     * Puts a marker in request to avoid looping over the exception handling
-     * mechanism
+     * Puts a marker in request to avoid looping over the exception handling mechanism
      *
-     * @throws ServletException if request has already been marked as handled.
-     *             The initial exception is then wrapped.
+     * @throws ServletException if request has already been marked as handled. The initial exception is then wrapped.
      */
 
-    protected void startHandlingException(HttpServletRequest request,
-            HttpServletResponse response, Throwable t) throws ServletException {
+    protected void startHandlingException(HttpServletRequest request, HttpServletResponse response, Throwable t)
+            throws ServletException {
         if (request.getAttribute(EXCEPTION_HANDLER_MARKER) == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Initial exception", t);
@@ -75,9 +73,8 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
         }
     }
 
-    public void handleException(HttpServletRequest request,
-            HttpServletResponse response, Throwable t) throws IOException,
-            ServletException {
+    public void handleException(HttpServletRequest request, HttpServletResponse response, Throwable t)
+            throws IOException, ServletException {
         startHandlingException(request, response, t);
         try {
             ErrorHandler handler = getHandler(t);
@@ -97,40 +94,31 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 parameters.getLogger().error(stackTrace);
             }
 
-            parameters.getListener().beforeSetErrorPageAttribute(
-                    unwrappedException, request, response);
-            request.setAttribute("exception_message",
-                    unwrappedException.getLocalizedMessage());
-            request.setAttribute("user_message",
-                    getUserMessage(handler.getMessage(), request.getLocale()));
+            parameters.getListener().beforeSetErrorPageAttribute(unwrappedException, request, response);
+            request.setAttribute("exception_message", unwrappedException.getLocalizedMessage());
+            request.setAttribute("user_message", getUserMessage(handler.getMessage(), request.getLocale()));
             request.setAttribute("stackTrace", stackTrace);
-            request.setAttribute("securityError",
-                    ExceptionHelper.isSecurityError(unwrappedException));
-            request.setAttribute("messageBundle", ResourceBundle.getBundle(
-                    parameters.getBundleName(), request.getLocale(),
-                    Thread.currentThread().getContextClassLoader()));
-            String dumpedRequest = parameters.getRequestDumper().getDump(
-                    request);
+            request.setAttribute("securityError", ExceptionHelper.isSecurityError(unwrappedException));
+            request.setAttribute("messageBundle", ResourceBundle.getBundle(parameters.getBundleName(),
+                    request.getLocale(), Thread.currentThread().getContextClassLoader()));
+            String dumpedRequest = parameters.getRequestDumper().getDump(request);
             if (!is404) {
                 parameters.getLogger().error(dumpedRequest);
             }
             request.setAttribute("request_dump", dumpedRequest);
 
-            parameters.getListener().beforeForwardToErrorPage(
-                    unwrappedException, request, response);
+            parameters.getListener().beforeForwardToErrorPage(unwrappedException, request, response);
             if (!response.isCommitted()) {
                 if (code != null) {
                     response.setStatus(code);
                 }
                 String errorPage = handler.getPage();
-                errorPage = (errorPage == null) ? parameters.getDefaultErrorPage()
-                        : errorPage;
+                errorPage = (errorPage == null) ? parameters.getDefaultErrorPage() : errorPage;
                 RequestDispatcher requestDispatcher = request.getRequestDispatcher(errorPage);
                 if (requestDispatcher != null) {
                     requestDispatcher.forward(request, response);
                 } else {
-                    log.error("Cannot forward to error page, "
-                            + "no RequestDispatcher found for errorPage="
+                    log.error("Cannot forward to error page, " + "no RequestDispatcher found for errorPage="
                             + errorPage + " handler=" + handler);
                 }
                 FacesContext fContext = FacesContext.getCurrentInstance();
@@ -143,11 +131,9 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 // do not throw an error, just log it: afterDispatch needs to
                 // be called, and sometimes the initial error is a
                 // ClientAbortException
-                log.error("Cannot forward to error page: "
-                        + "response is already committed");
+                log.error("Cannot forward to error page: " + "response is already committed");
             }
-            parameters.getListener().afterDispatch(unwrappedException, request,
-                    response);
+            parameters.getListener().afterDispatch(unwrappedException, request, response);
         } catch (Throwable newError) {
             throw new ServletException(newError);
         }
@@ -163,8 +149,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             className = throwable.getClass().getName();
         }
         for (ErrorHandler handler : parameters.getHandlers()) {
-            if (handler.getError() != null
-                    && className.matches(handler.getError())) {
+            if (handler.getError() != null && className.matches(handler.getError())) {
                 return handler;
             }
         }
@@ -172,8 +157,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
     }
 
     protected Object getUserMessage(String messageKey, Locale locale) {
-        return I18NUtils.getMessageString(parameters.getBundleName(),
-                messageKey, null, locale);
+        return I18NUtils.getMessageString(parameters.getBundleName(), messageKey, null, locale);
     }
 
     /**

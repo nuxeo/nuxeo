@@ -28,22 +28,16 @@ import org.nuxeo.runtime.api.Framework;
 public class CoreEventNotifier implements Notifier {
 
     @Override
-    public void notifyEvent(String eventName, String instanceIdentifier,
-            String serviceIdentifier) {
+    public void notifyEvent(String eventName, String instanceIdentifier, String serviceIdentifier) {
 
         Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
 
-        eventProperties.put("category",
-                AdministrativeStatusManager.ADMINISTRATIVE_EVENT_CATEGORY);
-        eventProperties.put(
-                AdministrativeStatusManager.ADMINISTRATIVE_EVENT_INSTANCE,
-                instanceIdentifier);
-        eventProperties.put(
-                AdministrativeStatusManager.ADMINISTRATIVE_EVENT_SERVICE,
-                serviceIdentifier);
+        eventProperties.put("category", AdministrativeStatusManager.ADMINISTRATIVE_EVENT_CATEGORY);
+        eventProperties.put(AdministrativeStatusManager.ADMINISTRATIVE_EVENT_INSTANCE, instanceIdentifier);
+        eventProperties.put(AdministrativeStatusManager.ADMINISTRATIVE_EVENT_SERVICE, serviceIdentifier);
 
-        EventContext ctx = new InlineEventContext(new SimplePrincipal(
-                SecurityConstants.SYSTEM_USERNAME), eventProperties);
+        EventContext ctx = new InlineEventContext(new SimplePrincipal(SecurityConstants.SYSTEM_USERNAME),
+                eventProperties);
 
         Event event = ctx.newEvent(eventName);
         Framework.getService(EventProducer.class).fireEvent(event);

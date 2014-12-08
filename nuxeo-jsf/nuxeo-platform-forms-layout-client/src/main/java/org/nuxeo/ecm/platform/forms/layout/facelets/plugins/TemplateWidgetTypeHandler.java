@@ -64,22 +64,21 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
     public static final String TEMPLATE_PROPERTY_NAME = "template";
 
     /**
-     * Property that can be put on the widget type definition to decide whether
-     * the widget type should bind to parent value when no field is set
+     * Property that can be put on the widget type definition to decide whether the widget type should bind to parent
+     * value when no field is set
      *
      * @since 5.6
      */
     public static final String BIND_VALUE_IF_NO_FIELD_PROPERTY_NAME = "bindValueIfNoField";
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         String template = getTemplateValue(widget);
         FaceletHandler leaf = new LeafFaceletHandler();
         if (template == null) {
-            log.error("Missing template property for widget "
-                    + widget.getName() + " in layout " + widget.getLayoutName());
+            log.error("Missing template property for widget " + widget.getName() + " in layout "
+                    + widget.getLayoutName());
             return leaf;
         }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
@@ -87,47 +86,39 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
         TagAttribute templateAttr = getTemplateAttribute(helper);
         if (templateAttr == null) {
-            templateAttr = helper.createAttribute(TEMPLATE_PROPERTY_NAME,
-                    template);
+            templateAttr = helper.createAttribute(TEMPLATE_PROPERTY_NAME, template);
         }
-        attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                templateAttr);
+        attributes = FaceletHandlerHelper.addTagAttribute(attributes, templateAttr);
         String widgetTagConfigId = widget.getTagConfigId();
         FaceletHandler nextHandler = leaf;
         if (subHandlers != null) {
             nextHandler = new CompositeFaceletHandler(subHandlers);
         }
 
-        TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                widgetTagConfigId, attributes, nextHandler);
+        TagConfig config = TagConfigFactory.createTagConfig(tagConfig, widgetTagConfigId, attributes, nextHandler);
 
-        Map<String, ValueExpression> variables = getVariablesForRendering(ctx,
-                helper, widget, subHandlers, widgetTagConfigId, template);
+        Map<String, ValueExpression> variables = getVariablesForRendering(ctx, helper, widget, subHandlers,
+                widgetTagConfigId, template);
 
         List<String> blockedPatterns = new ArrayList<String>();
         blockedPatterns.add(RenderVariables.widgetVariables.field.name() + "*");
         blockedPatterns.add(RenderVariables.widgetVariables.fieldOrValue.name());
-        blockedPatterns.add(RenderVariables.widgetVariables.widgetProperty.name()
-                + "_*");
+        blockedPatterns.add(RenderVariables.widgetVariables.widgetProperty.name() + "_*");
         blockedPatterns.add(RenderVariables.widgetVariables.widgetProperties.name());
-        blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name()
-                + "_*");
+        blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");
 
         DecorateHandler includeHandler = new DecorateHandler(config);
-        FaceletHandler handler = helper.getAliasTagHandler(widgetTagConfigId,
-                variables, blockedPatterns, includeHandler);
+        FaceletHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns,
+                includeHandler);
         return handler;
     }
 
     /**
-     * Computes variables for rendering, making available the field values in
-     * templates using the format "field_0", "field_1", etc. and also the
-     * widget properties using the format "widgetProperty_thePropertyName".
+     * Computes variables for rendering, making available the field values in templates using the format "field_0",
+     * "field_1", etc. and also the widget properties using the format "widgetProperty_thePropertyName".
      */
-    protected Map<String, ValueExpression> getVariablesForRendering(
-            FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
-            FaceletHandler[] subHandlers, String widgetTagConfigId,
-            String template) {
+    protected Map<String, ValueExpression> getVariablesForRendering(FaceletContext ctx, FaceletHandlerHelper helper,
+            Widget widget, FaceletHandler[] subHandlers, String widgetTagConfigId, String template) {
         Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
         ExpressionFactory eFactory = ctx.getExpressionFactory();
 
@@ -140,8 +131,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     addFieldVariable(variables, ctx, widget, fieldDefs[i], null);
                     firstField = fieldDefs[i];
                 }
-                addFieldVariable(variables, ctx, widget, fieldDefs[i],
-                        Integer.valueOf(i));
+                addFieldVariable(variables, ctx, widget, fieldDefs[i], Integer.valueOf(i));
             }
         } else if (getBindValueIfNoFieldValue(widget)) {
             // expose value as first parameter
@@ -151,10 +141,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
         // add binding "fieldOrValue" available since 5.6, in case template
         // widget is always supposed to bind value when no field is defined
-        String computedValue = ValueExpressionHelper.createExpressionString(
-                widget.getValueName(), firstField);
-        variables.put(
-                RenderVariables.widgetVariables.fieldOrValue.name(),
+        String computedValue = ValueExpressionHelper.createExpressionString(widget.getValueName(), firstField);
+        variables.put(RenderVariables.widgetVariables.fieldOrValue.name(),
                 eFactory.createValueExpression(ctx, computedValue, Object.class));
 
         // expose widget properties too
@@ -162,23 +150,19 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         Map<String, ValueExpression> mappedExpressions = new HashMap<String, ValueExpression>();
         for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
             String key = prop.getKey();
-            String name = String.format("%s_%s",
-                    RenderVariables.widgetVariables.widgetProperty.name(), key);
+            String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetProperty.name(), key);
             String value;
             Serializable valueInstance = prop.getValue();
-            if (!layoutService.referencePropertyAsExpression(key,
-                    valueInstance, widget.getType(), widget.getTypeCategory(),
-                    widget.getMode(), template)) {
+            if (!layoutService.referencePropertyAsExpression(key, valueInstance, widget.getType(),
+                    widget.getTypeCategory(), widget.getMode(), template)) {
                 // FIXME: this will not be updated correctly using ajax
                 value = (String) valueInstance;
             } else {
                 // create a reference so that it's a real expression and it's
                 // not kept (cached) in a component value on ajax refresh
-                value = String.format("#{%s.properties.%s}",
-                        RenderVariables.widgetVariables.widget.name(), key);
+                value = String.format("#{%s.properties.%s}", RenderVariables.widgetVariables.widget.name(), key);
             }
-            ValueExpression ve = eFactory.createValueExpression(ctx, value,
-                    Object.class);
+            ValueExpression ve = eFactory.createValueExpression(ctx, value, Object.class);
             variables.put(name, ve);
             mappedExpressions.put(key, ve);
         }
@@ -187,38 +171,30 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         // expose widget controls too
         for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
             String key = ctrl.getKey();
-            String name = String.format("%s_%s",
-                    RenderVariables.widgetVariables.widgetControl.name(), key);
-            String value = String.format("#{%s.controls.%s}",
-                    RenderVariables.widgetVariables.widget.name(), key);
-            variables.put(name,
-                    eFactory.createValueExpression(ctx, value, Object.class));
+            String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetControl.name(), key);
+            String value = String.format("#{%s.controls.%s}", RenderVariables.widgetVariables.widget.name(), key);
+            variables.put(name, eFactory.createValueExpression(ctx, value, Object.class));
         }
         return variables;
     }
 
-    protected void addFieldVariable(Map<String, ValueExpression> variables,
-            FaceletContext ctx, Widget widget, FieldDefinition fieldDef,
-            Integer index) {
+    protected void addFieldVariable(Map<String, ValueExpression> variables, FaceletContext ctx, Widget widget,
+            FieldDefinition fieldDef, Integer index) {
         String computedName;
         if (index == null) {
             computedName = RenderVariables.widgetVariables.field.name();
         } else {
-            computedName = String.format("%s_%s",
-                    RenderVariables.widgetVariables.field.name(), index);
+            computedName = String.format("%s_%s", RenderVariables.widgetVariables.field.name(), index);
         }
-        String computedValue = ValueExpressionHelper.createExpressionString(
-                widget.getValueName(), fieldDef);
+        String computedValue = ValueExpressionHelper.createExpressionString(widget.getValueName(), fieldDef);
 
         ExpressionFactory eFactory = ctx.getExpressionFactory();
-        variables.put(
-                computedName,
-                eFactory.createValueExpression(ctx, computedValue, Object.class));
+        variables.put(computedName, eFactory.createValueExpression(ctx, computedValue, Object.class));
     }
 
     /**
-     * Returns the "template" property value, looking up on the widget type
-     * definition first, and on the widget definition if not found.
+     * Returns the "template" property value, looking up on the widget type definition first, and on the widget
+     * definition if not found.
      */
     protected String getTemplateValue(Widget widget) {
         // lookup in the widget type configuration
@@ -231,8 +207,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
     }
 
     /**
-     * Returns the "bindValueIfNoField" property value, looking up on the
-     * widget type definition first, and on the widget definition if not found.
+     * Returns the "bindValueIfNoField" property value, looking up on the widget type definition first, and on the
+     * widget definition if not found.
      *
      * @since 5.6
      * @param widget

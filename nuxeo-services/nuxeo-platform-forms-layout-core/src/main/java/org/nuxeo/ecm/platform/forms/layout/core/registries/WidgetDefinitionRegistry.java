@@ -26,8 +26,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  *
  * @since 5.5
  */
-public class WidgetDefinitionRegistry extends
-        SimpleContributionRegistry<WidgetDefinition> {
+public class WidgetDefinitionRegistry extends SimpleContributionRegistry<WidgetDefinition> {
 
     protected final String category;
 
@@ -56,8 +55,7 @@ public class WidgetDefinitionRegistry extends
         List<String> aliases = contrib.getAliases();
         if (aliases != null) {
             for (String alias : aliases) {
-                FragmentList<WidgetDefinition> head = addFragment(alias,
-                        contrib);
+                FragmentList<WidgetDefinition> head = addFragment(alias, contrib);
                 contributionUpdated(alias, head.merge(this), contrib);
             }
         }
@@ -65,14 +63,12 @@ public class WidgetDefinitionRegistry extends
 
     @Override
     // overridden to handle aliases
-    public synchronized void removeContribution(WidgetDefinition contrib,
-            boolean useEqualsMethod) {
+    public synchronized void removeContribution(WidgetDefinition contrib, boolean useEqualsMethod) {
         super.removeContribution(contrib, useEqualsMethod);
         List<String> aliases = contrib.getAliases();
         if (aliases != null) {
             for (String alias : aliases) {
-                FragmentList<WidgetDefinition> head = removeFragment(alias,
-                        contrib, useEqualsMethod);
+                FragmentList<WidgetDefinition> head = removeFragment(alias, contrib, useEqualsMethod);
                 if (head != null) {
                     WidgetDefinition result = head.merge(this);
                     if (result != null) {

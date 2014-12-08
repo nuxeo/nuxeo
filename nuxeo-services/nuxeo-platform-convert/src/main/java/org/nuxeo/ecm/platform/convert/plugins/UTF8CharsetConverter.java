@@ -44,8 +44,7 @@ public class UTF8CharsetConverter implements Converter {
     }
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         Blob originalBlob;
         String path;
         try {
@@ -58,8 +57,7 @@ public class UTF8CharsetConverter implements Converter {
         try {
             transcodedBlob = convert(originalBlob);
         } catch (IOException e) {
-            throw new ConversionException("Cannot transcode " + path
-                    + " to UTF-8", e);
+            throw new ConversionException("Cannot transcode " + path + " to UTF-8", e);
         }
         return new SimpleBlobHolder(transcodedBlob);
     }
@@ -91,8 +89,7 @@ public class UTF8CharsetConverter implements Converter {
         return newBlob;
     }
 
-    protected String detectEncoding(InputStream in) throws IOException,
-            ConversionException {
+    protected String detectEncoding(InputStream in) throws IOException, ConversionException {
         CharsetDetector detector = new CharsetDetector();
         detector.setText(in);
         CharsetMatch charsetMatch = detector.detect();

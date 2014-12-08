@@ -23,8 +23,7 @@ public class ManagementRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = -8772340021060960325L;
 
-    public static ManagementRuntimeException wrap(String message,
-            Exception cause) {
+    public static ManagementRuntimeException wrap(String message, Exception cause) {
         return new ManagementRuntimeException(message, cause);
     }
 

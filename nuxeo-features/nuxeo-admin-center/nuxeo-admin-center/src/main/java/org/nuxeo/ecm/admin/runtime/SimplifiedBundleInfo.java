@@ -20,8 +20,7 @@
 package org.nuxeo.ecm.admin.runtime;
 
 /**
- * Very simplified representation of a Nuxeo Bundle used for displaying in the
- * admin screens.
+ * Very simplified representation of a Nuxeo Bundle used for displaying in the admin screens.
  *
  * @author tiry
  */

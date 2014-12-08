@@ -17,13 +17,11 @@ package org.nuxeo.ecm.core.api;
 /**
  * The base exception thrown by the CoreSession API.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ServerException extends Exception {
 
     private static final long serialVersionUID = -4229939764908138612L;
-
 
     public ServerException() {
         fillInStackTrace();

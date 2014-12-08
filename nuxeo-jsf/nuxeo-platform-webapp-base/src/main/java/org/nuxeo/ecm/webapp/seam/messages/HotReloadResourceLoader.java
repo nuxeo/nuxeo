@@ -39,8 +39,8 @@ import org.jboss.seam.log.Logging;
 @Scope(ScopeType.STATELESS)
 @BypassInterceptors
 @Name("org.jboss.seam.core.resourceLoader")
-//XXX: since debug mode cannot be set by using nuxeo debug/dev mode, make
-//sure this component is deployed even in production => debug = false
+// XXX: since debug mode cannot be set by using nuxeo debug/dev mode, make
+// sure this component is deployed even in production => debug = false
 @Install(precedence = APPLICATION, debug = false)
 public class HotReloadResourceLoader extends ResourceLoader {
 
@@ -50,8 +50,7 @@ public class HotReloadResourceLoader extends ResourceLoader {
     public ResourceBundle loadBundle(String bundleName) {
         try {
             ResourceBundle.Control control = HotReloadResourceBundleControl.instance();
-            ResourceBundle bundle = ResourceBundle.getBundle(bundleName,
-                    Locale.instance(),
+            ResourceBundle bundle = ResourceBundle.getBundle(bundleName, Locale.instance(),
                     Thread.currentThread().getContextClassLoader(), control);
             log.debug("loaded resource bundle: " + bundleName);
             return bundle;

@@ -32,29 +32,24 @@ import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
  */
 @Provider
 @Produces({ "application/json", "application/json+nxautomation" })
-public class JsonAutomationInfoWriter implements
-        MessageBodyWriter<AutomationInfo> {
+public class JsonAutomationInfoWriter implements MessageBodyWriter<AutomationInfo> {
 
     @Context
     protected HttpServletRequest request;
 
     @Override
-    public long getSize(AutomationInfo arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(AutomationInfo arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
         return AutomationInfo.class.isAssignableFrom(arg0);
     }
 
     @Override
-    public void writeTo(AutomationInfo info, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream out)
-            throws IOException, WebApplicationException {
+    public void writeTo(AutomationInfo info, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
+            MultivaluedMap<String, Object> arg5, OutputStream out) throws IOException, WebApplicationException {
         boolean pretty = Boolean.parseBoolean(request.getParameter("pretty"));
         JsonWriter.writeAutomationInfo(out, info, pretty);
     }

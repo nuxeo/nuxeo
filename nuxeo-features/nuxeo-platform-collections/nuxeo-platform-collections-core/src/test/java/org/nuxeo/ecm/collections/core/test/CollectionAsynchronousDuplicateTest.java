@@ -34,31 +34,24 @@ import org.nuxeo.ecm.core.api.PathRef;
 public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
 
     @Test
-    public void testCopyCollectionWithManyItems()
-            throws ClientException, InterruptedException {
-        updateCollectionMemberOnCollectionDuplicated(createTestFiles(session,
-                MAX_CARDINALITY));
+    public void testCopyCollectionWithManyItems() throws ClientException, InterruptedException {
+        updateCollectionMemberOnCollectionDuplicated(createTestFiles(session, MAX_CARDINALITY));
     }
 
     @Test
-    public void testCopyCollectionWithOneItem() throws ClientException,
-            InterruptedException {
+    public void testCopyCollectionWithOneItem() throws ClientException, InterruptedException {
         updateCollectionMemberOnCollectionDuplicated(createTestFiles(session, 1));
     }
 
-    protected void updateCollectionMemberOnCollectionDuplicated(
-            final List<DocumentModel> docs) throws ClientException,
+    protected void updateCollectionMemberOnCollectionDuplicated(final List<DocumentModel> docs) throws ClientException,
             InterruptedException {
         List<DocumentModel> files = docs;
 
-        collectionManager.addToNewCollection(COLLECTION_NAME,
-                COLLECTION_DESCRIPTION, files, session);
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, files, session);
 
-        final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/"
-                + COLLECTION_NAME;
+        final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME;
 
-        final DocumentRef newCollectionRef = new PathRef(
-                newlyCreatedCollectionPath);
+        final DocumentRef newCollectionRef = new PathRef(newlyCreatedCollectionPath);
 
         assertTrue(session.exists(newCollectionRef));
 
@@ -72,25 +65,20 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
 
             file = session.getDocument(file.getRef());
 
-            assertTrue(collectionAdapter.getCollectedDocumentIds().contains(
-                    file.getId()));
+            assertTrue(collectionAdapter.getCollectedDocumentIds().contains(file.getId()));
 
             CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
 
-            assertTrue(collectionMemberAdapter.getCollectionIds().contains(
-                    newCollectionId));
+            assertTrue(collectionMemberAdapter.getCollectionIds().contains(newCollectionId));
         }
 
-        session.copy(newlyCreatedCollection.getRef(), new PathRef(
-                COLLECTION_FOLDER_PATH), COLLECTION_NAME + "_BIS");
+        session.copy(newlyCreatedCollection.getRef(), new PathRef(COLLECTION_FOLDER_PATH), COLLECTION_NAME + "_BIS");
 
         awaitCollectionWorks();
 
-        final String newlyCreatedCollectionPathBis = COLLECTION_FOLDER_PATH
-                + "/" + COLLECTION_NAME + "_BIS";
+        final String newlyCreatedCollectionPathBis = COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME + "_BIS";
 
-        final DocumentRef newCollectionRefBis = new PathRef(
-                newlyCreatedCollectionPathBis);
+        final DocumentRef newCollectionRefBis = new PathRef(newlyCreatedCollectionPathBis);
 
         DocumentModel newlyCreatedCollectionBis = session.getDocument(newCollectionRefBis);
 
@@ -100,14 +88,12 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
 
         for (DocumentModel file : files) {
 
-            assertTrue(collectionAdapterBis.getCollectedDocumentIds().contains(
-                    file.getId()));
+            assertTrue(collectionAdapterBis.getCollectedDocumentIds().contains(file.getId()));
 
-            CollectionMember collectionMemberAdapter = session.getDocument(
-                    file.getRef()).getAdapter(CollectionMember.class);
+            CollectionMember collectionMemberAdapter = session.getDocument(file.getRef()).getAdapter(
+                    CollectionMember.class);
 
-            assertTrue(collectionMemberAdapter.getCollectionIds().contains(
-                    newCollectionIdBis));
+            assertTrue(collectionMemberAdapter.getCollectionIds().contains(newCollectionIdBis));
         }
     }
 

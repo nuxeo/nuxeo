@@ -26,8 +26,7 @@ import org.nuxeo.theme.ResourceResolver;
  *
  * @since 5.5
  */
-public class ServletResourceResolver extends ResourceResolver implements
-        ServletContextListener {
+public class ServletResourceResolver extends ResourceResolver implements ServletContextListener {
 
     protected ServletContext servletContext;
 

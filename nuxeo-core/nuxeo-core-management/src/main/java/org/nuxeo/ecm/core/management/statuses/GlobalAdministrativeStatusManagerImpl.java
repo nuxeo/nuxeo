@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.storage.AdministrativeStatusPersister;
 import org.nuxeo.ecm.core.management.storage.DocumentModelStatusPersister;
 
-public class GlobalAdministrativeStatusManagerImpl implements
-        GlobalAdministrativeStatusManager {
+public class GlobalAdministrativeStatusManagerImpl implements GlobalAdministrativeStatusManager {
 
     protected final AdministrativeStatusPersister persister = new DocumentModelStatusPersister();
 
@@ -39,12 +38,9 @@ public class GlobalAdministrativeStatusManagerImpl implements
     }
 
     @Override
-    public AdministrativeStatusManager getStatusManager(
-            String instanceIdentifier) {
+    public AdministrativeStatusManager getStatusManager(String instanceIdentifier) {
         if (!managers.containsKey(instanceIdentifier)) {
-            managers.put(instanceIdentifier,
-                    new AdministrativeStatusManagerImpl(this, persister,
-                            instanceIdentifier));
+            managers.put(instanceIdentifier, new AdministrativeStatusManagerImpl(this, persister, instanceIdentifier));
         }
         return managers.get(instanceIdentifier);
     }
@@ -55,11 +51,9 @@ public class GlobalAdministrativeStatusManagerImpl implements
     }
 
     @Override
-    public void setStatus(String serviceIdentifier, String state,
-            String message, String login) {
+    public void setStatus(String serviceIdentifier, String state, String message, String login) {
         for (String instanceIdentifier : listInstanceIds()) {
-            getStatusManager(instanceIdentifier).setStatus(serviceIdentifier,
-                    state, message, login);
+            getStatusManager(instanceIdentifier).setStatus(serviceIdentifier, state, message, login);
         }
     }
 
@@ -75,8 +69,7 @@ public class GlobalAdministrativeStatusManagerImpl implements
     }
 
     @Override
-    public AdministrableServiceDescriptor getServiceDescriptor(
-            String serviceIdentifier) {
+    public AdministrableServiceDescriptor getServiceDescriptor(String serviceIdentifier) {
         return descriptorsByServiceId.get(serviceIdentifier);
     }
 

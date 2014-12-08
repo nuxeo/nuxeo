@@ -21,20 +21,19 @@ import java.io.Serializable;
  * <p>
  * The following two types of references are supported:
  * <ul>
- * <li> <code>ID</code> references.
- * Refers to the core document by its UUID. See {@link IdRef}.
- * <li> <code>PATH</code> references.
- * Refers to the core document by its path. See {@link PathRef}.
+ * <li> <code>ID</code> references. Refers to the core document by its UUID. See {@link IdRef}.
+ * <li> <code>PATH</code> references. Refers to the core document by its path. See {@link PathRef}.
  * </ul>
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface DocumentRef extends Serializable {
 
     // the document is specified by its UUID
-    int ID          = 1;
+    int ID = 1;
+
     // the documenmt is specified by its path
-    int PATH        = 2;
+    int PATH = 2;
 
     /**
      * Gets the type of the reference.

@@ -22,11 +22,9 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
- * @since 5.7 Automation client osgi activator to use HttpAutomationClient
- *        service
+ * @since 5.7 Automation client osgi activator to use HttpAutomationClient service
  */
-public class AutomationClientActivator implements AutomationClientFactory,
-        BundleActivator {
+public class AutomationClientActivator implements AutomationClientFactory, BundleActivator {
 
     protected static volatile AutomationClientActivator instance;
 
@@ -34,8 +32,7 @@ public class AutomationClientActivator implements AutomationClientFactory,
 
     @Override
     public void start(BundleContext bundleContext) {
-        bundleContext.registerService(AutomationClientFactory.class.getName(),
-                this, null);
+        bundleContext.registerService(AutomationClientFactory.class.getName(), this, null);
         this.instance = this;
         this.context = bundleContext;
     }
@@ -56,10 +53,8 @@ public class AutomationClientActivator implements AutomationClientFactory,
     }
 
     @Override
-    public AutomationClient getClient(URL url, int httpCxTimeout)
-            throws URISyntaxException {
-        return new HttpAutomationClient(url.toURI().toASCIIString(),
-                httpCxTimeout);
+    public AutomationClient getClient(URL url, int httpCxTimeout) throws URISyntaxException {
+        return new HttpAutomationClient(url.toURI().toASCIIString(), httpCxTimeout);
     }
 
     public static AutomationClientActivator getInstance() {

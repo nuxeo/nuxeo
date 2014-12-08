@@ -29,7 +29,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Florent Guillaume
- *
  */
 public class MultiDirectory extends AbstractDirectory {
 

@@ -23,7 +23,6 @@ import java.util.Collection;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ContributionManager extends DependencyTree<String, Contribution> {
 
@@ -42,7 +41,7 @@ public class ContributionManager extends DependencyTree<String, Contribution> {
     public void registerContribution(Contribution contrib) {
         String baseId = null;
         if (contrib instanceof ExtensibleContribution) {
-            ExtensibleContribution c = (ExtensibleContribution)contrib;
+            ExtensibleContribution c = (ExtensibleContribution) contrib;
             baseId = c.getBaseContributionId();
         }
         Collection<String> deps = new ArrayList<String>();

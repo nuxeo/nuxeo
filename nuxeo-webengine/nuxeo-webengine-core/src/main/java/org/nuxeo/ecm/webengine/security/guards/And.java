@@ -26,17 +26,16 @@ import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class And implements Guard {
 
     protected Guard[] perms;
 
     public And(Collection<Guard> guards) {
-        this (guards.toArray(new Guard[guards.size()]));
+        this(guards.toArray(new Guard[guards.size()]));
     }
 
-    public And(Guard ... perms) {
+    public And(Guard... perms) {
         if (perms == null) {
             throw new IllegalArgumentException("Argument cannot be null");
         }
@@ -59,7 +58,7 @@ public class And implements Guard {
             return "[AND]";
         }
         buf.append('(').append(perms[0]);
-        for (int i=1; i<perms.length; i++) {
+        for (int i = 1; i < perms.length; i++) {
             buf.append(" AND ").append(perms[i]);
         }
         return buf.append(')').toString();

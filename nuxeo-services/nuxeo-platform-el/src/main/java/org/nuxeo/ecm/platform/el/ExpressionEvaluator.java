@@ -37,26 +37,20 @@ public class ExpressionEvaluator {
         this.expressionFactory = expressionFactory;
     }
 
-    public <T> T evaluateExpression(ELContext context, String stringExpression,
-            Class<T> clazz) {
-        return clazz.cast(expressionFactory.createValueExpression(context,
-                stringExpression, clazz).getValue(context));
+    public <T> T evaluateExpression(ELContext context, String stringExpression, Class<T> clazz) {
+        return clazz.cast(expressionFactory.createValueExpression(context, stringExpression, clazz).getValue(context));
     }
 
     public void bindValue(ELContext context, String name, Object value) {
         if (value == null) {
-            throw new IllegalArgumentException(
-                    "No value provided, cannot bind " + name + " in context "
-                            + context);
+            throw new IllegalArgumentException("No value provided, cannot bind " + name + " in context " + context);
         }
         // the jsf/facelets way of binding additional values in the context
         // is to contribute a variable mapper wrapping the existing one, so
         // that contexts are not merged and variables are not overridden,
         // especially when the variable mapper is used in a shared context =>
         // maybe change this behaviour if needed
-        context.getVariableMapper().setVariable(
-                name,
-                expressionFactory.createValueExpression(value, value.getClass()));
+        context.getVariableMapper().setVariable(name, expressionFactory.createValueExpression(value, value.getClass()));
     }
 
 }

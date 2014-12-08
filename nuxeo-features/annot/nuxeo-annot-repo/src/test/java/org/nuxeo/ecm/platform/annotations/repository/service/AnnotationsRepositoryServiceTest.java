@@ -28,7 +28,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationsRepositoryServiceTest extends SQLRepositoryTestCase {
 

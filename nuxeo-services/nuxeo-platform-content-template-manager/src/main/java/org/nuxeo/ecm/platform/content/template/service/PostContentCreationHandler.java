@@ -20,14 +20,11 @@ package org.nuxeo.ecm.platform.content.template.service;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * Handler called after the content creation done by the
- * {@link ContentTemplateService}.
+ * Handler called after the content creation done by the {@link ContentTemplateService}.
  * <p>
- * The registered handlers are always called when the server starts even if no
- * content creation is done.
+ * The registered handlers are always called when the server starts even if no content creation is done.
  * <p>
- * Useful for packages deployed on an existing Nuxeo that need a default
- * documents structure.
+ * Useful for packages deployed on an existing Nuxeo that need a default documents structure.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5

@@ -28,13 +28,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Variable mapper that holds value expressions. It can be exposed to the
- * request context after the JSF component tree build, so that
- * {@link AliasValueExpression} instances can be resolved.
+ * Variable mapper that holds value expressions. It can be exposed to the request context after the JSF component tree
+ * build, so that {@link AliasValueExpression} instances can be resolved.
  * <p>
- * It also builds the {@link VariableMapper} to use when building the component
- * tree, so that {@link AliasValueExpression} instances are kept in component
- * attributes, even on ajax rerender.
+ * It also builds the {@link VariableMapper} to use when building the component tree, so that
+ * {@link AliasValueExpression} instances are kept in component attributes, even on ajax rerender.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -43,8 +41,7 @@ public class AliasVariableMapper extends VariableMapper {
 
     private static final Log log = LogFactory.getLog(AliasVariableMapper.class);
 
-    public static final String REQUEST_MARKER = AliasVariableMapper.class.getName()
-            + "_MARKER";
+    public static final String REQUEST_MARKER = AliasVariableMapper.class.getName() + "_MARKER";
 
     protected String id;
 
@@ -77,8 +74,7 @@ public class AliasVariableMapper extends VariableMapper {
         return ve;
     }
 
-    public ValueExpression setVariable(String variable,
-            ValueExpression expression) {
+    public ValueExpression setVariable(String variable, ValueExpression expression) {
         if (this.vars == null) {
             this.vars = new LinkedHashMap<String, ValueExpression>();
         }
@@ -90,14 +86,12 @@ public class AliasVariableMapper extends VariableMapper {
     }
 
     public VariableMapper getVariableMapperForBuild(VariableMapper orig) {
-        AliasVariableMapperWrapper vm = new AliasVariableMapperWrapper(orig,
-                getBlockedPatterns());
+        AliasVariableMapperWrapper vm = new AliasVariableMapperWrapper(orig, getBlockedPatterns());
         Map<String, ValueExpression> vars = getVariables();
         if (vars != null) {
             String id = getId();
             for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
-                vm.setVariable(var.getKey(),
-                        new AliasValueExpression(id, var.getKey()));
+                vm.setVariable(var.getKey(), new AliasValueExpression(id, var.getKey()));
             }
         }
         return vm;
@@ -115,8 +109,7 @@ public class AliasVariableMapper extends VariableMapper {
         this.blockedPatterns = blockedPatterns;
     }
 
-    public static AliasVariableMapper getVariableMapper(FacesContext ctx,
-            String id) {
+    public static AliasVariableMapper getVariableMapper(FacesContext ctx, String id) {
         NuxeoAliasBean a = lookupBean(ctx);
         if (a != null) {
             return a.get(id);
@@ -124,8 +117,7 @@ public class AliasVariableMapper extends VariableMapper {
         return null;
     }
 
-    public static void exposeAliasesToRequest(FacesContext ctx,
-            AliasVariableMapper vm) {
+    public static void exposeAliasesToRequest(FacesContext ctx, AliasVariableMapper vm) {
         NuxeoAliasBean a = lookupBean(ctx);
         if (a != null) {
             a.add(vm);
@@ -144,8 +136,7 @@ public class AliasVariableMapper extends VariableMapper {
 
     protected static NuxeoAliasBean lookupBean(FacesContext ctx) {
         String expr = "#{" + NuxeoAliasBean.NAME + "}";
-        NuxeoAliasBean bean = (NuxeoAliasBean) ctx.getApplication().evaluateExpressionGet(
-                ctx, expr, Object.class);
+        NuxeoAliasBean bean = (NuxeoAliasBean) ctx.getApplication().evaluateExpressionGet(ctx, expr, Object.class);
         if (bean == null) {
             log.error("Managed bean not found: " + expr);
             return null;

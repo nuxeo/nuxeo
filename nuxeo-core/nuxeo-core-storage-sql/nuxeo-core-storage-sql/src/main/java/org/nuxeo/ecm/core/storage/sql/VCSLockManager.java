@@ -35,15 +35,13 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Manager of locks that serializes access to them.
  * <p>
- * The public methods called by the session are {@link #setLock},
- * {@link #removeLock} and {@link #getLock}. Method {@link #shutdown} must be
- * called when done with the lock manager.
+ * The public methods called by the session are {@link #setLock}, {@link #removeLock} and {@link #getLock}. Method
+ * {@link #shutdown} must be called when done with the lock manager.
  * <p>
- * In cluster mode, changes are executed in a begin/commit so that tests/updates
- * can be atomic.
+ * In cluster mode, changes are executed in a begin/commit so that tests/updates can be atomic.
  * <p>
- * Transaction management can be done by hand because we're dealing with a
- * low-level {@link Mapper} and not something wrapped by a JCA pool.
+ * Transaction management can be done by hand because we're dealing with a low-level {@link Mapper} and not something
+ * wrapped by a JCA pool.
  */
 public class VCSLockManager extends AbstractLockManager {
 
@@ -58,15 +56,13 @@ public class VCSLockManager extends AbstractLockManager {
     protected final RepositoryImpl repository;
 
     /**
-     * The mapper to use. In this mapper we only ever touch the lock table, so
-     * no need to deal with fulltext and complex saves, and we don't do
-     * prefetch.
+     * The mapper to use. In this mapper we only ever touch the lock table, so no need to deal with fulltext and complex
+     * saves, and we don't do prefetch.
      */
     protected Mapper mapper;
 
     /**
-     * If clustering is enabled then we have to wrap test/set and test/remove in
-     * a transaction.
+     * If clustering is enabled then we have to wrap test/set and test/remove in a transaction.
      */
     protected final boolean clusteringEnabled;
 
@@ -80,8 +76,7 @@ public class VCSLockManager extends AbstractLockManager {
     protected final boolean caching;
 
     /**
-     * A cache of locks, used only in non-cluster mode, when this lock manager
-     * is the only one dealing with locks.
+     * A cache of locks, used only in non-cluster mode, when this lock manager is the only one dealing with locks.
      * <p>
      * Used under {@link #serializationLock}.
      */
@@ -118,8 +113,7 @@ public class VCSLockManager extends AbstractLockManager {
         clusteringEnabled = repository.getRepositoryDescriptor().getClusteringEnabled();
         serializationLock = new ReentrantLock();
         caching = !clusteringEnabled;
-        lockCache = caching ? new LRUCache<Serializable, Lock>(CACHE_SIZE)
-                : null;
+        lockCache = caching ? new LRUCache<Serializable, Lock>(CACHE_SIZE) : null;
     }
 
     /**
@@ -127,8 +121,7 @@ public class VCSLockManager extends AbstractLockManager {
      */
     protected Mapper getMapper() throws StorageException {
         if (mapper == null) {
-            mapper = repository.getBackend().newMapper(repository.getModel(),
-                    null, MapperKind.LOCK_MANAGER);
+            mapper = repository.getBackend().newMapper(repository.getModel(), null, MapperKind.LOCK_MANAGER);
         }
         return mapper;
     }
@@ -210,8 +203,8 @@ public class VCSLockManager extends AbstractLockManager {
                 throw exception;
             }
         }
-        LockException exception = new LockException("Failed to lock " + id
-                + ", too much concurrency (tried " + LOCK_RETRIES + " times)");
+        LockException exception = new LockException("Failed to lock " + id + ", too much concurrency (tried "
+                + LOCK_RETRIES + " times)");
         for (Throwable t : suppressed) {
             exception.addSuppressed(t);
         }
@@ -256,13 +249,11 @@ public class VCSLockManager extends AbstractLockManager {
         return false;
     }
 
-    protected Lock setLockInternal(String id, Lock lock)
-            throws StorageException {
+    protected Lock setLockInternal(String id, Lock lock) throws StorageException {
         serializationLock.lock();
         try {
             Lock oldLock;
-            if (caching && (oldLock = lockCache.get(id)) != null
-                    && oldLock != NULL_LOCK) {
+            if (caching && (oldLock = lockCache.get(id)) != null && oldLock != NULL_LOCK) {
                 return oldLock;
             }
             oldLock = getMapper().setLock(idFromString(id), lock);
@@ -289,8 +280,7 @@ public class VCSLockManager extends AbstractLockManager {
             } else {
                 try {
                     if (oldLock == null) {
-                        oldLock = getMapper().removeLock(idFromString(id),
-                                owner, false);
+                        oldLock = getMapper().removeLock(idFromString(id), owner, false);
                     } else {
                         // we know the previous lock, we can force
                         // no transaction needed, single operation

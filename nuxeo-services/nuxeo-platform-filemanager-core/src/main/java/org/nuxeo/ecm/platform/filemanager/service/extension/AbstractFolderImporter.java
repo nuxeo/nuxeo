@@ -35,13 +35,11 @@ public abstract class AbstractFolderImporter implements FolderImporter {
     // creation utility methods without having to lookup the service
     protected FileManagerService fileManagerService;
 
-    public DocumentModel create(CoreSession documentManager, String fullname,
-            String path, boolean overwrite, TypeManager typeManager)
-            throws ClientException {
+    public DocumentModel create(CoreSession documentManager, String fullname, String path, boolean overwrite,
+            TypeManager typeManager) throws ClientException {
         // sample implementation to override in a custom FolderImporter
         // implementation
-        return fileManagerService.defaultCreateFolder(documentManager,
-                fullname, path);
+        return fileManagerService.defaultCreateFolder(documentManager, fullname, path);
     }
 
     public String getName() {

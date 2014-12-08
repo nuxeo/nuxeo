@@ -44,9 +44,7 @@ import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 public class TestRegisterNotificationService extends NXRuntimeTestCase {
 
@@ -64,19 +62,16 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         super.setUp();
 
         File propertiesFile = FileUtils.getResourceFileFromContext("notifications.properties");
-        InputStream notificationsProperties = new FileInputStream(
-                propertiesFile);
+        InputStream notificationsProperties = new FileInputStream(propertiesFile);
         ((OSGiRuntimeService) runtime).loadProperties(notificationsProperties);
 
-        deployContrib("org.nuxeo.ecm.platform.notification.core",
-                "OSGI-INF/NotificationService.xml");
+        deployContrib("org.nuxeo.ecm.platform.notification.core", "OSGI-INF/NotificationService.xml");
     }
 
     @Test
     public void testRegistration() throws Exception {
         deployContrib(BUNDLE_TEST_NAME, "notification-contrib.xml");
-        List<Notification> notifications = getService().getNotificationsForEvents(
-                "testEvent");
+        List<Notification> notifications = getService().getNotificationsForEvents("testEvent");
 
         assertEquals(1, notifications.size());
 
@@ -87,33 +82,27 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         // assertEquals(true, notif.getEnabled());
         assertEquals("Test Notification Label", notif.getLabel());
         assertEquals("Test Notification Subject", notif.getSubject());
-        assertEquals("Test Notification Subject Template",
-                notif.getSubjectTemplate());
+        assertEquals("Test Notification Subject Template", notif.getSubjectTemplate());
         assertEquals("test-template", notif.getTemplate());
         assertEquals("NotificationContext['exp1']", notif.getTemplateExpr());
 
         Map<String, Serializable> infos = new HashMap<String, Serializable>();
         infos.put("exp1", "myDynamicTemplate");
-        String template = mailHelper.evaluateMvelExpresssion(notif.getTemplateExpr(),
-                infos);
+        String template = mailHelper.evaluateMvelExpresssion(notif.getTemplateExpr(), infos);
         assertEquals("myDynamicTemplate", template);
 
-
-        notifications = getRegistry().getNotificationsForSubscriptions(
-                "section");
+        notifications = getRegistry().getNotificationsForSubscriptions("section");
         assertEquals(1, notifications.size());
 
         URL newModifTemplate = NotificationService.getTemplateURL("test-template");
-        assertTrue(newModifTemplate.getFile().endsWith(
-                "templates/test-template.ftl"));
+        assertTrue(newModifTemplate.getFile().endsWith("templates/test-template.ftl"));
 
     }
 
     @Test
     public void testRegistrationDisabled() throws Exception {
         deployContrib(BUNDLE_TEST_NAME, "notification-contrib-disabled.xml");
-        List<Notification> notifications = getService().getNotificationsForEvents(
-                "testEvent");
+        List<Notification> notifications = getService().getNotificationsForEvents("testEvent");
 
         assertEquals(0, notifications.size());
     }
@@ -121,8 +110,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
     @Test
     public void testRegistrationOverrideWithDisabled() throws Exception {
         deployContrib(BUNDLE_TEST_NAME, "notification-contrib.xml");
-        List<Notification> notifications = getService().getNotificationsForEvents(
-                "testEvent");
+        List<Notification> notifications = getService().getNotificationsForEvents("testEvent");
 
         assertEquals(1, notifications.size());
         deployContrib(BUNDLE_TEST_NAME, "notification-contrib-disabled.xml");
@@ -136,8 +124,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         deployContrib(BUNDLE_TEST_NAME, "notification-contrib.xml");
         deployContrib(BUNDLE_TEST_NAME, "notification-contrib-overridden.xml");
 
-        List<Notification> notifications = getService().getNotificationsForEvents(
-                "testEvent");
+        List<Notification> notifications = getService().getNotificationsForEvents("testEvent");
         assertEquals(0, notifications.size());
 
         notifications = getService().getNotificationsForEvents("testEvent-ov");
@@ -150,63 +137,50 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         // assertEquals(true, notif.getEnabled());
         assertEquals("Test Notification Label-ov", notif.getLabel());
         assertEquals("Test Notification Subject-ov", notif.getSubject());
-        assertEquals("Test Notification Subject Template-ov",
-                notif.getSubjectTemplate());
+        assertEquals("Test Notification Subject Template-ov", notif.getSubjectTemplate());
         assertEquals("test-template-ov", notif.getTemplate());
-        assertEquals("NotificationContext['exp1-ov']",
-                notif.getTemplateExpr());
+        assertEquals("NotificationContext['exp1-ov']", notif.getTemplateExpr());
 
-        notifications = getRegistry().getNotificationsForSubscriptions(
-                "section");
+        notifications = getRegistry().getNotificationsForSubscriptions("section");
         assertEquals(0, notifications.size());
 
         notifications = getRegistry().getNotificationsForSubscriptions("folder");
         assertEquals(0, notifications.size());
 
         URL newModifTemplate = NotificationService.getTemplateURL("test-template");
-        assertTrue(newModifTemplate.getFile().endsWith(
-                "templates/test-template-ov.ftl"));
+        assertTrue(newModifTemplate.getFile().endsWith("templates/test-template-ov.ftl"));
     }
 
     @Test
     public void testExpandVarsInGeneralSettings() throws Exception {
         deployContrib(BUNDLE_TEST_NAME, "notification-contrib.xml");
 
-        assertEquals("http://localhost:8080/nuxeo/",
-                getService().getServerUrlPrefix());
+        assertEquals("http://localhost:8080/nuxeo/", getService().getServerUrlPrefix());
         assertEquals("[Nuxeo5]", getService().getEMailSubjectPrefix());
 
         // this one should not be expanded
-        assertEquals("java:/Mail",
-                getService().getMailSessionJndiName());
+        assertEquals("java:/Mail", getService().getMailSessionJndiName());
 
         deployContrib(BUNDLE_TEST_NAME, "notification-contrib-overridden.xml");
 
-        assertEquals("http://testServerPrefix/nuxeo",
-                getService().getServerUrlPrefix());
+        assertEquals("http://testServerPrefix/nuxeo", getService().getServerUrlPrefix());
         assertEquals("testSubjectPrefix", getService().getEMailSubjectPrefix());
 
         // this one should not be expanded
-        assertEquals("${not.existing.property}",
-                getService().getMailSessionJndiName());
-}
+        assertEquals("${not.existing.property}", getService().getMailSessionJndiName());
+    }
 
     @Test
     public void testVetoRegistration() throws Exception {
         deployContrib(BUNDLE_TEST_NAME, "notification-veto-contrib.xml");
-        deployContrib(BUNDLE_TEST_NAME,
-                "notification-veto-contrib-overridden.xml");
+        deployContrib(BUNDLE_TEST_NAME, "notification-veto-contrib-overridden.xml");
 
         Collection<NotificationListenerVeto> vetos = getService().getNotificationVetos();
         assertEquals(2, vetos.size());
-        assertEquals(
-                "org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto1",
-                getService().getNotificationListenerVetoRegistry().getVeto(
-                        "veto1").getClass().getCanonicalName());
-        assertEquals(
-                "org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto20",
-                getService().getNotificationListenerVetoRegistry().getVeto(
-                        "veto2").getClass().getCanonicalName());
+        assertEquals("org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto1",
+                getService().getNotificationListenerVetoRegistry().getVeto("veto1").getClass().getCanonicalName());
+        assertEquals("org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto20",
+                getService().getNotificationListenerVetoRegistry().getVeto("veto2").getClass().getCanonicalName());
 
     }
 

@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.api;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ConnectionException extends ClientException {
 

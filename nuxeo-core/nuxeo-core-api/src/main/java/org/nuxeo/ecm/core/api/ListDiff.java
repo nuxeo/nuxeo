@@ -20,9 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A list that is detached from its data source so all modifications on the list
- * are recorded so that the data source will be updated later when the list will
- * be reconnected to it.
+ * A list that is detached from its data source so all modifications on the list are recorded so that the data source
+ * will be updated later when the list will be reconnected to it.
  * <p>
  * It purposedly doesn't implement the List interface.
  *
@@ -137,8 +136,7 @@ public class ListDiff implements Serializable {
 
         @Override
         public String toString() {
-            return String.format("Entry {%s, %s, %s}",
-                    index, ListDiff.typeToString(type), value);
+            return String.format("Entry {%s, %s, %s}", index, ListDiff.typeToString(type), value);
         }
 
     }

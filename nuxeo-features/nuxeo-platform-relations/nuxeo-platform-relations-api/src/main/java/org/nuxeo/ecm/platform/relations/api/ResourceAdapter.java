@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Adapter to transform any java {@link Serializable} into a qualified name
- * resource and conversely.
+ * Adapter to transform any java {@link Serializable} into a qualified name resource and conversely.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -50,16 +49,13 @@ public interface ResourceAdapter {
     Resource getResource(Serializable object, Map<String, Object> context);
 
     /**
-     * Resolves the resource to an applicative representation, for instance a
-     * {@link DocumentModel}.
+     * Resolves the resource to an applicative representation, for instance a {@link DocumentModel}.
      *
      * @param resource
-     * @param context a context map (holding for instance a {@link CoreSession}
-     *            instance.
+     * @param context a context map (holding for instance a {@link CoreSession} instance.
      * @return the representation
      */
-    Serializable getResourceRepresentation(Resource resource,
-            Map<String, Object> context);
+    Serializable getResourceRepresentation(Resource resource, Map<String, Object> context);
 
     /**
      * @return the class being adapted

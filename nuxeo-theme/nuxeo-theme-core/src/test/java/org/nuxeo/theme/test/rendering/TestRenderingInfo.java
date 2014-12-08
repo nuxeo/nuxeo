@@ -33,13 +33,10 @@ public class TestRenderingInfo extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "engine-config.xml");
-        deployContrib("org.nuxeo.theme.core.tests",
-                "template-engine-config.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "template-engine-config.xml");
     }
 
     @Test
@@ -52,8 +49,7 @@ public class TestRenderingInfo extends NXRuntimeTestCase {
     @Test
     public void testInfoClone() throws MalformedURLException {
         Element page = ElementFactory.create("page");
-        URL themeUrl = new URL(
-                "nxtheme://theme/test-engine/mode/theme/page/perspective/test-template-engine");
+        URL themeUrl = new URL("nxtheme://theme/test-engine/mode/theme/page/perspective/test-template-engine");
         RenderingInfo info = new RenderingInfo(page, themeUrl);
 
         assertEquals("test-engine", info.getEngine().getName());

@@ -41,8 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author tiry
  */
-public class ConverterBasedHtmlPreviewAdapter extends
-        AbstractHtmlPreviewAdapter {
+public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter {
 
     private static final Log log = LogFactory.getLog(ConverterBasedHtmlPreviewAdapter.class);
 
@@ -69,8 +68,8 @@ public class ConverterBasedHtmlPreviewAdapter extends
             // call MT Service
             try {
                 MimetypeRegistry mtr = Framework.getService(MimetypeRegistry.class);
-                srcMT = mtr.getMimetypeFromFilenameAndBlobWithDefault(
-                        blob.getFilename(), blob, "application/octet-stream");
+                srcMT = mtr.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob,
+                        "application/octet-stream");
                 log.debug("mime type service returned " + srcMT);
             } catch (MimetypeDetectionException e) {
                 log.warn("error while calling Mimetype service", e);
@@ -108,8 +107,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
             return blobResults;
         }
 
-        String converterName = getConversionService().getConverterName(srcMT,
-                "text/html");
+        String converterName = getConversionService().getConverterName(srcMT, "text/html");
         if (converterName == null) {
             log.debug("No dedicated converter found, using generic");
             converterName = "any2html";
@@ -117,8 +115,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
 
         BlobHolder result;
         try {
-            result = getConversionService().convert(converterName,
-                    blobHolder2preview, null);
+            result = getConversionService().convert(converterName, blobHolder2preview, null);
             setMimeType(result);
             return result.getBlobs();
         } catch (ConversionException e) {
@@ -133,11 +130,9 @@ public class ConverterBasedHtmlPreviewAdapter extends
      * @param blobHolder2preview
      * @return
      * @throws PreviewException
-     *
      * @since 5.7.3
      */
-    private Blob getBlob2preview(BlobHolder blobHolder2preview)
-            throws PreviewException {
+    private Blob getBlob2preview(BlobHolder blobHolder2preview) throws PreviewException {
         Blob blob2Preview;
         try {
             blob2Preview = blobHolder2preview.getBlob();
@@ -145,8 +140,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
             throw new PreviewException("Error while getting blob", e);
         }
         if (blob2Preview == null) {
-            throw new NothingToPreviewException(
-                    "Can not preview a document without blob");
+            throw new NothingToPreviewException("Can not preview a document without blob");
         } else {
             return blob2Preview;
         }
@@ -158,7 +152,6 @@ public class ConverterBasedHtmlPreviewAdapter extends
      * @param xpath
      * @param adaptedDoc
      * @return
-     *
      * @since 5.7.3
      */
     private BlobHolder getBlobHolder2preview(String xpath) {
@@ -171,8 +164,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
 
     protected void setMimeType(BlobHolder result) throws ClientException {
         for (Blob blob : result.getBlobs()) {
-            if ((blob.getMimeType() == null || blob.getMimeType().startsWith(
-                    "application/octet-stream"))
+            if ((blob.getMimeType() == null || blob.getMimeType().startsWith("application/octet-stream"))
                     && blob.getFilename().endsWith("html")) {
                 String mimeTpye = getMimeType(blob);
                 blob.setMimeType(mimeTpye);

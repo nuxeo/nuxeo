@@ -23,46 +23,46 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  * <p>
  * The following event types are defined:
  * <ul>
- * <li> <code>COMPONENT_REGISTERED</code>
- * Sent when registering a component after the component is created
- * <li> <code>ACTIVATING_COMPONENT</code>
- * Sent before a component is activated
- * <li> <code>COMPONENT_ACTIVATED</code>
- * Sent after the component is activated
- * <li> <code>DEACTIVATING_COMPONENT</code>
- * Sent before a component is deactivated
- * <li> <code>COMPONENT_DEACTIVATED</code>
- * Sent after a component is deactivated
- * <li> <code>COMPONENT_RESOLVED</code>
- * Sent when a component was resolved (all dependencies are satisfied)
- * <li> <code>COMPONENT_UNRESOLVED</code>
- * Sent when a component is unresolved (either it will be unregistered,
- * either one of its dependencies is no more satosfied)
- * <li> <code>COMPONENT_UNREGISTERED</code>
- * Sent when unregsitering a component before the component is destroyed
- * <li> <code>COMPONENT_EVENT</code>
- * May be used by components to end custom events
+ * <li> <code>COMPONENT_REGISTERED</code> Sent when registering a component after the component is created
+ * <li> <code>ACTIVATING_COMPONENT</code> Sent before a component is activated
+ * <li> <code>COMPONENT_ACTIVATED</code> Sent after the component is activated
+ * <li> <code>DEACTIVATING_COMPONENT</code> Sent before a component is deactivated
+ * <li> <code>COMPONENT_DEACTIVATED</code> Sent after a component is deactivated
+ * <li> <code>COMPONENT_RESOLVED</code> Sent when a component was resolved (all dependencies are satisfied)
+ * <li> <code>COMPONENT_UNRESOLVED</code> Sent when a component is unresolved (either it will be unregistered, either one
+ * of its dependencies is no more satosfied)
+ * <li> <code>COMPONENT_UNREGISTERED</code> Sent when unregsitering a component before the component is destroyed
+ * <li> <code>COMPONENT_EVENT</code> May be used by components to end custom events
  * </ul>
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ComponentEvent implements Serializable {
 
     // the event IDs
-    public static final int COMPONENT_REGISTERED   = 1;
-    public static final int ACTIVATING_COMPONENT   = 2;
-    public static final int DEACTIVATING_COMPONENT = 3;
-    public static final int COMPONENT_ACTIVATED    = 4;
-    public static final int COMPONENT_DEACTIVATED  = 5;
-    public static final int COMPONENT_UNREGISTERED = 6;
-    public static final int COMPONENT_RESOLVED     = 7;
-    public static final int COMPONENT_UNRESOLVED   = 8;
-    public static final int EXTENSION_REGISTERED   = 9;
-    public static final int EXTENSION_UNREGISTERED = 10;
-    public static final int EXTENSION_PENDING      = 11;
+    public static final int COMPONENT_REGISTERED = 1;
 
-    public static final int COMPONENT_EVENT        = 100;
+    public static final int ACTIVATING_COMPONENT = 2;
+
+    public static final int DEACTIVATING_COMPONENT = 3;
+
+    public static final int COMPONENT_ACTIVATED = 4;
+
+    public static final int COMPONENT_DEACTIVATED = 5;
+
+    public static final int COMPONENT_UNREGISTERED = 6;
+
+    public static final int COMPONENT_RESOLVED = 7;
+
+    public static final int COMPONENT_UNRESOLVED = 8;
+
+    public static final int EXTENSION_REGISTERED = 9;
+
+    public static final int EXTENSION_UNREGISTERED = 10;
+
+    public static final int EXTENSION_PENDING = 11;
+
+    public static final int COMPONENT_EVENT = 100;
 
     private static final long serialVersionUID = 8936615866437064000L;
 
@@ -74,7 +74,6 @@ public class ComponentEvent implements Serializable {
 
     /** Optional event data. */
     public final Serializable data;
-
 
     public ComponentEvent(int id, RegistrationInfo ri) {
         this(id, ri, null);
@@ -117,7 +116,7 @@ public class ComponentEvent implements Serializable {
             return "EXTENSION_PENDING";
         }
         return "UNKNOWN_" + id;
-   }
+    }
 
     @Override
     public String toString() {

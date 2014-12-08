@@ -39,9 +39,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 
 /**
- * Helper for selection actions, useful when performing ajax calls on a "liste
- * shuttle" widget for instance, or to retrieve the selected value on a JSF
- * component and set it on another.
+ * Helper for selection actions, useful when performing ajax calls on a "liste shuttle" widget for instance, or to
+ * retrieve the selected value on a JSF component and set it on another.
  */
 @Name("selectionActions")
 @Scope(ScopeType.EVENT)
@@ -87,8 +86,7 @@ public class SelectionActionsBean implements Serializable {
     protected String valueHolderId;
 
     /**
-     * Lookup level request parameter (defaults to 1, means search is done in r
-     * first parent naming container)
+     * Lookup level request parameter (defaults to 1, means search is done in r first parent naming container)
      *
      * @since 5.6
      */
@@ -96,11 +94,9 @@ public class SelectionActionsBean implements Serializable {
     protected Integer lookupLevel;
 
     /**
-     * Lookup level field (defaults to 1, means search is done in first parent
-     * naming container)
+     * Lookup level field (defaults to 1, means search is done in first parent naming container)
      * <p>
-     * Useful as fallback when posting a button where request parameter
-     * {@link #lookupLevel} cannot be set.
+     * Useful as fallback when posting a button where request parameter {@link #lookupLevel} cannot be set.
      *
      * @since 5.6
      */
@@ -151,12 +147,10 @@ public class SelectionActionsBean implements Serializable {
     }
 
     /**
-     * Value component id held temporarily by this bean to be retrieved from
-     * the JSF component tree.
+     * Value component id held temporarily by this bean to be retrieved from the JSF component tree.
      * <p>
-     * this is an alternative to {@link #valueHolderId} request parameter
-     * usage, to make it possible to set this value easily from command buttons
-     * (as only command links do take request parameters into account).
+     * this is an alternative to {@link #valueHolderId} request parameter usage, to make it possible to set this value
+     * easily from command buttons (as only command links do take request parameters into account).
      *
      * @since 5.6
      */
@@ -217,28 +211,23 @@ public class SelectionActionsBean implements Serializable {
         UIComponent rightItemsComp = eventComp.findComponent(rightItems);
         UIComponent rightSelectComp = eventComp.findComponent(rightSelect);
         UIComponent hiddenTargetListComp = eventComp.findComponent(submittedList);
-        if (rightSelectComp instanceof UISelectMany
-                && rightItemsComp instanceof UISelectItems
+        if (rightSelectComp instanceof UISelectMany && rightItemsComp instanceof UISelectItems
                 && hiddenTargetListComp instanceof UIEditableList) {
             UISelectItems targetItems = (UISelectItems) rightItemsComp;
             UISelectMany targetComp = (UISelectMany) rightSelectComp;
             UIEditableList hiddenTargetList = (UIEditableList) hiddenTargetListComp;
             switch (stype) {
             case UP:
-                ComponentUtils.shiftItemsUp(targetComp, targetItems,
-                        hiddenTargetList);
+                ComponentUtils.shiftItemsUp(targetComp, targetItems, hiddenTargetList);
                 break;
             case DOWN:
-                ComponentUtils.shiftItemsDown(targetComp, targetItems,
-                        hiddenTargetList);
+                ComponentUtils.shiftItemsDown(targetComp, targetItems, hiddenTargetList);
                 break;
             case FIRST:
-                ComponentUtils.shiftItemsFirst(targetComp, targetItems,
-                        hiddenTargetList);
+                ComponentUtils.shiftItemsFirst(targetComp, targetItems, hiddenTargetList);
                 break;
             case LAST:
-                ComponentUtils.shiftItemsLast(targetComp, targetItems,
-                        hiddenTargetList);
+                ComponentUtils.shiftItemsLast(targetComp, targetItems, hiddenTargetList);
                 break;
             }
         }
@@ -261,8 +250,7 @@ public class SelectionActionsBean implements Serializable {
     }
 
     public void addToSelection(ActionEvent event) throws ClientException {
-        if (!checkLeftComponents() || !checkRightComponents()
-                || !checkSubmittedList()) {
+        if (!checkLeftComponents() || !checkRightComponents() || !checkSubmittedList()) {
             return;
         }
         UIComponent eventComp = event.getComponent();
@@ -270,22 +258,18 @@ public class SelectionActionsBean implements Serializable {
         UIComponent leftItemsComp = eventComp.findComponent(leftItems);
         UIComponent rightItemsComp = eventComp.findComponent(rightItems);
         UIComponent hiddenTargetListComp = eventComp.findComponent(submittedList);
-        if (leftSelectComp instanceof UISelectMany
-                && leftItemsComp instanceof UISelectItems
-                && rightItemsComp instanceof UISelectItems
-                && hiddenTargetListComp instanceof UIEditableList) {
+        if (leftSelectComp instanceof UISelectMany && leftItemsComp instanceof UISelectItems
+                && rightItemsComp instanceof UISelectItems && hiddenTargetListComp instanceof UIEditableList) {
             UISelectMany sourceSelect = (UISelectMany) leftSelectComp;
             UISelectItems sourceItems = (UISelectItems) leftItemsComp;
             UISelectItems targetItems = (UISelectItems) rightItemsComp;
             UIEditableList hiddenTargetList = (UIEditableList) hiddenTargetListComp;
-            ComponentUtils.moveItems(sourceSelect, sourceItems, targetItems,
-                    hiddenTargetList, true);
+            ComponentUtils.moveItems(sourceSelect, sourceItems, targetItems, hiddenTargetList, true);
         }
     }
 
     public void removeFromSelection(ActionEvent event) throws ClientException {
-        if (!checkLeftComponents() || !checkRightComponents()
-                || !checkSubmittedList()) {
+        if (!checkLeftComponents() || !checkRightComponents() || !checkSubmittedList()) {
             return;
         }
         UIComponent eventComp = event.getComponent();
@@ -293,36 +277,30 @@ public class SelectionActionsBean implements Serializable {
         UIComponent rightSelectComp = eventComp.findComponent(rightSelect);
         UIComponent rightItemsComp = eventComp.findComponent(rightItems);
         UIComponent hiddenTargetListComp = eventComp.findComponent(submittedList);
-        if (leftItemsComp instanceof UISelectItems
-                && rightSelectComp instanceof UISelectMany
-                && rightItemsComp instanceof UISelectItems
-                && hiddenTargetListComp instanceof UIEditableList) {
+        if (leftItemsComp instanceof UISelectItems && rightSelectComp instanceof UISelectMany
+                && rightItemsComp instanceof UISelectItems && hiddenTargetListComp instanceof UIEditableList) {
             UISelectItems leftItems = (UISelectItems) leftItemsComp;
             UISelectMany rightSelect = (UISelectMany) rightSelectComp;
             UISelectItems rightItems = (UISelectItems) rightItemsComp;
             UIEditableList hiddenTargetList = (UIEditableList) hiddenTargetListComp;
-            ComponentUtils.moveItems(rightSelect, rightItems, leftItems,
-                    hiddenTargetList, false);
+            ComponentUtils.moveItems(rightSelect, rightItems, leftItems, hiddenTargetList, false);
         }
     }
 
     public void addAllToSelection(ActionEvent event) {
-        if (!checkLeftComponents() || !checkRightComponents()
-                || !checkSubmittedList()) {
+        if (!checkLeftComponents() || !checkRightComponents() || !checkSubmittedList()) {
             return;
         }
         UIComponent eventComp = event.getComponent();
         UIComponent leftItemsComp = eventComp.findComponent(leftItems);
         UIComponent rightItemsComp = eventComp.findComponent(rightItems);
         UIComponent hiddenTargetListComp = eventComp.findComponent(submittedList);
-        if (leftItemsComp instanceof UISelectItems
-                && rightItemsComp instanceof UISelectItems
+        if (leftItemsComp instanceof UISelectItems && rightItemsComp instanceof UISelectItems
                 && hiddenTargetListComp instanceof UIEditableList) {
             UISelectItems sourceItems = (UISelectItems) leftItemsComp;
             UISelectItems targetItems = (UISelectItems) rightItemsComp;
             UIEditableList hiddenTargetList = (UIEditableList) hiddenTargetListComp;
-            ComponentUtils.moveAllItems(sourceItems, targetItems,
-                    hiddenTargetList, true);
+            ComponentUtils.moveAllItems(sourceItems, targetItems, hiddenTargetList, true);
         }
     }
 
@@ -354,45 +332,37 @@ public class SelectionActionsBean implements Serializable {
         return null;
     }
 
-    public void removeAllFromSelection(ActionEvent event)
-            throws ClientException {
-        if (!checkLeftComponents() || !checkRightComponents()
-                || !checkSubmittedList()) {
+    public void removeAllFromSelection(ActionEvent event) throws ClientException {
+        if (!checkLeftComponents() || !checkRightComponents() || !checkSubmittedList()) {
             return;
         }
         UIComponent eventComp = event.getComponent();
         UIComponent leftItemsComp = eventComp.findComponent(leftItems);
         UIComponent rightItemsComp = eventComp.findComponent(rightItems);
         UIComponent hiddenTargetListComp = eventComp.findComponent(submittedList);
-        if (leftItemsComp instanceof UISelectItems
-                && rightItemsComp instanceof UISelectItems
+        if (leftItemsComp instanceof UISelectItems && rightItemsComp instanceof UISelectItems
                 && hiddenTargetListComp instanceof UIEditableList) {
             UISelectItems leftItems = (UISelectItems) leftItemsComp;
             UISelectItems rightItems = (UISelectItems) rightItemsComp;
             UIEditableList hiddenTargetList = (UIEditableList) hiddenTargetListComp;
-            ComponentUtils.moveAllItems(rightItems, leftItems,
-                    hiddenTargetList, false);
+            ComponentUtils.moveAllItems(rightItems, leftItems, hiddenTargetList, false);
         }
     }
 
     /**
      * Adds selection retrieved from a selector to another component
      * <p>
-     * Must pass request parameters "selectorId" holding the id of component
-     * holding the value to pass to the other component, and "valueHolderId"
-     * holding the other component id.
+     * Must pass request parameters "selectorId" holding the id of component holding the value to pass to the other
+     * component, and "valueHolderId" holding the other component id.
      *
      * @since 5.5
      * @param event
-     * @deprecated since 6.0: use
-     *             {@link #onSelection(AjaxBehaviorEvent)} instead.
+     * @deprecated since 6.0: use {@link #onSelection(AjaxBehaviorEvent)} instead.
      */
     @Deprecated
     public void onSelection(ActionEvent event) {
-        log.warn(String.format(
-                "The method #onSelection(ActionEvent) on component "
-                        + "'selectionActions' at '%s' is deprecated, please "
-                        + "use #onSelection(AjaxBehaviorEvent) instead",
+        log.warn(String.format("The method #onSelection(ActionEvent) on component "
+                + "'selectionActions' at '%s' is deprecated, please " + "use #onSelection(AjaxBehaviorEvent) instead",
                 this.getClass().getName()));
         onSelection((FacesEvent) event);
     }
@@ -408,34 +378,28 @@ public class SelectionActionsBean implements Serializable {
         UIComponent component = event.getComponent();
         Object value = retrieveSourceComponentValue(component, selectorId);
         UIComponent base = ComponentUtils.getBase(component);
-        ValueHolder valueHolderComp = ComponentUtils.getComponent(base,
-                valueHolderId, ValueHolder.class);
+        ValueHolder valueHolderComp = ComponentUtils.getComponent(base, valueHolderId, ValueHolder.class);
         setTargetComponentValue(valueHolderComp, value);
     }
 
     /**
      * Adds value retrieved from {@link #getSelectedValue()} to a component
      * <p>
-     * Must pass request parameters "valueHolderId" holding the id of the bound
-     * component, and call {@link #setSelectedValue(String)} prior to this
-     * call.
+     * Must pass request parameters "valueHolderId" holding the id of the bound component, and call
+     * {@link #setSelectedValue(String)} prior to this call.
      * <p>
-     * As an alternative, must call {@link #setSelectedValueHolder(String)}
-     * with the id of the bound component, and call
-     * {@link #setSelectedValue(String)} prior to this call (this makes it
-     * possible to use the same logic in command buttons that do not make it
-     * possible to pass request parameters).
+     * As an alternative, must call {@link #setSelectedValueHolder(String)} with the id of the bound component, and call
+     * {@link #setSelectedValue(String)} prior to this call (this makes it possible to use the same logic in command
+     * buttons that do not make it possible to pass request parameters).
      *
-     * @deprecated since 6.0: use {@link #onClick(AjaxBehaviorEvent)}
-     *             instead.
+     * @deprecated since 6.0: use {@link #onClick(AjaxBehaviorEvent)} instead.
      * @since 5.5
      * @param event
      */
     @Deprecated
     public void onClick(ActionEvent event) {
         log.warn(String.format("The method #onClick(ActionEvent) on component "
-                + "'selectionActions' at '%s' is deprecated, please "
-                + "use #onClick(AjaxBehaviorEvent) instead",
+                + "'selectionActions' at '%s' is deprecated, please " + "use #onClick(AjaxBehaviorEvent) instead",
                 this.getClass().getName()));
         onClick((FacesEvent) event);
     }
@@ -452,14 +416,12 @@ public class SelectionActionsBean implements Serializable {
         EditableValueHolder hiddenSelector = null;
         UIComponent base = retrieveBase(component, computeLookupLevel());
         if (valueHolderId != null) {
-            hiddenSelector = ComponentUtils.getComponent(base, valueHolderId,
-                    EditableValueHolder.class);
+            hiddenSelector = ComponentUtils.getComponent(base, valueHolderId, EditableValueHolder.class);
         }
         if (hiddenSelector == null) {
             String selectedValueHolder = getSelectedValueHolder();
             if (selectedValueHolder != null) {
-                hiddenSelector = ComponentUtils.getComponent(base,
-                        selectedValueHolder, EditableValueHolder.class);
+                hiddenSelector = ComponentUtils.getComponent(base, selectedValueHolder, EditableValueHolder.class);
             }
         }
         if (hiddenSelector != null) {
@@ -479,16 +441,12 @@ public class SelectionActionsBean implements Serializable {
     }
 
     /**
-     * Retrieves a value from another component and sets it on the target
-     * component.
+     * Retrieves a value from another component and sets it on the target component.
      * <p>
-     * Source component id must be passed in the event component attributes
-     * with id "sourceComponentId".
+     * Source component id must be passed in the event component attributes with id "sourceComponentId".
      * <p>
-     * Target component id must be passed in the event component attributes
-     * with id "targetComponentId". If target component is an
-     * {@link EditableValueHolder}, its submitted value is set. Otherwise, its
-     * local value is set.
+     * Target component id must be passed in the event component attributes with id "targetComponentId". If target
+     * component is an {@link EditableValueHolder}, its submitted value is set. Otherwise, its local value is set.
      *
      * @since 6.0
      * @param event
@@ -507,24 +465,19 @@ public class SelectionActionsBean implements Serializable {
 
     protected void setValueFromComponent(FacesEvent event) {
         UIComponent anchor = event.getComponent();
-        String sourceCompId = getStringAttribute(anchor, "sourceComponentId",
-                true);
+        String sourceCompId = getStringAttribute(anchor, "sourceComponentId", true);
         Object value = retrieveSourceComponentValue(anchor, sourceCompId);
-        String targetCompId = getStringAttribute(anchor, "targetComponentId",
-                true);
-        ValueHolder targetComp = ComponentUtils.getComponent(anchor,
-                targetCompId, ValueHolder.class);
+        String targetCompId = getStringAttribute(anchor, "targetComponentId", true);
+        ValueHolder targetComp = ComponentUtils.getComponent(anchor, targetCompId, ValueHolder.class);
         setTargetComponentValue(targetComp, value);
     }
 
     /**
-     * Retrieves a value passed as an attribute with id "selectedValue" on the
-     * event component attributes and sets it on the target component.
+     * Retrieves a value passed as an attribute with id "selectedValue" on the event component attributes and sets it on
+     * the target component.
      * <p>
-     * Target component id must be passed in the event component attributes
-     * with id "targetComponentId". If target component is an
-     * {@link EditableValueHolder}, its submitted value is set. Otherwise, its
-     * local value is set.
+     * Target component id must be passed in the event component attributes with id "targetComponentId". If target
+     * component is an {@link EditableValueHolder}, its submitted value is set. Otherwise, its local value is set.
      *
      * @since 6.0
      * @param event
@@ -544,33 +497,26 @@ public class SelectionActionsBean implements Serializable {
     protected void setStaticValue(FacesEvent event) {
         UIComponent anchor = event.getComponent();
         Object value = anchor.getAttributes().get("selectedValue");
-        String targetCompId = getStringAttribute(anchor, "targetComponentId",
-                true);
-        ValueHolder targetComp = ComponentUtils.getComponent(anchor,
-                targetCompId, ValueHolder.class);
+        String targetCompId = getStringAttribute(anchor, "targetComponentId", true);
+        ValueHolder targetComp = ComponentUtils.getComponent(anchor, targetCompId, ValueHolder.class);
         setTargetComponentValue(targetComp, value);
     }
 
-    protected String getStringAttribute(UIComponent component, String name,
-            boolean required) {
+    protected String getStringAttribute(UIComponent component, String name, boolean required) {
         Object value = component.getAttributes().get(name);
         if (required && value == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Component attribute with name '%s' cannot be null: %s",
+            throw new IllegalArgumentException(String.format("Component attribute with name '%s' cannot be null: %s",
                     name, value));
         }
         if (value == null || value instanceof String) {
             return (String) value;
         }
-        throw new IllegalArgumentException(String.format(
-                "Component attribute with name '%s' is not a String: %s", name,
-                value));
+        throw new IllegalArgumentException(String.format("Component attribute with name '%s' is not a String: %s",
+                name, value));
     }
 
-    protected Object retrieveSourceComponentValue(UIComponent base,
-            String targetId) {
-        ValueHolder selectComp = ComponentUtils.getComponent(base, targetId,
-                ValueHolder.class);
+    protected Object retrieveSourceComponentValue(UIComponent base, String targetId) {
+        ValueHolder selectComp = ComponentUtils.getComponent(base, targetId, ValueHolder.class);
         if (selectComp != null) {
             Object value;
             if (selectComp instanceof EditableValueHolder) {

@@ -23,7 +23,6 @@ import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class NXRuntimeApplication {
@@ -34,7 +33,6 @@ public abstract class NXRuntimeApplication {
 
     protected final File home;
 
-
     protected NXRuntimeApplication(File home) {
         this.home = home;
     }
@@ -42,7 +40,6 @@ public abstract class NXRuntimeApplication {
     protected NXRuntimeApplication() {
         this(null);
     }
-
 
     public void start() {
         start(new String[0]);
@@ -60,7 +57,7 @@ public abstract class NXRuntimeApplication {
         deployAll();
     }
 
-    public  void shutdown() {
+    public void shutdown() {
         Framework.shutdown();
     }
 
@@ -93,7 +90,7 @@ public abstract class NXRuntimeApplication {
     }
 
     protected void deployAll() {
-        //deploy("RemotingService.xml");
+        // deploy("RemotingService.xml");
         deploy("EventService.xml");
     }
 

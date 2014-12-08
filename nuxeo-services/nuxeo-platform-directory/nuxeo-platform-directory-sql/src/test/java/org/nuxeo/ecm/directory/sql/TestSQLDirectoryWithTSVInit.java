@@ -30,7 +30,6 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class TestSQLDirectoryWithTSVInit extends SQLDirectoryTestCase {
 
@@ -38,8 +37,7 @@ public class TestSQLDirectoryWithTSVInit extends SQLDirectoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-        "test-sql-directories-tsv-bundle.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-tsv-bundle.xml");
     }
 
     private static final String SCHEMA = "user";
@@ -57,8 +55,7 @@ public class TestSQLDirectoryWithTSVInit extends SQLDirectoryTestCase {
             assertEquals("AdministratorTSV", dm.getProperty(SCHEMA, "username"));
             assertEquals("AdministratorTSV", dm.getProperty(SCHEMA, "password"));
             assertEquals(Long.valueOf(10), dm.getProperty(SCHEMA, "intField"));
-            TestSQLDirectory.assertCalendarEquals(
-                    TestSQLDirectory.getCalendar(1982, 3, 25, 16, 30, 47, 123),
+            TestSQLDirectory.assertCalendarEquals(TestSQLDirectory.getCalendar(1982, 3, 25, 16, 30, 47, 123),
                     (Calendar) dm.getProperty(SCHEMA, "dateField"));
         } finally {
             session.close();

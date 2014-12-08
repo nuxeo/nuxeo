@@ -27,7 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PathFilterTest {
 
@@ -66,8 +66,8 @@ public class PathFilterTest {
     public void testWildcard() {
         ExcludeFilter filter = new ExcludeFilter("/META-INF");
 
-        //assertTrue(filter.accept(new Path("a/b")));
-        //assertFalse(filter.accept(new Path("/META-INF")));
+        // assertTrue(filter.accept(new Path("a/b")));
+        // assertFalse(filter.accept(new Path("/META-INF")));
         assertFalse(filter.accept(new Path("/META-INF")));
         assertTrue(filter.accept(new Path("/META-INF/notexcluded")));
 
@@ -130,7 +130,7 @@ public class PathFilterTest {
         assertFalse(filter.accept(new Path("test/test.xml")));
     }
 
-    //TODO: fix include -> multiple include should be evealuated using OR
+    // TODO: fix include -> multiple include should be evealuated using OR
     @Test
     public void testInclude() {
         PathFilterSet filters = new PathFilterSet();

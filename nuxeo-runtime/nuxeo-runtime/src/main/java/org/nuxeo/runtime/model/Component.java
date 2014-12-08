@@ -19,8 +19,7 @@ import org.nuxeo.runtime.service.TimestampedService;
 /**
  * A Nuxeo Runtime component.
  * <p>
- * Components are extensible and adaptable objects and they provide methods to
- * respond to component life cycle events.
+ * Components are extensible and adaptable objects and they provide methods to respond to component life cycle events.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -47,9 +46,8 @@ public interface Component extends Extensible, TimestampedService {
     /**
      * The component notification order for {@link #applicationStarted}.
      * <p>
-     * Components are notified in increasing order. Order 1000 is the default
-     * order for components that don't care. Order 100 is the repository
-     * initialization.
+     * Components are notified in increasing order. Order 1000 is the default order for components that don't care.
+     * Order 100 is the repository initialization.
      *
      * @return the order, 1000 by default
      * @since 5.6
@@ -57,8 +55,7 @@ public interface Component extends Extensible, TimestampedService {
     int getApplicationStartedOrder();
 
     /**
-     * Notify the component that Nuxeo Framework finished starting all Nuxeo
-     * bundles.
+     * Notify the component that Nuxeo Framework finished starting all Nuxeo bundles.
      */
     void applicationStarted(ComponentContext context);
 

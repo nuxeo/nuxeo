@@ -27,15 +27,13 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentObjectWrapper extends DefaultObjectWrapper {
 
     @Override
-    protected TemplateModel handleUnknownType(Object obj)
-            throws TemplateModelException {
+    protected TemplateModel handleUnknownType(Object obj) throws TemplateModelException {
         if (obj instanceof DocumentModel) {
-            return new DocumentModelAdapter((DocumentModel)obj);
+            return new DocumentModelAdapter((DocumentModel) obj);
         }
         return super.handleUnknownType(obj);
     }

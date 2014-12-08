@@ -41,8 +41,8 @@ public interface MimetypeEntry extends Serializable {
     /**
      * Returns the main RFC-2046 name for this mime type.
      * <p>
-     * If this mime type has several names ('text/restructured', 'text-x-rst'),
-     * then this method will always return the first form.
+     * If this mime type has several names ('text/restructured', 'text-x-rst'), then this method will always return the
+     * first form.
      *
      * @return the main RFC-2046 name for this mime type
      */
@@ -52,7 +52,6 @@ public interface MimetypeEntry extends Serializable {
      * Returns the major part of the RFC-2046.
      *
      * @see #getNormalized()
-     *
      * @return the major part of the RFC-2046 name of this mime type.
      */
     String getMajor();
@@ -61,11 +60,9 @@ public interface MimetypeEntry extends Serializable {
      * Returns the minor part of the RFC-2046.
      *
      * @see #getNormalized()
-     *
      * @return string
      */
     String getMinor();
-
 
     /**
      * Returns the path of the icon for this mimetype.

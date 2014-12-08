@@ -51,7 +51,6 @@ import com.google.gwt.user.client.Window;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class AnnotatedDocument implements AnnotationChangeListener {
     private List<Annotation> annotations = new ArrayList<Annotation>();
@@ -117,8 +116,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
 
     public void preDecorateDocument() {
         Document document = Document.get();
-        Log.debug("preDecorateDocument -- isMultiImage? "
-                + controller.isMultiImage());
+        Log.debug("preDecorateDocument -- isMultiImage? " + controller.isMultiImage());
         preDecorateDocument(document);
     }
 
@@ -153,25 +151,21 @@ public class AnnotatedDocument implements AnnotationChangeListener {
         }
     }
 
-    private void decorateImageRange(ImageRangeXPointer xpointer,
-            Annotation annotation) {
+    private void decorateImageRange(ImageRangeXPointer xpointer, Annotation annotation) {
         ImageElement img = xpointer.getImage(controller.isMultiImage());
         if (img == null) {
             return;
         }
-        Point[] points = controller.filterAnnotation(xpointer.getTopLeft(),
-                xpointer.getBottomRight());
+        Point[] points = controller.filterAnnotation(xpointer.getTopLeft(), xpointer.getBottomRight());
         if (points == null) {
             return;
         }
-        decorator.addAnnotatedArea(points[0].getX(), points[0].getY(),
-                points[1].getX(), points[1].getY(), img, annotation, controller);
+        decorator.addAnnotatedArea(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), img,
+                annotation, controller);
     }
 
-    private void decorateStringRange(StringRangeXPointer xpointer,
-            Annotation annotation) {
-        DecoratorVisitor processor = DecoratorVisitorFactory.forAnnotation(
-                annotation, controller);
+    private void decorateStringRange(StringRangeXPointer xpointer, Annotation annotation) {
+        DecoratorVisitor processor = DecoratorVisitorFactory.forAnnotation(annotation, controller);
         Visitor visitor = new Visitor(processor);
         visitor.process(xpointer.getOwnerDocument());
     }
@@ -187,8 +181,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
             for (int x = 0; x < spans.getLength(); x++) {
                 Element element = spans.getItem(x);
                 if (processElement(annotation, element)) {
-                    int[] absTopLeft = Utils.getAbsoluteTopLeft(element,
-                            Document.get());
+                    int[] absTopLeft = Utils.getAbsoluteTopLeft(element, Document.get());
                     if (absTopLeft[0] < scrollTop) {
                         scrollTop = absTopLeft[0];
                     }
@@ -200,8 +193,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
             for (int x = 0; x < as.getLength(); x++) {
                 Element element = as.getItem(x);
                 if (processElement(annotation, element)) {
-                    int[] absTopLeft = Utils.getAbsoluteTopLeft(element,
-                            Document.get());
+                    int[] absTopLeft = Utils.getAbsoluteTopLeft(element, Document.get());
                     if (absTopLeft[0] < scrollTop) {
                         scrollTop = absTopLeft[0];
                     }
@@ -222,8 +214,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
         // remove old
         manager.removeClass(AnnotationConstant.SELECTED_CLASS_NAME);
         // set new
-        if (manager.isClassPresent(AnnotationConstant.DECORATE_CLASS_NAME
-                + annotation.getId())) {
+        if (manager.isClassPresent(AnnotationConstant.DECORATE_CLASS_NAME + annotation.getId())) {
             manager.addClass(AnnotationConstant.SELECTED_CLASS_NAME);
 
             return true;
@@ -232,12 +223,12 @@ public class AnnotatedDocument implements AnnotationChangeListener {
     }
 
     private native int getSelectedAnnotationIndex() /*-{
-        if (typeof top['selectedAnnotationIndex'] != "undefined") {
-            return top['selectedAnnotationIndex'];
-        } else {
-            return -1;
-        }
-    }-*/;
+                                                    if (typeof top['selectedAnnotationIndex'] != "undefined") {
+                                                    return top['selectedAnnotationIndex'];
+                                                    } else {
+                                                    return -1;
+                                                    }
+                                                    }-*/;
 
     public void hideAnnotations() {
         BodyElement bodyElement = Document.get().getBody();
@@ -265,8 +256,8 @@ public class AnnotatedDocument implements AnnotationChangeListener {
     }
 
     private native void setAnnotationsShown(boolean annotationsShown) /*-{
-        top['annotationsShown'] = annotationsShown;
-    }-*/;
+                                                                      top['annotationsShown'] = annotationsShown;
+                                                                      }-*/;
 
     public void showAnnotations() {
         BodyElement bodyElement = Document.get().getBody();
@@ -302,12 +293,12 @@ public class AnnotatedDocument implements AnnotationChangeListener {
     }
 
     public native boolean isAnnotationsVisible() /*-{
-        if (typeof top['annotationsShown'] != "undefined") {
-            return top['annotationsShown'];
-        } else {
-            return true;
-        }
-    }-*/;
+                                                 if (typeof top['annotationsShown'] != "undefined") {
+                                                 return top['annotationsShown'];
+                                                 } else {
+                                                 return true;
+                                                 }
+                                                 }-*/;
 
     private void removeAllAnnotatedAreas() {
         String className = isAnnotationsVisible() ? AnnotationConstant.DECORATE_CLASS_NAME
@@ -325,8 +316,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
         }
     }
 
-    private List<Element> getElementsToRemove(NodeList<Element> nodes,
-            String className) {
+    private List<Element> getElementsToRemove(NodeList<Element> nodes, String className) {
         List<Element> elementsToRemove = new ArrayList<Element>();
         for (int i = 0; i < nodes.getLength(); ++i) {
             Element element = nodes.getItem(i);
@@ -339,8 +329,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
     }
 
     private void removeSpanAreas(String className) {
-        NodeList<Element> spans = Document.get().getBody().getElementsByTagName(
-                "span");
+        NodeList<Element> spans = Document.get().getBody().getElementsByTagName("span");
         List<Element> elements = getElementsToRemove(spans, className);
         while (!elements.isEmpty()) {
             Element element = elements.get(0);
@@ -348,14 +337,12 @@ public class AnnotatedDocument implements AnnotationChangeListener {
             Element parent = element.getParentElement();
             String parentHtml = parent.getInnerHTML();
 
-            String escapedClassName = element.getClassName().replaceAll(
-                    "([/\\\\\\.\\*\\+\\?\\|\\(\\)\\[\\]\\{\\}$^])", "\\\\$1");
-            String escapedElementHtml = elementHtml.replaceAll(
-                    "([/\\\\\\.\\*\\+\\?\\|\\(\\)\\[\\]\\{\\}$^])", "\\\\$1");
+            String escapedClassName = element.getClassName().replaceAll("([/\\\\\\.\\*\\+\\?\\|\\(\\)\\[\\]\\{\\}$^])",
+                    "\\\\$1");
+            String escapedElementHtml = elementHtml.replaceAll("([/\\\\\\.\\*\\+\\?\\|\\(\\)\\[\\]\\{\\}$^])", "\\\\$1");
 
-            parentHtml = parentHtml.replaceFirst("<(span|SPAN) class=(\")?"
-                    + escapedClassName + "(\")?.*>" + escapedElementHtml
-                    + "</(span|SPAN)>", elementHtml);
+            parentHtml = parentHtml.replaceFirst("<(span|SPAN) class=(\")?" + escapedClassName + "(\")?.*>"
+                    + escapedElementHtml + "</(span|SPAN)>", elementHtml);
             parent.setInnerHTML(parentHtml);
 
             spans = Document.get().getBody().getElementsByTagName("span");

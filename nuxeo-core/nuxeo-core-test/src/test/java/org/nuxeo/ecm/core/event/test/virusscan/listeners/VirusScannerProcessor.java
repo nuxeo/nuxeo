@@ -35,22 +35,17 @@ import org.nuxeo.ecm.core.event.test.virusscan.service.ScanService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * Async listener that will manage the real work for scanning.
- *
  * <p/>
  * To avoid long transactions, this listeners is split in 3 parts :
  * <p/>
  * <ul>
- * <li>fetch Blobs using the xpath information stored in the EventContext
- * (transactional)</li>
+ * <li>fetch Blobs using the xpath information stored in the EventContext (transactional)</li>
  * <li>call the {@link ScanService} (outside of any transaction)</li>
- * <li>update the target documents based on the result collected from the
- * {@link ScanService} (transactional)</li>
+ * <li>update the target documents based on the result collected from the {@link ScanService} (transactional)</li>
  * </ul>
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class VirusScannerProcessor extends AbstractLongRunningListener {
 
@@ -63,8 +58,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
     }
 
     @Override
-    protected boolean handleEventPreprocessing(EventBundle events,
-            Map<String, Object> data) throws ClientException {
+    protected boolean handleEventPreprocessing(EventBundle events, Map<String, Object> data) throws ClientException {
 
         for (Event event : events) {
             if (VirusScanConsts.VIRUS_SCAN_NEEDED_EVENT.equals(event.getName())) {
@@ -93,8 +87,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
     }
 
     @Override
-    protected boolean handleEventLongRunning(List<String> eventNames,
-            Map<String, Object> data) throws ClientException {
+    protected boolean handleEventLongRunning(List<String> eventNames, Map<String, Object> data) throws ClientException {
 
         boolean doContinue = false;
         ScanService scanService = Framework.getLocalService(ScanService.class);
@@ -109,10 +102,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
                     doContinue = true;
                 } catch (Exception e) {
                     log.error("Error calling ScanService", e);
-                    results.put(
-                            path,
-                            ScanResult.makeFailed("Error calling ScanService "
-                                    + e.getMessage()));
+                    results.put(path, ScanResult.makeFailed("Error calling ScanService " + e.getMessage()));
                 }
             }
             data.put(key, results);
@@ -122,8 +112,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
     }
 
     @Override
-    protected void handleEventPostprocessing(EventBundle events,
-            Map<String, Object> data) throws ClientException {
+    protected void handleEventPostprocessing(EventBundle events, Map<String, Object> data) throws ClientException {
 
         for (Event event : events) {
             if (VirusScanConsts.VIRUS_SCAN_NEEDED_EVENT.equals(event.getName())) {
@@ -139,8 +128,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
                     for (String path : results.keySet()) {
                         ScanResult res = results.get(path);
                         if (res.isVirusDetected()) {
-                            scanInfo.append("\n virus detected for blob "
-                                    + path);
+                            scanInfo.append("\n virus detected for blob " + path);
                         }
                         if (res.isError()) {
                             failed = true;
@@ -149,20 +137,14 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
                 }
 
                 if (!failed) {
-                    doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP,
-                            VirusScanConsts.VIRUSSCAN_STATUS_DONE);
-                    doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_OK_PROP,
-                            true);
+                    doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP, VirusScanConsts.VIRUSSCAN_STATUS_DONE);
+                    doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_OK_PROP, true);
                 } else {
-                    doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP,
-                            VirusScanConsts.VIRUSSCAN_STATUS_FAILED);
-                    doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_OK_PROP,
-                            false);
+                    doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP, VirusScanConsts.VIRUSSCAN_STATUS_FAILED);
+                    doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_OK_PROP, false);
                 }
-                doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_INFO_PROP,
-                        scanInfo.toString());
-                doc.putContextData(VirusScanConsts.DISABLE_VIRUSSCAN_LISTENER,
-                        true);
+                doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_INFO_PROP, scanInfo.toString());
+                doc.putContextData(VirusScanConsts.DISABLE_VIRUSSCAN_LISTENER, true);
                 doc.getCoreSession().saveDocument(doc);
             }
         }

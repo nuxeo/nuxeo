@@ -23,12 +23,13 @@ import org.nuxeo.ecm.core.api.model.PropertyRuntimeException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DirtyPropertyIterator implements Iterator<Property> {
 
     private final Iterator<Property> it;
+
     private Property property; // the current property - null if no intialized
+
     private Property next; // the last seen property by hasNext() - null if no initialized
 
     public DirtyPropertyIterator(Iterator<Property> it) {

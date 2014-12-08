@@ -16,12 +16,8 @@
  */
 package org.nuxeo.ecm.webengine.forms.validation;
 
-
 /**
- *
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ExactLengthValidator implements FieldValidator {
 
@@ -32,7 +28,7 @@ public class ExactLengthValidator implements FieldValidator {
     }
 
     public void validate(String value, Object decoded) throws ValidationException {
-        if (value.length()!= length) {
+        if (value.length() != length) {
             throw new ValidationException();
         }
     }

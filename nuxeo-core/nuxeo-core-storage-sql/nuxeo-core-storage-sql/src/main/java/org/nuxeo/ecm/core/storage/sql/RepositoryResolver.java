@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @deprecated since 5.9.5, use {@link SQLRepositoryService} or
- *             {@link BinaryManagerService} directly instead
+ * @deprecated since 5.9.5, use {@link SQLRepositoryService} or {@link BinaryManagerService} directly instead
  */
 @Deprecated
 public class RepositoryResolver {
@@ -44,9 +43,7 @@ public class RepositoryResolver {
      * Gets the repositories as a list of {@link RepositoryManagement} objects.
      *
      * @return a list of {@link RepositoryManagement}
-     * @deprecated since 5.9.5, use
-     *             {@link SQLRepositoryService#getRepositoriesManagement}
-     *             instead
+     * @deprecated since 5.9.5, use {@link SQLRepositoryService#getRepositoriesManagement} instead
      */
     @Deprecated
     public static List<RepositoryManagement> getRepositories() {
@@ -79,8 +76,7 @@ public class RepositoryResolver {
      * @deprecated since 5.9.5, use SQLRepositoryService instead
      */
     @Deprecated
-    public static Class<? extends FulltextParser> getFulltextParserClass(
-            String repositoryName) {
+    public static Class<? extends FulltextParser> getFulltextParserClass(String repositoryName) {
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         return sqlRepositoryService.getFulltextParserClass(repositoryName);
     }

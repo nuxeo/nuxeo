@@ -31,7 +31,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements HttpSessionBindingListener {
 
@@ -39,6 +38,7 @@ public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements 
 
     public static class Ref implements SessionRef {
         protected CoreSession session;
+
         protected ReentrantLock lock;
 
         public Ref(CoreSession session) {
@@ -58,7 +58,7 @@ public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements 
             try {
                 lock.unlock();
             } catch (IllegalMonitorStateException e) {
-                //do nothing
+                // do nothing
             }
         }
 
@@ -80,7 +80,6 @@ public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements 
             s.setAttribute(SessionFactory.SESSION_FACTORY_KEY, new PerSessionCoreProvider());
         }
     }
-
 
     @Override
     protected Ref createSessionRef(CoreSession session) {

@@ -17,8 +17,7 @@ package org.nuxeo.ecm.core.io;
 import java.io.IOException;
 
 /**
- * A document reader. This reader is designed to be accessed remotely (over a
- * network).
+ * A document reader. This reader is designed to be accessed remotely (over a network).
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -36,8 +35,7 @@ public interface DocumentReader {
      * Reads next 'count' documents.
      *
      * @param count the number of documents to read
-     * @return the array of read documents or null if there are no more
-     *         documents to read
+     * @return the array of read documents or null if there are no more documents to read
      * @throws IOException
      */
     ExportedDocument[] read(int count) throws IOException;

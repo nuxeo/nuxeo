@@ -21,11 +21,11 @@ package org.nuxeo.ecm.webengine.model;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Utils {
 
-    private Utils() {}
+    private Utils() {
+    }
 
     public static boolean streq(String str1, String str2) {
         if (str1 == null) {
@@ -44,8 +44,7 @@ public class Utils {
     public static String fcToUpperCase(String str) {
         char c = str.charAt(0);
         if (Character.isLowerCase(c)) {
-            str = new StringBuilder().append(Character.toUpperCase(c))
-                    .append(str.substring(1)).toString();
+            str = new StringBuilder().append(Character.toUpperCase(c)).append(str.substring(1)).toString();
         }
         return str;
     }
@@ -53,8 +52,7 @@ public class Utils {
     public static String fcToLowerCase(String str) {
         char c = str.charAt(0);
         if (Character.isUpperCase(c)) {
-            str = new StringBuilder().append(Character.toLowerCase(c))
-                    .append(str.substring(1)).toString();
+            str = new StringBuilder().append(Character.toLowerCase(c)).append(str.substring(1)).toString();
         }
         return str;
     }

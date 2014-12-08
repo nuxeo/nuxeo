@@ -32,11 +32,9 @@ import org.nuxeo.connect.update.ProductionState;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "package")
-@XmlType(propOrder = { "id", "state", "version", "name", "type", "visibility",
-        "targetPlatforms", "vendor", "supportsHotReload", "supported",
-        "productionState", "validationState", "provides", "dependencies",
-        "conflicts", "title", "description", "homePage", "licenseType",
-        "licenseUrl" })
+@XmlType(propOrder = { "id", "state", "version", "name", "type", "visibility", "targetPlatforms", "vendor",
+        "supportsHotReload", "supported", "productionState", "validationState", "provides", "dependencies",
+        "conflicts", "title", "description", "homePage", "licenseType", "licenseUrl" })
 public class PackageInfo {
 
     public String name;

@@ -32,14 +32,12 @@ import org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor;
 /**
  * Descriptor for navigation tree contributions.
  * <p>
- * Moved from module nuxeo-platform-virtual-navigation-web, originally added in
- * 5.6.
+ * Moved from module nuxeo-platform-virtual-navigation-web, originally added in 5.6.
  *
  * @since 6.0
  */
 @XObject("navTree")
-public class NavTreeDescriptor implements Serializable,
-        Comparable<NavTreeDescriptor> {
+public class NavTreeDescriptor implements Serializable, Comparable<NavTreeDescriptor> {
 
     /**
      * @since 6.0
@@ -89,8 +87,7 @@ public class NavTreeDescriptor implements Serializable,
         this(treeId, treeLabel, false);
     }
 
-    public NavTreeDescriptor(String treeId, String treeLabel,
-            boolean directoryTreeBased) {
+    public NavTreeDescriptor(String treeId, String treeLabel, boolean directoryTreeBased) {
         this.treeId = treeId;
         this.treeLabel = treeLabel;
         this.directoryTreeBased = directoryTreeBased;

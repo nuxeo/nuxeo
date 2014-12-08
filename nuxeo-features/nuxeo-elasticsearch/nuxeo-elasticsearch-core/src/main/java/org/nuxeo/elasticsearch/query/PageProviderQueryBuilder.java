@@ -43,17 +43,13 @@ public class PageProviderQueryBuilder {
 
     /**
      * Create a ES request from a PP pattern
-     *
      */
-    public static QueryBuilder makeQuery(final String pattern,
-            final Object[] params, final boolean quotePatternParameters,
-            final boolean escapePatternParameters,
-            final boolean useNativeQuery) {
+    public static QueryBuilder makeQuery(final String pattern, final Object[] params,
+            final boolean quotePatternParameters, final boolean escapePatternParameters, final boolean useNativeQuery) {
         String query = pattern;
-        if(params!=null) {
+        if (params != null) {
             for (Object param : params) {
-                query = query.replaceFirst("\\?",
-                        convertParam(param, quotePatternParameters));
+                query = query.replaceFirst("\\?", convertParam(param, quotePatternParameters));
             }
         }
         if (useNativeQuery) {
@@ -66,21 +62,16 @@ public class PageProviderQueryBuilder {
 
     /**
      * Create a ES request from a PP whereClause
-     *
      */
-    public static QueryBuilder makeQuery(final DocumentModel model,
-            final WhereClauseDefinition whereClause, final Object[] params,
-            final boolean useNativeQuery)
-            throws ClientException {
+    public static QueryBuilder makeQuery(final DocumentModel model, final WhereClauseDefinition whereClause,
+            final Object[] params, final boolean useNativeQuery) throws ClientException {
         assert (model != null);
         assert (whereClause != null);
-        NxqlQueryConverter.ExpressionBuilder eb = new NxqlQueryConverter.ExpressionBuilder(
-                "AND");
+        NxqlQueryConverter.ExpressionBuilder eb = new NxqlQueryConverter.ExpressionBuilder("AND");
         String fixedPart = whereClause.getFixedPart();
         if (params != null) {
             for (Object param : params) {
-                fixedPart = fixedPart.replaceFirst("\\?",
-                        convertParam(param, true));
+                fixedPart = fixedPart.replaceFirst("\\?", convertParam(param, true));
             }
             if (useNativeQuery) {
                 // Fixed part handled as query_string
@@ -97,12 +88,9 @@ public class PageProviderQueryBuilder {
                 values = new Object[fieldDef.length];
                 for (int fidx = 0; fidx < fieldDef.length; fidx++) {
                     if (fieldDef[fidx].getXpath() != null) {
-                        values[fidx] = model.getPropertyValue(fieldDef[fidx]
-                                .getXpath());
+                        values[fidx] = model.getPropertyValue(fieldDef[fidx].getXpath());
                     } else {
-                        values[fidx] = model.getProperty(
-                                fieldDef[fidx].getSchema(),
-                                fieldDef[fidx].getName());
+                        values[fidx] = model.getProperty(fieldDef[fidx].getSchema(), fieldDef[fidx].getName());
                     }
                 }
             } catch (ClientException e) {
@@ -127,8 +115,7 @@ public class PageProviderQueryBuilder {
                     name = NXQL.ECM_FULLTEXT + "." + name;
                 }
             }
-            eb.add(NxqlQueryConverter.makeQueryFromSimpleExpression(operator,
-                    name, value, values));
+            eb.add(NxqlQueryConverter.makeQueryFromSimpleExpression(operator, name, value, values));
         }
         return eb.get();
     }
@@ -141,7 +128,7 @@ public class PageProviderQueryBuilder {
         if (param == null) {
             ret = "";
         } else if (param instanceof List<?>) {
-            StringBuilder stringBuilder =  new StringBuilder("");
+            StringBuilder stringBuilder = new StringBuilder("");
             NXQLQueryBuilder.appendStringList(stringBuilder, (List<?>) param, quote, true);
             ret = stringBuilder.toString();
             // quote is already taken in account

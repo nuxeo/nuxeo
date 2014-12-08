@@ -24,7 +24,6 @@ import org.nuxeo.ecm.automation.client.model.PropertyMapSetter;
 
 /**
  * @author matic
- *
  */
 public class DocumentMarshaller implements JsonMarshaller<Document> {
 
@@ -84,7 +83,7 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
                 lockCreated = jp.getText();
             } else if (key.equals("lockOwner")) {
                 lockOwner = jp.getText();
-            }else if (key.equals("repository")) {
+            } else if (key.equals("repository")) {
                 repository = jp.getText();
             } else if (key.equals("title")) {
                 propsSetter.set("dc:title", jp.getText());
@@ -105,14 +104,13 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
-        return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, versionLabel, isCheckedOut, props, null);
+        return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, repository,
+                versionLabel, isCheckedOut, props, null);
     }
 
-    protected static void readProperties(JsonParser jp, PropertyMap props)
-            throws IOException {
+    protected static void readProperties(JsonParser jp, PropertyMap props) throws IOException {
         PropertyMapSetter setter = new PropertyMapSetter(props);
         JsonToken tok = jp.nextToken();
         while (tok != null && tok != JsonToken.END_OBJECT) {
@@ -122,28 +120,25 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
                 setter.set(key, readArrayProperty(jp));
             } else if (tok == JsonToken.START_OBJECT) {
                 setter.set(key, readObjectProperty(jp));
-            } else if (tok  == JsonToken.VALUE_NULL) {
-                setter.set(key, (String)null);
+            } else if (tok == JsonToken.VALUE_NULL) {
+                setter.set(key, (String) null);
             } else {
                 setter.set(key, jp.getText());
             }
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
     }
 
-    protected static PropertyMap readObjectProperty(JsonParser jp)
-            throws IOException {
+    protected static PropertyMap readObjectProperty(JsonParser jp) throws IOException {
         PropertyMap map = new PropertyMap();
         readProperties(jp, map);
         return map;
     }
 
-    protected static PropertyList readArrayProperty(JsonParser jp)
-            throws IOException {
+    protected static PropertyList readArrayProperty(JsonParser jp) throws IOException {
         PropertyList list = new PropertyList();
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {

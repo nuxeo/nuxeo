@@ -26,7 +26,6 @@ import org.w3c.dom.NodeList;
  *
  * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycleTransition
- *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class LifeCycleTransitionConfiguration {
@@ -72,17 +71,13 @@ public class LifeCycleTransitionConfiguration {
             Element element = (Element) elements.item(i);
 
             String name = element.getAttribute(ATTR_TRANSITION_NAME);
-            String destinationState = element
-                    .getAttribute(ATTR_TRANSITION_DESTINATION_STATE);
+            String destinationState = element.getAttribute(ATTR_TRANSITION_DESTINATION_STATE);
             String description = "";
 
-            if (element.getElementsByTagName(TAG_TRANSITION_DESCRIPTION)
-                    .getLength() > 0) {
-                description = element.getElementsByTagName(
-                        TAG_TRANSITION_DESCRIPTION).item(0).getTextContent();
+            if (element.getElementsByTagName(TAG_TRANSITION_DESCRIPTION).getLength() > 0) {
+                description = element.getElementsByTagName(TAG_TRANSITION_DESCRIPTION).item(0).getTextContent();
             }
-            transitions.add(new LifeCycleTransitionImpl(name, description,
-                    destinationState));
+            transitions.add(new LifeCycleTransitionImpl(name, description, destinationState));
         }
         return transitions;
     }

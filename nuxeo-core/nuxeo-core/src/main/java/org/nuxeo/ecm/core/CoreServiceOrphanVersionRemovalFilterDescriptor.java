@@ -15,8 +15,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor for Core Service orphanVersionRemovalFilter extension point
- * configuration.
+ * Descriptor for Core Service orphanVersionRemovalFilter extension point configuration.
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */

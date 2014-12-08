@@ -22,8 +22,8 @@ import java.util.Map.Entry;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- * DocumentModel comparator. Uses ordering independent of case or accent. If two
- * values are integers/longs, numbering comparison is used.
+ * DocumentModel comparator. Uses ordering independent of case or accent. If two values are integers/longs, numbering
+ * comparison is used.
  *
  * @author Florent Guillaume
  * @author Anahide Tchertchian
@@ -48,12 +48,10 @@ public class DocumentModelComparator implements Sorter {
      * Constructor using a schema and a map of field names to compare on.
      *
      * @param schemaName the schema name
-     * @param orderBy map using property names as keys, and "asc" or "desc" as
-     *            values. Should be a {@link LinkedHashMap} if order of criteria
-     *            matters.
+     * @param orderBy map using property names as keys, and "asc" or "desc" as values. Should be a {@link LinkedHashMap}
+     *            if order of criteria matters.
      */
-    public DocumentModelComparator(String schemaName,
-            Map<String, String> orderBy) {
+    public DocumentModelComparator(String schemaName, Map<String, String> orderBy) {
         this.schemaName = schemaName;
         this.orderBy = orderBy;
     }
@@ -61,9 +59,8 @@ public class DocumentModelComparator implements Sorter {
     /**
      * Constructor using a map of property names to compare on.
      *
-     * @param orderBy map using property names as keys, and "asc" or "desc" as
-     *            values. Should be a {@link LinkedHashMap} if order of criteria
-     *            matters.
+     * @param orderBy map using property names as keys, and "asc" or "desc" as values. Should be a {@link LinkedHashMap}
+     *            if order of criteria matters.
      */
     public DocumentModelComparator(Map<String, String> orderBy) {
         this(null, orderBy);

@@ -22,13 +22,12 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DynamicApplicationFactory implements ApplicationFactory {
 
     @Override
-    public Application getApplication(Bundle bundle, Map<String, String> args)
-            throws ReflectiveOperationException, IOException {
+    public Application getApplication(Bundle bundle, Map<String, String> args) throws ReflectiveOperationException,
+            IOException {
         String pkg = args.get("package");
         if (pkg == null) {
             pkg = "/";

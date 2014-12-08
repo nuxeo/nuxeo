@@ -46,9 +46,8 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 /**
  * Error handling interceptor.
  * <p>
- * Redirects to the good error page if an exception is caught: login page on
- * security exception, themed error page on other exceptions and unthemed error
- * page when another error is caught while rendering the error page.
+ * Redirects to the good error page if an exception is caught: login page on security exception, themed error page on
+ * other exceptions and unthemed error page when another error is caught while rendering the error page.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -68,8 +67,8 @@ public class NuxeoErrorInterceptor implements Serializable {
     private static final String LOGIN_VIEW_ID = "/login.jsp";
 
     @AroundInvoke
-    public Object invokeAndWrapExceptions(InvocationContext invocation)
-            throws SystemException, DocumentSecurityException, ClientException {
+    public Object invokeAndWrapExceptions(InvocationContext invocation) throws SystemException,
+            DocumentSecurityException, ClientException {
         try {
             // log.debug("Before invocation...");
             return invocation.proceed();
@@ -90,9 +89,8 @@ public class NuxeoErrorInterceptor implements Serializable {
                             request.setAttribute("securityException", t);
                         }
                     }
-                    throw new DocumentSecurityException(
-                            "Security Error during call of "
-                                    + invocation.getTarget().toString(), t);
+                    throw new DocumentSecurityException("Security Error during call of "
+                            + invocation.getTarget().toString(), t);
                 }
             }
 
@@ -120,8 +118,7 @@ public class NuxeoErrorInterceptor implements Serializable {
                         String[] previousPage = requestMap.get("Referer");
                         if (previousPage != null && previousPage.length != 0) {
                             String pageName = previousPage[0];
-                            if (pageName != null
-                                    && pageName.contains("error_page")) {
+                            if (pageName != null && pageName.contains("error_page")) {
                                 redirectToErrorPage(UNTHEMED_ERROR_VIEW_ID);
                                 return null;
                             }
@@ -132,14 +129,12 @@ public class NuxeoErrorInterceptor implements Serializable {
 
             String redirectToViewId = null;
             try {
-                log.error("Exception caught, redirecting to the error page...",
-                        cException);
+                log.error("Exception caught, redirecting to the error page...", cException);
                 final Context sessionContext = Contexts.getSessionContext();
                 // set applicationException in session hoping
                 // ErrorPageActionListener will inject it
                 sessionContext.set("applicationException", cException);
-                if (ExceptionHelper.isSecurityError(t)
-                        || cException.getCause() instanceof DocumentSecurityException) {
+                if (ExceptionHelper.isSecurityError(t) || cException.getCause() instanceof DocumentSecurityException) {
                     redirectToViewId = LOGIN_VIEW_ID;
                 } else {
                     redirectToViewId = GENERIC_ERROR_VIEW_ID;
@@ -153,8 +148,7 @@ public class NuxeoErrorInterceptor implements Serializable {
             if (redirectToErrorPage(redirectToViewId)) {
                 return null;
             } else {
-                log.info("Unable to handle exception in web-context. "
-                        + "It might be an external (soap) request. "
+                log.info("Unable to handle exception in web-context. " + "It might be an external (soap) request. "
                         + "Throwing further...");
                 log.error("Original error", t);
                 throw cException;
@@ -175,8 +169,7 @@ public class NuxeoErrorInterceptor implements Serializable {
 
         HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
         // avoid further redirection
-        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
-                Boolean.TRUE);
+        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
 
         Redirect.instance().setViewId(viewId);
         Redirect.instance().execute();

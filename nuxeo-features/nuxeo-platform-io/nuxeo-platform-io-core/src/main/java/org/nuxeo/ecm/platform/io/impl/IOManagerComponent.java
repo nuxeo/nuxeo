@@ -30,15 +30,13 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Component registering {@link IOResourceAdapter} instances to an
- * {@link IOManager}.
+ * Component registering {@link IOResourceAdapter} instances to an {@link IOManager}.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class IOManagerComponent extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName(
-            IOManagerComponent.class.getName());
+    public static final ComponentName NAME = new ComponentName(IOManagerComponent.class.getName());
 
     public static final String ADAPTERS_EP_NAME = "adapters";
 
@@ -55,8 +53,7 @@ public class IOManagerComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(ADAPTERS_EP_NAME)) {
             IOResourceAdapterDescriptor desc = (IOResourceAdapterDescriptor) contribution;
             String name = desc.getName();
@@ -64,8 +61,7 @@ public class IOManagerComponent extends DefaultComponent {
             IOResourceAdapter adapter;
             try {
                 // Thread context loader is not working in isolated EARs
-                adapter = (IOResourceAdapter) IOManagerComponent.class.getClassLoader().loadClass(
-                        className).newInstance();
+                adapter = (IOResourceAdapter) IOManagerComponent.class.getClassLoader().loadClass(className).newInstance();
             } catch (ReflectiveOperationException e) {
                 log.error("Caught error when instantiating adapter", e);
                 return;
@@ -74,27 +70,21 @@ public class IOManagerComponent extends DefaultComponent {
             try {
                 IOResourceAdapter existing = service.getAdapter(name);
                 if (existing != null) {
-                    log.warn(String.format(
-                            "Overriding IO Resource adapter definition %s",
-                            name));
+                    log.warn(String.format("Overriding IO Resource adapter definition %s", name));
                     service.removeAdapter(name);
                 }
                 service.addAdapter(name, adapter);
-                log.info(String.format("IO resource adapter %s registered",
-                        name));
+                log.info(String.format("IO resource adapter %s registered", name));
             } catch (ClientException e) {
                 log.error("Error when registering IO resource adapter", e);
             }
         } else {
-            log.error(String.format(
-                    "Unknown extension point %s, can't register !",
-                    extensionPoint));
+            log.error(String.format("Unknown extension point %s, can't register !", extensionPoint));
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(ADAPTERS_EP_NAME)) {
             IOResourceAdapterDescriptor desc = (IOResourceAdapterDescriptor) contribution;
             try {
@@ -103,9 +93,7 @@ public class IOManagerComponent extends DefaultComponent {
                 log.error("Error when unregistering IO resource adapter", e);
             }
         } else {
-            log.error(String.format(
-                    "Unknown extension point %s, can't unregister !",
-                    extensionPoint));
+            log.error(String.format("Unknown extension point %s, can't unregister !", extensionPoint));
         }
     }
 

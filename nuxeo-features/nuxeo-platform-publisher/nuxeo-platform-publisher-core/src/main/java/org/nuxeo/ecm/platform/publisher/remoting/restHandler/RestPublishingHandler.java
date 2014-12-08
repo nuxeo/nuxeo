@@ -48,27 +48,22 @@ public class RestPublishingHandler extends DefaultObject {
     // ClientException;
     @POST
     @Path("getChildrenDocuments")
-    public RemotePubResult getChildrenDocuments(RemotePubParam param)
-            throws ClientException {
-        return new RemotePubResult(getPublisher().getChildrenDocuments(
-                param.getAsNode()));
+    public RemotePubResult getChildrenDocuments(RemotePubParam param) throws ClientException {
+        return new RemotePubResult(getPublisher().getChildrenDocuments(param.getAsNode()));
     }
 
     // List<PublicationNode> getChildrenNodes(PublicationNode node) throws
     // ClientException;
     @POST
     @Path("getChildrenNodes")
-    public RemotePubResult getChildrenNodes(RemotePubParam param)
-            throws ClientException {
-        return new RemotePubResult(getPublisher().getChildrenNodes(
-                param.getAsNode()));
+    public RemotePubResult getChildrenNodes(RemotePubParam param) throws ClientException {
+        return new RemotePubResult(getPublisher().getChildrenNodes(param.getAsNode()));
     }
 
     // PublicationNode getParent(PublicationNode node);
     @POST
     @Path("getParent")
-    public RemotePubResult getParent(RemotePubParam param)
-            throws ClientException {
+    public RemotePubResult getParent(RemotePubParam param) throws ClientException {
         return new RemotePubResult(getPublisher().getParent(param.getAsNode()));
     }
 
@@ -76,10 +71,8 @@ public class RestPublishingHandler extends DefaultObject {
     // ClientException;
     @POST
     @Path("getNodeByPath")
-    public RemotePubResult getNodeByPath(RemotePubParam param)
-            throws ClientException {
-        return new RemotePubResult(getPublisher().getNodeByPath(
-                (String) param.getParams().get(0),
+    public RemotePubResult getNodeByPath(RemotePubParam param) throws ClientException {
+        return new RemotePubResult(getPublisher().getNodeByPath((String) param.getParams().get(0),
                 (String) param.getParams().get(1)));
     }
 
@@ -87,10 +80,8 @@ public class RestPublishingHandler extends DefaultObject {
     // DocumentLocation docLoc) throws ClientException;
     @POST
     @Path("getExistingPublishedDocument")
-    public RemotePubResult getExistingPublishedDocument(RemotePubParam param)
-            throws ClientException {
-        return new RemotePubResult(getPublisher().getExistingPublishedDocument(
-                (String) param.getParams().get(0),
+    public RemotePubResult getExistingPublishedDocument(RemotePubParam param) throws ClientException {
+        return new RemotePubResult(getPublisher().getExistingPublishedDocument((String) param.getParams().get(0),
                 (DocumentLocation) param.getParams().get(1)));
     }
 
@@ -98,10 +89,8 @@ public class RestPublishingHandler extends DefaultObject {
     // throws ClientException;
     @POST
     @Path("getPublishedDocumentInNode")
-    public RemotePubResult getPublishedDocumentInNode(RemotePubParam param)
-            throws ClientException {
-        return new RemotePubResult(getPublisher().getPublishedDocumentInNode(
-                param.getAsNode()));
+    public RemotePubResult getPublishedDocumentInNode(RemotePubParam param) throws ClientException {
+        return new RemotePubResult(getPublisher().getPublishedDocumentInNode(param.getAsNode()));
     }
 
     // PublishedDocument publish(DocumentModel doc, PublicationNode targetNode,
@@ -111,14 +100,11 @@ public class RestPublishingHandler extends DefaultObject {
     public RemotePubResult publish(RemotePubParam param) throws ClientException {
         RemotePubResult result;
         if (param.getParams().size() == 2) {
-            result = new RemotePubResult(getPublisher().publish(
-                    (DocumentModel) param.getParams().get(0),
+            result = new RemotePubResult(getPublisher().publish((DocumentModel) param.getParams().get(0),
                     (PublicationNode) param.getParams().get(1)));
         } else {
-            result = new RemotePubResult(getPublisher().publish(
-                    (DocumentModel) param.getParams().get(0),
-                    (PublicationNode) param.getParams().get(1),
-                    (Map<String, String>) param.getParams().get(2)));
+            result = new RemotePubResult(getPublisher().publish((DocumentModel) param.getParams().get(0),
+                    (PublicationNode) param.getParams().get(1), (Map<String, String>) param.getParams().get(2)));
         }
         return result;
     }
@@ -130,19 +116,16 @@ public class RestPublishingHandler extends DefaultObject {
     public void unpublish(RemotePubParam param) throws ClientException {
         Object object = param.getParams().get(1);
         if (object instanceof PublicationNode) {
-            getPublisher().unpublish((DocumentModel) param.getParams().get(0),
-                    (PublicationNode) object);
+            getPublisher().unpublish((DocumentModel) param.getParams().get(0), (PublicationNode) object);
         } else if (object instanceof PublishedDocument) {
-            getPublisher().unpublish((String) param.getParams().get(0),
-                    (PublishedDocument) object);
+            getPublisher().unpublish((String) param.getParams().get(0), (PublishedDocument) object);
         }
     }
 
     @POST
     @Path("initRemoteSession")
     public RemotePubResult initRemoteSession(RemotePubParam param) {
-        return new RemotePubResult(getPublisher().initRemoteSession(
-                (String) param.getParams().get(0),
+        return new RemotePubResult(getPublisher().initRemoteSession((String) param.getParams().get(0),
                 (Map<String, String>) param.getParams().get(1)));
     }
 

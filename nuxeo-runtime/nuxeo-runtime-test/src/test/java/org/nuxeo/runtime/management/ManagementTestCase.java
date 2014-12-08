@@ -31,29 +31,23 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author matic
- *
  */
 public abstract class ManagementTestCase extends NXRuntimeTestCase {
 
     protected static final String OSGI_BUNDLE_NAME = "org.nuxeo.runtime.management";
 
-
     protected ResourcePublisherService publisherService;
 
     protected ServerLocatorService locatorService;
-
 
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib(OSGI_BUNDLE_NAME,
-                "OSGI-INF/management-server-locator-service.xml");
-        deployContrib(OSGI_BUNDLE_NAME,
-                "OSGI-INF/management-resource-publisher-service.xml");
-        deployTestContrib(OSGI_BUNDLE_NAME,
-                "isolated-server.xml");
+        deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-server-locator-service.xml");
+        deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-resource-publisher-service.xml");
+        deployTestContrib(OSGI_BUNDLE_NAME, "isolated-server.xml");
 
         fireFrameworkStarted();
 
@@ -68,8 +62,7 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    protected void doBindResources() throws InstanceNotFoundException,
-            ReflectionException, MBeanException {
+    protected void doBindResources() throws InstanceNotFoundException, ReflectionException, MBeanException {
         String qualifiedName = ObjectNameFactory.formatQualifiedName(ResourcePublisherService.NAME);
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
         MBeanServer server = locatorService.lookupServer(objectName.getDomain());

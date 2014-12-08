@@ -27,9 +27,8 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 
 /**
- * Converter for document versioning, setting the accurate
- * {@link VersioningOption} on the document model context data instead of
- * String selected in the interface.
+ * Converter for document versioning, setting the accurate {@link VersioningOption} on the document model context data
+ * instead of String selected in the interface.
  *
  * @since 5.7.3
  */
@@ -39,8 +38,7 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 public class DocumentVersioningConverter implements Converter {
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component,
-            String value) {
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
         if (StringUtils.isBlank(value)) {
             return null;
         }
@@ -59,8 +57,7 @@ public class DocumentVersioningConverter implements Converter {
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component,
-            Object value) {
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value instanceof String) {
             return (String) value;
         }

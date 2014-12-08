@@ -48,19 +48,18 @@ import org.nuxeo.ecm.webengine.util.ACLUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Version Service - manage document versions
- * TODO not yet implemented
+ * Version Service - manage document versions TODO not yet implemented
  * <p>
  * Accepts the following methods:
  * <ul>
- * <li> GET - get the last document version
- * <li> DELETE - delete a version
- * <li> POST - create a new version
+ * <li>GET - get the last document version
+ * <li>DELETE - delete a version
+ * <li>POST - create a new version
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebAdapter(name="permissions", type="PermissionService", targetType="Document", targetFacets={"Folderish"})
+@WebAdapter(name = "permissions", type = "PermissionService", targetType = "Document", targetFacets = { "Folderish" })
 public class PermissionService extends DefaultAdapter {
 
     @GET
@@ -116,8 +115,7 @@ public class PermissionService extends DefaultAdapter {
             String username = req.getParameter("user");
             CoreSession session = ctx.getCoreSession();
             Resource target = getTarget();
-            ACLUtils.removePermission(session, target.getAdapter(DocumentModel.class).getRef(),
-                    username, permission);
+            ACLUtils.removePermission(session, target.getAdapter(DocumentModel.class).getRef(), username, permission);
             session.save();
             return redirect(target.getPath());
         } catch (ClientException e) {

@@ -18,23 +18,21 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * A repository initialization handler is responsible for initializing a
- * repository content.
+ * A repository initialization handler is responsible for initializing a repository content.
  * <p>
- * The handler is called each time a repository is opened in a JVM session. This
- * can be used to create a default structure for the repository.
+ * The handler is called each time a repository is opened in a JVM session. This can be used to create a default
+ * structure for the repository.
  * <p>
- * To register a repository initializer <code>MyInitHandler</code> you should
- * do:
+ * To register a repository initializer <code>MyInitHandler</code> you should do:
  * <p>
  * <code>RepositoryInitializationHandler.setInstance(new MyInitHandler());</code>
  * <p>
- * If you want to create an initialization chain you can implement to delegate
- * to the parent handle the default initialization and then to do your specific
- * initialization stuff
+ * If you want to create an initialization chain you can implement to delegate to the parent handle the default
+ * initialization and then to do your specific initialization stuff
  * <p>
  *
- * <pre><code>
+ * <pre>
+ * <code>
  * RepositoryInitializationHandler parentHandler = RepositoryInitializationHandler.getInstance();
  * MyInitHandler myHandler = new MyInitHandler(parentHandler);
  * RepositoryInitializationHandler.setInstance(myHandler);
@@ -48,15 +46,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
  *      }
  *      ...
  * }
- * </code></pre>
- *
+ * </code>
+ * </pre>
  * <p>
- * <b>Important Note:</b> Use the given session to initialize the repository.
- * Do not create other repository sessions when initializing the repository to
- * avoid dead locks.
+ * <b>Important Note:</b> Use the given session to initialize the repository. Do not create other repository sessions
+ * when initializing the repository to avoid dead locks.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class RepositoryInitializationHandler {
 

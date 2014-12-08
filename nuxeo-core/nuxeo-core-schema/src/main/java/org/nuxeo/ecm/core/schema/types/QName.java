@@ -17,15 +17,16 @@ package org.nuxeo.ecm.core.schema.types;
 import java.io.Serializable;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class QName implements Serializable {
 
     private static final long serialVersionUID = 5259846002688485463L;
 
     final String prefix;
+
     final String localName;
+
     final String prefixedName;
 
     /**
@@ -90,8 +91,8 @@ public class QName implements Serializable {
     /**
      * Parses the given name and creates the corresponding QName.
      * <p>
-     * If the given name is not prefixed then the default prefix (e.g. "")
-     * will be used (i.e. the name will remain unprefixed).
+     * If the given name is not prefixed then the default prefix (e.g. "") will be used (i.e. the name will remain
+     * unprefixed).
      *
      * @param name the name in the prefixed form
      * @return the qname

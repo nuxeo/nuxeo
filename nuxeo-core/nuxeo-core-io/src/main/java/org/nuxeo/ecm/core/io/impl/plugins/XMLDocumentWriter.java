@@ -32,20 +32,15 @@ import org.nuxeo.ecm.core.io.impl.AbstractDocumentWriter;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 
 /**
- * Writes to a file or output stream the XML corresponding to the document
- * content.
+ * Writes to a file or output stream the XML corresponding to the document content.
  * <p>
- * Note that additional xml descriptors (like relations.xml, workflow.xml etc)
- * are ignored
+ * Note that additional xml descriptors (like relations.xml, workflow.xml etc) are ignored
  * <p>
- * Also blobs are not handled specially. The value existing in the blob data
- * element will be written down. By default blobs are referred as external
- * references, so if their content is not written in the   XML document. If you
- * want to encode blobs as base64 inside the document you must use the
- * {@link InlineBlobTransformer}
+ * Also blobs are not handled specially. The value existing in the blob data element will be written down. By default
+ * blobs are referred as external references, so if their content is not written in the XML document. If you want to
+ * encode blobs as base64 inside the document you must use the {@link InlineBlobTransformer}
  * <p>
- * In order to write Blobs are encoded as Base64 and included in the XML
- * document
+ * In order to write Blobs are encoded as Base64 and included in the XML document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -64,8 +59,7 @@ public class XMLDocumentWriter extends AbstractDocumentWriter {
     }
 
     @Override
-    public DocumentTranslationMap write(ExportedDocument doc)
-            throws IOException {
+    public DocumentTranslationMap write(ExportedDocument doc) throws IOException {
 
         OutputFormat format = AbstractDocumentWriter.createPrettyPrint();
         XMLWriter writer = null;
@@ -82,8 +76,7 @@ public class XMLDocumentWriter extends AbstractDocumentWriter {
         DocumentLocation oldLoc = doc.getSourceLocation();
         String oldServerName = oldLoc.getServerName();
         DocumentRef oldDocRef = oldLoc.getDocRef();
-        DocumentTranslationMap map = new DocumentTranslationMapImpl(
-                oldServerName, oldServerName);
+        DocumentTranslationMap map = new DocumentTranslationMapImpl(oldServerName, oldServerName);
         map.put(oldDocRef, oldDocRef);
         return map;
     }

@@ -40,10 +40,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
- *
  */
-public class TiledImagePreviewer extends AbstractPreviewer implements
-        MimeTypePreviewer {
+public class TiledImagePreviewer extends AbstractPreviewer implements MimeTypePreviewer {
 
     private static final Log log = LogFactory.getLog(TiledImagePreviewer.class);
 
@@ -51,12 +49,10 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
 
     protected static final String ORIGINAL_VIEW_NAME = "Original";
 
-    public List<Blob> getPreview(Blob blob, DocumentModel dm)
-            throws PreviewException {
+    public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         if (useTiling(blob)) {
             List<Blob> blobResults = new ArrayList<Blob>();
-            String htmlFile = getString().replace("$repoId$",
-                    dm.getRepositoryName());
+            String htmlFile = getString().replace("$repoId$", dm.getRepositoryName());
             htmlFile = htmlFile.replace("$docId$", dm.getId());
             htmlFile = htmlFile.replace("$tileWidth$", "" + 200);
             htmlFile = htmlFile.replace("$tileHeight$", "" + 200);
@@ -82,10 +78,8 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
             if (info != null) {
                 int width = info.getWidth();
                 int height = info.getHeight();
-                Integer widthThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue(
-                        "WidthThreshold", "1200"));
-                Integer heightThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue(
-                        "HeightThreshold", "1200"));
+                Integer widthThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue("WidthThreshold", "1200"));
+                Integer heightThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue("HeightThreshold", "1200"));
                 return width > widthThreshold || height > heightThreshold;
             }
         }
@@ -93,8 +87,7 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
     }
 
     /**
-     * @deprecated since 5.9.2. Use
-     *             {@link #useTiling(org.nuxeo.ecm.core.api.Blob)}.
+     * @deprecated since 5.9.2. Use {@link #useTiling(org.nuxeo.ecm.core.api.Blob)}.
      */
     @Deprecated
     protected boolean useTiling(Blob blob, DocumentModel dm) {
@@ -108,8 +101,7 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
         writer.write("var serverSetting = {");
         writer.write("repoId : '$repoId$' ,");
         writer.write("docId : '$docId$' ,");
-        writer.write("contextPath : '"
-                + VirtualHostHelper.getContextPathProperty() + "'");
+        writer.write("contextPath : '" + VirtualHostHelper.getContextPathProperty() + "'");
         writer.write("};");
         writer.write("</script>");
         writer.write("<script type=\"text/javascript\"");
@@ -129,11 +121,9 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
         sb.append("imageOnly: \"true\", ");
         sb.append("multiImageAnnotation: \"true\", ");
         sb.append("xPointerFilterPath: \""
-                + TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_XPOINTER_FILTER
-                + "\", ");
+                + TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_XPOINTER_FILTER + "\", ");
         sb.append("pointerAdapter: \""
-                + TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_POINTER_ADAPTER
-                + "\", ");
+                + TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_POINTER_ADAPTER + "\", ");
         sb.append("annotationDecoratorFunction: \""
                 + TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_UPDATE_ANNOTATED_DOCUMENT
                 + "\"");

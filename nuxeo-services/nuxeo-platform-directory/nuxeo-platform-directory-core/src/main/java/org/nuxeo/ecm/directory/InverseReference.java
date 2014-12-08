@@ -25,8 +25,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Reference that uses the matching reference of the target directory to
- * actually do the job.
+ * Reference that uses the matching reference of the target directory to actually do the job.
  *
  * @author ogrisel
  */
@@ -34,8 +33,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class InverseReference extends AbstractReference {
 
     /**
-     * Indicates if the target directory can be updated from the current
-     * reference
+     * Indicates if the target directory can be updated from the current reference
      *
      * @since 5.7
      */
@@ -71,18 +69,15 @@ public class InverseReference extends AbstractReference {
             dualReference = getTargetDirectory().getReference(dualReferenceName);
         }
         if (dualReference == null) {
-            throw new DirectoryException("could not find reference "
-                    + dualReferenceName);
+            throw new DirectoryException("could not find reference " + dualReferenceName);
         }
         if (dualReference instanceof InverseReference) {
-            throw new DirectoryException(String.format(
-                    "InverseReference %s cannot refer to InverseReference %s",
+            throw new DirectoryException(String.format("InverseReference %s cannot refer to InverseReference %s",
                     getFieldName(), dualReferenceName));
         }
     }
 
-    public void addLinks(String sourceId, List<String> targetIds)
-            throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds) throws DirectoryException {
         if (readOnly) {
             return;
         }
@@ -90,8 +85,7 @@ public class InverseReference extends AbstractReference {
         dualReference.addLinks(targetIds, sourceId);
     }
 
-    public void addLinks(List<String> sourceIds, String targetId)
-            throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId) throws DirectoryException {
         if (readOnly) {
             return;
         }
@@ -115,20 +109,17 @@ public class InverseReference extends AbstractReference {
         dualReference.removeLinksForTarget(sourceId);
     }
 
-    public List<String> getSourceIdsForTarget(String targetId)
-            throws DirectoryException {
+    public List<String> getSourceIdsForTarget(String targetId) throws DirectoryException {
         checkDualReference();
         return dualReference.getTargetIdsForSource(targetId);
     }
 
-    public List<String> getTargetIdsForSource(String sourceId)
-            throws DirectoryException {
+    public List<String> getTargetIdsForSource(String sourceId) throws DirectoryException {
         checkDualReference();
         return dualReference.getSourceIdsForTarget(sourceId);
     }
 
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds)
-            throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
         if (readOnly) {
             return;
         }
@@ -136,8 +127,7 @@ public class InverseReference extends AbstractReference {
         dualReference.setSourceIdsForTarget(sourceId, targetIds);
     }
 
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds)
-            throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException {
         if (readOnly) {
             return;
         }

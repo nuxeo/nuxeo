@@ -1,4 +1,3 @@
-
 /*
  * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -34,7 +33,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(OAuthFeature.class)
 public class TestTokenService {
 
-    @Inject OAuthTokenStore tokenStore;
+    @Inject
+    OAuthTokenStore tokenStore;
 
     @Test
     public void testServiceRW() throws Exception {
@@ -58,9 +58,6 @@ public class TestTokenService {
         tokenStore.removeAccessToken(aToken.getToken());
 
         assertNull(tokenStore.getAccessToken(aToken.getToken()));
-
-
-
 
     }
 

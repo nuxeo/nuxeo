@@ -49,8 +49,7 @@ import org.apache.directory.server.core.partition.PartitionNexus;
 import org.apache.directory.server.core.prefs.ServerSystemPreferenceException;
 
 /**
- * An embedded LDAP test server, complete with test data for running the unit
- * tests against.
+ * An embedded LDAP test server, complete with test data for running the unit tests against.
  *
  * @author Luke Taylor
  * @version $Id: LdapTestServer.java 1496 2006-05-23 13:38:33Z benalex $
@@ -225,13 +224,10 @@ public class MockLdapServer implements ContextProvider {
         Properties env = new Properties();
 
         env.setProperty(Context.PROVIDER_URL, BASE_DN);
-        env.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-                CoreContextFactory.class.getName());
+        env.setProperty(Context.INITIAL_CONTEXT_FACTORY, CoreContextFactory.class.getName());
         env.setProperty(Context.SECURITY_AUTHENTICATION, "simple");
-        env.setProperty(Context.SECURITY_PRINCIPAL,
-                PartitionNexus.ADMIN_PRINCIPAL);
-        env.setProperty(Context.SECURITY_CREDENTIALS,
-                PartitionNexus.ADMIN_PASSWORD);
+        env.setProperty(Context.SECURITY_PRINCIPAL, PartitionNexus.ADMIN_PRINCIPAL);
+        env.setProperty(Context.SECURITY_CREDENTIALS, PartitionNexus.ADMIN_PASSWORD);
 
         try {
             initConfiguration();
@@ -244,15 +240,14 @@ public class MockLdapServer implements ContextProvider {
 
     public void shutdownLdapServer() {
 
-        Hashtable<String, Object> env = new Hashtable<>( new ShutdownConfiguration().toJndiEnvironment() );
-        env.put( Context.INITIAL_CONTEXT_FACTORY, CoreContextFactory.class.getName() );
-        env.put( Context.PROVIDER_URL, BASE_DN );
+        Hashtable<String, Object> env = new Hashtable<>(new ShutdownConfiguration().toJndiEnvironment());
+        env.put(Context.INITIAL_CONTEXT_FACTORY, CoreContextFactory.class.getName());
+        env.put(Context.PROVIDER_URL, BASE_DN);
 
         try {
             new InitialLdapContext(env, null);
         } catch (Exception e) {
-            throw new ServerSystemPreferenceException(
-                    "Failed to shutdown ldap server.", e);
+            throw new ServerSystemPreferenceException("Failed to shutdown ldap server.", e);
         }
     }
 }

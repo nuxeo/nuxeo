@@ -57,7 +57,7 @@ public class TestWPD2TextConverter extends BaseConverterTest {
         assertNotNull(result);
 
         String txt = result.getBlob().getString();
-        //System.out.println(txt);
+        // System.out.println(txt);
         assertTrue(txt.contains("Zoonotic"));
         assertTrue(txt.contains("Committee"));
     }

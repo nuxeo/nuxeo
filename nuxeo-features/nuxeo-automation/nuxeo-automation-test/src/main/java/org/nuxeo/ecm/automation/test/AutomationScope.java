@@ -72,8 +72,7 @@ public class AutomationScope implements Scope {
     private <T> Map<Key<?>, Object> getScopedObjectMap(Key<T> key) {
         Map<Key<?>, Object> scopedObjects = values.get();
         if (scopedObjects == null) {
-            throw new OutOfScopeException("Cannot access " + key
-                    + " outside of a scoping block");
+            throw new OutOfScopeException("Cannot access " + key + " outside of a scoping block");
         }
         return scopedObjects;
     }

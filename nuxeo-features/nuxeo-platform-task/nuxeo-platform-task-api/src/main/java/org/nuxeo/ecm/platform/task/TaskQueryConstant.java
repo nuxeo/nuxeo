@@ -48,17 +48,14 @@ public class TaskQueryConstant {
      */
     @Deprecated
     public static final String GET_TASKS_QUERY = "SELECT * FROM Document WHERE ecm:mixinType = '"
-            + TaskConstants.TASK_FACET_NAME
-            + "'"
-            + " AND ecm:currentLifeCycleState NOT IN ('ended', 'cancelled')"
+            + TaskConstants.TASK_FACET_NAME + "'" + " AND ecm:currentLifeCycleState NOT IN ('ended', 'cancelled')"
             + " AND ecm:isProxy = 0";
 
     /**
      * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
-    public static final String GET_TASKS_FOR_ACTORS_QUERY = GET_TASKS_QUERY
-            + " AND nt:actors IN (%s) ";
+    public static final String GET_TASKS_FOR_ACTORS_QUERY = GET_TASKS_QUERY + " AND nt:actors IN (%s) ";
 
     /**
      * @since 6.0
@@ -120,8 +117,7 @@ public class TaskQueryConstant {
      * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
-    public static final String GET_TASKS_FOR_PROCESS_ID_QUERY = GET_TASKS_QUERY
-            + " AND nt:processId = '%s' ";
+    public static final String GET_TASKS_FOR_PROCESS_ID_QUERY = GET_TASKS_QUERY + " AND nt:processId = '%s' ";
 
     /**
      * @since 6.0

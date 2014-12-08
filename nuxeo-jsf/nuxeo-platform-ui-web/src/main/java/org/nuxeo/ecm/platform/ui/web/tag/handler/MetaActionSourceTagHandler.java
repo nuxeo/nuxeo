@@ -28,8 +28,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.jsf.MetaActionSourceRule;
 import com.sun.faces.facelets.tag.jsf.html.HtmlComponentHandler;
 
 /**
- * Component tag handler that wires an action source attributes to a
- * {@link MetaActionSourceRule} set.
+ * Component tag handler that wires an action source attributes to a {@link MetaActionSourceRule} set.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

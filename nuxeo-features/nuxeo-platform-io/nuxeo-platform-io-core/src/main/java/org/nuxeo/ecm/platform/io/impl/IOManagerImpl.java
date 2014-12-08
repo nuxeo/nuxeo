@@ -85,11 +85,9 @@ public class IOManagerImpl implements IOManager {
     }
 
     @Override
-    public void addAdapter(String name, IOResourceAdapter adapter)
-            throws ClientException {
+    public void addAdapter(String name, IOResourceAdapter adapter) throws ClientException {
         if (DOCUMENTS_ADAPTER_NAME.equals(name)) {
-            log.error("Cannot register adapter with name "
-                    + DOCUMENTS_ADAPTER_NAME);
+            log.error("Cannot register adapter with name " + DOCUMENTS_ADAPTER_NAME);
             return;
         }
         adaptersRegistry.put(name, adapter);
@@ -100,19 +98,16 @@ public class IOManagerImpl implements IOManager {
         adaptersRegistry.remove(name);
     }
 
-    public void exportDocumentsAndResources(OutputStream out, String repo,
-            final String format, Collection<String> ioAdapters,
-            final DocumentReader customDocReader)
-            throws ExportDocumentException, IOException, ClientException {
+    public void exportDocumentsAndResources(OutputStream out, String repo, final String format,
+            Collection<String> ioAdapters, final DocumentReader customDocReader) throws ExportDocumentException,
+            IOException, ClientException {
 
         DocumentsExporter docsExporter = new DocumentsExporter() {
             @Override
-            public DocumentTranslationMap exportDocs(OutputStream out)
-                    throws ExportDocumentException, ClientException,
+            public DocumentTranslationMap exportDocs(OutputStream out) throws ExportDocumentException, ClientException,
                     IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
-                DocumentTranslationMap map = docManager.exportDocuments(out,
-                        customDocReader, format);
+                DocumentTranslationMap map = docManager.exportDocuments(out, customDocReader, format);
                 return map;
             }
         };
@@ -121,20 +116,16 @@ public class IOManagerImpl implements IOManager {
     }
 
     @Override
-    public void exportDocumentsAndResources(OutputStream out,
-            final String repo, final Collection<DocumentRef> sources,
-            final boolean recurse, final String format,
-            final Collection<String> ioAdapters) throws IOException,
+    public void exportDocumentsAndResources(OutputStream out, final String repo, final Collection<DocumentRef> sources,
+            final boolean recurse, final String format, final Collection<String> ioAdapters) throws IOException,
             ClientException, ExportDocumentException {
 
         DocumentsExporter docsExporter = new DocumentsExporter() {
             @Override
-            public DocumentTranslationMap exportDocs(OutputStream out)
-                    throws ExportDocumentException, ClientException,
+            public DocumentTranslationMap exportDocs(OutputStream out) throws ExportDocumentException, ClientException,
                     IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
-                DocumentTranslationMap map = docManager.exportDocuments(out,
-                        repo, sources, recurse, format);
+                DocumentTranslationMap map = docManager.exportDocuments(out, repo, sources, recurse, format);
                 return map;
             }
         };
@@ -142,9 +133,8 @@ public class IOManagerImpl implements IOManager {
         exportDocumentsAndResources(out, repo, docsExporter, ioAdapters);
     }
 
-    void exportDocumentsAndResources(OutputStream out, String repo,
-            DocumentsExporter docsExporter, Collection<String> ioAdapters)
-            throws IOException, ClientException, ExportDocumentException {
+    void exportDocumentsAndResources(OutputStream out, String repo, DocumentsExporter docsExporter,
+            Collection<String> ioAdapters) throws IOException, ClientException, ExportDocumentException {
 
         List<String> doneAdapters = new ArrayList<String>();
 
@@ -173,12 +163,10 @@ public class IOManagerImpl implements IOManager {
                     continue;
                 }
                 if (doneAdapters.contains(adapterName)) {
-                    log.warn("Export for adapter " + adapterName
-                            + " already done");
+                    log.warn("Export for adapter " + adapterName + " already done");
                     continue;
                 }
-                IOResources resources = adapter.extractResources(repo,
-                        allSources);
+                IOResources resources = adapter.extractResources(repo, allSources);
                 resources = adapter.translateResources(repo, resources, map);
                 ByteArrayOutputStream adapterOut = new ByteArrayOutputStream();
                 adapter.getResourcesAsXML(adapterOut, resources);
@@ -198,16 +186,14 @@ public class IOManagerImpl implements IOManager {
     }
 
     @Override
-    public void importDocumentsAndResources(InputStream in, final String repo,
-            final DocumentRef root) throws IOException, ClientException,
-            ImportDocumentException {
+    public void importDocumentsAndResources(InputStream in, final String repo, final DocumentRef root)
+            throws IOException, ClientException, ImportDocumentException {
 
         DocumentsImporter docsImporter = new DocumentsImporter() {
 
             @Override
-            public DocumentTranslationMap importDocs(InputStream sourceStream)
-                    throws ImportDocumentException, ClientException,
-                    IOException {
+            public DocumentTranslationMap importDocs(InputStream sourceStream) throws ImportDocumentException,
+                    ClientException, IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
                 return docManager.importDocuments(sourceStream, repo, root);
             }
@@ -217,16 +203,14 @@ public class IOManagerImpl implements IOManager {
         importDocumentsAndResources(docsImporter, in, repo);
     }
 
-    public void importDocumentsAndResources(InputStream in, final String repo,
-            final DocumentRef root, final DocumentWriter customDocWriter)
-            throws IOException, ClientException, ImportDocumentException {
+    public void importDocumentsAndResources(InputStream in, final String repo, final DocumentRef root,
+            final DocumentWriter customDocWriter) throws IOException, ClientException, ImportDocumentException {
 
         DocumentsImporter docsImporter = new DocumentsImporter() {
 
             @Override
-            public DocumentTranslationMap importDocs(InputStream sourceStream)
-                    throws ImportDocumentException, ClientException,
-                    IOException {
+            public DocumentTranslationMap importDocs(InputStream sourceStream) throws ImportDocumentException,
+                    ClientException, IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
                 return docManager.importDocuments(sourceStream, customDocWriter);
             }
@@ -236,9 +220,8 @@ public class IOManagerImpl implements IOManager {
         importDocumentsAndResources(docsImporter, in, repo);
     }
 
-    void importDocumentsAndResources(DocumentsImporter docsImporter,
-            InputStream in, String repo) throws IOException, ClientException,
-            ImportDocumentException {
+    void importDocumentsAndResources(DocumentsImporter docsImporter, InputStream in, String repo) throws IOException,
+            ClientException, ImportDocumentException {
 
         ZipInputStream zip = new ZipInputStream(in);
 
@@ -268,18 +251,14 @@ public class IOManagerImpl implements IOManager {
         while ((zentry = zip.getNextEntry()) != null) {
             String entryName = zentry.getName();
             if (entryName.endsWith(".xml")) {
-                String ioAdapterName = entryName.substring(0,
-                        entryName.length() - 4);
+                String ioAdapterName = entryName.substring(0, entryName.length() - 4);
                 IOResourceAdapter adapter = getAdapter(ioAdapterName);
                 if (adapter == null) {
-                    log.warn("Adapter "
-                            + ioAdapterName
-                            + " not available. Unable to import associated resources.");
+                    log.warn("Adapter " + ioAdapterName + " not available. Unable to import associated resources.");
                     continue;
                 }
                 IOResources resources = adapter.loadResourcesFromXML(zip);
-                IOResources newResources = adapter.translateResources(repo,
-                        resources, map);
+                IOResources newResources = adapter.translateResources(repo, resources, map);
                 log.info("store resources with adapter " + ioAdapterName);
                 adapter.storeResources(newResources);
             } else {
@@ -296,9 +275,8 @@ public class IOManagerImpl implements IOManager {
     }
 
     @Override
-    public Collection<DocumentRef> copyDocumentsAndResources(String repo,
-            Collection<DocumentRef> sources, DocumentLocation targetLocation,
-            Collection<String> ioAdapters) throws ClientException {
+    public Collection<DocumentRef> copyDocumentsAndResources(String repo, Collection<DocumentRef> sources,
+            DocumentLocation targetLocation, Collection<String> ioAdapters) throws ClientException {
         if (sources == null || sources.isEmpty()) {
             return null;
         }
@@ -312,17 +290,13 @@ public class IOManagerImpl implements IOManager {
         List<DocumentRef> roots = new ArrayList<DocumentRef>();
         try (CoreSession session = CoreInstance.openCoreSession(repo)) {
             for (DocumentRef source : sources) {
-                DocumentTranslationMap map = new DocumentTranslationMapImpl(
-                        repo, repo);
+                DocumentTranslationMap map = new DocumentTranslationMapImpl(repo, repo);
                 DocumentModel sourceDoc = session.getDocument(source);
-                DocumentModel destDoc = session.copy(source,
-                        targetLocation.getDocRef(), null);
+                DocumentModel destDoc = session.copy(source, targetLocation.getDocRef(), null);
                 roots.add(destDoc.getRef());
                 // iterate on each tree to build translation map
-                DocumentTreeIterator sourceIt = new DocumentTreeIterator(
-                        session, sourceDoc);
-                DocumentTreeIterator destIt = new DocumentTreeIterator(session,
-                        destDoc);
+                DocumentTreeIterator sourceIt = new DocumentTreeIterator(session, sourceDoc);
+                DocumentTreeIterator destIt = new DocumentTreeIterator(session, destDoc);
                 while (sourceIt.hasNext()) {
                     DocumentModel sourceItem = sourceIt.next();
                     DocumentRef sourceRef = sourceItem.getRef();
@@ -342,10 +316,8 @@ public class IOManagerImpl implements IOManager {
                             log.warn("Adapter " + adapterName + " not found");
                             continue;
                         }
-                        IOResources resources = adapter.extractResources(repo,
-                                allSources);
-                        IOResources newResources = adapter.translateResources(
-                                repo, resources, map);
+                        IOResources resources = adapter.extractResources(repo, allSources);
+                        IOResources newResources = adapter.translateResources(repo, resources, map);
                         adapter.storeResources(newResources);
                     }
                 }
@@ -355,8 +327,8 @@ public class IOManagerImpl implements IOManager {
         return roots;
     }
 
-    private static DocumentWriter createDocWriter(String docWriterFactoryName,
-            Map<String, Object> factoryParams) throws ClientException {
+    private static DocumentWriter createDocWriter(String docWriterFactoryName, Map<String, Object> factoryParams)
+            throws ClientException {
         // create a custom writer using factory instance
 
         Object factoryObj;
@@ -364,8 +336,7 @@ public class IOManagerImpl implements IOManager {
             Class<?> clazz = Class.forName(docWriterFactoryName);
             factoryObj = clazz.newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new ClientException("cannot instantiate factory "
-                    + docWriterFactoryName, e);
+            throw new ClientException("cannot instantiate factory " + docWriterFactoryName, e);
         }
 
         DocumentWriter customDocWriter;
@@ -376,15 +347,14 @@ public class IOManagerImpl implements IOManager {
         }
 
         if (customDocWriter == null) {
-            throw new ClientException("null DocumentWriter created by "
-                    + docWriterFactoryName);
+            throw new ClientException("null DocumentWriter created by " + docWriterFactoryName);
         }
 
         return customDocWriter;
     }
 
-    private static DocumentReader createDocReader(String docReaderFactoryName,
-            Map<String, Object> factoryParams) throws ClientException {
+    private static DocumentReader createDocReader(String docReaderFactoryName, Map<String, Object> factoryParams)
+            throws ClientException {
         // create a custom reader using factory instance
 
         Object factoryObj;
@@ -392,8 +362,7 @@ public class IOManagerImpl implements IOManager {
             Class<?> clazz = Class.forName(docReaderFactoryName);
             factoryObj = clazz.newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new ClientException("cannot instantiate factory "
-                    + docReaderFactoryName, e);
+            throw new ClientException("cannot instantiate factory " + docReaderFactoryName, e);
         }
 
         DocumentReader customDocReader;
@@ -404,22 +373,18 @@ public class IOManagerImpl implements IOManager {
         }
 
         if (customDocReader == null) {
-            throw new ClientException("null DocumentReader created by "
-                    + docReaderFactoryName);
+            throw new ClientException("null DocumentReader created by " + docReaderFactoryName);
         }
 
         return customDocReader;
     }
 
     @Override
-    public void importFromStream(InputStream in,
-            DocumentLocation targetLocation, String docReaderFactoryClassName,
-            Map<String, Object> rFactoryParams,
-            String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
+    public void importFromStream(InputStream in, DocumentLocation targetLocation, String docReaderFactoryClassName,
+            Map<String, Object> rFactoryParams, String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
             throws ClientException {
 
-        DocumentWriter customDocWriter = createDocWriter(
-                docWriterFactoryClassName, wFactoryParams);
+        DocumentWriter customDocWriter = createDocWriter(docWriterFactoryClassName, wFactoryParams);
         DocumentReader customDocReader = null;
 
         try {
@@ -427,12 +392,10 @@ public class IOManagerImpl implements IOManager {
                 rFactoryParams = new HashMap<String, Object>();
             }
             rFactoryParams.put("source_stream", in);
-            customDocReader = createDocReader(docReaderFactoryClassName,
-                    rFactoryParams);
+            customDocReader = createDocReader(docReaderFactoryClassName, rFactoryParams);
 
             IODocumentManager docManager = new IODocumentManagerImpl();
-            DocumentTranslationMap map = docManager.importDocuments(
-                    customDocReader, customDocWriter);
+            DocumentTranslationMap map = docManager.importDocuments(customDocReader, customDocWriter);
         } finally {
             if (customDocReader != null) {
                 customDocReader.close();

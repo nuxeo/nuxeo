@@ -68,13 +68,11 @@ public class MethodResultTagHandler extends MetaTagHandler {
         return DEFAULT_PARAM_TYPES_CLASSES;
     }
 
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
         String nameStr = name.getValue(ctx);
         // resolve given value as a method binding, paramtypes ignored for now
         Class[] paramTypesClasses = resolveParamTypes(ctx);
-        MethodExpression meth = value.getMethodExpression(ctx, Object.class,
-                paramTypesClasses);
+        MethodExpression meth = value.getMethodExpression(ctx, Object.class, paramTypesClasses);
         Boolean invokeNow = false;
         if (immediate != null) {
             invokeNow = immediate.getBoolean(ctx);
@@ -82,11 +80,9 @@ public class MethodResultTagHandler extends MetaTagHandler {
         ValueExpression ve;
         if (invokeNow) {
             Object res = meth.invoke(ctx, paramTypesClasses);
-            ve = ctx.getExpressionFactory().createValueExpression(res,
-                    Object.class);
+            ve = ctx.getExpressionFactory().createValueExpression(res, Object.class);
         } else {
-            ve = new MethodValueExpression(ctx.getFunctionMapper(),
-                    ctx.getVariableMapper(), meth, paramTypesClasses);
+            ve = new MethodValueExpression(ctx.getFunctionMapper(), ctx.getVariableMapper(), meth, paramTypesClasses);
         }
         VariableMapper orig = ctx.getVariableMapper();
         VariableMapper vm = new VariableMapperWrapper(orig);

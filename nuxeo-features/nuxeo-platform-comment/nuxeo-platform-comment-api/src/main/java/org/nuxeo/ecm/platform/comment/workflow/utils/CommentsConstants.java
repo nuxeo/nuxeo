@@ -58,8 +58,11 @@ public final class CommentsConstants {
      * Schemas and fields.
      */
     public static final String COMMENT_DOC_TYPE = "Comment";
+
     public static final String COMMENT_CREATION_DATE = "comment:creationDate";
+
     public static final String COMMENT_AUTHOR = "comment:author";
+
     public static final String COMMENT_TEXT = "comment:text";
 
     private CommentsConstants() {

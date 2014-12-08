@@ -52,8 +52,7 @@ public class SeamOperationFilter {
      * @param context
      * @param conversationId
      */
-    public static void handleBeforeRun(OperationContext context,
-            String conversationId) {
+    public static void handleBeforeRun(OperationContext context, String conversationId) {
 
         CoreSession session = context.getCoreSession();
 
@@ -77,8 +76,7 @@ public class SeamOperationFilter {
      * @param context
      * @param conversationId
      */
-    public static void handleAfterRun(OperationContext context,
-            String conversationId) {
+    public static void handleAfterRun(OperationContext context, String conversationId) {
 
         // Cannot destroy Seam context if it is not initialized
         if (!OperationHelper.isSeamContextAvailable()) {
@@ -105,13 +103,12 @@ public class SeamOperationFilter {
         ServletLifecycle.endRequest(request);
     }
 
-    protected static void initializeSeamContext(OperationContext context,
-            String conversationId, CoreSession session) throws ClientException {
+    protected static void initializeSeamContext(OperationContext context, String conversationId, CoreSession session)
+            throws ClientException {
 
         HttpServletRequest request = getRequest(context);
         if (request == null) {
-            throw new ClientException(
-                    "Can not init Seam context: no HttpServletRequest was found");
+            throw new ClientException("Can not init Seam context: no HttpServletRequest was found");
         }
         ServletLifecycle.beginRequest(request);
         ServletContexts.instance().setRequest(request);
@@ -130,8 +127,7 @@ public class SeamOperationFilter {
     }
 
     /**
-     * Gets the request from the Automation context, fallback on the
-     * FacesContext.
+     * Gets the request from the Automation context, fallback on the FacesContext.
      */
     protected static HttpServletRequest getRequest(OperationContext context) {
         HttpServletRequest request = (HttpServletRequest) context.get("request");
@@ -144,8 +140,7 @@ public class SeamOperationFilter {
         return request;
     }
 
-    protected static void setSeamActionContext(OperationContext context,
-            CoreSession session) {
+    protected static void setSeamActionContext(OperationContext context, CoreSession session) {
         ActionContext seamActionContext = new SeamActionContext();
         NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext().get(
                 "navigationContext");
@@ -153,8 +148,7 @@ public class SeamOperationFilter {
             seamActionContext.setCurrentDocument(navigationContext.getCurrentDocument());
         }
         seamActionContext.setDocumentManager(session);
-        seamActionContext.putLocalVariable("SeamContext",
-                new SeamContextHelper());
+        seamActionContext.putLocalVariable("SeamContext", new SeamContextHelper());
         seamActionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
 
         context.put("seamActionContext", seamActionContext);

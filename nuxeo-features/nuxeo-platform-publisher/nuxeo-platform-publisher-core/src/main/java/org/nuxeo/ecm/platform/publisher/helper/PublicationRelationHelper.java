@@ -46,8 +46,7 @@ public class PublicationRelationHelper {
 
     public static final String PUBLICATION_TREE_NAMESPACE = "http://www.nuxeo.org/publication/tree/";
 
-    public static final Resource PUBLISHED_BY = new ResourceImpl(
-            "http://www.nuxeo.org/publication/publishedBy");
+    public static final Resource PUBLISHED_BY = new ResourceImpl("http://www.nuxeo.org/publication/publishedBy");
 
     private static Log log = LogFactory.getLog(PublicationRelationHelper.class);
 
@@ -55,21 +54,17 @@ public class PublicationRelationHelper {
         // Helper class
     }
 
-    public static void addPublicationRelation(DocumentModel documentModel,
-            PublicationTree publicationTree) throws ClientException {
+    public static void addPublicationRelation(DocumentModel documentModel, PublicationTree publicationTree)
+            throws ClientException {
         RelationManager rm = RelationHelper.getRelationManager();
         QNameResource docResource = RelationHelper.getDocumentResource(documentModel);
-        QNameResource treeResource = new QNameResourceImpl(
-                PUBLICATION_TREE_NAMESPACE, publicationTree.getConfigName());
-        Statement stmt = new StatementImpl(docResource, PUBLISHED_BY,
-                treeResource);
+        QNameResource treeResource = new QNameResourceImpl(PUBLICATION_TREE_NAMESPACE, publicationTree.getConfigName());
+        Statement stmt = new StatementImpl(docResource, PUBLISHED_BY, treeResource);
         rm.getGraphByName(PUBLICATION_GRAPH_NAME).add(stmt);
     }
 
-    public static void removePublicationRelation(DocumentModel documentModel)
-            throws ClientException {
-        List<Statement> stmts = RelationHelper.getStatements(
-                PUBLICATION_GRAPH_NAME, documentModel, PUBLISHED_BY);
+    public static void removePublicationRelation(DocumentModel documentModel) throws ClientException {
+        List<Statement> stmts = RelationHelper.getStatements(PUBLICATION_GRAPH_NAME, documentModel, PUBLISHED_BY);
         RelationManager rm = RelationHelper.getRelationManager();
         if (stmts != null) {
             rm.getGraphByName(PUBLICATION_GRAPH_NAME).remove(stmts);
@@ -77,23 +72,18 @@ public class PublicationRelationHelper {
     }
 
     public static boolean isPublished(DocumentModel documentModel) {
-        List<Statement> stmts = RelationHelper.getStatements(
-                PUBLICATION_GRAPH_NAME, documentModel, PUBLISHED_BY);
+        List<Statement> stmts = RelationHelper.getStatements(PUBLICATION_GRAPH_NAME, documentModel, PUBLISHED_BY);
         return stmts != null && !stmts.isEmpty();
     }
 
-    public static PublicationTree getPublicationTreeUsedForPublishing(
-            DocumentModel documentModel, CoreSession coreSession)
-            throws ClientException {
+    public static PublicationTree getPublicationTreeUsedForPublishing(DocumentModel documentModel,
+            CoreSession coreSession) throws ClientException {
         if (!isPublished(documentModel)) {
-            throw new ClientException("The document "
-                    + documentModel.getPathAsString()
+            throw new ClientException("The document " + documentModel.getPathAsString()
                     + " is not a published document");
         }
-        List<Statement> stmts = RelationHelper.getStatements(
-                PUBLICATION_GRAPH_NAME, documentModel, PUBLISHED_BY);
+        List<Statement> stmts = RelationHelper.getStatements(PUBLICATION_GRAPH_NAME, documentModel, PUBLISHED_BY);
         Statement statement = stmts.get(0);
-
 
         PublicationTree tree = null;
         Node node = statement.getObject();
@@ -102,11 +92,9 @@ public class PublicationRelationHelper {
             String localName = resource.getLocalName();
             try {
                 PublisherService publisherService = Framework.getService(PublisherService.class);
-                tree = publisherService.getPublicationTree(localName,
-                        coreSession, null);
+                tree = publisherService.getPublicationTree(localName, coreSession, null);
             } catch (ClientException e) {
-                log.error("Unable to get PublicationTree for name: "
-                        + localName, e);
+                log.error("Unable to get PublicationTree for name: " + localName, e);
             }
         } else {
             log.error("Resource is not a QNameResource, check the namespace");

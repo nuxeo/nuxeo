@@ -51,11 +51,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestJMSEventBundle extends NXRuntimeTestCase {
 
-    protected static class CoreSessionInvocationHandler implements
-            InvocationHandler {
+    protected static class CoreSessionInvocationHandler implements InvocationHandler {
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             final String name = method.getName();
             if (name.equals("getRepositoryName")) {
                 return "default";
@@ -67,8 +65,7 @@ public class TestJMSEventBundle extends NXRuntimeTestCase {
     }
 
     protected final CoreSession fakeCoreSession = (CoreSession) Proxy.newProxyInstance(
-            CoreSession.class.getClassLoader(),
-            new Class<?>[] { CoreSession.class },
+            CoreSession.class.getClassLoader(), new Class<?>[] { CoreSession.class },
             new CoreSessionInvocationHandler());
 
     @Override
@@ -87,14 +84,12 @@ public class TestJMSEventBundle extends NXRuntimeTestCase {
 
         DocumentRef parentRef = new IdRef("01");
         DocumentRef docRef = new IdRef("02");
-        String[] schemas = {"file","dublincore"};
-        DocumentModel srcDoc = new DocumentModelImpl("sid0", "File", "02",
-                new Path("/"), null, docRef, parentRef, schemas, null, null,
-                null);
+        String[] schemas = { "file", "dublincore" };
+        DocumentModel srcDoc = new DocumentModelImpl("sid0", "File", "02", new Path("/"), null, docRef, parentRef,
+                schemas, null, null, null);
         DocumentRef destinationRef = new IdRef("03");
 
-        EventContext ctx3 = new DocumentEventContext(
-                null, new SimplePrincipal("tata"), srcDoc, destinationRef);
+        EventContext ctx3 = new DocumentEventContext(null, new SimplePrincipal("tata"), srcDoc, destinationRef);
 
         bundle.push(ctx1.newEvent("EVT1"));
         bundle.push(ctx2.newEvent("EVT2"));

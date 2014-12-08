@@ -26,7 +26,6 @@ import org.nuxeo.common.utils.ExceptionUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Guard {
 

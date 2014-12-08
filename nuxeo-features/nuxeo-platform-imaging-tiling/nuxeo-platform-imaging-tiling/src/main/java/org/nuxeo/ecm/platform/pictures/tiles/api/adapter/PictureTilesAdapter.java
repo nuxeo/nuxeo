@@ -24,15 +24,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 
 /**
- * Interface for the DocumentModelAdapter that gives access to the PictureTiles
- * of the underlying image.
+ * Interface for the DocumentModelAdapter that gives access to the PictureTiles of the underlying image.
  *
  * @author tiry
  */
 public interface PictureTilesAdapter {
 
-    PictureTiles getTiles(int tileWidth, int tileHeight, int maxTiles)
-            throws ClientException;
+    PictureTiles getTiles(int tileWidth, int tileHeight, int maxTiles) throws ClientException;
 
     void setXPath(String path);
 

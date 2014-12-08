@@ -39,23 +39,17 @@ import org.osgi.framework.Constants;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BundleWalker extends FileWalker.Visitor {
 
     private static final Log log = LogFactory.getLog(BundleWalker.class);
 
-    public static final FileNamePattern[] DEFAULT_PATTERNS = {
-        new FileNamePattern("*.jar"),
-        new FileNamePattern("*.war"),
-        new FileNamePattern("*.rar"),
-        new FileNamePattern("*.sar"), // jboss sar
-        new FileNamePattern("*_jar"),
-        new FileNamePattern("*_war"),
-        new FileNamePattern("*_rar")
-    };
+    public static final FileNamePattern[] DEFAULT_PATTERNS = { new FileNamePattern("*.jar"),
+            new FileNamePattern("*.war"), new FileNamePattern("*.rar"), new FileNamePattern("*.sar"), // jboss sar
+            new FileNamePattern("*_jar"), new FileNamePattern("*_war"), new FileNamePattern("*_rar") };
 
     private FileNamePattern[] patterns;
+
     private final Callback callback;
 
     public BundleWalker(Callback cb) {
@@ -93,7 +87,7 @@ public class BundleWalker extends FileWalker.Visitor {
         }
     }
 
-    public void visit(File ... files) {
+    public void visit(File... files) {
         for (File file : files) {
             if (file.isFile()) {
                 if (file.isFile()) {
@@ -107,7 +101,7 @@ public class BundleWalker extends FileWalker.Visitor {
 
     @Override
     public int visitDirectory(File file) {
-        //System.out.println("###### Processing DIR: " + file);
+        // System.out.println("###### Processing DIR: " + file);
         // first check if this is a possible bundle
         String fileName = file.getName();
         if (patterns != null) {
@@ -121,8 +115,7 @@ public class BundleWalker extends FileWalker.Visitor {
             if (mf == null) {
                 return FileWalker.CONTINUE;
             }
-            String bundleName = mf.getMainAttributes().getValue(
-                    Constants.BUNDLE_SYMBOLICNAME);
+            String bundleName = mf.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
             if (bundleName != null) {
                 // notify the callback about the new bundle
                 callback.visitBundle(new DirectoryBundleFile(file, mf));
@@ -137,12 +130,12 @@ public class BundleWalker extends FileWalker.Visitor {
 
     @Override
     public int visitFile(File file) {
-        //System.out.println("###### Processing file: "+file);
+        // System.out.println("###### Processing file: "+file);
         // first check if this is a possible bundle
         String fileName = file.getName();
         if (patterns != null) {
             if (!acceptFile(fileName, patterns)) {
-                //System.out.println("###### Ignoring file based on name: "+file);
+                // System.out.println("###### Ignoring file based on name: "+file);
                 return FileWalker.CONTINUE;
             }
         }
@@ -150,12 +143,12 @@ public class BundleWalker extends FileWalker.Visitor {
         try {
             JarFile jarFile = new JarFile(file);
             if (jarFile.getManifest() == null) {
-                //System.out.println("###### No manifest found: "+file);
+                // System.out.println("###### No manifest found: "+file);
                 return FileWalker.CONTINUE;
             }
             BundleFile bundleFile = new JarBundleFile(jarFile);
             if (bundleFile.getSymbolicName() != null) {
-                //System.out.println("###### Bundle symbolic name: "+bundleFile.getSymbolicName());
+                // System.out.println("###### Bundle symbolic name: "+bundleFile.getSymbolicName());
 
                 // notify the callback about the new bundle
                 callback.visitBundle(bundleFile);
@@ -181,6 +174,7 @@ public class BundleWalker extends FileWalker.Visitor {
 
     public interface Callback {
         void visitBundle(BundleFile bundleFile) throws IOException;
+
         void visitJar(BundleFile bundleFile) throws IOException;
     }
 

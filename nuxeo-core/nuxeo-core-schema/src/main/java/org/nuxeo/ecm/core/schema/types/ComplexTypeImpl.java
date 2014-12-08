@@ -36,15 +36,14 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
 
     protected final Namespace ns;
 
-    public ComplexTypeImpl(ComplexType superType, String schema, String name,
-            Namespace ns) {
+    public ComplexTypeImpl(ComplexType superType, String schema, String name, Namespace ns) {
         super(superType, schema, name);
-// for composite types, they already include schemas from supertypes
-//        if (superType != null) {
-//            for (Field field : superType.getFields()) {
-//                addField(field);
-//            }
-//        }
+        // for composite types, they already include schemas from supertypes
+        // if (superType != null) {
+        // for (Field field : superType.getFields()) {
+        // addField(field);
+        // }
+        // }
         this.ns = ns;
     }
 
@@ -164,16 +163,14 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
                 String key = entry.getKey().toString();
                 Field field = getField(key);
                 if (field == null) {
-                    throw new IllegalArgumentException("Field " + key
-                            + " is not defined for the complex type "
+                    throw new IllegalArgumentException("Field " + key + " is not defined for the complex type "
                             + getName());
                 }
                 entry.setValue(field.getType().convert(entry.getValue()));
             }
             return object;
         }
-        throw new TypeException("Incompatible object: " + object.getClass()
-                + " for type " + this);
+        throw new TypeException("Incompatible object: " + object.getClass() + " for type " + this);
     }
 
     /**

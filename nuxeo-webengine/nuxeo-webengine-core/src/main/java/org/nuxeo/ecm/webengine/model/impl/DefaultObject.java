@@ -24,10 +24,8 @@ import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.webengine.model.AdapterResource;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultObject extends AbstractResource<ResourceTypeImpl> {
 
@@ -39,7 +37,7 @@ public class DefaultObject extends AbstractResource<ResourceTypeImpl> {
         return false;
     }
 
-    @Path(value="@{segment}")
+    @Path(value = "@{segment}")
     public AdapterResource disptachAdapter(@PathParam("segment") String adapterName) {
         return ctx.newAdapter(this, adapterName);
     }

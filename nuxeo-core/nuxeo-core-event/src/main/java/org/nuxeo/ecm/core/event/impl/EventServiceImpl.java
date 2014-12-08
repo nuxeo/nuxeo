@@ -49,8 +49,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Implementation of the event service.
  */
-public class EventServiceImpl implements EventService, EventServiceAdmin,
-        Synchronization {
+public class EventServiceImpl implements EventService, EventServiceAdmin, Synchronization {
 
     public static final VMID VMID = new VMID();
 
@@ -99,7 +98,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
         asyncExec = new AsyncEventExecutor();
     }
 
-
     public void init() {
         asyncExec.init();
     }
@@ -113,12 +111,10 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
             }
         }
         if (!notTerminated.isEmpty()) {
-            throw new RuntimeException("Asynch services are still running : "
-                    + notTerminated);
+            throw new RuntimeException("Asynch services are still running : " + notTerminated);
         }
         if (asyncExec.shutdown(timeoutMillis) == false) {
-            throw new RuntimeException(
-                    "Async executor is still running, timeout expired");
+            throw new RuntimeException("Async executor is still running, timeout expired");
         }
     }
 
@@ -152,13 +148,11 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
             }
         }
         if (!notCompleted.isEmpty()) {
-            throw new RuntimeException("Async tasks are still running : "
-                    + notCompleted);
+            throw new RuntimeException("Async tasks are still running : " + notCompleted);
         }
         try {
             if (!asyncExec.waitForCompletion(timeout)) {
-                throw new RuntimeException(
-                        "Async event listeners thread pool is not terminated");
+                throw new RuntimeException("Async event listeners thread pool is not terminated");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -180,8 +174,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
     }
 
     @Override
-    public void fireEvent(String name, EventContext context)
-            throws ClientException {
+    public void fireEvent(String name, EventContext context) throws ClientException {
         fireEvent(new EventImpl(name, context));
     }
 
@@ -207,8 +200,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
             } catch (Exception e) { // deals with interrupt below
                 ExceptionUtils.checkInterrupt(e);
                 // get message
-                String message = "Exception during " + desc.getName()
-                        + " sync listener execution, ";
+                String message = "Exception during " + desc.getName() + " sync listener execution, ";
                 if (event.isBubbleException()) {
                     message += "other listeners will be ignored";
                 } else if (event.isMarkedForRollBack()) {
@@ -414,8 +406,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
     }
 
     @Override
-    public void setBlockSyncPostCommitHandlers(
-            boolean blockSyncPostComitHandlers) {
+    public void setBlockSyncPostCommitHandlers(boolean blockSyncPostComitHandlers) {
         blockSyncPostCommitProcessing = blockSyncPostComitHandlers;
     }
 
@@ -436,11 +427,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
             if (!b.registeredSynchronization) {
                 // register as synchronization
                 try {
-                    TransactionHelper.lookupTransactionManager().getTransaction().registerSynchronization(
-                            this);
+                    TransactionHelper.lookupTransactionManager().getTransaction().registerSynchronization(this);
                 } catch (NamingException | SystemException | RollbackException e) {
-                    throw new RuntimeException(
-                            "Cannot register Synchronization", e);
+                    throw new RuntimeException("Cannot register Synchronization", e);
                 }
                 b.registeredSynchronization = true;
             }
@@ -481,6 +470,5 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
             }
         }
     }
-
 
 }

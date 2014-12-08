@@ -26,17 +26,15 @@ import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 
 /**
- * Handle servlet registration from Nuxeo extension points. This class is a
- * singleton shared by the {@link Activator} and the
- * {@link ServletRegistryComponent} component. Because we don't have yet a
- * solution to synchronize the initialization time of the Activator and a Nuxeo
- * component we are using a singleton instance to be able
+ * Handle servlet registration from Nuxeo extension points. This class is a singleton shared by the {@link Activator}
+ * and the {@link ServletRegistryComponent} component. Because we don't have yet a solution to synchronize the
+ * initialization time of the Activator and a Nuxeo component we are using a singleton instance to be able
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ServletRegistry {
 
-    public static final String SERVLET_NAME = ServletRegistry.class.getName()+".name";
+    public static final String SERVLET_NAME = ServletRegistry.class.getName() + ".name";
 
     private static volatile ServletRegistry instance;
 
@@ -56,33 +54,29 @@ public class ServletRegistry {
     }
 
     /**
-     * Servlets contributed to the extension points.
-     * Servlets are contributed to the {@link HttpService} when it becomes available.
+     * Servlets contributed to the extension points. Servlets are contributed to the {@link HttpService} when it becomes
+     * available.
      */
     protected List<ServletDescriptor> servlets;
 
     protected List<FilterSetDescriptor> filters;
 
     /**
-     * Store resources contributed from external bundles to servlets.
-     * Map the servlet path to the list of contributed resources
+     * Store resources contributed from external bundles to servlets. Map the servlet path to the list of contributed
+     * resources
      */
     protected Map<String, List<ResourcesDescriptor>> resources;
 
     /**
-     * The registered HttpContext mapped to the servlet path.
-     * An HttpContext is created and inserted in this map when its servlet
-     * is registered against the HttpService.
-     * The context is removed when the servlet is unregsitered.
+     * The registered HttpContext mapped to the servlet path. An HttpContext is created and inserted in this map when
+     * its servlet is registered against the HttpService. The context is removed when the servlet is unregsitered.
      * <p>
-     * Resource contributions are injected into the context and reinjected each time the
-     * context is restarted.
+     * Resource contributions are injected into the context and reinjected each time the context is restarted.
      */
     protected Map<String, BundleHttpContext> contexts;
 
     /**
-     * The HttpService instance is injected when the service becomes
-     * available by the Activator.
+     * The HttpService instance is injected when the service becomes available by the Activator.
      */
     protected HttpService service;
 
@@ -90,7 +84,6 @@ public class ServletRegistry {
      * The bundle owning this class
      */
     protected Bundle bundle;
-
 
     private ServletRegistry() {
         this.servlets = new ArrayList<ServletDescriptor>();
@@ -116,7 +109,6 @@ public class ServletRegistry {
         return null;
     }
 
-
     public List<FilterSetDescriptor> getFiltersFor(String name) {
         ArrayList<FilterSetDescriptor> list = new ArrayList<FilterSetDescriptor>();
         for (FilterSetDescriptor filter : getFilterSetDescriptors()) {
@@ -128,12 +120,11 @@ public class ServletRegistry {
     }
 
     /**
-     * Called by the service tracker when HttpService is up to configure it
-     * with current contributed servlets
+     * Called by the service tracker when HttpService is up to configure it with current contributed servlets
+     *
      * @param service
      */
-    public synchronized void initHttpService(HttpService service)
-            throws ServletException, NamespaceException {
+    public synchronized void initHttpService(HttpService service) throws ServletException, NamespaceException {
         if (this.service == null) {
             this.service = service;
             installServlets();
@@ -144,8 +135,7 @@ public class ServletRegistry {
         return service;
     }
 
-    public synchronized void addServlet(ServletDescriptor descriptor)
-            throws ServletException, NamespaceException {
+    public synchronized void addServlet(ServletDescriptor descriptor) throws ServletException, NamespaceException {
         servlets.add(descriptor);
         installServlet(descriptor);
     }
@@ -164,8 +154,7 @@ public class ServletRegistry {
         }
     }
 
-    public synchronized void reloadServlet(ServletDescriptor descriptor)
-            throws ServletException, NamespaceException {
+    public synchronized void reloadServlet(ServletDescriptor descriptor) throws ServletException, NamespaceException {
         removeServlet(descriptor);
         addServlet(descriptor);
     }
@@ -207,8 +196,7 @@ public class ServletRegistry {
         }
     }
 
-    private synchronized void installServlets() throws ServletException,
-            NamespaceException {
+    private synchronized void installServlets() throws ServletException, NamespaceException {
         if (service != null) {
             for (ServletDescriptor sd : servlets) {
                 installServlet(sd);
@@ -216,10 +204,9 @@ public class ServletRegistry {
         }
     }
 
-    private void installServlet(ServletDescriptor sd) throws ServletException,
-            NamespaceException {
+    private void installServlet(ServletDescriptor sd) throws ServletException, NamespaceException {
         if (service != null) {
-            //ClassRef ref = sd.getClassRef();
+            // ClassRef ref = sd.getClassRef();
             BundleHttpContext ctx = new BundleHttpContext(sd.bundle, sd.resources);
             List<ResourcesDescriptor> rd = resources.get(sd.path);
             // register resources contributed so far
@@ -236,25 +223,24 @@ public class ServletRegistry {
         }
     }
 
-    //    static class BundleHttpContext implements HttpContext {
-    //        protected Bundle bundle;
-    //        public BundleHttpContext(Bundle bundle) {
-    //            this.bundle = bundle;
-    //        }
-    //        @Override
-    //        public String getMimeType(String name) {
-    //            return null;
-    //        }
-    //        @Override
-    //        public URL getResource(String name) {
-    //            return null;
-    //        }
-    //        @Override
-    //        public boolean handleSecurity(HttpServletRequest request,
-    //                HttpServletResponse response) throws IOException {
-    //            // default behaviour assumes the container has already performed authentication
-    //            return true;
-    //        }
-    //    }
+    // static class BundleHttpContext implements HttpContext {
+    // protected Bundle bundle;
+    // public BundleHttpContext(Bundle bundle) {
+    // this.bundle = bundle;
+    // }
+    // @Override
+    // public String getMimeType(String name) {
+    // return null;
+    // }
+    // @Override
+    // public URL getResource(String name) {
+    // return null;
+    // }
+    // @Override
+    // public boolean handleSecurity(HttpServletRequest request,
+    // HttpServletResponse response) throws IOException {
+    // // default behaviour assumes the container has already performed authentication
+    // return true;
+    // }
+    // }
 }
-

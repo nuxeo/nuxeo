@@ -34,6 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 public class RepositoryAnnotabilityManager implements AnnotabilityManager {
 
     private final URNDocumentViewTranslator translator = new URNDocumentViewTranslator();
+
     private AnnotationsRepositoryService service;
 
     public RepositoryAnnotabilityManager() {
@@ -42,7 +43,7 @@ public class RepositoryAnnotabilityManager implements AnnotabilityManager {
 
     public boolean isAnnotable(URI uri) throws AnnotationException {
         DocumentView view = translator.getDocumentViewFromUri(uri);
-        if(view == null) { //not a nuxeo uri
+        if (view == null) { // not a nuxeo uri
             try {
                 return service.isAnnotable(null);
             } catch (ClientException e) {

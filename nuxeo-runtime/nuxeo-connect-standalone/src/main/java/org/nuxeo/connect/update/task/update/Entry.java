@@ -23,15 +23,11 @@ import java.util.List;
 import org.nuxeo.common.utils.FileVersion;
 
 /**
- * Versions are stored in the same order they are registered (in historical
- * package install order).
- *
- * That means when rollbacking an update the file system will be modified
- * only if the last version was rollbacked. And the version that will become the
- * current version will be the last version in the version list.
+ * Versions are stored in the same order they are registered (in historical package install order). That means when
+ * rollbacking an update the file system will be modified only if the last version was rollbacked. And the version that
+ * will become the current version will be the last version in the version list.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Entry implements Iterable<Version> {
 
@@ -112,8 +108,7 @@ public class Entry implements Iterable<Version> {
     public Version getVersion(String version) {
         for (Version v : versions) {
             String ov = v.getVersion();
-            if ((ov != null && ov.equals(version))
-                    || (ov == null && version == null)) {
+            if ((ov != null && ov.equals(version)) || (ov == null && version == null)) {
                 return v;
             }
         }

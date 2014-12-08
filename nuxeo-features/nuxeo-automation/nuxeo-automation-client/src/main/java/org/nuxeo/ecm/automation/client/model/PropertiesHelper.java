@@ -84,9 +84,9 @@ public class PropertiesHelper {
         if (v.getClass() == String.class) {
             return DateUtils.parseDate(v.toString());
         } else {
-            return (Date)v;
+            return (Date) v;
         }
-        //throw new IllegalArgumentException("Property is not a scalar: " + v);
+        // throw new IllegalArgumentException("Property is not a scalar: " + v);
     }
 
     public static PropertyList getList(Object v, PropertyList defValue) {

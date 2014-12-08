@@ -28,7 +28,6 @@ import freemarker.template.TemplateException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WikiSerializerHandler extends PrintListener {
 
@@ -37,11 +36,16 @@ public class WikiSerializerHandler extends PrintListener {
     protected static final String LINE_SEP = System.getProperty("line.separator");
 
     protected final WikiSerializer engine;
+
     protected final StringBuilder words = new StringBuilder();
 
     protected Environment env;
+
     protected WikiWriter writer;
-    protected int mark = -1; // used to mark the current buffer to be able to retrieve printed text that starts at the mark
+
+    protected int mark = -1; // used to mark the current buffer to be able to retrieve printed text that starts at the
+                             // mark
+
     protected Toc toc;
 
     public WikiSerializerHandler(WikiSerializer engine) {
@@ -49,7 +53,7 @@ public class WikiSerializerHandler extends PrintListener {
         this.engine = engine;
         writer = new WikiWriter();
         if (engine.macros.containsKey("toc")) {
-            toc =new Toc();
+            toc = new Toc();
         }
     }
 
@@ -93,7 +97,7 @@ public class WikiSerializerHandler extends PrintListener {
         }
         String text = words.toString();
         words.setLength(0);
-        for (int i=0, len=engine.filters.size(); i<len; i++) {
+        for (int i = 0, len = engine.filters.size(); i < len; i++) {
             String result = engine.filters.get(i).apply(text);
             if (result != null) {
                 print(result);
@@ -139,7 +143,7 @@ public class WikiSerializerHandler extends PrintListener {
         super.beginHeader(level, params);
         if (toc != null) {
             String id = toc.addHeading(null, level); // we don't know the title yet
-            print("<a name=\"heading_"+id+"\">");
+            print("<a name=\"heading_" + id + "\">");
             mark = writer.getBuffer().length();
         }
     }
@@ -173,9 +177,9 @@ public class WikiSerializerHandler extends PrintListener {
         beginElement();
         if (propertyUri.startsWith("block:")) {
             String name = propertyUri.substring(6);
-           WikiBlockWriter bwriter = new WikiBlockWriter(writer, name);
-           writer.writeText(bwriter);
-           writer = bwriter;
+            WikiBlockWriter bwriter = new WikiBlockWriter(writer, name);
+            writer.writeText(bwriter);
+            writer = bwriter;
         } else {
             super.beginPropertyBlock(propertyUri, doc);
         }
@@ -379,8 +383,7 @@ public class WikiSerializerHandler extends PrintListener {
     }
 
     @Override
-    public void onMacroBlock(String macroName, WikiParameters params,
-            String content) {
+    public void onMacroBlock(String macroName, WikiParameters params, String content) {
         flushWords();
         WikiMacro expression = engine.macros.get(macroName);
         if (expression != null) {
@@ -390,13 +393,12 @@ public class WikiSerializerHandler extends PrintListener {
                 log.error("Failed to eval macro", e);
             }
         } else {
-            log.warn("Unknown wiki macro: "+macroName);
+            log.warn("Unknown wiki macro: " + macroName);
         }
     }
 
     @Override
-    public void onMacroInline(String macroName, WikiParameters params,
-            String content) {
+    public void onMacroInline(String macroName, WikiParameters params, String content) {
         flushWords();
         WikiMacro expression = engine.macros.get(macroName);
         if (expression != null) {
@@ -406,20 +408,20 @@ public class WikiSerializerHandler extends PrintListener {
                 log.error("Failed to eval macro", e);
             }
         } else {
-            log.warn("Unknown wiki macro: "+macroName);
+            log.warn("Unknown wiki macro: " + macroName);
         }
     }
 
     @Override
     public void onExtensionBlock(String extensionName, WikiParameters params) {
         flushWords();
-        log.warn("Unknown wiki expression: "+extensionName);
+        log.warn("Unknown wiki expression: " + extensionName);
     }
 
     @Override
     public void onExtensionInline(String extensionName, WikiParameters params) {
         flushWords();
-        log.warn("Unknown wiki expression: "+extensionName);
+        log.warn("Unknown wiki expression: " + extensionName);
     }
 
     @Override
@@ -453,11 +455,11 @@ public class WikiSerializerHandler extends PrintListener {
     @Override
     public void onWord(String word) {
         words.append(word);
-        //writeWord(word);
+        // writeWord(word);
     }
 
     protected void writeWord(String word) {
-        for (int i=0, len=engine.filters.size(); i<len; i++) {
+        for (int i = 0, len = engine.filters.size(); i < len; i++) {
             String result = engine.filters.get(i).apply(word);
             if (result != null) {
                 print(result);
@@ -468,11 +470,9 @@ public class WikiSerializerHandler extends PrintListener {
     }
 
     /**
-     * Returns an HTML/XML entity corresponding to the specified special symbol.
-     * Depending on implementation it can be real entities (like &amp;amp;
-     * &amp;lt; &amp;gt; or the corresponding digital codes (like &amp;#38;,
-     * &amp;#&amp;#38; or &amp;#8250;). Digital entity representation is better
-     * for generation of XML files.
+     * Returns an HTML/XML entity corresponding to the specified special symbol. Depending on implementation it can be
+     * real entities (like &amp;amp; &amp;lt; &amp;gt; or the corresponding digital codes (like &amp;#38;,
+     * &amp;#&amp;#38; or &amp;#8250;). Digital entity representation is better for generation of XML files.
      *
      * @param str the special string to convert to an HTML/XML entity
      * @return an HTML/XML entity corresponding to the specified special symbol.
@@ -497,16 +497,12 @@ public class WikiSerializerHandler extends PrintListener {
     }
 
     /**
-     * Returns <code>true</code> if special Wiki entities should be
-     * represented as the corresponding HTML entities or they should be
-     * visualized using the corresponding XHTML codes (like &amp;amp; and so
-     * on). This method can be overloaded in subclasses to re-define the
-     * visualization style.
+     * Returns <code>true</code> if special Wiki entities should be represented as the corresponding HTML entities or
+     * they should be visualized using the corresponding XHTML codes (like &amp;amp; and so on). This method can be
+     * overloaded in subclasses to re-define the visualization style.
      *
-     * @return <code>true</code> if special Wiki entities should be
-     *         represented as the corresponding HTML entities or they should be
-     *         visualized using the corresponding XHTML codes (like &amp;amp;
-     *         and so on).
+     * @return <code>true</code> if special Wiki entities should be represented as the corresponding HTML entities or
+     *         they should be visualized using the corresponding XHTML codes (like &amp;amp; and so on).
      */
     protected boolean isHtmlEntities() {
         return true;

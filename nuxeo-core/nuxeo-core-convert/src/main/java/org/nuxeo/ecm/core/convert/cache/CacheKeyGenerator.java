@@ -29,8 +29,7 @@ public class CacheKeyGenerator {
     private CacheKeyGenerator() {
     }
 
-    public static String computeKey(String converterName, BlobHolder blobHolder,
-            Map<String, Serializable> parameters) {
+    public static String computeKey(String converterName, BlobHolder blobHolder, Map<String, Serializable> parameters) {
 
         StringBuilder sb = new StringBuilder();
 

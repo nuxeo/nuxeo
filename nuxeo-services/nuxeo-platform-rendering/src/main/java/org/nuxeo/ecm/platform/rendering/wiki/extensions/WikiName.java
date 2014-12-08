@@ -21,7 +21,6 @@ import org.nuxeo.ecm.platform.rendering.wiki.WikiFilter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WikiName implements WikiFilter {
 
@@ -29,7 +28,7 @@ public class WikiName implements WikiFilter {
 
     public String apply(String content) {
         Matcher matcher = pattern.matcher(content);
-        if (matcher.matches())  {
+        if (matcher.matches()) {
             return "#link#" + content + "#/link#";
         }
         return null;

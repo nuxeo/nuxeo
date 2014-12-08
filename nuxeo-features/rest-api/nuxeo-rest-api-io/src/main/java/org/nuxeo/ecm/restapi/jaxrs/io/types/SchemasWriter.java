@@ -33,14 +33,12 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class SchemasWriter extends AbstractTypeDefWriter implements
-        MessageBodyWriter<Schemas> {
+public class SchemasWriter extends AbstractTypeDefWriter implements MessageBodyWriter<Schemas> {
 
     @Override
-    public void writeTo(Schemas schemas, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(Schemas schemas, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException {
         JsonGenerator jg = getGenerator(entityStream);
         jg.writeStartArray();
         for (Schema schema : schemas.schemas) {
@@ -54,14 +52,12 @@ public class SchemasWriter extends AbstractTypeDefWriter implements
     }
 
     @Override
-    public long getSize(Schemas arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(Schemas arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return Schemas.class == arg0;
     }
 

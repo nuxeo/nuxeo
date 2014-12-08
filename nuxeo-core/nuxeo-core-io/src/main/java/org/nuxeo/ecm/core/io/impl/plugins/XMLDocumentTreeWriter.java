@@ -60,8 +60,7 @@ public class XMLDocumentTreeWriter extends XMLDocumentWriter {
     }
 
     @Override
-    public DocumentTranslationMap write(ExportedDocument doc)
-            throws IOException {
+    public DocumentTranslationMap write(ExportedDocument doc) throws IOException {
 
         initWriter();
         writer.write(doc.getDocument());
@@ -71,15 +70,13 @@ public class XMLDocumentTreeWriter extends XMLDocumentWriter {
         DocumentLocation oldLoc = doc.getSourceLocation();
         String oldServerName = oldLoc.getServerName();
         DocumentRef oldDocRef = oldLoc.getDocRef();
-        DocumentTranslationMap map = new DocumentTranslationMapImpl(
-                oldServerName, oldServerName);
+        DocumentTranslationMap map = new DocumentTranslationMapImpl(oldServerName, oldServerName);
         map.put(oldDocRef, oldDocRef);
         return map;
     }
 
     @Override
-    public DocumentTranslationMap write(ExportedDocument[] docs)
-            throws IOException {
+    public DocumentTranslationMap write(ExportedDocument[] docs) throws IOException {
         initWriter();
         out.write("<documents>".getBytes());
         out.flush();
@@ -90,8 +87,7 @@ public class XMLDocumentTreeWriter extends XMLDocumentWriter {
     }
 
     @Override
-    public DocumentTranslationMap write(Collection<ExportedDocument> docs)
-            throws IOException {
+    public DocumentTranslationMap write(Collection<ExportedDocument> docs) throws IOException {
         initWriter();
         out.write("<documents>".getBytes());
         out.flush();

@@ -58,14 +58,11 @@ public class BulkLifeCycleChangeListenerTest extends SQLRepositoryTestCase {
     @Test
     public void testLifeCycleAPI() throws ClientException {
 
-        DocumentModel folderDoc = session.createDocumentModel("/",
-                "testFolder", "Folder");
+        DocumentModel folderDoc = session.createDocumentModel("/", "testFolder", "Folder");
         folderDoc = session.createDocument(folderDoc);
-        DocumentModel testFile1 = session.createDocumentModel(
-                folderDoc.getPathAsString(), "testFile1", "File");
+        DocumentModel testFile1 = session.createDocumentModel(folderDoc.getPathAsString(), "testFile1", "File");
         testFile1 = session.createDocument(testFile1);
-        DocumentModel testFile2 = session.createDocumentModel(
-                folderDoc.getPathAsString(), "testFile2", "File");
+        DocumentModel testFile2 = session.createDocumentModel(folderDoc.getPathAsString(), "testFile2", "File");
         testFile2 = session.createDocument(testFile2);
 
         session.saveDocument(folderDoc);
@@ -82,22 +79,17 @@ public class BulkLifeCycleChangeListenerTest extends SQLRepositoryTestCase {
         session.save(); // process async invalidations
 
         // Check that the MassCycleListener has changed child files to approved
-        assertEquals("approved",
-                session.getCurrentLifeCycleState(testFile1.getRef()));
-        assertEquals("approved",
-                session.getCurrentLifeCycleState(testFile2.getRef()));
+        assertEquals("approved", session.getCurrentLifeCycleState(testFile1.getRef()));
+        assertEquals("approved", session.getCurrentLifeCycleState(testFile2.getRef()));
     }
 
     @Test
     public void testCopyLifeCycleHandler() throws ClientException {
-        DocumentModel folderDoc = session.createDocumentModel("/",
-                "testFolder", "Folder");
+        DocumentModel folderDoc = session.createDocumentModel("/", "testFolder", "Folder");
         folderDoc = session.createDocument(folderDoc);
-        DocumentModel testFile1 = session.createDocumentModel(
-                folderDoc.getPathAsString(), "testFile1", "File");
+        DocumentModel testFile1 = session.createDocumentModel(folderDoc.getPathAsString(), "testFile1", "File");
         testFile1 = session.createDocument(testFile1);
-        DocumentModel testFile2 = session.createDocumentModel(
-                folderDoc.getPathAsString(), "testFile2", "File");
+        DocumentModel testFile2 = session.createDocumentModel(folderDoc.getPathAsString(), "testFile2", "File");
         testFile2 = session.createDocument(testFile2);
         session.saveDocument(folderDoc);
         session.saveDocument(testFile1);
@@ -109,20 +101,16 @@ public class BulkLifeCycleChangeListenerTest extends SQLRepositoryTestCase {
 
         // All documents in approve life cycle state
         // Checking document copy lifecycle handler
-        DocumentModel folderCopy = session.createDocumentModel("/",
-                "folderCopy", "Folder");
+        DocumentModel folderCopy = session.createDocumentModel("/", "folderCopy", "Folder");
         folderCopy = session.createDocument(folderCopy);
-        folderCopy = session.copy(folderDoc.getRef(), folderCopy.getRef(),
-                "folderCopy",true);
+        folderCopy = session.copy(folderDoc.getRef(), folderCopy.getRef(), "folderCopy", true);
         session.save();
         waitForAsyncExec();
         session.save();// process async invalidations
         DocumentModelList childrenCopy = session.getChildren(folderCopy.getRef());
-        assertEquals("project",
-                session.getCurrentLifeCycleState(folderCopy.getRef()));
+        assertEquals("project", session.getCurrentLifeCycleState(folderCopy.getRef()));
         for (DocumentModel child : childrenCopy) {
-            assertEquals("project",
-                    session.getCurrentLifeCycleState(child.getRef()));
+            assertEquals("project", session.getCurrentLifeCycleState(child.getRef()));
         }
     }
 

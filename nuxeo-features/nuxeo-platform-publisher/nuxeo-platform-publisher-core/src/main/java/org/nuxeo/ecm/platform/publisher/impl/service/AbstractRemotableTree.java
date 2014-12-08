@@ -32,8 +32,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 
 /**
- * Abstract class for {@link PublicationTree} that delegates method calls to a
- * remote service.
+ * Abstract class for {@link PublicationTree} that delegates method calls to a remote service.
  *
  * @author tiry
  */
@@ -47,54 +46,42 @@ public abstract class AbstractRemotableTree implements PublicationTree {
 
     protected String configName;
 
-    protected abstract RemotePublicationTreeManager getTreeService()
-            throws ClientException;
+    protected abstract RemotePublicationTreeManager getTreeService() throws ClientException;
 
     protected abstract String getTargetTreeName();
 
     protected abstract String getServerTreeSessionId();
 
-    public List<PublishedDocument> getExistingPublishedDocument(
-            DocumentLocation docLoc) throws ClientException {
-        return getTreeService().getExistingPublishedDocument(
-                getServerTreeSessionId(), docLoc);
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
+        return getTreeService().getExistingPublishedDocument(getServerTreeSessionId(), docLoc);
     }
 
-    public List<PublishedDocument> getPublishedDocumentInNode(
-            PublicationNode node) throws ClientException {
-        return getTreeService().getPublishedDocumentInNode(
-                switchToServerNode(node));
+    public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) throws ClientException {
+        return getTreeService().getPublishedDocumentInNode(switchToServerNode(node));
     }
 
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
         return publish(doc, targetNode, null);
     }
 
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
-        return getTreeService().publish(doc, switchToServerNode(targetNode),
-                params);
+        return getTreeService().publish(doc, switchToServerNode(targetNode), params);
     }
 
-    public void unpublish(DocumentModel doc, PublicationNode targetNode)
-            throws ClientException {
+    public void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
         getTreeService().unpublish(doc, switchToServerNode(targetNode));
     }
 
-    public void unpublish(PublishedDocument publishedDocument)
-            throws ClientException {
+    public void unpublish(PublishedDocument publishedDocument) throws ClientException {
         getTreeService().unpublish(getServerTreeSessionId(), publishedDocument);
     }
 
-    protected abstract PublicationNode switchToClientNode(PublicationNode node)
-            throws ClientException;
+    protected abstract PublicationNode switchToClientNode(PublicationNode node) throws ClientException;
 
     protected abstract PublicationNode switchToServerNode(PublicationNode node);
 
-    protected List<PublicationNode> switchToClientNodes(
-            List<PublicationNode> nodes) throws ClientException {
+    protected List<PublicationNode> switchToClientNodes(List<PublicationNode> nodes) throws ClientException {
         List<PublicationNode> wrappedNodes = new ArrayList<PublicationNode>();
 
         for (PublicationNode node : nodes) {
@@ -104,8 +91,7 @@ public abstract class AbstractRemotableTree implements PublicationTree {
     }
 
     public PublicationNode getNodeByPath(String path) throws ClientException {
-        return switchToClientNode(getTreeService().getNodeByPath(
-                getServerTreeSessionId(), path));
+        return switchToClientNode(getTreeService().getNodeByPath(getServerTreeSessionId(), path));
     }
 
     public String getConfigName() {

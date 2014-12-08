@@ -16,8 +16,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Service generating a path segment from the title by simplifying it to
- * lowercase and dash-separated words.
+ * Service generating a path segment from the title by simplifying it to lowercase and dash-separated words.
  */
 public class PathSegmentServiceCompat implements PathSegmentService {
 

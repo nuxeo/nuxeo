@@ -55,11 +55,9 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.ecm.directory:types-for-test-directory-local-configuration.xml")
 public class TestDirectoryLocalConfigurationDefinition {
 
-    public static final DocumentRef PARENT_DOMAIN_REF = new PathRef(
-            "/default-domain");
+    public static final DocumentRef PARENT_DOMAIN_REF = new PathRef("/default-domain");
 
-    public static final DocumentRef CHILD_WORKSPACE_REF = new PathRef(
-            "/default-domain/workspaces/workspace/workspace2");
+    public static final DocumentRef CHILD_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace/workspace2");
 
     @Inject
     protected CoreSession session;
@@ -78,52 +76,45 @@ public class TestDirectoryLocalConfigurationDefinition {
     }
 
     @Test
-    public void shouldReturnANullSuffixValueIfLocalConfigurationNotSet()
-            throws Exception {
+    public void shouldReturnANullSuffixValueIfLocalConfigurationNotSet() throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_DOMAIN_REF);
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
 
-        DirectoryConfiguration configuration = localConfigurationService.getConfiguration(
-                DirectoryConfiguration.class, DIRECTORY_CONFIGURATION_FACET,
-                workspace);
+        DirectoryConfiguration configuration = localConfigurationService.getConfiguration(DirectoryConfiguration.class,
+                DIRECTORY_CONFIGURATION_FACET, workspace);
 
         assertNull(configuration.getDirectorySuffix());
     }
 
     @Test
-    public void shouldReturnSuffixGivenByLocalConfig()
-            throws Exception {
+    public void shouldReturnSuffixGivenByLocalConfig() throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_DOMAIN_REF);
 
         setDirectorySuffix(workspace, "suffix");
 
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-        DirectoryConfiguration configuration = localConfigurationService.getConfiguration(
-                DirectoryConfiguration.class, DIRECTORY_CONFIGURATION_FACET,
-                workspace);
+        DirectoryConfiguration configuration = localConfigurationService.getConfiguration(DirectoryConfiguration.class,
+                DIRECTORY_CONFIGURATION_FACET, workspace);
 
         assertNotNull(configuration);
         assertEquals("suffix", configuration.getDirectorySuffix());
     }
 
     @Test
-    public void shouldReturnSuffixGivenByLocalConfigWithTrim()
-            throws Exception {
+    public void shouldReturnSuffixGivenByLocalConfigWithTrim() throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_DOMAIN_REF);
 
         setDirectorySuffix(workspace, "  suffix     ");
 
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-        DirectoryConfiguration configuration = localConfigurationService.getConfiguration(
-                DirectoryConfiguration.class, DIRECTORY_CONFIGURATION_FACET,
-                workspace);
+        DirectoryConfiguration configuration = localConfigurationService.getConfiguration(DirectoryConfiguration.class,
+                DIRECTORY_CONFIGURATION_FACET, workspace);
 
         assertNotNull(configuration);
         assertEquals("suffix", configuration.getDirectorySuffix());
     }
 
-    protected void setDirectorySuffix(DocumentModel doc, String directorySuffix)
-            throws ClientException {
+    protected void setDirectorySuffix(DocumentModel doc, String directorySuffix) throws ClientException {
         doc.setPropertyValue(DIRECTORY_CONFIGURATION_FIELD, directorySuffix);
         session.saveDocument(doc);
         session.save();

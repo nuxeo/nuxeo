@@ -23,7 +23,6 @@ import org.nuxeo.runtime.model.impl.PropertyDecoder;
 
 /**
  * @author Bogdan Stefanescu
- *
  */
 @XObject(value = "property", order = { "@name", "@type" })
 public class Property implements Serializable {
@@ -43,20 +42,20 @@ public class Property implements Serializable {
         this.value = PropertyDecoder.decode(type, value);
     }
 
-    //TODO
-//    @XContent
-//    public void setValueFromContent(String value) {
-//        this.value = PropertyDecoder.decode(type, value);
-//    }
+    // TODO
+    // @XContent
+    // public void setValueFromContent(String value) {
+    // this.value = PropertyDecoder.decode(type, value);
+    // }
 
     public Object getValue() {
         return value;
     }
 
     // Not used.
-    //public void setValue(Object value) {
-    //    this.value = value;
-    //}
+    // public void setValue(Object value) {
+    // this.value = value;
+    // }
 
     // Not used.
     public String getType() {

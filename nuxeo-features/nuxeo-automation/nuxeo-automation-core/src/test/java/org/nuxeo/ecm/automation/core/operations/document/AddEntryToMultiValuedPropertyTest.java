@@ -115,8 +115,7 @@ public class AddEntryToMultiValuedPropertyTest {
             operation.run(doc);
             fail();
         } catch (UnsupportedOperationException e) {
-            assertEquals("Given type \"false\" value is not a string type",
-                    e.getMessage());
+            assertEquals("Given type \"false\" value is not a string type", e.getMessage());
         } catch (Exception e) {
             fail();
         }

@@ -51,8 +51,7 @@ public abstract class AbstractUnicityChecker {
 
     protected static final String DUPLICATED_FILE = "duplicatedFile";
 
-    protected void doUnicityCheck(DocumentModel doc2Check, CoreSession session,
-            Event event) {
+    protected void doUnicityCheck(DocumentModel doc2Check, CoreSession session, Event event) {
 
         List<String> xpathFields;
 
@@ -92,9 +91,8 @@ public abstract class AbstractUnicityChecker {
 
             List<DocumentLocation> existingDocuments = null;
             try {
-                existingDocuments = fileManager.findExistingDocumentWithFile(
-                        session, doc2Check.getPathAsString(), digest,
-                        session.getPrincipal());
+                existingDocuments = fileManager.findExistingDocumentWithFile(session, doc2Check.getPathAsString(),
+                        digest, session.getPrincipal());
             } catch (ClientException e) {
                 log.error("Error in FileManager unicity check execution", e);
                 continue;
@@ -107,23 +105,20 @@ public abstract class AbstractUnicityChecker {
                         existingDocumentsIterator.remove();
                     }
                 }
-                log.debug("Existing Documents[" + existingDocuments.size()
-                        + "]");
+                log.debug("Existing Documents[" + existingDocuments.size() + "]");
 
-                onDuplicatedDoc(session, session.getPrincipal(), doc2Check,
-                        existingDocuments, event);
+                onDuplicatedDoc(session, session.getPrincipal(), doc2Check, existingDocuments, event);
             }
         }
     }
 
-    protected abstract void onDuplicatedDoc(CoreSession session,
-            Principal principal, DocumentModel newDoc,
+    protected abstract void onDuplicatedDoc(CoreSession session, Principal principal, DocumentModel newDoc,
             List<DocumentLocation> existingDocs, Event event);
 
-    protected void raiseDuplicatedFileEvent(CoreSession session, Principal principal,
-            DocumentModel newDoc, List<DocumentLocation> existingDocs) {
+    protected void raiseDuplicatedFileEvent(CoreSession session, Principal principal, DocumentModel newDoc,
+            List<DocumentLocation> existingDocs) {
 
-        DocumentEventContext ctx = new DocumentEventContext(session,principal, newDoc);
+        DocumentEventContext ctx = new DocumentEventContext(session, principal, newDoc);
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
 
@@ -139,7 +134,7 @@ public abstract class AbstractUnicityChecker {
         }
     }
 
-    protected boolean isUnicityCheckEnabled(){
+    protected boolean isUnicityCheckEnabled() {
         if (unicityCheckEnabled == null) {
             try {
                 unicityCheckEnabled = getFileManagerService().isUnicityEnabled();
@@ -157,8 +152,7 @@ public abstract class AbstractUnicityChecker {
         }
         if (fileManager == null) {
             log.error("Unable to get FileManager runtime service");
-            throw new ClientException(
-                    "Unable to get FileManager runtime service");
+            throw new ClientException("Unable to get FileManager runtime service");
         }
         return fileManager;
     }

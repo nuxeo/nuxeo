@@ -29,7 +29,6 @@ import freemarker.cache.URLTemplateLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ResourceTemplateLoader implements TemplateLoader {
 
@@ -83,8 +82,7 @@ public class ResourceTemplateLoader implements TemplateLoader {
         }
     }
 
-    public Reader getReader(Object templateSource, String encoding)
-            throws IOException {
+    public Reader getReader(Object templateSource, String encoding) throws IOException {
         if (templateSource instanceof File) {
             return fileLoader.getReader(templateSource, encoding);
         } else {
@@ -107,8 +105,7 @@ public class ResourceTemplateLoader implements TemplateLoader {
     }
 
     class MyFileTemplateLoader implements TemplateLoader {
-        public void closeTemplateSource(Object templateSource)
-                throws IOException {
+        public void closeTemplateSource(Object templateSource) throws IOException {
             // do nothing
         }
 
@@ -134,19 +131,15 @@ public class ResourceTemplateLoader implements TemplateLoader {
             try {
                 return ((File) templateSource).lastModified();
             } catch (ClassCastException e) {
-                throw new IllegalArgumentException("templateSource is a: "
-                        + templateSource.getClass().getName());
+                throw new IllegalArgumentException("templateSource is a: " + templateSource.getClass().getName());
             }
         }
 
-        public Reader getReader(Object templateSource, String encoding)
-                throws IOException {
+        public Reader getReader(Object templateSource, String encoding) throws IOException {
             try {
-                return new InputStreamReader(new FileInputStream(
-                        (File) templateSource), encoding);
+                return new InputStreamReader(new FileInputStream((File) templateSource), encoding);
             } catch (ClassCastException e) {
-                throw new IllegalArgumentException("templateSource is a: "
-                        + templateSource.getClass().getName());
+                throw new IllegalArgumentException("templateSource is a: " + templateSource.getClass().getName());
             }
         }
 

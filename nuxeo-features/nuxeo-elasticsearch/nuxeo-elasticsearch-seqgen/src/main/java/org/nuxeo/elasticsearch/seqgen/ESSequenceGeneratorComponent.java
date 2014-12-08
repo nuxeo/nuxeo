@@ -25,20 +25,13 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Implements the {@link SequenceGenerator} service on top of Elasticsearch.
- *
- * Since elasticsearch does not seem to support a notion of native sequence, the
- * implementation uses the auto-increment of the version attribute as described
- * in
- *
- * http://blogs.perl.org/users/clinton_gormley/2011/10/elasticsearchsequence--
- * -a-blazing-fast-ticket-server.html
+ * Implements the {@link SequenceGenerator} service on top of Elasticsearch. Since elasticsearch does not seem to
+ * support a notion of native sequence, the implementation uses the auto-increment of the version attribute as described
+ * in http://blogs.perl.org/users/clinton_gormley/2011/10/elasticsearchsequence-- -a-blazing-fast-ticket-server.html
  *
  * @author tiry
- *
  */
-public class ESSequenceGeneratorComponent extends DefaultComponent implements
-        SequenceGenerator {
+public class ESSequenceGeneratorComponent extends DefaultComponent implements SequenceGenerator {
 
     public static final String IDX_NAME = "sequence";
 
@@ -57,8 +50,7 @@ public class ESSequenceGeneratorComponent extends DefaultComponent implements
     @Override
     public long getNextId(String sequenceName) {
         String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
-        IndexResponse res = getClient().prepareIndex(IDX_NAME, IDX_TYPE,
-                sequenceName).setSource(source).execute().actionGet();
+        IndexResponse res = getClient().prepareIndex(IDX_NAME, IDX_TYPE, sequenceName).setSource(source).execute().actionGet();
         return res.getVersion();
     }
 

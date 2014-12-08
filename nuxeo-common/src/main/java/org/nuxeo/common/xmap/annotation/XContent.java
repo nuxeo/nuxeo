@@ -27,10 +27,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation that injects the content of the current node as an XML string or
- * DocumentFragment depending on the field type.
+ * An annotation that injects the content of the current node as an XML string or DocumentFragment depending on the
+ * field type.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XMemberAnnotation(XMemberAnnotation.CONTENT)
 @Target({ ElementType.FIELD, ElementType.METHOD })

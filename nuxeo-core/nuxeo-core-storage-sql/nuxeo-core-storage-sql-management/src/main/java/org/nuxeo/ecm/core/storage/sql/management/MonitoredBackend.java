@@ -30,10 +30,8 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     }
 
     @Override
-    public Mapper newMapper(Model model, PathResolver pathResolver,
-            MapperKind kind) throws StorageException {
-        return MetricInvocationHandler.newProxy(
-                wrapped.newMapper(model, pathResolver, kind), Mapper.class);
+    public Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind) throws StorageException {
+        return MetricInvocationHandler.newProxy(wrapped.newMapper(model, pathResolver, kind), Mapper.class);
     }
 
     @Override
@@ -47,8 +45,7 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     }
 
     @Override
-    public void initializeModelSetup(ModelSetup modelSetup)
-            throws StorageException {
+    public void initializeModelSetup(ModelSetup modelSetup) throws StorageException {
         wrapped.initializeModelSetup(modelSetup);
     }
 

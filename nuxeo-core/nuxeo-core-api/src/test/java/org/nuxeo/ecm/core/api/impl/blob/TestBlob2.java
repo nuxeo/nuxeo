@@ -30,11 +30,10 @@ import static org.junit.Assert.*;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // XXX: Second blob testcase -> merge it with the other one ?
-@SuppressWarnings({"IOResourceOpenedButNotSafelyClosed"})
+@SuppressWarnings({ "IOResourceOpenedButNotSafelyClosed" })
 public class TestBlob2 {
 
     @Test

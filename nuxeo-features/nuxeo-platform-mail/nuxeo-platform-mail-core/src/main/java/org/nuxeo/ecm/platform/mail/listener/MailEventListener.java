@@ -40,8 +40,8 @@ import org.nuxeo.ecm.platform.mail.utils.MailCoreHelper;
 /**
  * Listener that listens for MailReceivedEvent.
  * <p>
- * The email connection corresponding to every MailFolder document found in the
- * repository is checked for new incoming email.
+ * The email connection corresponding to every MailFolder document found in the repository is checked for new incoming
+ * email.
  *
  * @author Catalin Baican
  */
@@ -81,9 +81,7 @@ public class MailEventListener implements EventListener {
         try (CoreSession coreSession = CoreInstance.openCoreSession(null)) {
             StringBuilder query = new StringBuilder();
             query.append("SELECT * FROM MailFolder ");
-            query.append(String.format(
-                    " WHERE ecm:currentLifeCycleState != '%s' ",
-                    LifeCycleConstants.DELETED_STATE));
+            query.append(String.format(" WHERE ecm:currentLifeCycleState != '%s' ", LifeCycleConstants.DELETED_STATE));
             query.append(" AND ecm:isProxy = 0 ");
             DocumentModelList mailFolderList = coreSession.query(query.toString());
 

@@ -43,8 +43,7 @@ public class CropPictureConverter implements Converter {
     private static final Log log = LogFactory.getLog(CropPictureConverter.class);
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         try {
             ImagingService service = Framework.getService(ImagingService.class);
 

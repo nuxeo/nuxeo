@@ -21,7 +21,6 @@ import javax.security.auth.Subject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LoginStack {
 
@@ -75,7 +74,9 @@ public class LoginStack {
 
     public static class Entry {
         protected final Principal principal;
+
         protected final Object credential;
+
         protected final Subject subject;
 
         public Entry(Principal principal, Object credential, Subject subject) {

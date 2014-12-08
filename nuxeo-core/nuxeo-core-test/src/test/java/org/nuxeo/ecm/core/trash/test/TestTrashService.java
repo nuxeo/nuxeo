@@ -91,27 +91,18 @@ public class TestTrashService {
     public void testBase() throws Exception {
         createDocuments();
         assertTrue(trashService.folderAllowsDelete(fold));
-        assertTrue(trashService.checkDeletePermOnParents(Arrays.asList(doc1,
-                doc2)));
-        assertTrue(trashService.canDelete(Collections.singletonList(fold),
-                principal, false));
-        assertTrue(trashService.canDelete(Collections.singletonList(doc1),
-                principal, false));
-        assertTrue(trashService.canDelete(Collections.singletonList(doc2),
-                principal, false));
-        assertFalse(trashService.canPurgeOrUndelete(
-                Collections.singletonList(fold), principal));
-        assertFalse(trashService.canPurgeOrUndelete(
-                Collections.singletonList(doc1), principal));
-        assertFalse(trashService.canPurgeOrUndelete(
-                Collections.singletonList(doc2), principal));
+        assertTrue(trashService.checkDeletePermOnParents(Arrays.asList(doc1, doc2)));
+        assertTrue(trashService.canDelete(Collections.singletonList(fold), principal, false));
+        assertTrue(trashService.canDelete(Collections.singletonList(doc1), principal, false));
+        assertTrue(trashService.canDelete(Collections.singletonList(doc2), principal, false));
+        assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(fold), principal));
+        assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(doc1), principal));
+        assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(doc2), principal));
 
-        TrashInfo info = trashService.getTrashInfo(Arrays.asList(fold, doc1,
-                doc3), principal, false, false);
+        TrashInfo info = trashService.getTrashInfo(Arrays.asList(fold, doc1, doc3), principal, false, false);
         assertEquals(3, info.docs.size());
         assertEquals(2, info.rootRefs.size());
-        assertEquals(new HashSet<Path>(Arrays.asList(new Path("/fold"),
-                new Path("/doc3"))), info.rootPaths);
+        assertEquals(new HashSet<Path>(Arrays.asList(new Path("/fold"), new Path("/doc3"))), info.rootPaths);
 
         DocumentModel above = trashService.getAboveDocument(doc1,
                 new HashSet<Path>(Arrays.asList(new Path("/fold/doc1"))));
@@ -152,12 +143,10 @@ public class TestTrashService {
         // when recursing, don't change name
         assertEquals("doc2", doc2.getName());
 
-        assertTrue(trashService.canPurgeOrUndelete(
-                Arrays.asList(fold, doc1, doc2, doc3, doc4), principal));
+        assertTrue(trashService.canPurgeOrUndelete(Arrays.asList(fold, doc1, doc2, doc3, doc4), principal));
 
         // purge doc1
-        trashService.purgeDocuments(session,
-                Collections.singletonList(doc1.getRef()));
+        trashService.purgeDocuments(session, Collections.singletonList(doc1.getRef()));
         assertFalse(session.exists(doc1.getRef()));
 
         // undelete doc2 and doc4
@@ -221,8 +210,7 @@ public class TestTrashService {
     @Test
     public void testTrashFolderContainingProxy() throws Exception {
         createDocuments();
-        DocumentRef versionRef = session.checkIn(doc3.getRef(),
-                VersioningOption.MAJOR, null);
+        DocumentRef versionRef = session.checkIn(doc3.getRef(), VersioningOption.MAJOR, null);
         DocumentModel version = session.getDocument(versionRef);
         DocumentModel proxy = session.createProxy(versionRef, fold.getRef());
         session.save();
@@ -249,12 +237,9 @@ public class TestTrashService {
         DocumentRef verRef = doc3.checkIn(null, null);
         DocumentModel proxy = session.createProxy(verRef, fold.getRef());
         session.save();
-        assertTrue(trashService.canDelete(Collections.singletonList(proxy),
-                principal, false));
-        assertFalse(trashService.canDelete(Collections.singletonList(proxy),
-                principal, true));
-        assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(proxy),
-                principal));
+        assertTrue(trashService.canDelete(Collections.singletonList(proxy), principal, false));
+        assertFalse(trashService.canDelete(Collections.singletonList(proxy), principal, true));
+        assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(proxy), principal));
     }
 
 }

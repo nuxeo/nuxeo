@@ -24,7 +24,6 @@ import org.w3c.dom.Node;
 
 /**
  * @author Max Stepanov
- *
  */
 public interface IDOMSupport {
 

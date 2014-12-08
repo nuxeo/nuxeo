@@ -34,7 +34,6 @@ import org.osgi.framework.BundleException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StandaloneBundleLoader extends ApplicationLoader {
 
@@ -68,6 +67,7 @@ public class StandaloneBundleLoader extends ApplicationLoader {
     public void installBundle(BundleFile bundleFile) throws BundleException {
         osgi.install(new BundleImpl(osgi, bundleFile, loader.getLoader()));
     }
+
     @Override
     public void loadBundle(BundleFile bundleFile) {
         loader.addURL(bundleFile.getURL());

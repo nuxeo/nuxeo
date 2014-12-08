@@ -42,8 +42,7 @@ public class FormatDate implements TemplateMethodModelEx {
         }
         SimpleScalar scalar = (SimpleScalar) arguments.get(1);
         if (scalar == null) {
-            throw new TemplateModelException(
-                    "the argument local is not defined");
+            throw new TemplateModelException("the argument local is not defined");
         }
 
         SimpleDate simpledate = (SimpleDate) arguments.get(0);

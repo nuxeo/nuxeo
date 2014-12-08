@@ -61,18 +61,15 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
         assertEquals(0, userManager.searchUsers("jolivier").size());
 
-        String requestId = userRegistrationService.submitRegistrationRequest(
-                userInfo, new HashMap<String, Serializable>(),
-                UserInvitationService.ValidationMethod.NONE, true);
-        userRegistrationService.validateRegistration(requestId,
-                new HashMap<String, Serializable>());
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo,
+                new HashMap<String, Serializable>(), UserInvitationService.ValidationMethod.NONE, true);
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         assertEquals(1, userManager.searchUsers("jolivier").size());
     }
 
     @Test
-    public void testBasicUserRegistrationWithLoginChanged()
-            throws ClientException {
+    public void testBasicUserRegistrationWithLoginChanged() throws ClientException {
         UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
         // User info
         DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
@@ -87,13 +84,11 @@ public class TestUserRegistration extends AbstractUserRegistration {
         assertEquals(0, userManager.searchUsers(templogin).size());
         assertEquals(0, userManager.searchUsers(newUser).size());
 
-        String requestId = userRegistrationService.submitRegistrationRequest(
-                userInfo, new HashMap<String, Serializable>(),
-                UserInvitationService.ValidationMethod.NONE, true);
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo,
+                new HashMap<String, Serializable>(), UserInvitationService.ValidationMethod.NONE, true);
         Map<String, Serializable> additionnalInfos = new HashMap<String, Serializable>();
         additionnalInfos.put("userinfo:login", newUser);
-        userRegistrationService.validateRegistration(requestId,
-                additionnalInfos);
+        userRegistrationService.validateRegistration(requestId, additionnalInfos);
 
         assertEquals(0, userManager.searchUsers(templogin).size());
         assertEquals(1, userManager.searchUsers(newUser).size());

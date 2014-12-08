@@ -27,13 +27,11 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 
 /**
- * Used to control the server administrative status: the status of the server
- * can be passive or active.
+ * Used to control the server administrative status: the status of the server can be passive or active.
  *
  * @author Mariana Cedica
  */
-public class DocumentModelStatusPersister implements
-        AdministrativeStatusPersister {
+public class DocumentModelStatusPersister implements AdministrativeStatusPersister {
 
     public static final String ADMINISTRATIVE_INFO_CONTAINER = "administrative-infos";
 
@@ -81,10 +79,8 @@ public class DocumentModelStatusPersister implements
             DocumentRef admRootDocRef = DocumentStoreManager.newPath(ADMINISTRATIVE_INFO_CONTAINER);
 
             if (!session.exists(admRootDocRef)) {
-                DocumentModel doc = session.createDocumentModel(
-                        DocumentStoreManager.newPath().toString(),
-                        ADMINISTRATIVE_INFO_CONTAINER,
-                        ADMINISTRATIVE_INFO_CONTAINER_DOCUMENT_TYPE);
+                DocumentModel doc = session.createDocumentModel(DocumentStoreManager.newPath().toString(),
+                        ADMINISTRATIVE_INFO_CONTAINER, ADMINISTRATIVE_INFO_CONTAINER_DOCUMENT_TYPE);
                 doc.setPropertyValue("dc:title", ADMINISTRATIVE_INFO_CONTAINER);
                 doc = session.createDocument(doc);
                 session.save();
@@ -93,36 +89,29 @@ public class DocumentModelStatusPersister implements
             return session.getDocument(admRootDocRef);
         }
 
-        protected DocumentModel doGetOrCreateDoc(AdministrativeStatus status)
-                throws ClientException {
+        protected DocumentModel doGetOrCreateDoc(AdministrativeStatus status) throws ClientException {
             DocumentModel administrativeContainer = doGetOrCreateContainer();
 
-            DocumentRef statusDocRef = new PathRef(
-                    administrativeContainer.getPathAsString() + "/"
-                            + getAdministrativeStatusDocName(status));
+            DocumentRef statusDocRef = new PathRef(administrativeContainer.getPathAsString() + "/"
+                    + getAdministrativeStatusDocName(status));
 
             DocumentModel doc;
             boolean create = false;
             if (!session.exists(statusDocRef)) {
                 create = true;
-                doc = session.createDocumentModel(
-                        administrativeContainer.getPathAsString(),
-                        getAdministrativeStatusDocName(status),
-                        ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
+                doc = session.createDocumentModel(administrativeContainer.getPathAsString(),
+                        getAdministrativeStatusDocName(status), ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
             } else {
                 doc = session.getDocument(statusDocRef);
             }
 
             doc.setPropertyValue(LOGIN_PROPERTY, status.getUserLogin());
-            doc.setPropertyValue(INSTANCE_PROPERTY,
-                    status.getInstanceIdentifier());
-            doc.setPropertyValue(SERVICE_PROPERTY,
-                    status.getServiceIdentifier());
+            doc.setPropertyValue(INSTANCE_PROPERTY, status.getInstanceIdentifier());
+            doc.setPropertyValue(SERVICE_PROPERTY, status.getServiceIdentifier());
             doc.setPropertyValue(MESSAGE_PROPERTY, status.getMessage());
             doc.setPropertyValue(STATUS_PROPERTY, status.getState());
 
-            doc.setPropertyValue("dc:title",
-                    getAdministrativeStatusDocName(status));
+            doc.setPropertyValue("dc:title", getAdministrativeStatusDocName(status));
 
             if (create) {
                 doc = session.createDocument(doc);
@@ -137,8 +126,7 @@ public class DocumentModelStatusPersister implements
     }
 
     protected String getAdministrativeStatusDocName(AdministrativeStatus status) {
-        return status.getInstanceIdentifier() + "--"
-                + status.getServiceIdentifier();
+        return status.getInstanceIdentifier() + "--" + status.getServiceIdentifier();
     }
 
     public static class StatusFetcher extends DocumentStoreSessionRunner {
@@ -206,8 +194,7 @@ public class DocumentModelStatusPersister implements
             }
         }
 
-        protected AdministrativeStatus wrap(DocumentModel doc)
-                throws ClientException {
+        protected AdministrativeStatus wrap(DocumentModel doc) throws ClientException {
 
             String userLogin = (String) doc.getPropertyValue(LOGIN_PROPERTY);
             String id = (String) doc.getPropertyValue(INSTANCE_PROPERTY);
@@ -216,8 +203,7 @@ public class DocumentModelStatusPersister implements
             String state = (String) doc.getPropertyValue(STATUS_PROPERTY);
             Calendar modified = (Calendar) doc.getPropertyValue("dc:modified");
 
-            return new AdministrativeStatus(state, message, modified,
-                    userLogin, id, service);
+            return new AdministrativeStatus(state, message, modified, userLogin, id, service);
         }
     }
 
@@ -241,11 +227,9 @@ public class DocumentModelStatusPersister implements
             return fetcher.statuses;
         } catch (ClientException e) {
             OSGiRuntimeService runtime = (OSGiRuntimeService) Framework.getRuntime();
-            String message = "Error while fetching all service status for instance "
-                    + instanceId;
+            String message = "Error while fetching all service status for instance " + instanceId;
             if (!runtime.isShuttingDown()) {
-                log.error(
-                        message, e);
+                log.error(message, e);
             } else {
                 log.warn(message + " (Runtime is shutting down)", e);
             }
@@ -254,21 +238,18 @@ public class DocumentModelStatusPersister implements
     }
 
     @Override
-    public AdministrativeStatus getStatus(String instanceId,
-            String serviceIdentifier) {
+    public AdministrativeStatus getStatus(String instanceId, String serviceIdentifier) {
         StatusFetcher fetcher = new StatusFetcher(instanceId, serviceIdentifier);
         try {
             fetcher.runUnrestricted();
             if (fetcher.statuses.size() == 1) {
                 return fetcher.statuses.get(0);
             } else {
-                log.warn("Unable to fetch status for service "
-                        + serviceIdentifier + " in instance " + instanceId);
+                log.warn("Unable to fetch status for service " + serviceIdentifier + " in instance " + instanceId);
                 return null;
             }
         } catch (ClientException e) {
-            log.error("Error while fetching all service status for instance "
-                    + instanceId, e);
+            log.error("Error while fetching all service status for instance " + instanceId, e);
             return null;
         }
     }

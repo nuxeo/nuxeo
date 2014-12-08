@@ -18,8 +18,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 
 /**
- * Create filters that are able to filter documents on their attribute (Regular
- * Doc, Published Doc, Version, Link, Proxy, Immutable, Mutable)
+ * Create filters that are able to filter documents on their attribute (Regular Doc, Published Doc, Version, Link,
+ * Proxy, Immutable, Mutable)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

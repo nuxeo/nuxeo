@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.annotations.gwt.client;
 
 /**
  * @author Alexandre Russel
- *
  */
 public final class AnnotationConstant {
 

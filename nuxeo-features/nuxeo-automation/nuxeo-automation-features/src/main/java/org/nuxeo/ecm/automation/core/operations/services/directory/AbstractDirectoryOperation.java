@@ -36,11 +36,9 @@ import org.nuxeo.runtime.api.Framework;
 public class AbstractDirectoryOperation {
 
     /**
-     * Throws a {@link ClientException} if the current user on the {@code ctx}
-     * cannot manage directories.
+     * Throws a {@link ClientException} if the current user on the {@code ctx} cannot manage directories.
      */
-    protected void validateCanManageDirectories(OperationContext ctx)
-            throws ClientException {
+    protected void validateCanManageDirectories(OperationContext ctx) throws ClientException {
         if (!canManageDirectories(ctx)) {
             throw new ClientException("Unauthorized user");
         }
@@ -48,13 +46,11 @@ public class AbstractDirectoryOperation {
 
     protected boolean canManageDirectories(OperationContext ctx) {
         ActionManager actionManager = Framework.getLocalService(ActionManager.class);
-        return actionManager.checkFilter("directoriesManagementAccess",
-                createActionContext(ctx));
+        return actionManager.checkFilter("directoriesManagementAccess", createActionContext(ctx));
     }
 
     protected ActionContext createActionContext(OperationContext ctx) {
-        ActionContext actionContext = new ELActionContext(
-                new ExpressionContext(), new ExpressionFactoryImpl());
+        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
         actionContext.setDocumentManager(ctx.getCoreSession());
         actionContext.setCurrentPrincipal((NuxeoPrincipal) ctx.getPrincipal());
         return actionContext;

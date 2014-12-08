@@ -50,8 +50,7 @@ public class ContentCreationListenerTest extends SQLRepositoryTestCase {
     @Test
     public void testContentCreationListener() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel model = session.createDocumentModel(
-                root.getPathAsString(), "mondomaine", "Domain");
+        DocumentModel model = session.createDocumentModel(root.getPathAsString(), "mondomaine", "Domain");
         DocumentModel doc = session.createDocument(model);
         session.saveDocument(doc);
         assert (doc != null);

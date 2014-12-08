@@ -27,8 +27,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 
 /**
- * Security policy that blocks WRITE permission on a document if it is locked by
- * someone else.
+ * Security policy that blocks WRITE permission on a document if it is locked by someone else.
  *
  * @author Anahide Tchertchian
  * @author Florent Guillaume
@@ -38,14 +37,11 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
     private static final Log log = LogFactory.getLog(LockSecurityPolicy.class);
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp,
-            Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
         // policy only applies on WRITE
-        if (resolvedPermissions == null
-                || !Arrays.asList(resolvedPermissions).contains(
-                        SecurityConstants.WRITE)) {
+        if (resolvedPermissions == null || !Arrays.asList(resolvedPermissions).contains(SecurityConstants.WRITE)) {
             return access;
         }
         // check the lock

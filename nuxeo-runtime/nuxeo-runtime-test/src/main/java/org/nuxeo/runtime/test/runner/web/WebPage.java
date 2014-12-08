@@ -38,16 +38,13 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class WebPage {
 
     /**
-     * Can be used by tests as default timeouts. This way you can change these
-     * values to change all the timeout in the tests. DEFAULT_TIMEOUT is used
-     * for regular timeouts (loading an ajax page an ajax dialog etc.) while
-     * BIG_TIMEOUT should be used for pages that are slower (like the home of a
-     * GWT application)
+     * Can be used by tests as default timeouts. This way you can change these values to change all the timeout in the
+     * tests. DEFAULT_TIMEOUT is used for regular timeouts (loading an ajax page an ajax dialog etc.) while BIG_TIMEOUT
+     * should be used for pages that are slower (like the home of a GWT application)
      */
     public static int DEFAULT_TIMEOUT = 5;
 
@@ -65,9 +62,8 @@ public abstract class WebPage {
     protected FeaturesRunner runner;
 
     /**
-     * Should be overridden by dynamic page (using ajax) to wait until the page
-     * is completely loaded By default nothing is done (page is assumed to be
-     * loaded)
+     * Should be overridden by dynamic page (using ajax) to wait until the page is completely loaded By default nothing
+     * is done (page is assumed to be loaded)
      *
      * @return the page itself
      */

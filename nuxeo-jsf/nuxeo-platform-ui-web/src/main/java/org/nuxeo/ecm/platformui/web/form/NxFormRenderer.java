@@ -28,8 +28,7 @@ import org.nuxeo.runtime.api.Framework;
 import com.sun.faces.renderkit.html_basic.FormRenderer;
 
 /**
- * Nuxeo h:form tag renderer override, to include javascript code preventing
- * multiple submissions of the form.
+ * Nuxeo h:form tag renderer override, to include javascript code preventing multiple submissions of the form.
  *
  * @since 5.7.3
  */
@@ -47,8 +46,7 @@ public class NxFormRenderer extends FormRenderer {
 
     protected static boolean dcDisabledOnElement(UIComponent component) {
         if (component != null) {
-            Object dcDisabledOnElement = component.getAttributes().get(
-                    ENABLE_DOUBLE_CLICK_ON_ELEMENT);
+            Object dcDisabledOnElement = component.getAttributes().get(ENABLE_DOUBLE_CLICK_ON_ELEMENT);
             if (dcDisabledOnElement != null) {
                 if (dcDisabledOnElement instanceof String) {
                     return Boolean.TRUE.equals(Boolean.valueOf((String) dcDisabledOnElement));
@@ -62,8 +60,7 @@ public class NxFormRenderer extends FormRenderer {
         return false;
     }
 
-    protected static boolean containsDoubleClickShieldClass(
-            final String styleClass) {
+    protected static boolean containsDoubleClickShieldClass(final String styleClass) {
         if (styleClass != null) {
             String[] split = styleClass.split(" ");
             for (String s : split) {
@@ -76,19 +73,16 @@ public class NxFormRenderer extends FormRenderer {
     }
 
     @Override
-    public void encodeBegin(FacesContext context, UIComponent component)
-            throws IOException {
+    public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
 
         if (component.isRendered() && isDoubleShieldEnabled()) {
             if (!dcDisabledOnElement(component)) {
-                String styleClass = (String) ((HtmlForm) component).getAttributes().get(
-                        "styleClass");
+                String styleClass = (String) ((HtmlForm) component).getAttributes().get("styleClass");
                 if (StringUtils.isBlank(styleClass)) {
                     ((HtmlForm) component).setStyleClass(DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG);
                 } else {
                     if (!containsDoubleClickShieldClass(styleClass)) {
-                        ((HtmlForm) component).setStyleClass(styleClass + " "
-                                + DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG);
+                        ((HtmlForm) component).setStyleClass(styleClass + " " + DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG);
                     }
                 }
             }

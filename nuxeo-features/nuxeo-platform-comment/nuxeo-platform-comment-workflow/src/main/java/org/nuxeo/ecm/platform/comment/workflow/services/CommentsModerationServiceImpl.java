@@ -47,8 +47,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
     private static final Log log = LogFactory.getLog(CommentsModerationService.class);
 
     @Override
-    public void startModeration(CoreSession session, DocumentModel doc,
-            String commentID, ArrayList<String> moderators)
+    public void startModeration(CoreSession session, DocumentModel doc, String commentID, ArrayList<String> moderators)
             throws ClientException {
         TaskService taskService = Framework.getService(TaskService.class);
         if (moderators == null || moderators.isEmpty()) {
@@ -57,34 +56,23 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         Map<String, String> vars = new HashMap<String, String>();
         vars.put(CommentsConstants.COMMENT_ID, commentID);
         vars.put(Task.TaskVariableName.needi18n.name(), "true");
-        vars.put(Task.TaskVariableName.taskType.name(),
-                CommentConstants.COMMENT_TASK_TYPE);
+        vars.put(Task.TaskVariableName.taskType.name(), CommentConstants.COMMENT_TASK_TYPE);
 
-        vars.put(
-                CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(),
-                "false");
-        vars.put(
-                CreateTask.OperationTaskVariableName.acceptOperationChain.name(),
-                CommentsConstants.ACCEPT_CHAIN_NAME);
-        vars.put(
-                CreateTask.OperationTaskVariableName.rejectOperationChain.name(),
-                CommentsConstants.REJECT_CHAIN_NAME);
+        vars.put(CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(), "false");
+        vars.put(CreateTask.OperationTaskVariableName.acceptOperationChain.name(), CommentsConstants.ACCEPT_CHAIN_NAME);
+        vars.put(CreateTask.OperationTaskVariableName.rejectOperationChain.name(), CommentsConstants.REJECT_CHAIN_NAME);
 
-        taskService.createTask(session,
-                (NuxeoPrincipal) session.getPrincipal(), doc,
-                CommentsConstants.MODERATION_DIRECTIVE_NAME, moderators, false,
-                null, null, null, vars, null);
+        taskService.createTask(session, (NuxeoPrincipal) session.getPrincipal(), doc,
+                CommentsConstants.MODERATION_DIRECTIVE_NAME, moderators, false, null, null, null, vars, null);
     }
 
-    public Task getModerationTask(TaskService taskService, CoreSession session,
-            DocumentModel doc, String commentId) throws ClientException {
-        List<Task> tasks = DocumentTaskProvider.getTasks(
-                "GET_COMMENT_MODERATION_TASKS", session, false, null,
+    public Task getModerationTask(TaskService taskService, CoreSession session, DocumentModel doc, String commentId)
+            throws ClientException {
+        List<Task> tasks = DocumentTaskProvider.getTasks("GET_COMMENT_MODERATION_TASKS", session, false, null,
                 doc.getId(), session.getPrincipal().getName(), commentId);
         if (tasks != null && !tasks.isEmpty()) {
             if (tasks.size() > 1) {
-                log.error("There are several moderation workflows running, "
-                        + "taking only first found");
+                log.error("There are several moderation workflows running, " + "taking only first found");
             }
             Task task = tasks.get(0);
             return task;
@@ -93,57 +81,42 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
     }
 
     @Override
-    public void approveComent(CoreSession session, DocumentModel doc,
-            String commentId) throws ClientException {
+    public void approveComent(CoreSession session, DocumentModel doc, String commentId) throws ClientException {
         TaskService taskService = Framework.getService(TaskService.class);
-        Task moderationTask = getModerationTask(taskService, session, doc,
-                commentId);
+        Task moderationTask = getModerationTask(taskService, session, doc, commentId);
         if (moderationTask == null) {
             // throw new ClientException("No moderation task found");
-            session.followTransition(new IdRef(commentId),
-                    CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
+            session.followTransition(new IdRef(commentId), CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
         } else {
-            taskService.acceptTask(session,
-                    (NuxeoPrincipal) session.getPrincipal(), moderationTask,
-                    null);
+            taskService.acceptTask(session, (NuxeoPrincipal) session.getPrincipal(), moderationTask, null);
         }
 
         Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
         eventInfo.put("emailDetails", "test");
-        notifyEvent(session, CommentsConstants.COMMENT_PUBLISHED, null, null,
-                null, doc);
+        notifyEvent(session, CommentsConstants.COMMENT_PUBLISHED, null, null, null, doc);
     }
 
     @Override
-    public void rejectComment(CoreSession session, DocumentModel doc,
-            String commentId) throws ClientException {
+    public void rejectComment(CoreSession session, DocumentModel doc, String commentId) throws ClientException {
         TaskService taskService = Framework.getService(TaskService.class);
-        Task moderationTask = getModerationTask(taskService, session, doc,
-                commentId);
+        Task moderationTask = getModerationTask(taskService, session, doc, commentId);
         if (moderationTask == null) {
             // throw new ClientException("No moderation task found");
-            session.followTransition(new IdRef(commentId),
-                    CommentsConstants.REJECT_STATE);
+            session.followTransition(new IdRef(commentId), CommentsConstants.REJECT_STATE);
         } else {
-            taskService.rejectTask(session,
-                    (NuxeoPrincipal) session.getPrincipal(), moderationTask,
-                    null);
+            taskService.rejectTask(session, (NuxeoPrincipal) session.getPrincipal(), moderationTask, null);
         }
     }
 
     @Override
-    public void publishComment(CoreSession session, DocumentModel comment)
-            throws ClientException {
-        session.followTransition(comment.getRef(),
-                CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
+    public void publishComment(CoreSession session, DocumentModel comment) throws ClientException {
+        session.followTransition(comment.getRef(), CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
 
-        notifyEvent(session, CommentsConstants.COMMENT_PUBLISHED, null, null,
-                null, comment);
+        notifyEvent(session, CommentsConstants.COMMENT_PUBLISHED, null, null, null, comment);
     }
 
-    protected void notifyEvent(CoreSession session, String eventId,
-            Map<String, Serializable> properties, String comment,
-            String category, DocumentModel dm) throws ClientException {
+    protected void notifyEvent(CoreSession session, String eventId, Map<String, Serializable> properties,
+            String comment, String category, DocumentModel dm) throws ClientException {
 
         // Default category
         if (category == null) {
@@ -154,14 +127,11 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
             properties = new HashMap<String, Serializable>();
         }
 
-        properties.put(CoreEventConstants.REPOSITORY_NAME,
-                session.getRepositoryName());
+        properties.put(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
         properties.put(CoreEventConstants.SESSION_ID, session.getSessionId());
-        properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
-                dm.getCurrentLifeCycleState());
+        properties.put(CoreEventConstants.DOC_LIFE_CYCLE, dm.getCurrentLifeCycleState());
 
-        DocumentEventContext ctx = new DocumentEventContext(session,
-                session.getPrincipal(), dm);
+        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), dm);
 
         ctx.setProperties(properties);
         ctx.setComment(comment);

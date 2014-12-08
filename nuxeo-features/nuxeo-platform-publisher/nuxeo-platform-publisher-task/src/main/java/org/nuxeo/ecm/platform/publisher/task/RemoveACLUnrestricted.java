@@ -24,9 +24,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 
 /**
  * @author arussel
- * @author ataillefer
- * 
- *         XXX ataillefer: get rid of oldAclName if refactor old JBPM ACL name
+ * @author ataillefer XXX ataillefer: get rid of oldAclName if refactor old JBPM ACL name
  */
 public class RemoveACLUnrestricted extends UnrestrictedSessionRunner {
     private final DocumentModel document;
@@ -35,8 +33,7 @@ public class RemoveACLUnrestricted extends UnrestrictedSessionRunner {
 
     private final String oldAclName;
 
-    public RemoveACLUnrestricted(CoreSession session, DocumentModel document,
-            String aclName, String oldAclName) {
+    public RemoveACLUnrestricted(CoreSession session, DocumentModel document, String aclName, String oldAclName) {
         super(session);
         this.document = document;
         this.aclName = aclName;

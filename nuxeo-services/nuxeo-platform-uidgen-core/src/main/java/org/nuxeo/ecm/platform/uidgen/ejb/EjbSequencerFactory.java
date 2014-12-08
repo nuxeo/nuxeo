@@ -26,8 +26,7 @@ import org.nuxeo.ecm.platform.uidgen.UIDSequencerFactory;
 import org.nuxeo.ecm.platform.uidgen.service.UIDSequencerImpl;
 
 /**
- * EJB Sequence factory. Will provide ejb based implementation
- * UIDSequencerManager
+ * EJB Sequence factory. Will provide ejb based implementation UIDSequencerManager
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */

@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Sync listener that calls the soft delete cleanup method of the repositories.
- * Designed to be called periodically.
+ * Sync listener that calls the soft delete cleanup method of the repositories. Designed to be called periodically.
  *
  * @since 5.7
  */
@@ -38,23 +37,21 @@ public class SoftDeleteCleanupListener implements EventListener {
     public static final int DEFAULT_MAX = 1000;
 
     /**
-     * Property for the maximum number of documents to delete in one call. Zero
-     * means all the documents. Default is {@value #DEFAULT_MAX}.
+     * Property for the maximum number of documents to delete in one call. Zero means all the documents. Default is
+     * {@value #DEFAULT_MAX}.
      */
     public static final String DEFAULT_MAX_PROP = "org.nuxeo.vcs.softdelete.cleanup.max";
 
     public static final int DEFAULT_DELAY = 5 * 60; // 5 min
 
     /**
-     * Property for the minimum delay (in seconds) since when a document must
-     * have been soft-deleted before it can be hard-deleted. Zero means no
-     * delay. Default is {@value #DEFAULT_DELAY}.
+     * Property for the minimum delay (in seconds) since when a document must have been soft-deleted before it can be
+     * hard-deleted. Zero means no delay. Default is {@value #DEFAULT_DELAY}.
      */
     public static final String DEFAULT_DELAY_PROP = "org.nuxeo.vcs.softdelete.cleanup.age";
 
     /**
-     * Gets the maximum number of documents to delete in one call. Zero means
-     * all the documents.
+     * Gets the maximum number of documents to delete in one call. Zero means all the documents.
      */
     protected int getMax() {
         String max = Framework.getProperty(DEFAULT_MAX_PROP);
@@ -70,8 +67,8 @@ public class SoftDeleteCleanupListener implements EventListener {
     }
 
     /**
-     * Gets the minimum delay (in seconds) since when a document must have been
-     * soft-deleted before it can be hard-deleted. Zero means no delay.
+     * Gets the minimum delay (in seconds) since when a document must have been soft-deleted before it can be
+     * hard-deleted. Zero means no delay.
      */
     protected int getDelaySeconds() {
         String delay = Framework.getProperty(DEFAULT_DELAY_PROP);
@@ -99,8 +96,7 @@ public class SoftDeleteCleanupListener implements EventListener {
         }
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         for (RepositoryManagement repoMgmt : sqlRepositoryService.getRepositories()) {
-            log.debug("Calling repository soft-delete cleanup for repository: "
-                    + repoMgmt.getName() + ", max=" + max
+            log.debug("Calling repository soft-delete cleanup for repository: " + repoMgmt.getName() + ", max=" + max
                     + ", beforeTimeDelay=" + delay);
             int n = repoMgmt.cleanupDeletedDocuments(max, beforeTime);
             log.debug("Number of documents deleted: " + n);

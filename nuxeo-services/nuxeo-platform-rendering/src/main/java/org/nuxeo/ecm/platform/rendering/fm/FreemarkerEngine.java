@@ -46,7 +46,6 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FreemarkerEngine implements RenderingEngine {
 
@@ -63,8 +62,7 @@ public class FreemarkerEngine implements RenderingEngine {
 
     protected final MessagesMethod messages = new MessagesMethod(null);
 
-    protected final LocaleMessagesMethod localeMessages = new LocaleMessagesMethod(
-            null);
+    protected final LocaleMessagesMethod localeMessages = new LocaleMessagesMethod(null);
 
     protected ResourceTemplateLoader loader;
 
@@ -105,9 +103,8 @@ public class FreemarkerEngine implements RenderingEngine {
     }
 
     /**
-     * set the resource bundle to be used with method message and lmessage. If
-     * the resourcebundle is not of the type ResourceComposite, lmessage will
-     * create a default ResourceComposite.
+     * set the resource bundle to be used with method message and lmessage. If the resourcebundle is not of the type
+     * ResourceComposite, lmessage will create a default ResourceComposite.
      */
     @Override
     public void setMessageBundle(ResourceBundle messages) {
@@ -165,36 +162,28 @@ public class FreemarkerEngine implements RenderingEngine {
     }
 
     /**
-     *
      * @param template
      * @param input
      * @param writer
-     * @param baseUrl a base URL used for resolving referenced files in extends
-     *            directive.
+     * @param baseUrl a base URL used for resolving referenced files in extends directive.
      * @throws RenderingException
      */
     @Override
-    public void render(String template, Object input, Writer writer)
-            throws RenderingException {
+    public void render(String template, Object input, Writer writer) throws RenderingException {
         try {
             /*
-             * A special method to get the absolute path as an URI to be used
-             * with freemarker since freemarker removes the leading / from the
-             * absolute path and the file cannot be resolved anymore In the case
-             * of URI like path freemarker is not modifying the path <p>
-             *
+             * A special method to get the absolute path as an URI to be used with freemarker since freemarker removes
+             * the leading / from the absolute path and the file cannot be resolved anymore In the case of URI like path
+             * freemarker is not modifying the path <p>
              * @see TemplateCache#normalizeName()
-             *
              * @see ResourceTemplateLoader#findTemplateSource()
              */
             if (template.startsWith("/")) {
                 template = "fs://" + template;
             }
             Template temp = cfg.getTemplate(template);
-            BlockWriter bw = new BlockWriter(temp.getName(), "",
-                    new BlockWriterRegistry());
-            Environment env = temp.createProcessingEnvironment(input, bw,
-                    wrapper);
+            BlockWriter bw = new BlockWriter(temp.getName(), "", new BlockWriterRegistry());
+            Environment env = temp.createProcessingEnvironment(input, bw, wrapper);
             env.process();
             bw.copyTo(writer);
         } catch (SocketException e) {

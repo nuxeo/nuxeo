@@ -10,8 +10,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.7.2
  */
-public class WSEndpointRegistry extends
-        SimpleContributionRegistry<WSEndpointDescriptor> {
+public class WSEndpointRegistry extends SimpleContributionRegistry<WSEndpointDescriptor> {
 
     @Override
     public String getContributionId(WSEndpointDescriptor contrib) {

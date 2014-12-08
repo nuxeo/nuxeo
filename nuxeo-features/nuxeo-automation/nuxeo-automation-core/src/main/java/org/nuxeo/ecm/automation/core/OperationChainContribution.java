@@ -69,23 +69,19 @@ public class OperationChainContribution {
     @XNode("description")
     protected String description;
 
-    @XNodeList(value = "operation", type = Operation[].class,
-            componentType = Operation.class)
+    @XNodeList(value = "operation", type = Operation[].class, componentType = Operation.class)
     protected Operation[] ops = new Operation[0];
 
     @XNode("public")
     protected boolean isPublic = true;
 
-    @XNodeList(value = "param", type = OperationDocumentation.Param[].class,
-            componentType = OperationDocumentation.Param.class)
-    protected OperationDocumentation.Param[] params = new
-            OperationDocumentation.Param[0];
+    @XNodeList(value = "param", type = OperationDocumentation.Param[].class, componentType = OperationDocumentation.Param.class)
+    protected OperationDocumentation.Param[] params = new OperationDocumentation.Param[0];
 
     /**
      * @since 7.1
      */
-    @XNodeList(value = "aliases/alias", type = String[].class,
-            componentType = String.class)
+    @XNodeList(value = "aliases/alias", type = String[].class, componentType = String.class)
     protected String[] aliases;
 
     @XObject("operation")
@@ -93,8 +89,7 @@ public class OperationChainContribution {
         @XNode("@id")
         protected String id;
 
-        @XNodeList(value = "param", type = ArrayList.class,
-                componentType = Param.class)
+        @XNodeList(value = "param", type = ArrayList.class, componentType = Param.class)
         protected ArrayList<Param> params;
 
         public String getId() {
@@ -122,8 +117,7 @@ public class OperationChainContribution {
         protected String value;
 
         // Optional map for properties type values
-        @XNodeMap(value = "property", key = "@key", type = HashMap.class,
-                componentType = String.class, nullByDefault = true)
+        @XNodeMap(value = "property", key = "@key", type = HashMap.class, componentType = String.class, nullByDefault = true)
         protected Map<String, String> map;
 
         public String getName() {
@@ -151,8 +145,7 @@ public class OperationChainContribution {
         return id;
     }
 
-    public OperationChain toOperationChain(Bundle bundle)
-            throws OperationException {
+    public OperationChain toOperationChain(Bundle bundle) throws OperationException {
         OperationChain chain = new OperationChain(id);
         chain.setDescription(description);
         chain.setPublic(isPublic);
@@ -166,11 +159,9 @@ public class OperationChainContribution {
                 if (param.value.startsWith("expr:")) {
                     param.value = param.value.substring(5);
                     if (param.value.contains("@{")) {
-                        params.set(param.name,
-                                Scripting.newTemplate(param.value));
+                        params.set(param.name, Scripting.newTemplate(param.value));
                     } else {
-                        params.set(param.name,
-                                Scripting.newExpression(param.value));
+                        params.set(param.name, Scripting.newExpression(param.value));
                     }
                 } else {
                     Object val = null;
@@ -213,18 +204,13 @@ public class OperationChainContribution {
                     case 'd':
                         if (T_DOCUMENT.equals(type)) {
                             if (param.value.startsWith(".")) {
-                                val = Scripting.newExpression("Document" +
-                                        ".resolvePathAsRef(\""
-                                        + param.value + "\")");
+                                val = Scripting.newExpression("Document" + ".resolvePathAsRef(\"" + param.value + "\")");
                             } else {
                                 val = StringToDocRef.createRef(param.value);
                             }
                         } else if (T_DOCUMENTS.equals(type)) {
-                            String[] ar = StringUtils.split(param.value, ',',
-                                    true);
-                            DocumentRefListImpl result = new
-                                    DocumentRefListImpl(
-                                    ar.length);
+                            String[] ar = StringUtils.split(param.value, ',', true);
+                            DocumentRefListImpl result = new DocumentRefListImpl(ar.length);
                             for (String ref : ar) {
                                 result.add(StringToDocRef.createRef(ref));
                             }

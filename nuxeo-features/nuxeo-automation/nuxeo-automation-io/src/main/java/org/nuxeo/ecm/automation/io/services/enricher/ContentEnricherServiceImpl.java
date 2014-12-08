@@ -44,19 +44,14 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
- *
  * @since 5.7.3
  */
-public class ContentEnricherServiceImpl extends DefaultComponent implements
-        ContentEnricherService {
+public class ContentEnricherServiceImpl extends DefaultComponent implements ContentEnricherService {
 
     /**
     *
     */
     public static final String NXCONTENT_CATEGORY_HEADER = "X-NXContext-Category";
-
-
 
     protected static final Log log = LogFactory.getLog(ContentEnricherServiceImpl.class);
 
@@ -65,8 +60,7 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements
     private Map<String, ContentEnricherDescriptor> descriptorRegistry = new ConcurrentHashMap<>();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (ENRICHER.equals(extensionPoint)) {
             ContentEnricherDescriptor cd = (ContentEnricherDescriptor) contribution;
@@ -76,8 +70,7 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (ENRICHER.equals(extensionPoint)) {
             ContentEnricherDescriptor cd = (ContentEnricherDescriptor) contribution;
             if (descriptorRegistry.containsKey(cd.name)) {
@@ -87,11 +80,9 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<ContentEnricher> getEnrichers(String category,
-            RestEvaluationContext context) {
+    public List<ContentEnricher> getEnrichers(String category, RestEvaluationContext context) {
         List<ContentEnricher> result = new ArrayList<>();
-        for (ContentEnricherDescriptor descriptor : getEnricherDescriptors(
-                category, context)) {
+        for (ContentEnricherDescriptor descriptor : getEnricherDescriptors(category, context)) {
 
             ContentEnricher contentEnricher = descriptor.getContentEnricher();
             result.add(contentEnricher);
@@ -100,8 +91,7 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements
         return result;
     }
 
-    private List<ContentEnricherDescriptor> getEnricherDescriptors(
-            String category, RestEvaluationContext context) {
+    private List<ContentEnricherDescriptor> getEnricherDescriptors(String category, RestEvaluationContext context) {
         List<ContentEnricherDescriptor> result = new ArrayList<>();
         for (Entry<String, ContentEnricherDescriptor> entry : descriptorRegistry.entrySet()) {
             ContentEnricherDescriptor descriptor = entry.getValue();
@@ -113,12 +103,11 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void writeContext(JsonGenerator jg, RestEvaluationContext ec)
-            throws JsonGenerationException, IOException, ClientException {
+    public void writeContext(JsonGenerator jg, RestEvaluationContext ec) throws JsonGenerationException, IOException,
+            ClientException {
 
         for (String category : getCategoriesToActivate(ec)) {
-            for (ContentEnricherDescriptor descriptor : getEnricherDescriptors(
-                    category, ec)) {
+            for (ContentEnricherDescriptor descriptor : getEnricherDescriptors(category, ec)) {
                 if (evaluateFilter(ec, descriptor)) {
                     ContentEnricher enricher = descriptor.getContentEnricher();
                     if (enricher != null) {
@@ -135,10 +124,8 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements
      * @param ec
      * @param descriptor
      * @return
-     *
      */
-    private boolean evaluateFilter(RestEvaluationContext ec,
-            ContentEnricherDescriptor descriptor) {
+    private boolean evaluateFilter(RestEvaluationContext ec, ContentEnricherDescriptor descriptor) {
         for (String filterId : descriptor.filterIds) {
             ActionManager as = Framework.getLocalService(ActionManager.class);
             if (!as.checkFilter(filterId, createActionContext(ec))) {
@@ -153,11 +140,9 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements
      *
      * @param ec
      * @return
-     *
      */
     private ActionContext createActionContext(RestEvaluationContext ec) {
-        ActionContext actionContext = new ELActionContext(
-                new ExpressionContext(), new ExpressionFactoryImpl());
+        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
         CoreSession session = ec.getDocumentModel().getCoreSession();
         actionContext.setDocumentManager(session);
         actionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
@@ -172,8 +157,7 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements
         if (headers != null) {
             List<String> requestHeader = headers.getRequestHeader(NXCONTENT_CATEGORY_HEADER);
             if (requestHeader != null && !requestHeader.isEmpty()) {
-                return Arrays.asList(StringUtils.split(requestHeader.get(0),
-                        ',', true));
+                return Arrays.asList(StringUtils.split(requestHeader.get(0), ',', true));
             } else {
                 return new ArrayList<>(0);
             }

@@ -18,8 +18,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 /**
- * Multiple select options top be held by the {@link WidgetDefinition} and
- * {@link Widget} generated from the definition.
+ * Multiple select options top be held by the {@link WidgetDefinition} and {@link Widget} generated from the definition.
  *
  * @author Anahide Tchertchian
  * @since 5.4.2

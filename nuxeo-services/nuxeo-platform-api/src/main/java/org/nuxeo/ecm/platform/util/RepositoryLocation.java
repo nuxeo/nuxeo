@@ -28,8 +28,7 @@ import java.io.Serializable;
  * @author Thierry Delprat
  * @author Florent Guillaume
  */
-public class RepositoryLocation implements Serializable,
-        Comparable<RepositoryLocation> {
+public class RepositoryLocation implements Serializable, Comparable<RepositoryLocation> {
 
     private static final long serialVersionUID = -4802281621945117577L;
 

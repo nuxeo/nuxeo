@@ -52,12 +52,9 @@ public class TestRealRemoting extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.query.api");
 
         deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-pageprovider-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.core", "OSGI-INF/publisher-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.core", "OSGI-INF/publisher-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.core", "OSGI-INF/publisher-pageprovider-contrib.xml");
 
         openSession();
         fireFrameworkStarted();
@@ -72,16 +69,13 @@ public class TestRealRemoting extends SQLRepositoryTestCase {
 
     protected void createInitialDocs() throws Exception {
 
-        DocumentModel wsRoot = session.getDocument(new PathRef(
-                "default-domain/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
 
-        DocumentModel ws = session.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
+        DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");
         ws = session.createDocument(ws);
 
-        doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file",
-                "File");
+        doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file", "File");
         doc2Publish.setProperty("dublincore", "title", "MyDoc");
 
         Blob blob = new StringBlob("SomeDummyContent");
@@ -104,8 +98,7 @@ public class TestRealRemoting extends SQLRepositoryTestCase {
 
         createInitialDocs();
 
-        deployContrib("org.nuxeo.ecm.platform.publisher.test",
-                "OSGI-INF/publisher-remote-contrib-test.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.test", "OSGI-INF/publisher-remote-contrib-test.xml");
 
         // check service config
         PublisherService service = Framework.getLocalService(PublisherService.class);
@@ -113,8 +106,7 @@ public class TestRealRemoting extends SQLRepositoryTestCase {
         assertTrue(treeNames.contains("ClientRemoteTree2"));
 
         // check publication tree
-        PublicationTree tree = service.getPublicationTree("ClientRemoteTree2",
-                session, null);
+        PublicationTree tree = service.getPublicationTree("ClientRemoteTree2", session, null);
         assertNotNull(tree);
         assertEquals("ClientRemoteTree2", tree.getConfigName());
 
@@ -142,8 +134,7 @@ public class TestRealRemoting extends SQLRepositoryTestCase {
                 doc2Publish));
         assertEquals(1, publishedDocuments.size());
         tree.unpublish(pubDoc);
-        publishedDocuments = tree.getExistingPublishedDocument(new DocumentLocationImpl(
-                doc2Publish));
+        publishedDocuments = tree.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish));
         assertEquals(0, publishedDocuments.size());
     }
 

@@ -28,7 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Thierry Delprat
  */
 @XObject("permission")
-public class PermissionDescriptor implements Serializable{
+public class PermissionDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -61,8 +61,7 @@ public class PermissionDescriptor implements Serializable{
     }
 
     /**
-     * Used to unregistered a PermissionDescriptor out of the list
-     * of already registered contributions.
+     * Used to unregistered a PermissionDescriptor out of the list of already registered contributions.
      */
     @Override
     public boolean equals(Object o) {

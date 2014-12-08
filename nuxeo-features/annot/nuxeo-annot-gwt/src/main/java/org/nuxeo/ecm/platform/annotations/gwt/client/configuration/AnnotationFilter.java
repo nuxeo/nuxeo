@@ -44,8 +44,7 @@ public class AnnotationFilter implements IsSerializable {
     public AnnotationFilter() {
     }
 
-    public AnnotationFilter(String name, String icon, String type,
-            String author, Map<String, String> fields) {
+    public AnnotationFilter(String name, String icon, String type, String author, Map<String, String> fields) {
         this.name = name;
         this.icon = icon;
 
@@ -86,8 +85,7 @@ public class AnnotationFilter implements IsSerializable {
 
         if (fields != null) {
             for (String name : fields.keySet()) {
-                accept &= fields.get(name).equals(
-                        annotation.getFields().get(name));
+                accept &= fields.get(name).equals(annotation.getFields().get(name));
             }
         }
 
@@ -101,7 +99,6 @@ public class AnnotationFilter implements IsSerializable {
     public String getIcon() {
         return icon;
     }
-
 
     public String getType() {
         return type;

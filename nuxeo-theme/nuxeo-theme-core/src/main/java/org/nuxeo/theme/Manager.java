@@ -39,8 +39,7 @@ public final class Manager {
     }
 
     public static ThemeService getThemeService() {
-        return (ThemeService) Framework.getRuntime().getComponent(
-                ThemeService.ID);
+        return (ThemeService) Framework.getRuntime().getComponent(ThemeService.ID);
     }
 
     private static Map<String, Registrable> getRegistries() {
@@ -89,15 +88,14 @@ public final class Manager {
 
     public static void initializeProtocols() {
         shf = new URLStreamHandlerFactory() {
-                @Override
-                public URLStreamHandler createURLStreamHandler(
-                        String protocol) {
-                    if ("nxtheme".equals(protocol)) {
-                        return new Handler();
-                    }
-                    return null;
+            @Override
+            public URLStreamHandler createURLStreamHandler(String protocol) {
+                if ("nxtheme".equals(protocol)) {
+                    return new Handler();
                 }
-            };
+                return null;
+            }
+        };
         try {
             URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(shf);
         } catch (Throwable e) {

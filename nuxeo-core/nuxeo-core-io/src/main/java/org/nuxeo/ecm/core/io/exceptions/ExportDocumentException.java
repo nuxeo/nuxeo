@@ -18,7 +18,6 @@ package org.nuxeo.ecm.core.io.exceptions;
  * Import document exception.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class ExportDocumentException extends RuntimeException {
 

@@ -22,14 +22,13 @@ package org.nuxeo.ecm.directory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Interface to be used by Directory implementations to perform arbitrary
- * "fetch-time" adaptations on the entry fields and the readonly flag.
+ * Interface to be used by Directory implementations to perform arbitrary "fetch-time" adaptations on the entry fields
+ * and the readonly flag.
  */
 public interface EntryAdaptor {
 
     /**
-     * Allow the directory initialization process to configure the adaptor by
-     * providing String valued parameters.
+     * Allow the directory initialization process to configure the adaptor by providing String valued parameters.
      */
     void setParameter(String name, String value);
 
@@ -41,7 +40,6 @@ public interface EntryAdaptor {
      * @return the adapted entry
      * @throws DirectoryException if the adapting process fails unexpectedly
      */
-    DocumentModel adapt(Directory directory, DocumentModel entry)
-            throws DirectoryException;
+    DocumentModel adapt(Directory directory, DocumentModel entry) throws DirectoryException;
 
 }

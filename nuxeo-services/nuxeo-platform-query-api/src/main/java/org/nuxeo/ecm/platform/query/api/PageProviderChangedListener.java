@@ -18,8 +18,7 @@
 package org.nuxeo.ecm.platform.query.api;
 
 /**
- * Listener to set on a {@link PageProvider} to be notified when the
- * {@code PageProvider} changes.
+ * Listener to set on a {@link PageProvider} to be notified when the {@code PageProvider} changes.
  *
  * @since 5.7
  */

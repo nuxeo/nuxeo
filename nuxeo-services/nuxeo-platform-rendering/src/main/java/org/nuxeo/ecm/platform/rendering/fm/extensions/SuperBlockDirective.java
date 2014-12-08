@@ -26,20 +26,19 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SuperBlockDirective implements TemplateDirectiveModel {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public void execute(Environment env, Map params, TemplateModel[] loopVars,
-            TemplateDirectiveBody body) throws TemplateException, IOException {
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+            throws TemplateException, IOException {
 
         if (body != null) {
             throw new TemplateModelException("Didn't expect a body");
         }
 
-        BlockWriter writer = (BlockWriter)env.getOut();
+        BlockWriter writer = (BlockWriter) env.getOut();
         writer.writeSuperBlock();
     }
 

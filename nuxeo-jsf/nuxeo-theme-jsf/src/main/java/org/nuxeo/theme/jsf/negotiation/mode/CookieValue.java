@@ -22,8 +22,7 @@ import org.nuxeo.theme.negotiation.Scheme;
 public class CookieValue implements Scheme {
 
     public String getOutcome(final Object context) {
-        return CookieManager.getCookie("nxthemes.mode",
-                ((FacesContext) context).getExternalContext());
+        return CookieManager.getCookie("nxthemes.mode", ((FacesContext) context).getExternalContext());
     }
 
 }

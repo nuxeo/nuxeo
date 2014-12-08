@@ -21,7 +21,6 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface FormDataProvider {
 

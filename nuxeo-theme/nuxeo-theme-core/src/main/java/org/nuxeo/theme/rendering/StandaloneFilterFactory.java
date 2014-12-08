@@ -25,8 +25,8 @@ public final class StandaloneFilterFactory {
 
     public static StandaloneFilter create(String typeName) {
         StandaloneFilter filter = null;
-        StandaloneFilterType filterType = (StandaloneFilterType) Manager.getTypeRegistry().lookup(
-                TypeFamily.FILTER, typeName);
+        StandaloneFilterType filterType = (StandaloneFilterType) Manager.getTypeRegistry().lookup(TypeFamily.FILTER,
+                typeName);
         try {
             filter = (StandaloneFilter) Thread.currentThread().getContextClassLoader().loadClass(
                     filterType.getClassName()).newInstance();

@@ -38,7 +38,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class TilingMainPanel extends Composite {
 
@@ -48,8 +47,7 @@ public class TilingMainPanel extends Composite {
 
         private boolean showThumbnail = true;
 
-        public ThumbnailButton(
-                final TilingPreviewControllerPanel previewControllerPanel) {
+        public ThumbnailButton(final TilingPreviewControllerPanel previewControllerPanel) {
             super(HIDE_THUMBNAIL_IMAGE);
 
             addMouseListener(new MouseListenerAdapter() {
@@ -66,8 +64,7 @@ public class TilingMainPanel extends Composite {
                 public void onClick(Widget arg0) {
                     showThumbnail = !showThumbnail;
                     previewControllerPanel.setVisible(showThumbnail);
-                    thumbnailButton.setUrl(showThumbnail ? HIDE_THUMBNAIL_IMAGE
-                            : SHOW_THUMBNAIL_IMAGE);
+                    thumbnailButton.setUrl(showThumbnail ? HIDE_THUMBNAIL_IMAGE : SHOW_THUMBNAIL_IMAGE);
                 }
             });
         }
@@ -130,8 +127,8 @@ public class TilingMainPanel extends Composite {
 
         int maxTiles = maxTilesW > maxTilesH ? maxTilesW : maxTilesH;
         maxTiles += 1;
-        final TilingInfo currentTilingInfo = new TilingInfo(repoId, docId, contextPath,
-                TILE_WIDTH, TILE_HEIGHT, maxTiles);
+        final TilingInfo currentTilingInfo = new TilingInfo(repoId, docId, contextPath, TILE_WIDTH, TILE_HEIGHT,
+                maxTiles);
         currentTilingInfo.updateTilingInfo(new TilingInfoCallback() {
             public void tilingInfoUpdated() {
                 finishLoading(tilingInfo, currentTilingInfo);
@@ -139,26 +136,21 @@ public class TilingMainPanel extends Composite {
         });
     }
 
-    private void finishLoading(TilingInfo sourceTilingInfo,
-            TilingInfo currentTilingInfo) {
+    private void finishLoading(TilingInfo sourceTilingInfo, TilingInfo currentTilingInfo) {
         // Size of the view area
         final int width = Window.getClientWidth();
         final int height = Window.getClientHeight();
-        TilingModel model = new TilingModel(currentTilingInfo, width, height,
-                currentTilingInfo.getZoom());
+        TilingModel model = new TilingModel(currentTilingInfo, width, height, currentTilingInfo.getZoom());
 
         // Create a controller
-        TilingController controller = new TilingController(sourceTilingInfo,
-                model);
+        TilingController controller = new TilingController(sourceTilingInfo, model);
 
         // the panels
         AbsolutePanel rootPanel = new AbsolutePanel();
-        TilingPreviewPanel previewPanel = new TilingPreviewPanel(controller,
-                model);
+        TilingPreviewPanel previewPanel = new TilingPreviewPanel(controller, model);
         rootPanel.add(previewPanel);
 
-        final TilingPreviewControllerPanel controllerPanel = new TilingPreviewControllerPanel(
-                sourceTilingInfo, model);
+        final TilingPreviewControllerPanel controllerPanel = new TilingPreviewControllerPanel(sourceTilingInfo, model);
         controllerPanel.addStyleName("thumbnail-panel");
         final int controllerPanelWidth = (int) Math.round(sourceTilingInfo.getOriginalImageWidth()
                 * sourceTilingInfo.getZoom());
@@ -169,8 +161,7 @@ public class TilingMainPanel extends Composite {
 
         // the button to show / hide the thumbnail
         ThumbnailButton thumbnailButton = new ThumbnailButton(controllerPanel);
-        rootPanel.add(thumbnailButton, width - thumbnailButton.getWidth(),
-            height - thumbnailButton.getHeight());
+        rootPanel.add(thumbnailButton, width - thumbnailButton.getWidth(), height - thumbnailButton.getHeight());
 
         initWidget(rootPanel);
 

@@ -23,8 +23,7 @@ import org.jboss.seam.annotations.Scope;
 /**
  * Helper component to count number of columns rendered in a layout context.
  * <p>
- * Useful when rendering listing layouts in a PDF table, where number of
- * columns need to be known in advance.
+ * Useful when rendering listing layouts in a PDF table, where number of columns need to be known in advance.
  *
  * @since 5.4.2
  */

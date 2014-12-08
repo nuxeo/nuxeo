@@ -24,15 +24,15 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface CommandProcessor {
 
     /**
      * Gets the list of commands to execute when install() is called.
      * <p>
-     * The returned list is editable so that you can add new commands or modify existing commands
-     * by modifying the returned list.
+     * The returned list is editable so that you can add new commands or modify existing commands by modifying the
+     * returned list.
      *
      * @return the list of commands to execute by this installer
      */

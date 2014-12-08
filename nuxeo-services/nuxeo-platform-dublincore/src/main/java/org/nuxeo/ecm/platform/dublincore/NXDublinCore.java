@@ -18,21 +18,21 @@ import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *  DublinCore service facade.
+ * DublinCore service facade.
  *
- *  @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public final class NXDublinCore {
 
     // This is a utility class.
-    private NXDublinCore() { }
+    private NXDublinCore() {
+    }
 
     /**
      * Locates the core service using NXRuntime.
      */
     public static DublinCoreStorageService getDublinCoreStorageService() {
-        return (DublinCoreStorageService) Framework.getRuntime().getComponent(
-                DublinCoreStorageService.ID);
+        return (DublinCoreStorageService) Framework.getRuntime().getComponent(DublinCoreStorageService.ID);
     }
 
 }

@@ -21,7 +21,7 @@ package org.nuxeo.runtime.test.protocols.inline;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 public class InlineURLsFeature extends SimpleFeature {
-    
+
     public InlineURLsFeature() {
         InlineURLFactory.install();
     }

@@ -16,15 +16,12 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AuthenticationService {
 
     protected Map<String, AuthenticationHandler> handlers;
 
-
-    public void addHander(AuthenticationHandlerDescriptor desc)
-            throws ReflectiveOperationException {
+    public void addHander(AuthenticationHandlerDescriptor desc) throws ReflectiveOperationException {
         handlers.put(desc.name, desc.newInstance());
     }
 
@@ -46,6 +43,7 @@ public class AuthenticationService {
 
     /**
      * Create a handler instance for the given comma separated list of handler names.
+     *
      * @param names
      * @return
      */
@@ -61,7 +59,7 @@ public class AuthenticationService {
             String name = names.substring(s, i).trim();
             AuthenticationHandler handler = getHandler(name);
             result.add(handler);
-            s = i+1;
+            s = i + 1;
             i = names.indexOf(',', s);
         } while (i > -1);
         if (s < names.length()) {

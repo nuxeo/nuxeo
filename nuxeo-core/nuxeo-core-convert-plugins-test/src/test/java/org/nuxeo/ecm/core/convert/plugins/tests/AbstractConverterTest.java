@@ -47,8 +47,7 @@ public abstract class AbstractConverterTest {
         return new SimpleBlobHolder(new FileBlob(file));
     }
 
-    protected String doTestTextConverter(String srcMT, String converter,
-            String fileName) throws Exception {
+    protected String doTestTextConverter(String srcMT, String converter, String fileName) throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
@@ -71,8 +70,7 @@ public abstract class AbstractConverterTest {
         return textContent;
     }
 
-    protected String doTestAny2TextConverter(String srcMT,
-            String converterName, String fileName) throws Exception {
+    protected String doTestAny2TextConverter(String srcMT, String converterName, String fileName) throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
@@ -94,8 +92,7 @@ public abstract class AbstractConverterTest {
         return textContent;
     }
 
-    protected String doTestArabicTextConverter(String srcMT, String converter,
-            String fileName) throws Exception {
+    protected String doTestArabicTextConverter(String srcMT, String converter, String fileName) throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         assertTrue(cs.isConverterAvailable(converter).isAvailable());

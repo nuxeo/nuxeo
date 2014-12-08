@@ -51,37 +51,31 @@ public final class CSSUtils {
 
     private static final String CSS_PROPERTIES_RESOURCE = "/nxthemes/html/styles/css.properties";
 
-    private static final Pattern firstTagPattern = Pattern.compile("<(.*?)>",
+    private static final Pattern firstTagPattern = Pattern.compile("<(.*?)>", Pattern.DOTALL);
+
+    private static final Pattern otherTagsPattern = Pattern.compile("<.*?>(.*)", Pattern.DOTALL);
+
+    private static final Pattern classAttrPattern = Pattern.compile(" class=\"(.*?)\"", Pattern.DOTALL);
+
+    private static final Pattern emptyCssSelectorPattern = Pattern.compile("(.*?)\\{(.*?)\\}", Pattern.DOTALL);
+
+    private static final Pattern hexColorPattern = Pattern.compile(".*?#(\\p{XDigit}{3,6}).*?", Pattern.DOTALL);
+
+    private static final Pattern rgbColorPattern = Pattern.compile(".*?rgb\\s*\\(\\s*([0-9,\\s]+)\\s*\\).*?",
             Pattern.DOTALL);
 
-    private static final Pattern otherTagsPattern = Pattern.compile(
-            "<.*?>(.*)", Pattern.DOTALL);
+    private static final Pattern urlPattern = Pattern.compile("^url\\s*\\([\\s,\",\']*(.*?)[\\s,\",\']*\\)$",
+            Pattern.DOTALL);
 
-    private static final Pattern classAttrPattern = Pattern.compile(
-            " class=\"(.*?)\"", Pattern.DOTALL);
-
-    private static final Pattern emptyCssSelectorPattern = Pattern.compile(
-            "(.*?)\\{(.*?)\\}", Pattern.DOTALL);
-
-    private static final Pattern hexColorPattern = Pattern.compile(
-            ".*?#(\\p{XDigit}{3,6}).*?", Pattern.DOTALL);
-
-    private static final Pattern rgbColorPattern = Pattern.compile(
-            ".*?rgb\\s*\\(\\s*([0-9,\\s]+)\\s*\\).*?", Pattern.DOTALL);
-
-    private static final Pattern urlPattern = Pattern.compile(
-            "^url\\s*\\([\\s,\",\']*(.*?)[\\s,\",\']*\\)$", Pattern.DOTALL);
-
-    private static final Pattern partialUrlPattern = Pattern.compile(
-            "url\\s*\\([\\s,\",\']*([^/].*?)[\\s,\",\']*\\)", Pattern.DOTALL);
+    private static final Pattern partialUrlPattern = Pattern.compile("url\\s*\\([\\s,\",\']*([^/].*?)[\\s,\",\']*\\)",
+            Pattern.DOTALL);
 
     private static final Pattern rgbDigitPattern = Pattern.compile("([0-9]{1,3},[0-9]{1,3},[0-9]{1,3})");
 
     private static final Properties cssProperties = new OrderedProperties();
 
     static {
-        org.nuxeo.theme.Utils.loadProperties(cssProperties,
-                CSS_PROPERTIES_RESOURCE);
+        org.nuxeo.theme.Utils.loadProperties(cssProperties, CSS_PROPERTIES_RESOURCE);
     }
 
     private CSSUtils() {
@@ -92,9 +86,8 @@ public final class CSSUtils {
         return cssProperties;
     }
 
-    public static String styleToCss(final Style style,
-            final Collection<String> viewNames, final boolean ignoreViewName,
-            final boolean ignoreClassName, final boolean indent) {
+    public static String styleToCss(final Style style, final Collection<String> viewNames,
+            final boolean ignoreViewName, final boolean ignoreClassName, final boolean indent) {
 
         final StringBuilder sb = new StringBuilder();
         final StringBuilder pSb = new StringBuilder();
@@ -112,8 +105,7 @@ public final class CSSUtils {
             }
 
             for (String path : style.getPathsForView(viewName)) {
-                final Properties styleProperties = style.getPropertiesFor(
-                        viewName, path);
+                final Properties styleProperties = style.getPropertiesFor(viewName, path);
                 // if (styleProperties.isEmpty()) {
                 // continue;
                 // }
@@ -163,8 +155,7 @@ public final class CSSUtils {
         return sb.toString();
     }
 
-    public static String insertCssClass(final String markup,
-            final String className) {
+    public static String insertCssClass(final String markup, final String className) {
         final Matcher firstMatcher = firstTagPattern.matcher(markup);
         final Matcher othersMatcher = otherTagsPattern.matcher(markup);
 
@@ -197,12 +188,10 @@ public final class CSSUtils {
 
         // write the final markup
         if (inBrackets.endsWith("/")) {
-            return String.format("<%s class=\"%s\" />%s",
-                    inBrackets.replaceAll("/$", "").trim(),
+            return String.format("<%s class=\"%s\" />%s", inBrackets.replaceAll("/$", "").trim(),
                     classAttributes.toString(), othersMatcher.group(1));
         }
-        return String.format("<%s class=\"%s\">%s", inBrackets,
-                classAttributes.toString(), othersMatcher.group(1));
+        return String.format("<%s class=\"%s\">%s", inBrackets, classAttributes.toString(), othersMatcher.group(1));
 
     }
 
@@ -251,11 +240,9 @@ public final class CSSUtils {
         if (value.length() != 6) {
             return value;
         }
-        if ((value.charAt(0) == value.charAt(1))
-                && (value.charAt(2) == value.charAt(3))
+        if ((value.charAt(0) == value.charAt(1)) && (value.charAt(2) == value.charAt(3))
                 && (value.charAt(4) == value.charAt(5))) {
-            return String.format("%s%s%s", value.charAt(0), value.charAt(2),
-                    value.charAt(4));
+            return String.format("%s%s%s", value.charAt(0), value.charAt(2), value.charAt(4));
         }
         return value;
     }
@@ -330,8 +317,7 @@ public final class CSSUtils {
         return sb.toString();
     }
 
-    public static String compressSource(final String source)
-            throws ThemeException {
+    public static String compressSource(final String source) throws ThemeException {
         String compressedSource = source;
         Reader in = null;
         Writer out = null;
@@ -374,47 +360,39 @@ public final class CSSUtils {
         if (!cssContextPath.endsWith("/")) {
             cssContextPath += "/";
         }
-        String replacement = String.format("url(%s$1)",
-                Matcher.quoteReplacement(cssContextPath));
+        String replacement = String.format("url(%s$1)", Matcher.quoteReplacement(cssContextPath));
         return m.replaceAll(replacement);
     }
 
-    public static String expandVariables(String text, String basePath,
-            String collectionName, ThemeDescriptor themeDescriptor) {
+    public static String expandVariables(String text, String basePath, String collectionName,
+            ThemeDescriptor themeDescriptor) {
 
         String themeName = themeDescriptor.getName();
 
         if (basePath != null) {
-            text = text.replaceAll("\\$\\{basePath\\}",
-                    Matcher.quoteReplacement(basePath));
-            text = text.replaceAll("\\$\\{org.nuxeo.ecm.contextPath\\}",
-                    Matcher.quoteReplacement(basePath));
+            text = text.replaceAll("\\$\\{basePath\\}", Matcher.quoteReplacement(basePath));
+            text = text.replaceAll("\\$\\{org.nuxeo.ecm.contextPath\\}", Matcher.quoteReplacement(basePath));
         }
 
         String contextPath = VirtualHostHelper.getContextPathProperty();
 
         // Replace global presets
         for (PresetType preset : PresetManager.getGlobalPresets(null, null)) {
-            text = text.replaceAll(
-                    Pattern.quote(String.format("\"%s\"", preset.getTypeName())),
+            text = text.replaceAll(Pattern.quote(String.format("\"%s\"", preset.getTypeName())),
                     Matcher.quoteReplacement(preset.getValue()));
         }
 
         // Replace custom presets
         for (PresetType preset : PresetManager.getCustomPresets(themeName)) {
-            text = text.replaceAll(
-                    Pattern.quote(String.format("\"%s\"", preset.getTypeName())),
+            text = text.replaceAll(Pattern.quote(String.format("\"%s\"", preset.getTypeName())),
                     Matcher.quoteReplacement(preset.getValue()));
         }
 
         // Replace presets from the current collection
         if (collectionName != null) {
-            for (PresetType preset : PresetManager.getGlobalPresets(
-                    collectionName, null)) {
-                text = text.replaceAll(Pattern.quote(String.format("\"%s\"",
-                        preset.getTypeName())),
-                        Matcher.quoteReplacement(PresetManager.resolvePresets(
-                                themeName, preset.getValue())));
+            for (PresetType preset : PresetManager.getGlobalPresets(collectionName, null)) {
+                text = text.replaceAll(Pattern.quote(String.format("\"%s\"", preset.getTypeName())),
+                        Matcher.quoteReplacement(PresetManager.resolvePresets(themeName, preset.getValue())));
             }
         }
 
@@ -426,25 +404,18 @@ public final class CSSUtils {
                 resourceBank = ThemeManager.getResourceBank(resourceBankName);
 
                 for (PresetInfo preset : resourceBank.getPresets()) {
-                    text = text.replaceAll(
-                            Pattern.quote(String.format("\"%s\"",
-                                    preset.getTypeName())),
-                            Matcher.quoteReplacement(PresetManager.resolvePresets(
-                                    themeName, preset.getValue())));
+                    text = text.replaceAll(Pattern.quote(String.format("\"%s\"", preset.getTypeName())),
+                            Matcher.quoteReplacement(PresetManager.resolvePresets(themeName, preset.getValue())));
                 }
 
                 for (ImageInfo image : resourceBank.getImages()) {
                     String path = image.getPath();
-                    text = text.replaceAll(
-                            path,
-                            Matcher.quoteReplacement(String.format(
-                                    "%s/nxthemes-images/%s/%s", contextPath,
-                                    resourceBankName, path.replace(" ", "%20"))));
+                    text = text.replaceAll(path, Matcher.quoteReplacement(String.format("%s/nxthemes-images/%s/%s",
+                            contextPath, resourceBankName, path.replace(" ", "%20"))));
                 }
 
             } catch (ThemeException e) {
-                log.warn("Could not get resources from theme bank: "
-                        + resourceBankName);
+                log.warn("Could not get resources from theme bank: " + resourceBankName);
             }
         }
 

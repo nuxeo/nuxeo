@@ -55,11 +55,9 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         return SessionFactory.getSession(request);
     }
 
-    public static final MediaType targetMediaTypeNXReq = new MediaType(
-            "application", "json+nxrequest");
+    public static final MediaType targetMediaTypeNXReq = new MediaType("application", "json+nxrequest");
 
-    public static final MediaType targetMediaType = new MediaType(
-            "application", "json");
+    public static final MediaType targetMediaType = new MediaType("application", "json");
 
     protected static final HashMap<String, InputResolver<?>> inputResolvers = new HashMap<String, InputResolver<?>>();
 
@@ -89,23 +87,17 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
     }
 
     @Override
-    public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3) {
-        return ((targetMediaTypeNXReq.isCompatible(arg3) || targetMediaType
-                .isCompatible(arg3)) && ExecutionRequest.class
-                .isAssignableFrom(arg0));
+    public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
+        return ((targetMediaTypeNXReq.isCompatible(arg3) || targetMediaType.isCompatible(arg3)) && ExecutionRequest.class.isAssignableFrom(arg0));
     }
 
     @Override
-    public ExecutionRequest readFrom(Class<ExecutionRequest> arg0, Type arg1,
-            Annotation[] arg2, MediaType arg3,
-            MultivaluedMap<String, String> headers, InputStream in)
-            throws IOException, WebApplicationException {
+    public ExecutionRequest readFrom(Class<ExecutionRequest> arg0, Type arg1, Annotation[] arg2, MediaType arg3,
+            MultivaluedMap<String, String> headers, InputStream in) throws IOException, WebApplicationException {
         return readRequest(in, headers, getCoreSession());
     }
 
-    public ExecutionRequest readRequest(InputStream in,
-            MultivaluedMap<String, String> headers, CoreSession session)
+    public ExecutionRequest readRequest(InputStream in, MultivaluedMap<String, String> headers, CoreSession session)
             throws IOException, WebApplicationException {
         // As stated in http://tools.ietf.org/html/rfc4627.html UTF-8 is the
         // default encoding for JSON content
@@ -119,8 +111,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         return readRequest(content, headers, session);
     }
 
-    public ExecutionRequest readRequest(String content,
-            MultivaluedMap<String, String> headers, CoreSession session)
+    public ExecutionRequest readRequest(String content, MultivaluedMap<String, String> headers, CoreSession session)
             throws WebApplicationException {
         try {
             return readRequest0(content, headers, session);
@@ -131,8 +122,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         }
     }
 
-    public ExecutionRequest readRequest0(String content,
-            MultivaluedMap<String, String> headers, CoreSession session)
+    public ExecutionRequest readRequest0(String content, MultivaluedMap<String, String> headers, CoreSession session)
             throws IOException {
 
         JsonParser jp = factory.createJsonParser(content);
@@ -147,9 +137,8 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
      * @return
      * @since TODO
      */
-    public static ExecutionRequest readRequest(JsonParser jp,
-            MultivaluedMap<String, String> headers, CoreSession session)
-            throws IOException {
+    public static ExecutionRequest readRequest(JsonParser jp, MultivaluedMap<String, String> headers,
+            CoreSession session) throws IOException {
         ExecutionRequest req = new ExecutionRequest();
 
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
@@ -177,51 +166,42 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
                 // td
                 String documentProperties = jp.getText();
                 if (documentProperties != null) {
-                    headers.putSingle(
-                            JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER,
-                            documentProperties);
+                    headers.putSingle(JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER, documentProperties);
                 }
             }
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
         return req;
     }
 
-    private static void readParams(JsonParser jp, ExecutionRequest req,
-            CoreSession session) throws IOException {
+    private static void readParams(JsonParser jp, ExecutionRequest req, CoreSession session) throws IOException {
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         JsonToken tok = jp.nextToken(); // move to first entry
         while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
-            req.setParam(key,
-                    codecService.readNode(jp.readValueAsTree(), session));
+            req.setParam(key, codecService.readNode(jp.readValueAsTree(), session));
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
     }
 
-    private static void readContext(JsonParser jp, ExecutionRequest req,
-            CoreSession session) throws IOException {
+    private static void readContext(JsonParser jp, ExecutionRequest req, CoreSession session) throws IOException {
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         JsonToken tok = jp.nextToken(); // move to first entry
         while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
-            req.setContextParam(key,
-                    codecService.readNode(jp.readValueAsTree(), session));
+            req.setContextParam(key, codecService.readNode(jp.readValueAsTree(), session));
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
     }
 

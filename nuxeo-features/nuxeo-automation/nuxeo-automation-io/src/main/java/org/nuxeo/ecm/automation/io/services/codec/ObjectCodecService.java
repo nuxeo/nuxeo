@@ -54,7 +54,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ObjectCodecService {
 
@@ -86,8 +85,7 @@ public class ObjectCodecService {
     }
 
     public void postInit() {
-        DocumentAdapterCodec.register(this,
-                Framework.getLocalService(DocumentAdapterService.class));
+        DocumentAdapterCodec.register(this, Framework.getLocalService(DocumentAdapterService.class));
     }
 
     /**
@@ -145,8 +143,7 @@ public class ObjectCodecService {
         Map<String, ObjectCodec<?>> cache = _codecsByName;
         if (cache == null) {
             synchronized (this) {
-                _codecsByName = new HashMap<String, ObjectCodec<?>>(
-                        codecsByName);
+                _codecsByName = new HashMap<String, ObjectCodec<?>>(codecsByName);
                 cache = _codecsByName;
             }
         }
@@ -157,8 +154,7 @@ public class ObjectCodecService {
         return toString(object, false);
     }
 
-    public String toString(Object object, boolean preetyPrint)
-            throws IOException {
+    public String toString(Object object, boolean preetyPrint) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         write(baos, object, preetyPrint);
         return baos.toString("UTF-8");
@@ -168,10 +164,9 @@ public class ObjectCodecService {
         write(out, object, false);
     }
 
-    public void write(OutputStream out, Object object, boolean prettyPint)
-            throws IOException {
+    public void write(OutputStream out, Object object, boolean prettyPint) throws IOException {
 
-        JsonGenerator jg = jsonFactory.createJsonGenerator(out,JsonEncoding.UTF8);
+        JsonGenerator jg = jsonFactory.createJsonGenerator(out, JsonEncoding.UTF8);
         if (prettyPint) {
             jg.useDefaultPrettyPrinter();
         }
@@ -202,30 +197,25 @@ public class ObjectCodecService {
         jg.flush();
     }
 
-    public Object read(String json, CoreSession session) throws IOException,
-            ClassNotFoundException {
+    public Object read(String json, CoreSession session) throws IOException, ClassNotFoundException {
         return read(json, null, session);
     }
 
-    public Object read(String json, ClassLoader cl, CoreSession session)
-            throws IOException, ClassNotFoundException {
+    public Object read(String json, ClassLoader cl, CoreSession session) throws IOException, ClassNotFoundException {
         ByteArrayInputStream in = new ByteArrayInputStream(json.getBytes());
         return read(in, cl, session);
     }
 
-    public Object read(InputStream in, CoreSession session) throws IOException,
-            ClassNotFoundException {
+    public Object read(InputStream in, CoreSession session) throws IOException, ClassNotFoundException {
         return read(in, null, session);
     }
 
-    public Object read(InputStream in, ClassLoader cl, CoreSession session)
-            throws IOException, ClassNotFoundException {
+    public Object read(InputStream in, ClassLoader cl, CoreSession session) throws IOException, ClassNotFoundException {
         JsonParser jp = jsonFactory.createJsonParser(in);
         return read(jp, cl, session);
     }
 
-    public Object read(JsonParser jp, ClassLoader cl, CoreSession session)
-            throws IOException, ClassNotFoundException {
+    public Object read(JsonParser jp, ClassLoader cl, CoreSession session) throws IOException, ClassNotFoundException {
         JsonToken tok = jp.getCurrentToken();
         if (tok == null) {
             tok = jp.nextToken();
@@ -238,14 +228,12 @@ public class ObjectCodecService {
         }
         String key = jp.getCurrentName();
         if (!"entity-type".equals(key)) {
-            throw new IllegalStateException(
-                    "Invalid parser state. Current field must be 'entity-type'");
+            throw new IllegalStateException("Invalid parser state. Current field must be 'entity-type'");
         }
         jp.nextToken();
         String name = jp.getText();
         if (name == null) {
-            throw new IllegalStateException(
-                    "Invalid stream. Entity-Type is null");
+            throw new IllegalStateException("Invalid stream. Entity-Type is null");
         }
         jp.nextValue(); // move to next value
         ObjectCodec<?> codec = codecs.get(name);
@@ -256,8 +244,7 @@ public class ObjectCodecService {
         }
     }
 
-    public Object readNode(JsonNode node, ClassLoader cl, CoreSession session)
-            throws IOException {
+    public Object readNode(JsonNode node, ClassLoader cl, CoreSession session) throws IOException {
         // Handle simple scalar types
         if (node.isNumber()) {
             return node.getNumberValue();
@@ -289,13 +276,11 @@ public class ObjectCodecService {
         return node;
     }
 
-    public Object readNode(JsonNode node, CoreSession session)
-            throws IOException {
+    public Object readNode(JsonNode node, CoreSession session) throws IOException {
         return readNode(node, null, session);
     }
 
-    protected final void writeGenericObject(JsonGenerator jg, Class<?> clazz,
-            Object object) throws IOException {
+    protected final void writeGenericObject(JsonGenerator jg, Class<?> clazz, Object object) throws IOException {
         jg.writeStartObject();
         if (clazz.isPrimitive()) {
             if (clazz == Boolean.TYPE) {
@@ -304,8 +289,7 @@ public class ObjectCodecService {
             } else if (clazz == Double.TYPE || clazz == Float.TYPE) {
                 jg.writeStringField("entity-type", "number");
                 jg.writeNumberField("value", ((Number) object).doubleValue());
-            } else if (clazz == Integer.TYPE || clazz == Long.TYPE
-                    || clazz == Short.TYPE || clazz == Byte.TYPE) {
+            } else if (clazz == Integer.TYPE || clazz == Long.TYPE || clazz == Short.TYPE || clazz == Byte.TYPE) {
                 jg.writeStringField("entity-type", "number");
                 jg.writeNumberField("value", ((Number) object).longValue());
             } else if (clazz == Character.TYPE) {
@@ -332,8 +316,7 @@ public class ObjectCodecService {
         jg.writeEndObject();
     }
 
-    protected final Object readGenericObject(JsonParser jp, String name,
-            ClassLoader cl) throws IOException {
+    protected final Object readGenericObject(JsonParser jp, String name, ClassLoader cl) throws IOException {
         if (jp.getCodec() == null) {
             jp.setCodec(new ObjectMapper());
         }
@@ -375,8 +358,7 @@ public class ObjectCodecService {
         }
 
         @Override
-        public String read(JsonParser jp, CoreSession session)
-                throws IOException {
+        public String read(JsonParser jp, CoreSession session) throws IOException {
             return jp.getText();
         }
 
@@ -438,8 +420,7 @@ public class ObjectCodecService {
         }
 
         @Override
-        public Calendar read(JsonParser jp, CoreSession session)
-                throws IOException {
+        public Calendar read(JsonParser jp, CoreSession session) throws IOException {
             Calendar c = Calendar.getInstance();
             c.setTime(DateParser.parseW3CDateTime(jp.getText()));
             return c;
@@ -471,8 +452,7 @@ public class ObjectCodecService {
         }
 
         @Override
-        public Boolean read(JsonParser jp, CoreSession session)
-                throws IOException {
+        public Boolean read(JsonParser jp, CoreSession session) throws IOException {
             return jp.getBooleanValue();
         }
 
@@ -509,8 +489,7 @@ public class ObjectCodecService {
         }
 
         @Override
-        public Number read(JsonParser jp, CoreSession session)
-                throws IOException {
+        public Number read(JsonParser jp, CoreSession session) throws IOException {
             if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_FLOAT) {
                 return jp.getDoubleValue();
             } else {
@@ -540,8 +519,7 @@ public class ObjectCodecService {
         }
     }
 
-    public static class DocumentAdapterCodec extends
-            ObjectCodec<BusinessAdapter> {
+    public static class DocumentAdapterCodec extends ObjectCodec<BusinessAdapter> {
 
         protected final DocumentAdapterDescriptor descriptor;
 
@@ -556,8 +534,7 @@ public class ObjectCodecService {
             return descriptor.getInterface().getSimpleName();
         }
 
-        public static void register(ObjectCodecService service,
-                DocumentAdapterService adapterService) {
+        public static void register(ObjectCodecService service, DocumentAdapterService adapterService) {
             for (DocumentAdapterDescriptor desc : adapterService.getAdapterDescriptors()) {
                 if (!BusinessAdapter.class.isAssignableFrom(desc.getInterface())) {
                     continue;
@@ -574,34 +551,30 @@ public class ObjectCodecService {
         }
 
         /**
-         * When the object codec is called the stream is positioned on the first
-         * value. For inlined objects this is the first value after the
-         * "entity-type" property. For non inlined objects this will be the
-         * object itself (i.e. '{' or '[')
+         * When the object codec is called the stream is positioned on the first value. For inlined objects this is the
+         * first value after the "entity-type" property. For non inlined objects this will be the object itself (i.e.
+         * '{' or '[')
          *
          * @param jp
          * @return
          * @throws IOException
          */
         @Override
-        public BusinessAdapter read(JsonParser jp, CoreSession session)
-                throws IOException {
+        public BusinessAdapter read(JsonParser jp, CoreSession session) throws IOException {
             if (jp.getCodec() == null) {
                 jp.setCodec(new ObjectMapper());
             }
             BusinessAdapter fromBa = jp.readValueAs(type);
 
             try {
-                DocumentModel doc = fromBa.getId() != null ? session.getDocument(new IdRef(
-                        fromBa.getId()))
+                DocumentModel doc = fromBa.getId() != null ? session.getDocument(new IdRef(fromBa.getId()))
                         : DocumentModelFactory.createDocumentModel(fromBa.getType());
                 BusinessAdapter ba = doc.getAdapter(fromBa.getClass());
 
                 // And finally copy the fields sets from the adapter
                 for (String schema : fromBa.getDocument().getSchemas()) {
                     DataModel dataModel = ba.getDocument().getDataModel(schema);
-                    DataModel fromDataModel = fromBa.getDocument().getDataModel(
-                            schema);
+                    DataModel fromDataModel = fromBa.getDocument().getDataModel(schema);
 
                     for (String field : fromDataModel.getDirtyFields()) {
                         dataModel.setData(field, fromDataModel.getData(field));
@@ -615,21 +588,21 @@ public class ObjectCodecService {
         }
     }
 
-//    public static void main(String[] args) throws Exception {
-//        Map<String, Object> map = new LinkedHashMap<String, Object>();
-//        ArrayList<Object> list = new ArrayList<Object>();
-//        list.add("v1");
-//        list.add(2);
-//        list.add(new Date());
-//        map.put("list", list);
-//        map.put("k", "v");
-//        map.put("k2", "v");
-//        map.put("k1", "v");
-//        ObjectCodecService s = new ObjectCodecService();
-//        String json = s.toString(map, true);
-//        System.out.println(json);
-//        System.out.println("================");
-//        System.out.println(s.toString(s.read(json, null), true));
-//    }
+    // public static void main(String[] args) throws Exception {
+    // Map<String, Object> map = new LinkedHashMap<String, Object>();
+    // ArrayList<Object> list = new ArrayList<Object>();
+    // list.add("v1");
+    // list.add(2);
+    // list.add(new Date());
+    // map.put("list", list);
+    // map.put("k", "v");
+    // map.put("k2", "v");
+    // map.put("k1", "v");
+    // ObjectCodecService s = new ObjectCodecService();
+    // String json = s.toString(map, true);
+    // System.out.println(json);
+    // System.out.println("================");
+    // System.out.println(s.toString(s.read(json, null), true));
+    // }
 
 }

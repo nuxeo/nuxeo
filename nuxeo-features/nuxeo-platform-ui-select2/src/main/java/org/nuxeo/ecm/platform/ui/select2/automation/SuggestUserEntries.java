@@ -70,7 +70,7 @@ public class SuggestUserEntries {
     @Context
     protected SchemaManager schemaManager;
 
-    @Param(name = "searchTerm", alias="prefix", required = false)
+    @Param(name = "searchTerm", alias = "prefix", required = false)
     protected String prefix;
 
     @Param(name = "searchType", required = false)
@@ -149,14 +149,10 @@ public class SuggestUserEntries {
                     }
                     String userId = user.getId();
                     obj.put(Select2Common.ID, userId);
-                    obj.put(Select2Common.TYPE_KEY_NAME,
-                            Select2Common.USER_TYPE);
-                    obj.put(Select2Common.PREFIXED_ID_KEY_NAME,
-                            NuxeoPrincipal.PREFIX + userId);
-                    Select2Common.computeUserLabel(obj, firstLabelField,
-                            secondLabelField, thirdLabelField, hideFirstLabel,
-                            hideSecondLabel, hideThirdLabel,
-                            displayEmailInSuggestion, userId);
+                    obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
+                    obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
+                    Select2Common.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField,
+                            hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, userId);
                     Select2Common.computeUserGroupIcon(obj, hideIcon);
                     if (isGroupRestriction) {
                         // We need to load all data about the user particularly
@@ -187,12 +183,9 @@ public class SuggestUserEntries {
                     String groupId = group.getId();
                     obj.put(Select2Common.ID, groupId);
                     // If the group hasn't an label, let's put the groupid
-                    Select2Common.computeGroupLabel(obj, groupId,
-                            userManager.getGroupLabelField(), hideFirstLabel);
-                    obj.put(Select2Common.TYPE_KEY_NAME,
-                            Select2Common.GROUP_TYPE);
-                    obj.put(Select2Common.PREFIXED_ID_KEY_NAME,
-                            NuxeoGroup.PREFIX + groupId);
+                    Select2Common.computeGroupLabel(obj, groupId, userManager.getGroupLabelField(), hideFirstLabel);
+                    obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.GROUP_TYPE);
+                    obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + groupId);
                     Select2Common.computeUserGroupIcon(obj, hideIcon);
                     result.add(obj);
                 }
@@ -202,10 +195,8 @@ public class SuggestUserEntries {
             int userSize = userList != null ? userList.size() : 0;
             int groupSize = groupList != null ? groupList.size() : 0;
             int totalSize = userSize + groupSize;
-            if (userSuggestionMaxSearchResults != null
-                    && userSuggestionMaxSearchResults > 0) {
-                if (userSize > userSuggestionMaxSearchResults
-                        || groupSize > userSuggestionMaxSearchResults
+            if (userSuggestionMaxSearchResults != null && userSuggestionMaxSearchResults > 0) {
+                if (userSize > userSuggestionMaxSearchResults || groupSize > userSuggestionMaxSearchResults
                         || totalSize > userSuggestionMaxSearchResults) {
                     throw new SizeLimitExceededException();
                 }
@@ -225,8 +216,8 @@ public class SuggestUserEntries {
     private Blob searchOverflowMessage() {
         JSONArray result = new JSONArray();
         JSONObject obj = new JSONObject();
-        obj.put(Select2Common.LABEL, I18NUtils.getMessageString("messages",
-                "label.security.searchOverFlow", new Object[0], getLocale()));
+        obj.put(Select2Common.LABEL,
+                I18NUtils.getMessageString("messages", "label.security.searchOverFlow", new Object[0], getLocale()));
         result.add(obj);
         return new StringBlob(result.toString(), "application/json");
     }

@@ -37,8 +37,7 @@ public abstract class BaseMVCTag extends UIComponentELTag {
         super.setProperties(component);
 
         if (null != url && null != resource) {
-            throw new IllegalArgumentException(
-                    "Cannot specify both a URL and a resource.");
+            throw new IllegalArgumentException("Cannot specify both a URL and a resource.");
         }
 
         if (null != resource) {

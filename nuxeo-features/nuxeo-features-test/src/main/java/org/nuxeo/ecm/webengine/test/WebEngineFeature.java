@@ -34,22 +34,13 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 
-@Deploy({
-        "org.nuxeo.ecm.platform.login",
-        "org.nuxeo.ecm.platform.login.default",
-        "org.nuxeo.ecm.webengine.admin",
-        "org.nuxeo.ecm.webengine.jaxrs",
-        "org.nuxeo.ecm.webengine.base",
-        "org.nuxeo.ecm.webengine.ui",
-        "org.nuxeo.ecm.webengine.gwt",
-        "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
-        "org.nuxeo.ecm.webengine.test:login-anonymous-config.xml",
-        "org.nuxeo.ecm.webengine.test:login-config.xml",
+@Deploy({ "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.login.default", "org.nuxeo.ecm.webengine.admin",
+        "org.nuxeo.ecm.webengine.jaxrs", "org.nuxeo.ecm.webengine.base", "org.nuxeo.ecm.webengine.ui",
+        "org.nuxeo.ecm.webengine.gwt", "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
+        "org.nuxeo.ecm.webengine.test:login-anonymous-config.xml", "org.nuxeo.ecm.webengine.test:login-config.xml",
         "org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml" })
-@Features({ PlatformFeature.class, WebDriverFeature.class,
-        JettyTransactionalFeature.class, WebEngineFeatureCore.class })
-public class WebEngineFeature extends SimpleFeature implements
-        WorkingDirectoryConfigurator {
+@Features({ PlatformFeature.class, WebDriverFeature.class, JettyTransactionalFeature.class, WebEngineFeatureCore.class })
+public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 
     protected URL config;
 
@@ -61,19 +52,17 @@ public class WebEngineFeature extends SimpleFeature implements
         } else {
             config = runner.getTargetTestClass().getClassLoader().getResource(anno.value());
         }
-        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(
-                this);
+        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
     }
 
-    public void configure(RuntimeHarness harness, File workingDir)
-            throws IOException {
+    public void configure(RuntimeHarness harness, File workingDir) throws IOException {
         SessionFactory.setDefaultRepository("test");
         File dest = new File(workingDir, "web/root.war/WEB-INF/");
         dest.mkdirs();
 
         if (config == null) {
-            throw new java.lang.IllegalStateException("No custom web.xml was found. " +
-            		"Check your @WebXml annotation on the test class");
+            throw new java.lang.IllegalStateException("No custom web.xml was found. "
+                    + "Check your @WebXml annotation on the test class");
         }
         InputStream in = config.openStream();
         dest = new File(workingDir + "/web/root.war/WEB-INF/", "web.xml");
@@ -85,8 +74,7 @@ public class WebEngineFeature extends SimpleFeature implements
     }
 
     private static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResource(
-                resource);
+        return Thread.currentThread().getContextClassLoader().getResource(resource);
     }
 
     // public void deployTestModule() {

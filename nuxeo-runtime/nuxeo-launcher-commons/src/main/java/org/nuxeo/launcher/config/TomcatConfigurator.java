@@ -76,16 +76,12 @@ public class TomcatConfigurator extends ServerConfigurator {
     @Override
     public void checkPaths() throws ConfigurationException {
         super.checkPaths();
-        File oldPath = new File(getRuntimeHome(), "data" + File.separator
-                + "vcsh2repo");
-        String message = String.format("NXP-5370, NXP-5460. "
-                + "Please rename 'vcsh2repo' directory from %s to %s", oldPath,
-                new File(generator.getDataDir(), "h2" + File.separator
-                        + "nuxeo"));
+        File oldPath = new File(getRuntimeHome(), "data" + File.separator + "vcsh2repo");
+        String message = String.format("NXP-5370, NXP-5460. " + "Please rename 'vcsh2repo' directory from %s to %s",
+                oldPath, new File(generator.getDataDir(), "h2" + File.separator + "nuxeo"));
         checkPath(oldPath, message);
 
-        oldPath = new File(getRuntimeHome(), "data" + File.separator + "derby"
-                + File.separator + "nxsqldirectory");
+        oldPath = new File(getRuntimeHome(), "data" + File.separator + "derby" + File.separator + "nxsqldirectory");
         message = "NXP-5370, NXP-5460. "
                 + "It is not possible to migrate Derby data."
                 + System.getProperty("line.separator")
@@ -114,8 +110,8 @@ public class TomcatConfigurator extends ServerConfigurator {
      * @return Path to Tomcat configuration of Nuxeo context
      */
     public String getTomcatConfig() {
-        return "conf" + File.separator + "Catalina" + File.separator
-                + "localhost" + File.separator + getContextName() + ".xml";
+        return "conf" + File.separator + "Catalina" + File.separator + "localhost" + File.separator + getContextName()
+                + ".xml";
     }
 
     /**
@@ -126,8 +122,7 @@ public class TomcatConfigurator extends ServerConfigurator {
         if (contextName == null) {
             Properties userConfig = generator.getUserConfig();
             if (userConfig != null) {
-                contextName = generator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_CONTEXT_PATH,
+                contextName = generator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH,
                         DEFAULT_CONTEXT_NAME).substring(1);
             } else {
                 contextName = DEFAULT_CONTEXT_NAME.substring(1);
@@ -140,28 +135,22 @@ public class TomcatConfigurator extends ServerConfigurator {
     public void prepareWizardStart() {
         try {
             // remove Tomcat configuration of Nuxeo context
-            File contextXML = new File(generator.getNuxeoHome(),
-                    getTomcatConfig());
+            File contextXML = new File(generator.getNuxeoHome(), getTomcatConfig());
             contextXML.delete();
 
             // deploy wizard WAR
-            File wizardWAR = new File(generator.getNuxeoHome(), "templates"
-                    + File.separator + "nuxeo-wizard.war");
-            File nuxeoWAR = new File(generator.getNuxeoHome(), "webapps"
-                    + File.separator + getContextName() + ".war");
+            File wizardWAR = new File(generator.getNuxeoHome(), "templates" + File.separator + "nuxeo-wizard.war");
+            File nuxeoWAR = new File(generator.getNuxeoHome(), "webapps" + File.separator + getContextName() + ".war");
             nuxeoWAR.delete();
             FileUtils.copyFile(wizardWAR, nuxeoWAR);
         } catch (IOException e) {
-            log.error(
-                    "Could not change Tomcat configuration to run wizard instead of Nuxeo.",
-                    e);
+            log.error("Could not change Tomcat configuration to run wizard instead of Nuxeo.", e);
         }
     }
 
     @Override
     public void cleanupPostWizard() {
-        File nuxeoWAR = new File(generator.getNuxeoHome(), "webapps"
-                + File.separator + getContextName());
+        File nuxeoWAR = new File(generator.getNuxeoHome(), "webapps" + File.separator + getContextName());
         if (nuxeoWAR.exists()) {
             try {
                 FileUtils.deleteDirectory(nuxeoWAR);
@@ -184,8 +173,7 @@ public class TomcatConfigurator extends ServerConfigurator {
 
     @Override
     public boolean isWizardAvailable() {
-        File wizardWAR = new File(generator.getNuxeoHome(), "templates"
-                + File.separator + "nuxeo-wizard.war");
+        File wizardWAR = new File(generator.getNuxeoHome(), "templates" + File.separator + "nuxeo-wizard.war");
         return wizardWAR.exists();
     }
 
@@ -202,17 +190,13 @@ public class TomcatConfigurator extends ServerConfigurator {
     @Override
     protected void checkNetwork() throws ConfigurationException {
         InetAddress bindAddress = generator.getBindAddress();
-        ConfigurationGenerator.checkPortAvailable(
-                bindAddress,
-                Integer.parseInt(generator.getUserConfig().getProperty(
-                        PARAM_HTTP_TOMCAT_ADMIN_PORT)));
+        ConfigurationGenerator.checkPortAvailable(bindAddress,
+                Integer.parseInt(generator.getUserConfig().getProperty(PARAM_HTTP_TOMCAT_ADMIN_PORT)));
     }
 
     @Override
-    protected void addServerSpecificParameters(
-            Map<String, String> parametersmigration) {
-        parametersmigration.put("nuxeo.server.tomcat-admin.port",
-                PARAM_HTTP_TOMCAT_ADMIN_PORT);
+    protected void addServerSpecificParameters(Map<String, String> parametersmigration) {
+        parametersmigration.put("nuxeo.server.tomcat-admin.port", PARAM_HTTP_TOMCAT_ADMIN_PORT);
     }
 
 }

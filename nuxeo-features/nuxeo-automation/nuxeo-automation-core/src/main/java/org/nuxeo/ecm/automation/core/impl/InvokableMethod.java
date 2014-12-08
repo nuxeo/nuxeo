@@ -55,9 +55,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         produce = method.getReturnType();
         Class<?>[] p = method.getParameterTypes();
         if (p.length > 1) {
-            throw new IllegalArgumentException(
-                    "Operation method must accept at most one argument: "
-                            + method);
+            throw new IllegalArgumentException("Operation method must accept at most one argument: " + method);
         }
         // if produce is Void => a control operation
         // if (produce == Void.TYPE) {
@@ -77,9 +75,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         produce = method.getReturnType();
         Class<?>[] p = method.getParameterTypes();
         if (p.length > 1) {
-            throw new IllegalArgumentException(
-                    "Operation method must accept at most one argument: "
-                            + method);
+            throw new IllegalArgumentException("Operation method must accept at most one argument: " + method);
         }
         this.op = op;
         this.method = method;
@@ -128,8 +124,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         return 0;
     }
 
-    protected Object doInvoke(OperationContext ctx, Map<String, Object> args,
-            Object input) throws OperationException,
+    protected Object doInvoke(OperationContext ctx, Map<String, Object> args, Object input) throws OperationException,
             ReflectiveOperationException {
         Object target = op.newInstance(ctx, args);
         if (consume == Void.TYPE) {
@@ -145,8 +140,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         }
     }
 
-    public Object invoke(OperationContext ctx, Map<String, Object> args)
-            throws OperationException {
+    public Object invoke(OperationContext ctx, Map<String, Object> args) throws OperationException {
         try {
             return doInvoke(ctx, args, ctx.getInput());
         } catch (OperationException e) {
@@ -158,16 +152,14 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
             } else {
                 String exceptionMessage = "Failed to invoke operation " + op.getId();
                 if (op.getAliases() != null && op.getAliases().length > 0) {
-                    exceptionMessage += " with aliases " + Arrays.toString(op
-                            .getAliases());
+                    exceptionMessage += " with aliases " + Arrays.toString(op.getAliases());
                 }
                 throw new OperationException(exceptionMessage, t);
             }
         } catch (ReflectiveOperationException e) {
             String exceptionMessage = "Failed to invoke operation " + op.getId();
             if (op.getAliases() != null && op.getAliases().length > 0) {
-                exceptionMessage += " with aliases " + Arrays.toString(op
-                        .getAliases());
+                exceptionMessage += " with aliases " + Arrays.toString(op.getAliases());
             }
             throw new OperationException(exceptionMessage, e);
         }
@@ -175,8 +167,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + method + ", " + priority
-                + ")";
+        return getClass().getSimpleName() + "(" + method + ", " + priority + ")";
     }
 
     @Override

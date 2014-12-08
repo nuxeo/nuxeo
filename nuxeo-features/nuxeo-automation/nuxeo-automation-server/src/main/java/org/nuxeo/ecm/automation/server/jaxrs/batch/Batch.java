@@ -33,9 +33,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
 /**
- *
- * Batch Object to encapsulate all data related to a batch, especially the
- * temporary files used for Blobs
+ * Batch Object to encapsulate all data related to a batch, especially the temporary files used for Blobs
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
@@ -60,8 +58,7 @@ public class Batch {
         uploadedBlob.put(idx, blob);
     }
 
-    public void addStream(String idx, InputStream is, String name, String mime)
-            throws IOException {
+    public void addStream(String idx, InputStream is, String name, String mime) throws IOException {
 
         uploadInProgress.incrementAndGet();
         try {
@@ -92,7 +89,6 @@ public class Batch {
 
     /**
      * @since 5.7
-     *
      * @param timeoutS
      * @return
      */
@@ -100,14 +96,14 @@ public class Batch {
 
         List<Blob> blobs = new ArrayList<Blob>();
 
-        if (uploadInProgress.get() > 0 && timeoutS>0) {
-            for (int i = 0; i < timeoutS*5; i++) {
+        if (uploadInProgress.get() > 0 && timeoutS > 0) {
+            for (int i = 0; i < timeoutS * 5; i++) {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                if (uploadInProgress.get()==0) {
+                if (uploadInProgress.get() == 0) {
                     break;
                 }
             }
@@ -127,23 +123,22 @@ public class Batch {
 
     /**
      * @since 5.7
-     *
      * @param fileId
      * @param timeoutS
      * @return
      */
     public Blob getBlob(String fileId, int timeoutS) {
 
-        Blob result =  uploadedBlob.get(fileId);
-        if (result==null && timeoutS>0 && uploadInProgress.get()>0) {
-            for (int i = 0; i < timeoutS*5; i++) {
+        Blob result = uploadedBlob.get(fileId);
+        if (result == null && timeoutS > 0 && uploadInProgress.get() > 0) {
+            for (int i = 0; i < timeoutS * 5; i++) {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                result =  uploadedBlob.get(fileId);
-                if (result!=null) {
+                result = uploadedBlob.get(fileId);
+                if (result != null) {
                     break;
                 }
             }

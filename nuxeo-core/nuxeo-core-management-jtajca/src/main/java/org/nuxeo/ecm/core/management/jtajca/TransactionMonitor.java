@@ -22,7 +22,6 @@ import javax.management.MXBean;
 
 /**
  * @author matic
- *
  */
 @MXBean
 public interface TransactionMonitor extends Monitor {

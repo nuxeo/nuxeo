@@ -40,53 +40,44 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.runtime.api.Framework;
 
-public class AnnotatedDocumentEventListenerImpl implements
-        AnnotatedDocumentEventListener {
+public class AnnotatedDocumentEventListenerImpl implements AnnotatedDocumentEventListener {
 
     private static final Log log = LogFactory.getLog(AnnotatedDocumentEventListenerImpl.class);
 
-    public void beforeAnnotationCreated(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation) {
+    public void beforeAnnotationCreated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         // NOP
     }
 
-    public void beforeAnnotationDeleted(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation) {
+    public void beforeAnnotationDeleted(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         // NOP
     }
 
-    public void beforeAnnotationRead(NuxeoPrincipal principal,
-            String annotationId) {
+    public void beforeAnnotationRead(NuxeoPrincipal principal, String annotationId) {
         // NOP
     }
 
-    public void beforeAnnotationUpdated(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation) {
+    public void beforeAnnotationUpdated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         // NOP
     }
 
-    public void afterAnnotationCreated(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation) {
+    public void afterAnnotationCreated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         notifyEvent(ANNOTATION_CREATED, annotation, documentLoc, principal);
     }
 
-    public void afterAnnotationDeleted(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation) {
+    public void afterAnnotationDeleted(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         notifyEvent(ANNOTATION_DELETED, annotation, documentLoc, principal);
     }
 
-    public void afterAnnotationRead(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation) {
+    public void afterAnnotationRead(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         // NOP for now
     }
 
-    public void afterAnnotationUpdated(NuxeoPrincipal principal,
-            DocumentLocation documentLoc, Annotation annotation) {
+    public void afterAnnotationUpdated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         notifyEvent(ANNOTATION_UPDATED, annotation, documentLoc, principal);
     }
 
-    protected void notifyEvent(String eventId, Annotation annotation,
-            DocumentLocation documentLocation, NuxeoPrincipal principal) {
+    protected void notifyEvent(String eventId, Annotation annotation, DocumentLocation documentLocation,
+            NuxeoPrincipal principal) {
         if (documentLocation == null) {
             return;
         }
@@ -97,17 +88,13 @@ public class AnnotatedDocumentEventListenerImpl implements
             }
 
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
-            properties.put(AnnotatedDocumentEventListener.ANNOTATION_ID,
-                    annotation.getId());
-            properties.put(AnnotatedDocumentEventListener.ANNOTATION_SUBJECT,
-                    annotation.getSubject());
-            properties.put(AnnotatedDocumentEventListener.ANNOTATION_BODY,
-                    annotation.getBodyAsText());
+            properties.put(AnnotatedDocumentEventListener.ANNOTATION_ID, annotation.getId());
+            properties.put(AnnotatedDocumentEventListener.ANNOTATION_SUBJECT, annotation.getSubject());
+            properties.put(AnnotatedDocumentEventListener.ANNOTATION_BODY, annotation.getBodyAsText());
 
             EventContext ctx = null;
             if (doc != null) {
-                DocumentEventContext docCtx = new DocumentEventContext(session,
-                        principal, doc);
+                DocumentEventContext docCtx = new DocumentEventContext(session, principal, doc);
                 docCtx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
                 ctx = docCtx;
             } else {

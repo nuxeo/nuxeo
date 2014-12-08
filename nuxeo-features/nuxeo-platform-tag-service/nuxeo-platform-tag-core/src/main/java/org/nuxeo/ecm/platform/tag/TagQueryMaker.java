@@ -48,8 +48,7 @@ public class TagQueryMaker extends NXQLQueryMaker {
     public static final String PROPERTY_TARGET = "target";
 
     /**
-     * Makes sure the Tag table is joined with the relation target instead of
-     * the hierarchy id.
+     * Makes sure the Tag table is joined with the relation target instead of the hierarchy id.
      */
     public static final String TAG_IS_TARGET = "TAGISTARGET: ";
 
@@ -75,9 +74,8 @@ public class TagQueryMaker extends NXQLQueryMaker {
     }
 
     @Override
-    public Query buildQuery(SQLInfo sqlInfo, Model model,
-            PathResolver pathResolver, String query, QueryFilter queryFilter,
-            Object... params) throws StorageException {
+    public Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String query,
+            QueryFilter queryFilter, Object... params) throws StorageException {
         if (query.startsWith(TAG_IS_TARGET)) {
             type = TAG_IS_TARGET;
         } else if (query.startsWith(COUNT_SOURCE)) {
@@ -96,8 +94,7 @@ public class TagQueryMaker extends NXQLQueryMaker {
             throw new QueryMakerException("Bad query: " + query);
         }
         query = query.substring(type.length());
-        return super.buildQuery(sqlInfo, model, pathResolver, query,
-                queryFilter, params);
+        return super.buildQuery(sqlInfo, model, pathResolver, query, queryFilter, params);
     }
 
     /**
@@ -105,25 +102,21 @@ public class TagQueryMaker extends NXQLQueryMaker {
      */
     @Override
     protected void fixInitialJoins() {
-        relationTable = getFragmentTable(dataHierTable, SCHEMA_RELATION,
-                SCHEMA_RELATION, -1, false);
+        relationTable = getFragmentTable(dataHierTable, SCHEMA_RELATION, SCHEMA_RELATION, -1, false);
     }
 
     /**
-     * Patches the Tag join to join on the relation target instead of the
-     * hierarchy id.
+     * Patches the Tag join to join on the relation target instead of the hierarchy id.
      */
     @Override
-    protected void addJoin(int kind, String alias, Table table, String column,
-            Table contextTable, String contextColumn, String name, int index,
-            String primaryType) {
+    protected void addJoin(int kind, String alias, Table table, String column, Table contextTable,
+            String contextColumn, String name, int index, String primaryType) {
         if (table.getKey().equals(SCHEMA_TAG)) {
             kind = Join.INNER;
             contextTable = relationTable;
             contextColumn = PROPERTY_TARGET;
         }
-        super.addJoin(kind, alias, table, column, contextTable, contextColumn,
-                name, index, null);
+        super.addJoin(kind, alias, table, column, contextTable, contextColumn, name, index, null);
     }
 
     @Override
@@ -132,8 +125,7 @@ public class TagQueryMaker extends NXQLQueryMaker {
         if (firstSelectedColumn == null) {
             firstSelectedColumn = col;
         }
-        if (type == COUNT_SOURCE
-                && col.getTable().getKey().equals(SCHEMA_RELATION)
+        if (type == COUNT_SOURCE && col.getTable().getKey().equals(SCHEMA_RELATION)
                 && col.getKey().equals(PROPERTY_SOURCE)) {
             name = String.format("COUNT(DISTINCT %s)", name);
         }
@@ -145,8 +137,7 @@ public class TagQueryMaker extends NXQLQueryMaker {
         if (type == COUNT_SOURCE) {
             // 2nd col is a COUNT -> different type
             Column targetCol = whatColumns.remove(1);
-            Column countCol = new Column(targetCol.getTable(), null,
-                    ColumnType.INTEGER, null);
+            Column countCol = new Column(targetCol.getTable(), null, ColumnType.INTEGER, null);
             whatColumns.add(countCol);
         }
     }
@@ -159,8 +150,7 @@ public class TagQueryMaker extends NXQLQueryMaker {
             if (dialect.needsOriginalColumnInGroupBy()) {
                 name = firstSelectedColumn.getFullQuotedName();
             } else {
-                name = dialect.openQuote() + COL_ALIAS_PREFIX + "1"
-                        + dialect.closeQuote();
+                name = dialect.openQuote() + COL_ALIAS_PREFIX + "1" + dialect.closeQuote();
             }
             select.setGroupBy(name);
         }

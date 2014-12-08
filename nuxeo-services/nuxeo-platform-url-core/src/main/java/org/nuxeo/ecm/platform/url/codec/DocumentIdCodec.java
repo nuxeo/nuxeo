@@ -36,8 +36,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
 /**
- * Codec handling a document repository, id, view and additional request
- * parameters.
+ * Codec handling a document repository, id, view and additional request parameters.
  *
  * @author Anahide Tchertchian
  */
@@ -46,8 +45,7 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec {
     public static final String PREFIX = "nxdoc";
 
     // nxdoc/server/docId/view_id/?requestParams
-    public static final String URLPattern
-            = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9\\-\\.;=]*))?(/)?(\\?(.*)?)?";
+    public static final String URLPattern = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9\\-\\.;=]*))?(/)?(\\?(.*)?)?";
 
     public DocumentIdCodec() {
     }
@@ -79,15 +77,13 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec {
                 items.add(viewId);
             }
             String uri = StringUtils.join(items, "/");
-            return URIUtils.addParametersToURIQuery(uri,
-                    docView.getParameters());
+            return URIUtils.addParametersToURIQuery(uri, docView.getParameters());
         }
         return null;
     }
 
     /**
-     * Extracts document location from a Zope-like URL ie:
-     * server/path_or_docId/view_id/tab_id .
+     * Extracts document location from a Zope-like URL ie: server/path_or_docId/view_id/tab_id .
      */
     public DocumentView getDocumentViewFromUrl(String url) {
         final Pattern pattern = Pattern.compile(getPrefix() + URLPattern);
@@ -119,8 +115,7 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec {
                     params = URIUtils.getRequestParameters(query);
                 }
 
-                final DocumentLocation docLoc = new DocumentLocationImpl(
-                        server, docRef);
+                final DocumentLocation docLoc = new DocumentLocationImpl(server, docRef);
 
                 return new DocumentViewImpl(docLoc, viewId, params);
             }

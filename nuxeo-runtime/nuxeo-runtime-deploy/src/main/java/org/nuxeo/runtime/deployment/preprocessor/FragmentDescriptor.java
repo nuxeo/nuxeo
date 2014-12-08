@@ -46,11 +46,9 @@ public class FragmentDescriptor {
     private static final Log log = LogFactory.getLog(FragmentDescriptor.class);
 
     /**
-     * Marker used for better control on requirements. see "all" marker in
-     * FragmentRegistry
+     * Marker used for better control on requirements. see "all" marker in FragmentRegistry
      */
-    public static final FragmentDescriptor ALL = new FragmentDescriptor("all",
-            true);
+    public static final FragmentDescriptor ALL = new FragmentDescriptor("all", true);
 
     // the name is the name of the XML fragment file for XML fragments
     // or the name of the JAR container for archive or directory fragments
@@ -65,21 +63,18 @@ public class FragmentDescriptor {
     public String filePath;
 
     /**
-     * The start level is used to control bundle start order. The following
-     * levels are defined:
+     * The start level is used to control bundle start order. The following levels are defined:
      * <ul>
      * <li>0 - system level - used by the OSGi framework itself
      * <li>1 - runtime level - used by nuxeo-runtime bundles
      * <li>2 - core level - used for core bundles
      * <li>3 - platform level - used for platform service bundles
-     * <li>4 - presentation level - used for UI service bundles (e.g. seam
-     * components etc)
+     * <li>4 - presentation level - used for UI service bundles (e.g. seam components etc)
      * <li>5 - UI level -used for UI bundles (e.g. war / web, widgets contribs)
      * <li>6 - user level
      * </ul>
-     * The start level is overwritten by the one specified at MANIFEST level
-     * using the Nuxeo-StartLevel header. If the start header is missing it will
-     * be initialized from the OSGi Bundle-Category (if any) as follows:
+     * The start level is overwritten by the one specified at MANIFEST level using the Nuxeo-StartLevel header. If the
+     * start header is missing it will be initialized from the OSGi Bundle-Category (if any) as follows:
      * <ul>
      * <li><code>nuxeo-framework</code>
      * <li><code>nuxeo-runtime</code>
@@ -90,10 +85,9 @@ public class FragmentDescriptor {
      * <li><code>nuxeo-ui</code>
      * <li><code>nuxeo-plugin</code>
      * </ul>
-     * If the start level could not be computed then the default value of 6
-     * (user level) is used The recommended method of specifying the start level
-     * is to use the <code>Bundle-Category</code> since start level numbering
-     * may change (this header has the advantage of using symbolic names)
+     * If the start level could not be computed then the default value of 6 (user level) is used The recommended method
+     * of specifying the start level is to use the <code>Bundle-Category</code> since start level numbering may change
+     * (this header has the advantage of using symbolic names)
      */
     @XNode("@startLevel")
     @Deprecated

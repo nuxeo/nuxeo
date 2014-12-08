@@ -33,8 +33,7 @@ public class OrderByExpr implements Operand {
         final int prime = 31;
         int result = 1;
         result = prime * result + (isDescending ? 1231 : 1237);
-        result = prime * result +
-                (reference == null ? 0 : reference.hashCode());
+        result = prime * result + (reference == null ? 0 : reference.hashCode());
         return result;
     }
 

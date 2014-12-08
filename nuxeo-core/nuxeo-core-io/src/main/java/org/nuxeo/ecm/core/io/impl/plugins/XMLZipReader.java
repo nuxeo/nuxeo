@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class XMLZipReader extends AbstractDocumentReader {
 
@@ -74,8 +73,7 @@ public class XMLZipReader extends AbstractDocumentReader {
         }
     }
 
-    private ExportedDocument createDocument(ZipEntry dirEntry)
-            throws IOException {
+    private ExportedDocument createDocument(ZipEntry dirEntry) throws IOException {
         ExportedDocument xdoc = new ExportedDocumentImpl();
         String dirPath = dirEntry.getName();
         // TODO -> some processing on the path?

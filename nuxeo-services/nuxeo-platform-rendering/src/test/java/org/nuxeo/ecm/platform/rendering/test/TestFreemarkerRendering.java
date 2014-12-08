@@ -43,7 +43,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestFreemarkerRendering extends NXRuntimeTestCase {
 
@@ -55,52 +54,42 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.platform.rendering.tests",
-                "OSGI-INF/test-schema.xml");
+        deployContrib("org.nuxeo.ecm.platform.rendering.tests", "OSGI-INF/test-schema.xml");
 
         engine = new FreemarkerEngine();
         engine.setResourceLocator(new MyResourceLocator());
 
         WikiTransformer tr = new WikiTransformer();
+        tr.getSerializer().addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
         tr.getSerializer().addFilter(
-                new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*",
-                        "<link>$0</link>"));
-        tr.getSerializer().addFilter(
-                new PatternFilter("NXP-[0-9]+",
-                        "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+                new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
         tr.getSerializer().registerMacro(new FreemarkerMacro());
         engine.setSharedVariable("wiki", tr);
     }
 
-    public static String getTestFile(String filePath)
-            throws UnsupportedEncodingException {
+    public static String getTestFile(String filePath) throws UnsupportedEncodingException {
         return FileUtils.getResourcePathFromContext(filePath);
     }
 
     @Test
     public void testRendering() throws Exception {
-        DocumentModelImpl doc1 = new DocumentModelImpl(null, "File", null,
-                new Path("/root/folder/wiki1"), null, null, null, new String[] {
-                        "dublincore", "file" }, null, null, "default");
+        DocumentModelImpl doc1 = new DocumentModelImpl(null, "File", null, new Path("/root/folder/wiki1"), null, null,
+                null, new String[] { "dublincore", "file" }, null, null, "default");
         doc1.addDataModel(new DataModelImpl("dublincore"));
         DocumentPart documentPart = doc1.getPart("dublincore");
         documentPart.get("title").setValue("The dublincore title for doc1");
-        documentPart.get("description").setValue(
-                "A descripton *with* wiki code and a WikiName");
-        Blob blob = new StreamingBlob(new URLSource(
-                TestFreemarkerRendering.class.getClassLoader().getResource(
-                        "testdata/blob.wiki")));
+        documentPart.get("description").setValue("A descripton *with* wiki code and a WikiName");
+        Blob blob = new StreamingBlob(new URLSource(TestFreemarkerRendering.class.getClassLoader().getResource(
+                "testdata/blob.wiki")));
         doc1.getPart("dublincore").get("content").setValue(blob);
         // also add something prefetched (dm not loaded)
         Prefetch prefetch = new Prefetch();
         prefetch.put("filename", "file", "filename", "somefile");
         doc1.prefetch = prefetch;
 
-        DocumentModelImpl doc2 = new DocumentModelImpl("/root/folder/wiki2",
-                "Test Doc 2", "File");
+        DocumentModelImpl doc2 = new DocumentModelImpl("/root/folder/wiki2", "Test Doc 2", "File");
         doc2.addDataModel(new DataModelImpl("dublincore"));
-        doc2.getPart("dublincore").get("title").setValue(
-                "The dublincore title for doc1");
+        doc2.getPart("dublincore").get("title").setValue("The dublincore title for doc1");
         engine.setSharedVariable("doc", doc2);
 
         StringWriter writer = new StringWriter();
@@ -111,8 +100,7 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         engine.render("testdata/c.ftl", input, writer);
         // double e = System.currentTimeMillis();
 
-        InputStream expected = new FileInputStream(
-                getTestFile("expecteddata/c_output.txt"));
+        InputStream expected = new FileInputStream(getTestFile("expecteddata/c_output.txt"));
         assertTextEquals(FileUtils.read(expected), writer.toString());
 
     }
@@ -121,11 +109,11 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         if (SystemUtils.IS_OS_WINDOWS) {
             // make tests pass under Windows
             expected = expected.trim();
-            expected = expected.replace("\n","");
-            expected = expected.replace("\r","");
+            expected = expected.replace("\n", "");
+            expected = expected.replace("\r", "");
             actual = actual.trim();
-            actual = actual.replace("\n","");
-            actual = actual.replace("\r","");
+            actual = actual.replace("\n", "");
+            actual = actual.replace("\r", "");
         }
         assertEquals(expected, actual);
     }

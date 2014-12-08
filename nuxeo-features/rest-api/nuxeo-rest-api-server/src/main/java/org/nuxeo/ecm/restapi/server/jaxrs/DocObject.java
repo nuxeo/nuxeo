@@ -25,13 +25,10 @@ import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 
 /**
- *
- *
  * @since 5.8
  */
 @WebObject(type = "doc")
 public class DocObject extends AbstractResource<ResourceTypeImpl> {
-
 
     @GET
     public Object doGet() {
@@ -43,7 +40,5 @@ public class DocObject extends AbstractResource<ResourceTypeImpl> {
     public Object doGetResource(@PathParam("resource") String resource) {
         return getView(resource).arg("resource", resource);
     }
-
-
 
 }

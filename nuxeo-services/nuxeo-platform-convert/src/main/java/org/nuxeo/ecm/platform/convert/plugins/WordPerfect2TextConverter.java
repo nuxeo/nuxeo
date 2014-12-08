@@ -33,14 +33,13 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 public class WordPerfect2TextConverter extends CommandLineBasedConverter {
 
     @Override
-    protected BlobHolder buildResult(List<String> cmdOutput,
-            CmdParameters cmdParams) throws ConversionException {
+    protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException {
 
         StringBuilder sb = new StringBuilder();
 
-        if (cmdOutput!=null) {
+        if (cmdOutput != null) {
             for (String out : cmdOutput) {
-                if (out!=null && out.trim().length()>0) {
+                if (out != null && out.trim().length() > 0) {
                     sb.append(out.trim());
                     sb.append('\n');
                 }
@@ -50,8 +49,8 @@ public class WordPerfect2TextConverter extends CommandLineBasedConverter {
     }
 
     @Override
-    protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException {
 
         Map<String, Blob> cmdBlobParams = new HashMap<String, Blob>();
         try {
@@ -63,8 +62,8 @@ public class WordPerfect2TextConverter extends CommandLineBasedConverter {
     }
 
     @Override
-    protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException {
         return new HashMap<String, String>();
     }
 

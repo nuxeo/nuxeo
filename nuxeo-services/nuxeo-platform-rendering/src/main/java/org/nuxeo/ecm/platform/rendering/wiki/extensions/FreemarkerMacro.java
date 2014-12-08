@@ -29,7 +29,6 @@ import freemarker.template.TemplateException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FreemarkerMacro implements WikiMacro {
 
@@ -37,13 +36,12 @@ public class FreemarkerMacro implements WikiMacro {
         return "freemarker";
     }
 
-    public void eval(WikiParameters params, String content,
-            WikiSerializerHandler serializer) throws IOException,
+    public void eval(WikiParameters params, String content, WikiSerializerHandler serializer) throws IOException,
             TemplateException {
         Environment env = serializer.getEnvironment();
         if (env != null) {
-            Template tpl = new Template("inline", new StringReader(content),
-                    env.getConfiguration(), env.getTemplate().getEncoding());
+            Template tpl = new Template("inline", new StringReader(content), env.getConfiguration(),
+                    env.getTemplate().getEncoding());
             Writer oldw = env.getOut();
             Writer neww = new StringWriter();
             try {
@@ -56,8 +54,7 @@ public class FreemarkerMacro implements WikiMacro {
         }
     }
 
-    public void evalInline(WikiParameters params, String content,
-            WikiSerializerHandler serializer) throws IOException,
+    public void evalInline(WikiParameters params, String content, WikiSerializerHandler serializer) throws IOException,
             TemplateException {
         eval(params, content, serializer);
     }

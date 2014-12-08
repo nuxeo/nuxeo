@@ -31,8 +31,7 @@ import org.nuxeo.ecm.platform.io.api.IOResources;
 /**
  * IO Resources for logs
  * <p>
- * Holds a map of document resources, with a document reference as key, and a
- * list of RDF resources as values.
+ * Holds a map of document resources, with a document reference as key, and a list of RDF resources as values.
  */
 public class IOAuditResources implements IOResources {
 

@@ -29,11 +29,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 
 /**
- * Operation to put a parameter on the Simple Configuration of the input
- * Document.
+ * Operation to put a parameter on the Simple Configuration of the input Document.
  * <p>
- * The <code>SimpleConfiguration</code> facet is added to the input document if
- * needed.
+ * The <code>SimpleConfiguration</code> facet is added to the input document if needed.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
@@ -68,8 +66,8 @@ public class PutSimpleConfParam {
             doc = session.saveDocument(doc);
         }
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET, doc);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, doc);
         simpleConfiguration.put(key, value);
         simpleConfiguration.save(session);
 

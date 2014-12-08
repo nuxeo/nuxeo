@@ -44,10 +44,8 @@ public class TemplateViewWriter implements MessageBodyWriter<TemplateView> {
 
     private static final Log log = LogFactory.getLog(TemplateViewWriter.class);
 
-    public void writeTo(TemplateView t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(TemplateView t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         try {
             t.render(entityStream);
         } catch (Throwable e) {
@@ -56,13 +54,11 @@ public class TemplateViewWriter implements MessageBodyWriter<TemplateView> {
         }
     }
 
-    public long getSize(TemplateView arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(TemplateView arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return TemplateView.class.isAssignableFrom(arg0);
     }
 

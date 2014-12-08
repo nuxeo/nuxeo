@@ -87,8 +87,7 @@ public class DialectSQLServer extends Dialect {
 
     protected boolean azure;
 
-    public DialectSQLServer(DatabaseMetaData metadata,
-            BinaryManager binaryManager,
+    public DialectSQLServer(DatabaseMetaData metadata, BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
         try {
@@ -142,15 +141,14 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public String addPagingClause(String sql, long limit, long offset) {
-        if (! sql.contains("ORDER")) {
+        if (!sql.contains("ORDER")) {
             // Order is required to use the offset operation
             sql += " ORDER BY 1";
         }
         return sql + String.format(" OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", offset, limit);
     }
 
-    protected int getEngineEdition(Connection connection)
-            throws SQLException {
+    protected int getEngineEdition(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         try {
             ResultSet rs = st.executeQuery("SELECT CONVERT(NVARCHAR(100), SERVERPROPERTY('EngineEdition'))");
@@ -161,8 +159,7 @@ public class DialectSQLServer extends Dialect {
         }
     }
 
-    protected void checkDatabaseConfiguration(Connection connection)
-            throws SQLException {
+    protected void checkDatabaseConfiguration(Connection connection) throws SQLException {
         Statement stmt = connection.createStatement();
         try {
             String sql = "SELECT is_read_committed_snapshot_on FROM sys.databases WHERE name = db_name()";
@@ -171,13 +168,11 @@ public class DialectSQLServer extends Dialect {
             }
             ResultSet rs = stmt.executeQuery(sql);
             if (!rs.next()) {
-                throw new SQLException(
-                        "Cannot detect whether READ_COMMITTED_SNAPSHOT is on");
+                throw new SQLException("Cannot detect whether READ_COMMITTED_SNAPSHOT is on");
             }
             int on = rs.getInt(1);
             if (on != 1) {
-                throw new SQLException(
-                        "Incorrect database configuration, you must enable READ_COMMITTED_SNAPSHOT");
+                throw new SQLException("Incorrect database configuration, you must enable READ_COMMITTED_SNAPSHOT");
             }
             rs.close();
         } finally {
@@ -272,8 +267,7 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public boolean isAllowedConversion(int expected, int actual,
-            String actualName, int actualSize) {
+    public boolean isAllowedConversion(int expected, int actual, String actualName, int actualSize) {
         // The jTDS JDBC driver uses VARCHAR / CLOB
         // The Microsoft JDBC driver uses NVARCHAR / LONGNVARCHAR
         if (expected == Types.VARCHAR && actual == Types.CLOB) {
@@ -304,8 +298,7 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public void setId(PreparedStatement ps, int index, Serializable value)
-            throws SQLException {
+    public void setId(PreparedStatement ps, int index, Serializable value) throws SQLException {
         switch (idType) {
         case VARCHAR:
             ps.setObject(index, value, Types.VARCHAR);
@@ -317,8 +310,8 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public void setToPreparedStatement(PreparedStatement ps, int index,
-            Serializable value, Column column) throws SQLException {
+    public void setToPreparedStatement(PreparedStatement ps, int index, Serializable value, Column column)
+            throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
@@ -339,15 +332,13 @@ public class DialectSQLServer extends Dialect {
             setToPreparedStatementTimestamp(ps, index, value, column);
             return;
         default:
-            throw new SQLException("Unhandled JDBC type: "
-                    + column.getJdbcType());
+            throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
         }
     }
 
     @Override
     @SuppressWarnings("boxing")
-    public Serializable getFromResultSet(ResultSet rs, int index, Column column)
-            throws SQLException {
+    public Serializable getFromResultSet(ResultSet rs, int index, Column column) throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
@@ -388,23 +379,19 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, Table table, List<Column> columns,
-            Model model) {
+    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table,
+            List<Column> columns, Model model) {
         StringBuilder buf = new StringBuilder();
-        buf.append(String.format("CREATE FULLTEXT INDEX ON %s (",
-                table.getQuotedName()));
+        buf.append(String.format("CREATE FULLTEXT INDEX ON %s (", table.getQuotedName()));
         Iterator<Column> it = columns.iterator();
         while (it.hasNext()) {
-            buf.append(String.format("%s LANGUAGE %s",
-                    it.next().getQuotedName(), getQuotedFulltextAnalyzer()));
+            buf.append(String.format("%s LANGUAGE %s", it.next().getQuotedName(), getQuotedFulltextAnalyzer()));
             if (it.hasNext()) {
                 buf.append(", ");
             }
         }
         String fulltextUniqueIndex = "[fulltext_pk]";
-        buf.append(String.format(") KEY INDEX %s ON [%s]", fulltextUniqueIndex,
-                fulltextCatalog));
+        buf.append(String.format(") KEY INDEX %s ON [%s]", fulltextUniqueIndex, fulltextCatalog));
         return buf.toString();
     }
 
@@ -415,9 +402,8 @@ public class DialectSQLServer extends Dialect {
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        return FulltextQueryAnalyzer.translateFulltext(ft, "OR", "AND",
-                "AND NOT", "\"", "\"", Collections.<Character> emptySet(),
-                "\"", "\"", false);
+        return FulltextQueryAnalyzer.translateFulltext(ft, "OR", "AND", "AND NOT", "\"", "\"",
+                Collections.<Character> emptySet(), "\"", "\"", false);
     }
 
     // SELECT ..., FTTBL.RANK / 1000.0
@@ -428,9 +414,8 @@ public class DialectSQLServer extends Dialect {
     // WHERE ... AND FTTBL.[KEY] IS NOT NULL
     // ORDER BY FTTBL.RANK DESC
     @Override
-    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
-            String indexName, int nthMatch, Column mainColumn, Model model,
-            Database database) {
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery, String indexName, int nthMatch,
+            Column mainColumn, Model model, Database database) {
         // TODO multiple indexes
         Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
         Column ftMain = ft.getColumn(model.MAIN_KEY);
@@ -441,13 +426,12 @@ public class DialectSQLServer extends Dialect {
         info.joins = new ArrayList<Join>();
         if (nthMatch == 1) {
             // Need only one JOIN involving the fulltext table
-            info.joins.add(new Join(Join.LEFT, ft.getQuotedName(), null, null,
-                    ftMain.getFullQuotedName(), mainColumn.getFullQuotedName()));
+            info.joins.add(new Join(Join.LEFT, ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
+                    mainColumn.getFullQuotedName()));
         }
         info.joins.add(new Join(
                 Join.LEFT, //
-                String.format("CONTAINSTABLE(%s, *, ?, LANGUAGE %s)",
-                        ft.getQuotedName(), getQuotedFulltextAnalyzer()),
+                String.format("CONTAINSTABLE(%s, *, ?, LANGUAGE %s)", ft.getQuotedName(), getQuotedFulltextAnalyzer()),
                 tableAlias, // alias
                 fulltextQuery, // param
                 ftMain.getFullQuotedName(), // on1
@@ -456,8 +440,7 @@ public class DialectSQLServer extends Dialect {
         info.whereExpr = String.format("%s.[KEY] IS NOT NULL", tableAlias);
         info.scoreExpr = String.format("(%s.RANK / 1000.0)", tableAlias);
         info.scoreAlias = "_nxscore" + nthSuffix;
-        info.scoreCol = new Column(mainColumn.getTable(), null,
-                ColumnType.DOUBLE, null);
+        info.scoreCol = new Column(mainColumn.getTable(), null, ColumnType.DOUBLE, null);
         return info;
     }
 
@@ -504,15 +487,13 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public String getSecurityCheckSql(String idColumnName) {
-        return String.format("dbo.NX_ACCESS_ALLOWED(%s, ?, ?) = 1",
-                idColumnName);
+        return String.format("dbo.NX_ACCESS_ALLOWED(%s, ?, ?) = 1", idColumnName);
     }
 
     @Override
     public String getInTreeSql(String idColumnName) {
         if (pathOptimizationsEnabled) {
-            return String.format(
-                    "EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ancestor = ?)",
+            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ancestor = ?)",
                     idColumnName);
         }
         return String.format("%s IN (SELECT * FROM dbo.nx_children(?))", idColumnName);
@@ -529,8 +510,7 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public Map<String, Serializable> getSQLStatementsProperties(Model model,
-            Database database) {
+    public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         switch (idType) {
         case VARCHAR:
@@ -546,28 +526,22 @@ public class DialectSQLServer extends Dialect {
             properties.put("sequenceEnabled", Boolean.TRUE);
             properties.put("idSequenceName", idSequenceName);
         }
-        properties.put("lockEscalationDisabled",
-                Boolean.valueOf(supportsLockEscalationDisable()));
+        properties.put("lockEscalationDisabled", Boolean.valueOf(supportsLockEscalationDisable()));
         properties.put("md5HashString", getMd5HashString());
-        properties.put("reseedAclrModified", azure ? ""
-                : "DBCC CHECKIDENT('aclr_modified', RESEED, 0);");
+        properties.put("reseedAclrModified", azure ? "" : "DBCC CHECKIDENT('aclr_modified', RESEED, 0);");
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("fulltextCatalog", fulltextCatalog);
-        properties.put("aclOptimizationsEnabled",
-                Boolean.valueOf(aclOptimizationsEnabled));
-        properties.put("pathOptimizationsEnabled",
-                Boolean.valueOf(pathOptimizationsEnabled));
+        properties.put("aclOptimizationsEnabled", Boolean.valueOf(aclOptimizationsEnabled));
+        properties.put("pathOptimizationsEnabled", Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
-        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
-                SecurityConstants.BROWSE);
+        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<String>();
         for (String perm : permissions) {
             permsList.add(String.format("  SELECT '%s' ", perm));
         }
-        properties.put("readPermissions", StringUtils.join(permsList,
-                " UNION ALL "));
+        properties.put("readPermissions", StringUtils.join(permsList, " UNION ALL "));
         properties.put("usersSeparator", getUsersSeparator());
         return properties;
     }
@@ -624,8 +598,7 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public String getClusterGetInvalidations() {
-        return "SELECT [id], [fragments], [kind] FROM [cluster_invals]"
-                + " WHERE [nodeid] = @@SPID";
+        return "SELECT [id], [fragments], [kind] FROM [cluster_invals]" + " WHERE [nodeid] = @@SPID";
     }
 
     @Override
@@ -644,8 +617,7 @@ public class DialectSQLServer extends Dialect {
         // java.sql.SQLException: Invalid state, the Connection object is
         // closed.
         String message = t.getMessage();
-        if (message != null
-                && message.contains("the Connection object is closed")) {
+        if (message != null && message.contains("the Connection object is closed")) {
             return true;
         }
         return false;
@@ -684,8 +656,7 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public Serializable getGeneratedId(Connection connection)
-            throws SQLException {
+    public Serializable getGeneratedId(Connection connection) throws SQLException {
         if (idType != DialectIdType.SEQUENCE) {
             return super.getGeneratedId(connection);
         }
@@ -702,11 +673,9 @@ public class DialectSQLServer extends Dialect {
 
     /**
      * Set transaction isolation level to snapshot
-     *
      */
     @Override
-    public void performPostOpenStatements(Connection connection)
-            throws SQLException {
+    public void performPostOpenStatements(Connection connection) throws SQLException {
         Statement stmt = connection.createStatement();
         try {
             stmt.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
@@ -753,8 +722,7 @@ public class DialectSQLServer extends Dialect {
     }
 
     /**
-     * Tables created for directories don't need a clustered column
-     * automatically defined.
+     * Tables created for directories don't need a clustered column automatically defined.
      */
     protected boolean needsClusteredColumn(Table table) {
         if (idType == DialectIdType.SEQUENCE) {
@@ -783,10 +751,9 @@ public class DialectSQLServer extends Dialect {
         if (!needsClusteredColumn(table)) {
             return Collections.emptyList();
         }
-        String quotedIndexName = getIndexName(table.getKey(),
-                Collections.singletonList(CLUSTER_INDEX_COL));
-        String sql = String.format("CREATE UNIQUE CLUSTERED INDEX [%s] ON %s ([%s])",
-                quotedIndexName, table.getQuotedName(), CLUSTER_INDEX_COL);
+        String quotedIndexName = getIndexName(table.getKey(), Collections.singletonList(CLUSTER_INDEX_COL));
+        String sql = String.format("CREATE UNIQUE CLUSTERED INDEX [%s] ON %s ([%s])", quotedIndexName,
+                table.getQuotedName(), CLUSTER_INDEX_COL);
         return Collections.singletonList(sql);
     }
 

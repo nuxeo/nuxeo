@@ -25,8 +25,7 @@ import org.nuxeo.ecm.automation.jsf.OperationHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Creates a document (equivalent to clicking on the 'create' button on a
- * document creation form).
+ * Creates a document (equivalent to clicking on the 'create' button on a document creation form).
  *
  * @since 5.4.2
  */
@@ -44,8 +43,7 @@ public class CreateDocumentInUI {
 
     @OperationMethod
     public DocumentModel run() {
-        ctx.put(SeamOperation.OUTCOME,
-                OperationHelper.getDocumentActions().saveDocument());
+        ctx.put(SeamOperation.OUTCOME, OperationHelper.getDocumentActions().saveDocument());
         return OperationHelper.getNavigationContext().getCurrentDocument();
     }
 

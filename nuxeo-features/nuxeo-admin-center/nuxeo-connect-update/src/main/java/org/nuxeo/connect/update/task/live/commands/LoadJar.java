@@ -44,8 +44,7 @@ public class LoadJar extends LoadJarPlaceholder {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         log.warn("LoadJar command is deprecated and does nothing right now");
         return new UnloadJar(file);
     }

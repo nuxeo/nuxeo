@@ -24,12 +24,10 @@ import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
 /**
  * @since 6.0
  */
-public interface SearchConfiguration extends
-        LocalConfiguration<SearchConfiguration> {
+public interface SearchConfiguration extends LocalConfiguration<SearchConfiguration> {
 
     /**
-     * Return a list of content views name that are denied with the local
-     * configuration
+     * Return a list of content views name that are denied with the local configuration
      *
      * @return an unmodifiable list of String or null.
      */

@@ -58,8 +58,7 @@ public class SQLStaticFilter implements Serializable {
         return value;
     }
 
-    public Column getDirectoryColumn(Table table, boolean nativeCase)
-            throws DirectoryException {
+    public Column getDirectoryColumn(Table table, boolean nativeCase) throws DirectoryException {
         return table.getColumn(column);
     }
 

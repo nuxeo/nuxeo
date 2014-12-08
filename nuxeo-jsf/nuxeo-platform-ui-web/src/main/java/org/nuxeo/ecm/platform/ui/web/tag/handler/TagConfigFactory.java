@@ -51,8 +51,7 @@ public final class TagConfigFactory {
 
         protected final FaceletHandler nextHandler;
 
-        TagConfigWrapper(TagConfig tagConfig, String tagConfigId,
-                TagAttributes attributes, FaceletHandler nextHandler) {
+        TagConfigWrapper(TagConfig tagConfig, String tagConfigId, TagAttributes attributes, FaceletHandler nextHandler) {
             tag = new Tag(tagConfig.getTag(), attributes);
             if (tagConfigId == null) {
                 tagId = tagConfig.getTagId();
@@ -75,16 +74,14 @@ public final class TagConfigFactory {
         }
     }
 
-    private static class ComponentConfigWrapper extends TagConfigWrapper
-            implements ComponentConfig {
+    private static class ComponentConfigWrapper extends TagConfigWrapper implements ComponentConfig {
 
         protected final String componentType;
 
         protected final String rendererType;
 
-        ComponentConfigWrapper(TagConfig tagConfig, String tagConfigId,
-                TagAttributes attributes, FaceletHandler nextHandler,
-                String componentType, String rendererType) {
+        ComponentConfigWrapper(TagConfig tagConfig, String tagConfigId, TagAttributes attributes,
+                FaceletHandler nextHandler, String componentType, String rendererType) {
             super(tagConfig, tagConfigId, attributes, nextHandler);
             this.componentType = componentType;
             this.rendererType = rendererType;
@@ -99,14 +96,12 @@ public final class TagConfigFactory {
         }
     }
 
-    private static class ConverterConfigWrapper extends TagConfigWrapper
-            implements ConverterConfig {
+    private static class ConverterConfigWrapper extends TagConfigWrapper implements ConverterConfig {
 
         protected final String converterId;
 
-        ConverterConfigWrapper(TagConfig tagConfig, String tagConfigId,
-                TagAttributes attributes, FaceletHandler nextHandler,
-                String converterId) {
+        ConverterConfigWrapper(TagConfig tagConfig, String tagConfigId, TagAttributes attributes,
+                FaceletHandler nextHandler, String converterId) {
             super(tagConfig, tagConfigId, attributes, nextHandler);
             this.converterId = converterId;
         }
@@ -116,14 +111,12 @@ public final class TagConfigFactory {
         }
     }
 
-    private static class ValidatorConfigWrapper extends TagConfigWrapper
-            implements ValidatorConfig {
+    private static class ValidatorConfigWrapper extends TagConfigWrapper implements ValidatorConfig {
 
         protected final String validatorId;
 
-        ValidatorConfigWrapper(TagConfig tagConfig, String tagConfigId,
-                TagAttributes attributes, FaceletHandler nextHandler,
-                String validatorId) {
+        ValidatorConfigWrapper(TagConfig tagConfig, String tagConfigId, TagAttributes attributes,
+                FaceletHandler nextHandler, String validatorId) {
             super(tagConfig, tagConfigId, attributes, nextHandler);
             this.validatorId = validatorId;
         }
@@ -133,65 +126,52 @@ public final class TagConfigFactory {
         }
     }
 
-    public static TagConfig createTagConfig(TagConfig tagConfig,
-            String tagConfigId, TagAttributes attributes,
+    public static TagConfig createTagConfig(TagConfig tagConfig, String tagConfigId, TagAttributes attributes,
             FaceletHandler nextHandler) {
-        return new TagConfigWrapper(tagConfig, tagConfigId, attributes,
-                nextHandler);
+        return new TagConfigWrapper(tagConfig, tagConfigId, attributes, nextHandler);
     }
 
-    public static ComponentConfig createComponentConfig(TagConfig tagConfig,
-            String tagConfigId, TagAttributes attributes,
-            FaceletHandler nextHandler, String componentType,
-            String rendererType) {
-        return new ComponentConfigWrapper(tagConfig, tagConfigId, attributes,
-                nextHandler, componentType, rendererType);
+    public static ComponentConfig createComponentConfig(TagConfig tagConfig, String tagConfigId,
+            TagAttributes attributes, FaceletHandler nextHandler, String componentType, String rendererType) {
+        return new ComponentConfigWrapper(tagConfig, tagConfigId, attributes, nextHandler, componentType, rendererType);
     }
 
-    public static ConverterConfig createConverterConfig(TagConfig tagConfig,
-            String tagConfigId, TagAttributes attributes,
-            FaceletHandler nextHandler, String converterId) {
-        return new ConverterConfigWrapper(tagConfig, tagConfigId, attributes,
-                nextHandler, converterId);
+    public static ConverterConfig createConverterConfig(TagConfig tagConfig, String tagConfigId,
+            TagAttributes attributes, FaceletHandler nextHandler, String converterId) {
+        return new ConverterConfigWrapper(tagConfig, tagConfigId, attributes, nextHandler, converterId);
     }
 
-    public static ValidatorConfig createValidatorConfig(TagConfig tagConfig,
-            String tagConfigId, TagAttributes attributes,
-            FaceletHandler nextHandler, String validatorId) {
-        return new ValidatorConfigWrapper(tagConfig, tagConfigId, attributes,
-                nextHandler, validatorId);
+    public static ValidatorConfig createValidatorConfig(TagConfig tagConfig, String tagConfigId,
+            TagAttributes attributes, FaceletHandler nextHandler, String validatorId) {
+        return new ValidatorConfigWrapper(tagConfig, tagConfigId, attributes, nextHandler, validatorId);
     }
 
     /**
      * @since 6.0
      */
-    public static ComponentConfig createAliasTagConfig(TagConfig tagConfig,
-            String tagConfigId, TagAttributes attributes,
-            FaceletHandler nextHandler) {
-        return new ComponentConfigWrapper(tagConfig, tagConfigId, attributes,
-                nextHandler, UIAliasHolder.COMPONENT_TYPE, null);
+    public static ComponentConfig createAliasTagConfig(TagConfig tagConfig, String tagConfigId,
+            TagAttributes attributes, FaceletHandler nextHandler) {
+        return new ComponentConfigWrapper(tagConfig, tagConfigId, attributes, nextHandler,
+                UIAliasHolder.COMPONENT_TYPE, null);
     }
 
     /**
      * @since 6.0
      */
-    public static ComponentConfig createAliasTagConfig(TagConfig tagConfig,
-            String tagConfigId, String var, String value, String cache,
-            String anchor, FaceletHandler nextHandler) {
+    public static ComponentConfig createAliasTagConfig(TagConfig tagConfig, String tagConfigId, String var,
+            String value, String cache, String anchor, FaceletHandler nextHandler) {
         TagAttribute[] attrs = new TagAttribute[4];
         attrs[0] = createAttribute(tagConfig, "var", var);
         attrs[1] = createAttribute(tagConfig, "value", value);
         attrs[2] = createAttribute(tagConfig, "cache", cache);
         attrs[3] = createAttribute(tagConfig, "anchor", anchor);
         TagAttributes attributes = new TagAttributesImpl(attrs);
-        return new ComponentConfigWrapper(tagConfig, tagConfigId, attributes,
-                nextHandler, UIAliasHolder.COMPONENT_TYPE, null);
+        return new ComponentConfigWrapper(tagConfig, tagConfigId, attributes, nextHandler,
+                UIAliasHolder.COMPONENT_TYPE, null);
     }
 
-    protected static TagAttribute createAttribute(TagConfig tagConfig,
-            String name, String value) {
-        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", name,
-                name, value);
+    protected static TagAttribute createAttribute(TagConfig tagConfig, String name, String value) {
+        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", name, name, value);
     }
 
 }

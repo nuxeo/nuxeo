@@ -23,7 +23,6 @@ import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.model.TilingModel.Tiling
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public interface TilingModelListener {
 

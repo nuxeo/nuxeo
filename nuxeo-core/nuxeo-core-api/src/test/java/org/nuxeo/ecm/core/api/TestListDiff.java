@@ -33,9 +33,7 @@ public class TestListDiff {
 
         list.remove(5);
         assertTrue(list.isDirty());
-        assertEquals(
-                "ListDiff { [Entry {0, ADD, 0}, Entry {5, REMOVE, null}] }",
-                list.toString());
+        assertEquals("ListDiff { [Entry {0, ADD, 0}, Entry {5, REMOVE, null}] }", list.toString());
 
         list.reset();
         assertFalse(list.isDirty());

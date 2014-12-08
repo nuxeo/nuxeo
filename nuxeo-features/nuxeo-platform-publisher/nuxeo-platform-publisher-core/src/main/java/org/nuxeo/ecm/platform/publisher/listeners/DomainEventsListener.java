@@ -30,10 +30,9 @@ import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Handle Domain creation, deletion and lifecycle changes. Register new {@code
- * PublicationTreeConfigDescriptor} according to the new Domain, if at least one
- * descriptor is pending. Unregister {@code PublicationTreeConfigDescriptor}
- * associated to the Domain when it is removed or if its lifecycle has changed
+ * Handle Domain creation, deletion and lifecycle changes. Register new {@code PublicationTreeConfigDescriptor}
+ * according to the new Domain, if at least one descriptor is pending. Unregister
+ * {@code PublicationTreeConfigDescriptor} associated to the Domain when it is removed or if its lifecycle has changed
  * (ie. to delete state).
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -68,20 +67,17 @@ public class DomainEventsListener implements EventListener {
         }
     }
 
-    protected void registerNewPublicationTrees(DocumentModel doc)
-            throws ClientException {
+    protected void registerNewPublicationTrees(DocumentModel doc) throws ClientException {
         PublisherServiceImpl service = (PublisherServiceImpl) Framework.getService(PublisherService.class);
         service.registerTreeConfigFor(doc);
     }
 
-    protected void unregisterPublicationTrees(DocumentModel doc)
-            throws ClientException {
+    protected void unregisterPublicationTrees(DocumentModel doc) throws ClientException {
         PublisherServiceImpl service = (PublisherServiceImpl) Framework.getService(PublisherService.class);
         service.unRegisterTreeConfigFor(doc);
     }
 
-    protected void handleDomainLifeCycleChanged(DocumentEventContext docCtx,
-            DocumentModel doc) throws ClientException {
+    protected void handleDomainLifeCycleChanged(DocumentEventContext docCtx, DocumentModel doc) throws ClientException {
         String from = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM);
         String to = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO);
 
@@ -92,13 +88,11 @@ public class DomainEventsListener implements EventListener {
         }
     }
 
-    protected void handleDomainGoesToDeletedState(DocumentModel doc)
-            throws ClientException {
+    protected void handleDomainGoesToDeletedState(DocumentModel doc) throws ClientException {
         unregisterPublicationTrees(doc);
     }
 
-    protected void handleDomainGoesFromDeletedState(DocumentModel doc)
-            throws ClientException {
+    protected void handleDomainGoesFromDeletedState(DocumentModel doc) throws ClientException {
         registerNewPublicationTrees(doc);
     }
 

@@ -95,8 +95,8 @@ public class SuggestDirectoryEntries {
             this.isRoot = true;
         }
 
-        public JSONAdapter(Session session, Schema schema, DocumentModel entry)
-                throws PropertyException, ClientException {
+        public JSONAdapter(Session session, Schema schema, DocumentModel entry) throws PropertyException,
+                ClientException {
             this(session, schema);
             // Carry entry, not root
             isRoot = false;
@@ -117,10 +117,8 @@ public class SuggestDirectoryEntries {
 
             }
             if (displayObsoleteEntries) {
-                if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID)
-                        && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
-                    obj.element(Select2Common.WARN_MESSAGE_LABEL,
-                            getObsoleteWarningMessage());
+                if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID) && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
+                    obj.element(Select2Common.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
                 }
             }
         }
@@ -132,8 +130,7 @@ public class SuggestDirectoryEntries {
                 if (i != 0) {
                     return i;
                 } else {
-                    return getCollator().compare(this.getLabel(),
-                            other.getLabel());
+                    return getCollator().compare(this.getLabel(), other.getLabel());
                 }
             } else {
                 return -1;
@@ -171,14 +168,10 @@ public class SuggestDirectoryEntries {
                 // When serializing in JSON, we are now able to COMPUTED_ID
                 // which is the chained path of the entry (i.e absolute path
                 // considering its ancestor)
-                ja.getObj().element(
-                        Select2Common.COMPUTED_ID,
-                        (!isRoot ? (getComputedId() + keySeparator) : "")
-                                + ja.getId());
-                ja.getObj().element(
-                        Select2Common.ABSOLUTE_LABEL,
-                        (!isRoot ? (getAbsoluteLabel() + absoluteLabelSeparator) : "")
-                                + ja.getLabel());
+                ja.getObj().element(Select2Common.COMPUTED_ID,
+                        (!isRoot ? (getComputedId() + keySeparator) : "") + ja.getId());
+                ja.getObj().element(Select2Common.ABSOLUTE_LABEL,
+                        (!isRoot ? (getAbsoluteLabel() + absoluteLabelSeparator) : "") + ja.getLabel());
                 result.add(ja.toJSONObject());
             }
             return result;
@@ -205,8 +198,7 @@ public class SuggestDirectoryEntries {
         }
 
         public int getOrder() {
-            return isRoot ? -1
-                    : obj.optInt(Select2Common.DIRECTORY_ORDER_FIELD_NAME);
+            return isRoot ? -1 : obj.optInt(Select2Common.DIRECTORY_ORDER_FIELD_NAME);
         }
 
         private SuggestDirectoryEntries getOuterType() {
@@ -221,8 +213,7 @@ public class SuggestDirectoryEntries {
             if (children == null) {
                 return null;
             }
-            List<JSONAdapter> result = new ArrayList<JSONAdapter>(
-                    children.values());
+            List<JSONAdapter> result = new ArrayList<JSONAdapter>(children.values());
             Collections.sort(result);
             return result;
         }
@@ -252,8 +243,7 @@ public class SuggestDirectoryEntries {
                         try {
                             isLeaf = session.query(filter).isEmpty();
                         } catch (ClientException ce) {
-                            log.error("Could not retrieve children of entry",
-                                    ce);
+                            log.error("Could not retrieve children of entry", ce);
                             isLeaf = true;
                         }
                     } else {
@@ -267,8 +257,7 @@ public class SuggestDirectoryEntries {
         }
 
         public boolean isObsolete() {
-            return isRoot ? false
-                    : obj.optInt(Select2Common.OBSOLETE_FIELD_ID) > 0;
+            return isRoot ? false : obj.optInt(Select2Common.OBSOLETE_FIELD_ID) > 0;
         }
 
         private void mergeJsonAdapter(JSONAdapter branch) {
@@ -287,8 +276,7 @@ public class SuggestDirectoryEntries {
             }
         }
 
-        public JSONAdapter push(final JSONAdapter newEntry)
-                throws PropertyException, ClientException {
+        public JSONAdapter push(final JSONAdapter newEntry) throws PropertyException, ClientException {
             String parentIdOfNewEntry = newEntry.getParentId();
             if (parentIdOfNewEntry != null && !parentIdOfNewEntry.isEmpty()) {
                 // The given adapter has a parent which could already be in my
@@ -337,8 +325,7 @@ public class SuggestDirectoryEntries {
                 } else {
                     // We don't want it to be selectable, we just serialize the
                     // label
-                    return new JSONObject().element(Select2Common.LABEL,
-                            getLabel()).element("children",
+                    return new JSONObject().element(Select2Common.LABEL, getLabel()).element("children",
                             getChildrenJSONArray());
                 }
             }
@@ -372,7 +359,7 @@ public class SuggestDirectoryEntries {
     @Param(name = "lang", required = false)
     protected String lang;
 
-    @Param(name = "searchTerm", alias="prefix", required = false)
+    @Param(name = "searchTerm", alias = "prefix", required = false)
     protected String prefix;
 
     @Param(name = "labelFieldName", required = false)
@@ -454,8 +441,7 @@ public class SuggestDirectoryEntries {
 
     protected String getObsoleteWarningMessage() {
         if (obsoleteWarningMessage == null) {
-            obsoleteWarningMessage = I18NUtils.getMessageString("messages",
-                    "obsolete", new Object[0], getLocale());
+            obsoleteWarningMessage = I18NUtils.getMessageString("messages", "obsolete", new Object[0], getLocale());
         }
         return obsoleteWarningMessage;
     }
@@ -477,16 +463,14 @@ public class SuggestDirectoryEntries {
             isChained = parentField != null;
 
             String parentDirectory = directory.getParentDirectory();
-            if (parentDirectory == null || parentDirectory.isEmpty()
-                    || parentDirectory.equals(directoryName)) {
+            if (parentDirectory == null || parentDirectory.isEmpty() || parentDirectory.equals(directoryName)) {
                 parentDirectory = null;
             }
 
             DocumentModelList entries = null;
             boolean postFilter = true;
 
-            label = Select2Common.getLabelFieldName(schema, dbl10n,
-                    labelFieldName, getLang());
+            label = Select2Common.getLabelFieldName(schema, dbl10n, labelFieldName, getLang());
 
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             if (!displayObsoleteEntries) {
@@ -538,13 +522,11 @@ public class SuggestDirectoryEntries {
 
                 if (prefix != null && !prefix.isEmpty() && postFilter) {
                     if (contains) {
-                        if (!adapter.getLabel().toLowerCase().contains(
-                                prefix.toLowerCase())) {
+                        if (!adapter.getLabel().toLowerCase().contains(prefix.toLowerCase())) {
                             continue;
                         }
                     } else {
-                        if (!adapter.getLabel().toLowerCase().startsWith(
-                                prefix.toLowerCase())) {
+                        if (!adapter.getLabel().toLowerCase().startsWith(prefix.toLowerCase())) {
                             continue;
                         }
                     }
@@ -553,9 +535,7 @@ public class SuggestDirectoryEntries {
                 jsonAdapter.push(adapter);
 
             }
-            return new StringBlob(
-                    jsonAdapter.getChildrenJSONArray().toString(),
-                    "application/json");
+            return new StringBlob(jsonAdapter.getChildrenJSONArray().toString(), "application/json");
         } finally {
             try {
                 if (session != null) {
@@ -571,8 +551,7 @@ public class SuggestDirectoryEntries {
         if (key == null) {
             return "";
         }
-        return I18NUtils.getMessageString("messages", key, new Object[0],
-                getLocale());
+        return I18NUtils.getMessageString("messages", key, new Object[0], getLocale());
     }
 
 }

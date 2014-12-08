@@ -26,8 +26,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.helper.VersioningHelper;
 
 /**
- * Implementations of the {@link PublishedDocument} on top of the Core, using
- * simple proxies.
+ * Implementations of the {@link PublishedDocument} on top of the Core, using simple proxies.
  *
  * @author tiry
  */
@@ -41,8 +40,7 @@ public class SimpleCorePublishedDocument implements PublishedDocument {
 
     protected boolean isPending;
 
-    public SimpleCorePublishedDocument(DocumentModel doc)
-            throws ClientException {
+    public SimpleCorePublishedDocument(DocumentModel doc) throws ClientException {
         if (!doc.isProxy()) {
             throw new ClientException("DocumentModel is not a proxy");
         }

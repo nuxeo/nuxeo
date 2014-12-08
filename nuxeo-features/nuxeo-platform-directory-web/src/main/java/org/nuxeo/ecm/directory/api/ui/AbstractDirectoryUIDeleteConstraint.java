@@ -27,15 +27,13 @@ import org.nuxeo.ecm.directory.DirectoryException;
  *
  * @author Anahide Tchertchian
  */
-public abstract class AbstractDirectoryUIDeleteConstraint implements
-        DirectoryUIDeleteConstraint {
+public abstract class AbstractDirectoryUIDeleteConstraint implements DirectoryUIDeleteConstraint {
 
     private static final long serialVersionUID = 1L;
 
     protected Map<String, String> properties;
 
-    public void setProperties(Map<String, String> properties)
-            throws DirectoryException {
+    public void setProperties(Map<String, String> properties) throws DirectoryException {
         if (properties != null) {
             this.properties = properties;
         }

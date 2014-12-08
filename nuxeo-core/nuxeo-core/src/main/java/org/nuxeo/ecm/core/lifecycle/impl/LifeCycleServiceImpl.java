@@ -37,11 +37,9 @@ import org.nuxeo.runtime.model.Extension;
  * @author Julien Anguenot
  * @author Florent Guillaume
  */
-public class LifeCycleServiceImpl extends DefaultComponent implements
-        LifeCycleService {
+public class LifeCycleServiceImpl extends DefaultComponent implements LifeCycleService {
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.core.lifecycle.LifeCycleService");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.lifecycle.LifeCycleService");
 
     private static final Log log = LogFactory.getLog(LifeCycleServiceImpl.class);
 
@@ -89,8 +87,7 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void initialize(Document doc, String initialStateName)
-            throws LifeCycleException {
+    public void initialize(Document doc, String initialStateName) throws LifeCycleException {
         String lifeCycleName;
         LifeCycle documentLifeCycle = getLifeCycleFor(doc);
         if (documentLifeCycle == null) {
@@ -107,16 +104,11 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
                 // check it's a valid state
                 LifeCycleState state = documentLifeCycle.getStateByName(initialStateName);
                 if (state == null) {
-                    throw new LifeCycleException(String.format(
-                            "State '%s' is not a valid state "
-                                    + "for lifecycle %s", initialStateName,
-                            lifeCycleName));
-                } else if (!documentLifeCycle.getInitialStateNames().contains(
-                        initialStateName)) {
-                    log.warn(String.format(
-                            "State '%s' is not a valid initial state "
-                                    + "for lifecycle %s", initialStateName,
-                            lifeCycleName));
+                    throw new LifeCycleException(String.format("State '%s' is not a valid state " + "for lifecycle %s",
+                            initialStateName, lifeCycleName));
+                } else if (!documentLifeCycle.getInitialStateNames().contains(initialStateName)) {
+                    log.warn(String.format("State '%s' is not a valid initial state " + "for lifecycle %s",
+                            initialStateName, lifeCycleName));
                 }
             }
         }
@@ -125,18 +117,15 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void followTransition(Document doc, String transitionName)
-            throws LifeCycleException {
+    public void followTransition(Document doc, String transitionName) throws LifeCycleException {
         String lifeCycleState = doc.getLifeCycleState();
         LifeCycle lifeCycle = getLifeCycleFor(doc);
-        if (lifeCycle.getAllowedStateTransitionsFrom(lifeCycleState).contains(
-                transitionName)) {
-            String destinationStateName = lifeCycle.getTransitionByName(
-                    transitionName).getDestinationStateName();
+        if (lifeCycle.getAllowedStateTransitionsFrom(lifeCycleState).contains(transitionName)) {
+            String destinationStateName = lifeCycle.getTransitionByName(transitionName).getDestinationStateName();
             doc.setCurrentLifeCycleState(destinationStateName);
         } else {
-            throw new LifeCycleException("Not allowed to follow transition <"
-                    + transitionName + "> from state <" + lifeCycleState + '>');
+            throw new LifeCycleException("Not allowed to follow transition <" + transitionName + "> from state <"
+                    + lifeCycleState + '>');
         }
     }
 

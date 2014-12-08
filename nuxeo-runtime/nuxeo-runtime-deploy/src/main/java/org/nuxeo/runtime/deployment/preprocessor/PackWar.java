@@ -149,15 +149,11 @@ public class PackWar {
         this.zip = zip;
     }
 
-    public void execute(String command) throws ConfigurationException,
-            IOException {
-        boolean preprocessing = COMMAND_PREPROCESSING.equals(command)
-                || StringUtils.isBlank(command);
-        boolean packaging = COMMAND_PACKAGING.equals(command)
-                || StringUtils.isBlank(command);
+    public void execute(String command) throws ConfigurationException, IOException {
+        boolean preprocessing = COMMAND_PREPROCESSING.equals(command) || StringUtils.isBlank(command);
+        boolean packaging = COMMAND_PACKAGING.equals(command) || StringUtils.isBlank(command);
         if (!preprocessing && !packaging) {
-            fail("Command parameter should be empty or "
-                    + COMMAND_PREPROCESSING + " or " + COMMAND_PACKAGING);
+            fail("Command parameter should be empty or " + COMMAND_PREPROCESSING + " or " + COMMAND_PACKAGING);
         }
         if (preprocessing) {
             executePreprocessing();
@@ -167,8 +163,7 @@ public class PackWar {
         }
     }
 
-    protected void executePreprocessing() throws ConfigurationException,
-            IOException {
+    protected void executePreprocessing() throws ConfigurationException, IOException {
         runTemplatePreprocessor();
         runDeploymentPreprocessor();
     }
@@ -178,8 +173,7 @@ public class PackWar {
             System.setProperty(Environment.NUXEO_HOME, tomcat.getAbsolutePath());
         }
         if (System.getProperty(ConfigurationGenerator.NUXEO_CONF) == null) {
-            System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(
-                    tomcat, "bin/nuxeo.conf").getPath());
+            System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(tomcat, "bin/nuxeo.conf").getPath());
         }
         cg = new ConfigurationGenerator();
         cg.run();
@@ -200,36 +194,24 @@ public class PackWar {
             // extract jdbc datasource from server.xml into README
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             bout.write(README_BEGIN.getBytes("UTF-8"));
-            ServerXmlProcessor.INSTANCE.process(
-                    newFile(tomcat, "conf/server.xml"), bout);
-            bout.write(README_END.replace("webapps/nuxeo",
-                    "webapps/" + tomcatConfigurator.getContextName()).getBytes(
+            ServerXmlProcessor.INSTANCE.process(newFile(tomcat, "conf/server.xml"), bout);
+            bout.write(README_END.replace("webapps/nuxeo", "webapps/" + tomcatConfigurator.getContextName()).getBytes(
                     "UTF-8"));
             zipBytes(ZIP_README, bout.toByteArray(), zout);
 
-            File nuxeoXml = new File(tomcat,
-                    tomcatConfigurator.getTomcatConfig());
-            String zipWebappsNuxeo = ZIP_WEBAPPS
-                    + tomcatConfigurator.getContextName() + "/";
-            zipFile(zipWebappsNuxeo + "META-INF/context.xml", nuxeoXml, zout,
-                    NuxeoXmlProcessor.INSTANCE);
-            zipTree(zipWebappsNuxeo, new File(nxserver, "nuxeo.war"), false,
-                    zout);
-            zipTree(zipWebappsNuxeo + ZIP_WEBINF, new File(nxserver, "config"),
-                    false, zout);
+            File nuxeoXml = new File(tomcat, tomcatConfigurator.getTomcatConfig());
+            String zipWebappsNuxeo = ZIP_WEBAPPS + tomcatConfigurator.getContextName() + "/";
+            zipFile(zipWebappsNuxeo + "META-INF/context.xml", nuxeoXml, zout, NuxeoXmlProcessor.INSTANCE);
+            zipTree(zipWebappsNuxeo, new File(nxserver, "nuxeo.war"), false, zout);
+            zipTree(zipWebappsNuxeo + ZIP_WEBINF, new File(nxserver, "config"), false, zout);
             File nuxeoBundles = listNuxeoBundles();
-            zipFile(zipWebappsNuxeo + ZIP_WEBINF
-                    + NuxeoStarter.NUXEO_BUNDLES_LIST, nuxeoBundles, zout, null);
+            zipFile(zipWebappsNuxeo + ZIP_WEBINF + NuxeoStarter.NUXEO_BUNDLES_LIST, nuxeoBundles, zout, null);
             nuxeoBundles.delete();
-            zipTree(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(nxserver,
-                    "bundles"), false, zout);
-            zipTree(zipWebappsNuxeo + ZIP_WEBINF_LIB,
-                    new File(nxserver, "lib"), false, zout);
-            zipLibs(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(tomcat, "lib"),
-                    MISSING_WEBINF_LIBS, zout);
+            zipTree(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(nxserver, "bundles"), false, zout);
+            zipTree(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(nxserver, "lib"), false, zout);
+            zipLibs(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(tomcat, "lib"), MISSING_WEBINF_LIBS, zout);
             zipLibs(ZIP_LIB, new File(tomcat, "lib"), MISSING_LIBS, zout);
-            zipFile(ZIP_LIB + "log4j.xml", newFile(tomcat, "lib/log4j.xml"),
-                    zout, null);
+            zipFile(ZIP_LIB + "log4j.xml", newFile(tomcat, "lib/log4j.xml"), zout, null);
             zipTree(ENDORSED_LIB, new File(tomcat, "endorsed"), false, zout);
             zipLibs(ENDORSED_LIB, new File(tomcat, "lib"), ENDORSED_LIBS, zout);
         } finally {
@@ -243,16 +225,14 @@ public class PackWar {
      * @since 5.9.3
      */
     private File listNuxeoBundles() throws IOException {
-        File nuxeoBundles = File.createTempFile(
-                NuxeoStarter.NUXEO_BUNDLES_LIST, "");
+        File nuxeoBundles = File.createTempFile(NuxeoStarter.NUXEO_BUNDLES_LIST, "");
         File[] bundles = new File(nxserver, "bundles").listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(".jar");
             }
         });
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(
-                nuxeoBundles))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nuxeoBundles))) {
             for (File bundle : bundles) {
                 writer.write(bundle.getName());
                 writer.newLine();
@@ -265,12 +245,10 @@ public class PackWar {
         return new File(base, path.replace("/", File.separator));
     }
 
-    protected void zipLibs(String prefix, File dir, List<String> patterns,
-            ZipOutputStream zout) throws IOException {
+    protected void zipLibs(String prefix, File dir, List<String> patterns, ZipOutputStream zout) throws IOException {
         for (String name : dir.list()) {
             for (String pat : patterns) {
-                if ((name.startsWith(pat + '-') && name.endsWith(".jar"))
-                        || name.equals(pat + ".jar")) {
+                if ((name.startsWith(pat + '-') && name.endsWith(".jar")) || name.equals(pat + ".jar")) {
                     zipFile(prefix + name, new File(dir, name), zout, null);
                     break;
                 }
@@ -278,15 +256,14 @@ public class PackWar {
         }
     }
 
-    protected void zipDirectory(String entryName, ZipOutputStream zout)
-            throws IOException {
+    protected void zipDirectory(String entryName, ZipOutputStream zout) throws IOException {
         ZipEntry zentry = new ZipEntry(entryName);
         zout.putNextEntry(zentry);
         zout.closeEntry();
     }
 
-    protected void zipFile(String entryName, File file, ZipOutputStream zout,
-            FileProcessor processor) throws IOException {
+    protected void zipFile(String entryName, File file, ZipOutputStream zout, FileProcessor processor)
+            throws IOException {
         ZipEntry zentry = new ZipEntry(entryName);
         if (processor == null) {
             processor = CopyProcessor.INSTANCE;
@@ -297,8 +274,7 @@ public class PackWar {
         zout.closeEntry();
     }
 
-    protected void zipBytes(String entryName, byte[] bytes, ZipOutputStream zout)
-            throws IOException {
+    protected void zipBytes(String entryName, byte[] bytes, ZipOutputStream zout) throws IOException {
         ZipEntry zentry = new ZipEntry(entryName);
         zout.putNextEntry(zentry);
         zout.write(bytes);
@@ -306,14 +282,12 @@ public class PackWar {
     }
 
     /** prefix ends with '/' */
-    protected void zipTree(String prefix, File root, boolean includeRoot,
-            ZipOutputStream zout) throws IOException {
+    protected void zipTree(String prefix, File root, boolean includeRoot, ZipOutputStream zout) throws IOException {
         if (includeRoot) {
             prefix += root.getName() + '/';
             zipDirectory(prefix, zout);
         }
-        String zipWebappsNuxeo = ZIP_WEBAPPS
-                + tomcatConfigurator.getContextName() + "/";
+        String zipWebappsNuxeo = ZIP_WEBAPPS + tomcatConfigurator.getContextName() + "/";
         for (String name : root.list()) {
             File file = new File(root, name);
             if (file.isDirectory()) {
@@ -329,10 +303,8 @@ public class PackWar {
                 FileProcessor processor;
                 if (name.equals(zipWebappsNuxeo + ZIP_WEBINF + "web.xml")) {
                     processor = WebXmlProcessor.INSTANCE;
-                } else if (name.equals(zipWebappsNuxeo + ZIP_WEBINF
-                        + "opensocial.properties")) {
-                    processor = new PropertiesFileProcessor("res://config/",
-                            zipWebappsNuxeo + ZIP_WEBINF);
+                } else if (name.equals(zipWebappsNuxeo + ZIP_WEBINF + "opensocial.properties")) {
+                    processor = new PropertiesFileProcessor("res://config/", zipWebappsNuxeo + ZIP_WEBINF);
                 } else {
                     processor = null;
                 }
@@ -538,14 +510,10 @@ public class PackWar {
     }
 
     public static void main(String[] args) {
-        if (args.length < 2
-                || args.length > 3
-                || (args.length == 3 && !Arrays.asList(COMMAND_PREPROCESSING,
-                        COMMAND_PACKAGING).contains(args[2]))) {
-            fail(String.format(
-                    "Usage: %s <nxserver_dir> <target_zip> [command]\n"
-                            + "    command may be empty or '%s' or '%s'",
-                    PackWar.class.getSimpleName(), COMMAND_PREPROCESSING,
+        if (args.length < 2 || args.length > 3
+                || (args.length == 3 && !Arrays.asList(COMMAND_PREPROCESSING, COMMAND_PACKAGING).contains(args[2]))) {
+            fail(String.format("Usage: %s <nxserver_dir> <target_zip> [command]\n"
+                    + "    command may be empty or '%s' or '%s'", PackWar.class.getSimpleName(), COMMAND_PREPROCESSING,
                     COMMAND_PACKAGING));
         }
 

@@ -22,8 +22,7 @@ import java.util.List;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 
 /**
- * Compares selected row instances to order them in the same order that given
- * by the input list of row names.
+ * Compares selected row instances to order them in the same order that given by the input list of row names.
  *
  * @author Anahide Tchertchian
  */

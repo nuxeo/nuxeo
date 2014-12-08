@@ -38,14 +38,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationManager {
 
     private static final String TRANSIENT_GRAPH_TYPE = "jena";
 
-    public void writeAnnotation(OutputStream os, Annotation annotation)
-            throws AnnotationException {
+    public void writeAnnotation(OutputStream os, Annotation annotation) throws AnnotationException {
         Graph graph = getTransientGraph();
         graph.add(annotation.getStatements());
         try {
@@ -56,20 +54,18 @@ public class AnnotationManager {
         graph.write(os, null, null);
     }
 
-    public Annotation translateAnnotationFromRepo(UriResolver resolver,
-            String baseUrl, Annotation annotation) throws AnnotationException {
+    public Annotation translateAnnotationFromRepo(UriResolver resolver, String baseUrl, Annotation annotation)
+            throws AnnotationException {
         List<Statement> results = new ArrayList<Statement>();
         for (Statement statement : annotation.getStatements()) {
             Node node = statement.getSubject();
             if (node instanceof Resource) {
-                Resource resource = getTranslatedResource(resolver, baseUrl,
-                        node);
+                Resource resource = getTranslatedResource(resolver, baseUrl, node);
                 statement.setSubject(resource);
             }
             node = statement.getObject();
             if (node instanceof Resource) {
-                Resource resource = getTranslatedResource(resolver, baseUrl,
-                        node);
+                Resource resource = getTranslatedResource(resolver, baseUrl, node);
                 statement.setObject(resource);
             }
             results.add(statement);
@@ -77,8 +73,8 @@ public class AnnotationManager {
         return getAnnotation(results);
     }
 
-    private static Resource getTranslatedResource(UriResolver resolver,
-            String baseUrl, Node node) throws AnnotationException {
+    private static Resource getTranslatedResource(UriResolver resolver, String baseUrl, Node node)
+            throws AnnotationException {
         String uri = ((Resource) node).getUri();
         Resource resource = null;
         try {
@@ -90,8 +86,7 @@ public class AnnotationManager {
         return resource;
     }
 
-    public Annotation translateAnnotationToRepo(UriResolver resolver,
-            Annotation annotation) throws AnnotationException {
+    public Annotation translateAnnotationToRepo(UriResolver resolver, Annotation annotation) throws AnnotationException {
         List<Statement> results = new ArrayList<Statement>();
         for (Statement statement : annotation.getStatements()) {
             Node node = statement.getSubject();
@@ -106,7 +101,7 @@ public class AnnotationManager {
                 Resource resource = new ResourceImpl(u.toString());
                 statement.setSubject(resource);
             }
-            node =  statement.getObject();
+            node = statement.getObject();
             if (node instanceof Resource) {
                 String uri = ((Resource) node).getUri();
                 URI u;
@@ -123,8 +118,7 @@ public class AnnotationManager {
         return getAnnotation(results);
     }
 
-    public Annotation getAnnotation(List<Statement> statements)
-            throws AnnotationException {
+    public Annotation getAnnotation(List<Statement> statements) throws AnnotationException {
         AnnotationImpl annotation = new AnnotationImpl();
         Graph graph = getTransientGraph();
         graph.add(statements);

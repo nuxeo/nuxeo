@@ -73,8 +73,7 @@ public class DocumentModelToJSON implements PropertyVisitor {
     }
 
     @Override
-    public Object visit(MapProperty property, Object arg)
-            throws PropertyException {
+    public Object visit(MapProperty property, Object arg) throws PropertyException {
         Object value = null;
         if (property.isContainer()) {
             value = new JSONObject();
@@ -93,8 +92,7 @@ public class DocumentModelToJSON implements PropertyVisitor {
             ((JSONArray) arg).add(value);
         } else {
             try {
-                ((JSONObject) arg).put(
-                        property.getField().getName().getPrefixedName(), value);
+                ((JSONObject) arg).put(property.getField().getName().getPrefixedName(), value);
             } catch (JSONException e) {
                 throw new PropertyException("Failed to put value", e);
             }
@@ -103,8 +101,7 @@ public class DocumentModelToJSON implements PropertyVisitor {
     }
 
     @Override
-    public Object visit(ListProperty property, Object arg)
-            throws PropertyException {
+    public Object visit(ListProperty property, Object arg) throws PropertyException {
         Object value = null;
         if (property.isContainer()) {
             value = new JSONArray();
@@ -119,8 +116,7 @@ public class DocumentModelToJSON implements PropertyVisitor {
             ((JSONArray) arg).add(value);
         } else {
             try {
-                ((JSONObject) arg).put(
-                        property.getField().getName().getPrefixedName(), value);
+                ((JSONObject) arg).put(property.getField().getName().getPrefixedName(), value);
             } catch (JSONException e) {
                 throw new PropertyException("Failed to put value", e);
             }
@@ -129,8 +125,7 @@ public class DocumentModelToJSON implements PropertyVisitor {
     }
 
     @Override
-    public Object visit(ScalarProperty property, Object arg)
-            throws PropertyException {
+    public Object visit(ScalarProperty property, Object arg) throws PropertyException {
         if (property.getParent() instanceof BlobProperty) {
             log.warn("Property '"
                     + property.getName()
@@ -148,8 +143,7 @@ public class DocumentModelToJSON implements PropertyVisitor {
             ((JSONArray) arg).add(value);
         } else {
             try {
-                ((JSONObject) arg).put(
-                        property.getField().getName().getPrefixedName(), value);
+                ((JSONObject) arg).put(property.getField().getName().getPrefixedName(), value);
             } catch (JSONException e) {
                 throw new PropertyException("Failed to put value", e);
             }

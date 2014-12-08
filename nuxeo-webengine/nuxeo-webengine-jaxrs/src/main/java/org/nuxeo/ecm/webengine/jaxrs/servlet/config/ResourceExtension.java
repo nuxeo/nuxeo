@@ -19,7 +19,6 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("resource")
 public class ResourceExtension {
@@ -84,11 +83,11 @@ public class ResourceExtension {
     }
 
     public String getId() {
-        return target+"#"+segment;
+        return target + "#" + segment;
     }
 
     @Override
     public String toString() {
-        return bundle.getSymbolicName()+":"+target+"#"+segment;
+        return bundle.getSymbolicName() + ":" + target + "#" + segment;
     }
 }

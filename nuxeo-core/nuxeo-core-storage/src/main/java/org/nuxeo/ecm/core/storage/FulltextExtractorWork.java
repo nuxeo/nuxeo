@@ -37,8 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Work task that does fulltext extraction from the blobs of the given document.
  * <p>
- * The extracted fulltext is then passed to the single-threaded
- * {@link FulltextUpdaterWork}.
+ * The extracted fulltext is then passed to the single-threaded {@link FulltextUpdaterWork}.
  * <p>
  * This base abstract class must be subclassed in order to implement the proper
  * {@link #initFulltextConfigurationAndParser} depending on the storage.
@@ -63,8 +62,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
 
     protected transient FulltextParser fulltextParser;
 
-    public FulltextExtractorWork(String repositoryName, String docId,
-            String id, boolean excludeProxies) {
+    public FulltextExtractorWork(String repositoryName, String docId, String id, boolean excludeProxies) {
         super(id);
         setDocument(repositoryName, docId);
         this.excludeProxies = excludeProxies;
@@ -131,8 +129,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                 // nothing to do: index not configured for blob
                 continue;
             }
-            extractor.setExtractorProperties(
-                    fulltextConfiguration.propPathsByIndexBinary.get(indexName),
+            extractor.setExtractorProperties(fulltextConfiguration.propPathsByIndexBinary.get(indexName),
                     fulltextConfiguration.propPathsExcludedByIndexBinary.get(indexName),
                     fulltextConfiguration.indexesAllBinary.contains(indexName));
             List<Blob> blobs = extractor.getBlobs(doc);
@@ -141,8 +138,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
             indexesAndText.add(new IndexAndText(indexName, text));
         }
         if (!indexesAndText.isEmpty()) {
-            Work work = new FulltextUpdaterWork(repositoryName, docId, false,
-                    true, indexesAndText);
+            Work work = new FulltextUpdaterWork(repositoryName, docId, false, true, indexesAndText);
             WorkManager workManager = Framework.getLocalService(WorkManager.class);
             workManager.schedule(work, true);
         }
@@ -175,8 +171,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                 }
                 strings.add(string);
             } catch (ClientException | IOException e) {
-                String msg = "Could not extract fulltext of file '"
-                        + blob.getFilename() + "' for document: " + docId
+                String msg = "Could not extract fulltext of file '" + blob.getFilename() + "' for document: " + docId
                         + ": " + e;
                 log.warn(msg);
                 log.debug(msg, e);
@@ -186,8 +181,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
         return StringUtils.join(strings, " ");
     }
 
-    protected BlobHolder convert(BlobHolder blobHolder)
-            throws ConversionException {
+    protected BlobHolder convert(BlobHolder blobHolder) throws ConversionException {
         ConversionService conversionService = Framework.getLocalService(ConversionService.class);
         if (conversionService == null) {
             log.debug("No ConversionService available");

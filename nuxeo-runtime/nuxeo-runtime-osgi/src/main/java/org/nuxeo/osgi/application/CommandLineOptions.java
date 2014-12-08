@@ -27,12 +27,10 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CommandLineOptions {
 
     private final LinkedHashMap<Object, String> args = new LinkedHashMap<Object, String>();
-
 
     public CommandLineOptions(String[] args) {
         String op = null;
@@ -67,7 +65,7 @@ public class CommandLineOptions {
         return args;
     }
 
-    public Set<Map.Entry<Object,String>> entrySet() {
+    public Set<Map.Entry<Object, String>> entrySet() {
         return args.entrySet();
     }
 

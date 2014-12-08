@@ -30,7 +30,6 @@ import org.nuxeo.connect.update.xml.XmlWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class PackageDef {
 
@@ -48,18 +47,15 @@ public abstract class PackageDef {
 
     private PackageUpdateService service;
 
-    public PackageDef(String name, String version, PackageUpdateService service)
-            throws Exception {
+    public PackageDef(String name, String version, PackageUpdateService service) throws Exception {
         this(name, version, PackageType.ADDON, service);
     }
 
-    public PackageDef(String name, String version, PackageType type,
-            PackageUpdateService service) throws Exception {
+    public PackageDef(String name, String version, PackageType type, PackageUpdateService service) throws Exception {
         this(name, version, type, "dm-" + version, service);
     }
 
-    public PackageDef(String name, String version, PackageType type,
-            String targetVersion, PackageUpdateService service) {
+    public PackageDef(String name, String version, PackageType type, String targetVersion, PackageUpdateService service) {
         builder = new PackageBuilder();
         builder.name(name).version(version).type(type);
         builder.platform(targetVersion);
@@ -148,8 +144,7 @@ public abstract class PackageDef {
 
     protected abstract void updatePackage() throws Exception;
 
-    protected abstract void writeInstallCommands(XmlWriter writer)
-            throws Exception;
+    protected abstract void writeInstallCommands(XmlWriter writer) throws Exception;
 
     public void addFile(String name, URL url) throws Exception {
         builder.addEntry(name, url.openStream());

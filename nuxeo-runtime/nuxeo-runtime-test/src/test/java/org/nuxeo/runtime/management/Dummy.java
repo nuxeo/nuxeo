@@ -18,10 +18,11 @@ package org.nuxeo.runtime.management;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
-public interface Dummy  {
+public interface Dummy {
     String getMessage();
+
     void setMessage(String message);
+
     String sayHelloWorld();
 }

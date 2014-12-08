@@ -26,27 +26,22 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public interface CommentManager {
 
-    List<DocumentModel> getComments(DocumentModel docModel)
-            throws ClientException;
+    List<DocumentModel> getComments(DocumentModel docModel) throws ClientException;
 
-    List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent)
-            throws ClientException;
+    List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent) throws ClientException;
 
     /**
-     * @deprecated CommentManager cannot find the author if invoked remotely so
-     *             one should use {@link #createComment(DocumentModel, String, String)}
+     * @deprecated CommentManager cannot find the author if invoked remotely so one should use
+     *             {@link #createComment(DocumentModel, String, String)}
      */
     @Deprecated
-    DocumentModel createComment(DocumentModel docModel, String comment)
-            throws ClientException;
+    DocumentModel createComment(DocumentModel docModel, String comment) throws ClientException;
 
     /**
-     * Creates a comment document model, filling its properties with given info
-     * and linking it to given document.
+     * Creates a comment document model, filling its properties with given info and linking it to given document.
      *
      * @param docModel the document to comment
      * @param comment the comment content
@@ -54,17 +49,14 @@ public interface CommentManager {
      * @return the comment document model.
      * @throws ClientException
      */
-    DocumentModel createComment(DocumentModel docModel, String comment,
-            String author) throws ClientException;
+    DocumentModel createComment(DocumentModel docModel, String comment, String author) throws ClientException;
 
-    DocumentModel createComment(DocumentModel docModel, DocumentModel comment)
+    DocumentModel createComment(DocumentModel docModel, DocumentModel comment) throws ClientException;
+
+    DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child)
             throws ClientException;
 
-    DocumentModel createComment(DocumentModel docModel, DocumentModel parent,
-            DocumentModel child) throws ClientException;
-
-    void deleteComment(DocumentModel docModel, DocumentModel comment)
-            throws ClientException;
+    void deleteComment(DocumentModel docModel, DocumentModel comment) throws ClientException;
 
     /**
      * Gets documents in relation with a particular comment.
@@ -73,22 +65,20 @@ public interface CommentManager {
      * @return the list of documents
      * @throws ClientException
      */
-    List<DocumentModel> getDocumentsForComment(DocumentModel comment)
-            throws ClientException;
-    
+    List<DocumentModel> getDocumentsForComment(DocumentModel comment) throws ClientException;
+
     /**
      * Gets thread in relation with a given comment (post or comment)
+     *
      * @param comment
      * @return
      * @throws ClientException
      * @since 5.5
      */
-    DocumentModel getThreadForComment(DocumentModel comment)
-            throws ClientException;
+    DocumentModel getThreadForComment(DocumentModel comment) throws ClientException;
 
     /**
-     * Creates a comment document model. It gives opportunity to save the comments in a
-     * specified location.
+     * Creates a comment document model. It gives opportunity to save the comments in a specified location.
      *
      * @param docModel the document to comment
      * @param comment the comment content
@@ -96,7 +86,7 @@ public interface CommentManager {
      * @return the comment document model.
      * @throws ClientException
      */
-    DocumentModel createLocatedComment(DocumentModel docModel,
-            DocumentModel comment, String path) throws ClientException;
+    DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path)
+            throws ClientException;
 
 }

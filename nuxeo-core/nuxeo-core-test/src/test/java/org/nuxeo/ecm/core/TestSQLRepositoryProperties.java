@@ -74,15 +74,12 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.core.test.tests",
-                "OSGI-INF/test-repo-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.test.tests",
-                "OSGI-INF/test-restriction-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-repo-core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-restriction-contrib.xml");
 
         // deploy specific adapter for testing external blobs: files are stored
         // in temporary directory
-        deployContrib("org.nuxeo.ecm.core.test.tests",
-                "OSGI-INF/test-externalblob-adapters-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-externalblob-adapters-contrib.xml");
         // set container to temp directory here in case that depends on the OS
         // or machine configuration and add funny characters to avoid problems
         // due to xml parsing
@@ -90,8 +87,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertNotNull(service);
         ExternalBlobAdapter adapter = service.getExternalBlobAdapterForPrefix("fs");
         Map<String, String> props = new HashMap<String, String>();
-        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n"
-                + System.getProperty("java.io.tmpdir") + " ");
+        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n" + System.getProperty("java.io.tmpdir")
+                + " ");
         adapter.setProperties(props);
 
         openSession();
@@ -159,8 +156,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
             fail("Should throw PropertyNotFoundException");
         } catch (PropertyNotFoundException e) {
             assertEquals("tp:complexList/notaninteger/foo", e.getPath());
-            assertEquals("segment notaninteger cannot be resolved",
-                    e.getDetail());
+            assertEquals("segment notaninteger cannot be resolved", e.getDetail());
         }
         try {
             doc.getPropertyValue("tp:complexList/0/foo");
@@ -185,8 +181,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         String[] values = { "foo", "bar" };
         doc.setPropertyValue("tp:stringArray", values);
         doc = session.saveDocument(doc);
-        assertTrue(Arrays.equals(values,
-                (Object[]) doc.getPropertyValue("tp:stringArray")));
+        assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:stringArray")));
     }
 
     // NXP-2454
@@ -199,8 +194,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc.setPropertyValue("tp:dateArray", values);
         doc = session.saveDocument(doc);
         // currently returning long[] instead of Calendar[]
-        assertTrue(Arrays.equals(values,
-                (Object[]) doc.getPropertyValue("tp:dateArray")));
+        assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:dateArray")));
     }
 
     // NXP-2454
@@ -211,8 +205,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc.setPropertyValue("tp:intArray", values);
         doc = session.saveDocument(doc);
         // currently returning long[], maybe this is the wanted behaviour (?)
-        assertTrue(Arrays.equals(values,
-                (Object[]) doc.getPropertyValue("tp:intArray")));
+        assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:intArray")));
     }
 
     @Test
@@ -318,8 +311,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertComplexListElements(actual, 0, "baz", 333);
     }
 
-    protected static void assertComplexListElements(List<?> list, int i,
-            String string, int theint) {
+    protected static void assertComplexListElements(List<?> list, int i, String string, int theint) {
         Map<String, Serializable> map = (Map<String, Serializable>) list.get(i);
         assertEquals(string, map.get("string"));
         assertEquals(Long.valueOf(theint), map.get("int"));
@@ -374,8 +366,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     public void testSubBlobValue() throws Exception {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileComplexList") instanceof List);
-        assertEquals(0,
-                ((List) doc.getPropertyValue("tp:fileComplexList")).size());
+        assertEquals(0, ((List) doc.getPropertyValue("tp:fileComplexList")).size());
         ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> item = new HashMap<String, Serializable>();
         StringBlob blob = new StringBlob("My content");
@@ -394,15 +385,13 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertEquals("My filename", actualItem.get("filename"));
         assertTrue(actualItem.get("blob") instanceof Blob);
 
-        Object actualBlob = doc.getProperty("tp:fileComplexList/0/blob").getValue(
-                Blob.class);
+        Object actualBlob = doc.getProperty("tp:fileComplexList/0/blob").getValue(Blob.class);
         assertTrue(actualBlob instanceof Blob);
     }
 
     @Test
     public void testComplexParallelFetch() throws Exception {
-        DocumentModel doc2 = session.createDocumentModel("/", "doc2",
-                "TestDocument2");
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "TestDocument2");
         doc2.setPropertyValue("dc:title", "doc2");
         doc2 = session.createDocument(doc2);
         session.save();
@@ -523,8 +512,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         waitForAsyncCompletion();
 
         // add complexschema to TestDocument
-        deployContrib("org.nuxeo.ecm.core.test.tests",
-                "OSGI-INF/test-schema-update.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-schema-update.xml");
 
         // reload repo with new doctype
         Framework.getService(ReloadService.class).reloadRepository();
@@ -582,8 +570,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(blob instanceof Blob);
         assertEquals("Hello External Blob", ((Blob) blob).getString());
         assertEquals("hello.txt", ((Blob) blob).getFilename());
-        assertEquals("hello.txt",
-                doc.getPropertyValue("tp:externalcontent/name"));
+        assertEquals("hello.txt", doc.getPropertyValue("tp:externalcontent/name"));
         assertEquals(uri, doc.getPropertyValue("tp:externalcontent/uri"));
     }
 
@@ -674,8 +661,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(actualBlob instanceof Blob);
         assertEquals("Hello External Blob", ((Blob) actualBlob).getString());
         assertEquals("hello.txt", ((Blob) actualBlob).getFilename());
-        assertEquals("hello.txt",
-                doc.getPropertyValue(propName + "/0/blob/name"));
+        assertEquals("hello.txt", doc.getPropertyValue(propName + "/0/blob/name"));
         assertEquals(uri, doc.getPropertyValue(propName + "/0/blob/uri"));
     }
 
@@ -730,11 +716,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         vignette.put("width", width);
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", attachedFile);
-        assertEquals(width,
-                doc.getPropertyValue("cmpf:attachedFile/vignettes/0/width"));
-        assertEquals(
-                width,
-                doc.getPropertyValue("cmpf:attachedFile/vignettes/vignette[0]/width"));
+        assertEquals(width, doc.getPropertyValue("cmpf:attachedFile/vignettes/0/width"));
+        assertEquals(width, doc.getPropertyValue("cmpf:attachedFile/vignettes/vignette[0]/width"));
     }
 
     private static String canonXPath(String xpath) {
@@ -754,15 +737,13 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertEquals("foo/0/bar", canonXPath("foo/gee[0]/bar"));
         assertEquals("foo/*/bar", canonXPath("foo/gee[*]/bar"));
         assertEquals("foo/bar/0", canonXPath("foo/bar/gee[0]"));
-        assertEquals("foo/0/bar/123/moo",
-                canonXPath("foo/gee[0]/bar/baz[123]/moo"));
+        assertEquals("foo/0/bar/123/moo", canonXPath("foo/gee[0]/bar/baz[123]/moo"));
         assertEquals("foo/0/bar/*/moo", canonXPath("foo/gee[0]/bar/baz[*]/moo"));
     }
 
     @Test
     public void testPrefetchDefault() throws Exception {
-        doc = session.createDocument(session.createDocumentModel("/", "doc2",
-                "TestDocumentWithDefaultPrefetch"));
+        doc = session.createDocument(session.createDocumentModel("/", "doc2", "TestDocumentWithDefaultPrefetch"));
         assertTrue(doc.isPrefetched("dc:title"));
         assertTrue(doc.isPrefetched("dc:description"));
         assertTrue(doc.isPrefetched("dc:created"));
@@ -845,8 +826,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc.setPropertyValue("restr:shortstring", "foo");
         doc = session.createDocument(doc);
         doc = session.getDocument(doc.getRef());
-        String value = doc.getProperty("restr:shortstring").getValue(
-                String.class);
+        String value = doc.getProperty("restr:shortstring").getValue(String.class);
         assertEquals("foo", value);
     }
 
@@ -858,8 +838,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(part.isSameAs(part));
 
         DocumentModel doc2 = session.createDocumentModel("/", "file2", "File");
-        Blob blob2 = new ByteArrayBlob("hello world!".getBytes(), "text/plain",
-                "UTF-8");
+        Blob blob2 = new ByteArrayBlob("hello world!".getBytes(), "text/plain", "UTF-8");
         doc2.setPropertyValue("file:content", (Serializable) blob2);
         doc2 = session.createDocument(doc2);
         DocumentPart part2 = doc2.getPart("file");
@@ -888,11 +867,9 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
         // compare directly two StorageBlobs
         // same
-        assertEquals(doc2.getPropertyValue("file:content"),
-                doc3.getPropertyValue("file:content"));
+        assertEquals(doc2.getPropertyValue("file:content"), doc3.getPropertyValue("file:content"));
         // different
-        assertFalse(doc2.getPropertyValue("file:content").equals(
-                doc4.getPropertyValue("file:content")));
+        assertFalse(doc2.getPropertyValue("file:content").equals(doc4.getPropertyValue("file:content")));
 
         // compare a ByteArrayBlob and a StorageBlob
         assertEquals(blob2, doc3.getPropertyValue("file:content"));
@@ -993,8 +970,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     /**
-     * Checks that writing several documents using batching with some of them
-     * having Delta and some not doesn't fail.
+     * Checks that writing several documents using batching with some of them having Delta and some not doesn't fail.
      */
     @Test
     public void testPropertyDeltaBatching() throws Exception {
@@ -1002,8 +978,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         int base = 100;
         int fakebase = 1000;
         for (int i = 0; i < n; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "doc" + i,
-                    "MyDocType");
+            DocumentModel doc = session.createDocumentModel("/", "doc" + i, "MyDocType");
             doc.setPropertyValue("my:integer", Long.valueOf(base));
             doc = session.createDocument(doc);
         }

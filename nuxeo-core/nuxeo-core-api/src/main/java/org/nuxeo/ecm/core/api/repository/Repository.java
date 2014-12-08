@@ -23,15 +23,12 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * A high-level repository descriptor, from which you get a {@link CoreSession}
- * when calling {@link #open}.
+ * A high-level repository descriptor, from which you get a {@link CoreSession} when calling {@link #open}.
  * <p>
- * This is obsolete as an extension point, use
- * org.nuxeo.ecm.core.storage.sql.RepositoryService instead. Descriptor kept for
- * backward-compatibility.
+ * This is obsolete as an extension point, use org.nuxeo.ecm.core.storage.sql.RepositoryService instead. Descriptor kept
+ * for backward-compatibility.
  * <p>
- * Note that this is still use as an object returned by the core api
- * RepositoryManager.
+ * Note that this is still use as an object returned by the core api RepositoryManager.
  */
 @XObject("repository")
 public class Repository {
@@ -53,8 +50,7 @@ public class Repository {
     public Repository() {
     }
 
-    public Repository(String name, String label, Boolean isDefault,
-            Callable<Object> repositoryFactory) {
+    public Repository(String name, String label, Boolean isDefault, Callable<Object> repositoryFactory) {
         this.name = name;
         this.label = label;
         this.isDefault = isDefault;
@@ -101,8 +97,7 @@ public class Repository {
      * @deprecated since 5.9.3, use {@link CoreInstance#openCoreSession} instead.
      */
     @Deprecated
-    public CoreSession open(Map<String, Serializable> context)
-            throws ClientException {
+    public CoreSession open(Map<String, Serializable> context) throws ClientException {
         return CoreInstance.openCoreSession(name, context);
     }
 
@@ -116,8 +111,7 @@ public class Repository {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " {name=" + name + ", label="
-                + label + '}';
+        return getClass().getSimpleName() + " {name=" + name + ", label=" + label + '}';
     }
 
 }

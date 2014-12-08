@@ -24,13 +24,11 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 /**
  * A data model is a concrete representation of a schema.
  * <p>
- * The schema describe the data structure and the data model object
- * is storing concrete values according to that structure.
+ * The schema describe the data structure and the data model object is storing concrete values according to that
+ * structure.
  * <p>
- * When the user modifies a data structure the modified fields are tracked
- * so that at any time you can query about the dirty state of the data model
- * by using the {@link DataModel#isDirty()} and
- * {@link DataModel#isDirty(String)} methods.
+ * When the user modifies a data structure the modified fields are tracked so that at any time you can query about the
+ * dirty state of the data model by using the {@link DataModel#isDirty()} and {@link DataModel#isDirty(String)} methods.
  * <p>
  * The data model can be modified only through the set methods:
  * <ul>
@@ -39,13 +37,11 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
  * </ul>
  * This is ensuring the dirty state will be correctly updated
  * <p>
- * This is the reason why the {@link DataModel#getMap()} method is returning
- * a read only map.
+ * This is the reason why the {@link DataModel#getMap()} method is returning a read only map.
  * <p>
- * Data structure are usually part of a composite model as the
- * {@link DocumentModel}.
+ * Data structure are usually part of a composite model as the {@link DocumentModel}.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface DataModel extends Serializable {
 
@@ -77,8 +73,8 @@ public interface DataModel extends Serializable {
     /**
      * Gets all the fields set in this data model.
      * <p>
-     * It is not guaranteed that the returned map will contain all
-     * the fields defined by the schema. It may even be empty.
+     * It is not guaranteed that the returned map will contain all the fields defined by the schema. It may even be
+     * empty.
      * <p>
      * The returned map is null if the data model was not yet loaded.
      *
@@ -96,16 +92,14 @@ public interface DataModel extends Serializable {
     void setMap(Map<String, Object> data) throws PropertyException;
 
     /**
-     * Tests whether or not this data model is dirty
-     * (i.e. it was changed by the client).
+     * Tests whether or not this data model is dirty (i.e. it was changed by the client).
      *
      * @return true if the data model is dirty, false otherwise
      */
     boolean isDirty();
 
     /**
-     * Tests whether or not the specified field from this data model
-     * is dirty.
+     * Tests whether or not the specified field from this data model is dirty.
      *
      * @param name the field name to tests
      * @return true if the field is dirty, false otherwise
@@ -114,8 +108,7 @@ public interface DataModel extends Serializable {
     boolean isDirty(String name) throws PropertyNotFoundException;
 
     /**
-     * Marks the specified field from this data model
-     * as dirty.
+     * Marks the specified field from this data model as dirty.
      *
      * @param name the field name to be dirty
      * @throws PropertyNotFoundException

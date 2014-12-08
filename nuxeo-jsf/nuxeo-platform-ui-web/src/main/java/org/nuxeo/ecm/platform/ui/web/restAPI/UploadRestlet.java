@@ -52,9 +52,8 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
 /**
- * Restlet to import files as nuxeo documents using the pluggable FileManager
- * service. This restlet is mainly used for desktop integration with drag and
- * drop browser plugins.
+ * Restlet to import files as nuxeo documents using the pluggable FileManager service. This restlet is mainly used for
+ * desktop integration with drag and drop browser plugins.
  *
  * @author tdelprat
  */
@@ -85,8 +84,7 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
 
         DocumentModel targetContainer;
         try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(
-                    repo));
+            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
             targetContainer = documentManager.getDocument(new IdRef(docid));
         } catch (ClientException e) {
@@ -107,11 +105,9 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                 // mono import
                 String outcome;
                 try {
-                    Blob inputBlob = StreamingBlob.createFromStream(
-                            req.getEntity().getStream()).persist();
+                    Blob inputBlob = StreamingBlob.createFromStream(req.getEntity().getStream()).persist();
                     inputBlob.setFilename(fileName);
-                    outcome = FileManageActions.addBinaryFileFromPlugin(
-                            inputBlob, fileName, targetContainer);
+                    outcome = FileManageActions.addBinaryFileFromPlugin(inputBlob, fileName, targetContainer);
                 } catch (ClientException | IOException e) {
                     outcome = "ERROR : " + e.getMessage();
                 }
@@ -122,19 +118,16 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                 for (Blob blob : blobs) {
                     String outcome;
                     try {
-                        outcome = FileManageActions.addBinaryFileFromPlugin(
-                                blob, blob.getFilename(), targetContainer);
+                        outcome = FileManageActions.addBinaryFileFromPlugin(blob, blob.getFilename(), targetContainer);
                     } catch (ClientException e) {
-                        log.error("error importing " + blob.getFilename()
-                                + ": " + e.getMessage(), e);
+                        log.error("error importing " + blob.getFilename() + ": " + e.getMessage(), e);
                         outcome = "ERROR : " + e.getMessage();
                     }
                     uploads.addElement("upload").setText(outcome);
                 }
             }
         }
-        Representation rep = new StringRepresentation(result.asXML(),
-                MediaType.APPLICATION_XML);
+        Representation rep = new StringRepresentation(result.asXML(), MediaType.APPLICATION_XML);
         rep.setCharacterSet(CharacterSet.UTF_8);
         res.setEntity(rep);
     }

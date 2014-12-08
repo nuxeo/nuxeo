@@ -43,8 +43,7 @@ import org.nuxeo.ecm.platform.types.SubType;
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class UITypesConfigurationAdapter extends
-        AbstractLocalConfiguration<UITypesConfiguration> implements
+public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITypesConfiguration> implements
         UITypesConfiguration {
 
     private static final Log log = LogFactory.getLog(UITypesConfigurationAdapter.class);
@@ -63,10 +62,8 @@ public class UITypesConfigurationAdapter extends
 
     public UITypesConfigurationAdapter(DocumentModel doc) {
         documentRef = doc.getRef();
-        allowedTypes = getTypesList(doc,
-                UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY);
-        deniedTypes = getTypesList(doc,
-                UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY);
+        allowedTypes = getTypesList(doc, UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY);
+        deniedTypes = getTypesList(doc, UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY);
         defaultType = getDefaultType(doc);
 
         denyAllTypes = getDenyAllTypesProperty(doc);
@@ -155,8 +152,7 @@ public class UITypesConfigurationAdapter extends
     }
 
     @Override
-    public Map<String, SubType> filterSubTypes(
-            Map<String, SubType> allowedSubTypes) {
+    public Map<String, SubType> filterSubTypes(Map<String, SubType> allowedSubTypes) {
         if (denyAllTypes()) {
             return Collections.emptyMap();
         }
@@ -167,12 +163,10 @@ public class UITypesConfigurationAdapter extends
             return allowedSubTypes;
         }
 
-        Map<String, SubType> filteredAllowedSubTypes = new HashMap<String, SubType>(
-                allowedSubTypes);
+        Map<String, SubType> filteredAllowedSubTypes = new HashMap<String, SubType>(allowedSubTypes);
         for (Iterator<String> it = filteredAllowedSubTypes.keySet().iterator(); it.hasNext();) {
             String subTypeName = it.next();
-            if (deniedTypes.contains(subTypeName) || !allowedTypes.isEmpty()
-                    && !allowedTypes.contains(subTypeName)) {
+            if (deniedTypes.contains(subTypeName) || !allowedTypes.isEmpty() && !allowedTypes.contains(subTypeName)) {
                 it.remove();
             }
         }
@@ -181,9 +175,7 @@ public class UITypesConfigurationAdapter extends
 
     /*
      * (non-Javadoc)
-     * @see
-     * org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration#
-     * getDefaultType()
+     * @see org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration# getDefaultType()
      */
     @Override
     public String getDefaultType() {

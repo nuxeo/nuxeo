@@ -40,10 +40,8 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
     @Test
@@ -175,8 +173,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testCleanupEmptyStylePaths() throws ThemeException,
-            NodeException {
+    public void testCleanupEmptyStylePaths() throws ThemeException, NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
@@ -237,23 +234,18 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         ThemeRepairer.repair(theme);
 
         // Layout property 'width' is moved to both layout1 and layout2
-        Layout layout1 = (Layout) ElementFormatter.getFormatFor(section1,
-                "layout");
+        Layout layout1 = (Layout) ElementFormatter.getFormatFor(section1, "layout");
         assertEquals("100%", layout1.getProperty("width"));
 
-        Layout layout2 = (Layout) ElementFormatter.getFormatFor(section2,
-                "layout");
+        Layout layout2 = (Layout) ElementFormatter.getFormatFor(section2, "layout");
         assertEquals("100%", layout2.getProperty("width"));
 
         // Style property 'color' is not moved.
-        assertEquals(
-                "red",
-                style.getPropertiesFor("section frame", "").getProperty("color"));
+        assertEquals("red", style.getPropertiesFor("section frame", "").getProperty("color"));
     }
 
     @Test
-    public void testSharedStylesOnDifferentElementTypes()
-            throws ThemeException, NodeException {
+    public void testSharedStylesOnDifferentElementTypes() throws ThemeException, NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
@@ -308,8 +300,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         ThemeRepairer.repair(theme);
 
         Style pageStyle = (Style) ElementFormatter.getFormatFor(page, "style");
-        Style sectionStyle = (Style) ElementFormatter.getFormatFor(section,
-                "style");
+        Style sectionStyle = (Style) ElementFormatter.getFormatFor(section, "style");
         Style cell1Style = (Style) ElementFormatter.getFormatFor(cell1, "style");
         Style cell2Style = (Style) ElementFormatter.getFormatFor(cell2, "style");
 
@@ -327,8 +318,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
 
         // Make sure that inherited styles are preserved
         assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(pageStyle));
-        assertSame(inheritedStyle,
-                ThemeManager.getAncestorFormatOf(sectionStyle));
+        assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(sectionStyle));
         assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(cell2Style));
         assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(cell1Style));
     }

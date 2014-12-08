@@ -38,6 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 public class SystemLoginRestrictionManager {
 
     public static final String RESTRICT_REMOTE_SYSTEM_LOGIN_PROP = "org.nuxeo.systemlogin.restrict";
+
     public static final String REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP = "org.nuxeo.systemlogin.trusted.instances";
 
     public static final String TRUSTED_INSTANCES_SEP = ",";

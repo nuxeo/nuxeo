@@ -23,7 +23,6 @@ import freemarker.template.Configuration;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class DocumentRenderingEngine extends FreemarkerRenderingEngine {
 

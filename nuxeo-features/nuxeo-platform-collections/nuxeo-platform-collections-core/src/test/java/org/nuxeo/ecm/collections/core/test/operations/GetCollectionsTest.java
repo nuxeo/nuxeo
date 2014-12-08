@@ -48,22 +48,21 @@ public class GetCollectionsTest extends CollectionOperationsTestCase {
 
     @Before
     public void setUp() throws ClientException {
-        testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         // Create a list of collections
         listCollections = new ArrayList<>();
-        DocumentModel collection1 = collectionManager.createCollection(session,
-                COLLECTION_NAME + 1, COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
+        DocumentModel collection1 = collectionManager.createCollection(session, COLLECTION_NAME + 1,
+                COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
         listCollections.add(collection1);
-        DocumentModel collection2 = collectionManager.createCollection(session,
-                COLLECTION_NAME + 2, COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
+        DocumentModel collection2 = collectionManager.createCollection(session, COLLECTION_NAME + 2,
+                COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
         listCollections.add(collection2);
-        DocumentModel collection3 = collectionManager.createCollection(session,
-                COLLECTION_NAME + 3, COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
+        DocumentModel collection3 = collectionManager.createCollection(session, COLLECTION_NAME + 3,
+                COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
         listCollections.add(collection3);
-        DocumentModel collection4 = collectionManager.createCollection(session,
-                COLLECTION_NAME + 4, COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
+        DocumentModel collection4 = collectionManager.createCollection(session, COLLECTION_NAME + 4,
+                COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
         listCollections.add(collection4);
 
         session.save();

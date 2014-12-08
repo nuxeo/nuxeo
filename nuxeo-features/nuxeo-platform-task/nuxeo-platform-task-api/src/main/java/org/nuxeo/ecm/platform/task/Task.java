@@ -91,8 +91,7 @@ public interface Task extends Serializable {
 
     /**
      * @deprecated
-     * @since 5.8, setTargetDocumentsIds(List<String> ids) should be used
-     *        instead
+     * @since 5.8, setTargetDocumentsIds(List<String> ids) should be used instead
      */
     void setTargetDocumentId(String targetDocumentId) throws ClientException;
 

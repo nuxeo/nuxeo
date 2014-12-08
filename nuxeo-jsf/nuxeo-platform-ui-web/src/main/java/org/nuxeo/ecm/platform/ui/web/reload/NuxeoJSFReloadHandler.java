@@ -29,15 +29,13 @@ import org.nuxeo.runtime.services.event.EventListener;
 /**
  * Handler for hot reload features.
  * <p>
- * Hot reload features should be enabled only if the application is in a
- * "debug" mode, as some reloading can hurt a server in production (when
- * altering document types declared on the platform, resetting caches, etc...)
+ * Hot reload features should be enabled only if the application is in a "debug" mode, as some reloading can hurt a
+ * server in production (when altering document types declared on the platform, resetting caches, etc...)
  * <p>
- * Note that some hot reload features cannot be handled without additional
- * debug configurations to be available (like the seam debug jar for instance).
+ * Note that some hot reload features cannot be handled without additional debug configurations to be available (like
+ * the seam debug jar for instance).
  * <p>
- * This reload handler is supposed to handle at least (or most of) features
- * used in Studio.
+ * This reload handler is supposed to handle at least (or most of) features used in Studio.
  *
  * @since 5.6
  */

@@ -24,12 +24,10 @@ import java.util.regex.Pattern;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 
 /**
- * Default implementation of the {@link LdapExceptionProcessor} based on Errors
- * returned by OpenDS
+ * Default implementation of the {@link LdapExceptionProcessor} based on Errors returned by OpenDS
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
- *
  */
 public class DefaultLdapExceptionProcessor implements LdapExceptionProcessor {
 
@@ -45,8 +43,7 @@ public class DefaultLdapExceptionProcessor implements LdapExceptionProcessor {
 
         if (matcher53.matches()) {
             String userMessage = matcher53.group(1);
-            return new RecoverableClientException(userMessage, userMessage,
-                    null, e);
+            return new RecoverableClientException(userMessage, userMessage, null, e);
         }
 
         return null;

@@ -43,8 +43,7 @@ public interface PictureTilingService {
      * @throws ClientException
      */
     @Deprecated
-    PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight,
-            int maxTiles) throws ClientException;
+    PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles) throws ClientException;
 
     /**
      * Gets the picture tiles from a blob Tiles are lazily generated.
@@ -58,19 +57,15 @@ public interface PictureTilingService {
      * @throws ClientException
      */
     @Deprecated
-    PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight,
-            int maxTiles, int xCenter, int yCenter, boolean fullGeneration)
-            throws ClientException;
-
-    PictureTiles completeTiles(PictureTiles existingTiles, int xCenter,
-            int yCenter) throws ClientException;
-
-    PictureTiles getTiles(ImageResource resource, int tileWidth,
-            int tileHeight, int maxTiles) throws ClientException;
-
-    PictureTiles getTiles(ImageResource resource, int tileWidth,
-            int tileHeight, int maxTiles, int xCenter, int yCenter,
+    PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles, int xCenter, int yCenter,
             boolean fullGeneration) throws ClientException;
+
+    PictureTiles completeTiles(PictureTiles existingTiles, int xCenter, int yCenter) throws ClientException;
+
+    PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles) throws ClientException;
+
+    PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles, int xCenter,
+            int yCenter, boolean fullGeneration) throws ClientException;
 
     void setWorkingDirPath(String path);
 

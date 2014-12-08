@@ -47,8 +47,7 @@ public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
     @Test
     public void testContrib() throws Exception {
         assertEquals(0, BlobHolderAdapterComponent.getFactoryNames().size());
-        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
-                "test-blob-holder-adapters-contrib.xml");
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE, "test-blob-holder-adapters-contrib.xml");
         assertEquals(1, BlobHolderAdapterComponent.getFactoryNames().size());
 
         BlobHolderAdapterService bhas = Framework.getLocalService(BlobHolderAdapterService.class);

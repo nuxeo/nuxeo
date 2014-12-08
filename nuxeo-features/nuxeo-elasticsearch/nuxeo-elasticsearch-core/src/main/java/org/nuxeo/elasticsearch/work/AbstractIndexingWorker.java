@@ -29,7 +29,6 @@ import org.nuxeo.runtime.api.Framework;
  * Abstract class for sharing code between ElasticSearch related workers
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
 
@@ -48,14 +47,12 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
 
     @Override
     public void doWork() {
-            CoreSession session = initSession(repositoryName);
-            ElasticSearchIndexing esi = Framework
-                    .getLocalService(ElasticSearchIndexing.class);
-            cmd.refresh(session);
-            doIndexingWork(esi, cmd);
+        CoreSession session = initSession(repositoryName);
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        cmd.refresh(session);
+        doIndexingWork(esi, cmd);
     }
 
-    protected abstract void doIndexingWork(ElasticSearchIndexing esi,
-            IndexingCommand cmd);
+    protected abstract void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd);
 
 }

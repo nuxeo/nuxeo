@@ -52,7 +52,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.XAnnotatedList;
 
-
 public class JSMin {
 
     private static final Log log = LogFactory.getLog(XAnnotatedList.class);
@@ -60,9 +59,11 @@ public class JSMin {
     private static final int EOF = -1;
 
     private PushbackInputStream in;
+
     private OutputStream out;
 
     private int theA;
+
     private int theB;
 
     public JSMin(InputStream in, OutputStream out) {
@@ -71,19 +72,16 @@ public class JSMin {
     }
 
     /**
-     * isAlphanum -- return true if the character is a letter, digit,
-     * underscore, dollar sign, or non-ASCII character.
+     * isAlphanum -- return true if the character is a letter, digit, underscore, dollar sign, or non-ASCII character.
      */
     static boolean isAlphanum(int c) {
-        return ( (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
-                 (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || c == '\\' ||
-                 c > 126);
+        return ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$'
+                || c == '\\' || c > 126);
     }
 
     /**
-     * get -- return the next character from stdin. Watch out for lookahead. If
-     * the character is a control character, translate it to a space or
-     * linefeed.
+     * get -- return the next character from stdin. Watch out for lookahead. If the character is a control character,
+     * translate it to a space or linefeed.
      */
     int get() throws IOException {
         int c = in.read();
@@ -99,8 +97,6 @@ public class JSMin {
         return ' ';
     }
 
-
-
     /**
      * Get the next character without getting it.
      */
@@ -111,8 +107,7 @@ public class JSMin {
     }
 
     /**
-     * next -- get the next character, excluding comments. peek() is used to see
-     * if a '/' is followed by a '/' or '*'.
+     * next -- get the next character, excluding comments. peek() is used to see if a '/' is followed by a '/' or '*'.
      */
     int next() throws IOException, UnterminatedCommentException {
         int c = get();
@@ -150,15 +145,13 @@ public class JSMin {
     }
 
     /**
-     * action -- do something! What you do is determined by the argument: 1
-     * Output A. Copy B to A. Get the next B. 2 Copy B to A. Get the next B.
-     * (Delete A). 3 Get the next B. (Delete B). action treats a string as a
-     * single character. Wow! action recognizes a regular expression if it is
-     * preceded by ( or , or =.
+     * action -- do something! What you do is determined by the argument: 1 Output A. Copy B to A. Get the next B. 2
+     * Copy B to A. Get the next B. (Delete A). 3 Get the next B. (Delete B). action treats a string as a single
+     * character. Wow! action recognizes a regular expression if it is preceded by ( or , or =.
      */
 
-    void action(int d) throws IOException, UnterminatedRegExpLiteralException,
-            UnterminatedCommentException, UnterminatedStringLiteralException {
+    void action(int d) throws IOException, UnterminatedRegExpLiteralException, UnterminatedCommentException,
+            UnterminatedStringLiteralException {
         switch (d) {
         case 1:
             out.write(theA);
@@ -184,11 +177,9 @@ public class JSMin {
 
         case 3:
             theB = next();
-            if (theB == '/' && (theA == '(' || theA == ',' || theA == '=' ||
-                                theA == ':' || theA == '[' || theA == '!' ||
-                                theA == '&' || theA == '|' || theA == '?' ||
-                                theA == '{' || theA == '}' || theA == ';' ||
-                                theA == '\n')) {
+            if (theB == '/'
+                    && (theA == '(' || theA == ',' || theA == '=' || theA == ':' || theA == '[' || theA == '!'
+                            || theA == '&' || theA == '|' || theA == '?' || theA == '{' || theA == '}' || theA == ';' || theA == '\n')) {
                 out.write(theA);
                 out.write(theB);
                 for (;;) {
@@ -209,12 +200,12 @@ public class JSMin {
     }
 
     /**
-     * jsmin -- Copy the input to the output, deleting the characters which are
-     * insignificant to JavaScript. Comments will be removed. Tabs will be
-     * replaced with spaces. Carriage returns will be replaced with linefeeds.
-     * Most spaces and linefeeds will be removed.
+     * jsmin -- Copy the input to the output, deleting the characters which are insignificant to JavaScript. Comments
+     * will be removed. Tabs will be replaced with spaces. Carriage returns will be replaced with linefeeds. Most spaces
+     * and linefeeds will be removed.
      */
-    public void jsmin() throws IOException, UnterminatedRegExpLiteralException, UnterminatedCommentException, UnterminatedStringLiteralException{
+    public void jsmin() throws IOException, UnterminatedRegExpLiteralException, UnterminatedCommentException,
+            UnterminatedStringLiteralException {
         theA = '\n';
         action(3);
         while (theA != EOF) {
@@ -310,6 +301,5 @@ public class JSMin {
             log.error(e, e);
         }
     }
-
 
 }

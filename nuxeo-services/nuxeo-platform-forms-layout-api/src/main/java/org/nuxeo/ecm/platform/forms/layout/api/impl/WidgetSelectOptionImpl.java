@@ -53,14 +53,12 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
         this(null, null, itemLabel, itemValue);
     }
 
-    public WidgetSelectOptionImpl(Serializable value, String var,
-            String itemLabel, String itemValue) {
+    public WidgetSelectOptionImpl(Serializable value, String var, String itemLabel, String itemValue) {
         this(value, var, itemLabel, itemValue, null, null);
     }
 
-    public WidgetSelectOptionImpl(Serializable value, String var,
-            String itemLabel, String itemValue, Serializable itemDisabled,
-            Serializable itemRendered) {
+    public WidgetSelectOptionImpl(Serializable value, String var, String itemLabel, String itemValue,
+            Serializable itemDisabled, Serializable itemRendered) {
         super();
         this.value = value;
         this.var = var;
@@ -134,8 +132,8 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
 
     @Override
     public WidgetSelectOption clone() {
-        WidgetSelectOptionImpl clone = new WidgetSelectOptionImpl(value, var,
-                itemLabel, itemValue, itemDisabled, itemRendered);
+        WidgetSelectOptionImpl clone = new WidgetSelectOptionImpl(value, var, itemLabel, itemValue, itemDisabled,
+                itemRendered);
         if (labels != null) {
             clone.setItemLabels(new HashMap<String, String>(labels));
         }

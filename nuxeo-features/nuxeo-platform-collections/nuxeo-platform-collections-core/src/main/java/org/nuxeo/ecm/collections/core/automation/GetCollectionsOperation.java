@@ -63,8 +63,7 @@ public class GetCollectionsOperation {
         vars.put("queryParams", sl);
         vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
 
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
-                vars);
+        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
 
         OperationChain chain = new OperationChain("operation");
         OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, vars);

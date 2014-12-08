@@ -72,15 +72,14 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
 
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/directory-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
 
         ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
         assertNotNull(cgs);
 
         ComputedGroupsServiceImpl component = (ComputedGroupsServiceImpl) cgs;
 
-        GroupComputerDescriptor desc =  component.getComputerDescriptors().get(0);
+        GroupComputerDescriptor desc = component.getComputerDescriptors().get(0);
         assertNotNull(desc);
         assertEquals("dummy", desc.getName());
 
@@ -123,15 +122,14 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
 
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/directory-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
 
         UserManager um = Framework.getLocalService(UserManager.class);
         assertNotNull(um);
 
         boolean isUserManagerWithComputedGroups = false;
         if (um instanceof UserManagerWithComputedGroups) {
-            isUserManagerWithComputedGroups=true;
+            isUserManagerWithComputedGroups = true;
         }
         assertTrue(isUserManagerWithComputedGroups);
 
@@ -146,7 +144,7 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         DocumentModel groupModel = um.getBareGroupModel();
         groupModel.setProperty("group", "groupname", "StaticGroup");
         um.createGroup(groupModel);
-        List<String> staticGroups=new ArrayList<String>();
+        List<String> staticGroups = new ArrayList<String>();
         staticGroups.add("StaticGroup");
         userModel = um.getUserModel("User1");
         userModel.setProperty("user", "groups", staticGroups);
@@ -182,8 +180,7 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
 
     @Test
     public void testCompanyComputer() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "companycomputedgroups-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "companycomputedgroups-contrib.xml");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
@@ -195,8 +192,7 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
 
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/directory-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
 
         UserManager um = Framework.getLocalService(UserManager.class);
         assertNotNull(um);

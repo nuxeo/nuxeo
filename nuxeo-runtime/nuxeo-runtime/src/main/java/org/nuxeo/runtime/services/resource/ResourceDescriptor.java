@@ -24,7 +24,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * A pointer to a template located in the contributor bundle.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("resource")
 public class ResourceDescriptor {
@@ -34,7 +33,6 @@ public class ResourceDescriptor {
 
     @XNode
     protected Resource resource;
-
 
     public ResourceDescriptor() {
 

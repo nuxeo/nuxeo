@@ -69,14 +69,12 @@ public interface ActionContext extends Serializable {
     NuxeoPrincipal getCurrentPrincipal();
 
     /**
-     * Sets a local variable, to put in the context so that expressions can
-     * reference it.
+     * Sets a local variable, to put in the context so that expressions can reference it.
      */
     Object putLocalVariable(String key, Object value);
 
     /**
-     * Sets local variables, to put in the context so that expressions can
-     * reference them.
+     * Sets local variables, to put in the context so that expressions can reference them.
      */
     void putAllLocalVariables(Map<String, Object> vars);
 

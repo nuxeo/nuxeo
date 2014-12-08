@@ -30,8 +30,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * This component is used to register the service that provide the userworkspace
- * service support.
+ * This component is used to register the service that provide the userworkspace service support.
  *
  * @author btatar
  * @author Damien METZLER (damien.metzler@leroymerlin.fr)
@@ -68,38 +67,32 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
         return null;
     }
 
-    private UserWorkspaceService getUserWorkspaceService()
-            throws ClientException {
+    private UserWorkspaceService getUserWorkspaceService() throws ClientException {
         if (userWorkspaceService == null) {
             Class<?> klass = descriptor.getUserWorkspaceClass();
 
             if (klass == null) {
-                throw new ClientException(
-                        "No class specified for the userWorkspace");
+                throw new ClientException("No class specified for the userWorkspace");
             }
             try {
                 userWorkspaceService = (UserWorkspaceService) klass.newInstance();
             } catch (InstantiationException e) {
-                throw new ClientException("Failed to instantiate class "
-                        + klass, e);
+                throw new ClientException("Failed to instantiate class " + klass, e);
             } catch (IllegalAccessException e) {
-                throw new ClientException("Failed to instantiate class "
-                        + klass, e);
+                throw new ClientException("Failed to instantiate class " + klass, e);
             }
         }
         return userWorkspaceService;
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws ClientException {
         descriptor = (UserWorkspaceDescriptor) contribution;
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws ClientException {
         descriptor = null;
     }

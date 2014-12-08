@@ -39,10 +39,10 @@ public class TestLDAPSessionUsingSSL extends LDAPDirectoryTestCase {
 
     @Before
     public void setUp() throws Exception {
-    	EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP-SSL.xml";
+        EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP-SSL.xml";
         super.setUp();
     }
-    
+
     @Test
     public void testGetEntries() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();

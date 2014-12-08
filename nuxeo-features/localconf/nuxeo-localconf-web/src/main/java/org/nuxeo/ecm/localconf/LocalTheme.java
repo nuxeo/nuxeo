@@ -35,8 +35,8 @@ public class LocalTheme implements Scheme {
     /**
      * Called by the theme negotiation module.
      *
-     * @return the local theme associated to the current space (workspace,
-     *         section, ...) as a 'theme/page' string. Return null otherwise.
+     * @return the local theme associated to the current space (workspace, section, ...) as a 'theme/page' string.
+     *         Return null otherwise.
      */
     public String getOutcome(Object context) {
         Boolean useOldThemeConf = Boolean.valueOf(Framework.getProperty(LocalThemeConfig.OLD_THEME_CONFIGURATION_PROPERTY));

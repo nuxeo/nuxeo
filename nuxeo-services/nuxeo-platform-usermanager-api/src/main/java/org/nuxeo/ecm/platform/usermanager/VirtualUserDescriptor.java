@@ -31,11 +31,9 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor for virtual users.
- *
- * APG-240 All attributes are defined public because the user manager service do not get
- * access to the fields. OSGI don't allow splitted packages having access to public members defined
- * from an another package provider.
+ * Descriptor for virtual users. APG-240 All attributes are defined public because the user manager service do not get
+ * access to the fields. OSGI don't allow splitted packages having access to public members defined from an another
+ * package provider.
  *
  * @author Anahide Tchertchian
  */

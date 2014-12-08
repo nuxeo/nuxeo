@@ -62,8 +62,7 @@ public class TestSQLDirectories extends NXRuntimeTestCase {
         return dirService.open(dirName);
     }
 
-    protected static Directory getDirectory(String dirName)
-            throws DirectoryException {
+    protected static Directory getDirectory(String dirName) throws DirectoryException {
         DirectoryServiceImpl dirServiceImpl = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
                 DirectoryService.NAME);
         Directory dir = dirServiceImpl.getDirectory(dirName);
@@ -71,14 +70,12 @@ public class TestSQLDirectories extends NXRuntimeTestCase {
     }
 
     public Connection getConnection() throws Exception {
-        return new SimpleDataSource("jdbc:hsqldb:mem:memid",
-                "org.hsqldb.jdbcDriver", "sa", "").getConnection();
+        return new SimpleDataSource("jdbc:hsqldb:mem:memid", "org.hsqldb.jdbcDriver", "sa", "").getConnection();
     }
 
     public static void setUpContextFactory() {
         Properties props = System.getProperties();
-        props.put("java.naming.factory.initial",
-                "org.nuxeo.ecm.directory.sql.LocalContextFactory");
+        props.put("java.naming.factory.initial", "org.nuxeo.ecm.directory.sql.LocalContextFactory");
     }
 
     @Test

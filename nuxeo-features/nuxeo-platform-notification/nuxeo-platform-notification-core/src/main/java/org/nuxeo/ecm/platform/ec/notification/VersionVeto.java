@@ -20,15 +20,12 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
- * Veto not to send notification when a version is the source document of the
- * event. Notifications on versions are not really relevant, there should be
- * another event on the live document that provides a more specific notification
- * For instance, use documentCheckedIn on the live document, instead of
- * documentCreated on the version
+ * Veto not to send notification when a version is the source document of the event. Notifications on versions are not
+ * really relevant, there should be another event on the live document that provides a more specific notification For
+ * instance, use documentCheckedIn on the live document, instead of documentCreated on the version
  *
  * @since 5.7
  * @author Thierry Martins <tm@nuxeo.com>
- *
  */
 public class VersionVeto implements NotificationListenerVeto {
 

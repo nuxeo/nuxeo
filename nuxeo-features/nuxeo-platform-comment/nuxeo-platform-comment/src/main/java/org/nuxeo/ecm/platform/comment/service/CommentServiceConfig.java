@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 @XObject("config")
 public class CommentServiceConfig {

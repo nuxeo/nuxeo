@@ -43,11 +43,11 @@ public interface ReloadService extends TimestampedService {
     public static final String RELOAD_REPOSITORIES_ID = "reloadRepositories";
 
     /**
-     * Sends a runtime event with id {@link #RELOAD_EVENT_ID} so that listeners
-     * can be notified that a reload has been done.
+     * Sends a runtime event with id {@link #RELOAD_EVENT_ID} so that listeners can be notified that a reload has been
+     * done.
      * <p>
-     * Also calls {@link #reloadProperties()} by default, but not other reload
-     * methods as they could alter the running application behaviour.
+     * Also calls {@link #reloadProperties()} by default, but not other reload methods as they could alter the running
+     * application behaviour.
      *
      * @since 5.5
      * @see #reloadProperties()
@@ -72,11 +72,11 @@ public interface ReloadService extends TimestampedService {
     void reloadSeamComponents();
 
     /**
-     * Sends a runtime event with id {@link #FLUSH_EVENT_ID} so that listeners
-     * can be notified that a flush is needed (after a reload for instance).
+     * Sends a runtime event with id {@link #FLUSH_EVENT_ID} so that listeners can be notified that a flush is needed
+     * (after a reload for instance).
      * <p>
-     * Also calls {@link #flushJaasCache()} by default, but not other flush
-     * methods as they could alter the running application behaviour.
+     * Also calls {@link #flushJaasCache()} by default, but not other flush methods as they could alter the running
+     * application behaviour.
      *
      * @see {@link #flushJaasCache()}
      * @since 5.5
@@ -84,9 +84,8 @@ public interface ReloadService extends TimestampedService {
     void flush();
 
     /**
-     * Returns the last time one of the flush commands where called on this
-     * service instance ({@link #flush()} or {@link #flushJaasCache()} or
-     * {@link #flushSeamComponents()}, or null if never called
+     * Returns the last time one of the flush commands where called on this service instance ({@link #flush()} or
+     * {@link #flushJaasCache()} or {@link #flushSeamComponents()}, or null if never called
      *
      * @since 5.6
      */
@@ -113,16 +112,14 @@ public interface ReloadService extends TimestampedService {
     String deployBundle(File file) throws BundleException;
 
     /**
-     * Deploys bundle to the runtime, gives possibility to control resources
-     * reloading.
+     * Deploys bundle to the runtime, gives possibility to control resources reloading.
      *
      * @since 5.5
      */
     String deployBundle(File file, boolean reloadResources) throws BundleException;
 
     /**
-     * Undeploys bundle from the runtime, given the bundle resource, gives
-     * possibility to control resources reloading
+     * Undeploys bundle from the runtime, given the bundle resource, gives possibility to control resources reloading
      *
      * @since 5.6
      */
@@ -147,17 +144,15 @@ public interface ReloadService extends TimestampedService {
      * Copies the bundle web resources into the nuxeo WAR directory.
      *
      * @since 5.5
-     * @deprecated since 5.6: {@link #runDeploymentPreprocessor()} method now
-     *             re-deploys all jars so that the nuxeo.war holds the same
-     *             content than it would at startup.
+     * @deprecated since 5.6: {@link #runDeploymentPreprocessor()} method now re-deploys all jars so that the nuxeo.war
+     *             holds the same content than it would at startup.
      */
     @Deprecated
     void installWebResources(File file) throws IOException;
 
     /***
-     * Returns the OSGI bundle name if given file can be identified as an OSGI
-     * bundle, or null. The OSGI bundle can be a jar or an exploded jar on file
-     * system.
+     * Returns the OSGI bundle name if given file can be identified as an OSGI bundle, or null. The OSGI bundle can be a
+     * jar or an exploded jar on file system.
      *
      * @since 5.6
      */

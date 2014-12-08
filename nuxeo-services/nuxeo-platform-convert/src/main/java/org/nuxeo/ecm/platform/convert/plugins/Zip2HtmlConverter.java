@@ -35,8 +35,7 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
  */
 public class Zip2HtmlConverter implements Converter {
 
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         try {
             Blob blob = blobHolder.getBlob();
             String mimeType = blob.getMimeType();

@@ -29,10 +29,8 @@ public class TestEngineConfiguration extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "engine-config.xml");
     }
 
@@ -40,24 +38,20 @@ public class TestEngineConfiguration extends NXRuntimeTestCase {
     public void testRegisterEngine1() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // engine 1
-        EngineType engine1 = (EngineType) typeRegistry.lookup(
-                TypeFamily.ENGINE, "test-engine");
+        EngineType engine1 = (EngineType) typeRegistry.lookup(TypeFamily.ENGINE, "test-engine");
         assertNotNull(engine1);
         assertEquals("test-engine", engine1.getTypeName());
-        assertEquals("[widget, style]",
-                engine1.getRenderers().get("theme").getFilters().toString());
+        assertEquals("[widget, style]", engine1.getRenderers().get("theme").getFilters().toString());
     }
 
     @Test
     public void testRegisterEngine2() {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // engine 2
-        EngineType engine2 = (EngineType) typeRegistry.lookup(
-                TypeFamily.ENGINE, "test-engine-2");
+        EngineType engine2 = (EngineType) typeRegistry.lookup(TypeFamily.ENGINE, "test-engine-2");
         assertNotNull(engine2);
         assertEquals("test-engine-2", engine2.getTypeName());
-        assertEquals("[widget, style, page filter]",
-                engine2.getRenderers().get("page").getFilters().toString());
+        assertEquals("[widget, style, page filter]", engine2.getRenderers().get("page").getFilters().toString());
     }
 
 }

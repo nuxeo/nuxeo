@@ -39,8 +39,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
-public class DirectoryServiceImpl extends DefaultComponent implements
-        DirectoryService {
+public class DirectoryServiceImpl extends DefaultComponent implements DirectoryService {
 
     protected static final String DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX = "_";
 
@@ -68,8 +67,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected DirectoryConfiguration getDirectoryConfiguration(
-            DocumentModel documentContext) {
+    protected DirectoryConfiguration getDirectoryConfiguration(DocumentModel documentContext) {
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
 
         if (localConfigurationService == null) {
@@ -77,21 +75,17 @@ public class DirectoryServiceImpl extends DefaultComponent implements
             return null;
         }
 
-        return localConfigurationService.getConfiguration(
-                DirectoryConfiguration.class, DIRECTORY_CONFIGURATION_FACET,
+        return localConfigurationService.getConfiguration(DirectoryConfiguration.class, DIRECTORY_CONFIGURATION_FACET,
                 documentContext);
     }
 
     /**
-     * This will return the local directory name according the local
-     * configuration. If the local configuration is null or the suffix value is
-     * null or the suffix value trimmed is an empty string the returned value
-     * is the directoryName given in parameter. If not this is directoryName +
-     * DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX + suffix. if directoryName
-     * is null, return null.
+     * This will return the local directory name according the local configuration. If the local configuration is null
+     * or the suffix value is null or the suffix value trimmed is an empty string the returned value is the
+     * directoryName given in parameter. If not this is directoryName + DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX +
+     * suffix. if directoryName is null, return null.
      */
-    protected String getWaitingLocalDirectoryName(String directoryName,
-            DirectoryConfiguration configuration) {
+    protected String getWaitingLocalDirectoryName(String directoryName, DirectoryConfiguration configuration) {
         if (directoryName == null) {
             return null;
         }
@@ -99,19 +93,16 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         if (configuration != null && configuration.getDirectorySuffix() != null) {
             String suffix = configuration.getDirectorySuffix().trim();
             if (!"".equals(suffix)) {
-                return directoryName
-                        + DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX + suffix;
+                return directoryName + DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX + suffix;
             }
             log.warn("The local configuration detected is an empty value, we consider it as no configuration set.");
-            log.debug("Directory Local Configuration is on : "
-                    + configuration.getDocumentRef());
+            log.debug("Directory Local Configuration is on : " + configuration.getDocumentRef());
         }
 
         return directoryName;
     }
 
-    public Directory getDirectory(String directoryName)
-            throws DirectoryException {
+    public Directory getDirectory(String directoryName) throws DirectoryException {
         if (directoryName == null) {
             return null;
         }
@@ -128,21 +119,18 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         return null;
     }
 
-    public Directory getDirectory(String name, DocumentModel documentContext)
-            throws DirectoryException {
+    public Directory getDirectory(String name, DocumentModel documentContext) throws DirectoryException {
         if (name == null) {
             return null;
         }
 
-        String localDirectoryName = getWaitingLocalDirectoryName(name,
-                getDirectoryConfiguration(documentContext));
+        String localDirectoryName = getWaitingLocalDirectoryName(name, getDirectoryConfiguration(documentContext));
 
         Directory directory = getDirectory(localDirectoryName);
 
         if (directory == null && !name.equals(localDirectoryName)) {
             log.debug(String.format("The local directory named '%s' was"
-                    + " not found. Look for the default one named: %s",
-                    localDirectoryName, name));
+                    + " not found. Look for the default one named: %s", localDirectoryName, name));
             directory = getDirectory(name);
         }
 
@@ -153,13 +141,11 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         return getDirectoryOrFail(name, null);
     }
 
-    private Directory getDirectoryOrFail(String name,
-            DocumentModel documentContext) throws DirectoryException {
+    private Directory getDirectoryOrFail(String name, DocumentModel documentContext) throws DirectoryException {
 
         Directory dir = getDirectory(name, documentContext);
         if (null == dir) {
-            throw new DirectoryException(String.format(
-                    "no directory registered with name '%s'", name));
+            throw new DirectoryException(String.format("no directory registered with name '%s'", name));
         }
         return dir;
     }
@@ -207,8 +193,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements
             String factoryName = factoryDescriptor.getFactoryName();
             DirectoryFactory factoryToRemove = factories.getFactory(factoryName);
             if (factoryToRemove == null) {
-                log.warn(String.format("Factory '%s' was not registered",
-                        factoryName));
+                log.warn(String.format("Factory '%s' was not registered", factoryName));
                 return;
             }
             factoryToRemove.shutdown();
@@ -225,15 +210,12 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         if (factory instanceof MemoryDirectoryFactory) {
             factories.addContribution(factory);
         }
-        DirectoryFactoryMapper contrib = new DirectoryFactoryMapper(
-                directoryName, factory.getName());
+        DirectoryFactoryMapper contrib = new DirectoryFactoryMapper(directoryName, factory.getName());
         factoriesByDirectoryName.addContribution(contrib);
     }
 
-    public void unregisterDirectory(String directoryName,
-            DirectoryFactory factory) {
-        DirectoryFactoryMapper contrib = new DirectoryFactoryMapper(
-                directoryName, factory.getName());
+    public void unregisterDirectory(String directoryName, DirectoryFactory factory) {
+        DirectoryFactoryMapper contrib = new DirectoryFactoryMapper(directoryName, factory.getName());
         factoriesByDirectoryName.removeContribution(contrib);
     }
 
@@ -246,18 +228,15 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         return directoryNames;
     }
 
-    public String getDirectorySchema(String directoryName)
-            throws DirectoryException {
+    public String getDirectorySchema(String directoryName) throws DirectoryException {
         return getDirectoryOrFail(directoryName).getSchema();
     }
 
-    public String getDirectoryIdField(String directoryName)
-            throws DirectoryException {
+    public String getDirectoryIdField(String directoryName) throws DirectoryException {
         return getDirectoryOrFail(directoryName).getIdField();
     }
 
-    public String getDirectoryPasswordField(String directoryName)
-            throws DirectoryException {
+    public String getDirectoryPasswordField(String directoryName) throws DirectoryException {
         return getDirectoryOrFail(directoryName).getPasswordField();
     }
 
@@ -265,13 +244,11 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         return getDirectoryOrFail(directoryName).getSession();
     }
 
-    public Session open(String directoryName, DocumentModel documentContext)
-            throws DirectoryException {
+    public Session open(String directoryName, DocumentModel documentContext) throws DirectoryException {
         return getDirectoryOrFail(directoryName, documentContext).getSession();
     }
 
-    public String getParentDirectoryName(String directoryName)
-            throws DirectoryException {
+    public String getParentDirectoryName(String directoryName) throws DirectoryException {
         return getDirectoryOrFail(directoryName).getParentDirectory();
     }
 

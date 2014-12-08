@@ -31,6 +31,7 @@ import org.nuxeo.common.utils.FileUtils;
 public class MemoryStore implements ResourceStore {
 
     protected final Map<String, byte[]> store;
+
     protected String location;
 
     public MemoryStore() {
@@ -39,7 +40,7 @@ public class MemoryStore implements ResourceStore {
 
     public MemoryStore(Map<String, byte[]> store) {
         this.store = store;
-        this.location = "java:"+System.identityHashCode(this);
+        this.location = "java:" + System.identityHashCode(this);
     }
 
     public boolean exists(String name) {
@@ -55,7 +56,7 @@ public class MemoryStore implements ResourceStore {
         return data == null ? null : new ByteArrayInputStream(data);
     }
 
-    public URL getURL(String name) { //TODO not yet implemented
+    public URL getURL(String name) { // TODO not yet implemented
         return null;
     }
 

@@ -53,14 +53,12 @@ public class RemoveFromCollectionTest extends CollectionOperationsTestCase {
 
     @Before
     public void setUp() throws ClientException {
-        testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         // Create test documents
         listDocs = createTestFiles(session, 5);
         // Create a collection
-        collection = collectionManager.createCollection(session,
-                COLLECTION_NAME, COLLECTION_DESCRIPTION,
+        collection = collectionManager.createCollection(session, COLLECTION_NAME, COLLECTION_DESCRIPTION,
                 testWorkspace.getPathAsString());
         // Add documents to the collection
         collectionManager.addToCollection(collection, listDocs, session);
@@ -70,8 +68,7 @@ public class RemoveFromCollectionTest extends CollectionOperationsTestCase {
     public void testRemovalWithOneDocument() throws Exception {
 
         Collection collectionAdapter = collection.getAdapter(Collection.class);
-        assertEquals(listDocs.size(),
-                collectionAdapter.getCollectedDocumentIds().size());
+        assertEquals(listDocs.size(), collectionAdapter.getCollectedDocumentIds().size());
 
         chain = new OperationChain("test-chain");
         chain.add(RemoveFromCollectionOperation.ID).set("collection", collection);
@@ -82,18 +79,15 @@ public class RemoveFromCollectionTest extends CollectionOperationsTestCase {
         DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
 
         // Test the result of the operation
-        assertFalse(collectionAdapter.getCollectedDocumentIds().contains(
-                listDocs.get(0).getId()));
-        assertEquals(listDocs.size() - 1,
-                collectionAdapter.getCollectedDocumentIds().size());
+        assertFalse(collectionAdapter.getCollectedDocumentIds().contains(listDocs.get(0).getId()));
+        assertEquals(listDocs.size() - 1, collectionAdapter.getCollectedDocumentIds().size());
         assertEquals(listDocs.get(0).getId(), resultDoc.getId());
     }
 
     @Test
     public void testRemovalWithSeveralDocuments() throws Exception {
         Collection collectionAdapter = collection.getAdapter(Collection.class);
-        assertEquals(listDocs.size(),
-                collectionAdapter.getCollectedDocumentIds().size());
+        assertEquals(listDocs.size(), collectionAdapter.getCollectedDocumentIds().size());
 
         chain = new OperationChain("test-chain");
         chain.add(RemoveFromCollectionOperation.ID).set("collection", collection);
@@ -108,18 +102,16 @@ public class RemoveFromCollectionTest extends CollectionOperationsTestCase {
         assertEquals(0, collectionAdapter.getCollectedDocumentIds().size());
         assertEquals(listDocs.size(), listDocResult.size());
         for (DocumentModel doc : listDocModel) {
-            assertFalse(collectionAdapter.getCollectedDocumentIds().contains(
-                    doc.getId()));
+            assertFalse(collectionAdapter.getCollectedDocumentIds().contains(doc.getId()));
         }
     }
 
     @Test
     public void testRemoveDocumentNotInCollection() throws Exception {
-        DocumentModel testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
-        DocumentModel doc = session.createDocumentModel(testWorkspace.getPath().toString(),
-                "test", "File");
+        DocumentModel doc = session.createDocumentModel(testWorkspace.getPath().toString(), "test", "File");
         session.createDocument(doc);
         session.save();
 

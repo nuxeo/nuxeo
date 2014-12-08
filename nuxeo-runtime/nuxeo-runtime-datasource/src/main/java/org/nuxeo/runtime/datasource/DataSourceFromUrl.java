@@ -31,16 +31,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This class is used for tests, where datasources are set up from a jdbc: url
- * and user/password instead of a JNDI name.
+ * This class is used for tests, where datasources are set up from a jdbc: url and user/password instead of a JNDI name.
  */
 public class DataSourceFromUrl implements DataSource {
 
     private static final Log log = LogFactory.getLog(DataSourceFromUrl.class);
 
     /**
-     * Maximum number of time we retry a connection if the server says it's
-     * overloaded.
+     * Maximum number of time we retry a connection if the server says it's overloaded.
      */
     public static final int MAX_CONNECTION_TRIES = 5;
 
@@ -56,8 +54,7 @@ public class DataSourceFromUrl implements DataSource {
         this.password = Framework.expandVars(password);
     }
 
-    public DataSourceFromUrl(String url, String user, String password,
-            String driver) {
+    public DataSourceFromUrl(String url, String user, String password, String driver) {
         this(url, user, password);
         if (driver != null) {
             driver = Framework.expandVars(driver);
@@ -67,8 +64,7 @@ public class DataSourceFromUrl implements DataSource {
                 // this can still be useful.
                 Class.forName(driver);
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Driver class not found: " + driver,
-                        e);
+                throw new RuntimeException("Driver class not found: " + driver, e);
             }
         }
     }
@@ -93,9 +89,7 @@ public class DataSourceFromUrl implements DataSource {
                 // service handler found SQLState = "66000"
                 // Happens when connections are open too fast (unit tests)
                 // -> retry a few times after a small delay
-                log.warn(String.format(
-                        "Connections open too fast, retrying in %ds: %s",
-                        Integer.valueOf(tryNo),
+                log.warn(String.format("Connections open too fast, retrying in %ds: %s", Integer.valueOf(tryNo),
                         e.getMessage().replace("\n", " ")));
                 try {
                     Thread.sleep(1000 * tryNo);
@@ -109,8 +103,7 @@ public class DataSourceFromUrl implements DataSource {
     }
 
     @Override
-    public Connection getConnection(String username, String password)
-            throws SQLException {
+    public Connection getConnection(String username, String password) throws SQLException {
         throw new UnsupportedOperationException();
     }
 

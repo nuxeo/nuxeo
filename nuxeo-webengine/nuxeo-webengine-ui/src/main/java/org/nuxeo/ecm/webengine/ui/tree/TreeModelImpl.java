@@ -21,18 +21,16 @@ package org.nuxeo.ecm.webengine.ui.tree;
 
 import org.nuxeo.common.utils.Path;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TreeModelImpl implements TreeModel {
 
     private static final long serialVersionUID = 1L;
 
     protected ContentProvider provider;
-    protected TreeItem root;
 
+    protected TreeItem root;
 
     public TreeModelImpl() {
     }

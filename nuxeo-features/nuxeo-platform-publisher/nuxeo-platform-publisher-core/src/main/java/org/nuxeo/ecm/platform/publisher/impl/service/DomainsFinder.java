@@ -52,8 +52,7 @@ public class DomainsFinder extends UnrestrictedSessionRunner {
     protected List<DocumentModel> getDomainsFiltered() throws ClientException {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pps.getPageProvider(
                 PUBLISHING_DOMAINS_PROVIDER, null, null, null, props,
                 new Object[] { session.getRootDocument().getId() });

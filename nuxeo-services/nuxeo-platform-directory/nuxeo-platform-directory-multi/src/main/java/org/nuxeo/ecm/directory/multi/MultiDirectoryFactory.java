@@ -34,8 +34,7 @@ import org.nuxeo.runtime.model.Extension;
 /**
  * @author Florent Guillaume
  */
-public class MultiDirectoryFactory extends DefaultComponent implements
-        DirectoryFactory {
+public class MultiDirectoryFactory extends DefaultComponent implements DirectoryFactory {
 
     private static final String NAME = "org.nuxeo.ecm.directory.multi.MultiDirectoryFactory";
 
@@ -79,8 +78,7 @@ public class MultiDirectoryFactory extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterExtension(Extension extension)
-            throws DirectoryException {
+    public void unregisterExtension(Extension extension) throws DirectoryException {
         Object[] contribs = extension.getContributions();
         DirectoryService dirService = Framework.getService(DirectoryService.class);
         for (Object contrib : contribs) {

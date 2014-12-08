@@ -38,7 +38,6 @@ public class EnvironmentDescriptor implements Serializable {
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> parameters = new HashMap<String, String>();
 
-
     public String getWorkingDirectory() {
         if (workingDirectory == null) {
             workingDirectory = System.getProperty("java.io.tmpdir");

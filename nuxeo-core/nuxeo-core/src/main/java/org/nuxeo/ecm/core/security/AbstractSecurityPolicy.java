@@ -35,8 +35,7 @@ public abstract class AbstractSecurityPolicy implements SecurityPolicy {
     }
 
     /**
-     * Legacy method for compatibility, use
-     * {@link #getQueryTransformer(String)} instead
+     * Legacy method for compatibility, use {@link #getQueryTransformer(String)} instead
      */
     @Deprecated
     public Transformer getQueryTransformer() {
@@ -45,15 +44,12 @@ public abstract class AbstractSecurityPolicy implements SecurityPolicy {
     }
 
     @Override
-    public QueryTransformer getQueryTransformer(String repositoryName,
-            String queryLanguage) {
+    public QueryTransformer getQueryTransformer(String repositoryName, String queryLanguage) {
         /*
-         * By default in this abstract class: If we're expressible in NXQL and
-         * the query transformer is IDENTITY, then express as
-         * QueryTransformer.IDENTITY in any language.
+         * By default in this abstract class: If we're expressible in NXQL and the query transformer is IDENTITY, then
+         * express as QueryTransformer.IDENTITY in any language.
          */
-        if (isExpressibleInQuery(repositoryName)
-                && getQueryTransformer(repositoryName) == Transformer.IDENTITY) {
+        if (isExpressibleInQuery(repositoryName) && getQueryTransformer(repositoryName) == Transformer.IDENTITY) {
             return QueryTransformer.IDENTITY;
         }
         // else we don't know how to transform
@@ -66,8 +62,7 @@ public abstract class AbstractSecurityPolicy implements SecurityPolicy {
     }
 
     /**
-     * Legacy method for compatibility, use
-     * {@link #isExpressibleInQuery(String)} instead
+     * Legacy method for compatibility, use {@link #isExpressibleInQuery(String)} instead
      */
     @Deprecated
     public boolean isExpressibleInQuery() {
@@ -76,15 +71,12 @@ public abstract class AbstractSecurityPolicy implements SecurityPolicy {
     }
 
     @Override
-    public boolean isExpressibleInQuery(String repositoryName,
-            String queryLanguage) {
+    public boolean isExpressibleInQuery(String repositoryName, String queryLanguage) {
         /*
-         * By default in this abstract class: If we're expressible in NXQL and
-         * the query transformer is IDENTITY, then we're expressible (as
-         * QueryTransformer.IDENTITY) in any language.
+         * By default in this abstract class: If we're expressible in NXQL and the query transformer is IDENTITY, then
+         * we're expressible (as QueryTransformer.IDENTITY) in any language.
          */
-        return isExpressibleInQuery(repositoryName)
-                && getQueryTransformer(repositoryName) == Transformer.IDENTITY;
+        return isExpressibleInQuery(repositoryName) && getQueryTransformer(repositoryName) == Transformer.IDENTITY;
     }
 
 }

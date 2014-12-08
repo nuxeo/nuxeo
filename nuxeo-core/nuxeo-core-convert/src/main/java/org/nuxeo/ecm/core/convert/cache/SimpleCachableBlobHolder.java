@@ -27,8 +27,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
  *
  * @author tiry
  */
-public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
-        CachableBlobHolder {
+public class SimpleCachableBlobHolder extends SimpleBlobHolder implements CachableBlobHolder {
 
     public SimpleCachableBlobHolder() {
     }
@@ -44,7 +43,6 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
     public SimpleCachableBlobHolder(String path) {
         super(new FileBlob(new File(path)));
     }
-
 
     @Override
     public void load(String path) {
@@ -113,8 +111,7 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
         Blob indexPage = null;
         for (Blob blob : blobs) {
             if (blob.getFilename().contains("index.html")
-                    && (indexPage == null || blob.getFilename().compareTo(
-                            indexPage.getFilename()) < 0)) {
+                    && (indexPage == null || blob.getFilename().compareTo(indexPage.getFilename()) < 0)) {
                 indexPage = blob;
             }
         }

@@ -13,9 +13,8 @@ import java.io.File;
 import org.nuxeo.runtime.services.event.EventService;
 
 /**
- * {@link FileEvent} handler that should be implemented by consumers. Could be
- * enlisted in the @{link {@link EventService} through the use of a
- * {@link FileEventListener}.
+ * {@link FileEvent} handler that should be implemented by consumers. Could be enlisted in the @{link
+ * {@link EventService} through the use of a {@link FileEventListener}.
  *
  * @author Stephane Lacoin at Nuxeo (aka matic)
  * @since 6.0

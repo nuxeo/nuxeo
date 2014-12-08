@@ -29,9 +29,8 @@ import javax.faces.convert.Converter;
 import static java.util.regex.Pattern.*;
 
 /**
- * Simple mail address converter: most of the addresses imported from the POP3
- * or IMAP mailbox simply return the string "null <mail.address@domain.org>". To
- * avoid a list of nulls this converter removes the "null" aliases and only keep
+ * Simple mail address converter: most of the addresses imported from the POP3 or IMAP mailbox simply return the string
+ * "null <mail.address@domain.org>". To avoid a list of nulls this converter removes the "null" aliases and only keep
  * the mail address. Also return a mailto: link to the sender.
  *
  * @author <a href="mailto:christophe.capon@vilogia.fr">Christophe Capon</a>
@@ -63,8 +62,7 @@ public class MailAddressConverter implements Converter {
                     alias = email;
                 }
 
-                return String.format("<a href=\"mailto:%s\">%s</a>",
-                        email, alias);
+                return String.format("<a href=\"mailto:%s\">%s</a>", email, alias);
 
             } else {
                 return inStr;

@@ -21,8 +21,8 @@ package org.nuxeo.ecm.webengine.security;
 
 /**
  * Should be used to contribute custom guards via extension points
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // XXX: currently not implemented
 public interface GuardFactory {

@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.annotations.repository.service.DocumentAnnotabilit
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 @XObject("documentAnnotability")
 public class DocumentAnnotabilityDescriptor {

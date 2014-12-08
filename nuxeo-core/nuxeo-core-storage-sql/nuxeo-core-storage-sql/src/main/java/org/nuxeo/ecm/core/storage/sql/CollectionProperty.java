@@ -17,8 +17,7 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * A {@link CollectionProperty} gives access to a collection value stored in an
- * underlying {@link Fragment}.
+ * A {@link CollectionProperty} gives access to a collection value stored in an underlying {@link Fragment}.
  *
  * @author Florent Guillaume
  */
@@ -33,8 +32,7 @@ public class CollectionProperty extends BaseProperty {
     /**
      * Creates a {@link CollectionProperty}.
      */
-    public CollectionProperty(String name, PropertyType type, boolean readonly,
-            CollectionFragment fragment) {
+    public CollectionProperty(String name, PropertyType type, boolean readonly, CollectionFragment fragment) {
         super(name, type, readonly);
         this.fragment = fragment;
         this.key = null;
@@ -43,8 +41,7 @@ public class CollectionProperty extends BaseProperty {
     /**
      * Creates a {@link CollectionProperty}.
      */
-    public CollectionProperty(String name, PropertyType type, boolean readonly,
-            SimpleFragment fragment, String key) {
+    public CollectionProperty(String name, PropertyType type, boolean readonly, SimpleFragment fragment, String key) {
         super(name, type, readonly);
         this.fragment = fragment;
         this.key = key;
@@ -90,12 +87,11 @@ public class CollectionProperty extends BaseProperty {
                 ((SimpleFragment) fragment).put(key, type.normalize(value));
             }
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("item of list property '" +
-                    name + "': " + e.getMessage());
+            throw new IllegalArgumentException("item of list property '" + name + "': " + e.getMessage());
         }
         // mark fragment dirty!
     }
-    
+
     private boolean hasCollectionFragment() {
         return key == null;
     }

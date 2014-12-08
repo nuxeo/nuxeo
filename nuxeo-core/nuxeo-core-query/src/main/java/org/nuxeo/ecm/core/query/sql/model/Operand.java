@@ -17,8 +17,7 @@ package org.nuxeo.ecm.core.query.sql.model;
 /**
  * An operand may be a variable, a function, a literal, or an expression.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface Operand extends ASTNode {
 

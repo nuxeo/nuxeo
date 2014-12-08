@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 
 /**
  * @since 7.1
- *
  * @author Vincent Vergnolle
  */
 @Operation(id = RunConverter.ID, category = Constants.CAT_CONVERSION, label = RunConverter.ID, description = "Simply call a converter based on the 'converter' parameter. You can pass the converter properties with the 'properties' parameter.", since = "7.1")
@@ -62,8 +61,7 @@ public class RunConverter {
             log.debug("Call converter named: " + converter);
         }
 
-        BlobHolder holder = conversionService.convert(converter,
-                new SimpleBlobHolder(blob), propertiesToMap());
+        BlobHolder holder = conversionService.convert(converter, new SimpleBlobHolder(blob), propertiesToMap());
 
         return holder.getBlob();
     }

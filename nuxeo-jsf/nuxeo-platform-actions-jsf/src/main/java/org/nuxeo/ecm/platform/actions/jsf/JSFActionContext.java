@@ -33,8 +33,7 @@ import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 /**
  * @since 5.7.3
  */
-public class JSFActionContext extends AbstractActionContext implements
-        ActionContext {
+public class JSFActionContext extends AbstractActionContext implements ActionContext {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,8 +47,7 @@ public class JSFActionContext extends AbstractActionContext implements
         this.expressionFactory = faces.getApplication().getExpressionFactory();
     }
 
-    public JSFActionContext(ELContext originalContext,
-            ExpressionFactory expressionFactory) {
+    public JSFActionContext(ELContext originalContext, ExpressionFactory expressionFactory) {
         super();
         this.originalContext = originalContext;
         this.expressionFactory = expressionFactory;
@@ -57,8 +55,7 @@ public class JSFActionContext extends AbstractActionContext implements
 
     @Override
     public boolean checkCondition(String expression) throws ELException {
-        if (StringUtils.isBlank(expression)
-                || (expression != null && StringUtils.isBlank(expression.trim()))) {
+        if (StringUtils.isBlank(expression) || (expression != null && StringUtils.isBlank(expression.trim()))) {
             return false;
         }
         String expr = expression.trim();
@@ -73,10 +70,9 @@ public class JSFActionContext extends AbstractActionContext implements
         ELContext finalContext = new JSFELContext(originalContext);
         VariableMapper vm = finalContext.getVariableMapper();
         // init default variables
-        ValueExpression documentExpr = expressionFactory.createValueExpression(
-                getCurrentDocument(), DocumentModel.class);
-        ValueExpression userExpr = expressionFactory.createValueExpression(
-                getCurrentPrincipal(), NuxeoPrincipal.class);
+        ValueExpression documentExpr = expressionFactory.createValueExpression(getCurrentDocument(),
+                DocumentModel.class);
+        ValueExpression userExpr = expressionFactory.createValueExpression(getCurrentPrincipal(), NuxeoPrincipal.class);
         // add variables originally exposed by the action framework,
         // do not add aliases currentDocument and currentUser here as they
         // should already be available in this JSF context
@@ -84,16 +80,14 @@ public class JSFActionContext extends AbstractActionContext implements
         vm.setVariable("principal", userExpr);
         // get custom context from ActionContext
         for (String key : localVariables.keySet()) {
-            vm.setVariable(key, expressionFactory.createValueExpression(
-                    getLocalVariable(key), Object.class));
+            vm.setVariable(key, expressionFactory.createValueExpression(getLocalVariable(key), Object.class));
         }
         // expose Seam context for compatibility, although available its
         // components should be natively exposed in this JSF context
         putLocalVariable("SeamContext", new SeamContextHelper());
 
         // evaluate expression
-        ValueExpression ve = expressionFactory.createValueExpression(
-                finalContext, expr, Boolean.class);
+        ValueExpression ve = expressionFactory.createValueExpression(finalContext, expr, Boolean.class);
         return Boolean.TRUE.equals(ve.getValue(finalContext));
     }
 

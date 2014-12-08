@@ -41,14 +41,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * Default marshaler for RPC calls between 2 servers
  *
  * @author tiry
- *
  */
-public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
-        RemotePublisherMarshaler {
+public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements RemotePublisherMarshaler {
 
     private static final String PARAM_PATTERN = "$PARAM";
 
@@ -64,14 +61,14 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
 
     protected Map<String, String> params = new HashMap<String, String>();
 
-    protected static QName rootParametersTag = DocumentFactory.getInstance().createQName(
-            "parameters", publisherSerializerNSPrefix, publisherSerializerNS);
+    protected static QName rootParametersTag = DocumentFactory.getInstance().createQName("parameters",
+            publisherSerializerNSPrefix, publisherSerializerNS);
 
-    protected static QName parameterTag = DocumentFactory.getInstance().createQName(
-            "parameter", publisherSerializerNSPrefix, publisherSerializerNS);
+    protected static QName parameterTag = DocumentFactory.getInstance().createQName("parameter",
+            publisherSerializerNSPrefix, publisherSerializerNS);
 
-    protected static QName rootResultTag = DocumentFactory.getInstance().createQName(
-            "result", publisherSerializerNSPrefix, publisherSerializerNS);
+    protected static QName rootResultTag = DocumentFactory.getInstance().createQName("result",
+            publisherSerializerNSPrefix, publisherSerializerNS);
 
     protected CoreSession session;
 
@@ -87,8 +84,7 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
         this.session = session;
     }
 
-    public String marshallParameters(List<Object> params)
-            throws PublishingMarshalingException {
+    public String marshallParameters(List<Object> params) throws PublishingMarshalingException {
 
         if (params == null) {
             return "null";
@@ -103,21 +99,18 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
         return env;
     }
 
-    public String marshallResult(Object result)
-            throws PublishingMarshalingException {
+    public String marshallResult(Object result) throws PublishingMarshalingException {
         String res = buildResultEnvelope();
         String strResult = marshalSingleObject(result);
         res = res.replace(RESULT_PATTERN, strResult);
         return res;
     }
 
-    public List<Object> unMarshallParameters(String data)
-            throws PublishingMarshalingException {
+    public List<Object> unMarshallParameters(String data) throws PublishingMarshalingException {
         return unMarshallParameters(data, session);
     }
 
-    protected List<Object> unMarshallParameters(String data, CoreSession session)
-            throws PublishingMarshalingException {
+    protected List<Object> unMarshallParameters(String data, CoreSession session) throws PublishingMarshalingException {
 
         List<Object> params = new ArrayList<Object>();
 
@@ -128,8 +121,7 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
             for (Iterator i = rootElem.elementIterator(parameterTag); i.hasNext();) {
                 org.dom4j.Element param = (org.dom4j.Element) i.next();
                 if (param.elements().size() > 0) {
-                    String xmlParam = ((org.dom4j.Element) param.elements().get(
-                            0)).asXML();
+                    String xmlParam = ((org.dom4j.Element) param.elements().get(0)).asXML();
                     params.add(unMarshalSingleObject(xmlParam, session));
                 } else {
                     String value = param.getText();
@@ -140,19 +132,16 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
                 }
             }
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException(
-                    "Error during unmarshaling of parameters", e);
+            throw new PublishingMarshalingException("Error during unmarshaling of parameters", e);
         }
         return params;
     }
 
-    public Object unMarshallResult(String data)
-            throws PublishingMarshalingException {
+    public Object unMarshallResult(String data) throws PublishingMarshalingException {
         return unMarshallResult(data, session);
     }
 
-    protected Object unMarshallResult(String data, CoreSession coreSession)
-            throws PublishingMarshalingException {
+    protected Object unMarshallResult(String data, CoreSession coreSession) throws PublishingMarshalingException {
         Document document;
         try {
             document = DocumentHelper.parseText(data);
@@ -161,24 +150,18 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
             if (rootElem.elements().size() == 0) {
                 return rootElem.getText();
             } else {
-                return unMarshalSingleObject(
-                        ((org.dom4j.Element) rootElem.elements().get(0)).asXML(),
-                        coreSession);
+                return unMarshalSingleObject(((org.dom4j.Element) rootElem.elements().get(0)).asXML(), coreSession);
             }
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException(
-                    "Error during unmarshaling Result", e);
+            throw new PublishingMarshalingException("Error during unmarshaling Result", e);
         }
     }
 
     protected String buildParameterEnvelope(int nbParams) {
 
-        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(
-                rootParametersTag);
-        rootElem.addNamespace(publisherSerializerNSPrefix,
-                publisherSerializerNS);
-        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(
-                rootElem);
+        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(rootParametersTag);
+        rootElem.addNamespace(publisherSerializerNSPrefix, publisherSerializerNS);
+        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(rootElem);
 
         for (int i = 1; i <= nbParams; i++) {
             org.dom4j.Element pathElem = rootElem.addElement(parameterTag);
@@ -189,24 +172,19 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
 
     protected String buildResultEnvelope() {
 
-        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(
-                rootResultTag);
-        rootElem.addNamespace(publisherSerializerNSPrefix,
-                publisherSerializerNS);
-        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(
-                rootElem);
+        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(rootResultTag);
+        rootElem.addNamespace(publisherSerializerNSPrefix, publisherSerializerNS);
+        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(rootElem);
         rootElem.setText(RESULT_PATTERN);
         return rootDoc.asXML();
     }
 
-    protected Object unMarshalSingleObject(String xml, CoreSession coreSession)
-            throws PublishingMarshalingException {
+    protected Object unMarshalSingleObject(String xml, CoreSession coreSession) throws PublishingMarshalingException {
         Document document;
         try {
             document = DocumentHelper.parseText(xml);
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException(
-                    "Error during unmarshaling", e);
+            throw new PublishingMarshalingException("Error during unmarshaling", e);
         }
         org.dom4j.Element rootElem = document.getRootElement();
 
@@ -228,9 +206,7 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
                 if (el.elements().size() == 0) {
                     lst.add(el.getText());
                 } else {
-                    lst.add(unMarshalSingleObject(
-                            ((org.dom4j.Element) el.elements().get(0)).asXML(),
-                            coreSession));
+                    lst.add(unMarshalSingleObject(((org.dom4j.Element) el.elements().get(0)).asXML(), coreSession));
                 }
             }
             return lst;
@@ -241,9 +217,7 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
 
                 Object value = null;
                 if (el.elements().size() > 0) {
-                    value = unMarshalSingleObject(
-                            ((org.dom4j.Element) (el).elements().get(0)).asXML(),
-                            coreSession);
+                    value = unMarshalSingleObject(((org.dom4j.Element) (el).elements().get(0)).asXML(), coreSession);
                 } else {
                     value = el.getText();
                 }
@@ -257,8 +231,7 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
 
     }
 
-    protected String marshalSingleObject(Object ob)
-            throws PublishingMarshalingException {
+    protected String marshalSingleObject(Object ob) throws PublishingMarshalingException {
         if (ob == null) {
             return "null";
         } else if (ob instanceof String) {

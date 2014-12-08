@@ -24,7 +24,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Base64AuthenticationHandler implements AuthenticationHandler {
 
@@ -39,8 +38,8 @@ public class Base64AuthenticationHandler implements AuthenticationHandler {
     }
 
     @Override
-    public LoginContext handleAuthentication(HttpServletRequest request,
-            HttpServletResponse response) throws LoginException {
+    public LoginContext handleAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws LoginException {
         String[] login = retrieveBasicLogin(request);
         if (login != null) {
             return Framework.login(login[0], login[1]);
@@ -65,10 +64,9 @@ public class Base64AuthenticationHandler implements AuthenticationHandler {
     }
 
     protected void handleLoginFailure(HttpServletRequest request, HttpServletResponse response) {
-        String s = "Basic realm=\""+realmName+"\"";
+        String s = "Basic realm=\"" + realmName + "\"";
         response.setHeader("WWW-Authenticate", s);
         response.setStatus(401);
     }
-
 
 }

@@ -28,12 +28,10 @@ import org.nuxeo.ecm.webengine.model.io.TemplateViewWriter;
 import org.nuxeo.ecm.webengine.model.io.TemplateWriter;
 import org.nuxeo.ecm.webengine.model.io.URLWriter;
 
-
 /**
  * A web application configured by a module.xml file.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebEngineApplication extends Application {
 

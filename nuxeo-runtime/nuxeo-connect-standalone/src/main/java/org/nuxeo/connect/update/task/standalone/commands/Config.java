@@ -30,8 +30,7 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.w3c.dom.Element;
 
 /**
- * Command for managing the configuration.
- * It allows to set a property, add or remove a template.
+ * Command for managing the configuration. It allows to set a property, add or remove a template.
  *
  * @since 5.5
  */
@@ -69,8 +68,7 @@ public class Config extends AbstractCommand {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         Config rollback = new Config();
         ConfigurationGenerator cg = new ConfigurationGenerator();
         cg.init();
@@ -85,8 +83,7 @@ public class Config extends AbstractCommand {
             }
             if (set != null) {
                 String[] newValue = set.split("=", 2);
-                String previousValue = cg.setProperty(newValue[0],
-                        (newValue[1].length() > 0 ? newValue[1] : null));
+                String previousValue = cg.setProperty(newValue[0], (newValue[1].length() > 0 ? newValue[1] : null));
                 if (previousValue == null) {
                     previousValue = "";
                 }
@@ -99,16 +96,13 @@ public class Config extends AbstractCommand {
     }
 
     @Override
-    protected void doValidate(Task task, ValidationStatus status)
-            throws PackageException {
+    protected void doValidate(Task task, ValidationStatus status) throws PackageException {
         if (addtemplate == null && rmtemplate == null && set == null) {
             status.addError("Cannot execute command in installer."
-                    + " Invalid config syntax: neither addtemplate, rmtemplate "
-                    + "or set was specified.");
+                    + " Invalid config syntax: neither addtemplate, rmtemplate " + "or set was specified.");
         }
         if (set != null && !set.contains("=")) {
-            status.addError("Invalid config syntax: badly-formed property "
-                    + set);
+            status.addError("Invalid config syntax: badly-formed property " + set);
         }
     }
 

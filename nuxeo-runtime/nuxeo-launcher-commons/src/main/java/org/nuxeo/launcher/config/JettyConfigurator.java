@@ -70,8 +70,7 @@ public class JettyConfigurator extends ServerConfigurator {
 
     @Override
     public File getConfigDir() {
-        return new File(generator.getNuxeoHome(),
-                Environment.DEFAULT_CONFIG_DIR);
+        return new File(generator.getNuxeoHome(), Environment.DEFAULT_CONFIG_DIR);
     }
 
     @Override

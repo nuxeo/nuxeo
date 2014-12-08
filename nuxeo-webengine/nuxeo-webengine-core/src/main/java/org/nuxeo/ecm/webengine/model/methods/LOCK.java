@@ -28,9 +28,8 @@ import javax.ws.rs.HttpMethod;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Target({ElementType.METHOD})
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @HttpMethod("LOCK")
 public @interface LOCK {

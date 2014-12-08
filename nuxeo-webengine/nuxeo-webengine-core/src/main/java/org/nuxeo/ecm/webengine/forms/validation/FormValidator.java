@@ -20,7 +20,6 @@ import org.nuxeo.ecm.webengine.forms.FormDataProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface FormValidator {
 

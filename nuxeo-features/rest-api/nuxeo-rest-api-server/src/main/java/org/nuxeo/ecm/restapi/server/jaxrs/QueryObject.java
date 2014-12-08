@@ -21,8 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.automation.jaxrs.io.documents
-        .PaginableDocumentModelListImpl;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -54,8 +53,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @since 6.0
- * Search endpoint to perform queries on the repository through rest api.
+ * @since 6.0 Search endpoint to perform queries on the repository through rest api.
  */
 @WebObject(type = "query")
 public class QueryObject extends AbstractResource<ResourceTypeImpl> {
@@ -92,13 +90,11 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
 
     @Override
     public void initialize(Object... args) {
-        pageProviderService = Framework.getLocalService(PageProviderService
-                .class);
+        pageProviderService = Framework.getLocalService(PageProviderService.class);
         // Query Enum Parameters Map
         queryParametersMap = new EnumMap<>(QueryParams.class);
         queryParametersMap.put(QueryParams.PAGE_SIZE, PAGE_SIZE);
-        queryParametersMap.put(QueryParams.CURRENT_PAGE_INDEX,
-                CURRENT_PAGE_INDEX);
+        queryParametersMap.put(QueryParams.CURRENT_PAGE_INDEX, CURRENT_PAGE_INDEX);
         queryParametersMap.put(QueryParams.MAX_RESULTS, MAX_RESULTS);
         queryParametersMap.put(QueryParams.SORT_BY, SORT_BY);
         queryParametersMap.put(QueryParams.SORT_ORDER, SORT_ORDER);
@@ -110,11 +106,9 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     @SuppressWarnings("unchecked")
-    protected DocumentModelList getQuery(UriInfo uriInfo,
-            String langOrProviderName) {
+    protected DocumentModelList getQuery(UriInfo uriInfo, String langOrProviderName) {
         // Fetching all parameters
-        MultivaluedMap<String, String> queryParams = uriInfo
-                .getQueryParameters();
+        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         // Look if provider name is given
         String providerName = null;
         if (!langPathMap.containsValue(langOrProviderName)) {
@@ -130,8 +124,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
 
         // If no query or provider name has been found
         // Execute big select
-        if (query == null
-                && (providerName == null || providerName.length() == 0)) {
+        if (query == null && (providerName == null || providerName.length() == 0)) {
             // provide a defaut query
             query = "SELECT * from Document";
         }
@@ -141,8 +134,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         Properties namedParameters = new Properties();
         for (String namedParameterKey : queryParams.keySet()) {
             if (!queryParametersMap.containsValue(namedParameterKey)) {
-                namedParameters.put(namedParameterKey,
-                        queryParams.getFirst(namedParameterKey));
+                namedParameters.put(namedParameterKey, queryParams.getFirst(namedParameterKey));
             }
         }
 
@@ -158,17 +150,15 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
             targetPageSize = Long.valueOf(pageSize);
         }
 
-        //Ordered Parameters
+        // Ordered Parameters
         Object[] parameters = null;
         if (orderedParams != null && !orderedParams.isEmpty()) {
-            parameters = orderedParams.toArray(new String[orderedParams.size
-                    ()]);
+            parameters = orderedParams.toArray(new String[orderedParams.size()]);
             // expand specific parameters
             for (int idx = 0; idx < parameters.length; idx++) {
                 String value = (String) parameters[idx];
                 if (value.equals(CURRENT_USERID_PATTERN)) {
-                    parameters[idx] = ctx.getCoreSession().getPrincipal()
-                            .getName();
+                    parameters[idx] = ctx.getCoreSession().getPrincipal().getName();
                 } else if (value.equals(CURRENT_REPO_PATTERN)) {
                     parameters[idx] = ctx.getCoreSession().getRepositoryName();
                 }
@@ -176,24 +166,20 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         }
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) ctx.getCoreSession());
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
 
         // Named parameter management
         DocumentModel searchDocumentModel = null;
         if (!namedParameters.isEmpty()) {
             // Setup the search document model
             if (providerName != null) {
-                PageProviderDefinition pageProviderDefinition =
-                        pageProviderService.getPageProviderDefinition(providerName);
+                PageProviderDefinition pageProviderDefinition = pageProviderService.getPageProviderDefinition(providerName);
                 if (pageProviderDefinition != null) {
                     String searchDocType = pageProviderDefinition.getSearchDocumentType();
                     if (searchDocType != null) {
-                        searchDocumentModel = ctx.getCoreSession()
-                                .createDocumentModel(searchDocType);
+                        searchDocumentModel = ctx.getCoreSession().createDocumentModel(searchDocType);
                         try {
-                            DocumentHelper.setJSONProperties(null,
-                                    searchDocumentModel, namedParameters);
+                            DocumentHelper.setJSONProperties(null, searchDocumentModel, namedParameters);
                         } catch (IOException e) {
                             throw WebException.wrap(e);
                         }
@@ -203,12 +189,10 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
                 }
             }
             // Setup the named parameters map
-            if (searchDocumentModel == null ) {
+            if (searchDocumentModel == null) {
                 searchDocumentModel = new SimpleDocumentModel();
             }
-            searchDocumentModel.putContextData(PageProviderServiceImpl
-                            .NAMED_PARAMETERS,
-                    namedParameters);
+            searchDocumentModel.putContextData(PageProviderServiceImpl.NAMED_PARAMETERS, namedParameters);
         }
 
         // Sort Info Management
@@ -221,34 +205,25 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
             }
             for (int i = 0; i < sorts.length; i++) {
                 String sort = sorts[i];
-                boolean sortAscending = (orders != null && orders.length
-                        > i && "asc".equals(orders[i].toLowerCase()));
+                boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
                 sortInfoList.add(new SortInfo(sort, sortAscending));
             }
         }
 
         if (query != null) {
-            PageProviderDefinition ppdefinition = pageProviderService
-                    .getPageProviderDefinition(SearchAdapter.pageProviderName);
+            PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(SearchAdapter.pageProviderName);
             ppdefinition.setPattern(query);
-            if (maxResults != null && !maxResults.isEmpty()
-                    && !maxResults.equals("-1")) {
+            if (maxResults != null && !maxResults.isEmpty() && !maxResults.equals("-1")) {
                 // set the maxResults to avoid slowing down queries
                 ppdefinition.getProperties().put("maxResults", maxResults);
             }
             return new PaginableDocumentModelListImpl(
-                    (PageProvider<DocumentModel>) pageProviderService
-                            .getPageProvider(StringUtils.EMPTY, ppdefinition,
-                                    searchDocumentModel, sortInfoList,
-                                    targetPageSize,
-                                    targetPage, props, parameters), null);
+                    (PageProvider<DocumentModel>) pageProviderService.getPageProvider(StringUtils.EMPTY, ppdefinition,
+                            searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, parameters), null);
         } else {
             return new PaginableDocumentModelListImpl(
-                    (PageProvider<DocumentModel>) pageProviderService
-                            .getPageProvider(
-                                    providerName, searchDocumentModel,
-                                    sortInfoList, targetPageSize, targetPage,
-                                    props, parameters), null);
+                    (PageProvider<DocumentModel>) pageProviderService.getPageProvider(providerName,
+                            searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, parameters), null);
         }
     }
 
@@ -264,23 +239,20 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     /**
-     * Perform query on the repository in NXQL or specific
-     * pageprovider name
+     * Perform query on the repository in NXQL or specific pageprovider name
      *
-     * @param uriInfo            Query parameters
+     * @param uriInfo Query parameters
      * @param langOrProviderName NXQL or specific provider name
      * @return Document Listing
      */
     @GET
     @Path("{langOrProviderName}")
-    public Object doSpecificQuery(@Context UriInfo uriInfo,
-            @PathParam("langOrProviderName") String langOrProviderName) {
+    public Object doSpecificQuery(@Context UriInfo uriInfo, @PathParam("langOrProviderName") String langOrProviderName) {
         return getQuery(uriInfo, langOrProviderName);
     }
 
     public enum QueryParams {
-        PAGE_SIZE, CURRENT_PAGE_INDEX, MAX_RESULTS, SORT_BY, SORT_ORDER,
-        ORDERED_PARAMS, QUERY
+        PAGE_SIZE, CURRENT_PAGE_INDEX, MAX_RESULTS, SORT_BY, SORT_ORDER, ORDERED_PARAMS, QUERY
     }
 
     public enum LangParams {

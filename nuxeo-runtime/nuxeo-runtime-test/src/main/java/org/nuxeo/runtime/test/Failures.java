@@ -66,13 +66,11 @@ public class Failures {
     }
 
     /**
-     * Call {@link org.junit.Assert#fail(String)} with a nice expanded string if
-     * there are failures. It also replaces original failure messages with a
-     * custom one if originalMessage is not {@code null}.
+     * Call {@link org.junit.Assert#fail(String)} with a nice expanded string if there are failures. It also replaces
+     * original failure messages with a custom one if originalMessage is not {@code null}.
      *
      * @param originalMessage Message to replace if found in a failure
-     * @param customMessage Custom message to use as replacement for
-     *            originalMessage
+     * @param customMessage Custom message to use as replacement for originalMessage
      */
     public void fail(String originalMessage, String customMessage) {
         if (failures.isEmpty()) {
@@ -83,12 +81,10 @@ public class Failures {
         AssertionFailedError errors = new AssertionFailedError();
         for (Failure failure : failures) {
             buffer.append("\n* Failure " + i + ": ");
-            if (originalMessage != null
-                    && originalMessage.equals(failure.getMessage())) {
+            if (originalMessage != null && originalMessage.equals(failure.getMessage())) {
                 buffer.append(failure.getTestHeader() + ":" + customMessage);
             } else {
-                buffer.append(String.format("Unexpected failure at %s\n%s",
-                        failure.getTestHeader(), failure.getTrace()));
+                buffer.append(String.format("Unexpected failure at %s\n%s", failure.getTestHeader(), failure.getTrace()));
                 errors.addSuppressed(failure.getException());
             }
             i++;

@@ -69,12 +69,10 @@ public class RestletServlet extends HttpServlet {
         Router restletRouter = new Router();
 
         // get the service
-        service = (PluggableRestletService) Framework.getRuntime().getComponent(
-                PluggableRestletService.NAME);
+        service = (PluggableRestletService) Framework.getRuntime().getComponent(PluggableRestletService.NAME);
         if (service == null) {
             log.error("Unable to get Service " + PluggableRestletService.NAME);
-            throw new ServletException(
-                    "Can't initialize Nuxeo Pluggable Restlet Service");
+            throw new ServletException("Can't initialize Nuxeo Pluggable Restlet Service");
         }
 
         for (String restletName : service.getContributedRestletNames()) {
@@ -84,8 +82,7 @@ public class RestletServlet extends HttpServlet {
             if (plugin.getUseSeam()) {
                 Filter seamFilter = new SeamRestletFilter(plugin.getUseConversation());
 
-                Restlet seamRestlet = service.getContributedRestletByName(
-                        restletName);
+                Restlet seamRestlet = service.getContributedRestletByName(restletName);
 
                 seamFilter.setNext(seamRestlet);
 
@@ -107,7 +104,7 @@ public class RestletServlet extends HttpServlet {
             // force regexp init
             for (String urlPattern : plugin.getUrlPatterns()) {
                 log.debug("Pre-compiling restlet pattern " + urlPattern);
-                Route route =  restletRouter.attach(urlPattern, restletToAdd);
+                Route route = restletRouter.attach(urlPattern, restletToAdd);
                 route.getTemplate().match("");
             }
         }
@@ -116,8 +113,7 @@ public class RestletServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         boolean tx = false;
         if (!TransactionHelper.isTransactionActive()) {
             tx = TransactionHelper.startTransaction();

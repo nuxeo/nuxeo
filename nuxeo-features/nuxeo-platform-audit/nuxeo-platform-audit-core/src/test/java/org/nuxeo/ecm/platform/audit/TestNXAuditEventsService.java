@@ -84,8 +84,7 @@ public class TestNXAuditEventsService {
         public void populate(CoreSession session) throws ClientException {
             super.populate(session);
             DocumentModel rootDocument = session.getRootDocument();
-            DocumentModel model = session.createDocumentModel(
-                    rootDocument.getPathAsString(), "youps", "File");
+            DocumentModel model = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
             model.setProperty("dublincore", "title", "huum");
             session.createDocument(model);
             source = session.getDocument(new PathRef("/youps"));
@@ -102,17 +101,15 @@ public class TestNXAuditEventsService {
 
     @Before
     public void setUp() throws Exception {
-        mbeanServer = Framework.getLocalService(ServerLocator.class)
-            .lookupServer();
+        mbeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
     }
 
     @Test
     public void testAuditContribution() throws Exception {
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework
-            .getRuntime().getComponent(NXAuditEventsService.NAME);
+        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(
+                NXAuditEventsService.NAME);
         assertNotNull(auditService);
-        Set<AdapterDescriptor> registeredAdapters = auditService
-            .getDocumentAdapters();
+        Set<AdapterDescriptor> registeredAdapters = auditService.getDocumentAdapters();
         assertEquals(1, registeredAdapters.size());
 
         AdapterDescriptor ad = registeredAdapters.iterator().next();
@@ -122,16 +119,14 @@ public class TestNXAuditEventsService {
 
     @Test
     public void testLogDocumentMessageWithoutCategory() throws ClientException {
-        EventContext ctx = new DocumentEventContext(session,
-                session.getPrincipal(), repo.source);
+        EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
         event.setImmediate(true);
         Framework.getLocalService(EventService.class).fireEvent(event);
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
-        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source
-            .getId());
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source.getId());
         assertEquals(2, entries.size());
 
         // entries are not ordered => skip creation log
@@ -153,8 +148,7 @@ public class TestNXAuditEventsService {
 
     @Test
     public void testLogDocumentMessageWithCategory() throws ClientException {
-        EventContext ctx = new DocumentEventContext(session,
-                session.getPrincipal(), repo.source);
+        EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
         ctx.setProperty("category", "myCategory");
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
@@ -162,8 +156,7 @@ public class TestNXAuditEventsService {
         Framework.getLocalService(EventService.class).fireEvent(event);
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
-        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source
-            .getId());
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source.getId());
         assertEquals(2, entries.size());
 
         // entries are not ordered => skip creation log
@@ -205,14 +198,11 @@ public class TestNXAuditEventsService {
     @Test
     public void testsyncLogCreation() throws Exception {
         DocumentModel rootDocument = session.getRootDocument();
-        long count = serviceUnderTest.syncLogCreationEntries(
-                session.getRepositoryName(), rootDocument.getPathAsString(),
-                true);
+        long count = serviceUnderTest.syncLogCreationEntries(session.getRepositoryName(),
+                rootDocument.getPathAsString(), true);
         assertEquals(14, count);
 
-        String query = String.format(
-                "log.docUUID = '%s' and log.eventId = 'documentCreated'",
-                rootDocument.getId());
+        String query = String.format("log.docUUID = '%s' and log.eventId = 'documentCreated'", rootDocument.getId());
 
         List<LogEntry> entries = serviceUnderTest.nativeQueryLogs(query, 1, 1);
         assertEquals(1, entries.size());
@@ -223,8 +213,7 @@ public class TestNXAuditEventsService {
         assertEquals("/", entry.getDocPath());
         assertEquals("Root", entry.getDocType());
         assertEquals("documentCreated", entry.getEventId());
-        assertEquals(SecurityConstants.SYSTEM_USERNAME,
-                entry.getPrincipalName());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, entry.getPrincipalName());
         assertEquals("test", entry.getRepositoryId());
     }
 
@@ -236,14 +225,12 @@ public class TestNXAuditEventsService {
 
     public void TODOtestCount() throws Exception {
         DocumentModel rootDocument = session.getRootDocument();
-        DocumentModel model = session.createDocumentModel(
-                rootDocument.getPathAsString(), "youps", "File");
+        DocumentModel model = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");
         session.createDocument(model);
         session.save();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        ObjectName objectName = AuditEventMetricFactory
-            .getObjectName("documentCreated");
+        ObjectName objectName = AuditEventMetricFactory.getObjectName("documentCreated");
         Long count = (Long) mbeanServer.getAttribute(objectName, "count");
         assertEquals(new Long(1L), count);
     }

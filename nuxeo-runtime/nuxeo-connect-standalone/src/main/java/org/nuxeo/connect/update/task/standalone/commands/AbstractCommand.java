@@ -30,14 +30,12 @@ import org.nuxeo.connect.update.task.guards.Guard;
 /**
  * All commands have 2 attributes: fail and ignore which are EL expressions.
  * <p>
- * If ignore is defined and evaluated to true then the command will be ignored
- * (null is returned as the inverse command) If fail is defined and evaluated to
- * true then the validation fails.
+ * If ignore is defined and evaluated to true then the command will be ignored (null is returned as the inverse command)
+ * If fail is defined and evaluated to true then the validation fails.
  * <p>
- * Commands extending this class must implement the {@link #doRun} and
- * {@link #doValidate} methods instead of the one in the interface. These
- * methods are first testing for ignore and fail guards and then if needed
- * delegated to the doXXX method versions.
+ * Commands extending this class must implement the {@link #doRun} and {@link #doValidate} methods instead of the one in
+ * the interface. These methods are first testing for ignore and fail guards and then if needed delegated to the doXXX
+ * method versions.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -79,36 +77,30 @@ public abstract class AbstractCommand implements Command {
      * @return Rollback command
      * @throws PackageException
      */
-    protected abstract Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException;
+    protected abstract Command doRun(Task task, Map<String, String> prefs) throws PackageException;
 
     /**
      * Override to implement validation.
      *
      * @param task The task being validated
-     * @param status Use {@link ValidationStatus#addError(String)} or
-     *            {@link ValidationStatus#addWarning(String)} to provide
-     *            validation error/warning messages
+     * @param status Use {@link ValidationStatus#addError(String)} or {@link ValidationStatus#addWarning(String)} to
+     *            provide validation error/warning messages
      * @throws PackageException
      */
-    protected abstract void doValidate(Task task, ValidationStatus status)
-            throws PackageException;
+    protected abstract void doValidate(Task task, ValidationStatus status) throws PackageException;
 
     @Override
-    public void validate(Task task, ValidationStatus status)
-            throws PackageException {
+    public void validate(Task task, ValidationStatus status) throws PackageException {
         if (fail != null) {
             if (new Guard(fail).evaluate(guardVars)) {
-                status.addError("Guard failed for command " + getId() + ": "
-                        + fail);
+                status.addError("Guard failed for command " + getId() + ": " + fail);
             }
         }
         doValidate(task, status);
     }
 
     @Override
-    public Command run(Task task, Map<String, String> prefs)
-            throws PackageException {
+    public Command run(Task task, Map<String, String> prefs) throws PackageException {
         if (ignore()) {
             return null;
         }
@@ -149,8 +141,7 @@ public abstract class AbstractCommand implements Command {
     }
 
     /**
-     * Must be implemented to initialize the command arguments from an XML
-     * fragment.
+     * Must be implemented to initialize the command arguments from an XML fragment.
      */
     public abstract void readFrom(Element element) throws PackageException;
 

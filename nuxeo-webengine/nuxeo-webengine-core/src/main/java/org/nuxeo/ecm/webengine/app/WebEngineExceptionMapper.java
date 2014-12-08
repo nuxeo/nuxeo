@@ -38,8 +38,7 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
     @Context
     HttpHeaders headers;
 
-    protected static final Log log = LogFactory.getLog
-            (WebEngineExceptionMapper.class);
+    protected static final Log log = LogFactory.getLog(WebEngineExceptionMapper.class);
 
     @Override
     public Response toResponse(Throwable cause) {
@@ -52,8 +51,7 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
         } else {
             log.warn("Exception in JAX-RS processing", cause);
         }
-        return WebException.newException(cause.getMessage(),
-                WebException.wrap(cause)).toResponse();
+        return WebException.newException(cause.getMessage(), WebException.wrap(cause)).toResponse();
     }
 
 }

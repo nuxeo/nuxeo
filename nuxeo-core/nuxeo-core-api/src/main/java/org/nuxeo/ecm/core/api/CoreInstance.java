@@ -45,8 +45,7 @@ public class CoreInstance {
         public final CoreSession session;
 
         public RegistrationInfo(CoreSession session) {
-            super("RegistrationInfo(" + Thread.currentThread().getName() + ", "
-                    + session.getSessionId() + ")");
+            super("RegistrationInfo(" + Thread.currentThread().getName() + ", " + session.getSessionId() + ")");
             this.session = session;
         }
 
@@ -72,13 +71,11 @@ public class CoreInstance {
      * <p>
      * The session must be closed using {@link CoreSession#close}.
      *
-     * @param repositoryName the repository name, or {@code null} for the
-     *            default repository
+     * @param repositoryName the repository name, or {@code null} for the default repository
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName)
-            throws ClientException {
+    public static CoreSession openCoreSession(String repositoryName) throws ClientException {
         return openCoreSession(repositoryName, getPrincipal((String) null));
     }
 
@@ -87,14 +84,12 @@ public class CoreInstance {
      * <p>
      * The session must be closed using {@link CoreSession#close}.
      *
-     * @param repositoryName the repository name, or {@code null} for the
-     *            default repository
+     * @param repositoryName the repository name, or {@code null} for the default repository
      * @param username the user name
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName,
-            String username) throws ClientException {
+    public static CoreSession openCoreSession(String repositoryName, String username) throws ClientException {
         return openCoreSession(repositoryName, getPrincipal(username));
     }
 
@@ -103,23 +98,19 @@ public class CoreInstance {
      * <p>
      * The session must be closed using {@link CoreSession#close}.
      *
-     * @param repositoryName the repository name, or {@code null} for the
-     *            default repository
+     * @param repositoryName the repository name, or {@code null} for the default repository
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSessionSystem(String repositoryName)
-            throws ClientException {
-        return openCoreSession(repositoryName,
-                getPrincipal((SecurityConstants.SYSTEM_USERNAME)));
+    public static CoreSession openCoreSessionSystem(String repositoryName) throws ClientException {
+        return openCoreSession(repositoryName, getPrincipal((SecurityConstants.SYSTEM_USERNAME)));
     }
 
     /**
      * @deprecated since 5.9.3, use {@link #openCoreSession} instead.
      */
     @Deprecated
-    public CoreSession open(String repositoryName,
-            Map<String, Serializable> context) throws ClientException {
+    public CoreSession open(String repositoryName, Map<String, Serializable> context) throws ClientException {
         return openCoreSession(repositoryName, getPrincipal(context));
     }
 
@@ -128,13 +119,12 @@ public class CoreInstance {
      * <p>
      * Opens a {@link CoreSession} for the given context.
      *
-     * @param repositoryName the repository name, or {@code null} for the
-     *            default repository
+     * @param repositoryName the repository name, or {@code null} for the default repository
      * @param context the session open context
      * @return the session
      */
-    public static CoreSession openCoreSession(String repositoryName,
-            Map<String, Serializable> context) throws ClientException {
+    public static CoreSession openCoreSession(String repositoryName, Map<String, Serializable> context)
+            throws ClientException {
         return openCoreSession(repositoryName, getPrincipal(context));
     }
 
@@ -143,19 +133,16 @@ public class CoreInstance {
      * <p>
      * The session must be closed using {@link CoreSession#close}.
      *
-     * @param repositoryName the repository name, or {@code null} for the
-     *            default repository
+     * @param repositoryName the repository name, or {@code null} for the default repository
      * @param principal the principal
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName,
-            Principal principal) throws ClientException {
+    public static CoreSession openCoreSession(String repositoryName, Principal principal) throws ClientException {
         if (principal instanceof NuxeoPrincipal) {
             return openCoreSession(repositoryName, (NuxeoPrincipal) principal);
         } else {
-            return openCoreSession(repositoryName,
-                    getPrincipal(principal.getName()));
+            return openCoreSession(repositoryName, getPrincipal(principal.getName()));
         }
     }
 
@@ -164,14 +151,12 @@ public class CoreInstance {
      * <p>
      * The session must be closed using {@link CoreSession#close}.
      *
-     * @param repositoryName the repository name, or {@code null} for the
-     *            default repository
+     * @param repositoryName the repository name, or {@code null} for the default repository
      * @param principal the principal
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName,
-            NuxeoPrincipal principal) throws ClientException {
+    public static CoreSession openCoreSession(String repositoryName, NuxeoPrincipal principal) throws ClientException {
         if (repositoryName == null) {
             RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
             repositoryName = repositoryManager.getDefaultRepository().getName();
@@ -179,8 +164,7 @@ public class CoreInstance {
         return getInstance().acquireCoreSession(repositoryName, principal);
     }
 
-    protected CoreSession acquireCoreSession(String repositoryName,
-            NuxeoPrincipal principal) throws ClientException {
+    protected CoreSession acquireCoreSession(String repositoryName, NuxeoPrincipal principal) throws ClientException {
         CoreSession session = Framework.getLocalService(CoreSession.class);
         session.connect(repositoryName, principal);
         sessions.put(session.getSessionId(), new RegistrationInfo(session));
@@ -190,8 +174,7 @@ public class CoreInstance {
     /**
      * Gets an existing open session for the given session id.
      * <p>
-     * The returned CoreSession must not be closed, as it is owned by someone
-     * else.
+     * The returned CoreSession must not be closed, as it is owned by someone else.
      *
      * @param sessionId the session id
      * @return the session, which must not be closed
@@ -217,14 +200,12 @@ public class CoreInstance {
         String sessionId = session.getSessionId();
         RegistrationInfo csi = sessions.remove(sessionId);
         if (csi == null) {
-            throw new RuntimeException("Closing unknown CoreSession: "
-                    + sessionId);
+            throw new RuntimeException("Closing unknown CoreSession: " + sessionId);
         }
         session.destroy();
     }
 
-    protected static NuxeoPrincipal getPrincipal(Map<String, Serializable> map)
-            throws ClientException {
+    protected static NuxeoPrincipal getPrincipal(Map<String, Serializable> map) throws ClientException {
         if (map == null) {
             return getPrincipal((String) null); // logged-in principal
         }
@@ -235,14 +216,12 @@ public class CoreInstance {
         return principal;
     }
 
-    protected static NuxeoPrincipal getPrincipal(String username)
-            throws ClientException {
+    protected static NuxeoPrincipal getPrincipal(String username) throws ClientException {
         if (username != null) {
             if (SYSTEM_USERNAME.equals(username)) {
                 return new SystemPrincipal(null);
             } else {
-                return new UserPrincipal(username, new ArrayList<String>(),
-                        false, false);
+                return new UserPrincipal(username, new ArrayList<String>(), false, false);
             }
         } else {
             LoginStack.Entry entry = ClientLoginModule.getCurrentLogin();
@@ -253,16 +232,14 @@ public class CoreInstance {
                 } else if (LoginComponent.isSystemLogin(p)) {
                     return new SystemPrincipal(p.getName());
                 } else {
-                    throw new RuntimeException("Unsupported principal: "
-                            + p.getClass());
+                    throw new RuntimeException("Unsupported principal: " + p.getClass());
                 }
             } else {
                 if (Framework.isTestModeSet()) {
                     return new SystemPrincipal(null);
                 } else {
-                    throw new ClientException(
-                            "Cannot create a CoreSession outside a security context, "
-                                    + " login() missing.");
+                    throw new ClientException("Cannot create a CoreSession outside a security context, "
+                            + " login() missing.");
                 }
             }
         }
@@ -302,7 +279,7 @@ public class CoreInstance {
 
     public void cleanupThisThread() throws ClientException {
         ClientException errors = new ClientException("disconnecting from storage for you");
-        for (RegistrationInfo each:CoreInstance.getInstance().getRegistrationInfosLive(true)) {
+        for (RegistrationInfo each : CoreInstance.getInstance().getRegistrationInfosLive(true)) {
             each.session.destroy();
             errors.addSuppressed(each);
         }

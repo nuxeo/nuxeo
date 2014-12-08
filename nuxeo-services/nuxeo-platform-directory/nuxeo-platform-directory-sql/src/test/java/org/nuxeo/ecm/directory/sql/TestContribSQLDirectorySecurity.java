@@ -44,8 +44,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ SQLDirectoryFeature.class, ClientLoginFeature.class })
-@LocalDeploy({
-        "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
+@LocalDeploy({ "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-security.xml" })
 public class TestContribSQLDirectorySecurity {
 
@@ -121,7 +120,7 @@ public class TestContribSQLDirectorySecurity {
 
     @Test
     public void cantGetEntry() throws LoginException {
-        //Given a user without right
+        // Given a user without right
         dummyLogin.loginAs("aUser");
 
         DocumentModel entry = userDirSession.getEntry("user_1");
@@ -132,7 +131,7 @@ public class TestContribSQLDirectorySecurity {
 
     @Test
     public void canGetEntry() throws LoginException {
-        //Given a user without right
+        // Given a user without right
         dummyLogin.loginAs(READER_USER);
 
         DocumentModel entry = userDirSession.getEntry("user_1");
@@ -143,7 +142,7 @@ public class TestContribSQLDirectorySecurity {
 
     @Test
     public void cantSearch() throws LoginException {
-        //Given a user without right
+        // Given a user without right
         dummyLogin.loginAs("aUser");
 
         // When I query entry
@@ -157,7 +156,7 @@ public class TestContribSQLDirectorySecurity {
 
     @Test
     public void canSearch() throws LoginException {
-        //Given a user without right
+        // Given a user without right
         dummyLogin.loginAs(SUPER_USER);
 
         // When I query entry
@@ -171,16 +170,16 @@ public class TestContribSQLDirectorySecurity {
 
     @Test
     public void groupCanCreateAndGetEntry() throws Exception {
-        //Given a user member of everyone group
+        // Given a user member of everyone group
         dummyLogin.loginAs("aUserEveryone");
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("groupname", "newGroup");
-        //When I create an entry
+        // When I create an entry
         DocumentModel entry = groupDirSession.createEntry(map);
         Assert.assertNotNull(entry);
 
-        //I can read it too
+        // I can read it too
         entry = groupDirSession.getEntry("newGroup");
         Assert.assertNotNull(entry);
 

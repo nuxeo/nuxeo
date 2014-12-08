@@ -35,18 +35,15 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationEventListener implements EventListener {
     private List<AnnotatedDocumentEventListener> listeners;
 
     private final DefaultNuxeoUriResolver resolver = new DefaultNuxeoUriResolver();
 
-    public void afterAnnotationCreated(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void afterAnnotationCreated(Principal principal, Annotation annotation) throws AnnotationException {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
-            listener.afterAnnotationCreated((NuxeoPrincipal) principal, getDocumentLocation(annotation),
-                    annotation);
+            listener.afterAnnotationCreated((NuxeoPrincipal) principal, getDocumentLocation(annotation), annotation);
         }
     }
 
@@ -55,8 +52,7 @@ public class AnnotationEventListener implements EventListener {
         return resolver.getDocumentLocation(annotates);
     }
 
-    private List<AnnotatedDocumentEventListener> getListeners()
-            throws AnnotationException {
+    private List<AnnotatedDocumentEventListener> getListeners() throws AnnotationException {
         if (listeners == null) {
             AnnotationsRepositoryConfigurationService service = Framework.getService(AnnotationsRepositoryConfigurationService.class);
             listeners = service.getEventListeners();
@@ -64,42 +60,33 @@ public class AnnotationEventListener implements EventListener {
         return listeners;
     }
 
-    public void afterAnnotationDeleted(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void afterAnnotationDeleted(Principal principal, Annotation annotation) throws AnnotationException {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
-            listener.afterAnnotationDeleted((NuxeoPrincipal) principal, getDocumentLocation(annotation),
-                    annotation);
+            listener.afterAnnotationDeleted((NuxeoPrincipal) principal, getDocumentLocation(annotation), annotation);
         }
     }
 
-    public void afterAnnotationRead(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void afterAnnotationRead(Principal principal, Annotation annotation) throws AnnotationException {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
             listener.afterAnnotationRead((NuxeoPrincipal) principal, getDocumentLocation(annotation), annotation);
         }
     }
 
-    public void afterAnnotationUpdated(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void afterAnnotationUpdated(Principal principal, Annotation annotation) throws AnnotationException {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
-            listener.afterAnnotationUpdated((NuxeoPrincipal) principal, getDocumentLocation(annotation),
-                    annotation);
+            listener.afterAnnotationUpdated((NuxeoPrincipal) principal, getDocumentLocation(annotation), annotation);
         }
     }
 
-    public void beforeAnnotationCreated(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void beforeAnnotationCreated(Principal principal, Annotation annotation) throws AnnotationException {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
-            listener.beforeAnnotationCreated((NuxeoPrincipal) principal, getDocumentLocation(annotation),
-                    annotation);
+            listener.beforeAnnotationCreated((NuxeoPrincipal) principal, getDocumentLocation(annotation), annotation);
         }
     }
 
-    public void beforeAnnotationDeleted(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void beforeAnnotationDeleted(Principal principal, Annotation annotation) throws AnnotationException {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
-            listener.beforeAnnotationDeleted((NuxeoPrincipal) principal, getDocumentLocation(annotation),
-                    annotation);
+            listener.beforeAnnotationDeleted((NuxeoPrincipal) principal, getDocumentLocation(annotation), annotation);
         }
     }
 
@@ -109,11 +96,9 @@ public class AnnotationEventListener implements EventListener {
         }
     }
 
-    public void beforeAnnotationUpdated(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void beforeAnnotationUpdated(Principal principal, Annotation annotation) throws AnnotationException {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
-            listener.beforeAnnotationUpdated((NuxeoPrincipal) principal, getDocumentLocation(annotation),
-                    annotation);
+            listener.beforeAnnotationUpdated((NuxeoPrincipal) principal, getDocumentLocation(annotation), annotation);
         }
     }
 

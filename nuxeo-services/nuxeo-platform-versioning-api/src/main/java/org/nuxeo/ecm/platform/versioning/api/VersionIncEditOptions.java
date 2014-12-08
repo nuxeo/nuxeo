@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class composes a result of versioning interrogation about what
- * increment options are available.
+ * This class composes a result of versioning interrogation about what increment options are available.
  *
  * @see org.nuxeo.ecm.platform.versioning.api.VersioningActions
  */
@@ -41,8 +40,7 @@ public class VersionIncEditOptions implements Serializable {
     /**
      * Returns action to be presented by default to user.
      * <p>
-     * Since 5.7.3, returns {@link VersioningActions#ACTION_NO_INCREMENT} by
-     * default instead of null, when not set.
+     * Since 5.7.3, returns {@link VersioningActions#ACTION_NO_INCREMENT} by default instead of null, when not set.
      */
     public VersioningActions getDefaultVersioningAction() {
         if (defaultVersioningAction == null) {
@@ -51,8 +49,7 @@ public class VersionIncEditOptions implements Serializable {
         return defaultVersioningAction;
     }
 
-    public void setDefaultVersioningAction(
-            VersioningActions defaultVersioningAction) {
+    public void setDefaultVersioningAction(VersioningActions defaultVersioningAction) {
         this.defaultVersioningAction = defaultVersioningAction;
     }
 

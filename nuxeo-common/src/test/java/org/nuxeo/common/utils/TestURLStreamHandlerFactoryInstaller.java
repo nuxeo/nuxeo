@@ -57,6 +57,7 @@ public class TestURLStreamHandlerFactoryInstaller {
     }
 
     URLStreamHandlerFactory f1;
+
     URLStreamHandlerFactory f2;
 
     @Before

@@ -26,8 +26,7 @@ import javax.faces.component.html.HtmlSelectManyCheckbox;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class DirectorySelectManyCheckboxWidgetTypeHandler extends
-        DirectorySelectManyWidgetTypeHandler {
+public class DirectorySelectManyCheckboxWidgetTypeHandler extends DirectorySelectManyWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 

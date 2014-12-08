@@ -52,10 +52,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
-public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
-        WebConfigurationService {
+public class WebConfigurationServiceImpl extends RemoteServiceServlet implements WebConfigurationService {
 
     private static final long serialVersionUID = 2389527283775608787L;
 
@@ -74,7 +72,6 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
         return webAnnotationConfigurationService;
     }
 
-
     public WebConfiguration getWebConfiguration(String url) {
         WebConfiguration conf = new WebConfiguration();
 
@@ -86,10 +83,8 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
                 fields.put(field.getName(), field.getChoices());
             }
 
-            conf.addAnnotationDefinition(new AnnotationDefinition(
-                    type.getUri(), type.getName(), type.getIcon(),
-                    type.getType(), type.getListIcon(), type.getCreateIcon(),
-                    type.isInMenu(), fields));
+            conf.addAnnotationDefinition(new AnnotationDefinition(type.getUri(), type.getName(), type.getIcon(),
+                    type.getType(), type.getListIcon(), type.getCreateIcon(), type.isInMenu(), fields));
         }
 
         UserInfoMapper userInfoMapper = getConfig().getUserInfoMapper();
@@ -104,8 +99,7 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
 
         Map<String, FilterDescriptor> filters = getConfig().getFilterDefinitions();
         for (FilterDescriptor filter : filters.values()) {
-            conf.addFilter(filter.getOrder(), filter.getName(),
-                    filter.getIcon(), filter.getType(), filter.getAuthor(),
+            conf.addFilter(filter.getOrder(), filter.getName(), filter.getIcon(), filter.getType(), filter.getAuthor(),
                     filter.getFields());
         }
 
@@ -115,16 +109,15 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
     }
 
     @Override
-    protected void service(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
         currentUser = (NuxeoPrincipal) request.getUserPrincipal();
         super.service(request, response);
     }
 
     protected boolean canAnnotate(String url, WebPermission webPermission) {
         DocumentViewCodecManager documentViewCodecManager = getDocumentViewCodecManager();
-        DocumentView docView = documentViewCodecManager.getDocumentViewFromUrl(
-                url, true, getBaseUrl(url));
+        DocumentView docView = documentViewCodecManager.getDocumentViewFromUrl(url, true, getBaseUrl(url));
         DocumentLocation docLocation = docView.getDocumentLocation();
         try (CoreSession coreSession = CoreInstance.openCoreSession(docLocation.getServerName())) {
             DocumentModel docModel = coreSession.getDocument(docLocation.getDocRef());

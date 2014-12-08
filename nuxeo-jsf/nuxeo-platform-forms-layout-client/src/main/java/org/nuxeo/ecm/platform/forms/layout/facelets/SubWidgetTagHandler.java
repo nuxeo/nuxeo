@@ -44,8 +44,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 /**
  * SubWidget tag handler.
  * <p>
- * Iterates over a widget subwidgets and apply next handlers as many times as
- * needed.
+ * Iterates over a widget subwidgets and apply next handlers as many times as needed.
  * <p>
  * Only works when used inside a tag using the {@link WidgetTagHandler}.
  *
@@ -63,24 +62,20 @@ public class SubWidgetTagHandler extends TagHandler {
     }
 
     /**
-     * For each subwidget in current widget, exposes widget variables and
-     * applies next handler.
+     * For each subwidget in current widget, exposes widget variables and applies next handler.
      * <p>
-     * Needs widget to be exposed in context, so works in conjunction with
-     * {@link WidgetTagHandler}.
+     * Needs widget to be exposed in context, so works in conjunction with {@link WidgetTagHandler}.
      * <p>
-     * Widget variables exposed: {@link RenderVariables.widgetVariables#widget}
-     * , same variable suffixed with "_n" where n is the widget level, and
-     * {@link RenderVariables.widgetVariables#widgetIndex}.
+     * Widget variables exposed: {@link RenderVariables.widgetVariables#widget} , same variable suffixed with "_n" where
+     * n is the widget level, and {@link RenderVariables.widgetVariables#widgetIndex}.
      */
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
         // resolve subwidgets from widget in context
         Widget widget = null;
         String widgetVariableName = RenderVariables.widgetVariables.widget.name();
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        TagAttribute widgetAttribute = helper.createAttribute(
-                widgetVariableName, String.format("#{%s}", widgetVariableName));
+        TagAttribute widgetAttribute = helper.createAttribute(widgetVariableName,
+                String.format("#{%s}", widgetVariableName));
         if (widgetAttribute != null) {
             widget = (Widget) widgetAttribute.getObject(ctx, Widget.class);
         }
@@ -99,8 +94,7 @@ public class SubWidgetTagHandler extends TagHandler {
             // expose widget variables
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
             ExpressionFactory eFactory = ctx.getExpressionFactory();
-            ValueExpression subWidgetVe = eFactory.createValueExpression(
-                    subWidget, Widget.class);
+            ValueExpression subWidgetVe = eFactory.createValueExpression(subWidget, Widget.class);
             Integer level = null;
             String tagConfigId = null;
             if (subWidget != null) {
@@ -108,17 +102,14 @@ public class SubWidgetTagHandler extends TagHandler {
                 tagConfigId = subWidget.getTagConfigId();
             }
 
-            variables.put(RenderVariables.widgetVariables.widget.name(),
-                    subWidgetVe);
+            variables.put(RenderVariables.widgetVariables.widget.name(), subWidgetVe);
             // variables.put(String.format("%s_%s",
             // RenderVariables.widgetVariables.widget.name(), level),
             // subWidgetVe);
-            ValueExpression subWidgetIndexVe = eFactory.createValueExpression(
-                    Integer.valueOf(subWidgetCounter), Integer.class);
-            variables.put(RenderVariables.widgetVariables.widgetIndex.name(),
-                    subWidgetIndexVe);
-            variables.put(String.format("%s_%s",
-                    RenderVariables.widgetVariables.widgetIndex.name(), level),
+            ValueExpression subWidgetIndexVe = eFactory.createValueExpression(Integer.valueOf(subWidgetCounter),
+                    Integer.class);
+            variables.put(RenderVariables.widgetVariables.widgetIndex.name(), subWidgetIndexVe);
+            variables.put(String.format("%s_%s", RenderVariables.widgetVariables.widgetIndex.name(), level),
                     subWidgetIndexVe);
 
             // XXX: expose widget controls too, need to figure out
@@ -127,25 +118,19 @@ public class SubWidgetTagHandler extends TagHandler {
             if (subWidget != null) {
                 for (Map.Entry<String, Serializable> ctrl : subWidget.getControls().entrySet()) {
                     String key = ctrl.getKey();
-                    String name = String.format(
-                            "%s_%s",
-                            RenderVariables.widgetVariables.widgetControl.name(),
-                            key);
+                    String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetControl.name(), key);
                     Serializable value = ctrl.getValue();
-                    variables.put(name,
-                            eFactory.createValueExpression(value, Object.class));
+                    variables.put(name, eFactory.createValueExpression(value, Object.class));
                 }
             }
 
             List<String> blockedPatterns = new ArrayList<String>();
             blockedPatterns.add(RenderVariables.widgetVariables.widget.name());
-            blockedPatterns.add(RenderVariables.widgetVariables.widgetIndex.name()
-                    + "*");
-            blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name()
-                    + "_*");
+            blockedPatterns.add(RenderVariables.widgetVariables.widgetIndex.name() + "*");
+            blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");
 
-            FaceletHandler handlerWithVars = helper.getAliasTagHandler(
-                    tagConfigId, variables, blockedPatterns, nextHandler);
+            FaceletHandler handlerWithVars = helper.getAliasTagHandler(tagConfigId, variables, blockedPatterns,
+                    nextHandler);
 
             // apply
             handlerWithVars.apply(ctx, parent);

@@ -41,8 +41,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
  */
 @Name("editorLinkActions")
 @Scope(CONVERSATION)
-public class EditorLinkActionsBean extends InputController implements
-        EditorLinkActions, Serializable {
+public class EditorLinkActionsBean extends InputController implements EditorLinkActions, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -75,8 +74,7 @@ public class EditorLinkActionsBean extends InputController implements
             if (searchKeywords.length() > 0) {
                 if (!searchKeywords.equals("*")) {
                     // full text search
-                    constraints.add(String.format("ecm:fulltext LIKE '%s'",
-                            searchKeywords));
+                    constraints.add(String.format("ecm:fulltext LIKE '%s'", searchKeywords));
                 }
             }
         }

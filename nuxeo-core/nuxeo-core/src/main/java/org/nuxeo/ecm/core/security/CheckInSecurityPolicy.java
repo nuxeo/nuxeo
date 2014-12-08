@@ -24,8 +24,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 
 /**
- * Security policy that denies write access on a live document when it is in the
- * checked-in state.
+ * Security policy that denies write access on a live document when it is in the checked-in state.
  * <p>
  * The document must be checked out before modification is allowed.
  *
@@ -36,13 +35,11 @@ public class CheckInSecurityPolicy extends AbstractSecurityPolicy {
     private static final Log log = LogFactory.getLog(CheckInSecurityPolicy.class);
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp,
-            Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
-        if (Arrays.asList(resolvedPermissions).contains(
-                SecurityConstants.WRITE_PROPERTIES)
-                && !doc.isVersion() && !doc.isProxy()) {
+        if (Arrays.asList(resolvedPermissions).contains(SecurityConstants.WRITE_PROPERTIES) && !doc.isVersion()
+                && !doc.isProxy()) {
             try {
                 if (!doc.isCheckedOut()) {
                     access = Access.DENY;

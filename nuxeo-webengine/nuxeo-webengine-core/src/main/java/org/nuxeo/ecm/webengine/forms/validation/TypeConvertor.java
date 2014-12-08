@@ -28,7 +28,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class TypeConvertor<T> {
 
@@ -37,7 +36,7 @@ public abstract class TypeConvertor<T> {
     public abstract T convert(String value) throws ValidationException;
 
     public Object[] newArray(int length) {
-        return (Object[])Array.newInstance(getType(), length);
+        return (Object[]) Array.newInstance(getType(), length);
     }
 
     @SuppressWarnings("unchecked")
@@ -61,20 +60,20 @@ public abstract class TypeConvertor<T> {
         } else if (type == Class.class) {
             result = CLASS;
         } else {
-            throw new IllegalArgumentException("Unsupported type: "+type);
+            throw new IllegalArgumentException("Unsupported type: " + type);
         }
-        return (TypeConvertor<T>)result;
+        return (TypeConvertor<T>) result;
     }
-
 
     public static final TypeConvertor<Boolean> BOOLEAN = new TypeConvertor<Boolean>() {
         @Override
         public Class<?> getType() {
             return Boolean.class;
         }
+
         @Override
         public Boolean convert(String value) throws ValidationException {
-            if("true".equals(value)) {
+            if ("true".equals(value)) {
                 return Boolean.TRUE;
             } else if ("false".equals(value)) {
                 return Boolean.FALSE;
@@ -89,6 +88,7 @@ public abstract class TypeConvertor<T> {
         public Class<?> getType() {
             return Integer.class;
         }
+
         @Override
         public Integer convert(String value) throws ValidationException {
             try {
@@ -104,6 +104,7 @@ public abstract class TypeConvertor<T> {
         public Class<?> getType() {
             return Long.class;
         }
+
         @Override
         public Long convert(String value) throws ValidationException {
             try {
@@ -119,6 +120,7 @@ public abstract class TypeConvertor<T> {
         public Class<?> getType() {
             return Float.class;
         }
+
         @Override
         public Float convert(String value) throws ValidationException {
             try {
@@ -134,6 +136,7 @@ public abstract class TypeConvertor<T> {
         public Class<?> getType() {
             return Double.class;
         }
+
         @Override
         public Double convert(String value) throws ValidationException {
             try {
@@ -149,6 +152,7 @@ public abstract class TypeConvertor<T> {
         public Class<?> getType() {
             return Date.class;
         }
+
         @Override
         public Date convert(String value) throws ValidationException {
             try {
@@ -164,6 +168,7 @@ public abstract class TypeConvertor<T> {
         public Class<?> getType() {
             return Class.class;
         }
+
         @Override
         public Class<?> convert(String value) throws ValidationException {
             try {
@@ -174,41 +179,39 @@ public abstract class TypeConvertor<T> {
         }
     };
 
-
-    public static Class<?> loadClass(String name)
-            throws ReflectiveOperationException {
+    public static Class<?> loadClass(String name) throws ReflectiveOperationException {
         return Framework.getLocalService(WebEngine.class).loadClass(name);
     }
 
-    private static final Pattern PATTERN = Pattern.compile(
-    "(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?(?:[Tt](?:(\\d{2}))?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{3}))?)?([Zz])?(?:([+-])(\\d{2}):(\\d{2}))?");
+    private static final Pattern PATTERN = Pattern.compile("(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?(?:[Tt](?:(\\d{2}))?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{3}))?)?([Zz])?(?:([+-])(\\d{2}):(\\d{2}))?");
 
     /**
      * Parse the serialized string form into a java.util.Date
+     *
      * @param date The serialized string form of the date
      * @return The created java.util.Date
      */
     public static Date parseDate(String date) {
-      Matcher m = PATTERN.matcher(date);
-      if (m.find()) {
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        int hoff = 0, moff = 0, doff = -1;
-        if (m.group(9) != null) {
-          doff = m.group(9).equals("-") ? 1 : -1;
-          hoff = doff * (m.group(10) != null ? Integer.parseInt(m.group(10)) : 0);
-          moff = doff * (m.group(11) != null ? Integer.parseInt(m.group(11)) : 0);
+        Matcher m = PATTERN.matcher(date);
+        if (m.find()) {
+            Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            int hoff = 0, moff = 0, doff = -1;
+            if (m.group(9) != null) {
+                doff = m.group(9).equals("-") ? 1 : -1;
+                hoff = doff * (m.group(10) != null ? Integer.parseInt(m.group(10)) : 0);
+                moff = doff * (m.group(11) != null ? Integer.parseInt(m.group(11)) : 0);
+            }
+            c.set(Calendar.YEAR, Integer.parseInt(m.group(1)));
+            c.set(Calendar.MONTH, m.group(2) != null ? Integer.parseInt(m.group(2)) - 1 : 0);
+            c.set(Calendar.DATE, m.group(3) != null ? Integer.parseInt(m.group(3)) : 1);
+            c.set(Calendar.HOUR_OF_DAY, m.group(4) != null ? Integer.parseInt(m.group(4)) + hoff : 0);
+            c.set(Calendar.MINUTE, m.group(5) != null ? Integer.parseInt(m.group(5)) + moff : 0);
+            c.set(Calendar.SECOND, m.group(6) != null ? Integer.parseInt(m.group(6)) : 0);
+            c.set(Calendar.MILLISECOND, m.group(7) != null ? Integer.parseInt(m.group(7)) : 0);
+            return c.getTime();
+        } else {
+            throw new IllegalArgumentException("Invalid Date Format");
         }
-        c.set(Calendar.YEAR,        Integer.parseInt(m.group(1)));
-        c.set(Calendar.MONTH,       m.group(2) != null ? Integer.parseInt(m.group(2))-1 : 0);
-        c.set(Calendar.DATE,        m.group(3) != null ? Integer.parseInt(m.group(3)) : 1);
-        c.set(Calendar.HOUR_OF_DAY, m.group(4) != null ? Integer.parseInt(m.group(4)) + hoff: 0);
-        c.set(Calendar.MINUTE,      m.group(5) != null ? Integer.parseInt(m.group(5)) + moff: 0);
-        c.set(Calendar.SECOND,      m.group(6) != null ? Integer.parseInt(m.group(6)) : 0);
-        c.set(Calendar.MILLISECOND, m.group(7) != null ? Integer.parseInt(m.group(7)) : 0);
-        return c.getTime();
-      } else {
-        throw new IllegalArgumentException("Invalid Date Format");
-      }
     }
 
 }

@@ -32,14 +32,17 @@ import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestMain {
 
     public static final String CONFIG_FILE = ".properties";
+
     public static final String BUNDLES = "bundles";
+
     public static final String INSTALL_DIR = "installdir";
+
     public static final String LIB_DIR = "libdir";
+
     public static final Pattern STR_LIST = Pattern.compile("\\s,\\s");
 
     public static void main(String[] args) throws Exception {
@@ -60,8 +63,7 @@ public class TestMain {
         String libList;
         if (configFile.isFile()) {
             Properties config = new Properties();
-            InputStream in = new BufferedInputStream(new FileInputStream(
-                    configFile));
+            InputStream in = new BufferedInputStream(new FileInputStream(configFile));
             config.load(in);
             installDirProp = config.getProperty(INSTALL_DIR);
             bundlesList = config.getProperty(BUNDLES);
@@ -79,8 +81,7 @@ public class TestMain {
             installDir = new File(installDirProp);
         }
 
-        SharedClassLoader cl = new SharedClassLoaderImpl(
-                TestMain.class.getClassLoader());
+        SharedClassLoader cl = new SharedClassLoaderImpl(TestMain.class.getClassLoader());
         if (libList != null) {
             String[] libs = STR_LIST.split(libList, 0);
             // loadLibs(cl, installDir, libs);

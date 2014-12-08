@@ -28,19 +28,17 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class MockAnnoteaBodyServer extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getPathInfo();
         String annId = path.substring(path.lastIndexOf("/") + 1, path.length());
         Integer id = Integer.parseInt(annId);
-        switch(id) {
+        switch (id) {
         case 1:
             resp.getWriter().write("Annotation body " + id);
             break;

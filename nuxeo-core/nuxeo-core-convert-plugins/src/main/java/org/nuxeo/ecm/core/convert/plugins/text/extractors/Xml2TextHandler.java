@@ -46,7 +46,9 @@ public class Xml2TextHandler extends DefaultHandler {
     }
 
     protected SAXParser parser;
+
     protected StringBuffer buf;
+
     protected boolean trim = false;
 
     public Xml2TextHandler() throws SAXException, ParserConfigurationException {
@@ -92,21 +94,18 @@ public class Xml2TextHandler extends DefaultHandler {
     }
 
     @Override
-    public void startElement(String uri, String localName,
-            String name, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
         trim = true;
     }
 
     @Override
-    public void endElement(String uri, String localName, String name)
-            throws SAXException {
+    public void endElement(String uri, String localName, String name) throws SAXException {
         trim = true;
     }
 
     @Override
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
-        //buf.append(ch, start, length); if (true) return;
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        // buf.append(ch, start, length); if (true) return;
         if (trim) {
             int i = start;
             int end = start + length;
@@ -115,10 +114,10 @@ public class Xml2TextHandler extends DefaultHandler {
             }
             buf.append(" ").append(ch, i, length - i + start);
             trim = false;
-            //System.out.println("["+new String(ch, i, length - i + start)+"]");
+            // System.out.println("["+new String(ch, i, length - i + start)+"]");
         } else {
             buf.append(ch, start, length);
-            //System.out.println("{"+new String(ch, start, length)+"}");
+            // System.out.println("{"+new String(ch, start, length)+"}");
         }
     }
 

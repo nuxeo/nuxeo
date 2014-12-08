@@ -27,7 +27,6 @@ import org.nuxeo.ecm.automation.client.model.DateParser;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class DateParserTest {
 

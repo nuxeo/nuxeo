@@ -13,10 +13,7 @@ class AnnotationsJenaSetup implements RuntimeServiceListener {
             Framework.removeListener(this);
         }
         final Properties properties = Framework.getProperties();
-        properties.setProperty("org.nuxeo.ecm.sql.jena.databaseType",
-                "HSQL");
-        properties.setProperty(
-                "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled",
-                "false");
+        properties.setProperty("org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
+        properties.setProperty("org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
     }
 }

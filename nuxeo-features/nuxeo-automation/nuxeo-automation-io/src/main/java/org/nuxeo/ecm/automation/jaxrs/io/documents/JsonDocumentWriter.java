@@ -88,22 +88,18 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     private HttpServletRequest servletRequest;
 
     @Override
-    public long getSize(DocumentModel arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(DocumentModel arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1L;
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
         return DocumentModel.class.isAssignableFrom(arg0);
     }
 
     @Override
-    public void writeTo(DocumentModel doc, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream out)
-            throws IOException, WebApplicationException {
+    public void writeTo(DocumentModel doc, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
+            MultivaluedMap<String, Object> arg5, OutputStream out) throws IOException, WebApplicationException {
         try {
             // schema names: dublincore, file, ... or *
             List<String> props = headers.getRequestHeader(DOCUMENT_PROPERTIES_HEADER);
@@ -118,77 +114,63 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
     }
 
-    public void writeDocument(OutputStream out, DocumentModel doc,
-            String[] schemas) throws IOException {
+    public void writeDocument(OutputStream out, DocumentModel doc, String[] schemas) throws IOException {
         writeDocument(out, doc, schemas, null);
     }
 
     /**
      * @since 5.6
      */
-    public void writeDocument(OutputStream out, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters)
-            throws IOException {
-        writeDocument(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc,
-                schemas, contextParameters, headers, servletRequest);
+    public void writeDocument(OutputStream out, DocumentModel doc, String[] schemas,
+            Map<String, String> contextParameters) throws IOException {
+        writeDocument(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc, schemas, contextParameters, headers,
+                servletRequest);
     }
 
-    public static void writeDocument(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, ServletRequest request) throws IOException {
+    public static void writeDocument(JsonGenerator jg, DocumentModel doc, String[] schemas, ServletRequest request)
+            throws IOException {
         writeDocument(jg, doc, schemas, null, request);
     }
 
     /**
      * @since 5.6
      */
-    public static void writeDocument(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters,
-            ServletRequest request) throws IOException {
+    public static void writeDocument(JsonGenerator jg, DocumentModel doc, String[] schemas,
+            Map<String, String> contextParameters, ServletRequest request) throws IOException {
         writeDocument(jg, doc, schemas, contextParameters, null, request);
     }
 
     /**
-     *
      * @param jg a ready to user JSON generator
      * @param doc the document to serialize
-     * @param schemas an array of schemas that must be serialized in the
-     *            properties map
+     * @param schemas an array of schemas that must be serialized in the properties map
      * @param contextParameters
      * @param headers
      * @param request the ServletRequest. If null blob URLs won't be generated.
-     *
      * @since 5.7.3
      */
-    public static void writeDocument(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters,
-            HttpHeaders headers, ServletRequest request) throws IOException {
+    public static void writeDocument(JsonGenerator jg, DocumentModel doc, String[] schemas,
+            Map<String, String> contextParameters, HttpHeaders headers, ServletRequest request) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "document");
         jg.writeStringField("repository", doc.getRepositoryName());
         jg.writeStringField("uid", doc.getId());
         jg.writeStringField("path", doc.getPathAsString());
         jg.writeStringField("type", doc.getType());
-        jg.writeStringField("state",
-                doc.getRef() != null ? doc.getCurrentLifeCycleState() : null);
-        jg.writeStringField("parentRef",
-                doc.getParentRef() != null ? doc.getParentRef().toString()
-                        : null);
+        jg.writeStringField("state", doc.getRef() != null ? doc.getCurrentLifeCycleState() : null);
+        jg.writeStringField("parentRef", doc.getParentRef() != null ? doc.getParentRef().toString() : null);
         jg.writeStringField("versionLabel", doc.getVersionLabel());
         jg.writeBooleanField("isCheckedOut", doc.isCheckedOut());
         Lock lock = doc.getLockInfo();
         if (lock != null) {
             jg.writeStringField("lockOwner", lock.getOwner());
-            jg.writeStringField(
-                    "lockCreated",
-                    ISODateTimeFormat.dateTime().print(
-                            new DateTime(lock.getCreated())));
+            jg.writeStringField("lockCreated", ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated())));
         }
         jg.writeStringField("title", doc.getTitle());
         try {
             Calendar cal = (Calendar) doc.getPropertyValue("dc:modified");
             if (cal != null) {
-                jg.writeStringField("lastModified",
-                        DateParser.formatW3CDateTime(cal.getTime()));
+                jg.writeStringField("lastModified", DateParser.formatW3CDateTime(cal.getTime()));
             }
         } catch (PropertyNotFoundException e) {
             // ignore
@@ -237,20 +219,17 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      * @throws ClientException
      * @throws IOException
      * @throws JsonGenerationException
-     *
      * @since 5.7.3
      */
-    protected static void writeRestContributions(JsonGenerator jg,
-            DocumentModel doc, HttpHeaders headers, ServletRequest request)
-            throws JsonGenerationException, IOException, ClientException {
+    protected static void writeRestContributions(JsonGenerator jg, DocumentModel doc, HttpHeaders headers,
+            ServletRequest request) throws JsonGenerationException, IOException, ClientException {
         ContentEnricherService rcs = Framework.getLocalService(ContentEnricherService.class);
-        RestEvaluationContext ec = new HeaderDocEvaluationContext(doc, headers,
-                request);
+        RestEvaluationContext ec = new HeaderDocEvaluationContext(doc, headers, request);
         rcs.writeContext(jg, ec);
     }
 
-    protected static void writeProperties(JsonGenerator jg, DocumentModel doc,
-            String schema, ServletRequest request) throws IOException {
+    protected static void writeProperties(JsonGenerator jg, DocumentModel doc, String schema, ServletRequest request)
+            throws IOException {
         DocumentPart part = doc.getPart(schema);
         if (part == null) {
             return;
@@ -263,10 +242,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
         String blobUrlPrefix = null;
         if (request != null) {
-            StringBuilder sb = new StringBuilder(
-                    VirtualHostHelper.getBaseURL(request));
-            sb.append("nxbigfile/").append(doc.getRepositoryName()).append("/").append(
-                    doc.getId()).append("/");
+            StringBuilder sb = new StringBuilder(VirtualHostHelper.getBaseURL(request));
+            sb.append("nxbigfile/").append(doc.getRepositoryName()).append("/").append(doc.getId()).append("/");
             blobUrlPrefix = sb.toString();
         }
 
@@ -277,13 +254,11 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     }
 
     /**
-     * Converts the value of the given core property to JSON format. The given
-     * filesBaseUrl is the baseUrl that can be used to locate blob content and
-     * is useful to generate blob urls.
+     * Converts the value of the given core property to JSON format. The given filesBaseUrl is the baseUrl that can be
+     * used to locate blob content and is useful to generate blob urls.
      */
-    public static void writePropertyValue(JsonGenerator jg, Property prop,
-            String filesBaseUrl) throws PropertyException,
-            JsonGenerationException, IOException {
+    public static void writePropertyValue(JsonGenerator jg, Property prop, String filesBaseUrl)
+            throws PropertyException, JsonGenerationException, IOException {
         if (prop.isScalar()) {
             writeScalarPropertyValue(jg, prop);
         } else if (prop.isList()) {
@@ -299,8 +274,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
     }
 
-    protected static void writeScalarPropertyValue(JsonGenerator jg,
-            Property prop) throws PropertyException, IOException {
+    protected static void writeScalarPropertyValue(JsonGenerator jg, Property prop) throws PropertyException,
+            IOException {
         org.nuxeo.ecm.core.schema.types.Type type = prop.getType();
         Object v = prop.getValue();
         if (v == null) {
@@ -322,9 +297,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
     }
 
-    protected static void writeListPropertyValue(JsonGenerator jg,
-            Property prop, String filesBaseUrl) throws PropertyException,
-            JsonGenerationException, IOException {
+    protected static void writeListPropertyValue(JsonGenerator jg, Property prop, String filesBaseUrl)
+            throws PropertyException, JsonGenerationException, IOException {
         jg.writeStartArray();
         if (prop instanceof ArrayProperty) {
             Object[] ar = (Object[]) prop.getValue();
@@ -345,8 +319,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         jg.writeEndArray();
     }
 
-    protected static void writeMapPropertyValue(JsonGenerator jg,
-            ComplexProperty prop, String filesBaseUrl)
+    protected static void writeMapPropertyValue(JsonGenerator jg, ComplexProperty prop, String filesBaseUrl)
             throws JsonGenerationException, IOException, PropertyException {
         jg.writeStartObject();
         for (Property p : prop.getChildren()) {
@@ -356,9 +329,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         jg.writeEndObject();
     }
 
-    protected static void writeBlobPropertyValue(JsonGenerator jg,
-            Property prop, String filesBaseUrl) throws PropertyException,
-            JsonGenerationException, IOException {
+    protected static void writeBlobPropertyValue(JsonGenerator jg, Property prop, String filesBaseUrl)
+            throws PropertyException, JsonGenerationException, IOException {
         Blob blob = (Blob) prop.getValue();
         if (blob == null) {
             jg.writeNull();
@@ -404,16 +376,14 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      * @return
      * @throws UnsupportedEncodingException
      * @throws PropertyException
-     *
      * @since 5.9.3
      */
-    private static String getBlobUrl(Property prop, String filesBaseUrl)
-            throws UnsupportedEncodingException, PropertyException {
+    private static String getBlobUrl(Property prop, String filesBaseUrl) throws UnsupportedEncodingException,
+            PropertyException {
         StringBuilder blobUrlBuilder = new StringBuilder(filesBaseUrl);
         blobUrlBuilder.append(prop.getSchema().getName());
         blobUrlBuilder.append(":");
-        String canonicalXPath = ComplexTypeImpl.canonicalXPath(prop.getPath().substring(
-                1));
+        String canonicalXPath = ComplexTypeImpl.canonicalXPath(prop.getPath().substring(1));
         blobUrlBuilder.append(canonicalXPath);
         blobUrlBuilder.append("/");
         String filename = ((Blob) prop.getValue()).getFilename();

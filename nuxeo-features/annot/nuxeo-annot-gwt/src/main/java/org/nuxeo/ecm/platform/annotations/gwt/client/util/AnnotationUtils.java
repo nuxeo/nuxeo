@@ -24,7 +24,6 @@ import com.google.gwt.user.client.Element;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class AnnotationUtils {
     private AnnotationUtils() {
@@ -35,8 +34,8 @@ public class AnnotationUtils {
         final Element div = DOM.createDiv();
         DOM.setInnerText(div, maybeHtml);
         String escapedHtml = DOM.getInnerHTML(div).replaceAll("<BR>", "\n")
-            // IE keep '&nbsp;' which will raise an error in the RDF backend
-            .replaceAll("&nbsp;", " ");
+        // IE keep '&nbsp;' which will raise an error in the RDF backend
+        .replaceAll("&nbsp;", " ");
         return escapedHtml;
     }
 

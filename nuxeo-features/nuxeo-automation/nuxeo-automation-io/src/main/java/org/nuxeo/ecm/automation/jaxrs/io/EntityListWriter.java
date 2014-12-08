@@ -29,9 +29,8 @@ import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Abstract class that knows how to serialize List of nuxeo entities. The
- * implementing classes should only implement {@link #getEntityType()} and
- * {@link #writeItem(JsonGenerator, Object)}
+ * Abstract class that knows how to serialize List of nuxeo entities. The implementing classes should only implement
+ * {@link #getEntityType()} and {@link #writeItem(JsonGenerator, Object)}
  *
  * @since 5.7.3
  */
@@ -39,19 +38,16 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
 
     /**
      * Returns the entity-type value of the list (ie: users, groups....)
-     *
      */
     protected abstract String getEntityType();
 
     /**
      * Writes the item in a JsonGenerator.
      */
-    protected abstract void writeItem(JsonGenerator jg, T item)
-            throws ClientException, IOException;
+    protected abstract void writeItem(JsonGenerator jg, T item) throws ClientException, IOException;
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (!List.class.isAssignableFrom(type)) {
             return false;
         }
@@ -74,8 +70,7 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
     }
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg, List<T> list)
-            throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg, List<T> list) throws IOException, ClientException {
         writePaginableHeader(jg, list);
         writeHeader(jg, list);
         jg.writeArrayFieldStart("entries");
@@ -85,30 +80,24 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
         jg.writeEndArray();
     }
 
-    protected void writePaginableHeader(JsonGenerator jg, List<T> list)
-            throws IOException {
+    protected void writePaginableHeader(JsonGenerator jg, List<T> list) throws IOException {
         if (list instanceof Paginable) {
             Paginable paginable = (Paginable) list;
             jg.writeBooleanField("isPaginable", true);
             jg.writeNumberField("resultsCount", paginable.getResultsCount());
             jg.writeNumberField("pageSize", paginable.getPageSize());
             jg.writeNumberField("maxPageSize", paginable.getMaxPageSize());
-            jg.writeNumberField("currentPageSize",
-                    paginable.getCurrentPageSize());
-            jg.writeNumberField("currentPageIndex",
-                    paginable.getCurrentPageIndex());
+            jg.writeNumberField("currentPageSize", paginable.getCurrentPageSize());
+            jg.writeNumberField("currentPageIndex", paginable.getCurrentPageIndex());
             jg.writeNumberField("numberOfPages", paginable.getNumberOfPages());
-            jg.writeBooleanField("isPreviousPageAvailable",
-                    paginable.isPreviousPageAvailable());
-            jg.writeBooleanField("isNextPageAvailable",
-                    paginable.isNextPageAvailable());
-            jg.writeBooleanField("isLastPageAvailable",
-                    paginable.isLastPageAvailable());
+            jg.writeBooleanField("isPreviousPageAvailable", paginable.isPreviousPageAvailable());
+            jg.writeBooleanField("isNextPageAvailable", paginable.isNextPageAvailable());
+            jg.writeBooleanField("isLastPageAvailable", paginable.isLastPageAvailable());
             jg.writeBooleanField("isSortable", paginable.isSortable());
             jg.writeBooleanField("hasError", paginable.hasError());
             jg.writeStringField("errorMessage", paginable.getErrorMessage());
-            if (paginable.hasAggregateSupport() && paginable.getAggregates() !=
-                    null && !paginable.getAggregates().isEmpty()) {
+            if (paginable.hasAggregateSupport() && paginable.getAggregates() != null
+                    && !paginable.getAggregates().isEmpty()) {
                 jg.writeObjectField("aggregations", paginable.getAggregates());
             }
         }
@@ -117,8 +106,7 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
     /**
      * Override this method to write into list header
      */
-    protected void writeHeader(JsonGenerator jg, List<T> list)
-            throws IOException {
+    protected void writeHeader(JsonGenerator jg, List<T> list) throws IOException {
     }
 
 }

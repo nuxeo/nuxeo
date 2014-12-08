@@ -42,10 +42,8 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client",
-                "OSGI-INF/layouts-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
-                "layouts-listing-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client", "OSGI-INF/layouts-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-listing-test-contrib.xml");
         service = Framework.getService(WebLayoutManager.class);
         assertNotNull(service);
     }
@@ -54,12 +52,10 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
     public void testRowSelectionFunctions() {
         // row selection needs to be tested against a layout with all rows
         // selected by default
-        Layout layout = service.getLayout(null, "search_listing_ajax",
-                "edit_columns", "", null, true);
+        Layout layout = service.getLayout(null, "search_listing_ajax", "edit_columns", "", null, true);
         assertNotNull(layout);
 
-        List<LayoutRow> selectedRows = LayoutTagLibrary.getSelectedRows(layout,
-                null, false);
+        List<LayoutRow> selectedRows = LayoutTagLibrary.getSelectedRows(layout, null, false);
         assertNotNull(selectedRows);
         assertEquals(3, selectedRows.size());
         assertEquals("title_link", selectedRows.get(0).getName());
@@ -75,19 +71,16 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
         assertEquals("modification_date", selectedRows.get(2).getName());
         assertEquals("lifecycle", selectedRows.get(3).getName());
 
-        List<LayoutRow> notSelectedRows = LayoutTagLibrary.getNotSelectedRows(
-                layout, null);
+        List<LayoutRow> notSelectedRows = LayoutTagLibrary.getNotSelectedRows(layout, null);
         assertEquals(3, notSelectedRows.size());
         assertEquals("description", notSelectedRows.get(0).getName());
         assertEquals("subjects", notSelectedRows.get(1).getName());
         assertEquals("rights", notSelectedRows.get(2).getName());
 
         // select some rows and re-do tests
-        List<String> selectedRowNames = Arrays.asList(new String[] {
-                "modification_date", "title_link", "description" });
+        List<String> selectedRowNames = Arrays.asList(new String[] { "modification_date", "title_link", "description" });
 
-        selectedRows = LayoutTagLibrary.getSelectedRows(layout,
-                selectedRowNames, false);
+        selectedRows = LayoutTagLibrary.getSelectedRows(layout, selectedRowNames, false);
         assertNotNull(selectedRows);
         assertEquals(3, selectedRows.size());
         assertEquals("modification_date", selectedRows.get(0).getName());
@@ -95,8 +88,7 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
         assertEquals("description", selectedRows.get(2).getName());
 
         // again with always selected rows
-        selectedRows = LayoutTagLibrary.getSelectedRows(layout,
-                selectedRowNames, true);
+        selectedRows = LayoutTagLibrary.getSelectedRows(layout, selectedRowNames, true);
         assertNotNull(selectedRows);
         assertEquals(4, selectedRows.size());
         assertEquals("selection", selectedRows.get(0).getName());
@@ -104,8 +96,7 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
         assertEquals("title_link", selectedRows.get(2).getName());
         assertEquals("description", selectedRows.get(3).getName());
 
-        notSelectedRows = LayoutTagLibrary.getNotSelectedRows(layout,
-                selectedRowNames);
+        notSelectedRows = LayoutTagLibrary.getNotSelectedRows(layout, selectedRowNames);
         assertEquals(3, notSelectedRows.size());
         assertEquals("lifecycle", notSelectedRows.get(0).getName());
         assertEquals("subjects", notSelectedRows.get(1).getName());

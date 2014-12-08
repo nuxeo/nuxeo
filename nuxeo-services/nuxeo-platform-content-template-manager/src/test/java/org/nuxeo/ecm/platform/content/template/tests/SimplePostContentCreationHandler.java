@@ -24,14 +24,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.content.template.service.PostContentCreationHandler;
 
 /**
- * Simple {@link PostContentCreationHandler} creating only one document in the
- * root.
+ * Simple {@link PostContentCreationHandler} creating only one document in the root.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class SimplePostContentCreationHandler implements
-        PostContentCreationHandler {
+public class SimplePostContentCreationHandler implements PostContentCreationHandler {
 
     public static final String DOC_TYPE = "Domain";
 
@@ -41,8 +39,7 @@ public class SimplePostContentCreationHandler implements
     public void execute(CoreSession session) {
         try {
             DocumentModel root = session.getRootDocument();
-            DocumentModel doc = session.createDocumentModel(
-                    root.getPathAsString(), DOC_NAME, DOC_TYPE);
+            DocumentModel doc = session.createDocumentModel(root.getPathAsString(), DOC_NAME, DOC_TYPE);
             session.createDocument(doc);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);

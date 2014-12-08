@@ -23,15 +23,14 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  */
 public class DuplicatedNameFixer implements EventListener {
 
-
     @Override
     public void handleEvent(Event event) throws ClientException {
         DocumentEventContext context = (DocumentEventContext) event.getContext();
-        Boolean destinationExists = (Boolean)context.getProperty(CoreEventConstants.DESTINATION_EXISTS);
+        Boolean destinationExists = (Boolean) context.getProperty(CoreEventConstants.DESTINATION_EXISTS);
         if (!destinationExists) {
             return;
         }
-        String name = (String)context.getProperty(CoreEventConstants.DESTINATION_NAME);
+        String name = (String) context.getProperty(CoreEventConstants.DESTINATION_NAME);
         name += '.' + String.valueOf(System.currentTimeMillis());
         context.setProperty(CoreEventConstants.DESTINATION_NAME, name);
     }

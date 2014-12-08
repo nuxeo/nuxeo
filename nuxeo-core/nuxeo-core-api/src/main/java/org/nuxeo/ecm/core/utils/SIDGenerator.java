@@ -17,11 +17,10 @@ package org.nuxeo.ecm.core.utils;
 /**
  * Generate session IDs.
  * <p>
- * Session IDs are long values that must be unique on the same JVM.
- * Each call of the {@link SIDGenerator#next()} method returns an
- * unique ID (unique relative to the current running JVM).
+ * Session IDs are long values that must be unique on the same JVM. Each call of the {@link SIDGenerator#next()} method
+ * returns an unique ID (unique relative to the current running JVM).
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class SIDGenerator {
 
@@ -29,18 +28,16 @@ public final class SIDGenerator {
 
     private static final int COUNT_OFFSET = 32;
 
-
     private SIDGenerator() {
     }
 
     /**
      * The long unique id is generated as follow:
      * <p>
-     * On the first 32 bits we put an integer value incremented at each call
-     * and that is reset to 0 when the it reaches the max integer range.
+     * On the first 32 bits we put an integer value incremented at each call and that is reset to 0 when the it reaches
+     * the max integer range.
      * <p>
-     * On the last 32 bits the most significant part of the current timestamp
-     * in milliseconds.
+     * On the last 32 bits the most significant part of the current timestamp in milliseconds.
      *
      * @return the next unique id in this JVM
      */

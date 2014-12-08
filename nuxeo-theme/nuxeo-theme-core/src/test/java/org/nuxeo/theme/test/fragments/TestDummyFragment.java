@@ -28,20 +28,16 @@ public class TestDummyFragment extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
     }
 
     @Test
     public void testVisibility() {
         Fragment fragment = FragmentFactory.create("dummy fragment");
-        PerspectiveType perspective1 = new PerspectiveType("view_mode",
-                "View mode");
-        PerspectiveType perspective2 = new PerspectiveType("edit_mode",
-                "Edit mode");
+        PerspectiveType perspective1 = new PerspectiveType("view_mode", "View mode");
+        PerspectiveType perspective2 = new PerspectiveType("edit_mode", "Edit mode");
 
         // fragments are visible in all perspectives by default
         assertTrue(fragment.isVisibleInPerspective(perspective1));

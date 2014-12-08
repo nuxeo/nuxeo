@@ -15,14 +15,13 @@ import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RegexSegmentMatcher extends SegmentMatcher {
 
     protected final Pattern pattern;
 
     public RegexSegmentMatcher(String regex) {
-        this (Pattern.compile(regex));
+        this(Pattern.compile(regex));
     }
 
     public RegexSegmentMatcher(Pattern pattern) {
@@ -36,6 +35,6 @@ public class RegexSegmentMatcher extends SegmentMatcher {
 
     @Override
     public String toString() {
-        return "("+pattern.toString()+")";
+        return "(" + pattern.toString() + ")";
     }
 }

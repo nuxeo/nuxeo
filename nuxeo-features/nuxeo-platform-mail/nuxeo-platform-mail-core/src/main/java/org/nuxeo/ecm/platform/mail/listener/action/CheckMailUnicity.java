@@ -31,10 +31,8 @@ import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
 
 /**
- * This class checks whether a mail is a duplicate of a previously stored mail
- * document. The mail is considered a duplicate if the sender, sending_date,
- * title, text and containing folder are the same. This should fit for most
- * uses.
+ * This class checks whether a mail is a duplicate of a previously stored mail document. The mail is considered a
+ * duplicate if the sender, sending_date, title, text and containing folder are the same. This should fit for most uses.
  *
  * @author <a href="mailto:christophe.capon@vilogia.fr">Christophe Capon</a>
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
@@ -66,8 +64,7 @@ public class CheckMailUnicity extends AbstractMailAction {
         // If they have been deleted we do not reinject them in the
         // mail folder
         StringBuilder query = new StringBuilder();
-        query.append(String.format(MAIL_SEARCH_QUERY,
-                NXQL.escapeString(messageId),
+        query.append(String.format(MAIL_SEARCH_QUERY, NXQL.escapeString(messageId),
                 NXQL.escapeString(parentPath.toString())));
 
         DocumentModelList duplicatedMail = session.query(query.toString());

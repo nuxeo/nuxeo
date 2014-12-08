@@ -27,8 +27,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestDependencyTree {
 
@@ -77,7 +76,6 @@ public class TestDependencyTree {
         assertFalse(dt.isRegistered("c"));
         assertFalse(dt.isResolved("c"));
         assertNull(dt.get("c"));
-
 
         dt.add("c", "c", "a");
 

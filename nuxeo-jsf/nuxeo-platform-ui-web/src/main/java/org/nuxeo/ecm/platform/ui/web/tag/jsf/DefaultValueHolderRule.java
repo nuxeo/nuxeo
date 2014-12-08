@@ -28,12 +28,11 @@ import javax.faces.view.facelets.TagAttribute;
 import org.nuxeo.ecm.platform.ui.web.binding.DefaultValueExpression;
 
 /**
- * Value holder rule, handling a default value using a
- * {@link DefaultValueExpression} when a "defaultValue" attribute is set on the
- * tag.
+ * Value holder rule, handling a default value using a {@link DefaultValueExpression} when a "defaultValue" attribute is
+ * set on the tag.
  * <p>
- * Assumes the standard value holder rule has already been processed, so that
- * the corresponding value expression is already available on the component.
+ * Assumes the standard value holder rule has already been processed, so that the corresponding value expression is
+ * already available on the component.
  *
  * @since 5.7.3
  */
@@ -66,17 +65,14 @@ public class DefaultValueHolderRule extends MetaRule {
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
             UIComponent comp = (UIComponent) instance;
-            ValueExpression defaultVe = attr.getValueExpression(ctx,
-                    Object.class);
+            ValueExpression defaultVe = attr.getValueExpression(ctx, Object.class);
             ValueExpression ve = comp.getValueExpression("value");
-            comp.setValueExpression("value", new DefaultValueExpression(ve,
-                    defaultVe));
+            comp.setValueExpression("value", new DefaultValueExpression(ve, defaultVe));
         }
     }
 
     @Override
-    public Metadata applyRule(String name, TagAttribute attribute,
-            MetadataTarget meta) {
+    public Metadata applyRule(String name, TagAttribute attribute, MetadataTarget meta) {
         if (meta.isTargetInstanceOf(ValueHolder.class)) {
 
             if ("defaultValue".equals(name)) {

@@ -17,7 +17,7 @@ package org.nuxeo.ecm.core.api.adapter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface DocumentAdapterFactory {
 

@@ -46,8 +46,7 @@ public class Database implements Serializable {
     public Table addTable(String name) throws IllegalArgumentException {
         String physicalName = dialect.getTableName(name);
         if (!physicalTables.add(physicalName)) {
-            throw new IllegalArgumentException("Duplicate table name: "
-                    + physicalName);
+            throw new IllegalArgumentException("Duplicate table name: " + physicalName);
         }
         Table table = new TableImpl(dialect, physicalName, name);
         tables.put(name, table);

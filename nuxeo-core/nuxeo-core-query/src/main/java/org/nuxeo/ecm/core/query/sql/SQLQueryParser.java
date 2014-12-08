@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.query.sql.parser.parser;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class SQLQueryParser {
 
@@ -51,8 +50,7 @@ public final class SQLQueryParser {
             query.setQueryString(string);
             return query;
         } catch (QueryParseException e) {
-            throw new QueryParseException(e.getMessage() + " in query: "
-                    + string, e);
+            throw new QueryParseException(e.getMessage() + " in query: " + string, e);
         }
     }
 

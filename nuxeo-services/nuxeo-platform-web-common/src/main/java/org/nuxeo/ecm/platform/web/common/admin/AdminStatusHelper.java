@@ -63,7 +63,7 @@ public class AdminStatusHelper {
     }
 
     public static boolean displayAdminMessage() {
-        return adminMessageActivated && adminMessage!=null && adminMessage.length()>0;
+        return adminMessageActivated && adminMessage != null && adminMessage.length() > 0;
     }
 
     public static boolean accessRestrictedToAdministrators() {

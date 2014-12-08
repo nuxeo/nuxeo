@@ -20,7 +20,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
  * @author matic
- *
  */
 public class ManagementObject extends DefaultObject {
 

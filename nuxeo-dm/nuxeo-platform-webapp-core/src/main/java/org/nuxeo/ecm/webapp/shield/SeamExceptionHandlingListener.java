@@ -39,18 +39,15 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @author arussel
  */
-public class SeamExceptionHandlingListener extends
-        NullExceptionHandlingListener {
+public class SeamExceptionHandlingListener extends NullExceptionHandlingListener {
 
     private static final Log log = LogFactory.getLog(SeamExceptionHandlingListener.class);
 
     /**
-     * Initiates a mock faces context when needed and tries to restore current
-     * conversation
+     * Initiates a mock faces context when needed and tries to restore current conversation
      */
     @Override
-    public void beforeSetErrorPageAttribute(Throwable t,
-            HttpServletRequest request, HttpServletResponse response)
+    public void beforeSetErrorPageAttribute(Throwable t, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         // cut/paste from seam Exception filter.
         // we recreate the seam context to be able to use the messages.
@@ -83,13 +80,10 @@ public class SeamExceptionHandlingListener extends
             // when released, the mock faces context is nullified, and this
             // leads to errors like in the following stack trace:
             /**
-             * java.lang.NullPointerException: FacesContext is null at
-             * org.ajax4jsf
+             * java.lang.NullPointerException: FacesContext is null at org.ajax4jsf
              * .context.AjaxContext.getCurrentInstance(AjaxContext.java:159) at
-             * org.ajax4jsf.context.AjaxContext.getCurrentInstance(AjaxContext.
-             * java:144) at
-             * org.ajax4jsf.component.AjaxViewRoot.getViewId(AjaxViewRoot
-             * .java:580) at
+             * org.ajax4jsf.context.AjaxContext.getCurrentInstance(AjaxContext. java:144) at
+             * org.ajax4jsf.component.AjaxViewRoot.getViewId(AjaxViewRoot .java:580) at
              * com.sun.faces.lifecycle.Phase.doPhase(Phase.java:104)
              */
             log.debug("Using existing faces context for exception handling");
@@ -131,8 +125,8 @@ public class SeamExceptionHandlingListener extends
      * Rollbacks transaction if necessary
      */
     @Override
-    public void startHandling(Throwable t, HttpServletRequest request,
-            HttpServletResponse response) throws ServletException {
+    public void startHandling(Throwable t, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
         if (TransactionHelper.isTransactionActive()) {
             TransactionHelper.setTransactionRollbackOnly();
         }
@@ -140,12 +134,11 @@ public class SeamExceptionHandlingListener extends
 
     /**
      * Cleans up context created in
-     * {@link #beforeSetErrorPageAttribute(Throwable, HttpServletRequest, HttpServletResponse)}
-     * when needed.
+     * {@link #beforeSetErrorPageAttribute(Throwable, HttpServletRequest, HttpServletResponse)} when needed.
      */
     @Override
-    public void afterDispatch(Throwable t, HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException {
+    public void afterDispatch(Throwable t, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
         FacesContext context = FacesContext.getCurrentInstance();
         // XXX: it's not clear what should be done here: current tests
         // depending on the faces context just allow to avoid errors after
@@ -154,45 +147,32 @@ public class SeamExceptionHandlingListener extends
             // we'll get the following stack trace:
             /**
              * java.lang.IllegalStateException: No active application scope at
-             * org.jboss.seam.core.Init.instance(Init.java:76) at
-             * org.jboss.seam.
-             * jsf.SeamPhaseListener.handleTransactionsAfterPhase(
-             * SeamPhaseListener.java:330) at
-             * org.jboss.seam.jsf.SeamPhaseListener
-             * .afterServletPhase(SeamPhaseListener.java:241) at
-             * org.jboss.seam.jsf
+             * org.jboss.seam.core.Init.instance(Init.java:76) at org.jboss.seam.
+             * jsf.SeamPhaseListener.handleTransactionsAfterPhase( SeamPhaseListener.java:330) at
+             * org.jboss.seam.jsf.SeamPhaseListener .afterServletPhase(SeamPhaseListener.java:241) at org.jboss.seam.jsf
              * .SeamPhaseListener.afterPhase(SeamPhaseListener.java:192) at
-             * com.sun.faces.lifecycle.Phase.handleAfterPhase(Phase.java:175)
-             * at com.sun.faces.lifecycle.Phase.doPhase(Phase.java:114) at
-             * com.sun.faces
+             * com.sun.faces.lifecycle.Phase.handleAfterPhase(Phase.java:175) at
+             * com.sun.faces.lifecycle.Phase.doPhase(Phase.java:114) at com.sun.faces
              * .lifecycle.LifecycleImpl.render(LifecycleImpl.java:139)
              */
             FacesLifecycle.endRequest(context.getExternalContext());
             // do not release an actual FacesContext that we did not create,
             // otherwise we get the following stack trace:
             /**
-             * java.lang.IllegalStateException at
-             * com.sun.faces.context.FacesContextImpl
-             * .assertNotReleased(FacesContextImpl.java:395) at
-             * com.sun.faces.context
-             * .FacesContextImpl.getExternalContext(FacesContextImpl.java:147)
-             * at com.sun.faces.util.RequestStateManager.getStateMap(
-             * RequestStateManager.java:276) at
-             * com.sun.faces.util.RequestStateManager
-             * .remove(RequestStateManager.java:243) at
-             * com.sun.faces.context.FacesContextImpl
-             * .release(FacesContextImpl.java:345)
+             * java.lang.IllegalStateException at com.sun.faces.context.FacesContextImpl
+             * .assertNotReleased(FacesContextImpl.java:395) at com.sun.faces.context
+             * .FacesContextImpl.getExternalContext(FacesContextImpl.java:147) at
+             * com.sun.faces.util.RequestStateManager.getStateMap( RequestStateManager.java:276) at
+             * com.sun.faces.util.RequestStateManager .remove(RequestStateManager.java:243) at
+             * com.sun.faces.context.FacesContextImpl .release(FacesContextImpl.java:345)
              */
             context.release();
         }
     }
 
-    protected MockFacesContext createFacesContext(HttpServletRequest request,
-            HttpServletResponse response) {
-        MockFacesContext mockFacesContext = new MockFacesContext(
-                new MockExternalContext(
-                        request.getSession().getServletContext(), request,
-                        response), new MockApplication());
+    protected MockFacesContext createFacesContext(HttpServletRequest request, HttpServletResponse response) {
+        MockFacesContext mockFacesContext = new MockFacesContext(new MockExternalContext(
+                request.getSession().getServletContext(), request, response), new MockApplication());
         mockFacesContext.setViewRoot(new UIViewRoot());
         return mockFacesContext;
     }

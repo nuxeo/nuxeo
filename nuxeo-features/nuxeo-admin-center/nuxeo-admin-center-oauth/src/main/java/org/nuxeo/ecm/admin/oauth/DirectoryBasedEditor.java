@@ -43,8 +43,7 @@ public abstract class DirectoryBasedEditor implements Serializable {
 
     public DocumentModel getCreationEntry() throws PropertyException {
         if (creationEntry == null) {
-            creationEntry = BaseSession.createEntryModel(null, getSchemaName(),
-                    null, null);
+            creationEntry = BaseSession.createEntryModel(null, getSchemaName(), null, null);
         }
         return creationEntry;
     }

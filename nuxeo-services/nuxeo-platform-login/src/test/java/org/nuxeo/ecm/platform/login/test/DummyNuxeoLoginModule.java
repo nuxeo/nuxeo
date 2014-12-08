@@ -56,11 +56,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
- * Dummy login module for TEST PURPOSE ONLY that will not check user/password
- * against usermanager so that any username/password will authenticate a dummy
- * user. The aim is to not use the user manager. Useful for directories tests
- * where it's not possible to use the usermanager in the test due to the cyclic
- * dependency between projects
+ * Dummy login module for TEST PURPOSE ONLY that will not check user/password against usermanager so that any
+ * username/password will authenticate a dummy user. The aim is to not use the user manager. Useful for directories
+ * tests where it's not possible to use the usermanager in the test due to the cyclic dependency between projects
  *
  * @since 6.0
  */
@@ -81,8 +79,8 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     public final List<String> groupsToAdd = new ArrayList<String>();
 
     @Override
-    public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map<String, ?> sharedState, Map<String, ?> options) {
+    public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
+            Map<String, ?> options) {
         // explicit cast to match the direct superclass method declaration
         // (JBoss implementation)
         // rather than the newer (jdk1.5) LoginModule (... Map<String,?>...)
@@ -136,8 +134,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
         // **** init the callbacks
         // Std login/password callbacks
-        NameCallback nc = new NameCallback("Username: ",
-                SecurityConstants.ANONYMOUS);
+        NameCallback nc = new NameCallback("Username: ", SecurityConstants.ANONYMOUS);
         PasswordCallback pc = new PasswordCallback("Password: ", false);
 
         // Nuxeo specific cb : handle LoginPlugin initialization
@@ -166,8 +163,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         } catch (UnsupportedCallbackException e) {
             log.debug("UserIdentificationInfoCallback is not supported");
         } catch (IOException e) {
-            log.warn("Error calling callback handler with UserIdentificationInfoCallback : "
-                    + e.getMessage());
+            log.warn("Error calling callback handler with UserIdentificationInfoCallback : " + e.getMessage());
         }
 
         Principal principal = null;
@@ -177,8 +173,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             CallbackResult result = loginPluginManager.handleSpecifcCallbacks(callbackHandler);
 
             if (result != null && result.cb_handled) {
-                if (result.userIdent != null
-                        && result.userIdent.containsValidIdentity()) {
+                if (result.userIdent != null && result.userIdent.containsValidIdentity()) {
                     userIdent = result.userIdent;
                     cb_handled = true;
                 } else {
@@ -197,12 +192,10 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
                 callbackHandler.handle(new Callback[] { nc, pc });
                 cb_handled = true;
             } catch (UnsupportedCallbackException e) {
-                LoginException le = new LoginException(
-                        "Authentications Failure - " + e.getMessage());
+                LoginException le = new LoginException("Authentications Failure - " + e.getMessage());
                 le.initCause(e);
             } catch (IOException e) {
-                LoginException le = new LoginException(
-                        "Authentications Failure - " + e.getMessage());
+                LoginException le = new LoginException("Authentications Failure - " + e.getMessage());
                 le.initCause(e);
             }
         }
@@ -213,10 +206,8 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
                 NuxeoPrincipal nxp = validateUserIdentity(userIdent);
 
                 if (nxp != null) {
-                    sharedState.put("javax.security.auth.login.name",
-                            nxp.getName());
-                    sharedState.put("javax.security.auth.login.password",
-                            userIdent);
+                    sharedState.put("javax.security.auth.login.name", nxp.getName());
+                    sharedState.put("javax.security.auth.login.password", userIdent);
                 }
                 return nxp;
             }
@@ -240,8 +231,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
                     return null;
                 }
                 char[] password = pc.getPassword();
-                return validateUsernamePassword(username,
-                        password != null ? new String(password) : null);
+                return validateUsernamePassword(username, password != null ? new String(password) : null);
             }
         } catch (LoginException e) {
             throw e;
@@ -263,8 +253,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
         if (RestrictedLoginHelper.isRestrictedModeActivated()) {
             if (!identity.isAdministrator()) {
-                throw new LoginException(
-                        "Only Administrators can login when restricted mode is activated");
+                throw new LoginException("Only Administrators can login when restricted mode is activated");
             }
         }
 
@@ -291,7 +280,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             }
 
             // don't retrieve from usernamanger, create a dummy principal
-            principal = new NuxeoPrincipalImpl(username,false,isAdmin);
+            principal = new NuxeoPrincipalImpl(username, false, isAdmin);
 
             String principalId = String.valueOf(random.nextLong());
             principal.setPrincipalId(principalId);
@@ -299,15 +288,13 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             return principal;
         } catch (Exception e) {
             log.error("createIdentity failed", e);
-            LoginException le = new LoginException(
-                    "createIdentity failed for user " + username);
+            LoginException le = new LoginException("createIdentity failed for user " + username);
             le.initCause(e);
             throw le;
         }
     }
 
-    protected NuxeoPrincipal validateUserIdentity(
-            UserIdentificationInfo userIdent) throws LoginException {
+    protected NuxeoPrincipal validateUserIdentity(UserIdentificationInfo userIdent) throws LoginException {
         String loginPluginName = userIdent.getLoginPluginName();
         if (loginPluginName == null) {
             // we don't use a specific plugin
@@ -334,8 +321,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
                 if (init) {
                     lpd.setInitialized(true);
                 } else {
-                    log.error("Unable to initialize LoginModulePlugin "
-                            + lp.getName());
+                    log.error("Unable to initialize LoginModulePlugin " + lp.getName());
                     return null;
                 }
             }
@@ -349,8 +335,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         }
     }
 
-    protected NuxeoPrincipal validateUsernamePassword(String username,
-            String password) throws Exception {
+    protected NuxeoPrincipal validateUsernamePassword(String username, String password) throws Exception {
         // Dummy login module will not check against the user manager
         return (NuxeoPrincipal) createIdentity(username);
     }

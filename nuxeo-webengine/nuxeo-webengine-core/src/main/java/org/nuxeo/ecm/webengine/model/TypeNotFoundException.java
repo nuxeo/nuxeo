@@ -19,17 +19,15 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TypeNotFoundException extends TypeException {
 
     private static final long serialVersionUID = 1L;
 
     public TypeNotFoundException(String type) {
-        super("Type not found: "+type);
+        super("Type not found: " + type);
     }
 
 }

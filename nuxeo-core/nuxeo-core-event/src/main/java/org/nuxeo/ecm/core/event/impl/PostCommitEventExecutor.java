@@ -35,11 +35,10 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Executor that passes an event bundle to post-commit asynchronous listeners
- * (in a separated thread in order to manage transactions).
+ * Executor that passes an event bundle to post-commit asynchronous listeners (in a separated thread in order to manage
+ * transactions).
  * <p>
- * Allows a bulk mode where transaction management is not per-listener done once
- * for the whole set of listeners.
+ * Allows a bulk mode where transaction management is not per-listener done once for the whole set of listeners.
  */
 public class PostCommitEventExecutor {
 
@@ -70,8 +69,7 @@ public class PostCommitEventExecutor {
 
         public NamedThreadFactory(String prefix) {
             SecurityManager sm = System.getSecurityManager();
-            group = sm == null ? Thread.currentThread().getThreadGroup()
-                    : sm.getThreadGroup();
+            group = sm == null ? Thread.currentThread().getThreadGroup() : sm.getThreadGroup();
             this.prefix = prefix;
         }
 
@@ -89,10 +87,8 @@ public class PostCommitEventExecutor {
         // use as much thread as needed up to MAX_POOL_SIZE
         // keep them alive a moment for reuse
         // have all threads torn down when there is no work to do
-        ThreadFactory threadFactory = new NamedThreadFactory(
-                "Nuxeo-Event-PostCommit-");
-        executor = new ThreadPoolExecutor(0, MAX_POOL_SIZE,
-                KEEP_ALIVE_TIME_SECOND, TimeUnit.SECONDS,
+        ThreadFactory threadFactory = new NamedThreadFactory("Nuxeo-Event-PostCommit-");
+        executor = new ThreadPoolExecutor(0, MAX_POOL_SIZE, KEEP_ALIVE_TIME_SECOND, TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>(), threadFactory);
         ((ThreadPoolExecutor) executor).allowCoreThreadTimeOut(true);
     }
@@ -109,15 +105,12 @@ public class PostCommitEventExecutor {
         run(listeners, event, DEFAULT_TIMEOUT_MS, false);
     }
 
-    public void runBulk(List<EventListenerDescriptor> listeners,
-            EventBundle event) {
-        String timeoutSeconds = Framework.getProperty(BULK_TIMEOUT_PROP,
-                DEFAULT_BULK_TIMEOUT_S);
+    public void runBulk(List<EventListenerDescriptor> listeners, EventBundle event) {
+        String timeoutSeconds = Framework.getProperty(BULK_TIMEOUT_PROP, DEFAULT_BULK_TIMEOUT_S);
         run(listeners, event, Long.parseLong(timeoutSeconds) * 1000, true);
     }
 
-    public void run(List<EventListenerDescriptor> listeners,
-            EventBundle bundle, long timeoutMillis, boolean bulk) {
+    public void run(List<EventListenerDescriptor> listeners, EventBundle bundle, long timeoutMillis, boolean bulk) {
         // check that there's at list one listener interested
         boolean some = false;
         for (EventListenerDescriptor listener : listeners) {
@@ -134,13 +127,12 @@ public class PostCommitEventExecutor {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Events postcommit execution starting with timeout %sms%s",
+            log.debug(String.format("Events postcommit execution starting with timeout %sms%s",
                     Long.valueOf(timeoutMillis), bulk ? " in bulk mode" : ""));
         }
 
-        Callable<Boolean> callable = !bulk ? new EventBundleRunner(listeners,
-                bundle) : new EventBundleBulkRunner(listeners, bundle);
+        Callable<Boolean> callable = !bulk ? new EventBundleRunner(listeners, bundle) : new EventBundleBulkRunner(
+                listeners, bundle);
         FutureTask<Boolean> futureTask = new FutureTask<Boolean>(callable);
         try {
             executor.execute(futureTask);
@@ -161,8 +153,7 @@ public class PostCommitEventExecutor {
             futureTask.cancel(true); // mayInterruptIfRunning=true
         } catch (TimeoutException e) {
             if (!bulk) {
-                log.warn(String.format(
-                        "Events postcommit execution exceeded timeout of %sms, leaving thread running",
+                log.warn(String.format("Events postcommit execution exceeded timeout of %sms, leaving thread running",
                         Long.valueOf(timeoutMillis)));
                 // don't cancel task, let it run
             } else {
@@ -172,9 +163,7 @@ public class PostCommitEventExecutor {
                 futureTask.cancel(true); // mayInterruptIfRunning=true
             }
         } catch (ExecutionException e) {
-            log.error(
-                    "Events postcommit execution encountered unexpected exception",
-                    e.getCause());
+            log.error("Events postcommit execution encountered unexpected exception", e.getCause());
         }
 
         if (log.isDebugEnabled()) {
@@ -185,15 +174,13 @@ public class PostCommitEventExecutor {
     /**
      * Lets the listeners process the event bundle.
      * <p>
-     * For each listener, the event bundle is reconnected to a session and a
-     * transaction is started.
+     * For each listener, the event bundle is reconnected to a session and a transaction is started.
      * <p>
-     * In case of exception in a listener, the transaction is rolled back for
-     * that listener but processing continues for the other listeners.
+     * In case of exception in a listener, the transaction is rolled back for that listener but processing continues for
+     * the other listeners.
      * <p>
-     * In case of timeout, an error is logged but processing continues for the
-     * other listeners (the thread is left running separately from the main
-     * thread that initiated post-commit processing).
+     * In case of timeout, an error is logged but processing continues for the other listeners (the thread is left
+     * running separately from the main thread that initiated post-commit processing).
      */
     protected static class EventBundleRunner implements Callable<Boolean> {
 
@@ -201,8 +188,7 @@ public class PostCommitEventExecutor {
 
         protected final EventBundle bundle;
 
-        public EventBundleRunner(List<EventListenerDescriptor> listeners,
-                EventBundle bundle) {
+        public EventBundleRunner(List<EventListenerDescriptor> listeners, EventBundle bundle) {
             this.listeners = listeners;
             this.bundle = bundle;
         }
@@ -210,8 +196,7 @@ public class PostCommitEventExecutor {
         @Override
         public Boolean call() {
             if (log.isDebugEnabled()) {
-                log.debug("Events postcommit execution starting in thread: "
-                        + Thread.currentThread().getName());
+                log.debug("Events postcommit execution starting in thread: " + Thread.currentThread().getName());
             }
             long t0 = System.currentTimeMillis();
             EventStats stats = Framework.getLocalService(EventStats.class);
@@ -222,8 +207,7 @@ public class PostCommitEventExecutor {
                     continue;
                 }
                 if (log.isDebugEnabled()) {
-                    log.debug("Events postcommit execution start for listener: "
-                            + listener.getName());
+                    log.debug("Events postcommit execution start for listener: " + listener.getName());
                 }
                 long t1 = System.currentTimeMillis();
 
@@ -232,27 +216,23 @@ public class PostCommitEventExecutor {
                 // transaction timeout is managed by the FutureTask
                 boolean tx = TransactionHelper.startTransaction();
                 try {
-                    reconnected = new ReconnectedEventBundleImpl(filtered,
-                            listeners.toString());
+                    reconnected = new ReconnectedEventBundleImpl(filtered, listeners.toString());
 
                     listener.asPostCommitListener().handleEvent(reconnected);
 
                     if (Thread.currentThread().isInterrupted()) {
-                        log.error("Events postcommit execution interrupted for listener: "
-                                + listener.getName());
+                        log.error("Events postcommit execution interrupted for listener: " + listener.getName());
                         ok = false;
                     } else {
                         ok = true;
                     }
                 } catch (ClientException e) {
-                    log.error(
-                            "Events postcommit execution encountered exception for listener: "
-                                    + listener.getName(), e);
+                    log.error("Events postcommit execution encountered exception for listener: " + listener.getName(),
+                            e);
                     // don't rethrow, but rollback (ok=false) and continue loop
                 } catch (RuntimeException e) {
-                    log.error(
-                            "Events postcommit execution encountered exception for listener: "
-                                    + listener.getName(), e);
+                    log.error("Events postcommit execution encountered exception for listener: " + listener.getName(),
+                            e);
                     // don't rethrow, but rollback (ok=false) and continue loop
                 } finally {
                     try {
@@ -268,13 +248,10 @@ public class PostCommitEventExecutor {
                             TransactionHelper.commitOrRollbackTransaction();
                         }
                         if (stats != null) {
-                            stats.logAsyncExec(listener,
-                                    System.currentTimeMillis() - t1);
+                            stats.logAsyncExec(listener, System.currentTimeMillis() - t1);
                         }
                         if (log.isDebugEnabled()) {
-                            log.debug("Events postcommit execution end for listener: "
-                                    + listener.getName()
-                                    + " in "
+                            log.debug("Events postcommit execution end for listener: " + listener.getName() + " in "
                                     + (System.currentTimeMillis() - t1) + "ms");
                         }
                     }
@@ -282,8 +259,7 @@ public class PostCommitEventExecutor {
                 // even if interrupted due to timeout, we continue the loop
             }
             if (log.isDebugEnabled()) {
-                log.debug("Events postcommit execution finished in "
-                        + (System.currentTimeMillis() - t0) + "ms");
+                log.debug("Events postcommit execution finished in " + (System.currentTimeMillis() - t0) + "ms");
             }
             return Boolean.TRUE; // no error to report
         }
@@ -292,11 +268,9 @@ public class PostCommitEventExecutor {
     /**
      * Lets the listeners process the event bundle in bulk mode.
      * <p>
-     * The event bundle is reconnected to a single session and a single
-     * transaction is started for all the listeners.
+     * The event bundle is reconnected to a single session and a single transaction is started for all the listeners.
      * <p>
-     * In case of exception in a listener, the transaction is rolled back and
-     * processing stops.
+     * In case of exception in a listener, the transaction is rolled back and processing stops.
      * <p>
      * In case of timeout, the transaction is rolled back and processing stops.
      */
@@ -306,8 +280,7 @@ public class PostCommitEventExecutor {
 
         protected final EventBundle bundle;
 
-        public EventBundleBulkRunner(List<EventListenerDescriptor> listeners,
-                EventBundle bundle) {
+        public EventBundleBulkRunner(List<EventListenerDescriptor> listeners, EventBundle bundle) {
             this.listeners = listeners;
             this.bundle = bundle;
         }
@@ -315,8 +288,7 @@ public class PostCommitEventExecutor {
         @Override
         public Boolean call() {
             if (log.isDebugEnabled()) {
-                log.debug("Events postcommit bulk execution starting in thread: "
-                        + Thread.currentThread().getName());
+                log.debug("Events postcommit bulk execution starting in thread: " + Thread.currentThread().getName());
             }
             long t0 = System.currentTimeMillis();
 
@@ -326,16 +298,14 @@ public class PostCommitEventExecutor {
             // transaction timeout is managed by the FutureTask
             boolean tx = TransactionHelper.startTransaction();
             try {
-                reconnected = new ReconnectedEventBundleImpl(bundle,
-                        listeners.toString());
+                reconnected = new ReconnectedEventBundleImpl(bundle, listeners.toString());
                 for (EventListenerDescriptor listener : listeners) {
                     EventBundle filtered = listener.filterBundle(reconnected);
                     if (filtered.isEmpty()) {
                         continue;
                     }
                     if (log.isDebugEnabled()) {
-                        log.debug("Events postcommit bulk execution start for listener: "
-                                + listener.getName());
+                        log.debug("Events postcommit bulk execution start for listener: " + listener.getName());
                     }
                     long t1 = System.currentTimeMillis();
                     try {
@@ -344,8 +314,7 @@ public class PostCommitEventExecutor {
 
                         if (Thread.currentThread().isInterrupted()) {
                             log.error("Events postcommit bulk execution interrupted for listener: "
-                                    + listener.getName()
-                                    + ", will rollback and abort bulk processing");
+                                    + listener.getName() + ", will rollback and abort bulk processing");
                             interrupt = true;
                         }
                     } catch (ClientException e) {
@@ -360,10 +329,8 @@ public class PostCommitEventExecutor {
                         return Boolean.FALSE; // report error
                     } finally {
                         if (log.isDebugEnabled()) {
-                            log.debug("Events postcommit bulk execution end for listener: "
-                                    + listener.getName()
-                                    + " in "
-                                    + (System.currentTimeMillis() - t1) + "ms");
+                            log.debug("Events postcommit bulk execution end for listener: " + listener.getName()
+                                    + " in " + (System.currentTimeMillis() - t1) + "ms");
                         }
                     }
                     if (interrupt) {
@@ -386,8 +353,8 @@ public class PostCommitEventExecutor {
                     }
                 }
                 if (log.isDebugEnabled()) {
-                    log.debug("Events postcommit bulk execution finished in "
-                            + (System.currentTimeMillis() - t0) + "ms");
+                    log.debug("Events postcommit bulk execution finished in " + (System.currentTimeMillis() - t0)
+                            + "ms");
                 }
             }
             return Boolean.TRUE; // no error to report

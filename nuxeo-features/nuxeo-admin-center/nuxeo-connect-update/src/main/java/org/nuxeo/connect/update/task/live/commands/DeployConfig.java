@@ -44,13 +44,11 @@ public class DeployConfig extends DeployConfigPlaceholder {
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         try {
             Framework.getRuntime().getContext().deploy(file.toURI().toURL());
         } catch (IOException e) {
-            throw new PackageException("Failed to deploy configuration file "
-                    + file, e);
+            throw new PackageException("Failed to deploy configuration file " + file, e);
         }
         return new UndeployConfig(file);
     }

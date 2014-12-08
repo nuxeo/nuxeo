@@ -63,8 +63,7 @@ public class Button {
         }
         view.put("label", label);
 
-        sb.append(String.format("<ins class=\"view\">%s</ins>",
-                Utils.toJson(view)));
+        sb.append(String.format("<ins class=\"view\">%s</ins>", Utils.toJson(view)));
         return sb.toString();
     }
 

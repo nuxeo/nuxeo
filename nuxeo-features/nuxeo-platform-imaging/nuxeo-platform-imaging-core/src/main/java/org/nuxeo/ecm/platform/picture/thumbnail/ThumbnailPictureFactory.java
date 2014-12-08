@@ -33,8 +33,7 @@ import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 public class ThumbnailPictureFactory implements ThumbnailFactory {
 
     @Override
-    public Blob getThumbnail(DocumentModel doc, CoreSession session)
-            throws ClientException {
+    public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
         if (!doc.hasFacet("Picture")) {
             throw new ClientException("Document is not a picture");
         }
@@ -46,9 +45,8 @@ public class ThumbnailPictureFactory implements ThumbnailFactory {
             thumbnailView = mViewPicture.getView("Thumbnail");
             if (thumbnailView == null || thumbnailView.getBlob() == null) {
                 TypeInfo docType = doc.getAdapter(TypeInfo.class);
-                return new FileBlob(
-                        FileUtils.getResourceFileFromContext("nuxeo.war"
-                                + File.separator + docType.getBigIcon()));
+                return new FileBlob(FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator
+                        + docType.getBigIcon()));
             }
         }
         return thumbnailView.getBlob();

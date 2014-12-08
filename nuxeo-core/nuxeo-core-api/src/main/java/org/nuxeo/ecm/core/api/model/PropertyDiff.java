@@ -19,20 +19,21 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- * TODO is this really needed?
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> TODO is this really needed?
  */
 public class PropertyDiff implements Iterable<PropertyDiff> {
 
     public static final int MODIFIED = 1;
+
     public static final int ADDED = 2;
+
     public static final int REMOVED = 3;
 
     public int type;
+
     public Serializable value;
+
     public String name;
 
     public final Set<PropertyDiff> children;

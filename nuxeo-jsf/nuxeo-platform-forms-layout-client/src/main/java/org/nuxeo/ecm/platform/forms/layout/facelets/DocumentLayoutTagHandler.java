@@ -46,11 +46,9 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 /**
  * Document layout tag handler.
  * <p>
- * Computes layouts in given facelet context, for given mode and document
- * attributes.
+ * Computes layouts in given facelet context, for given mode and document attributes.
  * <p>
- * Document must be resolved at the component tree construction so it cannot be
- * bound to an iteration value.
+ * Document must be resolved at the component tree construction so it cannot be bound to an iteration value.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -83,9 +81,8 @@ public class DocumentLayoutTagHandler extends TagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "name", "mode",
-            "documentMode", "value", "template", "defaultLayout",
-            "includeAnyMode" };
+    protected final String[] reservedVarsArray = { "id", "name", "mode", "documentMode", "value", "template",
+            "defaultLayout", "includeAnyMode" };
 
     public DocumentLayoutTagHandler(TagConfig config) {
         super(config);
@@ -103,8 +100,7 @@ public class DocumentLayoutTagHandler extends TagHandler {
     /**
      * If resolved document has layouts, apply each of them.
      */
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
         Object document = value.getObject(ctx, DocumentModel.class);
         if (!(document instanceof DocumentModel)) {
             return;
@@ -131,8 +127,7 @@ public class DocumentLayoutTagHandler extends TagHandler {
         if (StringUtils.isBlank(defaultMode) && useAnyMode) {
             defaultMode = BuiltinModes.ANY;
         }
-        String[] layoutNames = typeInfo.getLayouts(
-                documentModeValue == null ? modeValue : documentModeValue,
+        String[] layoutNames = typeInfo.getLayouts(documentModeValue == null ? modeValue : documentModeValue,
                 defaultMode);
         if (layoutNames == null || layoutNames.length == 0) {
             // fallback on default layout
@@ -152,24 +147,20 @@ public class DocumentLayoutTagHandler extends TagHandler {
             TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(
                     helper.createAttribute("name", layoutName), modeAttr, value);
             if (template != null) {
-                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                        template);
+                attributes = FaceletHandlerHelper.addTagAttribute(attributes, template);
             }
             // add other variables put on original tag
             List<String> reservedVars = Arrays.asList(reservedVarsArray);
             for (TagAttribute var : vars) {
                 String localName = var.getLocalName();
                 if (!reservedVars.contains(localName)) {
-                    attributes = FaceletHandlerHelper.addTagAttribute(
-                            attributes, var);
+                    attributes = FaceletHandlerHelper.addTagAttribute(attributes, var);
                 }
             }
-            TagConfig tagConfig = TagConfigFactory.createTagConfig(config,
-                    null, attributes, leaf);
+            TagConfig tagConfig = TagConfigFactory.createTagConfig(config, null, attributes, leaf);
             handlers.add(new LayoutTagHandler(tagConfig));
         }
-        CompositeFaceletHandler composite = new CompositeFaceletHandler(
-                handlers.toArray(new FaceletHandler[0]));
+        CompositeFaceletHandler composite = new CompositeFaceletHandler(handlers.toArray(new FaceletHandler[0]));
         composite.apply(ctx, parent);
     }
 }

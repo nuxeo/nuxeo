@@ -26,21 +26,19 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
-
 /**
- * Server Entry point to a server GWT module.
- * Must be extended by the webengine resource used to load the studio application.
- * The <code>@GET</code> method must be defined by the subclasses to point to the main HTML file of
- * the GWT module.
- * Example:
- * <pre>
-    <code>@GET</code> <code>@Produces("text/html")</code>
-    public Object getIndex() {
-        return getTemplate("index.ftl");
-    }
- * </pre>
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Server Entry point to a server GWT module. Must be extended by the webengine resource used to load the studio
+ * application. The <code>@GET</code> method must be defined by the subclasses to point to the main HTML file of the GWT
+ * module. Example:
  *
+ * <pre>
+ *     <code>@GET</code> <code>@Produces("text/html")</code>
+ *     public Object getIndex() {
+ *         return getTemplate("index.ftl");
+ *     }
+ * </pre>
+ *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class GwtResource extends ModuleRoot {
 
@@ -50,7 +48,7 @@ public abstract class GwtResource extends ModuleRoot {
     @GET
     @Path("{path:.*}")
     public Response getResource(@PathParam("path") String path) {
-        //System.out.println(">>> "+GWT_ROOT.getAbsolutePath());
+        // System.out.println(">>> "+GWT_ROOT.getAbsolutePath());
         // avoid putting automatic no cache headers
         ctx.getRequest().setAttribute("org.nuxeo.webengine.DisableAutoHeaders", "true");
         File file = new File(GwtBundleActivator.GWT_ROOT, path);
@@ -60,7 +58,7 @@ public abstract class GwtResource extends ModuleRoot {
             int p = fpath.lastIndexOf('.');
             String ext = "";
             if (p > -1) {
-                ext = fpath.substring(p+1);
+                ext = fpath.substring(p + 1);
             }
             String mimeType = ctx.getEngine().getMimeType(ext);
             if (mimeType == null) {

@@ -26,12 +26,10 @@ import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class DefaultPermissionManager implements PermissionManager {
 
-    public boolean check(NuxeoPrincipal user, String permission, URI uri)
-            throws AnnotationException {
+    public boolean check(NuxeoPrincipal user, String permission, URI uri) throws AnnotationException {
         return true;
     }
 

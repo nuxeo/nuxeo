@@ -24,7 +24,6 @@ import org.nuxeo.ecm.automation.client.model.Document;
 
 /**
  * @author bjalon
- *
  */
 public class ClientMarshallingTest {
 
@@ -40,14 +39,11 @@ public class ClientMarshallingTest {
 
     @Test
     public void shouldFetchDocumentProperties() throws Exception {
-        client.setResponse("application/json+nxentity",
-                HttpResponses.DOC_DEFAULT_DOMAIN);
+        client.setResponse("application/json+nxentity", HttpResponses.DOC_DEFAULT_DOMAIN);
 
         Session session = client.getSession("Administrator", "Administrator");
-        Document defaultDomain = (Document) session.newRequest("Document.Fetch").set(
-                "value", "/default-domain").execute();
-        assertEquals("6e4ee4b8-af3f-4fb4-ad31-1a0a88720dfb",
-                defaultDomain.getId());
+        Document defaultDomain = (Document) session.newRequest("Document.Fetch").set("value", "/default-domain").execute();
+        assertEquals("6e4ee4b8-af3f-4fb4-ad31-1a0a88720dfb", defaultDomain.getId());
         assertEquals(1368704100560L, defaultDomain.getLastModified().getTime());
         assertEquals(2, defaultDomain.getFacets().size());
         assertEquals("SuperSpace", defaultDomain.getFacets().getString(0));
@@ -68,12 +64,10 @@ public class ClientMarshallingTest {
 
     @Test
     public void shouldFetchVersionLabelAndLockInfo() throws Exception {
-        client.setResponse("application/json+nxentity",
-                HttpResponses.DOC_LOCK_AND_VERSIONNED);
+        client.setResponse("application/json+nxentity", HttpResponses.DOC_LOCK_AND_VERSIONNED);
 
         Session session = client.getSession("Administrator", "Administrator");
-        Document file = (Document) session.newRequest("Document.Fetch").set(
-                "value", "/default-domain").execute();
+        Document file = (Document) session.newRequest("Document.Fetch").set("value", "/default-domain").execute();
         assertEquals("8243123c-34d0-4e33-b4b3-290cef008db0", file.getId());
         assertEquals(6, file.getFacets().size());
         assertEquals("Downloadable", file.getFacets().getString(0));
@@ -83,8 +77,7 @@ public class ClientMarshallingTest {
         assertEquals("Publishable", file.getFacets().getString(4));
         assertEquals("HasRelatedText", file.getFacets().getString(5));
         assertEquals("Administrator:2013-05-16T17:58:26.618+02:00", file.getLock());
-        assertEquals("2013-05-16T17:58:26.618+02:00",
-                file.getLockCreated().toString());
+        assertEquals("2013-05-16T17:58:26.618+02:00", file.getLockCreated().toString());
         assertEquals(true, file.isLocked());
         assertEquals("Administrator", file.getLockOwner());
         assertEquals("/default-domain/UserWorkspaces/Administrator/My File", file.getPath());

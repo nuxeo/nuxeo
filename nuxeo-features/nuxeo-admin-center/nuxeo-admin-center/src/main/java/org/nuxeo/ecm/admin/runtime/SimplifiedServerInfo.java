@@ -34,7 +34,6 @@ public class SimplifiedServerInfo {
 
     protected List<String> warnings;
 
-
     public List<SimplifiedBundleInfo> getBundleInfos() {
         return bundleInfos;
     }

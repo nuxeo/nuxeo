@@ -28,7 +28,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("copy")
 public class CopyOperation {
@@ -43,7 +42,7 @@ public class CopyOperation {
         File dest = new File(installDir, target);
         if (path.endsWith("/*")) {
             dest.mkdirs();
-            File file = new File(bundleDir, path.substring(0, path.length()-1));
+            File file = new File(bundleDir, path.substring(0, path.length() - 1));
             FileUtils.copy(file.listFiles(), dest);
         } else {
             File file = new File(bundleDir, path);

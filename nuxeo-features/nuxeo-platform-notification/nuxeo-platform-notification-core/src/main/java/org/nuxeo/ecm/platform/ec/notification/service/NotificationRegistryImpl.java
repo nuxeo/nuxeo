@@ -60,11 +60,9 @@ public class NotificationRegistryImpl implements NotificationRegistry {
         }
 
         if (notif.getEnabled()) {
-            NotificationImpl notification = new NotificationImpl(
-                    notif.getName(), notif.getTemplate(), notif.getChannel(),
-                    notif.getSubjectTemplate(), notif.getAutoSubscribed(),
-                    notif.getSubject(), notif.getAvailableIn(),
-                    notif.getLabel());
+            NotificationImpl notification = new NotificationImpl(notif.getName(), notif.getTemplate(),
+                    notif.getChannel(), notif.getSubjectTemplate(), notif.getAutoSubscribed(), notif.getSubject(),
+                    notif.getAvailableIn(), notif.getLabel());
 
             if (notif.getTemplateExpr() != null) {
                 notification.setTemplateExpr(notif.getTemplateExpr());
@@ -105,10 +103,9 @@ public class NotificationRegistryImpl implements NotificationRegistry {
             return;
         }
 
-        NotificationImpl notification = new NotificationImpl(notif.getName(),
-                notif.getTemplate(), notif.getChannel(),
-                notif.getSubjectTemplate(), notif.getAutoSubscribed(),
-                notif.getSubject(), notif.getAvailableIn(), notif.getLabel());
+        NotificationImpl notification = new NotificationImpl(notif.getName(), notif.getTemplate(), notif.getChannel(),
+                notif.getSubjectTemplate(), notif.getAutoSubscribed(), notif.getSubject(), notif.getAvailableIn(),
+                notif.getLabel());
 
         if (notificationList.contains(notification)) {
             notificationList.remove(notification);

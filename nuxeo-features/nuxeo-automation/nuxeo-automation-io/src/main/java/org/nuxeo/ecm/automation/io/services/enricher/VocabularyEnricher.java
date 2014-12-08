@@ -39,8 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This enricher adds the labels for each value of a property referencing
- * dbl10n vocabularies.
+ * This enricher adds the labels for each value of a property referencing dbl10n vocabularies.
  *
  * @since 6.0
  */
@@ -65,8 +64,7 @@ public class VocabularyEnricher extends AbstractContentEnricher {
     private DirectoryService directoryService;
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec)
-            throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
 
         final DocumentModel doc = ec.getDocumentModel();
 
@@ -100,43 +98,39 @@ public class VocabularyEnricher extends AbstractContentEnricher {
         jg.flush();
     }
 
-
     @Override
     public void setParameters(Map<String, String> parameters) {
         field = parameters.get(FIELD_PARAMETER);
         if (field == null || field.isEmpty()) {
-            throw new IllegalArgumentException(
-                "Parameter '" + FIELD_PARAMETER + "' cannot be empty");
+            throw new IllegalArgumentException("Parameter '" + FIELD_PARAMETER + "' cannot be empty");
         }
         directoryName = parameters.get(DIRECTORY_PARAMETER);
         if (directoryName == null || directoryName.isEmpty()) {
-            throw new IllegalArgumentException(
-                "Parameter '" + DIRECTORY_PARAMETER + "' cannot be empty");
+            throw new IllegalArgumentException("Parameter '" + DIRECTORY_PARAMETER + "' cannot be empty");
         }
     }
 
     /**
      * Writes the labels for each entry
+     *
      * @param jg
      * @param directoryName
      * @param entriesIds
      * @param labelFields
      * @throws IOException
      */
-    private void writeLabels(JsonGenerator jg, String directoryName,
-        String[] entriesIds, List<String> labelFields) throws IOException {
+    private void writeLabels(JsonGenerator jg, String directoryName, String[] entriesIds, List<String> labelFields)
+            throws IOException {
         Session session = null;
         try {
             session = getDirectoryService().open(directoryName);
             for (String entryId : entriesIds) {
-                Map<String, String> labels =
-                    getAbsoluteLabels(entryId, session, labelFields);
+                Map<String, String> labels = getAbsoluteLabels(entryId, session, labelFields);
                 // Write absolute labels (<parent label> / <child label>)
                 jg.writeStartObject();
                 jg.writeStringField("id", entryId);
                 for (Map.Entry<String, String> label : labels.entrySet()) {
-                    jg.writeStringField(label.getKey(),
-                        label.getValue());
+                    jg.writeStringField(label.getKey(), label.getValue());
                 }
                 jg.writeEndObject();
             }
@@ -150,15 +144,14 @@ public class VocabularyEnricher extends AbstractContentEnricher {
 
     /**
      * Determines label columns based on the label prefix
+     *
      * @param directoryName the name of the directory to inspect
      * @return
      */
     private List<String> getLabelFields(String directoryName) {
-        String schemaName = getDirectoryService().getDirectorySchema(
-            directoryName);
+        String schemaName = getDirectoryService().getDirectorySchema(directoryName);
 
-        SchemaManager schemaManager = Framework.getLocalService(
-            SchemaManager.class);
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
 
         Schema schema = schemaManager.getSchema(schemaName);
 
@@ -176,8 +169,7 @@ public class VocabularyEnricher extends AbstractContentEnricher {
 
     private DirectoryService getDirectoryService() {
         if (directoryService == null) {
-            directoryService = Framework.getLocalService(
-                DirectoryService.class);
+            directoryService = Framework.getLocalService(DirectoryService.class);
         }
         return directoryService;
 
@@ -185,6 +177,7 @@ public class VocabularyEnricher extends AbstractContentEnricher {
 
     /**
      * Return the values of a document's property as an array of strings
+     *
      * @param doc
      * @param fieldName
      * @return
@@ -205,14 +198,15 @@ public class VocabularyEnricher extends AbstractContentEnricher {
 
     /**
      * Returns absolute labels for a given entry (<parent label> / <child label>)
+     *
      * @param entryId
      * @param session
      * @param labelFields
      * @return a map of field: label
      * @throws ClientException
      */
-    private static Map<String, String> getAbsoluteLabels(final String entryId,
-            final Session session, List<String> labelFields) throws ClientException {
+    private static Map<String, String> getAbsoluteLabels(final String entryId, final Session session,
+            List<String> labelFields) throws ClientException {
 
         String[] split = entryId.split(KEY_SEPARATOR);
         Map<String, String> labels = new HashMap<>();

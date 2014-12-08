@@ -25,8 +25,7 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * Wraps an existing Blob allowing to set a different filename than the original
- * Blob's filename.
+ * Wraps an existing Blob allowing to set a different filename than the original Blob's filename.
  *
  * @since 5.9.2
  */

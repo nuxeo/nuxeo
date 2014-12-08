@@ -88,15 +88,12 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     public void initRoot() {
         try {
             Session session = getSession(null);
-            Document root = session.importDocument(getRootId(), null, "",
-                    TYPE_ROOT, new HashMap<String, Serializable>());
+            Document root = session.importDocument(getRootId(), null, "", TYPE_ROOT,
+                    new HashMap<String, Serializable>());
             ACLImpl acl = new ACLImpl();
-            acl.add(new ACE(SecurityConstants.ADMINISTRATORS,
-                    SecurityConstants.EVERYTHING, true));
-            acl.add(new ACE(SecurityConstants.ADMINISTRATOR,
-                    SecurityConstants.EVERYTHING, true));
-            acl.add(new ACE(SecurityConstants.MEMBERS, SecurityConstants.READ,
-                    true));
+            acl.add(new ACE(SecurityConstants.ADMINISTRATORS, SecurityConstants.EVERYTHING, true));
+            acl.add(new ACE(SecurityConstants.ADMINISTRATOR, SecurityConstants.EVERYTHING, true));
+            acl.add(new ACE(SecurityConstants.MEMBERS, SecurityConstants.READ, true));
             ACPImpl acp = new ACPImpl();
             acp.addACL(acl);
             session.setACP(root, acp, true);
@@ -129,8 +126,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             binaryManagerDescriptor.storePath = null; // default
             binaryManager.initialize(binaryManagerDescriptor);
             BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
-            bms.addBinaryManager(binaryManagerDescriptor.repositoryName,
-                    binaryManager);
+            bms.addBinaryManager(binaryManagerDescriptor.repositoryName, binaryManager);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -147,8 +143,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         Transaction transaction;
         try {
             transaction = TransactionHelper.lookupTransactionManager().getTransaction();
-            if (transaction != null
-                    && transaction.getStatus() != Status.STATUS_ACTIVE) {
+            if (transaction != null && transaction.getStatus() != Status.STATUS_ACTIVE) {
                 transaction = null;
             }
         } catch (SystemException | NamingException e) {
@@ -182,8 +177,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
         protected final Set<Session> proxies;
 
-        public TransactionContext(Transaction transaction,
-                DBSSession baseSession) {
+        public TransactionContext(Transaction transaction, DBSSession baseSession) {
             this.transaction = transaction;
             this.baseSession = baseSession;
             proxies = new HashSet<>();
@@ -202,8 +196,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         public Session newSession(String sessionId) {
             ClassLoader cl = getClass().getClassLoader();
             DBSSessionInvoker invoker = new DBSSessionInvoker(this, sessionId);
-            Session proxy = (Session) Proxy.newProxyInstance(cl,
-                    new Class[] { Session.class }, invoker);
+            Session proxy = (Session) Proxy.newProxyInstance(cl, new Class[] { Session.class }, invoker);
             add(proxy);
             return proxy;
         }
@@ -262,8 +255,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             String methodName = method.getName();
             if (methodName.equals(METHOD_HASHCODE)) {
                 return doHashCode();
@@ -282,8 +274,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             }
 
             if (closed) {
-                throw new DocumentException(
-                        "Cannot use closed connection handle: " + sessionId);
+                throw new DocumentException("Cannot use closed connection handle: " + sessionId);
             }
 
             try {

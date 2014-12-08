@@ -17,16 +17,15 @@ package org.nuxeo.ecm.platform.ui.web.model;
 import java.io.Serializable;
 
 /**
- * Provides support for sorting table models. Inspired from Tomahawk examples.
- * Abstract method design pattern.
+ * Provides support for sorting table models. Inspired from Tomahawk examples. Abstract method design pattern.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 public interface SortableDataModel extends Serializable {
 
     /**
-     * Sort the list. Should be implemented by the children to customize the
-     * sort (what comparators should be used, what other condition must be met).
+     * Sort the list. Should be implemented by the children to customize the sort (what comparators should be used, what
+     * other condition must be met).
      */
     void sort(String column, boolean ascending);
 

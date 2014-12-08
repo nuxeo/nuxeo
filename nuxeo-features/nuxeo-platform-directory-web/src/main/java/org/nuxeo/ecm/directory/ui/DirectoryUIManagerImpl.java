@@ -40,8 +40,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @author Anahide Tchertchian
  */
-public class DirectoryUIManagerImpl extends DefaultComponent implements
-        DirectoryUIManager {
+public class DirectoryUIManagerImpl extends DefaultComponent implements DirectoryUIManager {
 
     private static final long serialVersionUID = 1L;
 
@@ -73,8 +72,7 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (!extensionPoint.equals(DIRECTORIES_EP_NAME)) {
             log.warn("Unknown extension point: " + extensionPoint);
             return;
@@ -94,8 +92,7 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (!extensionPoint.equals(DIRECTORIES_EP_NAME)) {
             log.warn("Unknown extension point: " + extensionPoint);
             return;
@@ -105,8 +102,7 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements
         registry.remove(desc.getName());
     }
 
-    public DirectoryUI getDirectoryInfo(String directoryName)
-            throws ClientException {
+    public DirectoryUI getDirectoryInfo(String directoryName) throws ClientException {
         return registry.get(directoryName);
     }
 

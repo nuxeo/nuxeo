@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * This operation map pojo client side to document adapter server side and
- * update the related NX document.
+ * This operation map pojo client side to document adapter server side and update the related NX document.
  *
  * @since 5.7
  */
@@ -36,8 +35,7 @@ public class BusinessUpdateOperation {
     protected CoreSession session;
 
     @OperationMethod
-    public BusinessAdapter run(BusinessAdapter input) throws ClientException,
-            ClassNotFoundException, DocumentException {
+    public BusinessAdapter run(BusinessAdapter input) throws ClientException, ClassNotFoundException, DocumentException {
         DocumentModel document = input.getDocument();
         session.saveDocument(document);
         return input;

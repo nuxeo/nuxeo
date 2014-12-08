@@ -31,8 +31,7 @@ import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 
 /**
- * Operation to execute a query or a named provider against Audit with support
- * for Pagination
+ * Operation to execute a query or a named provider against Audit with support for Pagination
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.8
@@ -40,7 +39,7 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 @Operation(id = AuditPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "AuditPageProvider", description = "Perform "
         + "a query or a named provider query against Audit logs. Result is "
         + "paginated. The query result will become the input for the next "
-        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.", addToStudio=false)
+        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.", addToStudio = false)
 public class AuditPageProviderOperation {
 
     public static final String ID = "Audit.PageProvider";
@@ -106,16 +105,14 @@ public class AuditPageProviderOperation {
     /**
      * @since 6.0
      */
-    @Param(name = "sortBy", required = false, description = "Sort by " +
-            "properties (separated by comma)")
+    @Param(name = "sortBy", required = false, description = "Sort by " + "properties (separated by comma)")
     protected String sortBy;
 
     /**
      * @since 6.0
      */
-    @Param(name = "sortOrder", required = false, description = "Sort order, " +
-            "ASC or DESC", widget = Constants.W_OPTION,
-            values = { ASC, DESC })
+    @Param(name = "sortOrder", required = false, description = "Sort order, " + "ASC or DESC", widget = Constants.W_OPTION, values = {
+            ASC, DESC })
     protected String sortOrder;
 
     @SuppressWarnings("unchecked")
@@ -129,8 +126,7 @@ public class AuditPageProviderOperation {
                 SortInfo sortInfo;
                 if (sortInfoDesc.contains(SORT_PARAMETER_SEPARATOR)) {
                     String[] parts = sortInfoDesc.split(SORT_PARAMETER_SEPARATOR);
-                    sortInfo = new SortInfo(parts[0],
-                            Boolean.parseBoolean(parts[1]));
+                    sortInfo = new SortInfo(parts[0], Boolean.parseBoolean(parts[1]));
                 } else {
                     sortInfo = new SortInfo(sortInfoDesc, true);
                 }
@@ -147,8 +143,7 @@ public class AuditPageProviderOperation {
                 }
                 for (int i = 0; i < sorts.length; i++) {
                     String sort = sorts[i];
-                    boolean sortAscending = (orders != null && orders.length
-                            > i && "asc".equals(orders[i].toLowerCase()));
+                    boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
                     sortInfos.add(new SortInfo(sort, sortAscending));
                 }
             }
@@ -173,11 +168,9 @@ public class AuditPageProviderOperation {
         }
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        if (query == null
-                && (providerName == null || providerName.length() == 0)) {
+        if (query == null && (providerName == null || providerName.length() == 0)) {
             // provide a defaut provider
             providerName = "AUDIT_BROWSER";
         }
@@ -212,14 +205,12 @@ public class AuditPageProviderOperation {
             if (namedQueryParams != null && namedQueryParams.size() > 0) {
                 String docType = ppService.getPageProviderDefinition(providerName).getWhereClause().getDocType();
                 searchDoc = session.createDocumentModel(docType);
-                DocumentHelper.setProperties(session, searchDoc,
-                        namedQueryParams);
+                DocumentHelper.setProperties(session, searchDoc, namedQueryParams);
             }
 
-            PageProvider<LogEntry> pp = (PageProvider<LogEntry>) ppService.getPageProvider(
-                    providerName, searchDoc, sortInfos, targetPageSize,
-                    targetPage, props, parameters);
-            //return new PaginablePageProvider<LogEntry>(pp);
+            PageProvider<LogEntry> pp = (PageProvider<LogEntry>) ppService.getPageProvider(providerName, searchDoc,
+                    sortInfos, targetPageSize, targetPage, props, parameters);
+            // return new PaginablePageProvider<LogEntry>(pp);
             return new LogEntryList(pp);
         }
 

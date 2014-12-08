@@ -50,14 +50,12 @@ public class AspellTester extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor",
-                "OSGI-INF/commandline-aspell-test-contribs.xml");
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-aspell-test-contribs.xml");
     }
 
     @Test
     public void testAspellExec() throws Exception {
-        CommandLineExecutorService cles = Framework
-                .getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
         CommandAvailability ca = cles.getCommandAvailability("aspell");
@@ -73,8 +71,7 @@ public class AspellTester extends NXRuntimeTestCase {
 
         String text2Check = "this is a teste with a typo";
         File file2Check = File.createTempFile("nuxeo-spell-check-in", "txt");
-        PrintWriter printout = new PrintWriter(new BufferedWriter(
-                new FileWriter(file2Check)));
+        PrintWriter printout = new PrintWriter(new BufferedWriter(new FileWriter(file2Check)));
         printout.print(text2Check);
         printout.flush();
         printout.close();

@@ -35,13 +35,13 @@ public class CommentSorter implements Sorter {
 
     public int compare(DocumentModel doc1, DocumentModel doc2) {
 
-         if (doc1 == null && doc2 == null) {
-             return 0;
-         } else if (doc1 == null) {
-             return asc ? -1 : 1;
-         } else if (doc2 == null) {
-             return asc ? 1 : -1;
-         }
+        if (doc1 == null && doc2 == null) {
+            return 0;
+        } else if (doc1 == null) {
+            return asc ? -1 : 1;
+        } else if (doc2 == null) {
+            return asc ? 1 : -1;
+        }
 
         int cmp = 0;
         try {
@@ -56,8 +56,7 @@ public class CommentSorter implements Sorter {
                 return asc ? 1 : -1;
             }
             cmp = created1.compareTo(created2);
-        }
-        catch (PropertyException e) {
+        } catch (PropertyException e) {
         }
         return asc ? cmp : -cmp;
     }

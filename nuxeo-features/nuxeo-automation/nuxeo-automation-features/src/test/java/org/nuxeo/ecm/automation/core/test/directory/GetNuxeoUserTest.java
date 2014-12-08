@@ -27,11 +27,10 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory.types.contrib",
-        "org.nuxeo.ecm.platform.usermanager.api",
-        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.actions",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
+@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.platform.usermanager.api",
+        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.actions", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.automation.features" })
 @LocalDeploy("org.nuxeo.ecm.automation.features:test-user-directories-contrib.xml")
 public class GetNuxeoUserTest {
 
@@ -56,8 +55,7 @@ public class GetNuxeoUserTest {
         Assert.assertEquals("Jacky", doc.getPropertyValue("user:firstName"));
         Assert.assertEquals("Chan", doc.getPropertyValue("user:lastName"));
         Assert.assertEquals("Nuxeo", doc.getPropertyValue("user:company"));
-        Assert.assertEquals("Administrator@example.com",
-                doc.getPropertyValue("user:email"));
+        Assert.assertEquals("Administrator@example.com", doc.getPropertyValue("user:email"));
 
     }
 
@@ -72,8 +70,7 @@ public class GetNuxeoUserTest {
         params.put("login", "jdoe");
 
         OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(
-                GetNuxeoPrincipal.ID, params);
+        OperationParameters oparams = new OperationParameters(GetNuxeoPrincipal.ID, params);
         chain.add(oparams);
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
@@ -81,8 +78,7 @@ public class GetNuxeoUserTest {
         Assert.assertEquals("John", doc.getPropertyValue("user:firstName"));
         Assert.assertEquals("Doe", doc.getPropertyValue("user:lastName"));
         Assert.assertEquals("Nuxeo", doc.getPropertyValue("user:company"));
-        Assert.assertEquals("jdoe@nuxeo.com",
-                doc.getPropertyValue("user:email"));
+        Assert.assertEquals("jdoe@nuxeo.com", doc.getPropertyValue("user:email"));
 
     }
 }

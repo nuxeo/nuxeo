@@ -25,8 +25,7 @@ import java.io.InterruptedIOException;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Provides utility methods for manipulating and examining
- * exceptions in a generic way.
+ * Provides utility methods for manipulating and examining exceptions in a generic way.
  *
  * @author DM
  */
@@ -39,16 +38,12 @@ public final class ExceptionUtils {
     /**
      * Gets the root cause of the given <code>Throwable</code>.
      * <p>
-     * This method walks through the exception chain up to the root of the
-     * exceptions tree using {@link Throwable#getCause()}, and returns the root
-     * exception.
+     * This method walks through the exception chain up to the root of the exceptions tree using
+     * {@link Throwable#getCause()}, and returns the root exception.
      *
-     * @param throwable
-     *            the throwable to get the root cause for, may be null - this is
-     *            to avoid throwing other un-interesting exception when handling
-     *            a business-important exception
-     * @return the root cause of the <code>Throwable</code>,
-     *         <code>null</code> if none found or null throwable input
+     * @param throwable the throwable to get the root cause for, may be null - this is to avoid throwing other
+     *            un-interesting exception when handling a business-important exception
+     * @return the root cause of the <code>Throwable</code>, <code>null</code> if none found or null throwable input
      */
     public static Throwable getRootCause(Throwable throwable) {
         Throwable cause = throwable;
@@ -63,18 +58,15 @@ public final class ExceptionUtils {
     }
 
     /**
-     * Throws a {@link RuntimeException} if the passed exception is an
-     * {@link InterruptedException} or {@link InterruptedIOException}, or if the
-     * current thread is marked interrupted.
+     * Throws a {@link RuntimeException} if the passed exception is an {@link InterruptedException} or
+     * {@link InterruptedIOException}, or if the current thread is marked interrupted.
      *
      * @param e the exception to check
      * @throws RuntimeException if there was an interrupt
-     *
      * @since 7.1
      */
     public static void checkInterrupt(Exception e) {
-        if (e instanceof InterruptedException
-                || e instanceof InterruptedIOException) {
+        if (e instanceof InterruptedException || e instanceof InterruptedIOException) {
             // reset interrupted status
             Thread.currentThread().interrupt();
             // continue interrupt
@@ -99,7 +91,6 @@ public final class ExceptionUtils {
      * @param e the exception to unwrap
      * @return the unwrapped exception
      * @throws RuntimeException if there was an interrupt
-     *
      * @since 7.1
      */
     public static Exception unwrapInvoke(Exception e) {
@@ -120,16 +111,13 @@ public final class ExceptionUtils {
     }
 
     /**
-     * Wraps the exception into a {@link RuntimeException}, if needed, for
-     * re-throw.
+     * Wraps the exception into a {@link RuntimeException}, if needed, for re-throw.
      * <p>
-     * Deals with {@link InvocationTargetException},
-     * {@link InterruptedException} and {@link InterruptedIOException}.
+     * Deals with {@link InvocationTargetException}, {@link InterruptedException} and {@link InterruptedIOException}.
      *
      * @param e the exception to wrap
      * @return a {@link RuntimeException}
      * @throws RuntimeException if there was an interrupt
-     *
      * @since 7.1
      */
     public static RuntimeException runtimeException(Exception e) {

@@ -94,8 +94,8 @@ public class LayoutRowDescriptor {
                 cwidgets[i] = widgets[i].getWidgetReference();
             }
         }
-        LayoutRowDefinition clone = new LayoutRowDefinitionImpl(name,
-                getProperties(), cwidgets, alwaysSelected, selectedByDefault);
+        LayoutRowDefinition clone = new LayoutRowDefinitionImpl(name, getProperties(), cwidgets, alwaysSelected,
+                selectedByDefault);
         return clone;
     }
 }

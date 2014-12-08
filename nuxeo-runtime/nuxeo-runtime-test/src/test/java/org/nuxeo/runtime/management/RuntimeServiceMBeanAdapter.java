@@ -32,10 +32,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 
-
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
 public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
 
@@ -85,8 +83,7 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
         @SuppressWarnings("unchecked")
         public Object transform(Object input) {
             Set<String> output = new HashSet<String>();
-            TransformedSet.decorate(output, ComponentNameTransformer.INSTANCE).addAll(
-                    (Collection<?>) input);
+            TransformedSet.decorate(output, ComponentNameTransformer.INSTANCE).addAll((Collection<?>) input);
             return output;
         }
     }
@@ -95,12 +92,9 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
     @SuppressWarnings("unchecked")
     public Map<String, Set<String>> getPendingComponents() {
         Map<String, Set<String>> returnedMap = new HashMap<String, Set<String>>();
-        Map<ComponentName, Set<ComponentName>> pendingRegistrations
-                = doGetRuntime().getComponentManager().getPendingRegistrations();
+        Map<ComponentName, Set<ComponentName>> pendingRegistrations = doGetRuntime().getComponentManager().getPendingRegistrations();
         if (pendingRegistrations.size() != 0) {
-            TransformedMap.decorate(returnedMap,
-                    ComponentNameTransformer.INSTANCE,
-                    ComponentNamesTransformer.INSTANCE).putAll(
+            TransformedMap.decorate(returnedMap, ComponentNameTransformer.INSTANCE, ComponentNamesTransformer.INSTANCE).putAll(
                     pendingRegistrations);
         }
         return returnedMap;
@@ -123,8 +117,7 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
         Collection<RegistrationInfo> registrations = doGetRuntime().getComponentManager().getRegistrations();
         Set<String> returnedNames = new HashSet<String>(registrations.size());
         if (registrations.size() > 0) {
-            TransformedCollection.decorate(returnedNames,
-                    RegistrationTransformer.INSTANCE).addAll(registrations);
+            TransformedCollection.decorate(returnedNames, RegistrationTransformer.INSTANCE).addAll(registrations);
         }
         return returnedNames;
     }

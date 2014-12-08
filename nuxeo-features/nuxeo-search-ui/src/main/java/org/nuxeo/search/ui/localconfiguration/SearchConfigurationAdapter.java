@@ -34,8 +34,7 @@ import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
  *
  * @since 6.0
  */
-public class SearchConfigurationAdapter extends
-        AbstractLocalConfiguration<SearchConfiguration> implements
+public class SearchConfigurationAdapter extends AbstractLocalConfiguration<SearchConfiguration> implements
         SearchConfiguration {
 
     protected List<String> allowedContentViews;
@@ -46,8 +45,7 @@ public class SearchConfigurationAdapter extends
 
     public SearchConfigurationAdapter(DocumentModel doc) {
         docRef = doc.getRef();
-        allowedContentViews = getList(doc,
-                SEARCH_CONFIGURATION_ALLOWED_CONTENT_VIEWS);
+        allowedContentViews = getList(doc, SEARCH_CONFIGURATION_ALLOWED_CONTENT_VIEWS);
     }
 
     protected List<String> getList(DocumentModel doc, String property) {
@@ -82,8 +80,7 @@ public class SearchConfigurationAdapter extends
         // set the documentRef to the other UITypesConfiguration to continue
         // merging, if needed
         docRef = other.getDocumentRef();
-        if (allowedContentViews.isEmpty()
-                && !other.getAllowedContentViewNames().isEmpty()) {
+        if (allowedContentViews.isEmpty() && !other.getAllowedContentViewNames().isEmpty()) {
             this.allowedContentViews = Collections.unmodifiableList(other.getAllowedContentViewNames());
             canMerge = false;
         }

@@ -104,9 +104,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
     }
 
     @GET
-    public Object doGet(@QueryParam("id")
-    String id, @QueryParam("browse")
-    String browse) {
+    public Object doGet(@QueryParam("id") String id, @QueryParam("browse") String browse) {
         if (id == null) {
             return getTemplateFor(browse);
         } else {
@@ -177,16 +175,14 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
         if (!canManageTraces()) {
             return "You can not manage json exception stack display";
         }
-        JsonFactoryManager jsonFactoryManager = Framework.getLocalService
-                (JsonFactoryManager.class);
+        JsonFactoryManager jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
         return String.valueOf(jsonFactoryManager.toggleStackDisplay());
     }
 
     @GET
     @Path("/traces")
     @Produces("text/plain")
-    public String doGetTrace(@QueryParam("opId")
-    String opId) {
+    public String doGetTrace(@QueryParam("opId") String opId) {
         if (!canManageTraces()) {
             return "You can not manage traces";
         }

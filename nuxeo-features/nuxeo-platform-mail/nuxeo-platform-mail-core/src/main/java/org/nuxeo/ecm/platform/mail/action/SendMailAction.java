@@ -30,8 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Action to answer the mail. It expects the text of the answer to
- * be in the context under the "message" key.
+ * Action to answer the mail. It expects the text of the answer to be in the context under the "message" key.
  *
  * @author Alexandre Russel
  */
@@ -40,6 +39,7 @@ public class SendMailAction implements MessageAction {
     private static final Log log = LogFactory.getLog(SendMailAction.class);
 
     protected final Session session;
+
     protected final String textMessage;
 
     public SendMailAction(Session session, String textMessage) {
@@ -64,7 +64,7 @@ public class SendMailAction implements MessageAction {
     }
 
     public void reset(ExecutionContext context) {
-        //do nothing
+        // do nothing
     }
 
 }

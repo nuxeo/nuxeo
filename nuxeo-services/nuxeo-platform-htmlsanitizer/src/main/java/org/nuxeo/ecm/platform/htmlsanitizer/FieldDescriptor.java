@@ -73,8 +73,7 @@ public class FieldDescriptor {
     @Override
     public String toString() {
         if (filterField != null) {
-            return getContentField() + " if " + filterField
-                    + (sanitize ? "=" : "!=") + filterValue;
+            return getContentField() + " if " + filterField + (sanitize ? "=" : "!=") + filterValue;
         } else {
             return getContentField();
         }

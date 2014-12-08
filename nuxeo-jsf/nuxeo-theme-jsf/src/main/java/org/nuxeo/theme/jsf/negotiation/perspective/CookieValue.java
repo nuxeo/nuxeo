@@ -23,8 +23,7 @@ import org.nuxeo.theme.perspectives.PerspectiveManager;
 public class CookieValue implements Scheme {
 
     public String getOutcome(final Object context) {
-        final String perspectiveName = CookieManager.getCookie(
-                "nxthemes.perspective",
+        final String perspectiveName = CookieManager.getCookie("nxthemes.perspective",
                 ((FacesContext) context).getExternalContext());
         if (perspectiveName == null) {
             return null;

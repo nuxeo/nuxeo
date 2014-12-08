@@ -61,8 +61,7 @@ public class AppendCommand implements Command {
         File dstFile = new File(baseDir, ctx.expandVars(dst.toString()));
 
         if (pattern == null && !srcFile.exists()) {
-            throw new FileNotFoundException("Could not find the file "
-                    + srcFile.getAbsolutePath() + " to append.");
+            throw new FileNotFoundException("Could not find the file " + srcFile.getAbsolutePath() + " to append.");
         }
 
         if (!dstFile.isFile()) {
@@ -77,7 +76,7 @@ public class AppendCommand implements Command {
         } else {
             ArrayList<File> files = new ArrayList<File>();
             FileUtils.collectFiles(srcFile, pattern, files);
-            for (File file:files) {
+            for (File file : files) {
                 FileUtils.append(file, dstFile);
             }
         }
@@ -90,8 +89,7 @@ public class AppendCommand implements Command {
 
     @Override
     public String toString(CommandContext ctx) {
-        return "append " + ctx.expandVars(src.toString()) + " > "
-                + ctx.expandVars(dst.toString());
+        return "append " + ctx.expandVars(src.toString()) + " > " + ctx.expandVars(dst.toString());
     }
 
 }

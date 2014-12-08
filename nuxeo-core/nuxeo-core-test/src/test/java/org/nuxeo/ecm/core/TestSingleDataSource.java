@@ -41,8 +41,7 @@ import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Test that transaction management does the right thing with single-datasource
- * mode.
+ * Test that transaction management does the right thing with single-datasource mode.
  */
 public class TestSingleDataSource extends SQLRepositoryTestCase {
 
@@ -88,21 +87,18 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     /**
-     * H2 cannot have one connection doing an insert in a tx and annother using
-     * the same table, as it waits for a lock.
+     * H2 cannot have one connection doing an insert in a tx and annother using the same table, as it waits for a lock.
      */
     protected boolean canUseTwoConnections() {
         return !(database instanceof DatabaseH2 //
         || database instanceof DatabaseDerby);
     }
 
-    protected String getValidationQuery(Connection connection)
-            throws StorageException {
+    protected String getValidationQuery(Connection connection) throws StorageException {
         return Dialect.createDialect(connection, null, null).getValidationQuery();
     }
 
-    protected static void assertEqualsInt(int expected, ResultSet rs)
-            throws SQLException {
+    protected static void assertEqualsInt(int expected, ResultSet rs) throws SQLException {
         assertTrue(rs.next());
         int actual = rs.getInt(1);
         assertEquals(expected, actual);
@@ -335,8 +331,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     /*
-     * Does begin, no commit, then setAutoCommit=true; checks that autoCommit
-     * change auto-commits.
+     * Does begin, no commit, then setAutoCommit=true; checks that autoCommit change auto-commits.
      */
     @Test
     public void testEndWithoutCommit() throws Exception {
@@ -387,8 +382,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     /*
-     * Re-begin in a new transaction after a previous use and commit in a
-     * previous transaction.
+     * Re-begin in a new transaction after a previous use and commit in a previous transaction.
      */
     @Test
     public void testSeveralTx() throws Exception {
@@ -423,10 +417,8 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     /*
-     * Test through XAResource wrapper and transaction enlisting.
-     *
-     * As a side effect the connection commit is called while the transaction is
-     * in STATUS_COMMITTING.
+     * Test through XAResource wrapper and transaction enlisting. As a side effect the connection commit is called while
+     * the transaction is in STATUS_COMMITTING.
      */
     @Test
     public void testXAResourceBeginDoStuffCommit() throws Exception {
@@ -434,8 +426,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         jdbc.connection = ConnectionHelper.getConnection(null);
         try {
             Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
-            XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(
-                    jdbc);
+            XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(jdbc);
             transaction.enlistResource(xaresource);
             // lazy so not yet allocated
             assertSharedConnectionCount(0);
@@ -452,9 +443,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     /*
-     * Test through XAResource wrapper and transaction enlisting.
-     *
-     * But do nothing between tx start and end.
+     * Test through XAResource wrapper and transaction enlisting. But do nothing between tx start and end.
      */
     @Test
     public void testXAResourceBeginDoNothingCommit() throws Exception {
@@ -462,8 +451,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         jdbc.connection = ConnectionHelper.getConnection(null);
         try {
             Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
-            XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(
-                    jdbc);
+            XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(jdbc);
             transaction.enlistResource(xaresource);
             // lazy so not yet allocated
             assertSharedConnectionCount(0);
@@ -477,9 +465,8 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     /*
-     * Test through XAResource wrapper and transaction enlisting.
-     *
-     * But do nothing between tx start and end, and do a rollback.
+     * Test through XAResource wrapper and transaction enlisting. But do nothing between tx start and end, and do a
+     * rollback.
      */
     @Test
     public void testXAResourceBeginDoNothingRollback() throws Exception {
@@ -487,8 +474,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         jdbc.connection = ConnectionHelper.getConnection(null);
         try {
             Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
-            XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(
-                    jdbc);
+            XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(jdbc);
             transaction.enlistResource(xaresource);
             // lazy so not yet allocated
             assertSharedConnectionCount(0);

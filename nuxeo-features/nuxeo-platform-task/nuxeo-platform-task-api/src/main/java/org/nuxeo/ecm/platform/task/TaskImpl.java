@@ -59,8 +59,7 @@ public class TaskImpl implements Task {
         String targetDocumentId = getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME);
         if (targetDocumentId == null) {
             List<String> targetDocIds = getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME);
-            targetDocumentId = targetDocIds != null && targetDocIds.size() > 0 ? targetDocIds.get(0)
-                    : null;
+            targetDocumentId = targetDocIds != null && targetDocIds.size() > 0 ? targetDocIds.get(0) : null;
         }
         return targetDocumentId;
     }
@@ -89,8 +88,7 @@ public class TaskImpl implements Task {
     @Override
     public List<TaskComment> getComments() throws ClientException {
         List<Map<String, Serializable>> taskCommentsProperty = getPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME);
-        List<TaskComment> taskComments = new ArrayList<TaskComment>(
-                taskCommentsProperty.size());
+        List<TaskComment> taskComments = new ArrayList<TaskComment>(taskCommentsProperty.size());
         for (Map<String, Serializable> taskCommentMap : taskCommentsProperty) {
             taskComments.add(new TaskComment(taskCommentMap));
         }
@@ -153,8 +151,7 @@ public class TaskImpl implements Task {
     @Override
     public Map<String, String> getVariables() throws ClientException {
         List<Map<String, String>> variables = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
-        Map<String, String> variableMap = new HashMap<String, String>(
-                variables.size());
+        Map<String, String> variableMap = new HashMap<String, String>(variables.size());
         for (Map<String, String> map : variables) {
             variableMap.put(map.get("key"), map.get("value"));
         }
@@ -171,16 +168,13 @@ public class TaskImpl implements Task {
         List<String> ids = new ArrayList<String>();
         ids.add(targetDocId);
         // handle compatibility before @5.8
-        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME,
-                ids);
-        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME,
-                targetDocId);
+        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME, ids);
+        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME, targetDocId);
     }
 
     @Override
     public void setDescription(String description) throws ClientException {
-        setPropertyValue(TaskConstants.TASK_DESCRIPTION_PROPERTY_NAME,
-                description);
+        setPropertyValue(TaskConstants.TASK_DESCRIPTION_PROPERTY_NAME, description);
     }
 
     @Override
@@ -221,23 +215,20 @@ public class TaskImpl implements Task {
 
     @Override
     public void cancel(CoreSession coreSession) throws ClientException {
-        followTransition(coreSession,
-                TaskConstants.TASK_CANCEL_LIFE_CYCLE_TRANSITION);
+        followTransition(coreSession, TaskConstants.TASK_CANCEL_LIFE_CYCLE_TRANSITION);
     }
 
     @Override
     public void end(CoreSession coreSession) throws ClientException {
-        followTransition(coreSession,
-                TaskConstants.TASK_END_LIFE_CYCLE_TRANSITION);
+        followTransition(coreSession, TaskConstants.TASK_END_LIFE_CYCLE_TRANSITION);
     }
 
-    protected void followTransition(CoreSession coreSession, String transition)
-            throws ClientException {
+    protected void followTransition(CoreSession coreSession, String transition) throws ClientException {
         if (doc.getAllowedStateTransitions().contains(transition)) {
             coreSession.followTransition(doc.getRef(), transition);
         } else {
-            throw new ClientRuntimeException("Cannot follow transition "
-                    + transition + " on the document " + doc.getPathAsString());
+            throw new ClientRuntimeException("Cannot follow transition " + transition + " on the document "
+                    + doc.getPathAsString());
         }
 
     }
@@ -248,8 +239,7 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public void setVariables(Map<String, String> variables)
-            throws ClientException {
+    public void setVariables(Map<String, String> variables) throws ClientException {
         List<Map<String, Serializable>> variablesProperty = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
         if (variablesProperty == null) {
             variablesProperty = new ArrayList<Map<String, Serializable>>();
@@ -264,8 +254,7 @@ public class TaskImpl implements Task {
                 variablesProperty.add(variable);
             }
         }
-        setPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME,
-                variablesProperty);
+        setPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME, variablesProperty);
     }
 
     @Override
@@ -274,8 +263,7 @@ public class TaskImpl implements Task {
         if (variables == null) {
             variables = new ArrayList<Map<String, Serializable>>();
         }
-        Map<String, Serializable> variableMap = new HashMap<String, Serializable>(
-                2);
+        Map<String, Serializable> variableMap = new HashMap<String, Serializable>(2);
         variableMap.put("key", key);
         variableMap.put("value", value);
         variables.add(variableMap);
@@ -289,8 +277,7 @@ public class TaskImpl implements Task {
             existingTasks = new ArrayList<Map<String, Serializable>>();
         }
         existingTasks.add(new TaskComment(author, text));
-        setPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME,
-                existingTasks);
+        setPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME, existingTasks);
     }
 
     @SuppressWarnings("unchecked")
@@ -347,8 +334,7 @@ public class TaskImpl implements Task {
 
     @Override
     public void setDelegatedActors(List<String> delegatedActors) {
-        setPropertyValue(TaskConstants.TASK_DELEGATED_ACTORS_PROPERTY_NAME,
-                delegatedActors);
+        setPropertyValue(TaskConstants.TASK_DELEGATED_ACTORS_PROPERTY_NAME, delegatedActors);
     }
 
     @Override
@@ -360,11 +346,8 @@ public class TaskImpl implements Task {
     public void setTargetDocumentsIds(List<String> ids) throws ClientException {
         // handle compatibility before @5.8
         if (ids != null && ids.size() > 0) {
-            setPropertyValue(
-                    TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME,
-                    ids.get(0));
+            setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME, ids.get(0));
         }
-        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME,
-                ids);
+        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME, ids);
     }
 }

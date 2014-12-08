@@ -86,7 +86,7 @@ public class ConversionCacheGCManager {
 
         // do the GC
         long deltaInKB = totalSize - limit;
-        if (limit <0) {
+        if (limit < 0) {
             // mainly for testing : negative limit means cleanup everything
             deltaInKB = totalSize;
         }

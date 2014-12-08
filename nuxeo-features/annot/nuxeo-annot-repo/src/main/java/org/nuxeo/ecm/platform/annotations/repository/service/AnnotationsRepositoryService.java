@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface AnnotationsRepositoryService {
     boolean isAnnotable(DocumentModel document) throws ClientException;

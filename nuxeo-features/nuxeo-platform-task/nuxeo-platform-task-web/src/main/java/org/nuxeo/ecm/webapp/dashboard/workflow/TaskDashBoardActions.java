@@ -69,8 +69,7 @@ public class TaskDashBoardActions implements Serializable {
 
     private static final Log log = LogFactory.getLog(TaskDashBoardActions.class);
 
-    public Collection<DashBoardItem> computeDashboardItems()
-            throws ClientException {
+    public Collection<DashBoardItem> computeDashboardItems() throws ClientException {
         if (currentUserTasks == null) {
             currentUserTasks = new ArrayList<DashBoardItem>();
             List<Task> tasks = taskService.getCurrentTaskInstances(documentManager);
@@ -80,17 +79,12 @@ public class TaskDashBoardActions implements Serializable {
                         if (task.hasEnded() || task.isCancelled()) {
                             continue;
                         }
-                        DocumentModel doc = taskService.getTargetDocumentModel(
-                                task, documentManager);
-                        if (doc != null
-                                && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-                            currentUserTasks.add(new DashBoardItemImpl(task,
-                                    doc, localeSelector.getLocale()));
+                        DocumentModel doc = taskService.getTargetDocumentModel(task, documentManager);
+                        if (doc != null && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+                            currentUserTasks.add(new DashBoardItemImpl(task, doc, localeSelector.getLocale()));
                         } else {
-                            log.warn(String.format(
-                                    "User '%s' has a task of type '%s' on a "
-                                            + "missing or deleted document",
-                                    currentUser.getName(), task.getName()));
+                            log.warn(String.format("User '%s' has a task of type '%s' on a "
+                                    + "missing or deleted document", currentUser.getName(), task.getName()));
                         }
                     } catch (ClientException e) {
                         log.error(e);
@@ -101,20 +95,13 @@ public class TaskDashBoardActions implements Serializable {
         return currentUserTasks;
     }
 
-    @Observer(value = { TaskEventNames.WORKFLOW_ENDED,
-            TaskEventNames.WORKFLOW_NEW_STARTED,
-            TaskEventNames.WORKFLOW_TASK_START,
-            TaskEventNames.WORKFLOW_TASK_STOP,
-            TaskEventNames.WORKFLOW_TASK_REJECTED,
-            TaskEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
-            TaskEventNames.WORKFLOW_TASK_COMPLETED,
-            TaskEventNames.WORKFLOW_TASK_REMOVED,
-            TaskEventNames.WORK_ITEMS_LIST_LOADED,
-            TaskEventNames.WORKFLOW_TASKS_COMPUTED,
-            TaskEventNames.WORKFLOW_ABANDONED,
-            TaskEventNames.WORKFLOW_CANCELED,
-            EventNames.DOMAIN_SELECTION_CHANGED, "documentPublicationRejected",
-            "documentPublished" }, create = false)
+    @Observer(value = { TaskEventNames.WORKFLOW_ENDED, TaskEventNames.WORKFLOW_NEW_STARTED,
+            TaskEventNames.WORKFLOW_TASK_START, TaskEventNames.WORKFLOW_TASK_STOP,
+            TaskEventNames.WORKFLOW_TASK_REJECTED, TaskEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
+            TaskEventNames.WORKFLOW_TASK_COMPLETED, TaskEventNames.WORKFLOW_TASK_REMOVED,
+            TaskEventNames.WORK_ITEMS_LIST_LOADED, TaskEventNames.WORKFLOW_TASKS_COMPUTED,
+            TaskEventNames.WORKFLOW_ABANDONED, TaskEventNames.WORKFLOW_CANCELED, EventNames.DOMAIN_SELECTION_CHANGED,
+            "documentPublicationRejected", "documentPublished" }, create = false)
     @BypassInterceptors
     public void invalidateDashboardItems() {
         currentUserTasks = null;

@@ -179,8 +179,7 @@ public abstract class BasePageProviderDescriptor {
     }
 
     /**
-     * Returns the search document type used for wher clause, aggregates and
-     * named parameters.
+     * Returns the search document type used for wher clause, aggregates and named parameters.
      *
      * @since 6.0
      */

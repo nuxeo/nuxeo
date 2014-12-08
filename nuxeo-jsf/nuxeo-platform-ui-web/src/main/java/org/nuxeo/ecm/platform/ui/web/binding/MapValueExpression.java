@@ -26,11 +26,9 @@ import javax.el.PropertyNotFoundException;
 import javax.el.ValueExpression;
 
 /**
- * Value expression representing a map of value expressions, to allow
- * resolution, at runtime, of all of the map values.
+ * Value expression representing a map of value expressions, to allow resolution, at runtime, of all of the map values.
  * <p>
- * Useful to pass resolved widget properties to third party code (typically
- * javascript code)
+ * Useful to pass resolved widget properties to third party code (typically javascript code)
  *
  * @since 5.8
  */
@@ -42,8 +40,7 @@ public class MapValueExpression extends ValueExpression {
 
     public MapValueExpression(Map<String, ValueExpression> map) {
         super();
-        this.map = map == null ? Collections.<String, ValueExpression> emptyMap()
-                : map;
+        this.map = map == null ? Collections.<String, ValueExpression> emptyMap() : map;
     }
 
     @Override
@@ -57,15 +54,13 @@ public class MapValueExpression extends ValueExpression {
     }
 
     @Override
-    public Object getValue(ELContext elContext)
-            throws PropertyNotFoundException {
+    public Object getValue(ELContext elContext) throws PropertyNotFoundException {
         Map<String, Serializable> res = new HashMap<String, Serializable>();
         if (map != null) {
             for (Map.Entry<String, ValueExpression> entry : map.entrySet()) {
                 ValueExpression ve = entry.getValue();
                 if (ve != null) {
-                    res.put(entry.getKey(),
-                            (Serializable) ve.getValue(elContext));
+                    res.put(entry.getKey(), (Serializable) ve.getValue(elContext));
                 } else {
                     res.put(entry.getKey(), null);
                 }
@@ -80,8 +75,7 @@ public class MapValueExpression extends ValueExpression {
     }
 
     @Override
-    public void setValue(ELContext arg0, Object arg1)
-            throws PropertyNotFoundException {
+    public void setValue(ELContext arg0, Object arg1) throws PropertyNotFoundException {
         // do nothing
     }
 

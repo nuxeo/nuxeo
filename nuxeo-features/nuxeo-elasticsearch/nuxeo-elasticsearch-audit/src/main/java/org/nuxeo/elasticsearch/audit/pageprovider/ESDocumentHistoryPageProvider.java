@@ -20,32 +20,23 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
 
     protected Object[] newParams;
 
-    protected static String singleQuery = "            {\n"
-            + "                \"bool\" : {\n"
-            + "                  \"must\" : {\n"
-            + "                    \"match\" : {\n"
-            + "                      \"docUUID\" : {\n"
-            + "                        \"query\" : \"?\",\n"
-            + "                        \"type\" : \"boolean\"\n"
-            + "                      }\n" + "                    }\n"
-            + "                  }\n" + "                }\n"
+    protected static String singleQuery = "            {\n" + "                \"bool\" : {\n"
+            + "                  \"must\" : {\n" + "                    \"match\" : {\n"
+            + "                      \"docUUID\" : {\n" + "                        \"query\" : \"?\",\n"
+            + "                        \"type\" : \"boolean\"\n" + "                      }\n"
+            + "                    }\n" + "                  }\n" + "                }\n"
             + "              }          \n" + "";
 
-    protected static String complexQuery = "{\n" + "    \"filtered\" : {\n"
-            + "        \"query\" : {\n" + "            \"match_all\" : { }\n"
-            + "        },\n" + "        \"filter\" : {\n"
+    protected static String complexQuery = "{\n" + "    \"filtered\" : {\n" + "        \"query\" : {\n"
+            + "            \"match_all\" : { }\n" + "        },\n" + "        \"filter\" : {\n"
             + "            \"or\" : [\n" + "                {\n"
-            + "                    \"term\" : { \"docUUID\" : \"?\" }\n"
-            + "                },\n" + "                {\n"
-            + "                    \"bool\" : {\n"
-            + "                      \"must\" : [{\n"
-            + "                        \"term\" : { \"docUUID\" : \"?\" }\n"
-            + "                      },\n" + "                      {\n"
-            + "                        \"range\" : {\n"
-            + "                          \"eventDate\" :  { \"lte\" : \"?\"}\n"
-            + "                        }\n" + "                      }]\n"
-            + "                  }\n" + "                }\n"
-            + "            ]\n" + "        }\n" + "    }\n" + "}\n" + "\n" + "";
+            + "                    \"term\" : { \"docUUID\" : \"?\" }\n" + "                },\n"
+            + "                {\n" + "                    \"bool\" : {\n" + "                      \"must\" : [{\n"
+            + "                        \"term\" : { \"docUUID\" : \"?\" }\n" + "                      },\n"
+            + "                      {\n" + "                        \"range\" : {\n"
+            + "                          \"eventDate\" :  { \"lte\" : \"?\"}\n" + "                        }\n"
+            + "                      }]\n" + "                  }\n" + "                }\n" + "            ]\n"
+            + "        }\n" + "    }\n" + "}\n" + "\n" + "";
 
     @Override
     protected String getFixedPart() {
@@ -83,25 +74,21 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
                 uuid = doc.getId();
                 session = doc.getCoreSession();
             } else {
-                session = (CoreSession) getProperties().get(
-                        CORE_SESSION_PROPERTY);
+                session = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
                 uuid = params[0].toString();
             }
             if (session != null) {
                 try {
-                    AdditionalDocumentAuditParams additionalParams = DocumentAuditHelper.getAuditParamsForUUID(
-                            uuid, session);
+                    AdditionalDocumentAuditParams additionalParams = DocumentAuditHelper.getAuditParamsForUUID(uuid,
+                            session);
                     if (additionalParams != null) {
-                        newParams = new Object[] { uuid,
-                                additionalParams.getTargetUUID(),
+                        newParams = new Object[] { uuid, additionalParams.getTargetUUID(),
                                 additionalParams.getMaxDate() };
                     } else {
                         newParams = new Object[] { uuid };
                     }
                 } catch (ClientException e) {
-                    log.error(
-                            "Error while fetching additional parameters for audit query",
-                            e);
+                    log.error("Error while fetching additional parameters for audit query", e);
                 }
             } else {
                 log.warn("No core session found: cannot compute all info to get complete audit entries");

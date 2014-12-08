@@ -79,8 +79,7 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
     }
 
     public void testiWorkConverter(String blobPath) throws Exception {
-        String converterName = cs.getConverterName(
-                "application/vnd.apple.iwork", "application/pdf");
+        String converterName = cs.getConverterName("application/vnd.apple.iwork", "application/pdf");
         assertEquals("iwork2pdf", converterName);
 
         BlobHolder pagesBH = getBlobFromPath(blobPath);
@@ -105,8 +104,7 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
 
     @Test
     public void testHTMLConverter() throws Exception {
-        String converterName = cs.getConverterName(
-                "application/vnd.apple.pages", "text/html");
+        String converterName = cs.getConverterName("application/vnd.apple.pages", "text/html");
         assertEquals("iwork2html", converterName);
 
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
@@ -116,8 +114,7 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
         assertNotNull(check);
         if (!check.isAvailable()) {
             log.warn("Skipping PDF2Html tests since commandLine is not installed");
-            log.warn(" converter check output : "
-                    + check.getInstallationMessage());
+            log.warn(" converter check output : " + check.getInstallationMessage());
             log.warn(" converter check output : " + check.getErrorMessage());
             return;
         }
@@ -150,8 +147,7 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
 
     @Test
     public void testPagesWithoutPreviewConverter() throws ClientException {
-        String converterName = cs.getConverterName(
-                "application/vnd.apple.pages", "application/pdf");
+        String converterName = cs.getConverterName("application/vnd.apple.pages", "application/pdf");
         assertEquals("iwork2pdf", converterName);
 
         BlobHolder pagesBH = getBlobFromPath("test-docs/hello-without-preview.pages");

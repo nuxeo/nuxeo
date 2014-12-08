@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.relations.api.Literal;
  * Relation date management.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class RelationDate {
 

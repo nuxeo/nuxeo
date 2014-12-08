@@ -30,8 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Run an embedded operation chain using the current input. The output is
- * undefined (Void)
+ * Run an embedded operation chain using the current input. The output is undefined (Void)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @since 5.5
@@ -62,43 +61,35 @@ public class RunOperationOnList {
     @Param(name = "isolate", required = false, values = "true")
     protected boolean isolate = true;
 
-    @Param(name = "parameters", description = "Accessible in the subcontext " +
-            "ChainParameters. For instance, " +
-            "@{ChainParameters['parameterKey']}.", required = false)
+    @Param(name = "parameters", description = "Accessible in the subcontext " + "ChainParameters. For instance, "
+            + "@{ChainParameters['parameterKey']}.", required = false)
     protected Properties chainParameters;
 
     /**
-     * @since 6.0
-     * Define if the chain in parameter should be executed in new transaction.
+     * @since 6.0 Define if the chain in parameter should be executed in new transaction.
      */
-    @Param(name = "newTx", required = false, values = "false",
-            description = "Define if the chain in parameter should be " +
-                    "executed in new transaction.")
+    @Param(name = "newTx", required = false, values = "false", description = "Define if the chain in parameter should be "
+            + "executed in new transaction.")
     protected boolean newTx = false;
 
     /**
-     * @since 6.0
-     * Define transaction timeout (default to 60 sec).
+     * @since 6.0 Define transaction timeout (default to 60 sec).
      */
-    @Param(name = "timeout", required = false, description = "Define " +
-            "transaction timeout (default to 60 sec).")
+    @Param(name = "timeout", required = false, description = "Define " + "transaction timeout (default to 60 sec).")
     protected Integer timeout = 60;
 
     /**
-     * @since 6.0
-     * Define if transaction should rollback or not (default to true).
+     * @since 6.0 Define if transaction should rollback or not (default to true).
      */
-    @Param(name = "rollbackGlobalOnError", required = false, values = "true",
-            description = "Define if transaction should rollback or not " +
-                    "(default to true)")
+    @Param(name = "rollbackGlobalOnError", required = false, values = "true", description = "Define if transaction should rollback or not "
+            + "(default to true)")
     protected boolean rollbackGlobalOnError = true;
 
     @OperationMethod
     @SuppressWarnings("unchecked")
     public void run() throws OperationException {
         // Handle isolation option
-        Map<String, Object> vars = isolate ? new HashMap<>(
-                ctx.getVars()) : ctx.getVars();
+        Map<String, Object> vars = isolate ? new HashMap<>(ctx.getVars()) : ctx.getVars();
         OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput());
 
         // Running chain/operation for each list elements
@@ -108,16 +99,14 @@ public class RunOperationOnList {
         } else if (ctx.get(listName) instanceof Collection<?>) {
             list = (Collection<?>) ctx.get(listName);
         } else {
-            throw new UnsupportedOperationException(
-                    ctx.get(listName).getClass() + " is not a Collection");
+            throw new UnsupportedOperationException(ctx.get(listName).getClass() + " is not a Collection");
         }
         for (Object value : list) {
             subctx.put(itemName, value);
             // Running chain/operation
-            if(newTx) {
-                service.runInNewTx(subctx, chainId, chainParameters,
-                        timeout, rollbackGlobalOnError);
-            }else{
+            if (newTx) {
+                service.runInNewTx(subctx, chainId, chainParameters, timeout, rollbackGlobalOnError);
+            } else {
                 service.run(subctx, chainId, (Map) chainParameters);
             }
         }
@@ -129,11 +118,8 @@ public class RunOperationOnList {
                     ctx.put(varName, vars.get(varName));
                 } else {
                     Object value = vars.get(varName);
-                    if (session != null && value != null
-                            && value instanceof DocumentModel) {
-                        ctx.getVars().put(
-                                varName,
-                                session.getDocument(((DocumentModel) value).getRef()));
+                    if (session != null && value != null && value instanceof DocumentModel) {
+                        ctx.getVars().put(varName, session.getDocument(((DocumentModel) value).getRef()));
                     } else {
                         ctx.getVars().put(varName, value);
                     }

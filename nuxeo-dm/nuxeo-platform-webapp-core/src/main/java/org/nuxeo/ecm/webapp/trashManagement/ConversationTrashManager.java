@@ -34,6 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 public class ConversationTrashManager implements Serializable {
 
     private static final long serialVersionUID = 9876098763432L;
+
     private static final Log log = LogFactory.getLog(ConversationTrashManager.class);
 
     private static TrashManagementService trashService;
@@ -48,8 +49,7 @@ public class ConversationTrashManager implements Serializable {
 
     protected static TrashManagementService getService() {
         if (trashService == null) {
-            trashService = (TrashManagementService) Framework.getRuntime().getComponent(
-                    TrashManagementService.NAME);
+            trashService = (TrashManagementService) Framework.getRuntime().getComponent(TrashManagementService.NAME);
         }
         return trashService;
     }

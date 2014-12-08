@@ -58,8 +58,7 @@ public class OAuth2ServiceProvidersActionBean extends DirectoryBasedEditor {
 
             JsonFactory JSON_FACTORY = new JacksonFactory();
 
-            AuthorizationCodeFlow flow = serviceProvider.getAuthorizationCodeFlow(
-                    HTTP_TRANSPORT, JSON_FACTORY);
+            AuthorizationCodeFlow flow = serviceProvider.getAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY);
 
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             String redirectUrl = VirtualHostHelper.getServerURL(request)

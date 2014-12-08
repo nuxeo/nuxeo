@@ -47,16 +47,15 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
-@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit",
-        "org.nuxeo.elasticsearch.seqgen", "org.nuxeo.elasticsearch.audit" })
+@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit", "org.nuxeo.elasticsearch.seqgen",
+        "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
 public class TestAuditWithElasticSearch {
 
-    protected @Inject
-    CoreSession session;
+    protected @Inject CoreSession session;
 
     @Inject
     protected ElasticSearchAdmin esa;
@@ -98,24 +97,19 @@ public class TestAuditWithElasticSearch {
         Long startId = trail.get(0).getId();
         Assert.assertEquals("documentCreated", trail.get(0).getEventId());
         Assert.assertEquals("eventDocumentCategory", trail.get(0).getCategory());
-        Assert.assertEquals(
-                "A File",
-                trail.get(0).getExtendedInfos().get("title").getValue(
-                        String.class));
+        Assert.assertEquals("A File", trail.get(0).getExtendedInfos().get("title").getValue(String.class));
 
         Assert.assertEquals(startId + 1, trail.get(1).getId());
         Assert.assertEquals("documentModified", trail.get(1).getEventId());
         Assert.assertEquals("eventDocumentCategory", trail.get(1).getCategory());
-        Assert.assertEquals(
-                "A modified File",
-                trail.get(1).getExtendedInfos().get("title").getValue(
-                        String.class));
+        Assert.assertEquals("A modified File", trail.get(1).getExtendedInfos().get("title").getValue(String.class));
     }
 
     @Test
     public void shouldSupportMultiCriteriaQueries() throws Exception {
-        
-        LogEntryGen.generate("mydoc", "evt", "cat", 9);;
+
+        LogEntryGen.generate("mydoc", "evt", "cat", 9);
+        ;
 
         AuditReader reader = Framework.getLocalService(AuditReader.class);
 
@@ -145,12 +139,10 @@ public class TestAuditWithElasticSearch {
         Assert.assertEquals(2, res.size());
 
         // test page size
-        res = reader.queryLogsByPage((String[]) null, (Date) null,
-                (String[]) null, "/mydoc", 0, 5);
+        res = reader.queryLogsByPage((String[]) null, (Date) null, (String[]) null, "/mydoc", 0, 5);
         Assert.assertEquals(5, res.size());
 
-        res = reader.queryLogsByPage((String[]) null, (Date) null,
-                (String[]) null, "/mydoc", 1, 5);
+        res = reader.queryLogsByPage((String[]) null, (Date) null, (String[]) null, "/mydoc", 1, 5);
         Assert.assertEquals(4, res.size());
 
     }
@@ -162,16 +154,14 @@ public class TestAuditWithElasticSearch {
 
         AuditReader reader = Framework.getLocalService(AuditReader.class);
 
-        String jsonQuery = IOUtils.toString(
-                this.getClass().getClassLoader().getResourceAsStream(
-                        "filtredQuery.json"), "UTF-8");
+        String jsonQuery = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("filtredQuery.json"),
+                "UTF-8");
         List<?> res = reader.nativeQuery(jsonQuery, 0, 5);
 
         Assert.assertEquals(2, res.size());
 
         jsonQuery = IOUtils.toString(
-                this.getClass().getClassLoader().getResourceAsStream(
-                        "filtredQueryWithParams.json"), "UTF-8");
+                this.getClass().getClassLoader().getResourceAsStream("filtredQueryWithParams.json"), "UTF-8");
 
         Map<String, Object> params = new HashMap<>();
         params.put("category", "category1");

@@ -30,12 +30,10 @@ import static org.junit.Assert.*;
 public class URLPatternFilterTest {
 
     private static URLPatternFilter filter1 = new URLPatternFilter(true,
-            Collections.singletonList("http://foo.apache.org"),
-            Collections.singletonList("http://.*apache.org.*"));
+            Collections.singletonList("http://foo.apache.org"), Collections.singletonList("http://.*apache.org.*"));
 
     private static URLPatternFilter filter2 = new URLPatternFilter(false,
-            Collections.singletonList("http://.*apache.org.*"),
-            Collections.singletonList("http://foo.apache.org"));
+            Collections.singletonList("http://.*apache.org.*"), Collections.singletonList("http://foo.apache.org"));
 
     @Test
     public void testAllow() {

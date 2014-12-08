@@ -23,7 +23,6 @@ import org.nuxeo.ecm.platform.annotations.gwt.client.configuration.AnnotationDef
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public interface AnnotationDefinitionFilter {
 

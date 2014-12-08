@@ -29,17 +29,13 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 
 /**
- * Delete constraint preventing from removing an entry from a parent directory
- * if it is referenced in a child directory.
- *
+ * Delete constraint preventing from removing an entry from a parent directory if it is referenced in a child directory.
  * <p>
- * Needs to know the child directory name and the field where parent entry id is
- * declared on it.
+ * Needs to know the child directory name and the field where parent entry id is declared on it.
  *
  * @author Anahide Tchertchian
  */
-public class HierarchicalDirectoryUIDeleteConstraint extends
-        AbstractDirectoryUIDeleteConstraint {
+public class HierarchicalDirectoryUIDeleteConstraint extends AbstractDirectoryUIDeleteConstraint {
 
     private static final long serialVersionUID = 1L;
 
@@ -50,31 +46,25 @@ public class HierarchicalDirectoryUIDeleteConstraint extends
     protected String targetDirectoryField;
 
     @Override
-    public void setProperties(Map<String, String> properties)
-            throws DirectoryException {
+    public void setProperties(Map<String, String> properties) throws DirectoryException {
         String targetDirKey = "targetDirectory";
         String targetDirFieldKey = "targetDirectoryField";
         if (properties == null) {
-            throw new DirectoryException(String.format(
-                    "This delete constraint requires properties '%s' and '%s'",
+            throw new DirectoryException(String.format("This delete constraint requires properties '%s' and '%s'",
                     targetDirKey, targetDirFieldKey));
         }
         if (!properties.containsKey(targetDirKey)) {
-            throw new DirectoryException(String.format(
-                    "This delete constraint requires property '%s'",
-                    targetDirKey));
+            throw new DirectoryException(String.format("This delete constraint requires property '%s'", targetDirKey));
         }
         if (!properties.containsKey(targetDirFieldKey)) {
-            throw new DirectoryException(String.format(
-                    "This delete constraint requires property '%s'",
+            throw new DirectoryException(String.format("This delete constraint requires property '%s'",
                     targetDirFieldKey));
         }
         targetDirectory = properties.get(targetDirKey);
         targetDirectoryField = properties.get(targetDirFieldKey);
     }
 
-    public boolean canDelete(DirectoryService dirService, String entryId)
-            throws DirectoryException, ClientException {
+    public boolean canDelete(DirectoryService dirService, String entryId) throws DirectoryException, ClientException {
         Session dirSession = null;
         try {
             dirSession = dirService.open(targetDirectory);
@@ -86,9 +76,8 @@ public class HierarchicalDirectoryUIDeleteConstraint extends
                 return true;
             }
             if (log.isDebugEnabled()) {
-                log.debug("Can not delete " + targetDirectory + " " + entryId
-                        + ", constraint on " + targetDirectoryField + ":"
-                        + res.get(0).getId());
+                log.debug("Can not delete " + targetDirectory + " " + entryId + ", constraint on "
+                        + targetDirectoryField + ":" + res.get(0).getId());
             }
             return false;
         } finally {

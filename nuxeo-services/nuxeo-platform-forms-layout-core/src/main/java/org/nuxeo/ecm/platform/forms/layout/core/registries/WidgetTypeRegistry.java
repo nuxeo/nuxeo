@@ -63,14 +63,12 @@ public class WidgetTypeRegistry extends SimpleContributionRegistry<WidgetType> {
 
     @Override
     // overridden to handle aliases
-    public synchronized void removeContribution(WidgetType contrib,
-            boolean useEqualsMethod) {
+    public synchronized void removeContribution(WidgetType contrib, boolean useEqualsMethod) {
         super.removeContribution(contrib, useEqualsMethod);
         List<String> aliases = contrib.getAliases();
         if (aliases != null) {
             for (String alias : aliases) {
-                FragmentList<WidgetType> head = removeFragment(alias, contrib,
-                        useEqualsMethod);
+                FragmentList<WidgetType> head = removeFragment(alias, contrib, useEqualsMethod);
                 if (head != null) {
                     WidgetType result = head.merge(this);
                     if (result != null) {

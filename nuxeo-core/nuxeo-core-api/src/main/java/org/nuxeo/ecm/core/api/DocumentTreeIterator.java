@@ -58,18 +58,15 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
     /**
      * Creates the iterator given the tree root.
      */
-    public DocumentTreeIterator(CoreSession session, DocumentModel root)
-            throws ClientException {
+    public DocumentTreeIterator(CoreSession session, DocumentModel root) throws ClientException {
         this(session, root, false);
     }
 
-    public DocumentTreeIterator(CoreSession session, DocumentModel root,
-            boolean excludeRoot) throws ClientException {
+    public DocumentTreeIterator(CoreSession session, DocumentModel root, boolean excludeRoot) throws ClientException {
         this.root = root;
         this.session = session;
         if (excludeRoot) {
-            sequence = session.getChildrenIterator(root.getRef(), null, null,
-                    null);
+            sequence = session.getChildrenIterator(root.getRef(), null, null, null);
         } else {
             sequence = new OneDocSequence(root);
         }
@@ -78,8 +75,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
     /**
      * Gets next non empty sequence from queue.
      * <p>
-     * This will remove from the queue all traversed sequences (the empty ones
-     * and the first not empty sequence found).
+     * This will remove from the queue all traversed sequences (the empty ones and the first not empty sequence found).
      *
      * @return the first non empty sequence or null if no one was found
      */
@@ -112,8 +108,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
         // satisfy iterator contract - throw an exception if no more elements to
         // iterate
         if (!hasNext()) {
-            throw new NoSuchElementException(
-                    "no more documents to iterate over");
+            throw new NoSuchElementException("no more documents to iterate over");
         }
         // we have a non empty sequence to iterate over
         DocumentModel doc = sequence.next();
@@ -121,8 +116,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
             // TODO: load children after the document was traversed
             // update the sequence queue with children from this folder
             try {
-                queue.add(session.getChildrenIterator(doc.getRef(), null, null,
-                        null));
+                queue.add(session.getChildrenIterator(doc.getRef(), null, null, null));
             } catch (ClientException e) {
                 log.error(e);
             }
@@ -157,8 +151,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
         @Override
         public DocumentModel next() {
             if (doc == null) {
-                throw new NoSuchElementException(
-                        "no more documents to iterate over");
+                throw new NoSuchElementException("no more documents to iterate over");
             }
             hasNext = false;
             return doc;
@@ -166,8 +159,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
 
         @Override
         public void remove() {
-            throw new UnsupportedOperationException(
-                    "remove is not yet supported");
+            throw new UnsupportedOperationException("remove is not yet supported");
         }
     }
 

@@ -25,15 +25,12 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for
- * {@link org.nuxeo.ecm.platform.ec.notification.service.NotificationListenerVetoDescriptor}
- * elements
+ * Registry for {@link org.nuxeo.ecm.platform.ec.notification.service.NotificationListenerVetoDescriptor} elements
  *
  * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  * @since 5.6
  */
-public class NotificationListenerVetoRegistry extends
-        ContributionFragmentRegistry<NotificationListenerVetoDescriptor> {
+public class NotificationListenerVetoRegistry extends ContributionFragmentRegistry<NotificationListenerVetoDescriptor> {
 
     private static final Log log = LogFactory.getLog(NotificationListenerVetoRegistry.class);
 
@@ -45,20 +42,17 @@ public class NotificationListenerVetoRegistry extends
     }
 
     @Override
-    public NotificationListenerVetoDescriptor clone(
-            NotificationListenerVetoDescriptor descriptor) {
+    public NotificationListenerVetoDescriptor clone(NotificationListenerVetoDescriptor descriptor) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void contributionRemoved(String id,
-            NotificationListenerVetoDescriptor contrib) {
+    public void contributionRemoved(String id, NotificationListenerVetoDescriptor contrib) {
         vetos.remove(id);
     }
 
     @Override
-    public void contributionUpdated(String id,
-            NotificationListenerVetoDescriptor contrib,
+    public void contributionUpdated(String id, NotificationListenerVetoDescriptor contrib,
             NotificationListenerVetoDescriptor newOrigContrib) {
         if (contrib.isRemove()) {
             contributionRemoved(id, contrib);
@@ -77,8 +71,7 @@ public class NotificationListenerVetoRegistry extends
     }
 
     @Override
-    public void merge(NotificationListenerVetoDescriptor arg0,
-            NotificationListenerVetoDescriptor arg1) {
+    public void merge(NotificationListenerVetoDescriptor arg0, NotificationListenerVetoDescriptor arg1) {
         throw new UnsupportedOperationException();
     }
 

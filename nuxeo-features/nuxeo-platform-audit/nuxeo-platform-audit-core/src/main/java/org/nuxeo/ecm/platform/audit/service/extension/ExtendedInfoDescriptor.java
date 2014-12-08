@@ -44,7 +44,6 @@ public class ExtendedInfoDescriptor implements Serializable {
     @XNode("@enabled")
     private boolean enabled = true;
 
-
     public String getKey() {
         return key;
     }

@@ -28,8 +28,7 @@ import org.junit.Test;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class RuntimeInitializationTest extends NXRuntimeTestCase {
 

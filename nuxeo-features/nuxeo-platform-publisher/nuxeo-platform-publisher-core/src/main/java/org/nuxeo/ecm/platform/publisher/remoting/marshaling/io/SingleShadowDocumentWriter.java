@@ -34,8 +34,7 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 
 /**
- * {@link DocumentModelWriter} that creates a shallow DocumentModel (ie: no
- * path and no uuid).
+ * {@link DocumentModelWriter} that creates a shallow DocumentModel (ie: no path and no uuid).
  *
  * @author tiry
  */
@@ -50,8 +49,7 @@ public class SingleShadowDocumentWriter extends AbstractDocumentModelWriter {
     }
 
     @Override
-    public DocumentTranslationMap write(ExportedDocument doc)
-            throws IOException {
+    public DocumentTranslationMap write(ExportedDocument doc) throws IOException {
 
         try {
             dm = createDocument(doc, null);
@@ -62,15 +60,13 @@ public class SingleShadowDocumentWriter extends AbstractDocumentModelWriter {
         DocumentLocation oldLoc = doc.getSourceLocation();
         String oldServerName = oldLoc.getServerName();
         DocumentRef oldDocRef = oldLoc.getDocRef();
-        DocumentTranslationMap map = new DocumentTranslationMapImpl(
-                oldServerName, oldServerName);
+        DocumentTranslationMap map = new DocumentTranslationMapImpl(oldServerName, oldServerName);
         map.put(oldDocRef, oldDocRef);
         return map;
     }
 
     @Override
-    protected DocumentModel createDocument(ExportedDocument xdoc, Path toPath)
-            throws ClientException {
+    protected DocumentModel createDocument(ExportedDocument xdoc, Path toPath) throws ClientException {
         String docType = xdoc.getType();
         dm = session.createDocumentModel(docType);
         // then load schemas data

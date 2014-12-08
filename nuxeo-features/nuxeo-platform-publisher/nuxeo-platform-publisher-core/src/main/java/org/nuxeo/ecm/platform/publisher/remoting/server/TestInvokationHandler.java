@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@link PublicationInvokationHandler} implementation. Could be called by a
- * Restlet, a WebEngine module or a TestInvoker
+ * {@link PublicationInvokationHandler} implementation. Could be called by a Restlet, a WebEngine module or a
+ * TestInvoker
  *
  * @author tiry
  */
@@ -61,51 +61,41 @@ public class TestInvokationHandler implements PublicationInvokationHandler {
             } else if ("getChildrenNodes".equals(methodName)) {
                 return marshaler.marshallResult(tm.getChildrenNodes((PublicationNode) params.get(0)));
             } else if ("getExistingPublishedDocument".equals(methodName)) {
-                return marshaler.marshallResult(tm.getExistingPublishedDocument(
-                        (String) params.get(0),
+                return marshaler.marshallResult(tm.getExistingPublishedDocument((String) params.get(0),
                         (DocumentLocation) params.get(1)));
             } else if ("getNodeByPath".equals(methodName)) {
-                return marshaler.marshallResult(tm.getNodeByPath(
-                        (String) params.get(0), (String) params.get(1)));
+                return marshaler.marshallResult(tm.getNodeByPath((String) params.get(0), (String) params.get(1)));
             } else if ("getParent".equals(methodName)) {
                 return marshaler.marshallResult(tm.getParent((PublicationNode) params.get(0)));
             } else if ("getPublishedDocumentInNode".equals(methodName)) {
                 return marshaler.marshallResult(tm.getPublishedDocumentInNode((PublicationNode) params.get(0)));
             } else if ("initRemoteSession".equals(methodName)) {
-                return marshaler.marshallResult(tm.initRemoteSession(
-                        (String) params.get(0),
+                return marshaler.marshallResult(tm.initRemoteSession((String) params.get(0),
                         (Map<String, String>) params.get(1)));
             } else if ("release".equals(methodName)) {
                 tm.release((String) params.get(0));
                 return null;
             } else if ("publish".equals(methodName)) {
                 if (params.size() == 2 || params.get(2) == null) {
-                    return marshaler.marshallResult(tm.publish(
-                            (DocumentModel) params.get(0),
+                    return marshaler.marshallResult(tm.publish((DocumentModel) params.get(0),
                             (PublicationNode) params.get(1)));
                 } else {
-                    return marshaler.marshallResult(tm.publish(
-                            (DocumentModel) params.get(0),
-                            (PublicationNode) params.get(1),
-                            (Map<String, String>) params.get(2)));
+                    return marshaler.marshallResult(tm.publish((DocumentModel) params.get(0),
+                            (PublicationNode) params.get(1), (Map<String, String>) params.get(2)));
                 }
             } else if ("unpublish".equals(methodName)) {
                 if (params.get(0) instanceof DocumentModel) {
-                    tm.unpublish((DocumentModel) params.get(0),
-                            (PublicationNode) params.get(1));
+                    tm.unpublish((DocumentModel) params.get(0), (PublicationNode) params.get(1));
                 } else if (params.get(1) instanceof PublishedDocument) {
-                    tm.unpublish((String) params.get(0),
-                            (PublishedDocument) params.get(1));
+                    tm.unpublish((String) params.get(0), (PublishedDocument) params.get(1));
                 }
                 return null;
             } else {
-                throw new ClientException("Unable to handle unknown method "
-                        + methodName);
+                throw new ClientException("Unable to handle unknown method " + methodName);
             }
 
         } catch (ClientException e) {
-            throw new ClientException("Error during invocation of method "
-                    + methodName, e);
+            throw new ClientException("Error during invocation of method " + methodName, e);
         } finally {
 
         }

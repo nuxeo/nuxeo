@@ -26,9 +26,8 @@ public class EventMonitoringFactory extends AbstractResourceFactory {
     @Override
     public void registerResources() {
         EventMonitoring instance = new EventMonitoring();
-         service.registerResource("EventMonitoring",
-                 ObjectNameFactory.formatQualifiedName("EventMonitoring"),
-                 EventMonitoringMBean.class, instance);
+        service.registerResource("EventMonitoring", ObjectNameFactory.formatQualifiedName("EventMonitoring"),
+                EventMonitoringMBean.class, instance);
     }
 
 }

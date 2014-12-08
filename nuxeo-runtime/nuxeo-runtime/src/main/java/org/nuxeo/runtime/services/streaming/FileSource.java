@@ -21,7 +21,6 @@ import java.io.InputStream;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileSource extends AbstractStreamSource {
 

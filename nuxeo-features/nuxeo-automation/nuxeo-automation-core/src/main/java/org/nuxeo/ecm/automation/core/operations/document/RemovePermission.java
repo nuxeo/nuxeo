@@ -64,8 +64,7 @@ public class RemovePermission {
 
     protected void removePermission(DocumentModel doc) throws ClientException {
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
-        boolean permissionChanged = DocumentPermissionHelper.removePermission(
-                acp, aclName, user);
+        boolean permissionChanged = DocumentPermissionHelper.removePermission(acp, aclName, user);
         if (permissionChanged) {
             doc.setACP(acp, true);
         }

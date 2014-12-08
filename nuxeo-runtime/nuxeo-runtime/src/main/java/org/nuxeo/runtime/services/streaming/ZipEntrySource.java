@@ -22,11 +22,11 @@ import java.util.zip.ZipFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ZipEntrySource extends AbstractStreamSource {
 
     protected final String file;
+
     protected final String entry;
 
     public ZipEntrySource(String file, String entry) {
@@ -67,6 +67,7 @@ public class ZipEntrySource extends AbstractStreamSource {
     class ZipEntryInputStream extends InputStream {
 
         final InputStream in;
+
         final ZipFile zip;
 
         ZipEntryInputStream(ZipFile zip, InputStream in) {

@@ -25,9 +25,8 @@ import java.util.Map;
 /**
  * Layout row interface.
  * <p>
- * A layout row is a list {@link Widget} instances, built from a
- * {@link LayoutRowDefinition} in a given mode. It gives information about the
- * widgets presentation.
+ * A layout row is a list {@link Widget} instances, built from a {@link LayoutRowDefinition} in a given mode. It gives
+ * information about the widgets presentation.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -36,8 +35,7 @@ public interface LayoutRow extends Serializable {
     String getName();
 
     /**
-     * Returns the unique identifier of this widget to be used in tag
-     * configuration.
+     * Returns the unique identifier of this widget to be used in tag configuration.
      *
      * @since 5.4.2
      * @see {@link Layout#getTagConfigId()}.
@@ -61,8 +59,7 @@ public interface LayoutRow extends Serializable {
     /**
      * Get properties to use in this mode.
      * <p>
-     * The way that properties will be mapped to rendered components is managed
-     * by the widget type.
+     * The way that properties will be mapped to rendered components is managed by the widget type.
      *
      * @since 5.3.1
      */

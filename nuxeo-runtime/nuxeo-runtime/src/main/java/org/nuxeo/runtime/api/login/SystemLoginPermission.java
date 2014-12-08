@@ -18,7 +18,6 @@ import java.security.Permission;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SystemLoginPermission extends Permission {
 

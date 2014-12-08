@@ -71,20 +71,17 @@ public class ResponseHelper {
                 "attachment; filename=" + blob.getFilename()).build();
     }
 
-    public static Response blobs(List<Blob> blobs) throws MessagingException,
-            IOException {
+    public static Response blobs(List<Blob> blobs) throws MessagingException, IOException {
         MultipartBlobs multipartBlobs = new MultipartBlobs(blobs);
-        return Response.status(httpStatus).entity(multipartBlobs).type(new
-                BoundaryMediaType(multipartBlobs.getContentType())).build();
+        return Response.status(httpStatus).entity(multipartBlobs).type(
+                new BoundaryMediaType(multipartBlobs.getContentType())).build();
     }
 
     /**
      * @since 5.7.2
      */
-    public static Object getResponse(Object result, HttpServletRequest request)
-            throws MessagingException, IOException {
-        if (result == null || "true".equals(request.getHeader
-                ("X-NXVoidOperation"))) {
+    public static Object getResponse(Object result, HttpServletRequest request) throws MessagingException, IOException {
+        if (result == null || "true".equals(request.getHeader("X-NXVoidOperation"))) {
             return emptyContent();
         }
         if (result instanceof Blob) {
@@ -93,25 +90,22 @@ public class ResponseHelper {
             return blobs((BlobList) result);
         } else if (result instanceof DocumentRef) {
             CoreSession session = SessionFactory.getSession(request);
-            return Response.status(httpStatus).entity(session.getDocument(
-                    (DocumentRef) result)).build();
-        } else if (result instanceof DocumentModel
-                || result instanceof DocumentModelList
-                || result instanceof JsonAdapter || result instanceof
-                RecordSet || result instanceof Paginable<?>) {
+            return Response.status(httpStatus).entity(session.getDocument((DocumentRef) result)).build();
+        } else if (result instanceof DocumentModel || result instanceof DocumentModelList
+                || result instanceof JsonAdapter || result instanceof RecordSet || result instanceof Paginable<?>) {
             return Response.status(httpStatus).entity(result).build();
         } else { // try to adapt to JSON
-            return Response.status(httpStatus).entity(new DefaultJsonAdapter
-                    (result)).build();
+            return Response.status(httpStatus).entity(new DefaultJsonAdapter(result)).build();
         }
     }
 
     /**
      * Handle custom http status.
+     *
      * @since 7.1
      */
-    public static Object getResponse(Object result, HttpServletRequest request,
-            int httpStatus) throws IOException, MessagingException {
+    public static Object getResponse(Object result, HttpServletRequest request, int httpStatus) throws IOException,
+            MessagingException {
         ResponseHelper.httpStatus = httpStatus;
         return getResponse(result, request);
     }

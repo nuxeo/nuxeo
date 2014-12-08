@@ -19,28 +19,25 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class ExtensibleContribution extends Contribution {
 
     private static final Log log = LogFactory.getLog(ExtensibleContribution.class);
 
     protected ExtensibleContribution baseContribution;
+
     protected String baseContributionId;
 
     /**
      * Copy this contribution data over the given one.
      * <p>
-     * Warn that the copy must be done deeply - you should clone every element
-     * in any collection you have.
-     * This is to avoid merging data you copy into the base contribution
-     * and breaking subsequent merging operations.
+     * Warn that the copy must be done deeply - you should clone every element in any collection you have. This is to
+     * avoid merging data you copy into the base contribution and breaking subsequent merging operations.
      * <p>
-     * The baseContributionId and contributionId fields should not be copied
-     * since their are copied by the base classes implementation.
+     * The baseContributionId and contributionId fields should not be copied since their are copied by the base classes
+     * implementation.
      */
     protected abstract void copyOver(ExtensibleContribution contrib);
-
 
     public String getBaseContributionId() {
         return baseContributionId;
@@ -57,7 +54,7 @@ public abstract class ExtensibleContribution extends Contribution {
     @Override
     public void resolve(ContributionManager mgr) {
         if (baseContributionId != null) {
-            baseContribution = (ExtensibleContribution)mgr.getResolved(baseContributionId);
+            baseContribution = (ExtensibleContribution) mgr.getResolved(baseContributionId);
         }
     }
 
@@ -108,10 +105,8 @@ public abstract class ExtensibleContribution extends Contribution {
         try {
             clone = getClass().newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(
-                    "Failed to instantiate the contribution class. "
-                            + "Contribution classes must have a trivial constructor",
-                    e);
+            throw new RuntimeException("Failed to instantiate the contribution class. "
+                    + "Contribution classes must have a trivial constructor", e);
         }
         copyOver(clone);
         clone.contributionId = contributionId;

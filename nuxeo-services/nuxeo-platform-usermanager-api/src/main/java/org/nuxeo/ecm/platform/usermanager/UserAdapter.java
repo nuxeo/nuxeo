@@ -21,11 +21,11 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
-* Interface to expose user model fields
-* @since 5.7
-*
-* @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
-*/
+ * Interface to expose user model fields
+ *
+ * @since 5.7
+ * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
+ */
 public interface UserAdapter {
 
     String getName() throws ClientException;

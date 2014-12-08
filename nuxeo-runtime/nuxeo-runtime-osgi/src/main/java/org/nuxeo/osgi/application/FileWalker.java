@@ -25,12 +25,13 @@ import java.io.File;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileWalker {
 
     public static final int CONTINUE = 0;
+
     public static final int RETURN = 1;
+
     public static final int BREAK = 2;
 
     public static int walk(File root, Visitor visitor) {
@@ -65,6 +66,7 @@ public class FileWalker {
             // do something here
             return CONTINUE;
         }
+
         public int visitDirectory(File file) {
             // do something here
             return CONTINUE;

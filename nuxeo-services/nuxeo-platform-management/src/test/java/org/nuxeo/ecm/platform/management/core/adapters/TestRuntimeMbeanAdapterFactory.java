@@ -46,10 +46,8 @@ public class TestRuntimeMbeanAdapterFactory extends SQLRepositoryTestCase {
     }
 
     public void doRegisterInventoryFactory() throws Exception {
-        ResourceFactoryDescriptor factoryDescriptor = new ResourceFactoryDescriptor(
-                RuntimeInventoryFactory.class);
-        managementService.registerContribution(factoryDescriptor, "factories",
-                null);
+        ResourceFactoryDescriptor factoryDescriptor = new ResourceFactoryDescriptor(RuntimeInventoryFactory.class);
+        managementService.registerContribution(factoryDescriptor, "factories", null);
     }
 
 }

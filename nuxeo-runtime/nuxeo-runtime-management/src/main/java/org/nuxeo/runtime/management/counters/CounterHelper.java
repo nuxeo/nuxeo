@@ -21,42 +21,40 @@ package org.nuxeo.runtime.management.counters;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Dummy helper class to be used by code that updates the counters to avoid
- * having to do the service lookup
+ * Dummy helper class to be used by code that updates the counters to avoid having to do the service lookup
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class CounterHelper {
 
     protected static CounterManager cm = Framework.getLocalService(CounterManager.class);
 
     public static void increaseCounter(String counterName) {
-        if (cm!=null) {
+        if (cm != null) {
             cm.increaseCounter(counterName);
         }
     }
 
     public static void increaseCounter(String counterName, long value) {
-        if (cm!=null) {
+        if (cm != null) {
             cm.increaseCounter(counterName, value);
         }
     }
 
     public static void setCounterValue(String counterName, long value) {
-        if (cm!=null) {
+        if (cm != null) {
             cm.setCounterValue(counterName, value);
         }
     }
 
     public static void decreaseCounter(String counterName) {
-        if (cm!=null) {
+        if (cm != null) {
             cm.decreaseCounter(counterName);
         }
     }
 
     public static void decreaseCounter(String counterName, long value) {
-        if (cm!=null) {
+        if (cm != null) {
             cm.decreaseCounter(counterName, value);
         }
     }

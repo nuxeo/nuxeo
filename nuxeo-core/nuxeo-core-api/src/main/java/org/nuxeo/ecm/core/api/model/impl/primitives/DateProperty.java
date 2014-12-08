@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DateProperty extends ScalarProperty {
 
@@ -41,14 +40,13 @@ public class DateProperty extends ScalarProperty {
     }
 
     @Override
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
         if (value.getClass() == Date.class) {
             Calendar cal = Calendar.getInstance();
-            cal.setTime((Date)value);
+            cal.setTime((Date) value);
             return cal;
         }
         if (value instanceof String) {
@@ -63,8 +61,7 @@ public class DateProperty extends ScalarProperty {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType)
-            throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
         if (value == null || toType == Calendar.class) {
             return (T) value;
         }

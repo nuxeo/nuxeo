@@ -41,22 +41,31 @@ import org.w3c.dom.events.MutationEvent;
 
 /**
  * @author Max Stepanov
- *
  */
 public class DOMSynchronizer implements EventListener, IDOMMutationListener {
 
     private static final String DOM_SUBTREE_MODIFIED = "DOMSubtreeModified";
+
     private static final String DOM_NODE_INSERTED = "DOMNodeInserted";
+
     private static final String DOM_NODE_REMOVED = "DOMNodeRemoved";
+
     private static final String DOM_NODE_REMOVED_FROM_DOCUMENT = "DOMNodeRemovedFromDocument";
+
     private static final String DOM_NODE_INSERTED_INTO_DOCUMENT = "DOMNodeInsertedIntoDocument";
+
     private static final String DOM_ATTR_MODIFIED = "DOMAttrModified";
+
     private static final String DOM_CHARACTER_DATA_MODIFIED = "DOMCharacterDataModified";
 
     private final Document document;
+
     private final IDOMSupport domSupport;
+
     private int dispatchLevel;
+
     private DOMMutationEvent currentEvent; /* for debug/test purposes */
+
     private final List<IDOMMutationListener> listeners = new ArrayList<IDOMMutationListener>();
 
     public DOMSynchronizer(Document document, IDOMSupport domSupport) {
@@ -77,50 +86,44 @@ public class DOMSynchronizer implements EventListener, IDOMMutationListener {
         if (DOM_CHARACTER_DATA_MODIFIED.equals(type)) {
             Node target = (Node) event.getTarget();
             String newValue = event.getNewValue();
-            dispatchEvent(new DOMCharacterDataModifiedEvent(
-                    DOMUtil.computeNodeXPath(document, target), newValue));
+            dispatchEvent(new DOMCharacterDataModifiedEvent(DOMUtil.computeNodeXPath(document, target), newValue));
 
         } else if (DOM_NODE_INSERTED.equals(type)) {
             Node target = event.getRelatedNode();
-            Node insertedNode = (Node)event.getTarget();
+            Node insertedNode = (Node) event.getTarget();
             int position = DOMUtil.getNodePosition(insertedNode);
             List<DOMNodeInsertedEvent> list = new ArrayList<DOMNodeInsertedEvent>();
-            buildFragmentInsertedEvents(DOMUtil.computeNodeXPath(document, target),
-                    insertedNode, position, list);
+            buildFragmentInsertedEvents(DOMUtil.computeNodeXPath(document, target), insertedNode, position, list);
             for (DOMNodeInsertedEvent aList : list) {
                 dispatchEvent(aList);
             }
 
         } else if (DOM_NODE_REMOVED.equals(type)) {
             Node target = (Node) event.getTarget();
-            dispatchEvent(new DOMNodeRemovedEvent(
-                    DOMUtil.computeNodeXPath(document, target)));
+            dispatchEvent(new DOMNodeRemovedEvent(DOMUtil.computeNodeXPath(document, target)));
 
         } else if (DOM_ATTR_MODIFIED.equals(type)) {
             Node target = (Node) event.getTarget();
-            dispatchEvent(new DOMAttrModifiedEvent(
-                    DOMUtil.computeNodeXPath(document, target), event.getAttrName(), event.getAttrChange(), event.getNewValue()));
+            dispatchEvent(new DOMAttrModifiedEvent(DOMUtil.computeNodeXPath(document, target), event.getAttrName(),
+                    event.getAttrChange(), event.getNewValue()));
 
         } else {
-            System.err.println("!Unsupported event type "+type);
+            System.err.println("!Unsupported event type " + type);
         }
     }
 
-    private static void buildFragmentInsertedEvents(String baseXPath, Node node,
-            int position, List<DOMNodeInsertedEvent> list) {
+    private static void buildFragmentInsertedEvents(String baseXPath, Node node, int position,
+            List<DOMNodeInsertedEvent> list) {
         if (node instanceof Text) {
-            list.add(new DOMNodeInsertedEvent(baseXPath,
-                    "#text" + ((Text) node).getData(), position));
+            list.add(new DOMNodeInsertedEvent(baseXPath, "#text" + ((Text) node).getData(), position));
         } else if (node instanceof Element) {
-            list.add(new DOMNodeInsertedEvent(baseXPath,
-                    DOMUtil.getElementOuterNoChildren((Element) node), position));
+            list.add(new DOMNodeInsertedEvent(baseXPath, DOMUtil.getElementOuterNoChildren((Element) node), position));
             if (node.hasChildNodes()) {
                 baseXPath += DOMUtil.computeNodeXPath(node.getParentNode(), node);
                 node = node.getFirstChild();
                 position = 0;
                 while (node != null) {
-                    buildFragmentInsertedEvents(baseXPath, node, position,
-                            list);
+                    buildFragmentInsertedEvents(baseXPath, node, position, list);
                     node = node.getNextSibling();
                     ++position;
                 }
@@ -164,7 +167,7 @@ public class DOMSynchronizer implements EventListener, IDOMMutationListener {
         try {
             Node target = DOMUtil.findNodeByXPath(document, event.getTarget());
             if (target == null) {
-                System.err.println("!Null target for "+event.getTarget());
+                System.err.println("!Null target for " + event.getTarget());
                 return;
             }
 
@@ -173,10 +176,10 @@ public class DOMSynchronizer implements EventListener, IDOMMutationListener {
                     System.err.println("!Unsupported target node type");
                     return;
                 }
-                int position = ((DOMNodeInsertedEvent)event).getPosition();
-                String fragment = ((DOMNodeInsertedEvent)event).getFragment();
+                int position = ((DOMNodeInsertedEvent) event).getPosition();
+                String fragment = ((DOMNodeInsertedEvent) event).getFragment();
                 Node docFragment;
-                if(fragment.startsWith("#text")) {
+                if (fragment.startsWith("#text")) {
                     docFragment = document.createTextNode(fragment.substring(5));
                 } else {
                     docFragment = domSupport.createContextualFragment(target, fragment);
@@ -201,11 +204,11 @@ public class DOMSynchronizer implements EventListener, IDOMMutationListener {
                     System.err.println("!Unsupported target node type");
                     return;
                 }
-                String attrName = ((DOMAttrModifiedEvent)event).getAttrName();
-                short attrChange = ((DOMAttrModifiedEvent)event).getAttrChange();
-                String newValue = ((DOMAttrModifiedEvent)event).getNewValue();
+                String attrName = ((DOMAttrModifiedEvent) event).getAttrName();
+                short attrChange = ((DOMAttrModifiedEvent) event).getAttrChange();
+                String newValue = ((DOMAttrModifiedEvent) event).getNewValue();
                 NamedNodeMap attrs = target.getAttributes();
-                if(attrChange == MutationEvent.REMOVAL) {
+                if (attrChange == MutationEvent.REMOVAL) {
                     attrs.removeNamedItem(attrName);
                 } else {
                     Attr attr = (Attr) attrs.getNamedItem(attrName);

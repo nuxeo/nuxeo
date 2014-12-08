@@ -32,19 +32,16 @@ import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
 import com.ibm.icu.text.CharsetDetector;
 
-public class PlainTextPreviewer extends AbstractPreviewer implements
-        MimeTypePreviewer {
+public class PlainTextPreviewer extends AbstractPreviewer implements MimeTypePreviewer {
 
     protected String htmlContent(String content) {
         return "<pre>"
-                + content.replace("&", "&amp;").replace("<", "&lt;").replace(
-                        ">", "&gt;").replace("\'", "&apos;").replace("\"",
-                        "&quot;").replace("\n", "<br/>") + "</pre>";
+                + content.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\'", "&apos;").replace(
+                        "\"", "&quot;").replace("\n", "<br/>") + "</pre>";
     }
 
     @Override
-    public List<Blob> getPreview(Blob blob, DocumentModel dm)
-            throws PreviewException {
+    public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         List<Blob> blobResults = new ArrayList<Blob>();
 
         StringBuilder htmlPage = new StringBuilder();

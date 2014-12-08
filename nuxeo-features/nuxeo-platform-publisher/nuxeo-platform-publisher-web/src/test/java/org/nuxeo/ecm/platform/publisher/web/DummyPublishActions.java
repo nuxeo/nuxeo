@@ -21,8 +21,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 public class DummyPublishActions extends AbstractPublishActions {
 
-    public DummyPublishActions(CoreSession documentManager,
-            ResourcesAccessor resourcesAccessor) {
+    public DummyPublishActions(CoreSession documentManager, ResourcesAccessor resourcesAccessor) {
         this.documentManager = documentManager;
         this.messages = resourcesAccessor.getMessages();
     }

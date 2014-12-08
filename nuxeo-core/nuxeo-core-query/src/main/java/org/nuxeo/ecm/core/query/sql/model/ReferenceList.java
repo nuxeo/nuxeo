@@ -17,13 +17,11 @@ package org.nuxeo.ecm.core.query.sql.model;
 import java.util.ArrayList;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ReferenceList extends ArrayList<Reference> implements Operand {
 
     private static final long serialVersionUID = -1024570813196737623L;
-
 
     @Override
     public void accept(IVisitor visitor) {

@@ -77,13 +77,11 @@ public class BuiltinModes {
     }
 
     /**
-     * Returns true if given layout mode is mapped by default to the edit
-     * widget mode.
+     * Returns true if given layout mode is mapped by default to the edit widget mode.
      */
     public static boolean isBoundToEditMode(String layoutMode) {
         if (layoutMode != null) {
-            if (layoutMode.startsWith(CREATE) || layoutMode.startsWith(EDIT)
-                    || layoutMode.startsWith(SEARCH)
+            if (layoutMode.startsWith(CREATE) || layoutMode.startsWith(EDIT) || layoutMode.startsWith(SEARCH)
                     || layoutMode.startsWith(BULK_EDIT)) {
                 return true;
             }
@@ -94,11 +92,9 @@ public class BuiltinModes {
     /**
      * Returns the default mode to use for a widget, given the layout mode.
      * <p>
-     * Returns {@link BuiltinWidgetModes#EDIT} for all modes bound to edit,
-     * {@link BuiltinWidgetModes#VIEW} for modes {@link #VIEW}, {@link #HEADER}
-     * and {@link #SUMMARY}. {@link #PDF} and {@link #CSV} are respectively
-     * bound to {@link BuiltinWidgetModes#PDF} and
-     * {@link BuiltinWidgetModes#CSV}. In other cases, returns
+     * Returns {@link BuiltinWidgetModes#EDIT} for all modes bound to edit, {@link BuiltinWidgetModes#VIEW} for modes
+     * {@link #VIEW}, {@link #HEADER} and {@link #SUMMARY}. {@link #PDF} and {@link #CSV} are respectively bound to
+     * {@link BuiltinWidgetModes#PDF} and {@link BuiltinWidgetModes#CSV}. In other cases, returns
      * {@link BuiltinWidgetModes#PLAIN}.
      * <p>
      * This method is not called when mode is explicitely set on the widget.
@@ -107,9 +103,7 @@ public class BuiltinModes {
         if (layoutMode != null) {
             if (isBoundToEditMode(layoutMode)) {
                 return BuiltinWidgetModes.EDIT;
-            } else if (layoutMode.startsWith(VIEW)
-                    || layoutMode.startsWith(SUMMARY)
-                    || layoutMode.startsWith(LISTING)
+            } else if (layoutMode.startsWith(VIEW) || layoutMode.startsWith(SUMMARY) || layoutMode.startsWith(LISTING)
                     || layoutMode.startsWith(HEADER)) {
                 return BuiltinWidgetModes.VIEW;
             } else if (layoutMode.startsWith(CSV)) {

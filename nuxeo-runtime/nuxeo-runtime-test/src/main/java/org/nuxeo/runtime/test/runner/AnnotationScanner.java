@@ -76,11 +76,13 @@ public class AnnotationScanner {
         if (!visitedClasses.contains(clazz)) {
             scan(clazz);
         }
-        return (List<T>) ImmutableList.copyOf(Iterables.filter(classes.get(clazz), Predicates.instanceOf(annotationType)));
+        return (List<T>) ImmutableList.copyOf(Iterables.filter(classes.get(clazz),
+                Predicates.instanceOf(annotationType)));
     }
 
     /**
      * TODO when collecting annotations annotated with {@link Inherited} they will be collected twice.
+     *
      * @param clazz
      * @param result
      * @param visitedClasses

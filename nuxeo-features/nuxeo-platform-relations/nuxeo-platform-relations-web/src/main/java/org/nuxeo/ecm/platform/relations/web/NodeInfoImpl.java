@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class NodeInfoImpl implements NodeInfo {
 
@@ -91,8 +90,7 @@ public class NodeInfoImpl implements NodeInfo {
     public String getAction() {
         if (visible && documentModel != null) {
             String docId = documentModel.getId();
-            String actionValue = String.format(
-                    "#{navigationContext.navigateToId('%s')}", docId);
+            String actionValue = String.format("#{navigationContext.navigateToId('%s')}", docId);
             return actionValue;
         }
         return null;
@@ -123,8 +121,7 @@ public class NodeInfoImpl implements NodeInfo {
             if (documentModel != null) {
                 String documentTitle;
                 try {
-                    documentTitle = (String) documentModel.getProperty(
-                            "dublincore", "title");
+                    documentTitle = (String) documentModel.getProperty("dublincore", "title");
                 } catch (ClientException e) {
                     throw new ClientRuntimeException(e);
                 }

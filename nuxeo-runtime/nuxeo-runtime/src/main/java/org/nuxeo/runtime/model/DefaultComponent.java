@@ -14,7 +14,6 @@
 
 package org.nuxeo.runtime.model;
 
-
 /**
  * Empty implementation for a component.
  *
@@ -44,8 +43,7 @@ public class DefaultComponent implements Component, Adaptable {
             return;
         }
         for (Object contrib : contribs) {
-            registerContribution(contrib, extension.getExtensionPoint(),
-                    extension.getComponent());
+            registerContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
         }
         setModifiedNow();
     }
@@ -57,18 +55,15 @@ public class DefaultComponent implements Component, Adaptable {
             return;
         }
         for (Object contrib : contribs) {
-            unregisterContribution(contrib, extension.getExtensionPoint(),
-                    extension.getComponent());
+            unregisterContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
         }
         setModifiedNow();
     }
 
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
     @Override

@@ -20,8 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Provider simulating mock results given a page size ands a total number of
- * results
+ * Provider simulating mock results given a page size ands a total number of results
  *
  * @author Anahide Tchertchian
  */
@@ -41,8 +40,7 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
         knowsResultsCount = false;
     }
 
-    public MockPageProvider(long pageSize, long resultsCount,
-            boolean knowsResultsCount) {
+    public MockPageProvider(long pageSize, long resultsCount, boolean knowsResultsCount) {
         setPageSize(pageSize);
         givenResultsCount = resultsCount;
         this.knowsResultsCount = knowsResultsCount;
@@ -62,8 +60,7 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
         }
         currentItems = new ArrayList<MockPagedListItem>();
         long offset = getCurrentPageOffset();
-        for (long i = offset; i < offset + usedPageSize
-                && i < givenResultsCount; i++) {
+        for (long i = offset; i < offset + usedPageSize && i < givenResultsCount; i++) {
             currentItems.add(getItem(i));
         }
         if (!knowsResultsCount) {
@@ -81,8 +78,7 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
     }
 
     protected MockPagedListItem getItem(long position) {
-        return new MockPagedListItem(String.format("Mock_%s",
-                Long.valueOf(position)), position);
+        return new MockPagedListItem(String.format("Mock_%s", Long.valueOf(position)), position);
     }
 
     @Override

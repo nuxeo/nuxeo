@@ -36,21 +36,21 @@ import com.google.inject.Inject;
 
 /**
  * @author matic
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
 @Jetty(port = 18080)
 public class UploadBigFileTest {
 
-    @Inject Session session;
+    @Inject
+    Session session;
 
     @Test
     public void withMaxMemory() throws Exception {
         MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
         MemoryUsage usage = mbean.getHeapMemoryUsage();
         MockInputStream source = UploadFileSupport.newMockInput(usage.getMax(), false);
-        FileInputStream result = new UploadFileSupport(session,"/").testUploadFile(source);
+        FileInputStream result = new UploadFileSupport(session, "/").testUploadFile(source);
         assertEquals(source.consumed, result.getChannel().size());
     }
 

@@ -22,7 +22,6 @@ import java.io.Serializable;
  * Shared utils methods for the converters
  *
  * @since 7.1
- *
  * @author Vincent Vergnolle
  */
 final class ConverterUtils {

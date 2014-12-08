@@ -41,7 +41,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 /**
  * Connector wrapping a {@link HttpClient} instance.
  *
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
@@ -50,8 +49,7 @@ public class HttpConnector implements Connector {
     protected final HttpClient http;
 
     /**
-     * Timeout in milliseconds for the socket, connection manager and connection
-     * used by {@link #http}.
+     * Timeout in milliseconds for the socket, connection manager and connection used by {@link #http}.
      */
     protected final int httpConnectionTimeout;
 
@@ -64,8 +62,7 @@ public class HttpConnector implements Connector {
     }
 
     /**
-     * Allows to set a timeout for the HTTP connection to avoid infinite or
-     * quite long waiting periods if:
+     * Allows to set a timeout for the HTTP connection to avoid infinite or quite long waiting periods if:
      * <ul>
      * <li>Nuxeo is broken or running into an infinite loop</li>
      * <li>the network doesn't respond at all</li>
@@ -85,8 +82,7 @@ public class HttpConnector implements Connector {
      * @see #HttpConnector(HttpClient, long)
      * @since 5.7
      */
-    public HttpConnector(HttpClient http, HttpContext ctx,
-            int httpConnectionTimeout) {
+    public HttpConnector(HttpClient http, HttpContext ctx, int httpConnectionTimeout) {
         ctx.setAttribute(HttpClientContext.COOKIE_STORE, new BasicCookieStore());
         this.http = http;
         this.httpConnectionTimeout = httpConnectionTimeout;
@@ -105,8 +101,7 @@ public class HttpConnector implements Connector {
                     entity = new MultipartRequestEntity((MimeMultipart) obj);
                 } else {
                     try {
-                        entity = new StringEntity(obj.toString(),
-                                Charsets.UTF_8);
+                        entity = new StringEntity(obj.toString(), Charsets.UTF_8);
                     } catch (UnsupportedCharsetException e) {
                         throw new Error("Cannot encode into UTF-8", e);
                     }
@@ -124,8 +119,7 @@ public class HttpConnector implements Connector {
         }
     }
 
-    protected Object execute(Request request, HttpUriRequest httpReq)
-            throws RemoteException, IOException {
+    protected Object execute(Request request, HttpUriRequest httpReq) throws RemoteException, IOException {
         for (Map.Entry<String, String> entry : request.entrySet()) {
             httpReq.setHeader(entry.getKey(), entry.getValue());
         }
@@ -136,15 +130,13 @@ public class HttpConnector implements Connector {
             if (status < 400) {
                 return null;
             }
-            throw new RemoteException(status, "ServerError", "Server Error",
-                    (Throwable) null);
+            throw new RemoteException(status, "ServerError", "Server Error", (Throwable) null);
         }
         Header ctypeHeader = entity.getContentType();
         if (ctypeHeader == null) { // handle broken responses with no ctype
             if (status != 200) {
                 // this may happen when login failed
-                throw new RemoteException(status, "ServerError",
-                        "Server Error", (Throwable) null);
+                throw new RemoteException(status, "ServerError", "Server Error", (Throwable) null);
             }
             return null; // cannot handle responses with no ctype
         }
@@ -157,18 +149,14 @@ public class HttpConnector implements Connector {
         return request.handleResult(status, ctype, disp, entity.getContent());
     }
 
-    protected HttpResponse executeRequestWithTimeout(HttpUriRequest httpReq)
-            throws IOException {
+    protected HttpResponse executeRequestWithTimeout(HttpUriRequest httpReq) throws IOException {
         // Set timeout for the socket, connection manager
         // and connection itself
         if (httpConnectionTimeout > 0) {
             HttpParams httpParams = http.getParams();
-            httpParams.setIntParameter("http.socket.timeout",
-                    httpConnectionTimeout);
-            httpParams.setIntParameter("http.connection-manager.timeout",
-                    httpConnectionTimeout);
-            httpParams.setIntParameter("http.connection.timeout",
-                    httpConnectionTimeout);
+            httpParams.setIntParameter("http.socket.timeout", httpConnectionTimeout);
+            httpParams.setIntParameter("http.connection-manager.timeout", httpConnectionTimeout);
+            httpParams.setIntParameter("http.connection.timeout", httpConnectionTimeout);
         }
         return http.execute(httpReq, ctx);
     }

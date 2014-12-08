@@ -15,8 +15,7 @@ package org.nuxeo.ecm.core.schema.types;
 /**
  * A list of typed objects.
  * <p>
- * The List type can validate java <code>array</code> and/or java
- * <code>Collection</code>.
+ * The List type can validate java <code>array</code> and/or java <code>Collection</code>.
  */
 public interface ListType extends Type {
 
@@ -30,8 +29,7 @@ public interface ListType extends Type {
     /**
      * The field name if any was specified.
      * <p>
-     * This is used to more for outputting the list as XML and for
-     * compatibility with XSD.
+     * This is used to more for outputting the list as XML and for compatibility with XSD.
      *
      * @return the field name
      */
@@ -86,13 +84,11 @@ public interface ListType extends Type {
     boolean isArray();
 
     /**
-     * This method is provided for compatibility. Existing code is mapping scalar lists to arrays
-     * but this should be changed in order to map only explicit scalar list (those declared using xs:list)
-     * to arrays and not all list that have scalar items.
+     * This method is provided for compatibility. Existing code is mapping scalar lists to arrays but this should be
+     * changed in order to map only explicit scalar list (those declared using xs:list) to arrays and not all list that
+     * have scalar items.
      *
-     * @return true if the list items are of a scalar type
-     *
-     * TODO FIXME XXX remove the method and use instead isArray
+     * @return true if the list items are of a scalar type TODO FIXME XXX remove the method and use instead isArray
      */
     boolean isScalarList();
 

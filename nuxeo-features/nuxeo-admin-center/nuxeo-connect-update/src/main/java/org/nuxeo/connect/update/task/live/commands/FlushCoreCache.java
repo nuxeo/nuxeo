@@ -26,8 +26,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 
 /**
- * Flush any cache held by the core. This should be used when document types
- * are installed or removed.
+ * Flush any cache held by the core. This should be used when document types are installed or removed.
  * <p>
  * The inverse of this command is itself.
  *
@@ -36,8 +35,7 @@ import org.nuxeo.runtime.reload.ReloadService;
 public class FlushCoreCache extends FlushCoreCachePlaceholder {
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         Framework.getService(ReloadService.class).reloadRepository();
         return new FlushCoreCache();
     }

@@ -59,8 +59,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
 
     private DocumentModel version1;
 
-    private final NuxeoPrincipal user = new UserPrincipal("bob",
-            new ArrayList<String>(), false, false);
+    private final NuxeoPrincipal user = new UserPrincipal("bob", new ArrayList<String>(), false, false);
 
     @Override
     @Before
@@ -73,8 +72,8 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
     public void testAnnotateDocuments() throws Exception {
         waitForAsyncExec();
         assertNotNull(session);
-        DocumentModel myfileModel = session.createDocumentModel(
-                session.getRootDocument().getPathAsString(), "999", "File");
+        DocumentModel myfileModel = session.createDocumentModel(session.getRootDocument().getPathAsString(), "999",
+                "File");
         DocumentModel myfile = session.createDocument(myfileModel);
         assertNotNull(myfile);
 
@@ -85,15 +84,12 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         openSession();
 
         // the text 'zombie' is not found in the document
-        DocumentModelList results = session.query(
-                "SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
+        DocumentModelList results = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
         assertEquals(0, results.size());
 
-        String uriMyfileServer1 = viewCodecManager.getUrlFromDocumentView(
-                new DocumentViewImpl(myfile), true, SERVER1);
+        String uriMyfileServer1 = viewCodecManager.getUrlFromDocumentView(new DocumentViewImpl(myfile), true, SERVER1);
         assertNotNull(uriMyfileServer1);
-        String uriMyFileserver2 = viewCodecManager.getUrlFromDocumentView(
-                new DocumentViewImpl(myfile), true, SERVER2);
+        String uriMyFileserver2 = viewCodecManager.getUrlFromDocumentView(new DocumentViewImpl(myfile), true, SERVER2);
         assertNotNull(uriMyFileserver2);
         Annotation annotation = getAnnotation(uriMyfileServer1, 1);
         annotation.setBodyText("This is a Zombie annotation text");
@@ -107,8 +103,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         openSession();
 
         // the body of the text is annotated on the document
-        results = session.query(
-                "SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
+        results = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
         assertEquals(1, results.size());
         assertEquals(myfile.getRef(), results.get(0).getRef());
 
@@ -116,10 +111,8 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         // document, the archive document do not have annotation by default
         // hence not findable by fulltext search
         myfile = session.getDocument(myfile.getRef());
-        myfile.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MAJOR);
-        myfile.putContextData(VersioningService.CHECKIN_COMMENT,
-                "I would like to create a new major version");
+        myfile.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
+        myfile.putContextData(VersioningService.CHECKIN_COMMENT, "I would like to create a new major version");
         myfile = session.saveDocument(myfile);
 
         session.save();
@@ -128,12 +121,11 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         DatabaseHelper.DATABASE.sleepForFulltext();
         openSession();
 
-        // we  find no documents: this is
+        // we find no documents: this is
         // intentional: even if the annotation have been copied to the archived
         // versioned, but not the potential proxies pointed to them, we do not
         // want to fulltext index the body of annotation on achived versions
-        results = session.query(
-                "SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
+        results = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
         // TODO fails randomly due to random async event execution order
         // assertEquals(0, results.size());
         //
@@ -141,49 +133,40 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         // annotationOnNewVersion(uriMyfileServer1);
     }
 
-    protected void annotationOnNewVersion(String u1)
-            throws AnnotationException, IOException, URISyntaxException {
+    protected void annotationOnNewVersion(String u1) throws AnnotationException, IOException, URISyntaxException {
         annotation = service.addAnnotation(getAnnotation(u1, 2), user, SERVER1);
         assertNotNull(annotation);
-        List<Annotation> annotations = service.queryAnnotations(new URI(u1),
-                null, user);
+        List<Annotation> annotations = service.queryAnnotations(new URI(u1), null, user);
         assertEquals(1, annotations.size());
-        String versionUrl = viewCodecManager.getUrlFromDocumentView(
-                new DocumentViewImpl(version1), true, SERVER1);
+        String versionUrl = viewCodecManager.getUrlFromDocumentView(new DocumentViewImpl(version1), true, SERVER1);
         annotations = service.queryAnnotations(new URI(versionUrl), null, user);
         assertEquals(1, annotations.size());
     }
 
-    protected void newVersionSameAnnotations(CoreSession session,
-            DocumentModel myfile, String uriAnnotatedDoc)
+    protected void newVersionSameAnnotations(CoreSession session, DocumentModel myfile, String uriAnnotatedDoc)
             throws AnnotationException, URISyntaxException, ClientException {
-        List<Annotation> annotations = service.queryAnnotations(new URI(
-                uriAnnotatedDoc), null, user);
+        List<Annotation> annotations = service.queryAnnotations(new URI(uriAnnotatedDoc), null, user);
         log.debug(annotations.size() + " annotations for: " + uriAnnotatedDoc);
         assertEquals(0, annotations.size());
         List<DocumentModel> versions = session.getVersions(myfile.getRef());
         assertEquals(1, versions.size());
         version1 = versions.get(0);
-        String versionUrl = viewCodecManager.getUrlFromDocumentView(
-                new DocumentViewImpl(version1), true, SERVER1);
+        String versionUrl = viewCodecManager.getUrlFromDocumentView(new DocumentViewImpl(version1), true, SERVER1);
         assertNotNull(versionUrl);
         annotations = service.queryAnnotations(new URI(versionUrl), null, user);
         log.debug(annotations.size() + " annotations for: " + versionUrl);
         assertEquals(1, annotations.size());
     }
 
-    protected void createVersion(CoreSession session, DocumentModel myfile,
-            String comment) throws ClientException {
+    protected void createVersion(CoreSession session, DocumentModel myfile, String comment) throws ClientException {
         session.checkIn(myfile.getRef(), VersioningOption.MAJOR, comment);
         session.checkOut(myfile.getRef());
         session.save();
         waitForAsyncExec();
     }
 
-    protected void sameDocumentFrom2Servers(String u1, String u2)
-            throws AnnotationException, URISyntaxException {
-        List<Annotation> annotations = service.queryAnnotations(new URI(u1),
-                null, user);
+    protected void sameDocumentFrom2Servers(String u1, String u2) throws AnnotationException, URISyntaxException {
+        List<Annotation> annotations = service.queryAnnotations(new URI(u1), null, user);
         assertEquals(1, annotations.size());
         annotations = service.queryAnnotations(new URI(u2), null, user);
         assertEquals(1, annotations.size());

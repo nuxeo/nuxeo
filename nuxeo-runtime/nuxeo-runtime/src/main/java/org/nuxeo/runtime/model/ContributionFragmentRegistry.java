@@ -15,19 +15,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This is a contribution registry that is managing contribution fragments and
- * merge them as needed. The implementation will be notified through
- * {@link #contributionUpdated(String, Object)} each time you need to store or
- * remove a contribution. Note that contribution objects that are registered by
- * your implementation <b>must</b> not be modified. You can see them as
- * immutable objects - otherwise your local changes will be lost at the next
- * update event.
+ * This is a contribution registry that is managing contribution fragments and merge them as needed. The implementation
+ * will be notified through {@link #contributionUpdated(String, Object)} each time you need to store or remove a
+ * contribution. Note that contribution objects that are registered by your implementation <b>must</b> not be modified.
+ * You can see them as immutable objects - otherwise your local changes will be lost at the next update event.
  * <p>
- * To use it you should extends this abstract implementation and implement the
- * abstract methods.
+ * To use it you should extends this abstract implementation and implement the abstract methods.
  * <p>
- * The implementation registry doesn't need to be thread safe since it will be
- * called from synchronized methods.
+ * The implementation registry doesn't need to be thread safe since it will be called from synchronized methods.
  * <p>
  * Also, the contribution object
  * <p>
@@ -41,8 +36,7 @@ import java.util.Map;
  *         return contrib.getId();
  *     }
  *
- *     public void contributionUpdated(String id, MyContribution contrib,
- *             MyContribution origContrib) {
+ *     public void contributionUpdated(String id, MyContribution contrib, MyContribution origContrib) {
  *         registry.put(id, contrib);
  *     }
  *
@@ -64,9 +58,9 @@ import java.util.Map;
  * }
  * </pre>
  *
- * Since 5.5, if the registry does not support merging of resources, you can
- * just override the method {@link #isSupportingMerge()} and return false, so
- * that {@link #merge(Object, Object)} and {@link #clone()} are never called.
+ * Since 5.5, if the registry does not support merging of resources, you can just override the method
+ * {@link #isSupportingMerge()} and return false, so that {@link #merge(Object, Object)} and {@link #clone()} are never
+ * called.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @see SimpleContributionRegistry<T>
@@ -86,38 +80,30 @@ public abstract class ContributionFragmentRegistry<T> {
     /**
      * Adds or updates a contribution.
      * <p>
-     * If the contribution doesn't yet exists then it will be added, otherwise
-     * the value will be updated. If the given value is null the existing
-     * contribution must be removed.
+     * If the contribution doesn't yet exists then it will be added, otherwise the value will be updated. If the given
+     * value is null the existing contribution must be removed.
      * <p>
-     * The second parameter is the contribution that should be updated when
-     * merging, as well as stored and used. This usually represents a clone of
-     * the original contribution or a merge of multiple contribution fragments.
+     * The second parameter is the contribution that should be updated when merging, as well as stored and used. This
+     * usually represents a clone of the original contribution or a merge of multiple contribution fragments.
      * Modifications on this object at application level will be lost on next
-     * {@link #contributionUpdated(String, Object, Object)} call on the same
-     * object id: modifications should be done in the
-     * {@link #merge(Object, Object)} method.
+     * {@link #contributionUpdated(String, Object, Object)} call on the same object id: modifications should be done in
+     * the {@link #merge(Object, Object)} method.
      * <p>
-     * The last parameter is the new contribution object, unchanged (original)
-     * which was neither cloned nor merged. This object should never be
-     * modified at application level, because it will be used each time a
-     * subsequent merge is done. Also, it never should be stored.
+     * The last parameter is the new contribution object, unchanged (original) which was neither cloned nor merged. This
+     * object should never be modified at application level, because it will be used each time a subsequent merge is
+     * done. Also, it never should be stored.
      *
      * @param id - the id of the contribution that needs to be updated
      * @param contrib the updated contribution object that
-     * @param newOrigContrib - the new, unchanged (original) contribution
-     *            fragment that triggered the update.
+     * @param newOrigContrib - the new, unchanged (original) contribution fragment that triggered the update.
      */
-    public abstract void contributionUpdated(String id, T contrib,
-            T newOrigContrib);
+    public abstract void contributionUpdated(String id, T contrib, T newOrigContrib);
 
     /**
-     * All the fragments in the contribution was removed. Contribution must be
-     * unregistered.
+     * All the fragments in the contribution was removed. Contribution must be unregistered.
      * <p>
-     * The first parameter is the contribution ID that should be remove and the
-     * second parameter the original contribution fragment that as unregistered
-     * causing the contribution to be removed.
+     * The first parameter is the contribution ID that should be remove and the second parameter the original
+     * contribution fragment that as unregistered causing the contribution to be removed.
      *
      * @param id
      * @param origContrib
@@ -143,8 +129,8 @@ public abstract class ContributionFragmentRegistry<T> {
     /**
      * Returns true if merge is supported.
      * <p>
-     * Hook method to be overridden if merge logics behind {@link #clone()} and
-     * {@link #merge(Object, Object)} cannot be implemented.
+     * Hook method to be overridden if merge logics behind {@link #clone()} and {@link #merge(Object, Object)} cannot be
+     * implemented.
      *
      * @since 5.5
      */
@@ -153,10 +139,9 @@ public abstract class ContributionFragmentRegistry<T> {
     }
 
     /**
-     * Add a new contribution. This will start install the new contribution and
-     * will notify the implementation about the value to add. (the final value
-     * to add may not be the same object as the one added - but a merge between
-     * multiple contributions)
+     * Add a new contribution. This will start install the new contribution and will notify the implementation about the
+     * value to add. (the final value to add may not be the same object as the one added - but a merge between multiple
+     * contributions)
      *
      * @param contrib
      */
@@ -167,12 +152,10 @@ public abstract class ContributionFragmentRegistry<T> {
     }
 
     /**
-     * Remove a contribution. This will uninstall the contribution and notify
-     * the implementation about the new value it should store (after re-merging
-     * contribution fragments).
+     * Remove a contribution. This will uninstall the contribution and notify the implementation about the new value it
+     * should store (after re-merging contribution fragments).
      * <p>
-     * Uses standard equality to check for old objects (useEqualsMethod ==
-     * false).
+     * Uses standard equality to check for old objects (useEqualsMethod == false).
      *
      * @param contrib
      * @see #removeContribution(Object, boolean)
@@ -182,26 +165,22 @@ public abstract class ContributionFragmentRegistry<T> {
     }
 
     /**
-     * Remove a contribution. This will uninstall the contribution and notify
-     * the implementation about the new value it should store (after re-merging
-     * contribution fragments).
+     * Remove a contribution. This will uninstall the contribution and notify the implementation about the new value it
+     * should store (after re-merging contribution fragments).
      * <p>
      * Equality can be controlled from here.
      * <p>
-     * Contributions come from the runtime that keeps exact instances, so using
-     * equality usually makes it possible to remove the exact instance that was
-     * contributed by this component (without needing to reference the
-     * component name for instance). But when unit-testing, or when
-     * registrating contributions that do not come directly from the runtime,
-     * regirties need to use the equals method defined on each contribution.
+     * Contributions come from the runtime that keeps exact instances, so using equality usually makes it possible to
+     * remove the exact instance that was contributed by this component (without needing to reference the component name
+     * for instance). But when unit-testing, or when registrating contributions that do not come directly from the
+     * runtime, regirties need to use the equals method defined on each contribution.
      *
      * @param contrib the contrib to remove
-     * @param useEqualsMethod a boolean stating that old contributions should
-     *            be checked using the equals method instead of
+     * @param useEqualsMethod a boolean stating that old contributions should be checked using the equals method instead
+     *            of
      * @since 5.6
      */
-    public synchronized void removeContribution(T contrib,
-            boolean useEqualsMethod) {
+    public synchronized void removeContribution(T contrib, boolean useEqualsMethod) {
         String id = getContributionId(contrib);
         FragmentList<T> head = removeFragment(id, contrib, useEqualsMethod);
         if (head != null) {
@@ -215,14 +194,12 @@ public abstract class ContributionFragmentRegistry<T> {
     }
 
     /**
-     * Get a merged contribution directly from the internal registry - and
-     * avoid passing by the implementation registry. Note that this operation
-     * will invoke a merge of existing fragments if needed.
+     * Get a merged contribution directly from the internal registry - and avoid passing by the implementation registry.
+     * Note that this operation will invoke a merge of existing fragments if needed.
      * <p>
-     * Since 5.5, this method has made protected as it should not be used by
-     * the service retrieving merged resources (otherwise merge will be done
-     * again). If you'd really like to call it, add a public method on your
-     * registry implementation that will call it.
+     * Since 5.5, this method has made protected as it should not be used by the service retrieving merged resources
+     * (otherwise merge will be done again). If you'd really like to call it, add a public method on your registry
+     * implementation that will call it.
      *
      * @param id
      * @return
@@ -253,8 +230,7 @@ public abstract class ContributionFragmentRegistry<T> {
         return head;
     }
 
-    protected FragmentList<T> removeFragment(String id, T contrib,
-            boolean useEqualsMethod) {
+    protected FragmentList<T> removeFragment(String id, T contrib, boolean useEqualsMethod) {
         FragmentList<T> head = contribs.get(id);
         if (head == null) {
             return null;
@@ -289,8 +265,7 @@ public abstract class ContributionFragmentRegistry<T> {
             if (p == this) {
                 return null;
             }
-            mergedValue = reg.isSupportingMerge() ? reg.clone(p.object)
-                    : p.object;
+            mergedValue = reg.isSupportingMerge() ? reg.clone(p.object) : p.object;
             p = p.next;
             while (p != this) {
                 if (reg.isSupportingMerge()) {

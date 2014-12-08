@@ -29,13 +29,11 @@ import org.nuxeo.ecm.platform.picture.api.PictureConversion;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for the {@link org.nuxeo.ecm.platform.picture.api.PictureConversion}
- * class (merge supported)
+ * Registry for the {@link org.nuxeo.ecm.platform.picture.api.PictureConversion} class (merge supported)
  *
  * @since 7.1
  */
-public class PictureConversionRegistry extends
-        ContributionFragmentRegistry<PictureConversion> {
+public class PictureConversionRegistry extends ContributionFragmentRegistry<PictureConversion> {
 
     private static final Log log = LogFactory.getLog(PictureConversionRegistry.class);
 
@@ -49,8 +47,7 @@ public class PictureConversionRegistry extends
      * Returns picture conversion collection sorted by order.
      */
     public List<PictureConversion> getPictureConversions() {
-        List<PictureConversion> entries = new ArrayList<>(
-                pictureConversions.values());
+        List<PictureConversion> entries = new ArrayList<>(pictureConversions.values());
         Collections.sort(entries);
         return entries;
     }
@@ -61,8 +58,7 @@ public class PictureConversionRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            PictureConversion pictureConversion,
+    public void contributionUpdated(String id, PictureConversion pictureConversion,
             PictureConversion oldPictureConversion) {
         if (pictureConversions.containsKey(id)) {
             contributionRemoved(id, pictureConversion);
@@ -72,17 +68,14 @@ public class PictureConversionRegistry extends
             if (!StringUtils.isBlank(id)) {
                 pictureConversions.put(id, pictureConversion);
             } else {
-                log.warn(String.format(
-                        "Missing 'id' for picture conversion %s, not registering it.",
-                        pictureConversion));
+                log.warn(String.format("Missing 'id' for picture conversion %s, not registering it.", pictureConversion));
             }
 
         }
     }
 
     @Override
-    public void contributionRemoved(String id,
-            PictureConversion pictureConversion) {
+    public void contributionRemoved(String id, PictureConversion pictureConversion) {
         pictureConversions.remove(id);
     }
 
@@ -105,8 +98,7 @@ public class PictureConversionRegistry extends
         if (!dest.isEnabled() && dest.isDefault()) {
             dest.setEnabled(true);
             if (log.isWarnEnabled()) {
-                String message = String.format(
-                        "The picture conversion '%s' is marked as default, enabling it.",
+                String message = String.format("The picture conversion '%s' is marked as default, enabling it.",
                         dest.getId());
                 log.warn(message);
             }

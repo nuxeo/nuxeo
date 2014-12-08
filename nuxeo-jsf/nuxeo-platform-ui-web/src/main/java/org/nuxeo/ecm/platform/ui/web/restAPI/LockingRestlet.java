@@ -37,16 +37,25 @@ import org.w3c.dom.Element;
 public class LockingRestlet extends BaseStatelessNuxeoRestlet {
 
     public static final String LOCK = "lock";
+
     public static final String UNLOCK = "unlock";
+
     public static final String STATUS = "status";
+
     public static final String STATE = "state";
 
     public static final String SC_LOCKINFO_LOCKED = "LOCKED";
+
     public static final String SC_LOCKINFO_NOT_LOCKED = "NOTLOCKED";
+
     public static final String SC_LOCKED_OK = "OK";
+
     public static final String SC_ALREADY_LOCKED_KO = "ALREADYLOCKED";
+
     public static final String SC_ALREADY_LOCKED_OK = "ALREADYLOCKEDBYYOU";
+
     public static final String SC_UNLOCKED_OK = "OK";
+
     public static final String SC_ALREADY_UNLOCKED_OK = "NOT LOCKED";
 
     @Override
@@ -67,8 +76,8 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
         String cUserName = getUserPrincipal(req).getName();
 
         // get Action
-        String action=STATUS;
-        if (req.getResourceRef().getSegments().size()>5) {
+        String action = STATUS;
+        if (req.getResourceRef().getSegments().size() > 5) {
             action = req.getResourceRef().getSegments().get(5).toLowerCase();
         }
         if (req.getMethod().equals(Method.LOCK)) {
@@ -89,16 +98,13 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
                     response = "lock acquired on document " + docid;
                     code = SC_LOCKED_OK;
                 } else if (lock.getOwner().equals(cUserName)) {
-                    response = "document " + docid
-                            + " is already locked by you";
+                    response = "document " + docid + " is already locked by you";
                     code = SC_ALREADY_LOCKED_OK;
                 } else {
-                    response = "document " + docid + " is already locked by "
-                            + lock.getOwner();
+                    response = "document " + docid + " is already locked by " + lock.getOwner();
                     code = SC_ALREADY_LOCKED_KO;
                 }
-            }
-            catch (ClientException e) {
+            } catch (ClientException e) {
                 handleError(result, res, e);
                 return;
             }
@@ -115,12 +121,10 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
                     response = "document " + docid + " unlocked";
                     code = SC_UNLOCKED_OK;
                 } else {
-                    response = "document " + docid + " is locked by "
-                            + lock.getOwner();
+                    response = "document " + docid + " is locked by " + lock.getOwner();
                     code = SC_ALREADY_LOCKED_KO;
                 }
-            }
-            catch (ClientException e) {
+            } catch (ClientException e) {
                 handleError(result, res, e);
                 return;
             }
@@ -134,8 +138,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
                 } else {
                     code = SC_LOCKINFO_LOCKED;
                 }
-            }
-            catch (ClientException e) {
+            } catch (ClientException e) {
                 handleError(result, res, e);
                 return;
             }
@@ -148,13 +151,10 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
                     response = "";
                 } else {
                     code = SC_LOCKINFO_LOCKED;
-                    response = lock.getOwner()
-                            + '/'
-                            + ISODateTimeFormat.dateTime().print(
-                                    new DateTime(lock.getCreated()));
+                    response = lock.getOwner() + '/'
+                            + ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated()));
                 }
-            }
-            catch (ClientException e) {
+            } catch (ClientException e) {
                 handleError(result, res, e);
                 return;
             }

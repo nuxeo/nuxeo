@@ -50,21 +50,18 @@ public interface FileManager {
      * @param fullName the fullname that contains the filename
      * @return the created Document
      */
-    DocumentModel createDocumentFromBlob(CoreSession documentManager,
-            Blob input, String path, boolean overwrite, String fullName)
-            throws ClientException, IOException;
+    DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
+            String fullName) throws ClientException, IOException;
 
     /**
-     * Just applies the same actions as creation but does not changes the doc
-     * type.
+     * Just applies the same actions as creation but does not changes the doc type.
      *
      * @param input the blob containing the content and the mime type
      * @param path the path to the file to update
      * @param fullName the full name that contains the filename
      * @return the updated Document
      */
-    DocumentModel updateDocumentFromBlob(CoreSession documentManager,
-            Blob input, String path, String fullName);
+    DocumentModel updateDocumentFromBlob(CoreSession documentManager, Blob input, String path, String fullName);
 
     /**
      * Creates a Folder.
@@ -73,30 +70,26 @@ public interface FileManager {
      * @param path the path were to create the folder
      * @return the Folder Created
      */
-    DocumentModel createFolder(CoreSession documentManager, String fullname,
-            String path) throws ClientException, IOException;
+    DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws ClientException,
+            IOException;
 
     /**
-     * Returns the list of document that are to be suggested to principalName as
-     * a candidate container for a new document of type docType on all
-     * registered repositories.
+     * Returns the list of document that are to be suggested to principalName as a candidate container for a new
+     * document of type docType on all registered repositories.
      *
      * @return the list of candidate containers
      */
     DocumentModelList getCreationContainers(Principal principal, String docType);
 
     /**
-     * Returns the list of document that are to be suggested to the principal of
-     * documentManager as a candidate container for a new document of type
-     * docType.
+     * Returns the list of document that are to be suggested to the principal of documentManager as a candidate
+     * container for a new document of type docType.
      *
      * @return the list of candidate containers
      */
-    DocumentModelList getCreationContainers(CoreSession documentManager,
-            String docType);
+    DocumentModelList getCreationContainers(CoreSession documentManager, String docType);
 
-    List<DocumentLocation> findExistingDocumentWithFile(
-            CoreSession documentManager, String path, String digest,
+    List<DocumentLocation> findExistingDocumentWithFile(CoreSession documentManager, String path, String digest,
             Principal principal) throws ClientException;
 
     boolean isUnicityEnabled() throws ClientException;
@@ -108,16 +101,14 @@ public interface FileManager {
     boolean isDigestComputingEnabled();
 
     /**
-     * Gets the versioning applied on an overwritten document before it is
-     * overwritten.
+     * Gets the versioning applied on an overwritten document before it is overwritten.
      *
      * @since 5.7
      */
     VersioningOption getVersioningOption();
 
     /**
-     * Checks whether versioning should also be applied after a document is
-     * added.
+     * Checks whether versioning should also be applied after a document is added.
      *
      * @since 5.7
      */

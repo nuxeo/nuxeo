@@ -81,9 +81,8 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * Until {@code save()} is called, data lives in the transient map.
  * <p>
- * Upon save, data is written to the repository, even though it has not yet been
- * committed (this means that other sessions can read uncommitted data). It's
- * also kept in an undo log in order for rollback to be possible.
+ * Upon save, data is written to the repository, even though it has not yet been committed (this means that other
+ * sessions can read uncommitted data). It's also kept in an undo log in order for rollback to be possible.
  * <p>
  * On commit, the undo log is forgotten. On rollback, the undo log is replayed.
  *
@@ -111,8 +110,7 @@ public class DBSTransactionState {
         this.repository = repository;
         this.session = session;
         SecurityService securityService = Framework.getLocalService(SecurityService.class);
-        browsePermissions = new HashSet<>(
-                Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
+        browsePermissions = new HashSet<>(Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
     }
 
     protected FulltextConfiguration getFulltextConfiguration() {
@@ -140,8 +138,8 @@ public class DBSTransactionState {
     }
 
     /**
-     * Returns a state and marks it as transient, because it's about to be
-     * modified or returned to user code (where it may be modified).
+     * Returns a state and marks it as transient, because it's about to be modified or returned to user code (where it
+     * may be modified).
      */
     public DBSDocumentState getStateForUpdate(String id) {
         // check transient state
@@ -171,8 +169,8 @@ public class DBSTransactionState {
     }
 
     /**
-     * Returns states and marks them transient, because they're about to be
-     * returned to user code (where they may be modified).
+     * Returns states and marks them transient, because they're about to be returned to user code (where they may be
+     * modified).
      */
     public List<DBSDocumentState> getStatesForUpdate(List<String> ids) {
         // check which ones we have to fetch from repository
@@ -193,15 +191,13 @@ public class DBSTransactionState {
             }
         }
         // everything now fetched in transient
-        List<DBSDocumentState> docStates = new ArrayList<DBSDocumentState>(
-                ids.size());
+        List<DBSDocumentState> docStates = new ArrayList<DBSDocumentState>(ids.size());
         for (String id : ids) {
             DBSDocumentState docState = transientStates.get(id);
             if (docState != null) {
                 docStates.add(docState);
             } else {
-                log.warn("Cannot fetch document with id: " + id, new Throwable(
-                        "debug stack trace"));
+                log.warn("Cannot fetch document with id: " + id, new Throwable("debug stack trace"));
             }
         }
         return docStates;
@@ -255,8 +251,7 @@ public class DBSTransactionState {
             docStates.add(docState);
         }
         // fetch from repository
-        List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId,
-                seen);
+        List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, seen);
         for (State state : states) {
             docStates.add(newTransientState(state));
         }
@@ -276,8 +271,7 @@ public class DBSTransactionState {
             children.add(id);
         }
         // fetch from repository
-        List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId,
-                seen);
+        List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, seen);
         for (State state : states) {
             children.add((String) state.get(KEY_ID));
         }
@@ -298,8 +292,7 @@ public class DBSTransactionState {
         return repository.queryKeyValuePresence(KEY_PARENT_ID, parentId, seen);
     }
 
-    public DBSDocumentState createChild(String id, String parentId,
-            String name, Long pos, String typeName) {
+    public DBSDocumentState createChild(String id, String parentId, String name, Long pos, String typeName) {
         // id may be not-null for import
         if (id == null) {
             id = repository.generateNewId();
@@ -356,11 +349,9 @@ public class DBSTransactionState {
     /**
      * Updates ancestors recursively after a move.
      * <p>
-     * Recursing from given doc, replace the first ndel ancestors with those
-     * passed.
+     * Recursing from given doc, replace the first ndel ancestors with those passed.
      * <p>
-     * Doesn't check transient (assumes save is done). The modifications are
-     * automatically saved.
+     * Doesn't check transient (assumes save is done). The modifications are automatically saved.
      */
     public void updateAncestors(String id, int ndel, Object[] ancestorIds) {
         int nadd = ancestorIds.length;
@@ -376,8 +367,7 @@ public class DBSTransactionState {
             } else {
                 newAncestors = new Object[ancestors.length - ndel + nadd];
                 System.arraycopy(ancestorIds, 0, newAncestors, 0, nadd);
-                System.arraycopy(ancestors, ndel, newAncestors, nadd,
-                        ancestors.length - ndel);
+                System.arraycopy(ancestors, ndel, newAncestors, nadd, ancestors.length - ndel);
             }
             docState.put(KEY_ANCESTOR_IDS, newAncestors);
         }
@@ -398,8 +388,7 @@ public class DBSTransactionState {
     }
 
     /**
-     * Gets the Read ACL (flat list of users having browse permission, including
-     * inheritance) on a document.
+     * Gets the Read ACL (flat list of users having browse permission, including inheritance) on a document.
      */
     protected String[] getReadACL(DBSDocumentState docState) {
         Set<String> racls = new HashSet<>();
@@ -417,8 +406,7 @@ public class DBSTransactionState {
                         String username = (String) aceMap.get(KEY_ACE_USER);
                         String permission = (String) aceMap.get(KEY_ACE_PERMISSION);
                         Boolean granted = (Boolean) aceMap.get(KEY_ACE_GRANT);
-                        if (TRUE.equals(granted)
-                                && browsePermissions.contains(permission)) {
+                        if (TRUE.equals(granted) && browsePermissions.contains(permission)) {
                             racls.add(username);
                         }
                         if (FALSE.equals(granted)) {
@@ -434,8 +422,7 @@ public class DBSTransactionState {
             // get parent
             if (TRUE.equals(state.get(KEY_IS_VERSION))) {
                 String versionSeriesId = (String) state.get(KEY_VERSION_SERIES_ID);
-                state = versionSeriesId == null ? null
-                        : getStateForRead(versionSeriesId);
+                state = versionSeriesId == null ? null : getStateForRead(versionSeriesId);
             } else {
                 String parentId = (String) state.get(KEY_PARENT_ID);
                 state = parentId == null ? null : getStateForRead(parentId);
@@ -454,18 +441,13 @@ public class DBSTransactionState {
      * Doesn't check transient (assumes save is done).
      *
      * @param id the root of the tree (not included in results)
-     * @param proxyTargets returns a map of proxy to target among the documents
-     *            found
-     * @param targetProxies returns a map of target to proxies among the
-     *            document found
+     * @param proxyTargets returns a map of proxy to target among the documents found
+     * @param targetProxies returns a map of target to proxies among the document found
      */
-    protected Set<String> getSubTree(String id,
-            Map<String, String> proxyTargets,
-            Map<String, Object[]> targetProxies) {
+    protected Set<String> getSubTree(String id, Map<String, String> proxyTargets, Map<String, Object[]> targetProxies) {
         Set<String> ids = new HashSet<String>();
         // check repository
-        repository.queryKeyValueArray(KEY_ANCESTOR_IDS, id, ids, proxyTargets,
-                targetProxies);
+        repository.queryKeyValueArray(KEY_ANCESTOR_IDS, id, ids, proxyTargets, targetProxies);
         return ids;
     }
 
@@ -532,8 +514,7 @@ public class DBSTransactionState {
     }
 
     /**
-     * Checks if the changed documents are proxy targets, and updates the
-     * proxies if that's the case.
+     * Checks if the changed documents are proxy targets, and updates the proxies if that's the case.
      */
     protected void updateProxies() {
         for (String id : transientCreated) { // ordered
@@ -662,14 +643,12 @@ public class DBSTransactionState {
     }
 
     /**
-     * Finds the documents having dirty text or dirty binaries that have to be
-     * reindexed as fulltext.
+     * Finds the documents having dirty text or dirty binaries that have to be reindexed as fulltext.
      *
      * @param docsWithDirtyStrings set of ids, updated by this method
      * @param docWithDirtyBinaries set of ids, updated by this method
      */
-    protected void findDirtyDocuments(Set<String> docsWithDirtyStrings,
-            Set<String> docWithDirtyBinaries) {
+    protected void findDirtyDocuments(Set<String> docsWithDirtyStrings, Set<String> docWithDirtyBinaries) {
         for (String id : transientCreated) {
             docsWithDirtyStrings.add(id);
             docWithDirtyBinaries.add(id);
@@ -684,8 +663,7 @@ public class DBSTransactionState {
         }
     }
 
-    protected void getFulltextSimpleWorks(List<Work> works,
-            Set<String> docsWithDirtyStrings) {
+    protected void getFulltextSimpleWorks(List<Work> works, Set<String> docsWithDirtyStrings) {
         // TODO XXX make configurable, see also FulltextExtractorWork
         FulltextParser fulltextParser = new DefaultFulltextParser();
         // update simpletext on documents with dirty strings
@@ -708,8 +686,7 @@ public class DBSTransactionState {
                 continue;
             }
             docState.put(KEY_FULLTEXT_JOBID, docState.getId());
-            FulltextFinder fulltextFinder = new FulltextFinder(fulltextParser,
-                    docState, session);
+            FulltextFinder fulltextFinder = new FulltextFinder(fulltextParser, docState, session);
             List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
             for (String indexName : config.indexNames) {
                 // TODO paths from config
@@ -717,15 +694,13 @@ public class DBSTransactionState {
                 indexesAndText.add(new IndexAndText(indexName, text));
             }
             if (!indexesAndText.isEmpty()) {
-                Work work = new FulltextUpdaterWork(repository.getName(), id,
-                        true, false, indexesAndText);
+                Work work = new FulltextUpdaterWork(repository.getName(), id, true, false, indexesAndText);
                 works.add(work);
             }
         }
     }
 
-    protected void getFulltextBinariesWorks(List<Work> works,
-            Set<String> docWithDirtyBinaries) {
+    protected void getFulltextBinariesWorks(List<Work> works, Set<String> docWithDirtyBinaries) {
         if (docWithDirtyBinaries.isEmpty()) {
             return;
         }
@@ -773,8 +748,7 @@ public class DBSTransactionState {
         /**
          * Prepares parsing for one document.
          */
-        public FulltextFinder(FulltextParser fulltextParser,
-                DBSDocumentState document, DBSSession session) {
+        public FulltextFinder(FulltextParser fulltextParser, DBSDocumentState document, DBSSession session) {
             this.fulltextParser = fulltextParser;
             this.document = document;
             this.session = session;
@@ -798,8 +772,7 @@ public class DBSTransactionState {
             return StringUtils.join(strings, ' ');
         }
 
-        protected void findFulltext(String indexName, State state,
-                List<String> strings) {
+        protected void findFulltext(String indexName, State state, List<String> strings) {
             for (Entry<String, Serializable> en : state.entrySet()) {
                 String key = en.getKey();
                 if (key.startsWith(KEY_PREFIX)) {

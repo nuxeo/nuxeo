@@ -43,21 +43,17 @@ public class Root extends ModuleRoot {
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
     /**
-     *
-     *
      * @param serviceProviderName
      * @param serviceProviderURL
      * @return the rendered page.
      */
     @GET
     @Path("{serviceProviderName}/callback")
-    public Object doGet(@PathParam("serviceProviderName")
-    String serviceProviderName,
-            @QueryParam(WEOAuthConstants.CODE_URL_PARAMETER)
-            String code, @QueryParam(WEOAuthConstants.ERROR_URL_PARAMETER)
-            String error, @DefaultValue("false")
-            @QueryParam(WEOAuthConstants.INSTALLED_APP_PARAMETER)
-            boolean isInstalledApp) throws IOException {
+    public Object doGet(@PathParam("serviceProviderName") String serviceProviderName,
+            @QueryParam(WEOAuthConstants.CODE_URL_PARAMETER) String code,
+            @QueryParam(WEOAuthConstants.ERROR_URL_PARAMETER) String error,
+            @DefaultValue("false") @QueryParam(WEOAuthConstants.INSTALLED_APP_PARAMETER) boolean isInstalledApp)
+            throws IOException {
 
         // Checking if there was an error such as the user denied access
         if (error != null && error.length() > 0) {
@@ -72,32 +68,24 @@ public class Root extends ModuleRoot {
         NuxeoOAuth2ServiceProvider provider = getServiceProvider(serviceProviderName);
         if (provider == null) {
             return Response.status(HttpServletResponse.SC_NOT_FOUND).entity(
-                    "No service provider called: \"" + serviceProviderName
-                            + "\".").build();
+                    "No service provider called: \"" + serviceProviderName + "\".").build();
         }
 
-        AuthorizationCodeFlow flow = provider.getAuthorizationCodeFlow(
-                HTTP_TRANSPORT, JSON_FACTORY);
+        AuthorizationCodeFlow flow = provider.getAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY);
 
-        String redirectUri = ctx.getBaseURL()
-                + WEOAuthConstants.getCallbackURL(serviceProviderName,
-                        isInstalledApp);
+        String redirectUri = ctx.getBaseURL() + WEOAuthConstants.getCallbackURL(serviceProviderName, isInstalledApp);
 
-        String userId = (isInstalledApp) ? WEOAuthConstants.INSTALLED_APP_USER_ID
-                : getCurrentUsername();
+        String userId = (isInstalledApp) ? WEOAuthConstants.INSTALLED_APP_USER_ID : getCurrentUsername();
 
-        HttpResponse response = flow.newTokenRequest(code).setRedirectUri(
-                redirectUri).executeUnparsed();
+        HttpResponse response = flow.newTokenRequest(code).setRedirectUri(redirectUri).executeUnparsed();
         TokenResponse tokenResponse = response.parseAs(TokenResponse.class);
 
-        Credential credential = flow.createAndStoreCredential(tokenResponse,
-                userId);
+        Credential credential = flow.createAndStoreCredential(tokenResponse, userId);
 
         return getView("index");
     }
 
-    protected static NuxeoOAuth2ServiceProvider getServiceProvider(
-            String serviceName) {
+    protected static NuxeoOAuth2ServiceProvider getServiceProvider(String serviceName) {
         OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
         return registry.getProvider(serviceName);
     }

@@ -20,7 +20,6 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = ReloadDocument.ID, category = Constants.CAT_DOCUMENT, label = "Reset", description = "Reload the input document from the repository. Any previous modification made by the chain on this document will be lost if these modifications were not saved. Return the reloaded document.")
@@ -31,7 +30,7 @@ public class ReloadDocument {
     @Context
     protected OperationContext ctx;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
         return ctx.getCoreSession().getDocument(doc.getRef());
     }

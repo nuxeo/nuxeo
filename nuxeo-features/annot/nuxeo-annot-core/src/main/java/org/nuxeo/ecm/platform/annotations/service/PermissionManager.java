@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface PermissionManager {
 

@@ -25,7 +25,6 @@ import org.nuxeo.ecm.webengine.WebException;
  * A query / form parameter was expected but not found or has invalid value.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class IllegalParameterException extends WebException {
 

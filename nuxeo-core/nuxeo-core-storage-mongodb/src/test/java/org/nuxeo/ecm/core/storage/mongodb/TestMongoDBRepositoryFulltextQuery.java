@@ -49,8 +49,7 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
  * @author Florent Guillaume
  * @author Benjamin Jalon
  */
-public class TestMongoDBRepositoryFulltextQuery extends
-        MongoDBRepositoryTestCase {
+public class TestMongoDBRepositoryFulltextQuery extends MongoDBRepositoryTestCase {
 
     @Override
     @Before
@@ -59,12 +58,9 @@ public class TestMongoDBRepositoryFulltextQuery extends
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests",
-                "OSGI-INF/test-repo-types-query.xml");
-        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests",
-                "OSGI-INF/test-repo-types.xml");
-        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests",
-                "OSGI-INF/test-repo-types-2.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests", "OSGI-INF/test-repo-types-query.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests", "OSGI-INF/test-repo-types.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests", "OSGI-INF/test-repo-types-2.xml");
         openSession();
     }
 
@@ -86,8 +82,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
         assertEquals(expected, actual);
     }
 
-    protected Calendar getCalendar(int year, int month, int day, int hours,
-            int minutes, int seconds) {
+    protected Calendar getCalendar(int year, int month, int day, int hours, int minutes, int seconds) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month - 1); // 0-based
@@ -113,19 +108,16 @@ public class TestMongoDBRepositoryFulltextQuery extends
      * </pre>
      */
     protected void createDocs() throws Exception {
-        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
-                "Folder");
+        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
         folder1 = session.createDocument(folder1);
 
-        DocumentModel file1 = new DocumentModelImpl("/testfolder1",
-                "testfile1", "File");
+        DocumentModel file1 = new DocumentModelImpl("/testfolder1", "testfile1", "File");
         file1.setPropertyValue("dc:title", "testfile1_Title");
         file1.setPropertyValue("dc:description", "testfile1_description");
         String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
         String filename = "testfile.txt";
-        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"),
-                "text/plain", "UTF-8", filename, null);
+        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"), "text/plain", "UTF-8", filename, null);
         file1.setPropertyValue("content", blob1);
         file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
@@ -135,37 +127,29 @@ public class TestMongoDBRepositoryFulltextQuery extends
         file1.setPropertyValue("uid", "uid123");
         file1 = session.createDocument(file1);
 
-        DocumentModel file2 = new DocumentModelImpl("/testfolder1",
-                "testfile2", "File");
+        DocumentModel file2 = new DocumentModelImpl("/testfolder1", "testfile2", "File");
         file2.setPropertyValue("dc:title", "testfile2_Title");
         file2.setPropertyValue("dc:description", "testfile2_DESCRIPTION2");
         Calendar cal2 = getCalendar(2007, 4, 1, 12, 0, 0);
         file2.setPropertyValue("dc:created", cal2);
-        file2.setPropertyValue("dc:contributors",
-                new String[] { "bob", "pete" });
+        file2.setPropertyValue("dc:contributors", new String[] { "bob", "pete" });
         file2.setPropertyValue("dc:coverage", "foo/bar");
         file2 = session.createDocument(file2);
 
-        DocumentModel file3 = new DocumentModelImpl("/testfolder1",
-                "testfile3", "Note");
+        DocumentModel file3 = new DocumentModelImpl("/testfolder1", "testfile3", "Note");
         file3.setPropertyValue("dc:title", "testfile3_Title");
-        file3.setPropertyValue("dc:description",
-                "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
-        file3.setPropertyValue("dc:contributors",
-                new String[] { "bob", "john" });
+        file3.setPropertyValue("dc:description", "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
+        file3.setPropertyValue("dc:contributors", new String[] { "bob", "john" });
         file3 = session.createDocument(file3);
 
-        DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",
-                "Folder");
+        DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2", "Folder");
         folder2 = session.createDocument(folder2);
 
-        DocumentModel folder3 = new DocumentModelImpl("/testfolder2",
-                "testfolder3", "Folder");
+        DocumentModel folder3 = new DocumentModelImpl("/testfolder2", "testfolder3", "Folder");
         folder3 = session.createDocument(folder3);
 
         // create file 4
-        DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3",
-                "testfile4", "File");
+        DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3", "testfile4", "File");
         // title without space or _ for Oracle fulltext searchability
         // (testFulltextProxy)
         file4.setPropertyValue("dc:title", "testfile4Title");
@@ -183,13 +167,11 @@ public class TestMongoDBRepositoryFulltextQuery extends
      * proxy (UUID_14)
      */
     protected DocumentModel publishDoc() throws Exception {
-        DocumentModel doc = session.getDocument(new PathRef(
-                "/testfolder2/testfolder3/testfile4"));
+        DocumentModel doc = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
         DocumentModel sec = session.getDocument(new PathRef("/testfolder1"));
         DocumentModel proxy = session.publishDocument(doc, sec);
         session.save();
-        DocumentModelList proxies = session.getProxies(doc.getRef(),
-                sec.getRef());
+        DocumentModelList proxies = session.getProxies(doc.getRef(), sec.getRef());
         assertEquals(1, proxies.size());
         return proxy;
     }
@@ -200,14 +182,10 @@ public class TestMongoDBRepositoryFulltextQuery extends
         waitForFulltextIndexing();
         String query, nquery;
         DocumentModelList dml;
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
-        DocumentModel file2 = session.getDocument(new PathRef(
-                "/testfolder1/testfile2"));
-        DocumentModel file3 = session.getDocument(new PathRef(
-                "/testfolder1/testfile3"));
-        DocumentModel file4 = session.getDocument(new PathRef(
-                "/testfolder2/testfolder3/testfile4"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
+        DocumentModel file2 = session.getDocument(new PathRef("/testfolder1/testfile2"));
+        DocumentModel file3 = session.getDocument(new PathRef("/testfolder1/testfile3"));
+        DocumentModel file4 = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
 
         // query
         query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
@@ -248,8 +226,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
         dml = session.query(query);
         assertIdSet(dml, file3.getId());
 
-        query = "SELECT * FROM Document WHERE ecm:fulltext = 'world' "
-                + "AND dc:contributors = 'pete'";
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'world' " + "AND dc:contributors = 'pete'";
         waitForFulltextIndexing();
         dml = session.query(query);
         assertIdSet(dml, file2.getId());
@@ -352,10 +329,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
             res = session.queryAndFetch(query, "NXQL");
             fail("query should fail");
         } catch (ClientException e) {
-            assertTrue(
-                    e.toString(),
-                    e.getMessage().contains(
-                            "ecm:fulltextScore cannot be used without ecm:fulltext"));
+            assertTrue(e.toString(), e.getMessage().contains("ecm:fulltextScore cannot be used without ecm:fulltext"));
         }
         // cannot order by score if there's no search
         try {
@@ -363,16 +337,12 @@ public class TestMongoDBRepositoryFulltextQuery extends
             res = session.queryAndFetch(query, "NXQL");
             fail("query should fail");
         } catch (Exception e) {
-            assertTrue(
-                    e.toString(),
-                    e.getMessage().contains(
-                            "ecm:fulltextScore cannot be used without ecm:fulltext"));
+            assertTrue(e.toString(), e.getMessage().contains("ecm:fulltextScore cannot be used without ecm:fulltext"));
         }
     }
 
     /*
-     * This used to crash SQL Server 2008 R2 (NXP-6143). It works on SQL Server
-     * 2005.
+     * This used to crash SQL Server 2008 R2 (NXP-6143). It works on SQL Server 2005.
      */
     @Test
     public void testFulltextCrashingSQLServer2008() throws Exception {
@@ -388,8 +358,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
     @Test
     public void testFulltextPrefix() throws Exception {
         createDocs();
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         file1.setPropertyValue("dc:title", "hello world citizens");
         session.saveDocument(file1);
         session.save();
@@ -421,8 +390,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
     @Test
     public void testFulltextMixin() throws Exception {
         createDocs();
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         file1.addFacet("Aged");
         file1.setPropertyValue("age:age", "barbar");
         session.saveDocument(file1);
@@ -441,8 +409,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
         String query;
         DocumentModelList dml;
 
-        DocumentModel doc = session.getDocument(new PathRef(
-                "/testfolder2/testfolder3/testfile4"));
+        DocumentModel doc = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
         String docId = doc.getId();
 
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'testfile4Title'";
@@ -488,8 +455,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
         waitForFulltextIndexing();
         String query;
         DocumentModelList dml;
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
 
         file1.setProperty("dublincore", "title", "the world is my oyster");
         session.saveDocument(file1);
@@ -601,14 +567,12 @@ public class TestMongoDBRepositoryFulltextQuery extends
         String query;
 
         DocumentModel file1 = new DocumentModelImpl("/", "testfile1", "File");
-        file1.setPropertyValue("dc:title",
-                "bobby can learn international commerce easily");
+        file1.setPropertyValue("dc:title", "bobby can learn international commerce easily");
         file1 = session.createDocument(file1);
         // other files with data to avoid words being present in
         // too high a percentage of the indexes
         for (int i = 0; i < 10; i++) {
-            DocumentModel f = new DocumentModelImpl("/", "otherfile" + i,
-                    "File");
+            DocumentModel f = new DocumentModelImpl("/", "otherfile" + i, "File");
             f.setPropertyValue("dc:title", "some other text never matched");
             f.setPropertyValue("dc:description", "desc" + i);
             f = session.createDocument(f);
@@ -647,12 +611,9 @@ public class TestMongoDBRepositoryFulltextQuery extends
         createDocs();
         String query;
         DocumentModelList dml;
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
-        DocumentModel file2 = session.getDocument(new PathRef(
-                "/testfolder1/testfile2"));
-        DocumentModel file3 = session.getDocument(new PathRef(
-                "/testfolder1/testfile3"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
+        DocumentModel file2 = session.getDocument(new PathRef("/testfolder1/testfile2"));
+        DocumentModel file3 = session.getDocument(new PathRef("/testfolder1/testfile3"));
 
         file1.setProperty("dublincore", "title", "hello world");
         session.saveDocument(file1);
@@ -691,8 +652,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
 
         String query;
         DocumentModelList dml;
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         query = "SELECT * FROM File WHERE ecm:isProxy = 0 AND ecm:fulltext = 'restaurant'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
@@ -704,8 +664,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
         assertIdSet(dml, file1.getId());
         // check text extraction with '\0' in it
         String content = "Text with a \0 in it";
-        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"),
-                "text/plain");
+        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"), "text/plain");
         file1.setPropertyValue("content", blob1);
         session.saveDocument(file1);
         session.save();
@@ -718,8 +677,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
         String query;
         DocumentModelList dml;
         DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
-        DocumentModel file1 = session.getDocument(new PathRef(
-                "/testfolder1/testfile1"));
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         file1.setProperty("dublincore", "title", "hello world");
         session.saveDocument(file1);
         session.save();
@@ -731,8 +689,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
         assertIdSet(dml, file1.getId());
 
         // copy
-        DocumentModel copy = session.copy(file1.getRef(), folder1.getRef(),
-                "file1Copy");
+        DocumentModel copy = session.copy(file1.getRef(), folder1.getRef(), "file1Copy");
         // the save is needed to update the read acls
         session.save();
         waitForFulltextIndexing();
@@ -743,8 +700,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
 
     @Test
     public void testFulltextComplexType() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "complex-doc",
-                "ComplexDoc");
+        DocumentModel doc = new DocumentModelImpl("/", "complex-doc", "ComplexDoc");
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
         session.save();
@@ -767,8 +723,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
         openSession();
 
         // test fulltext indexing of complex property at level one
-        DocumentModelList results = session.query(
-                "SELECT * FROM Document WHERE ecm:fulltext = 'somename'", 1);
+        DocumentModelList results = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'somename'", 1);
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("complex-doc", results.get(0).getTitle());
@@ -776,9 +731,7 @@ public class TestMongoDBRepositoryFulltextQuery extends
         // test setting and reading a list of maps without a complex type in the
         // maps
         Map<String, Object> vignette = new HashMap<String, Object>();
-        vignette.put(
-                "content",
-                StreamingBlob.createFromString("textblob content", "text/plain"));
+        vignette.put("content", StreamingBlob.createFromString("textblob content", "text/plain"));
         vignette.put("label", "vignettelabel");
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -790,23 +743,20 @@ public class TestMongoDBRepositoryFulltextQuery extends
         openSession();
 
         // test fulltext indexing of complex property at level 3
-        results = session.query("SELECT * FROM Document"
-                + " WHERE ecm:fulltext = 'vignettelabel'", 2);
+        results = session.query("SELECT * FROM Document" + " WHERE ecm:fulltext = 'vignettelabel'", 2);
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("complex-doc", results.get(0).getTitle());
 
         // test fulltext indexing of complex property at level 3 in blob
-        results = session.query("SELECT * FROM Document"
-                + " WHERE ecm:fulltext = 'textblob content'", 2);
+        results = session.query("SELECT * FROM Document" + " WHERE ecm:fulltext = 'textblob content'", 2);
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("complex-doc", results.get(0).getTitle());
 
         // test deleting the list of vignette and ensure that the fulltext index
         // has been properly updated (regression test for NXP-6315)
-        doc.setPropertyValue("cmpf:attachedFile/vignettes",
-                new ArrayList<Map<String, Object>>());
+        doc.setPropertyValue("cmpf:attachedFile/vignettes", new ArrayList<Map<String, Object>>());
         session.saveDocument(doc);
         session.save();
 
@@ -814,13 +764,11 @@ public class TestMongoDBRepositoryFulltextQuery extends
         waitForFulltextIndexing();
         openSession();
 
-        results = session.query("SELECT * FROM Document"
-                + " WHERE ecm:fulltext = 'vignettelabel'", 2);
+        results = session.query("SELECT * FROM Document" + " WHERE ecm:fulltext = 'vignettelabel'", 2);
         assertNotNull(results);
         assertEquals(0, results.size());
 
-        results = session.query("SELECT * FROM Document"
-                + " WHERE ecm:fulltext = 'textblob content'", 2);
+        results = session.query("SELECT * FROM Document" + " WHERE ecm:fulltext = 'textblob content'", 2);
         assertNotNull(results);
         assertEquals(0, results.size());
     }

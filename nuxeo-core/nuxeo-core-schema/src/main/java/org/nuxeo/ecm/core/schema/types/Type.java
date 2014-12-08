@@ -18,48 +18,34 @@ import java.io.Serializable;
  * A Type object is used to describe some ECM content.
  * <p>
  * There are two groups of content types:
- *
  * <ul>
- * <li> primitive types - these are builtin types used to describe simple values
- * like string, integers, dates etc
- * <li> custom types - these are used defined types based on the primitive types
+ * <li>primitive types - these are builtin types used to describe simple values like string, integers, dates etc
+ * <li>custom types - these are used defined types based on the primitive types
  * </ul>
- *
  * Custom types are structured in two groups:
- *
  * <ul>
- * <li> simple types - constrained primitive types. Constraints are specific to
- * each primitive type. <br>
- * For example the "string" type may have constraints like maximum length,
- * regular expression pattern etc. <br>
- * So you can define a custom simple type as being a string that match the
- * regular expression <code>.+@.+</code>
- * <li> complex types - structured types that can be expressed as a tree like
- * structure of other primitive, simple or complex types.
+ * <li>simple types - constrained primitive types. Constraints are specific to each primitive type. <br>
+ * For example the "string" type may have constraints like maximum length, regular expression pattern etc. <br>
+ * So you can define a custom simple type as being a string that match the regular expression <code>.+@.+</code>
+ * <li>complex types - structured types that can be expressed as a tree like structure of other primitive, simple or
+ * complex types.
  * </ul>
- *
  * The typing system is mainly inspired from XML schemas.
  * <p>
  * There is a root type called <code>ANY</code> type. <br>
- * Apart this special type, each type has a super type (a type from which it is
- * derived)
+ * Apart this special type, each type has a super type (a type from which it is derived)
  * <p>
  * On top of this typing system there are two high level content types:
- *
  * <ul>
- * <li> schemas - a schema is a complex that can be used to form composite types
- * <br>
- * Because multiple schemas may live together in a composite type they must
- * provide a namespace to avoid name collisions inside a composite type
- * <li> composite types - a composite type is made of several schemas. <br>
- * You can see a composite type as a type derived from multiple complex super
- * types. <br>
+ * <li>schemas - a schema is a complex that can be used to form composite types <br>
+ * Because multiple schemas may live together in a composite type they must provide a namespace to avoid name collisions
+ * inside a composite type
+ * <li>composite types - a composite type is made of several schemas. <br>
+ * You can see a composite type as a type derived from multiple complex super types. <br>
  * Composite types are used to define ECM documents
  * </ul>
- *
- * Type names must not contains a <code>:</code> character. This character may
- * be used internally to prefix the type name so it must not be used in the type
- * name.
+ * Type names must not contains a <code>:</code> character. This character may be used internally to prefix the type
+ * name so it must not be used in the type name.
  */
 public interface Type extends Serializable {
 
@@ -103,8 +89,7 @@ public interface Type extends Serializable {
      * <li>and so on.
      * </ul>
      * <p>
-     * The returned array is never null. An empty array is returned in the case
-     * of <code>ANY</code> type.
+     * The returned array is never null. An empty array is returned in the case of <code>ANY</code> type.
      *
      * @return an array containing the supertypes of this type
      */
@@ -158,8 +143,7 @@ public interface Type extends Serializable {
      *
      * @param object the object to test
      * @return true if the given object if of this type, false otherwise
-     * @throws TypeException if an error occurs trying to retrieve the
-     *             supertypes
+     * @throws TypeException if an error occurs trying to retrieve the supertypes
      */
     boolean validate(Object object) throws TypeException;
 
@@ -171,26 +155,23 @@ public interface Type extends Serializable {
      * Returns null if the string can not be decoded.
      *
      * @param string the string to decode
-     * @return the converted object that can be use as a value for an object of
-     *         this type or null if the given object cannot be converted
+     * @return the converted object that can be use as a value for an object of this type or null if the given object
+     *         cannot be converted
      */
     Object decode(String string);
 
     /**
-     * Encodes the given object that is assumed to be of this type into a string
-     * representation.
+     * Encodes the given object that is assumed to be of this type into a string representation.
      * <p>
      * Null is returned if the object cannot be converted.
      *
      * @param object the object to convert
-     * @return the string representation of the given object or null if object
-     *         cannot be converted
+     * @return the string representation of the given object or null if object cannot be converted
      */
     String encode(Object object);
 
     /**
-     * Creates a new instance according to this type and filled with default
-     * values.
+     * Creates a new instance according to this type and filled with default values.
      *
      * @return
      */

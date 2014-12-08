@@ -24,22 +24,20 @@ import java.util.jar.JarFile;
 
 /**
  * @author matic
- *
  */
-public class URLClassLoaderCloser  {
+public class URLClassLoaderCloser {
 
-    protected  List<?> loaders;
+    protected List<?> loaders;
 
     protected final URLJarFileIntrospector introspector;
 
-    protected  final Map<?, ?> index;
+    protected final Map<?, ?> index;
 
-    public URLClassLoaderCloser(URLJarFileIntrospector anIntrospector, Map<?,?> anIndex, List<?> someLoaders) {
+    public URLClassLoaderCloser(URLJarFileIntrospector anIntrospector, Map<?, ?> anIndex, List<?> someLoaders) {
         introspector = anIntrospector;
         index = anIndex;
         loaders = someLoaders;
     }
-
 
     protected static String serializeURL(URL location) {
         StringBuilder localStringBuilder = new StringBuilder(128);
@@ -73,8 +71,7 @@ public class URLClassLoaderCloser  {
             return false;
         }
         Object firstKey = index.keySet().iterator().next();
-        Object loader = firstKey instanceof URL ? index.remove(location)
-                : index.remove(serializeURL(location));
+        Object loader = firstKey instanceof URL ? index.remove(location) : index.remove(serializeURL(location));
         if (loader == null) {
             return false;
         }
@@ -84,11 +81,9 @@ public class URLClassLoaderCloser  {
             jar = (JarFile) introspector.jarField.get(loader);
             introspector.jarField.set(loader, null);
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException(
-                    "Cannot use reflection on url class path", e);
+            throw new RuntimeException("Cannot use reflection on url class path", e);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(
-                    "Cannot use reflection on url class path", e);
+            throw new RuntimeException("Cannot use reflection on url class path", e);
         }
         jar.close();
         return true;

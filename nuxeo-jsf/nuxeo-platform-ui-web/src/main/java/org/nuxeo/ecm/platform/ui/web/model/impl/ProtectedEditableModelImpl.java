@@ -24,7 +24,6 @@ import org.nuxeo.ecm.platform.ui.web.model.ProtectedEditableModel;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class ProtectedEditableModelImpl implements ProtectedEditableModel {
 

@@ -29,9 +29,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Blob based implementation of the ImageResource Because ImageResource will be
- * cached this Implementation is not optimal (Blob digest is not compulsory and
- * the modification date is not set).
+ * Blob based implementation of the ImageResource Because ImageResource will be cached this Implementation is not
+ * optimal (Blob digest is not compulsory and the modification date is not set).
  * <p>
  * This implementation is mainly used for unit testing.
  *

@@ -34,7 +34,6 @@ import com.google.inject.name.Named;
 
 /**
  * @author matic
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(JtajcaManagementFeature.class)

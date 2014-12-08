@@ -20,9 +20,7 @@
 package org.nuxeo.ecm.platform.relations.api.exceptions;
 
 /**
- * A valid literal cannot have both type and language set.
- *
- * TODO: check encoding problems
+ * A valid literal cannot have both type and language set. TODO: check encoding problems
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

@@ -27,8 +27,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Object to store the definition of a picture conversion, to be used when
- * computing views for a given image.
+ * Object to store the definition of a picture conversion, to be used when computing views for a given image.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 7.1
@@ -67,8 +66,7 @@ public class PictureConversion implements Comparable<PictureConversion> {
         super();
     }
 
-    public PictureConversion(String id, String description, String tag,
-            Integer maxSize) {
+    public PictureConversion(String id, String description, String tag, Integer maxSize) {
         this.id = id;
         this.description = description;
         this.tag = tag;
@@ -112,8 +110,7 @@ public class PictureConversion implements Comparable<PictureConversion> {
     }
 
     /**
-     * For compat with
-     * {@link org.nuxeo.ecm.platform.picture.api.PictureTemplate}.
+     * For compat with {@link org.nuxeo.ecm.platform.picture.api.PictureTemplate}.
      *
      * @deprecated since 7.1. Use {@link #getId()}.
      */
@@ -199,7 +196,6 @@ public class PictureConversion implements Comparable<PictureConversion> {
     public String toString() {
         return String.format(
                 "PictureConversion [id=%s, description=%s, tag=%s, maxSize=%d, order=%d, chainId=%s, enabled=%s, default=%s]",
-                id, description, tag, maxSize, order, chainId, enabled,
-                isDefault);
+                id, description, tag, maxSize, order, chainId, enabled, isDefault);
     }
 }

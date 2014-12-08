@@ -45,7 +45,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
 public class PlacefulServiceImpl extends DefaultComponent implements PlacefulService {
@@ -98,7 +97,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("annotations".equals(extensionPoint)) {
-        	pending.add((AnnotationDescriptor) contribution);
+            pending.add((AnnotationDescriptor) contribution);
         }
     }
 
@@ -109,11 +108,11 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
 
     @Override
     public void applicationStarted(ComponentContext context) {
-    	Iterator<AnnotationDescriptor> it = pending.iterator();
-    	while (it.hasNext()) {
-    		registerAnnotations(it.next());
-    		it.remove();
-    	}
+        Iterator<AnnotationDescriptor> it = pending.iterator();
+        while (it.hasNext()) {
+            registerAnnotations(it.next());
+            it.remove();
+        }
     }
 
     protected void registerAnnotations(AnnotationDescriptor contribution) {
@@ -177,7 +176,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
                 }
             });
         } catch (ClientException e) {
-           throw new ClientRuntimeException(e);
+            throw new ClientRuntimeException(e);
         }
     }
 
@@ -192,11 +191,11 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
 
             });
         } catch (ClientException e) {
-           throw new ClientRuntimeException(e);
+            throw new ClientRuntimeException(e);
         }
     }
 
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     public List<Annotation> getAnnotationListByParamMap(EntityManager em, Map<String, Object> paramMap, String name) {
         String className = annotations.get(name);
         if (className == null) {
@@ -241,7 +240,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
             });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
-         }
+        }
     }
 
     public void removeAnnotationListByParamMap(EntityManager em, Map<String, Object> paramMap, String name) {
@@ -268,7 +267,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
             });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
-         }
+        }
     }
 
     public void setAnnotation(EntityManager em, Annotation annotation) {
@@ -287,7 +286,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
             });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
-         }
+        }
     }
 
     public void removeAnnotation(EntityManager em, Annotation annotation) {
@@ -305,6 +304,6 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
             });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
-         }
+        }
     }
 }

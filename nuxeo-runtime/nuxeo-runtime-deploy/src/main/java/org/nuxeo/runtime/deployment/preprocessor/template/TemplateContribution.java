@@ -25,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject
 public class TemplateContribution {
@@ -42,7 +42,6 @@ public class TemplateContribution {
 
     @XNode("@mode")
     private String mode = "append";
-
 
     @XNode("@target")
     public void setTarget(String target) {

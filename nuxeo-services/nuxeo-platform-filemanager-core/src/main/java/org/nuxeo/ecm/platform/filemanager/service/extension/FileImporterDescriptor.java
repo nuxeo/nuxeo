@@ -24,7 +24,6 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- *
  * @author akalogeropoulos
  */
 @XObject("plugin")
@@ -75,8 +74,7 @@ public class FileImporterDescriptor implements Serializable {
     }
 
     /**
-     * Returns the configured document type to be created when using the
-     * importer
+     * Returns the configured document type to be created when using the importer
      *
      * @since 5.5
      */
@@ -109,8 +107,8 @@ public class FileImporterDescriptor implements Serializable {
     }
 
     /**
-     * Returns {@code true} if this {@code FileImporterDescriptor} should be
-     * merged with an existing one, {@code false} otherwise.
+     * Returns {@code true} if this {@code FileImporterDescriptor} should be merged with an existing one, {@code false}
+     * otherwise.
      *
      * @since 5.5
      */

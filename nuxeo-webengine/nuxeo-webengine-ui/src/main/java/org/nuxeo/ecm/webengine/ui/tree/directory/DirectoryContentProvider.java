@@ -34,7 +34,6 @@ import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DirectoryContentProvider implements ContentProvider {
 
@@ -52,7 +51,7 @@ public class DirectoryContentProvider implements ContentProvider {
         return session;
     }
 
-    protected void createQuery(DocumentModel parent, Map<String,Serializable> query) {
+    protected void createQuery(DocumentModel parent, Map<String, Serializable> query) {
         String id = parent == null ? null : parent.getId();
         query.put("parent", id);
     }
@@ -68,7 +67,7 @@ public class DirectoryContentProvider implements ContentProvider {
     public Object[] getChildren(Object obj) {
         try {
             if (obj == null || obj instanceof DocumentModel) {
-                DocumentModel parent = (DocumentModel)obj;
+                DocumentModel parent = (DocumentModel) obj;
                 Map<String, Serializable> args = new HashMap<String, Serializable>();
                 createQuery(parent, args);
                 DocumentModelList list = session.query(args);
@@ -82,21 +81,21 @@ public class DirectoryContentProvider implements ContentProvider {
 
     public boolean isContainer(Object obj) {
         if (obj instanceof DocumentModel) {
-            return ((DocumentModel)obj).isFolder();
+            return ((DocumentModel) obj).isFolder();
         }
         return false;
     }
 
     public String getName(Object obj) {
         if (obj instanceof DocumentModel) {
-            return ((DocumentModel)obj).getId();
+            return ((DocumentModel) obj).getId();
         }
         return null;
     }
 
     public String getLabel(Object obj) {
         if (obj instanceof DocumentModel) {
-            return ((DocumentModel)obj).getName();
+            return ((DocumentModel) obj).getName();
         }
         return null;
     }

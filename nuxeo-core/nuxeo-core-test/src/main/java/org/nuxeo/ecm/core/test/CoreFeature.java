@@ -39,8 +39,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Binder;
 
 /**
- * The core feature provides deployments needed to have a nuxeo core running.
- * Several annotations can be used:
+ * The core feature provides deployments needed to have a nuxeo core running. Several annotations can be used:
  * <ul>
  * <li>FIXME
  * <li>FIXME
@@ -48,11 +47,9 @@ import com.google.inject.Binder;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Deploy({ "org.nuxeo.runtime.management", "org.nuxeo.ecm.core.schema",
-        "org.nuxeo.ecm.core.query", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core",
-        "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
-        "org.nuxeo.ecm.core.storage", "org.nuxeo.ecm.core.storage.sql",
+@Deploy({ "org.nuxeo.runtime.management", "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.query",
+        "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.convert",
+        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.core.storage", "org.nuxeo.ecm.core.storage.sql",
         "org.nuxeo.ecm.core.storage.sql.test" })
 @Features(RuntimeFeature.class)
 public class CoreFeature extends SimpleFeature {
@@ -97,8 +94,7 @@ public class CoreFeature extends SimpleFeature {
         final CoreInstance core = CoreInstance.getInstance();
         initialOpenSessions = core.getNumberOfSessions();
         if (initialOpenSessions != 0) {
-            log.error(String.format(
-                    "There are already %s open session(s) before running tests.",
+            log.error(String.format("There are already %s open session(s) before running tests.",
                     Integer.valueOf(initialOpenSessions)));
             for (CoreInstance.RegistrationInfo info : core.getRegistrationInfos()) {
                 log.warn("Leaking session", info);
@@ -121,10 +117,8 @@ public class CoreFeature extends SimpleFeature {
         int finalOpenSessions = core.getNumberOfSessions();
         int leakedOpenSessions = finalOpenSessions - initialOpenSessions;
         if (leakedOpenSessions > 0) {
-            log.error(String.format(
-                    "There are %s open session(s) at tear down; it seems "
-                            + "the test leaked %s session(s).",
-                    Integer.valueOf(finalOpenSessions),
+            log.error(String.format("There are %s open session(s) at tear down; it seems "
+                    + "the test leaked %s session(s).", Integer.valueOf(finalOpenSessions),
                     Integer.valueOf(leakedOpenSessions)));
         }
     }
@@ -177,8 +171,7 @@ public class CoreFeature extends SimpleFeature {
             session.removeChildren(new PathRef("/"));
             log.trace("remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
             String rootDocumentId = session.getRootDocument().getId();
-            IterableQueryResult results = session.queryAndFetch(
-                    "SELECT ecm:uuid FROM Document, Relation", NXQL.NXQL);
+            IterableQueryResult results = session.queryAndFetch("SELECT ecm:uuid FROM Document, Relation", NXQL.NXQL);
             for (Map<String, Serializable> result : results) {
                 String uuid = result.get("ecm:uuid").toString();
                 if (rootDocumentId != uuid) {

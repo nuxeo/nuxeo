@@ -20,8 +20,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
-@Operation(id = BlobHolderAttach.ID, category = Constants.CAT_BLOB, label = "Attach File or files to the currentDocument.",
-        description = "Attach the input file(s) to the current document using the BlobHolder abstraction")
+@Operation(id = BlobHolderAttach.ID, category = Constants.CAT_BLOB, label = "Attach File or files to the currentDocument.", description = "Attach the input file(s) to the current document using the BlobHolder abstraction")
 public class BlobHolderAttach {
 
     public static final String ID = "BlobHolder.Attach";
@@ -35,8 +34,8 @@ public class BlobHolderAttach {
     @Context
     protected OperationContext context;
 
-    @Param(name="useMainBlob", required=false)
-    protected boolean useMainBlob=true;
+    @Param(name = "useMainBlob", required = false)
+    protected boolean useMainBlob = true;
 
     protected DocumentModel getCurrentDocument() throws OperationException {
         String cdRef = (String) context.get("currentDocument");
@@ -47,7 +46,7 @@ public class BlobHolderAttach {
     public DocumentModel run(Blob blob) throws OperationException {
         DocumentModel currentDocument = getCurrentDocument();
         BlobHolder bh = currentDocument.getAdapter(BlobHolder.class);
-        if (bh==null) {
+        if (bh == null) {
             return currentDocument;
         }
         bh.setBlob(blob);
@@ -58,17 +57,17 @@ public class BlobHolderAttach {
 
     @OperationMethod
     public DocumentModel run(BlobList blobs) throws OperationException {
-        DocumentModel currentDocument=null;
+        DocumentModel currentDocument = null;
         if (useMainBlob) {
             Blob mainBlob = blobs.remove(0);
             currentDocument = run(mainBlob);
         } else {
-            currentDocument= getCurrentDocument();
+            currentDocument = getCurrentDocument();
         }
-        if (blobs.size()>0) {
+        if (blobs.size() > 0) {
             if (currentDocument.hasSchema("files")) {
                 List<Map<String, Object>> existingBlobs = (List<Map<String, Object>>) currentDocument.getPropertyValue("files:files");
-                if (existingBlobs==null) {
+                if (existingBlobs == null) {
                     existingBlobs = new ArrayList<Map<String, Object>>();
                 }
                 for (Blob blob : blobs) {
@@ -77,7 +76,7 @@ public class BlobHolderAttach {
                     map.put("filename", blob.getFilename());
                     existingBlobs.add(map);
                 }
-                currentDocument.setPropertyValue("files:files",(Serializable) existingBlobs);
+                currentDocument.setPropertyValue("files:files", (Serializable) existingBlobs);
                 currentDocument = session.saveDocument(currentDocument);
             }
         }

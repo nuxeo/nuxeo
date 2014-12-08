@@ -33,8 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.8
  */
-public class NuxeoPrincipalsPageProvider extends
-        AbstractUsersPageProvider<NuxeoPrincipal> {
+public class NuxeoPrincipalsPageProvider extends AbstractUsersPageProvider<NuxeoPrincipal> {
 
     private static final Log log = LogFactory.getLog(NuxeoPrincipalsPageProvider.class);
 
@@ -48,8 +47,8 @@ public class NuxeoPrincipalsPageProvider extends
             UserManager userManager = Framework.getLocalService(UserManager.class);
             for (DocumentModel user : users) {
                 try {
-                    NuxeoPrincipal principal = userManager.getPrincipal(user.getProperty(
-                            userManager.getUserIdField()).getValue(String.class));
+                    NuxeoPrincipal principal = userManager.getPrincipal(user.getProperty(userManager.getUserIdField()).getValue(
+                            String.class));
                     pagePrincipals.add(principal);
                 } catch (ClientException e) {
                     log.error(e, e);

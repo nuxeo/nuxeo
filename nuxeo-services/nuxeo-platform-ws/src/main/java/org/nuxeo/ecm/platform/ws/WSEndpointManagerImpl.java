@@ -19,8 +19,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.7.3
  */
-public class WSEndpointManagerImpl extends DefaultComponent implements
-        WSEndpointManager {
+public class WSEndpointManagerImpl extends DefaultComponent implements WSEndpointManager {
 
     public static final String ENDPOINT_EP = "endpoint";
 
@@ -33,8 +32,7 @@ public class WSEndpointManagerImpl extends DefaultComponent implements
     protected Map<String, Endpoint> endpoints = new HashMap<>();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (ENDPOINT_EP.equals(extensionPoint)) {
             regitry.addContribution((WSEndpointDescriptor) contribution);
         } else {
@@ -43,8 +41,7 @@ public class WSEndpointManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (ENDPOINT_EP.equals(extensionPoint)) {
             WSEndpointDescriptor descriptor = (WSEndpointDescriptor) contribution;
             stopIfExists(descriptor.name);
@@ -85,7 +82,7 @@ public class WSEndpointManagerImpl extends DefaultComponent implements
                 } else {
                     log.warn("Endpoint publishing is failing: " + desc.name);
                 }
-            } catch (IOException | IllegalAccessException | InstantiationException e ) {
+            } catch (IOException | IllegalAccessException | InstantiationException e) {
                 log.warn("Unable to register endpoint: " + desc.name, e);
             }
         }

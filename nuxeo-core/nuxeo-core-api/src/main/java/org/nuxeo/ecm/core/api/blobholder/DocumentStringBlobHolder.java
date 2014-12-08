@@ -21,8 +21,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
- * {@link BlobHolder} implemention based on a {@link DocumentModel} and a Xpath
- * pointing to a String fields. (Typical use case is the Note DocType).
+ * {@link BlobHolder} implemention based on a {@link DocumentModel} and a Xpath pointing to a String fields. (Typical
+ * use case is the Note DocType).
  *
  * @author tiry
  */
@@ -34,8 +34,7 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder {
         super(doc, path);
     }
 
-    public DocumentStringBlobHolder(DocumentModel doc, String path,
-            String mime_type) {
+    public DocumentStringBlobHolder(DocumentModel doc, String path, String mime_type) {
         super(doc, path);
         this.mt = mime_type;
     }

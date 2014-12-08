@@ -104,14 +104,12 @@ public class RestfulPhaseListener implements PhaseListener {
         // transaction, so it has to be started using Seam methods.
     }
 
-    protected void handleException(FacesContext context, Exception e)
-            throws ClientRuntimeException {
+    protected void handleException(FacesContext context, Exception e) throws ClientRuntimeException {
         try {
             ExternalContext externalContext = context.getExternalContext();
             ExceptionHandlingService exceptionHandlingService = Framework.getService(ExceptionHandlingService.class);
             NuxeoExceptionHandler handler = exceptionHandlingService.getExceptionHandler();
-            handler.handleException(
-                    (HttpServletRequest) externalContext.getRequest(),
+            handler.handleException((HttpServletRequest) externalContext.getRequest(),
                     (HttpServletResponse) externalContext.getResponse(), e);
         } catch (ServletException e1) {
             throw new ClientRuntimeException(e1);
@@ -121,11 +119,10 @@ public class RestfulPhaseListener implements PhaseListener {
     }
 
     /**
-     * Hack trigger of a Seam component that will trigger reset of most Seam
-     * components caches, only if dev mode is enabled
+     * Hack trigger of a Seam component that will trigger reset of most Seam components caches, only if dev mode is
+     * enabled
      * <p>
-     * This is handled here to be done very early, before response is
-     * constructed.
+     * This is handled here to be done very early, before response is constructed.
      *
      * @since 5.6
      * @see Framework#isDevModeSet()
@@ -136,15 +133,12 @@ public class RestfulPhaseListener implements PhaseListener {
                 ExpressionFactory ef = facesContext.getApplication().getExpressionFactory();
                 ELContext context = facesContext.getELContext();
                 String actionBinding = SEAM_HOTRELOAD_TRIGGER_ACTION;
-                MethodExpression action = ef.createMethodExpression(context,
-                        actionBinding, String.class,
+                MethodExpression action = ef.createMethodExpression(context, actionBinding, String.class,
                         new Class[] { DocumentView.class });
                 action.invoke(context, new Object[0]);
             } catch (ELException | NullPointerException e) {
-                String msg = String.format(
-                        "Error while trying to flush seam context after "
-                                + "a reload, executing method expression '%s'",
-                        SEAM_HOTRELOAD_TRIGGER_ACTION);
+                String msg = String.format("Error while trying to flush seam context after "
+                        + "a reload, executing method expression '%s'", SEAM_HOTRELOAD_TRIGGER_ACTION);
                 log.error(msg, e);
             }
         }

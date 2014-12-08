@@ -30,8 +30,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
 
-public class ElasticSearchPostCommitSyncListener implements
-        PostCommitEventListener {
+public class ElasticSearchPostCommitSyncListener implements PostCommitEventListener {
 
     @Override
     public void handleEvent(EventBundle bundle) throws ClientException {
@@ -39,24 +38,20 @@ public class ElasticSearchPostCommitSyncListener implements
         List<IndexingCommand> cmds = new ArrayList<>();
         for (Event event : bundle) {
             if (EventConstants.ES_INDEX_EVENT_SYNC.equals(event.getName())) {
-                Map<String, Serializable> props = event.getContext()
-                        .getProperties();
+                Map<String, Serializable> props = event.getContext().getProperties();
                 for (String key : props.keySet()) {
                     if (key.startsWith(IndexingCommand.PREFIX)) {
-                        IndexingCommand cmd = IndexingCommand.fromJSON(event
-                                .getContext().getCoreSession(), (String) props
-                                .get(key));
+                        IndexingCommand cmd = IndexingCommand.fromJSON(event.getContext().getCoreSession(),
+                                (String) props.get(key));
                         cmds.add(cmd);
                     }
                 }
             }
         }
         if (!cmds.isEmpty()) {
-            ElasticSearchIndexing esi = Framework
-                    .getLocalService(ElasticSearchIndexing.class);
+            ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
             esi.indexNow(cmds);
-            ElasticSearchAdmin esa = Framework
-                    .getLocalService(ElasticSearchAdmin.class);
+            ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
             esa.refresh();
         }
     }

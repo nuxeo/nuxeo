@@ -62,16 +62,11 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.mimetype.api",
+@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.mimetype.api",
         "org.nuxeo.ecm.platform.mimetype.core" })
-@LocalDeploy({
-        FileManagerUTConstants.FILEMANAGER_BUNDLE
-                + ":ecm-types-test-contrib.xml",
-        FileManagerUTConstants.FILEMANAGER_BUNDLE
-                + ":nxfilemanager-test-contribs.xml" })
+@LocalDeploy({ FileManagerUTConstants.FILEMANAGER_BUNDLE + ":ecm-types-test-contrib.xml",
+        FileManagerUTConstants.FILEMANAGER_BUNDLE + ":nxfilemanager-test-contribs.xml" })
 public class TestFileManagerService {
 
     protected FileManager service;
@@ -94,8 +89,7 @@ public class TestFileManagerService {
     }
 
     private void createWorkspaces() throws ClientException {
-        DocumentModel workspace = coreSession.createDocumentModel(
-                root.getPathAsString(), "workspace", "Workspace");
+        DocumentModel workspace = coreSession.createDocumentModel(root.getPathAsString(), "workspace", "Workspace");
         coreSession.createDocument(workspace);
         this.workspace = workspace;
     }
@@ -111,8 +105,8 @@ public class TestFileManagerService {
         byte[] content = FileManagerUtils.getBytesFromFile(file);
         ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), true, "test-data/hello.doc");
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+                "test-data/hello.doc");
         assertNotNull(doc);
         assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
         assertEquals("hello.doc", doc.getProperty("file", "filename"));
@@ -127,8 +121,8 @@ public class TestFileManagerService {
         byte[] content = FileManagerUtils.getBytesFromFile(file);
         ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), true, "test-data/hello.doc");
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+                "test-data/hello.doc");
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc);
@@ -140,8 +134,8 @@ public class TestFileManagerService {
         assertEquals(0, versions.size());
 
         // create again with same file
-        doc = service.createDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), true, "test-data/hello.doc");
+        doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+                "test-data/hello.doc");
         assertNotNull(doc);
 
         DocumentRef newDocRef = doc.getRef();
@@ -162,8 +156,8 @@ public class TestFileManagerService {
         byte[] content = FileManagerUtils.getBytesFromFile(file);
         ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), true, "test-data/hello.doc");
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+                "test-data/hello.doc");
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc);
@@ -172,8 +166,8 @@ public class TestFileManagerService {
         assertNotNull(doc.getProperty("file", "content"));
 
         // update it with another file with same name
-        doc = service.updateDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), "test-data/update/hello.doc");
+        doc = service.updateDocumentFromBlob(coreSession, input, workspace.getPathAsString(),
+                "test-data/update/hello.doc");
         assertNotNull(doc);
 
         DocumentRef newDocRef = doc.getRef();
@@ -185,9 +179,8 @@ public class TestFileManagerService {
 
     protected static final String SEPARATOR = "\n";
 
-    protected static final String NOTE_HTML_CONTENT = "<html>" + SEPARATOR
-            + "<body>" + SEPARATOR + "  <p>Hello from HTML document</p>"
-            + SEPARATOR + "</body>" + SEPARATOR + "</html>";
+    protected static final String NOTE_HTML_CONTENT = "<html>" + SEPARATOR + "<body>" + SEPARATOR
+            + "  <p>Hello from HTML document</p>" + SEPARATOR + "</body>" + SEPARATOR + "</html>";
 
     @Test
     public void testCreateNote() throws Exception {
@@ -196,8 +189,8 @@ public class TestFileManagerService {
         byte[] content = FileManagerUtils.getBytesFromFile(file);
         ByteArrayBlob input = new ByteArrayBlob(content, "text/html");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), true, "test-data/hello.html");
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+                "test-data/hello.html");
         assertNotNull(doc);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
         String expectedNoteTest = NOTE_HTML_CONTENT;
@@ -221,8 +214,8 @@ public class TestFileManagerService {
         byte[] content = FileManagerUtils.getBytesFromFile(file);
         ByteArrayBlob input = new ByteArrayBlob(content, "text/html");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), true, "test-data/hello.html");
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+                "test-data/hello.html");
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc);
@@ -243,8 +236,8 @@ public class TestFileManagerService {
         assertEquals(0, versions.size());
 
         // create again with same file
-        doc = service.createDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), true, "test-data/hello.html");
+        doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+                "test-data/hello.html");
         assertNotNull(doc);
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
@@ -276,11 +269,9 @@ public class TestFileManagerService {
     @Test
     public void testFileImportersMerge() throws Exception {
         assertNotNull(harness);
-        URL url = getClass().getClassLoader().getResource(
-                "nxfilemanager-test-override.xml");
+        URL url = getClass().getClassLoader().getResource("nxfilemanager-test-override.xml");
         assertNotNull(url);
-        harness.deployTestContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE,
-                url);
+        harness.deployTestContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE, url);
 
         FileManagerService fileManagerService = (FileManagerService) service;
 
@@ -311,30 +302,26 @@ public class TestFileManagerService {
         // plugin
         blob.setMimeType("application/csv");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob,
-                workspace.getPathAsString(), true, "test-data/hello.csv");
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
+                "test-data/hello.csv");
         assertNotNull(doc);
         assertEquals("Note", doc.getType());
     }
 
     @Test
-    public void testCreateExistingBlobWithNonNFCNormalizedFilename()
-            throws Exception {
+    public void testCreateExistingBlobWithNonNFCNormalizedFilename() throws Exception {
         // Create doc from NFC normalized filename
         String fileName = "ÜÜÜ ÓÓÓ.rtf";
-        String nfcNormalizedFileName = Normalizer.normalize(fileName,
-                Normalizer.Form.NFC);
+        String nfcNormalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFC);
         Blob blob = StreamingBlob.createFromString("Test content", "text/rtf");
         blob.setFilename(nfcNormalizedFileName);
-        service.createDocumentFromBlob(coreSession, blob,
-                workspace.getPathAsString(), true, nfcNormalizedFileName);
-        assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession,
-                workspace.getPathAsString(), nfcNormalizedFileName));
+        service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true, nfcNormalizedFileName);
+        assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession, workspace.getPathAsString(),
+                nfcNormalizedFileName));
         // Check existing doc with non NFC (NFD) normalized filename
-        String nfdNormalizedFileName = Normalizer.normalize(fileName,
-                Normalizer.Form.NFD);
-        assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession,
-                workspace.getPathAsString(), nfdNormalizedFileName));
+        String nfdNormalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFD);
+        assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession, workspace.getPathAsString(),
+                nfdNormalizedFileName));
     }
 
     @Test
@@ -346,8 +333,7 @@ public class TestFileManagerService {
         ByteArrayBlob input = new ByteArrayBlob(content, "text/rtf");
         input.setFilename("hello.html");
 
-        DocumentModel doc = coreSession.createDocumentModel(
-                workspace.getPathAsString(), "hello.html", "File");
+        DocumentModel doc = coreSession.createDocumentModel(workspace.getPathAsString(), "hello.html", "File");
         doc.setPropertyValue("dc:title", "hello.html");
         doc.setPropertyValue("file:content", input);
         doc.setPropertyValue("file:filename", "hello.html");
@@ -371,8 +357,8 @@ public class TestFileManagerService {
         file = getTestFile("test-data/hello.html");
         content = FileManagerUtils.getBytesFromFile(file);
         input = new ByteArrayBlob(content, "text/html");
-        doc = service.createDocumentFromBlob(coreSession, input,
-                workspace.getPathAsString(), true, "test-data/hello.html");
+        doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+                "test-data/hello.html");
         assertNotNull(doc);
 
         DocumentRef newDocRef = doc.getRef();

@@ -35,8 +35,8 @@ public class ModifiedDocumentDescriptorPage implements Serializable {
         this(null, 0, false);
     }
 
-    public ModifiedDocumentDescriptorPage(ModifiedDocumentDescriptor[] modifiedDocuments,
-            int pageIndex, boolean bHasMorePage) {
+    public ModifiedDocumentDescriptorPage(ModifiedDocumentDescriptor[] modifiedDocuments, int pageIndex,
+            boolean bHasMorePage) {
         this.pageIndex = pageIndex;
         this.bHasMorePage = bHasMorePage;
         this.modifiedDocuments = modifiedDocuments;

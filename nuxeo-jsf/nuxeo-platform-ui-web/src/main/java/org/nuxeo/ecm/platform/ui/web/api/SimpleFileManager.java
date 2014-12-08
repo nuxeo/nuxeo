@@ -25,11 +25,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface SimpleFileManager {
 
-    String addBinaryFileFromPlugin(Blob blob, String fullName,
-            String morePath) throws ClientException;
+    String addBinaryFileFromPlugin(Blob blob, String fullName, String morePath) throws ClientException;
 
-    String addBinaryFileFromPlugin(Blob blob, String fullName,
-            DocumentModel targetContainer) throws ClientException;
+    String addBinaryFileFromPlugin(Blob blob, String fullName, DocumentModel targetContainer) throws ClientException;
 
     String display();
 

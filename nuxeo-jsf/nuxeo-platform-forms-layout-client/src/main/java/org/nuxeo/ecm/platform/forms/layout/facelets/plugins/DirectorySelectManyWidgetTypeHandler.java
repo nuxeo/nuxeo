@@ -53,8 +53,7 @@ import com.sun.faces.facelets.tag.TagAttributesImpl;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class DirectorySelectManyWidgetTypeHandler extends
-        AbstractDirectorySelectWidgetTypeHandler {
+public class DirectorySelectManyWidgetTypeHandler extends AbstractDirectorySelectWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,18 +62,15 @@ public class DirectorySelectManyWidgetTypeHandler extends
     }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         String mode = widget.getMode();
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            return super.getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                    getEditComponentType());
+            return super.getFaceletHandler(ctx, tagConfig, widget, subHandlers, getEditComponentType());
         }
 
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
-                subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
 
@@ -83,16 +79,13 @@ public class DirectorySelectManyWidgetTypeHandler extends
         Map<String, Serializable> properties = widget.getProperties();
         TagAttribute valueAttr = null;
         if (properties.containsKey("value")) {
-            valueAttr = helper.createAttribute(valueAttributeName,
-                    (String) properties.get("value"));
+            valueAttr = helper.createAttribute(valueAttributeName, (String) properties.get("value"));
         }
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 0) {
             FieldDefinition field = fields[0];
-            valueAttr = helper.createAttribute(
-                    valueAttributeName,
-                    ValueExpressionHelper.createExpressionString(
-                            widget.getValueName(), field));
+            valueAttr = helper.createAttribute(valueAttributeName,
+                    ValueExpressionHelper.createExpressionString(widget.getValueName(), field));
         }
         if (valueAttr == null) {
             // don't bother
@@ -106,11 +99,9 @@ public class DirectorySelectManyWidgetTypeHandler extends
                 Serializable value = property.getValue();
                 TagAttribute attr = null;
                 if (value instanceof String) {
-                    attr = helper.createAttribute(property.getKey(),
-                            (String) value);
+                    attr = helper.createAttribute(property.getKey(), (String) value);
                 } else if (value != null) {
-                    attr = helper.createAttribute(property.getKey(),
-                            value.toString());
+                    attr = helper.createAttribute(property.getKey(), value.toString());
                 }
                 if (attr != null) {
                     attrs.add(attr);
@@ -123,8 +114,7 @@ public class DirectorySelectManyWidgetTypeHandler extends
             attrs.add(helper.createAttribute("value", "#{item}"));
         }
         TagAttributes dirEntryAttrs = FaceletHandlerHelper.getTagAttributes(attrs);
-        ComponentHandler dirEntry = helper.getHtmlComponentHandler(
-                widgetTagConfigId, dirEntryAttrs, leaf,
+        ComponentHandler dirEntry = helper.getHtmlComponentHandler(widgetTagConfigId, dirEntryAttrs, leaf,
                 DirectoryEntryOutputComponent.COMPONENT_TYPE, null);
 
         if (BuiltinWidgetModes.isLikePlainMode(mode)) {
@@ -132,41 +122,34 @@ public class DirectorySelectManyWidgetTypeHandler extends
             // HTML table component
             TagAttributes commaAttributes = FaceletHandlerHelper.getTagAttributes(
                     helper.createAttribute("value", ", "),
-                    helper.createAttribute("rendered",
-                            "#{model.rowIndex < model.rowCount}"));
-            ComponentHandler commaHandler = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, commaAttributes, leaf,
+                    helper.createAttribute("rendered", "#{model.rowIndex < model.rowCount}"));
+            ComponentHandler commaHandler = helper.getHtmlComponentHandler(widgetTagConfigId, commaAttributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
 
-            CompositeFaceletHandler childHandler = new CompositeFaceletHandler(
-                    new FaceletHandler[] { dirEntry, commaHandler });
+            CompositeFaceletHandler childHandler = new CompositeFaceletHandler(new FaceletHandler[] { dirEntry,
+                    commaHandler });
 
-            TagAttributes itAttributes = FaceletHandlerHelper.getTagAttributes(
-                    valueAttr, helper.createAttribute("model", "model"));
-            ComponentHandler itHandler = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, itAttributes, childHandler,
+            TagAttributes itAttributes = FaceletHandlerHelper.getTagAttributes(valueAttr,
+                    helper.createAttribute("model", "model"));
+            ComponentHandler itHandler = helper.getHtmlComponentHandler(widgetTagConfigId, itAttributes, childHandler,
                     UIEditableList.COMPONENT_TYPE, null);
 
             return itHandler;
         } else {
             // build a standard table
-            ComponentHandler columnEntry = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, FaceletHandlerHelper.getTagAttributes(),
-                    dirEntry, HtmlColumn.COMPONENT_TYPE, null);
+            ComponentHandler columnEntry = helper.getHtmlComponentHandler(widgetTagConfigId,
+                    FaceletHandlerHelper.getTagAttributes(), dirEntry, HtmlColumn.COMPONENT_TYPE, null);
 
             TagAttributes iterationAttributes = FaceletHandlerHelper.getTagAttributes(
-                    helper.createIdAttribute(widgetName), valueAttr,
-                    helper.createAttribute("var", "item"));
+                    helper.createIdAttribute(widgetName), valueAttr, helper.createAttribute("var", "item"));
 
-            ComponentHandler table = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, iterationAttributes, columnEntry,
-                    HtmlDataTable.COMPONENT_TYPE, null);
+            ComponentHandler table = helper.getHtmlComponentHandler(widgetTagConfigId, iterationAttributes,
+                    columnEntry, HtmlDataTable.COMPONENT_TYPE, null);
 
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributesImpl(new TagAttribute[0]), table,
-                        UIHtmlText.class.getName(), null);
+                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
+                        table, UIHtmlText.class.getName(), null);
             } else {
                 return table;
             }

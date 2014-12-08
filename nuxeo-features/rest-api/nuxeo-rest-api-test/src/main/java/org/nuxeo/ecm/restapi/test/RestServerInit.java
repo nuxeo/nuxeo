@@ -52,14 +52,11 @@ public class RestServerInit implements RepositoryInit {
      */
     private static final String POWER_USER_LOGIN = "user0";
 
-    public static final String[] FIRSTNAMES = { "Steve", "John", "Georges",
-            "Bill" };
+    public static final String[] FIRSTNAMES = { "Steve", "John", "Georges", "Bill" };
 
-    public static final String[] LASTNAMES = { "Jobs", "Lennon", "Harrisson",
-            "Gates" };
+    public static final String[] LASTNAMES = { "Jobs", "Lennon", "Harrisson", "Gates" };
 
-    public static final String[] GROUPNAMES = { "Stark", "Lannister",
-            "Targaryen", "Greyjoy" };
+    public static final String[] GROUPNAMES = { "Stark", "Lannister", "Targaryen", "Greyjoy" };
 
     @Override
     public void populate(CoreSession session) throws ClientException {
@@ -67,15 +64,13 @@ public class RestServerInit implements RepositoryInit {
         // clearRepositoryCaches(session.getRepositoryName());
         // Create some docs
         for (int i = 0; i < 5; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "folder_" + i,
-                    "Folder");
+            DocumentModel doc = session.createDocumentModel("/", "folder_" + i, "Folder");
             doc.setPropertyValue("dc:title", "Folder " + i);
             doc = session.createDocument(doc);
         }
 
         for (int i = 0; i < 5; i++) {
-            DocumentModel doc = session.createDocumentModel("/folder_1",
-                    "note_" + i, "Note");
+            DocumentModel doc = session.createDocumentModel("/folder_1", "note_" + i, "Note");
             doc.setPropertyValue("dc:title", "Note " + i);
             doc.setPropertyValue("dc:source", "Source" + i);
             doc.setPropertyValue("dc:nature", "Nature" + i % 2);
@@ -85,8 +80,7 @@ public class RestServerInit implements RepositoryInit {
         }
 
         // Create a file
-        DocumentModel doc = session.createDocumentModel("/folder_2",
-                "file", "File");
+        DocumentModel doc = session.createDocumentModel("/folder_2", "file", "File");
         doc.setPropertyValue("dc:title", "File");
         doc = session.createDocument(doc);
         // upload file blob
@@ -101,8 +95,9 @@ public class RestServerInit implements RepositoryInit {
 
         try {
             Framework.getService(WorkManager.class).awaitCompletion(10, TimeUnit.SECONDS);
-        } catch (InterruptedException  cause) {
-            LogFactory.getLog(RestServerInit.class).error("Cannot initialize the rest api test repo in 10 seconds", cause);
+        } catch (InterruptedException cause) {
+            LogFactory.getLog(RestServerInit.class).error("Cannot initialize the rest api test repo in 10 seconds",
+                    cause);
             Thread.currentThread().interrupt();
         }
 
@@ -120,8 +115,8 @@ public class RestServerInit implements RepositoryInit {
         repo.clearCaches();
     }
 
-    private void createUsersAndGroups(UserManager um) throws ClientException,
-            UserAlreadyExistsException, GroupAlreadyExistsException {
+    private void createUsersAndGroups(UserManager um) throws ClientException, UserAlreadyExistsException,
+            GroupAlreadyExistsException {
         for (int idx = 0; idx < 4; idx++) {
             String userId = "user" + idx;
 
@@ -158,8 +153,8 @@ public class RestServerInit implements RepositoryInit {
         um.updateUser(principal.getModel());
     }
 
-    private void createGroup(UserManager um, String groupId, String groupLabel)
-            throws ClientException, GroupAlreadyExistsException {
+    private void createGroup(UserManager um, String groupId, String groupLabel) throws ClientException,
+            GroupAlreadyExistsException {
         NuxeoGroup group = um.getGroup(groupId);
         if (group != null) {
             um.deleteGroup(groupId);
@@ -172,18 +167,15 @@ public class RestServerInit implements RepositoryInit {
         groupModel = um.createGroup(groupModel);
     }
 
-    public static DocumentModel getFolder(int index, CoreSession session)
-            throws ClientException {
+    public static DocumentModel getFolder(int index, CoreSession session) throws ClientException {
         return session.getDocument(new PathRef("/folder_" + index));
     }
 
-    public static DocumentModel getNote(int index, CoreSession session)
-            throws ClientException {
+    public static DocumentModel getNote(int index, CoreSession session) throws ClientException {
         return session.getDocument(new PathRef("/folder_1/note_" + index));
     }
 
-    public static DocumentModel getFile(int index, CoreSession session)
-            throws ClientException {
+    public static DocumentModel getFile(int index, CoreSession session) throws ClientException {
         return session.getDocument(new PathRef("/folder_2/file"));
     }
 

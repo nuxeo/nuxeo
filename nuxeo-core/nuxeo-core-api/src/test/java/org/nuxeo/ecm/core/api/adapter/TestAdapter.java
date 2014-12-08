@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TestAdapter {
 
-    @SuppressWarnings({"InterfaceNeverImplemented"})
+    @SuppressWarnings({ "InterfaceNeverImplemented" })
     private interface AnInterface {
     }
 

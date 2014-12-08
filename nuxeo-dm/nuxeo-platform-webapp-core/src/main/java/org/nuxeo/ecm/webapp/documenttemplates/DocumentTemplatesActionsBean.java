@@ -57,13 +57,11 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Implementation for the documentTemplatesBean component available on the
- * session.
+ * Implementation for the documentTemplatesBean component available on the session.
  */
 @Name("documentTemplatesActions")
 @Scope(CONVERSATION)
-public class DocumentTemplatesActionsBean extends InputController implements
-        DocumentTemplatesActions, Serializable {
+public class DocumentTemplatesActionsBean extends InputController implements DocumentTemplatesActions, Serializable {
 
     public static final String TemplateRoot = "TemplateRoot";
 
@@ -103,23 +101,20 @@ public class DocumentTemplatesActionsBean extends InputController implements
         return templates;
     }
 
-    public DocumentModelList getTemplates(String targetTypeName)
-            throws ClientException {
+    public DocumentModelList getTemplates(String targetTypeName) throws ClientException {
         if (documentManager == null) {
             log.error("Unable to access documentManager");
             return null;
         }
 
         String query = "SELECT * FROM Document where ecm:primaryType = '%s' AND ecm:path STARTSWITH %s";
-        DocumentModelList tl = documentManager.query(String.format(query,
-                TemplateRoot,
+        DocumentModelList tl = documentManager.query(String.format(query, TemplateRoot,
                 NXQL.escapeString(navigationContext.getCurrentDomainPath())));
 
         if (tl.isEmpty()) {
             templates = tl;
         } else {
-            templates = documentManager.getChildren(tl.get(0).getRef(),
-                    targetTypeName);
+            templates = documentManager.getChildren(tl.get(0).getRef(), targetTypeName);
             List<DocumentModel> deleted = new ArrayList<DocumentModel>();
             for (Iterator<DocumentModel> it = templates.iterator(); it.hasNext();) {
                 DocumentModel current = it.next();
@@ -139,14 +134,12 @@ public class DocumentTemplatesActionsBean extends InputController implements
         return getTemplates(targetType);
     }
 
-    public String createDocumentFromTemplate(DocumentModel doc,
-            String templateId) throws ClientException {
+    public String createDocumentFromTemplate(DocumentModel doc, String templateId) throws ClientException {
         selectedTemplateId = templateId;
         return createDocumentFromTemplate(doc);
     }
 
-    public String createDocumentFromTemplate(DocumentModel doc)
-            throws ClientException {
+    public String createDocumentFromTemplate(DocumentModel doc) throws ClientException {
 
         if (documentManager == null) {
             log.error("Unable to access documentManager");
@@ -176,8 +169,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
                 throw new ClientException(e);
             }
             String name = pss.generatePathSegment(doc);
-            DocumentModel created = documentManager.copy(new IdRef(
-                    selectedTemplateId), currentDocRef, name);
+            DocumentModel created = documentManager.copy(new IdRef(selectedTemplateId), currentDocRef, name);
 
             // Update from user input.
             // This part is for now harcoded for Workspace type.
@@ -200,11 +192,9 @@ public class DocumentTemplatesActionsBean extends InputController implements
             selectedTemplateId = "";
 
             logDocumentWithTitle("Created the document: ", created);
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get("document_saved"),
+            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_saved"),
                     resourcesAccessor.getMessages().get(created.getType()));
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    currentDocument);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
             return navigationContext.navigateToDocument(created, "after-create");
         } catch (Throwable t) {
             throw ClientException.wrap(t);

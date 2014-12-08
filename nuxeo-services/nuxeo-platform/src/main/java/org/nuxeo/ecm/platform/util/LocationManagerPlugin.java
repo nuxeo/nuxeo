@@ -21,12 +21,13 @@ package org.nuxeo.ecm.platform.util;
 
 /**
  * @author a015447
- *
  */
 public class LocationManagerPlugin {
 
     private Boolean locationEnabled;
+
     private String locationName;
+
     private String locationURI;
 
     public Boolean getLocationEnabled() {

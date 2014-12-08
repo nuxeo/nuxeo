@@ -22,7 +22,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7
- *
  * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  */
 public class UserAdapterFactory implements DocumentAdapterFactory {

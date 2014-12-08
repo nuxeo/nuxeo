@@ -34,15 +34,17 @@ import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
  * <p>
  * A prefix may be specified.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ZipCommand implements Command {
 
     protected final Path src;
-    protected final Path dst;
-    protected final PathFilter filter;
-    protected final String prefix;
 
+    protected final Path dst;
+
+    protected final PathFilter filter;
+
+    protected final String prefix;
 
     public ZipCommand(Path src, Path dst) {
         this(src, dst, null, null);
@@ -108,8 +110,7 @@ public class ZipCommand implements Command {
 
     @Override
     public String toString(CommandContext ctx) {
-        return "zip " + ctx.expandVars(src.toString()) + " > " +
-                ctx.expandVars(dst.toString());
+        return "zip " + ctx.expandVars(src.toString()) + " > " + ctx.expandVars(dst.toString());
     }
 
 }

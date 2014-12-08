@@ -4,9 +4,7 @@ import java.util.Collection;
 
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
-public class ScheduleExtensionRegistry extends
-        SimpleContributionRegistry<Schedule> {
-
+public class ScheduleExtensionRegistry extends SimpleContributionRegistry<Schedule> {
 
     @Override
     public String getContributionId(Schedule contrib) {
@@ -14,15 +12,13 @@ public class ScheduleExtensionRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, Schedule contrib,
-            Schedule newOrigContrib) {
+    public void contributionUpdated(String id, Schedule contrib, Schedule newOrigContrib) {
         if (contrib.isEnabled()) {
             currentContribs.put(id, contrib);
         } else {
             currentContribs.remove(id);
         }
     }
-
 
     protected Collection<Schedule> getSchedules() {
         return currentContribs.values();

@@ -27,8 +27,7 @@ import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * Run a script and return the result blob object of the script the output of
- * the operation.
+ * Run a script and return the result blob object of the script the output of the operation.
  *
  * @since 5.6
  */

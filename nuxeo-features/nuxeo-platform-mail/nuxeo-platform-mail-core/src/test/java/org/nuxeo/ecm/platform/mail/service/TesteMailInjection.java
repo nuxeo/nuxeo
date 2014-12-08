@@ -50,10 +50,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Laurent Doguin
- *
  */
-public class TesteMailInjection extends
-        SQLRepositoryTestCase {
+public class TesteMailInjection extends SQLRepositoryTestCase {
 
     protected MailService mailService;
 
@@ -117,11 +115,9 @@ public class TesteMailInjection extends
         ExecutionContext initialExecutionContext = new ExecutionContext();
         assertNotNull(session.getSessionId());
         initialExecutionContext.put(MailCoreConstants.CORE_SESSION_KEY, session);
-        initialExecutionContext.put(
-                MailCoreConstants.MIMETYPE_SERVICE_KEY,
+        initialExecutionContext.put(MailCoreConstants.MIMETYPE_SERVICE_KEY,
                 Framework.getLocalService(MimetypeRegistry.class));
-        initialExecutionContext.put(PARENT_PATH_KEY,
-                parentPath);
+        initialExecutionContext.put(PARENT_PATH_KEY, parentPath);
 
         Message[] messages = { getSampleMessage(filePath) };
 
@@ -130,8 +126,7 @@ public class TesteMailInjection extends
 
     @Test
     public void testBadMailAddress() throws Exception {
-        injectEmail("data/test_bad_mail_address.eml",
-                mailFolder1.getPathAsString());
+        injectEmail("data/test_bad_mail_address.eml", mailFolder1.getPathAsString());
         DocumentModelList children = session.getChildren(mailFolder1.getRef());
         assertNotNull(children);
         assertTrue(!children.isEmpty());
@@ -145,8 +140,7 @@ public class TesteMailInjection extends
         assertNotNull(ccRecipients);
         assertTrue(!ccRecipients.isEmpty());
         assertEquals(ccRecipients.get(0), "<Undisclosed-Recipient:;>");
-        assertEquals(mail.getProperty("mail:sender").getValue(String.class),
-                "Nicolas Ulrich <nulrich:nuxeo.com>");
+        assertEquals(mail.getProperty("mail:sender").getValue(String.class), "Nicolas Ulrich <nulrich:nuxeo.com>");
     }
 
     private Message getSampleMessage(String filePath) throws Exception {

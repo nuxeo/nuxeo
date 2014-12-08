@@ -26,11 +26,9 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
  */
 public interface DocumentLocationMarshaler {
 
-    String marshalDocumentLocation(DocumentLocation docLoc)
-            throws PublishingMarshalingException;;
+    String marshalDocumentLocation(DocumentLocation docLoc) throws PublishingMarshalingException;;
 
-    DocumentLocation unMarshalDocumentLocation(String data)
-            throws PublishingMarshalingException;;
+    DocumentLocation unMarshalDocumentLocation(String data) throws PublishingMarshalingException;;
 
     void setOriginatingServer(String serverName);
 }

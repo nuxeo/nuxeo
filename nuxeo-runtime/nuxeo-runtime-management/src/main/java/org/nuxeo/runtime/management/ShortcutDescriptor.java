@@ -21,7 +21,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author matic
- *
  */
 @XObject("shortcut")
 public class ShortcutDescriptor {
@@ -39,7 +38,6 @@ public class ShortcutDescriptor {
 
     @XNode("@qualifiedName")
     private String qualifiedName;
-
 
     public String getShortName() {
         return shortName;

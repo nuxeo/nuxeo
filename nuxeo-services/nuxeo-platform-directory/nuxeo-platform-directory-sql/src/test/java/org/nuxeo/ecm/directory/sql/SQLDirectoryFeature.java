@@ -43,15 +43,12 @@ import com.google.inject.Provider;
 import com.google.inject.name.Names;
 
 /**
- *
- *
  * @since 6.0
  */
 @Features({ ClientLoginFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.directory.types.contrib",
-        "org.nuxeo.ecm.directory.sql" })
+@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.core.schema",
+        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory.sql" })
 public class SQLDirectoryFeature extends SimpleFeature {
     public static final String USER_DIRECTORY_NAME = "userDirectory";
 
@@ -67,33 +64,26 @@ public class SQLDirectoryFeature extends SimpleFeature {
     }
 
     protected void bindDirectory(Binder binder, final String name) {
-        binder.bind(Directory.class).annotatedWith(Names.named(name))
-            .toProvider(new Provider<Directory>() {
+        binder.bind(Directory.class).annotatedWith(Names.named(name)).toProvider(new Provider<Directory>() {
 
-                @Override
-                public Directory get() {
-                    return Framework.getService(DirectoryService.class)
-                        .getDirectory(name);
-                }
+            @Override
+            public Directory get() {
+                return Framework.getService(DirectoryService.class).getDirectory(name);
+            }
 
-            });
+        });
     }
 
     protected final Map<Directory, Set<String>> savedContext = new HashMap<>();
 
     @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
-        for (Directory dir : Framework.getService(DirectoryService.class)
-            .getDirectories()) {
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        for (Directory dir : Framework.getService(DirectoryService.class).getDirectories()) {
             Session session = dir.getSession();
             try {
                 String field = session.getIdField();
                 Map<String, Serializable> filter = Collections.emptyMap();
-                savedContext.put(
-                        dir,
-                        new HashSet<String>(session
-                            .getProjection(filter, field)));
+                savedContext.put(dir, new HashSet<String>(session.getProjection(filter, field)));
             } finally {
                 session.close();
             }

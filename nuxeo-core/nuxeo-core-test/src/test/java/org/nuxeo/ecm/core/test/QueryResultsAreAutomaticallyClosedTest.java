@@ -19,8 +19,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class,
-        LogCaptureFeature.class })
+@Features({ TransactionalFeature.class, CoreFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @LogCaptureFeature.FilterWith(QueryResultsAreAutomaticallyClosedTest.LogFilter.class)
 public class QueryResultsAreAutomaticallyClosedTest {
@@ -63,8 +62,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
     @Test
     public void testTransactional() throws Exception {
         try (CoreSession session = settings.openSessionAsSystemUser()) {
-            IterableQueryResult results = session.queryAndFetch(
-                    "SELECT * from Document", "NXQL");
+            IterableQueryResult results = session.queryAndFetch("SELECT * from Document", "NXQL");
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
             logCaptureResults.assertHasEvent();
@@ -91,8 +89,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
     public void testNested() throws Exception {
         IterableQueryResult mainResults;
         try (CoreSession main = settings.openSessionAsSystemUser()) {
-            NestedQueryRunner runner = new NestedQueryRunner(
-                    settings.repositoryName);
+            NestedQueryRunner runner = new NestedQueryRunner(settings.repositoryName);
             mainResults = main.queryAndFetch("SELECT * from Document", "NXQL");
             runner.runUnrestricted();
             Assert.assertFalse(runner.result.isLife());

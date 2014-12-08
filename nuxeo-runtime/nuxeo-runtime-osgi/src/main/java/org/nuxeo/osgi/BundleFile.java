@@ -48,9 +48,8 @@ public interface BundleFile {
     boolean isDirectory();
 
     /**
-     * Gets this bundle symbolic name. If this bundle is an OSGi bundle,
-     * then the Bundle-SymbolicName manifest header is returned, otherwise
-     * null is returned.
+     * Gets this bundle symbolic name. If this bundle is an OSGi bundle, then the Bundle-SymbolicName manifest header is
+     * returned, otherwise null is returned.
      *
      * @return null if not an OSGi bundle, the OSGI bundle symbolic name otherwise
      */
@@ -73,8 +72,7 @@ public interface BundleFile {
     String getLocation();
 
     /**
-     * Gets the current location of the bundle as an URL (it may be different
-     * from the original location).
+     * Gets the current location of the bundle as an URL (it may be different from the original location).
      *
      * @return the bundle url
      */
@@ -98,15 +96,13 @@ public interface BundleFile {
      * Gets the entry at the given path in this bundle.
      *
      * @return the entry URL if any null otherwise
-     *
      * @see org.osgi.framework.Bundle#getEntry(String)
      */
     URL getEntry(String name);
 
     /**
-     * Returns an Enumeration of all the paths (<code>String</code> objects)
-     * to entries within the bundle whose longest sub-path matches the supplied
-     * path argument.
+     * Returns an Enumeration of all the paths (<code>String</code> objects) to entries within the bundle whose longest
+     * sub-path matches the supplied path argument.
      *
      * @see org.osgi.framework.Bundle#getEntryPaths(String)
      */
@@ -120,27 +116,23 @@ public interface BundleFile {
     Enumeration<URL> findEntries(String name, String pattern, boolean recurse);
 
     /**
-     * Gets a list with nested bundles or null if none. The bundle Manifest
-     * headers Bundle-ClassPath and Class-Path will be used to retrieve nested
-     * jars.
+     * Gets a list with nested bundles or null if none. The bundle Manifest headers Bundle-ClassPath and Class-Path will
+     * be used to retrieve nested jars.
      *
-     * @param tmpDir optional temporary dir if the nested bundle should be
-     *            extracted from an archive
+     * @param tmpDir optional temporary dir if the nested bundle should be extracted from an archive
      */
     Collection<BundleFile> getNestedBundles(File tmpDir) throws IOException;
 
     /**
-     * Get a list with nested bundles or null if none. The bundle file will be
-     * scanned for nested JARs.
+     * Get a list with nested bundles or null if none. The bundle file will be scanned for nested JARs.
      *
-     * @param tmpDir optional temporary dir if the nested bundle should be
-     *            extracted from an archive
+     * @param tmpDir optional temporary dir if the nested bundle should be extracted from an archive
      */
     Collection<BundleFile> findNestedBundles(File tmpDir) throws IOException;
 
     /**
-     * Close underlying file resources
-     *      *
+     * Close underlying file resources *
+     *
      * @since 5.6
      */
     void close(OSGiAdapter osgi) throws IOException;

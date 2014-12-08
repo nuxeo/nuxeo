@@ -20,18 +20,17 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ApplicationFactory {
 
     /**
-     * Create a new application instance given the bundle declaring the application
-     * and the attributes specified in the manifest.
+     * Create a new application instance given the bundle declaring the application and the attributes specified in the
+     * manifest.
      *
      * @param bundle the bundle defining the application
      * @param args the arguments parsed from manifest WebModule entry.
      */
-    Application getApplication(Bundle bundle, Map<String, String> args)
-            throws ReflectiveOperationException, IOException;
+    Application getApplication(Bundle bundle, Map<String, String> args) throws ReflectiveOperationException,
+            IOException;
 
 }

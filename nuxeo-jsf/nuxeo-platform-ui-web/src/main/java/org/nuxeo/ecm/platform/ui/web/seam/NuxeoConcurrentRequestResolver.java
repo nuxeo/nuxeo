@@ -37,9 +37,8 @@ import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
- * Default implementation to handle concurrent requests against the same Seam
- * Conversation. This component can be overridden using the standard Seam
- * override system.
+ * Default implementation to handle concurrent requests against the same Seam Conversation. This component can be
+ * overridden using the standard Seam override system.
  *
  * @since 5.7.3
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -48,20 +47,16 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 @Name(ConcurrentRequestResolver.NAME)
 @Install(precedence = FRAMEWORK)
 @BypassInterceptors
-public class NuxeoConcurrentRequestResolver extends AbstractResolver implements
-        ConcurrentRequestResolver {
+public class NuxeoConcurrentRequestResolver extends AbstractResolver implements ConcurrentRequestResolver {
 
-    public boolean handleConcurrentRequest(ConversationEntry ce,
-            HttpServletRequest request, HttpServletResponse response) {
+    public boolean handleConcurrentRequest(ConversationEntry ce, HttpServletRequest request,
+            HttpServletResponse response) {
 
         if (request.getMethod().equalsIgnoreCase("get")) {
             // flag request to skip apply method bindings
-            request.setAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY,
-                    Boolean.TRUE);
+            request.setAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY, Boolean.TRUE);
             // let's try to continue
-            addTransientMessage(
-                    Severity.WARN,
-                    "org.nuxeo.seam.concurrent.unsaferun",
+            addTransientMessage(Severity.WARN, "org.nuxeo.seam.concurrent.unsaferun",
                     "This page may be not up to date, an other concurrent requests is still running");
             return true;
         } else if (request.getMethod().equalsIgnoreCase("post")) {
@@ -75,12 +70,9 @@ public class NuxeoConcurrentRequestResolver extends AbstractResolver implements
 
             String url = request.getHeader("referer");
             if (url == null || url.length() == 0) {
-                url = VirtualHostHelper.getServerURL(request)
-                        + request.getRequestURI();
+                url = VirtualHostHelper.getServerURL(request) + request.getRequestURI();
             }
-            addTransientMessage(
-                    Severity.WARN,
-                    "org.nuxeo.seam.concurrent.skip",
+            addTransientMessage(Severity.WARN, "org.nuxeo.seam.concurrent.skip",
                     "Your request was not processed because you already have a requests in processing.");
             // XXX should Mark Request for No Tx Commit !
             return handleRedirect(ce, response, url);

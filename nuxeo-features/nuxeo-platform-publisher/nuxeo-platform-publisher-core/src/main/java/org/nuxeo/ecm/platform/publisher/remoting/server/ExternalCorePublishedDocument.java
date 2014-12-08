@@ -26,8 +26,8 @@ import org.nuxeo.ecm.platform.publisher.helper.VersioningHelper;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.ExtendedDocumentLocation;
 
 /**
- * {@link PublishedDocument} implementation that uses a {@link DocumentModel} to
- * store the result of a remote publication.
+ * {@link PublishedDocument} implementation that uses a {@link DocumentModel} to store the result of a remote
+ * publication.
  *
  * @author tiry
  */
@@ -49,8 +49,7 @@ public class ExternalCorePublishedDocument implements PublishedDocument {
 
     protected boolean isPending;
 
-    public ExternalCorePublishedDocument(DocumentModel doc)
-            throws ClientException {
+    public ExternalCorePublishedDocument(DocumentModel doc) throws ClientException {
         ExtendedDocumentLocation xLoc = ExtendedDocumentLocation.extractFromDoc(doc);
         this.sourceServer = xLoc.getOriginalServer();
         this.repositoryName = xLoc.getServerName();

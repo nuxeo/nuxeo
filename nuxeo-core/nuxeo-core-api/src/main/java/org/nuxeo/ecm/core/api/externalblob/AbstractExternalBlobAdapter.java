@@ -21,13 +21,11 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  * <p>
  * Provides generic methods
  * <p>
- * Extend this class if you want your contributions to be robust to interface
- * changes.
+ * Extend this class if you want your contributions to be robust to interface changes.
  *
  * @author Anahide Tchertchian
  */
-public abstract class AbstractExternalBlobAdapter implements
-        ExternalBlobAdapter {
+public abstract class AbstractExternalBlobAdapter implements ExternalBlobAdapter {
 
     protected String prefix;
 
@@ -68,17 +66,12 @@ public abstract class AbstractExternalBlobAdapter implements
     public String getLocalName(String uri) throws PropertyException {
         String prefix = getPrefix();
         if (prefix == null) {
-            throw new PropertyException(String.format(
-                    "Null prefix on external blob adapter with class '%s'",
+            throw new PropertyException(String.format("Null prefix on external blob adapter with class '%s'",
                     getClass().getName()));
         }
-        if (uri == null
-                || !uri.startsWith(prefix
-                        + ExternalBlobAdapter.PREFIX_SEPARATOR)) {
-            throw new PropertyException(
-                    String.format(
-                            "Invalid uri '%s' for this adapter: expected to start with prefix '%s'",
-                            uri, prefix));
+        if (uri == null || !uri.startsWith(prefix + ExternalBlobAdapter.PREFIX_SEPARATOR)) {
+            throw new PropertyException(String.format(
+                    "Invalid uri '%s' for this adapter: expected to start with prefix '%s'", uri, prefix));
         }
         return uri.substring(prefix.length() + 1);
     }

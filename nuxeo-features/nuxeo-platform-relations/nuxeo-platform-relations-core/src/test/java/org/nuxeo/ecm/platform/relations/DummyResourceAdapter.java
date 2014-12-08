@@ -30,19 +30,16 @@ import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 public class DummyResourceAdapter extends AbstractResourceAdapter {
 
     @Override
-    public Serializable getResourceRepresentation(Resource resource,
-            Map<String, Object> context) {
+    public Serializable getResourceRepresentation(Resource resource, Map<String, Object> context) {
         if (resource.isQNameResource()) {
-            return new DummyResourceLike(
-                    ((QNameResource) resource).getLocalName());
+            return new DummyResourceLike(((QNameResource) resource).getLocalName());
         } else {
             return null;
         }
     }
 
     @Override
-    public Resource getResource(Serializable object,
-            Map<String, Object> context) {
+    public Resource getResource(Serializable object, Map<String, Object> context) {
         DummyResourceLike resourceLike = (DummyResourceLike) object;
         return new QNameResourceImpl(namespace, resourceLike.getId());
     }

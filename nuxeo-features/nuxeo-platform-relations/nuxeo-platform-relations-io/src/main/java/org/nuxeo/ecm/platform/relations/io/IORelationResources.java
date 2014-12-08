@@ -32,13 +32,11 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 /**
  * IO Resources for relations
  * <p>
- * Holds a map of document resources, with a document reference as key, and a
- * list of RDF resources as values.
+ * Holds a map of document resources, with a document reference as key, and a list of RDF resources as values.
  * <p>
  * Actual statements to manage for export/import are not kept here.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class IORelationResources implements IOResources {
 
@@ -50,8 +48,7 @@ public class IORelationResources implements IOResources {
 
     final List<Statement> statements;
 
-    public IORelationResources(Map<String, String> namespaces,
-            Map<DocumentRef, Set<Resource>> documentResources,
+    public IORelationResources(Map<String, String> namespaces, Map<DocumentRef, Set<Resource>> documentResources,
             List<Statement> statements) {
         this.namespaces = namespaces;
         this.documentResources = documentResources;

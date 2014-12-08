@@ -24,17 +24,15 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
- *
  * List the statuses
  *
  * @author matic
- *
  */
-@WebObject(type="Statuses")
+@WebObject(type = "Statuses")
 public class StatusesObject extends ManagementObject {
 
     public static StatusesObject newObject(DefaultObject parent) {
-        return (StatusesObject)parent.newObject("Statuses");
+        return (StatusesObject) parent.newObject("Statuses");
     }
 
     @GET

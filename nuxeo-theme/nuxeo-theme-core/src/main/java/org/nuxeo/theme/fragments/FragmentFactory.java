@@ -28,10 +28,8 @@ public final class FragmentFactory {
 
     public static Fragment create(String typeName) {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        ElementType elementType = (ElementType) typeRegistry.lookup(
-                TypeFamily.ELEMENT, "fragment");
-        FragmentType fragmentType = (FragmentType) typeRegistry.lookup(
-                TypeFamily.FRAGMENT, typeName);
+        ElementType elementType = (ElementType) typeRegistry.lookup(TypeFamily.ELEMENT, "fragment");
+        FragmentType fragmentType = (FragmentType) typeRegistry.lookup(TypeFamily.FRAGMENT, typeName);
 
         if (fragmentType == null) {
             log.error("Fragment type not found: " + typeName);

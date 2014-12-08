@@ -22,11 +22,11 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestMediaType extends NXRuntimeTestCase{
+public class TestMediaType extends NXRuntimeTestCase {
 
     public static final String SCHEMA_NAME = "media";
-    public static final String SCHEMA_PREFIX = "media";
 
+    public static final String SCHEMA_PREFIX = "media";
 
     protected SchemaManager typeMgr;
 
@@ -40,7 +40,7 @@ public class TestMediaType extends NXRuntimeTestCase{
 
     // shema name != prefix name
     @Test
-    public void testDifferentPrefix()  throws Exception {
+    public void testDifferentPrefix() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "mediaDoc", "Media");
         doc.setPropertyValue("media:title", "Media Title");
         Object o1 = doc.getProperty("media:title");
@@ -57,7 +57,7 @@ public class TestMediaType extends NXRuntimeTestCase{
 
     // shema name = prefix name
     @Test
-    public void testSamePrefix()  throws Exception {
+    public void testSamePrefix() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "mediaDoc", "SameMedia");
         doc.setPropertyValue("sameMedia:title", "Media Title");
         Object o1 = doc.getProperty("sameMedia:title");

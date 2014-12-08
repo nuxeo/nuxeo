@@ -52,8 +52,8 @@ public class PaginableDocuments extends Documents {
     /**
      * @param size
      */
-    public PaginableDocuments(List<Document> docs, int resultsCount, int pageSize,
-            int numberOfPages, int currentPageIndex) {
+    public PaginableDocuments(List<Document> docs, int resultsCount, int pageSize, int numberOfPages,
+            int currentPageIndex) {
         super(docs);
         this.resultsCount = resultsCount;
         this.pageSize = pageSize;

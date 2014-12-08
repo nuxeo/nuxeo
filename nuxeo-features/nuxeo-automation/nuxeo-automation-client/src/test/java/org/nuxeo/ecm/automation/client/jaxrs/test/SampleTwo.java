@@ -26,11 +26,9 @@ public class SampleTwo {
 
     public static void main(String[] args) throws Exception {
         try {
-            HttpAutomationClient client = new HttpAutomationClient(
-                    "http://localhost:8080/nuxeo/site/automation");
+            HttpAutomationClient client = new HttpAutomationClient("http://localhost:8080/nuxeo/site/automation");
             long start = System.currentTimeMillis();
-            Session session = client.getSession("Administrator",
-                    "Administrator");
+            Session session = client.getSession("Administrator", "Administrator");
             DocumentService rs = session.getAdapter(DocumentService.class);
             Document doc = rs.getDocument("/default-domain");
             System.out.println(doc + " - " + doc.getTitle());
@@ -50,15 +48,13 @@ public class SampleTwo {
             docs = rs.getChildren(wsRef);
             System.out.println(docs);
             for (Document d : docs) {
-                System.out.println(d.getTitle() + " at " + d.getLastModified()
-                        + " state: " + d.getState());
+                System.out.println(d.getTitle() + " at " + d.getLastModified() + " state: " + d.getState());
             }
             doc = rs.getDocument("/default-domain/workspaces");
             System.out.println("----------------------------");
             System.out.println(doc + " - " + doc.getTitle());
             System.out.println("@@@@@@@@@@@@@@@@@@@");
-            System.out.println("took: "
-                    + ((double) System.currentTimeMillis() - start) / 1000);
+            System.out.println("took: " + ((double) System.currentTimeMillis() - start) / 1000);
             client.shutdown();
         } catch (RemoteException e) {
             e.printStackTrace();

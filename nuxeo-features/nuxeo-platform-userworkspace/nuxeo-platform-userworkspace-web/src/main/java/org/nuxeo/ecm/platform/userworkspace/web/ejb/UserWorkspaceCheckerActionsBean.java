@@ -36,8 +36,8 @@ import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
- * Standalone class to check if navigation is in the user workspaces
- * and if needed get the current personal workspace path
+ * Standalone class to check if navigation is in the user workspaces and if needed get the current personal workspace
+ * path
  *
  * @since 5.6
  * @author Thierry Martins <tm@nuxeo.com>
@@ -47,6 +47,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 public class UserWorkspaceCheckerActionsBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
@@ -68,8 +69,7 @@ public class UserWorkspaceCheckerActionsBean implements Serializable {
 
     @Factory(value = "currentPersonalWorkspacePath", scope = EVENT)
     public String getCurrentPersonalWorkspace() throws ClientException {
-        if (currentPersonalWorkspacePath == null
-                && Boolean.TRUE.equals(isUserWorkspace)) {
+        if (currentPersonalWorkspacePath == null && Boolean.TRUE.equals(isUserWorkspace)) {
             // Do not compute path if not necessary
             Path path = navigationContext.getCurrentDocument().getPath();
             String lastSegment = "";
@@ -90,8 +90,7 @@ public class UserWorkspaceCheckerActionsBean implements Serializable {
         return currentPersonalWorkspacePath;
     }
 
-    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
-            EventNames.LOCATION_SELECTION_CHANGED }, create = false)
+    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, EventNames.LOCATION_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void reset() {
         isUserWorkspace = null;

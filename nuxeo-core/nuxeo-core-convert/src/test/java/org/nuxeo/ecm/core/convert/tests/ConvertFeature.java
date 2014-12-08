@@ -27,8 +27,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 6.0
  */
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.convert.api",
-        "org.nuxeo.ecm.core.convert" })
+@Deploy({ "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert" })
 public class ConvertFeature extends SimpleFeature {
 
     @Override

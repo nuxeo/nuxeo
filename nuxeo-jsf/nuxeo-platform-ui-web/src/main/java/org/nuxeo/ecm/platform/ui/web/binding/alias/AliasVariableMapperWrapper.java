@@ -42,17 +42,15 @@ public class AliasVariableMapperWrapper extends VariableMapper {
 
     protected Map vars;
 
-    public AliasVariableMapperWrapper(VariableMapper orig,
-            List<String> blockedPatterns) {
+    public AliasVariableMapperWrapper(VariableMapper orig, List<String> blockedPatterns) {
         super();
         this.orig = orig;
         this.blockedPatterns = blockedPatterns;
     }
 
     /**
-     * First tries to resolve against the inner Map, then the wrapped
-     * ValueExpression, unless target is an {@link AliasVariableMapper} that
-     * blocks this variable pattern.
+     * First tries to resolve against the inner Map, then the wrapped ValueExpression, unless target is an
+     * {@link AliasVariableMapper} that blocks this variable pattern.
      */
     public ValueExpression resolveVariable(String variable) {
         ValueExpression ve = null;
@@ -70,8 +68,7 @@ public class AliasVariableMapperWrapper extends VariableMapper {
                         }
                         boolean doBlock = false;
                         if (blockedPattern.endsWith("*")) {
-                            String pattern = blockedPattern.substring(0,
-                                    blockedPattern.length() - 1);
+                            String pattern = blockedPattern.substring(0, blockedPattern.length() - 1);
                             if (variable.startsWith(pattern)) {
                                 doBlock = true;
                             }
@@ -80,8 +77,7 @@ public class AliasVariableMapperWrapper extends VariableMapper {
                         }
                         if (doBlock) {
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format(
-                                        "Blocked expression var='%s'", variable));
+                                log.debug(String.format("Blocked expression var='%s'", variable));
                             }
                             return getNullValueExpression();
                         }
@@ -91,8 +87,7 @@ public class AliasVariableMapperWrapper extends VariableMapper {
             }
             return ve;
         } catch (StackOverflowError e) {
-            throw new ELException("Could not Resolve Variable [Overflow]: "
-                    + variable, e);
+            throw new ELException("Could not Resolve Variable [Overflow]: " + variable, e);
         }
     }
 
@@ -100,8 +95,7 @@ public class AliasVariableMapperWrapper extends VariableMapper {
         return new ValueExpressionLiteral(null, Object.class);
     }
 
-    public ValueExpression setVariable(String variable,
-            ValueExpression expression) {
+    public ValueExpression setVariable(String variable, ValueExpression expression) {
         if (this.vars == null) {
             this.vars = new HashMap();
         }

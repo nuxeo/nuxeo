@@ -44,8 +44,7 @@ public class ProxiesDescriptor {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(type=" + getType() + ", schemas="
-                + getSchemas() + ")";
+        return getClass().getSimpleName() + "(type=" + getType() + ", schemas=" + getSchemas() + ")";
     }
 
 }

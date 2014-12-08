@@ -28,7 +28,6 @@ import org.nuxeo.runtime.management.ResourcePublisherService;
 
 /**
  * @author matic
- *
  */
 public class AuditEventMetricFactory implements ResourceFactory {
 
@@ -36,15 +35,13 @@ public class AuditEventMetricFactory implements ResourceFactory {
 
     protected ResourcePublisherService publisherService;
 
-    public void configure(ResourcePublisherService service,
-            ResourceFactoryDescriptor descriptor) {
+    public void configure(ResourcePublisherService service, ResourceFactoryDescriptor descriptor) {
         publisherService = service;
         auditService = Framework.getLocalService(Logs.class);
     }
 
     public static String formatQualifiedName(String name) {
-        return ObjectNameFactory.formatMetricQualifiedName(
-                NXAuditEventsService.NAME, name);
+        return ObjectNameFactory.formatMetricQualifiedName(NXAuditEventsService.NAME, name);
     }
 
     public static String formatShortcutName(String name) {
@@ -56,9 +53,8 @@ public class AuditEventMetricFactory implements ResourceFactory {
     }
 
     protected void doRegisterResource(String name) {
-        publisherService.registerResource(formatShortcutName(name),
-                formatQualifiedName(name), AuditEventMetricMBean.class,
-                new AuditEventMetricMBeanAdapter(auditService, name));
+        publisherService.registerResource(formatShortcutName(name), formatQualifiedName(name),
+                AuditEventMetricMBean.class, new AuditEventMetricMBeanAdapter(auditService, name));
     }
 
     protected void doUnregisterResource(String name) {

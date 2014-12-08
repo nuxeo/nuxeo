@@ -25,10 +25,9 @@ import org.nuxeo.osgi.BundleFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface BundleFileVisitor {
 
-     void visit(BundleFile bf);
+    void visit(BundleFile bf);
 
 }

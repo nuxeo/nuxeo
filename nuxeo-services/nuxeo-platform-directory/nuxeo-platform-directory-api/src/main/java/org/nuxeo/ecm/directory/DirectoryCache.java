@@ -34,12 +34,9 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 
 /**
- * Very simple cache system to cache directory entry lookups (not search
- * queries) on top of nuxeo cache
+ * Very simple cache system to cache directory entry lookups (not search queries) on top of nuxeo cache
  * <p>
- * Beware that this cache is not transaction aware (which is not a problem for
- * LDAP directories anyway).
- *
+ * Beware that this cache is not transaction aware (which is not a problem for LDAP directories anyway).
  */
 public class DirectoryCache {
 
@@ -64,35 +61,29 @@ public class DirectoryCache {
     protected final Counter sizeCounter;
 
     private final static Log log = LogFactory.getLog(DirectoryCache.class);
-    
-    
+
     protected DirectoryCache(String name) {
         this.name = name;
-        hitsCounter = metrics.counter(MetricRegistry.name("nuxeo",
-                "directories", name, "cache", "hits"));
-        invalidationsCounter = metrics.counter(MetricRegistry.name("nuxeo",
-                "directories", name, "cache", "invalidations"));
-        sizeCounter = metrics.counter(MetricRegistry.name("nuxeo",
-                "directories", name, "cache", "size"));
-        maxCounter = metrics.counter(MetricRegistry.name("nuxeo",
-                "directories", name, "cache", "max"));
+        hitsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "hits"));
+        invalidationsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache",
+                "invalidations"));
+        sizeCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "size"));
+        maxCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "max"));
     }
 
     protected boolean isCacheEnabled() {
         return (entryCacheName != null && entryCacheWithoutReferencesName != null);
     }
 
-    public DocumentModel getEntry(String entryId, EntrySource source)
-            throws DirectoryException {
+    public DocumentModel getEntry(String entryId, EntrySource source) throws DirectoryException {
         return getEntry(entryId, source, true);
     }
 
-    public DocumentModel getEntry(String entryId, EntrySource source,
-            boolean fetchReferences) throws DirectoryException {
+    public DocumentModel getEntry(String entryId, EntrySource source, boolean fetchReferences)
+            throws DirectoryException {
         if (!isCacheEnabled()) {
             return source.getEntryFromSource(entryId, fetchReferences);
-        } else if (isCacheEnabled()
-                && (getEntryCache() == null || getEntryCacheWithoutReferences() == null)) {
+        } else if (isCacheEnabled() && (getEntryCache() == null || getEntryCacheWithoutReferences() == null)) {
 
             log.warn("Your directory configuration for cache is wrong, directory cache will not be used.");
             if (getEntryCache() == null) {
@@ -123,8 +114,7 @@ public class DirectoryCache {
                     hitsCounter.inc();
                 }
             } else {
-                dm = (DocumentModel) getEntryCacheWithoutReferences().get(
-                        entryId);
+                dm = (DocumentModel) getEntryCacheWithoutReferences().get(entryId);
                 if (dm == null) {
                     // fetch the entry from the backend and cache it for later
                     // reuse
@@ -197,15 +187,13 @@ public class DirectoryCache {
         this.entryCacheName = entryCacheName;
     }
 
-    public void setEntryCacheWithoutReferencesName(
-            String entryCacheWithoutReferencesName) {
+    public void setEntryCacheWithoutReferencesName(String entryCacheWithoutReferencesName) {
         this.entryCacheWithoutReferencesName = entryCacheWithoutReferencesName;
     }
 
     public Cache getEntryCache() {
         if (entryCache == null) {
-            entryCache = Framework.getService(CacheService.class).getCache(
-                    entryCacheName);
+            entryCache = Framework.getService(CacheService.class).getCache(entryCacheName);
         }
         return entryCache;
     }
@@ -213,8 +201,7 @@ public class DirectoryCache {
     public Cache getEntryCacheWithoutReferences() {
 
         if (entryCacheWithoutReferences == null) {
-            entryCacheWithoutReferences = Framework.getService(
-                    CacheService.class).getCache(
+            entryCacheWithoutReferences = Framework.getService(CacheService.class).getCache(
                     entryCacheWithoutReferencesName);
         }
         return entryCacheWithoutReferences;

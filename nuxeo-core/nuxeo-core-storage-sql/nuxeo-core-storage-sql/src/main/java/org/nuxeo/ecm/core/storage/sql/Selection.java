@@ -24,11 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * A {@link Selection} holds information about row ids corresponding to a fixed
- * clause for a given table.
+ * A {@link Selection} holds information about row ids corresponding to a fixed clause for a given table.
  * <p>
- * A clause has the form: column = fixed value. The column can be the parent id,
- * the versionable id, the target id.
+ * A clause has the form: column = fixed value. The column can be the parent id, the versionable id, the target id.
  * <p>
  * The internal state of a {@link Selection} instance reflects:
  * <ul>
@@ -36,26 +34,22 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * <li>corresponding created rows not yet flushed to database,</li>
  * <li>corresponding rows not yet flushed to database.</li>
  * </ul>
- * Information about rows in the database may be complete, or just partial if
- * only individual rows corresponding to the clause have been retrieved from the
- * database.
+ * Information about rows in the database may be complete, or just partial if only individual rows corresponding to the
+ * clause have been retrieved from the database.
  * <p>
  * Row ids are stored in no particular order.
  * <p>
- * When this structure holds information all flushed to the database, then it
- * can safely be GC'ed, so it lives in a memory-sensitive map (softMap),
- * otherwise it's moved to a normal map (hardMap).
+ * When this structure holds information all flushed to the database, then it can safely be GC'ed, so it lives in a
+ * memory-sensitive map (softMap), otherwise it's moved to a normal map (hardMap).
  * <p>
- * This class is not thread-safe and should be used only from a single-threaded
- * session.
+ * This class is not thread-safe and should be used only from a single-threaded session.
  */
 public class Selection {
 
     private static final Log log = LogFactory.getLog(Selection.class);
 
     /**
-     * The selection id, also the key which this instance has in the map holding
-     * it.
+     * The selection id, also the key which this instance has in the map holding it.
      * <p>
      * For instance for a children selection this is the parent id.
      */
@@ -85,12 +79,10 @@ public class Selection {
     private final Map<Serializable, Selection> hardMap;
 
     /**
-     * This is {@code true} when complete information about the existing ids is
-     * known.
+     * This is {@code true} when complete information about the existing ids is known.
      * <p>
-     * This is the case when a query to the database has been made to fetch all
-     * rows with the clause, or when a new value for the clause has been created
-     * (applies for instance to a new parent id appearing when a folder is
+     * This is the case when a query to the database has been made to fetch all rows with the clause, or when a new
+     * value for the clause has been created (applies for instance to a new parent id appearing when a folder is
      * created).
      */
     protected boolean complete;
@@ -104,8 +96,7 @@ public class Selection {
     protected Set<Serializable> created;
 
     /**
-     * The row ids deleted (or for which the clause column changed value) and
-     * not yet flushed to database.
+     * The row ids deleted (or for which the clause column changed value) and not yet flushed to database.
      */
     protected Set<Serializable> deleted;
 
@@ -122,10 +113,8 @@ public class Selection {
      * @param softMap the soft map, when the selection is pristine
      * @param hardMap the hard map, when there are modifications to flush
      */
-    public Selection(Serializable selId, String tableName, boolean empty,
-            String filterKey, PersistenceContext context,
-            Map<Serializable, Selection> softMap,
-            Map<Serializable, Selection> hardMap) {
+    public Selection(Serializable selId, String tableName, boolean empty, String filterKey, PersistenceContext context,
+            Map<Serializable, Selection> softMap, Map<Serializable, Selection> hardMap) {
         this.selId = selId;
         this.tableName = tableName;
         this.context = context;
@@ -186,11 +175,10 @@ public class Selection {
     /**
      * Adds ids actually read from the backend, and mark this complete.
      * <p>
-     * Note that when adding a complete list of ids retrieved from the database,
-     * the deleted ids have already been removed in the result set.
+     * Note that when adding a complete list of ids retrieved from the database, the deleted ids have already been
+     * removed in the result set.
      *
-     * @param actualExisting the existing database ids (the list must be
-     *            mutable)
+     * @param actualExisting the existing database ids (the list must be mutable)
      */
     public void addExistingComplete(List<Serializable> actualExisting) {
         assert !complete;
@@ -201,8 +189,8 @@ public class Selection {
     /**
      * Marks as incomplete.
      * <p>
-     * Called after a database operation added rows corresponding to the clause
-     * with unknown ids (restore of complex properties).
+     * Called after a database operation added rows corresponding to the clause with unknown ids (restore of complex
+     * properties).
      */
     public void setIncomplete() {
         complete = false;
@@ -322,10 +310,8 @@ public class Selection {
     /**
      * Gets all the fragments, if the selection is complete.
      *
-     * @param filter the value to filter on, or {@code null} for the whole
-     *            selection
-     * @return the fragments, or {@code null} if the list is not known to be
-     *         complete
+     * @param filter the value to filter on, or {@code null} for the whole selection
+     * @return the fragments, or {@code null} if the list is not known to be complete
      */
     public List<SimpleFragment> getFragmentsByValue(Serializable filter) {
         if (!complete) {

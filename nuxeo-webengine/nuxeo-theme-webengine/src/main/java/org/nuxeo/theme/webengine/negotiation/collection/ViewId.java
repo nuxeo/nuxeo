@@ -29,9 +29,8 @@ public final class ViewId implements Scheme {
         WebContext webContext = (WebContext) context;
         final String applicationPath = webContext.getModulePath();
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        ApplicationType application = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, webContext.getModulePath(),
-                webContext.getModule().getName());
+        ApplicationType application = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION,
+                webContext.getModulePath(), webContext.getModule().getName());
         if (application == null) {
             return null;
         }
@@ -41,8 +40,7 @@ public final class ViewId implements Scheme {
             return null;
         }
         final String rootPath = webContext.getRoot().getPath();
-        final String viewId = targetObject.getPath().substring(
-                rootPath.length());
+        final String viewId = targetObject.getPath().substring(rootPath.length());
 
         final ViewDef view = application.getViewById(viewId);
         if (view == null) {

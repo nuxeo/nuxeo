@@ -48,46 +48,37 @@ public class ExceptionRestTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a wrong GET Request
-        ClientResponse response = getResponse(RequestType.GET,
-                "wrongpath" + note.getPathAsString());
+        ClientResponse response = getResponse(RequestType.GET, "wrongpath" + note.getPathAsString());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
 
         // Then i get an exception and parse it to check json payload
         assertEquals("exception", node.get("entity-type").getTextValue());
-        assertEquals(NotFoundException.class.getCanonicalName(),
-                node.get("code").getTextValue());
+        assertEquals(NotFoundException.class.getCanonicalName(), node.get("code").getTextValue());
         assertEquals(500, node.get("status").getIntValue());
-        assertEquals("null for uri: " +
-                        "http://localhost:18090/api/v1/wrongpath/folder_1" +
-                        "/note_0",
+        assertEquals("null for uri: " + "http://localhost:18090/api/v1/wrongpath/folder_1" + "/note_0",
                 node.get("message").getTextValue());
     }
 
     @Test
     public void testExtendedException() throws IOException {
-        JsonFactoryManager jsonFactoryManager = Framework.getLocalService
-                (JsonFactoryManager.class);
+        JsonFactoryManager jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
         if (!jsonFactoryManager.isStackDisplay()) {
             jsonFactoryManager.toggleStackDisplay();
         }
 
         // When I do a request with a wrong document ID
-        ClientResponse response = getResponse(RequestType.GET,
-                "path" + "/wrongID");
+        ClientResponse response = getResponse(RequestType.GET, "path" + "/wrongID");
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
 
         // Then i get an exception and parse it to check json payload
         assertEquals("exception", node.get("entity-type").getTextValue());
-        assertEquals(NoSuchDocumentException.class.getCanonicalName(),
-                node.get("code").getTextValue());
+        assertEquals(NoSuchDocumentException.class.getCanonicalName(), node.get("code").getTextValue());
         assertEquals(404, node.get("status").getIntValue());
-        assertEquals("No such document: /wrongID",
-                node.get("message").getTextValue());
+        assertEquals("No such document: /wrongID", node.get("message").getTextValue());
         assertNotNull(node.get("stacktrace").getTextValue());
         assertEquals(NoSuchDocumentException.class.getCanonicalName(),
-                node.get("exception").get
-                        ("className").getTextValue());
+                node.get("exception").get("className").getTextValue());
     }
 }

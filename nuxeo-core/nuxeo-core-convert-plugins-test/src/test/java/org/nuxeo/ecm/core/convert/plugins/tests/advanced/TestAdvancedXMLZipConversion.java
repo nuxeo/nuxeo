@@ -30,29 +30,25 @@ public class TestAdvancedXMLZipConversion extends AdvancedXMLZipConverterTest {
     // Test docx2text
     @Test
     public void testDocxConverter() throws Exception {
-        doTestTextConverter(
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "docx2text", "advanced/paragraphs.docx");
+        doTestTextConverter("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx2text",
+                "advanced/paragraphs.docx");
     }
 
     // Test pptx2text
     @Test
     public void testPptxConverter() throws Exception {
-        doTestTextConverter(
-                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                "pptx2text", "advanced/paragraphs.pptx");
+        doTestTextConverter("application/vnd.openxmlformats-officedocument.presentationml.presentation", "pptx2text",
+                "advanced/paragraphs.pptx");
     }
 
     // Test oo2text
     @Test
     public void testOOWriterConverter() throws Exception {
-        doTestTextConverter("application/vnd.sun.xml.writer", "oo2text",
-                "advanced/paragraphs.odt");
+        doTestTextConverter("application/vnd.sun.xml.writer", "oo2text", "advanced/paragraphs.odt");
     }
 
     @Test
     public void testOOImpressConverter() throws Exception {
-        doTestTextConverter("application/vnd.sun.xml.impress", "oo2text",
-                "advanced/paragraphs.odp");
+        doTestTextConverter("application/vnd.sun.xml.impress", "oo2text", "advanced/paragraphs.odp");
     }
 }

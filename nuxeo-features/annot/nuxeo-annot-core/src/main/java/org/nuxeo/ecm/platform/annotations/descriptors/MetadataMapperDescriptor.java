@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.annotations.service.MetadataMapper;
 
 /**
  * @author Alexandre Russel
- *
  */
 @XObject("metadataMapper")
 public class MetadataMapperDescriptor {

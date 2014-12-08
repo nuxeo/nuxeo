@@ -63,12 +63,11 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
 
     protected Map<String, String> properties;
 
-    public abstract FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException;
+    public abstract FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException;
 
-    public FaceletHandler getDevFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget) throws WidgetException {
+    public FaceletHandler getDevFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget)
+            throws WidgetException {
         if (Boolean.parseBoolean(getProperty(DISABLE_DEV_PROPERTY_NAME))
                 || Boolean.parseBoolean((String) widget.getProperty(DISABLE_DEV_PROPERTY_NAME))) {
             return null;
@@ -79,20 +78,17 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
             template = getProperty(DEV_TEMPLATE_PROPERTY_NAME);
         }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
-        TagAttribute widgetAttr = helper.createAttribute(
-                "widget",
-                String.format("#{%s}",
-                        RenderVariables.widgetVariables.widget.name()));
+        TagAttribute widgetAttr = helper.createAttribute("widget",
+                String.format("#{%s}", RenderVariables.widgetVariables.widget.name()));
         TagAttributes devWidgetAttributes;
         if (StringUtils.isBlank(template)) {
             devWidgetAttributes = FaceletHandlerHelper.getTagAttributes(widgetAttr);
         } else {
-            devWidgetAttributes = FaceletHandlerHelper.getTagAttributes(
-                    widgetAttr, helper.createAttribute("template", template));
+            devWidgetAttributes = FaceletHandlerHelper.getTagAttributes(widgetAttr,
+                    helper.createAttribute("template", template));
         }
-        TagConfig devWidgetConfig = TagConfigFactory.createTagConfig(tagConfig,
-                widget.getTagConfigId(), devWidgetAttributes,
-                new LeafFaceletHandler());
+        TagConfig devWidgetConfig = TagConfigFactory.createTagConfig(tagConfig, widget.getTagConfigId(),
+                devWidgetAttributes, new LeafFaceletHandler());
         return new WidgetTypeDevTagHandler(devWidgetConfig);
     }
 
@@ -110,8 +106,7 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
         String value = getProperty(name);
         if (value == null) {
             throw new WidgetException(String.format(
-                    "Required property %s is missing "
-                            + "on widget type configuration", name));
+                    "Required property %s is missing " + "on widget type configuration", name));
         }
         return value;
     }
@@ -123,15 +118,13 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
     /**
      * Returns sub handlers as computed from tag information.
      * <p>
-     * Adds an sub insert handler slot named
-     * {@link RenderVariables.widgetTemplatingZones#inside_input_widget} when
+     * Adds an sub insert handler slot named {@link RenderVariables.widgetTemplatingZones#inside_input_widget} when
      * widget is in edit mode.
      *
      * @since 6.0
      */
-    protected FaceletHandler getNextHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
-            FaceletHandlerHelper helper) {
+    protected FaceletHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers, FaceletHandlerHelper helper) {
         return getNextHandler(ctx, tagConfig, widget, subHandlers, helper,
                 BuiltinWidgetModes.EDIT.equals(widget.getMode()));
     }
@@ -141,18 +134,15 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
      *
      * @since 6.0
      */
-    protected FaceletHandler getNextHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
-            FaceletHandlerHelper helper, boolean addInputSlot) {
+    protected FaceletHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers, FaceletHandlerHelper helper, boolean addInputSlot) {
         FaceletHandler leaf;
         FaceletHandler[] handlers = new FaceletHandler[] {};
         if (subHandlers != null && subHandlers.length > 0) {
-            handlers = (FaceletHandler[]) ArrayUtils.addAll(subHandlers,
-                    handlers);
+            handlers = (FaceletHandler[]) ArrayUtils.addAll(subHandlers, handlers);
         }
         if (addInputSlot) {
-            FaceletHandler slot = getInputSlotHandler(ctx, tagConfig, widget,
-                    subHandlers, helper);
+            FaceletHandler slot = getInputSlotHandler(ctx, tagConfig, widget, subHandlers, helper);
             if (slot != null) {
                 handlers = (FaceletHandler[]) ArrayUtils.add(handlers, slot);
             }
@@ -165,16 +155,11 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
         return leaf;
     }
 
-    protected FaceletHandler getInputSlotHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
-            FaceletHandlerHelper helper) {
-        TagConfig config = TagConfigFactory.createTagConfig(
-                tagConfig,
-                tagConfig.getTagId(),
-                FaceletHandlerHelper.getTagAttributes(helper.createAttribute(
-                        "name",
-                        RenderVariables.widgetTemplatingZones.inside_input_widget.name())),
-                new LeafFaceletHandler());
+    protected FaceletHandler getInputSlotHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers, FaceletHandlerHelper helper) {
+        TagConfig config = TagConfigFactory.createTagConfig(tagConfig, tagConfig.getTagId(),
+                FaceletHandlerHelper.getTagAttributes(helper.createAttribute("name",
+                        RenderVariables.widgetTemplatingZones.inside_input_widget.name())), new LeafFaceletHandler());
         return new InsertHandler(config);
     }
 

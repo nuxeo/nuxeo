@@ -27,12 +27,10 @@ import javax.servlet.http.HttpSession;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 
 /**
- * Provide contextual access to the {@link ListingFilterSetting} for each listing.
- * Use HttpSession to store a map of {@link ListingFilterSetting}
+ * Provide contextual access to the {@link ListingFilterSetting} for each listing. Use HttpSession to store a map of
+ * {@link ListingFilterSetting} This class is used to share state between the WebEngine and the JSF parts
  *
- * This class is used to share state between the WebEngine and the JSF parts
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class SharedPackageListingsSettings implements Serializable {
 

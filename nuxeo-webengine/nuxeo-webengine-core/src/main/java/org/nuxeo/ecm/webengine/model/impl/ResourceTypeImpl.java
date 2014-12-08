@@ -35,11 +35,11 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ResourceTypeImpl extends AbstractResourceType {
 
-    public ResourceTypeImpl(WebEngine engine, ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz, int visibility) {
+    public ResourceTypeImpl(WebEngine engine, ModuleImpl module, ResourceTypeImpl superType, String name,
+            ClassProxy clazz, int visibility) {
         super(engine, module, superType, name, clazz, visibility);
     }
 
@@ -55,7 +55,7 @@ public class ResourceTypeImpl extends AbstractResourceType {
             try {
                 guard = PermissionService.parse(g);
             } catch (ParseException e) {
-                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+c.getName(), e);
+                throw WebException.wrap("Failed to parse guard: " + g + " on WebObject " + c.getName(), e);
             }
         } else {
             loadGuardFromAnnoation(c);

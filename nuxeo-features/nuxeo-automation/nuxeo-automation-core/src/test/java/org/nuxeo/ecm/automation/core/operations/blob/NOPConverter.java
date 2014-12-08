@@ -26,11 +26,9 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
 /**
- * Converter which do nothing on the input blob. It just return a new blob
- * holder with the same blobs.
+ * Converter which do nothing on the input blob. It just return a new blob holder with the same blobs.
  *
  * @since 7.1
- *
  * @author Vincent Vergnolle
  */
 public class NOPConverter implements Converter {
@@ -42,8 +40,7 @@ public class NOPConverter implements Converter {
     }
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         return new SimpleBlobHolder(blobHolder.getBlobs());
     }
 }

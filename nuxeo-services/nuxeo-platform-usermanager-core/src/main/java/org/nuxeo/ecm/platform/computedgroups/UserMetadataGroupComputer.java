@@ -38,13 +38,11 @@ public class UserMetadataGroupComputer extends AbstractGroupComputer {
 
     private String xpath;
 
-    public UserMetadataGroupComputer(String xpath, String groupPattern)
-            throws ClientException {
+    public UserMetadataGroupComputer(String xpath, String groupPattern) throws ClientException {
         this.xpath = xpath;
         this.groupPattern = groupPattern;
 
-        if (xpath == null || xpath.isEmpty() || groupPattern == null
-                || groupPattern.isEmpty()) {
+        if (xpath == null || xpath.isEmpty() || groupPattern == null || groupPattern.isEmpty()) {
             throw new ClientException("Bad configuration");
         }
 

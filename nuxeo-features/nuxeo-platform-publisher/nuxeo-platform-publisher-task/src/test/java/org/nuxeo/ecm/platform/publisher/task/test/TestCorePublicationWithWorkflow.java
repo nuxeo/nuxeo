@@ -61,13 +61,12 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
 
     private DocumentModel doc2Publish;
 
-    protected HashMap<String,String> factoryParams = new HashMap<String,String>();
+    protected HashMap<String, String> factoryParams = new HashMap<String, String>();
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        Framework.getProperties().setProperty(
-                "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
+        Framework.getProperties().setProperty("org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
 
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.directory");
@@ -106,16 +105,13 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
     }
 
     private void createDocumentToPublish() throws Exception {
-        DocumentModel wsRoot = session.getDocument(new PathRef(
-                "default-domain/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
 
-        DocumentModel ws = session.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
+        DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");
         ws = session.createDocument(ws);
 
-        doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file",
-                "File");
+        doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file", "File");
         doc2Publish.setProperty("dublincore", "title", "MyDoc");
 
         Blob blob = new StringBlob("SomeDummyContent");
@@ -129,10 +125,8 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
     }
 
     private void initializeACP() throws Exception {
-        DocumentModel sectionsRoot = session.getDocument(new PathRef(
-                "default-domain/sections"));
-        DocumentModel section1 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), "section1", "Section");
+        DocumentModel sectionsRoot = session.getDocument(new PathRef("default-domain/sections"));
+        DocumentModel section1 = session.createDocumentModel(sectionsRoot.getPathAsString(), "section1", "Section");
         section1.setProperty("dublincore", "title", "section1");
         section1 = session.createDocument(section1);
         session.save();
@@ -159,8 +153,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         acp.addACL(existingACL);
         session.setACP(sectionsRoot.getRef(), acp, true);
 
-        DocumentModel ws1 = session.getDocument(new PathRef(
-                "default-domain/workspaces/ws1"));
+        DocumentModel ws1 = session.getDocument(new PathRef("default-domain/workspaces/ws1"));
         acp = session.getACP(ws1.getRef());
         existingACL = acp.getOrCreateACL();
         existingACL.clear();
@@ -183,35 +176,29 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
     @Test
     public void testRights() throws Exception {
         changeUser("myuser1");
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        PublicationTree treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
         List<PublicationNode> nodes = treeUser1.getChildrenNodes();
         PublicationNode targetNode = nodes.get(0);
-        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
-                targetNode);
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
         session.save();
         assertFalse(treeUser1.canUnpublish(publishedDocument));
 
         session.save();
         changeUser("myuser4");
-        PublicationTree treeUser4 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        PublicationTree treeUser4 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
         assertFalse(treeUser4.canUnpublish(publishedDocument));
         assertFalse(treeUser4.canManagePublishing(publishedDocument));
 
         session.save();
         changeUser("myuser3");
-        PublicationTree treeUser3 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
         assertFalse(treeUser3.canUnpublish(publishedDocument));
         assertFalse(treeUser4.canManagePublishing(publishedDocument));
 
         session.save();
         changeUser("myuser2");
-        PublicationTree treeUser2 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
         assertTrue(treeUser2.canUnpublish(publishedDocument));
         assertTrue(treeUser2.hasValidationTask(publishedDocument));
     }
@@ -219,10 +206,8 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
     @Test
     public void testApprovePublication() throws Exception {
         changeUser("myuser1");
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        PublicationTree treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
 
         List<PublicationNode> nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
@@ -231,25 +216,20 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         PublicationNode targetNode = nodes.get(0);
         assertTrue(treeUser1.canPublishTo(targetNode));
 
-        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
-                targetNode);
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
         assertTrue(publishedDocument.isPending());
-        assertEquals(1, treeUser1.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser3 can't see the document waiting for validation
         changeUser("myuser3");
         session.save(); // Save session to get modifications made by other
         // sessions
-        PublicationTree treeUser3 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
-        assertEquals(0, treeUser3.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
+        assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser2 can see it, it's the validator
         changeUser("myuser2");
-        PublicationTree treeUser2 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
         List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
                 doc2Publish));
         assertEquals(1, publishedDocuments.size());
@@ -264,17 +244,14 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         changeUser("myuser3");
         session.save(); // Save session to get modifications made by other
         // sessions (here, removing workflow ACL)
-        assertEquals(1, treeUser3.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(1, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
     }
 
     @Test
     public void testRejectPublication() throws Exception {
         changeUser("myuser1");
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        PublicationTree treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
 
         List<PublicationNode> nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
@@ -282,25 +259,20 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
 
         PublicationNode targetNode = nodes.get(0);
 
-        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
-                targetNode);
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
         assertTrue(publishedDocument.isPending());
-        assertEquals(1, treeUser1.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser3 can't see the document waiting for validation
         changeUser("myuser3");
         session.save(); // Save session to get modifications made by other
         // sessions
-        PublicationTree treeUser3 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
-        assertEquals(0, treeUser3.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
+        assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser2 can see it, it's the validator
         changeUser("myuser2");
-        PublicationTree treeUser2 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
         List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
                 doc2Publish));
         assertEquals(1, publishedDocuments.size());
@@ -313,20 +285,17 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         treeUser2.validatorRejectPublication(publishedDocument, "Rejected!");
         assertTrue(publishedDocument.isPending());
         // No more document to approve
-        assertEquals(0, treeUser2.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(0, treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // published so myuser3 still can't see it
         changeUser("myuser3");
         session.save(); // Save session to get modifications made by other
         // sessions (here, removing workflow ACL)
-        assertEquals(0, treeUser3.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // No more document published for myuser1
         changeUser("myuser1");
-        assertEquals(0, treeUser1.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(0, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         assertFalse(session.exists(proxy.getRef()));
@@ -335,10 +304,8 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
     @Test
     public void testFirstPublicationByValidator() throws Exception {
         changeUser("myuser2");
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        PublicationTree treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
 
         List<PublicationNode> nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
@@ -347,25 +314,20 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         PublicationNode targetNode = nodes.get(0);
         assertTrue(treeUser1.canPublishTo(targetNode));
 
-        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
-                targetNode);
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
         assertFalse(publishedDocument.isPending());
         // myuser3 can see the document
         changeUser("myuser3");
         session.save();
-        PublicationTree treeUser3 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
-        assertEquals(1, treeUser3.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
+        assertEquals(1, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
     }
 
     @Test
     public void testFirstPublicationByNonValidator() throws Exception {
         changeUser("myuser1");
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        PublicationTree treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
 
         List<PublicationNode> nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
@@ -374,16 +336,13 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         PublicationNode targetNode = nodes.get(0);
         assertTrue(treeUser1.canPublishTo(targetNode));
 
-        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
-                targetNode);
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
         assertTrue(publishedDocument.isPending());
         // myuser3 can't see the document
         changeUser("myuser3");
         session.save();
-        PublicationTree treeUser3 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
-        assertEquals(0, treeUser3.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
+        assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
     }
 
@@ -391,10 +350,8 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
     public void testPublishOfAlreadyWaitingToBePublishedDocByNonValidator() throws Exception {
         // my user1 ask for publication
         changeUser("myuser1");
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        PublicationTree treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
 
         List<PublicationNode> nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
@@ -403,45 +360,36 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         PublicationNode targetNode = nodes.get(0);
         assertTrue(treeUser1.canPublishTo(targetNode));
 
-        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
-                targetNode);
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
         assertTrue(publishedDocument.isPending());
-        assertEquals(1, treeUser1.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
         session.save();
         // my user3 ask for publication
         changeUser("myuser3");
-        defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
         nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
         assertEquals("section1", nodes.get(0).getTitle());
         targetNode = nodes.get(0);
         assertTrue(treeUser1.canPublishTo(targetNode));
-        publishedDocument = treeUser1.publish(doc2Publish,
-                targetNode);
+        publishedDocument = treeUser1.publish(doc2Publish, targetNode);
         assertTrue(publishedDocument.isPending());
         session.save();
         // my user1 can still see the document
         changeUser("myuser1");
-        defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
 
         nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
         assertEquals("section1", nodes.get(0).getTitle());
 
         targetNode = nodes.get(0);
-        assertEquals(1, treeUser1.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
-        //my user 2 publish the document
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        // my user 2 publish the document
         changeUser("myuser2");
-        PublicationTree treeUser2 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
         List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
                 doc2Publish));
         assertEquals(1, publishedDocuments.size());
@@ -458,10 +406,8 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
     public void testMultiplePublishThenPublishByValidator() throws Exception {
         // my user1 ask for publication
         changeUser("myuser1");
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        PublicationTree treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
 
         List<PublicationNode> nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
@@ -470,60 +416,48 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         PublicationNode targetNode = nodes.get(0);
         assertTrue(treeUser1.canPublishTo(targetNode));
 
-        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
-                targetNode);
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
         assertTrue(publishedDocument.isPending());
-        assertEquals(1, treeUser1.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
         session.save();
         // my user3 ask for publication
         changeUser("myuser3");
-        defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
         nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
         assertEquals("section1", nodes.get(0).getTitle());
         targetNode = nodes.get(0);
         assertTrue(treeUser1.canPublishTo(targetNode));
-        publishedDocument = treeUser1.publish(doc2Publish,
-                targetNode);
+        publishedDocument = treeUser1.publish(doc2Publish, targetNode);
         assertTrue(publishedDocument.isPending());
         session.save();
         // my user1 can still see the document
         changeUser("myuser1");
-        defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
 
         nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
         assertEquals("section1", nodes.get(0).getTitle());
 
         targetNode = nodes.get(0);
-        assertEquals(1, treeUser1.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
         // my user4 don't see the document
         changeUser("myuser4");
-        defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
 
         nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
         assertEquals("section1", nodes.get(0).getTitle());
 
         targetNode = nodes.get(0);
-        assertEquals(0, treeUser1.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(0, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
-        //my user 2 publish the document
+        // my user 2 publish the document
         changeUser("myuser2");
-        PublicationTree treeUser2 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
         List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
                 doc2Publish));
         assertEquals(1, publishedDocuments.size());
@@ -536,20 +470,18 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
 
         // my user4 see the document
         changeUser("myuser4");
-        defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        treeUser1 = publisherService.getPublicationTree(
-                defaultTreeName, session, factoryParams);
+        defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        treeUser1 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
 
         nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
         assertEquals("section1", nodes.get(0).getTitle());
 
         targetNode = nodes.get(0);
-        assertEquals(1, treeUser1.getExistingPublishedDocument(
-                new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
     }
+
     private void changeUser(String userName) throws Exception {
         Session userdir = directoryService.open("userDirectory");
         DocumentModel userModel = userdir.getEntry(userName);

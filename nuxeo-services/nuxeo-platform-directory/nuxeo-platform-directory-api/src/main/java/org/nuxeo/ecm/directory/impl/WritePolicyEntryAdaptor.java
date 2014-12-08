@@ -29,12 +29,10 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntryAdaptor;
 
 /**
- * Simple entry adaptor implementation that leaves the entry as editable if the
- * specified field value matches the provided regexp or set the readonly flag of
- * the entry to true if the value of the field does not match the regexp.
+ * Simple entry adaptor implementation that leaves the entry as editable if the specified field value matches the
+ * provided regexp or set the readonly flag of the entry to true if the value of the field does not match the regexp.
  * <p>
- * In any case, if the readonly flag of the adapted entry is already set to
- * true, this value is kept unchanged.
+ * In any case, if the readonly flag of the adapted entry is already set to true, this value is kept unchanged.
  */
 public class WritePolicyEntryAdaptor implements EntryAdaptor {
 
@@ -44,11 +42,9 @@ public class WritePolicyEntryAdaptor implements EntryAdaptor {
 
     protected Pattern pattern;
 
-    public DocumentModel adapt(Directory directory, DocumentModel entry)
-            throws DirectoryException {
+    public DocumentModel adapt(Directory directory, DocumentModel entry) throws DirectoryException {
         if (fieldName == null || pattern == null) {
-            log.warn(getClass().getName()
-                    + " is missing configuration parameters");
+            log.warn(getClass().getName() + " is missing configuration parameters");
             return entry;
         }
         if (BaseSession.isReadOnlyEntry(entry)) {
@@ -56,8 +52,7 @@ public class WritePolicyEntryAdaptor implements EntryAdaptor {
             return entry;
         }
         try {
-            Object fieldValue = entry.getProperty(directory.getSchema(),
-                    fieldName);
+            Object fieldValue = entry.getProperty(directory.getSchema(), fieldName);
             String value = fieldValue != null ? fieldValue.toString() : "";
             if (pattern.matcher(value).matches()) {
                 BaseSession.setReadWriteEntry(entry);
@@ -80,8 +75,7 @@ public class WritePolicyEntryAdaptor implements EntryAdaptor {
         } else if ("regexp".equals(name)) {
             pattern = Pattern.compile(value);
         } else {
-            log.warn("unexpected parameter " + name + " for class "
-                    + getClass().getName());
+            log.warn("unexpected parameter " + name + " for class " + getClass().getName());
         }
     }
 

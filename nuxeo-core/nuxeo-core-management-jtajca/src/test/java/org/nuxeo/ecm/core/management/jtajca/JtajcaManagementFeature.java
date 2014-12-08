@@ -26,10 +26,10 @@ import com.google.inject.Binder;
 import com.google.inject.name.Names;
 
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.runtime.datasource",
-        "org.nuxeo.ecm.core.management.jtajca" })
-@LocalDeploy({"org.nuxeo.ecm.core.management.jtajca:login-config.xml","org.nuxeo.ecm.core.management.jtajca:ds-contrib.xml"})
-@ConditionalIgnoreRule.Ignore(condition=IgnoreNonPooledCondition.class)
+@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.management.jtajca" })
+@LocalDeploy({ "org.nuxeo.ecm.core.management.jtajca:login-config.xml",
+        "org.nuxeo.ecm.core.management.jtajca:ds-contrib.xml" })
+@ConditionalIgnoreRule.Ignore(condition = IgnoreNonPooledCondition.class)
 public class JtajcaManagementFeature extends SimpleFeature {
 
     protected ObjectName nameOf(Class<?> itf) {
@@ -44,9 +44,7 @@ public class JtajcaManagementFeature extends SimpleFeature {
         final Set<ObjectName> names = mbs.queryNames(nameOf(type), null);
         for (ObjectName name : names) {
             T instance = type.cast(JMX.newMXBeanProxy(mbs, name, type));
-            binder.bind(type).annotatedWith(
-                    Names.named(name.getKeyProperty("name"))).toInstance(
-                    instance);
+            binder.bind(type).annotatedWith(Names.named(name.getKeyProperty("name"))).toInstance(instance);
         }
     }
 
@@ -64,6 +62,5 @@ public class JtajcaManagementFeature extends SimpleFeature {
             binder.bind(TransactionManager.class).toInstance(tm);
         }
     }
-
 
 }

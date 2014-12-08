@@ -33,17 +33,15 @@ public interface FieldDefinition extends Serializable {
     /**
      * Optional schema name.
      * <p>
-     * If the field is used to identify a sub field within a complex type, no
-     * schema name is needed. Otherwise, the field will not be resolved
-     * correctly if the property does not have a prefix.
+     * If the field is used to identify a sub field within a complex type, no schema name is needed. Otherwise, the
+     * field will not be resolved correctly if the property does not have a prefix.
      */
     String getSchemaName();
 
     /**
      * Returns the field name, following XPath conventions.
      * <p>
-     * If the field is prefixed, it should contain the prefix followed by ':'.
-     * Examples: dc:title, dc:author/name
+     * If the field is prefixed, it should contain the prefix followed by ':'. Examples: dc:title, dc:author/name
      */
     String getFieldName();
 

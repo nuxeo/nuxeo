@@ -15,8 +15,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * Implement this class to provide an initializer for the
- * {@link RepositoryInitializer} annotation in tests.
+ * Implement this class to provide an initializer for the {@link RepositoryInitializer} annotation in tests.
  */
 public interface RepositoryInit {
 

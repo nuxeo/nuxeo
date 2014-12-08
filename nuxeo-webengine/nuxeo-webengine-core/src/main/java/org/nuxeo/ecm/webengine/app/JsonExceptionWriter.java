@@ -34,27 +34,22 @@ import java.lang.reflect.Type;
  * @since 6.0
  */
 @Provider
-@Produces({ MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class JsonExceptionWriter implements MessageBodyWriter<WebException> {
 
     @Override
-    public long getSize(WebException arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(WebException arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
         return WebException.class.isAssignableFrom(arg0);
     }
 
     @Override
-    public void writeTo(WebException webException, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType mediaType,
-            MultivaluedMap<String, Object> arg5, OutputStream outputStream)
-            throws IOException, WebApplicationException {
+    public void writeTo(WebException webException, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType mediaType,
+            MultivaluedMap<String, Object> arg5, OutputStream outputStream) throws IOException, WebApplicationException {
         JsonWebengineWriter.writeException(outputStream, webException, mediaType);
     }
 

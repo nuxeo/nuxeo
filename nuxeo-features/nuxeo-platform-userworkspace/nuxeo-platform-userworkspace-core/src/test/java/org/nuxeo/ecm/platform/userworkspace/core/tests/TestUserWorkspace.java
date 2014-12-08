@@ -98,17 +98,14 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         ACP acp = new ACPImpl();
         acp.addACL(acl);
 
-        DocumentModel ws1 = session.createDocumentModel(
-                "/default-domain/workspaces", "ws1", "Workspace");
+        DocumentModel ws1 = session.createDocumentModel("/default-domain/workspaces", "ws1", "Workspace");
         ws1 = session.createDocument(ws1);
         ws1.setACP(acp, true);
         ws1 = session.saveDocument(ws1);
 
-        DocumentModel alternate = session.createDocumentModel("/",
-                "alternate-domain", "Domain");
+        DocumentModel alternate = session.createDocumentModel("/", "alternate-domain", "Domain");
         alternate = session.createDocument(alternate);
-        DocumentModel ws2 = session.createDocumentModel(
-                "/alternate-domain/workspaces", "ws2", "Workspace");
+        DocumentModel ws2 = session.createDocumentModel("/alternate-domain/workspaces", "ws2", "Workspace");
         ws2 = session.createDocument(ws2);
         ws2.setACP(acp, true);
         ws2 = session.saveDocument(ws2);
@@ -122,8 +119,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
 
         // access from root
         DocumentModel context = userSession.getRootDocument();
-        DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession,
-                null);
+        DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
         assertNotNull(uw);
         assertTrue(uw.getPathAsString().startsWith("/default-domain"));
 
@@ -137,8 +133,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         context = userSession.getDocument(ws2.getRef());
         uw = uwm.getCurrentUserPersonalWorkspace(userSession, context);
         assertNotNull(uw);
-        assertTrue(uw.getPathAsString(),
-                uw.getPathAsString().startsWith("/default-domain"));
+        assertTrue(uw.getPathAsString(), uw.getPathAsString().startsWith("/default-domain"));
 
         // now delete the default-domain
         session.removeDocument(new PathRef("/default-domain"));
@@ -151,8 +146,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
 
     @Test
     public void testMultiDomainsCompat() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.userworkspace.core",
-                "OSGI-INF/compatUserWorkspaceImpl.xml");
+        deployContrib("org.nuxeo.ecm.platform.userworkspace.core", "OSGI-INF/compatUserWorkspaceImpl.xml");
 
         ACE ace = new ACE("Everyone", "Read", true);
         ACL acl = new ACLImpl();
@@ -160,17 +154,14 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         ACP acp = new ACPImpl();
         acp.addACL(acl);
 
-        DocumentModel ws1 = session.createDocumentModel(
-                "/default-domain/workspaces", "ws1", "Workspace");
+        DocumentModel ws1 = session.createDocumentModel("/default-domain/workspaces", "ws1", "Workspace");
         ws1 = session.createDocument(ws1);
         ws1.setACP(acp, true);
         ws1 = session.saveDocument(ws1);
 
-        DocumentModel alternate = session.createDocumentModel("/",
-                "alternate-domain", "Domain");
+        DocumentModel alternate = session.createDocumentModel("/", "alternate-domain", "Domain");
         alternate = session.createDocument(alternate);
-        DocumentModel ws2 = session.createDocumentModel(
-                "/alternate-domain/workspaces", "ws2", "Workspace");
+        DocumentModel ws2 = session.createDocumentModel("/alternate-domain/workspaces", "ws2", "Workspace");
         ws2 = session.createDocument(ws2);
         ws2.setACP(acp, true);
         ws2 = session.saveDocument(ws2);
@@ -186,8 +177,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
 
         // access from root
         DocumentModel context = userSession.getRootDocument();
-        DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession,
-                null);
+        DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
         assertNotNull(uw);
         assertTrue(uw.getPathAsString().startsWith("/default-domain"));
 
@@ -218,8 +208,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         assertNotNull(service);
 
         DocumentModel context = session.getRootDocument();
-        DocumentModel uw = service.getCurrentUserPersonalWorkspace("user1",
-                context);
+        DocumentModel uw = service.getCurrentUserPersonalWorkspace("user1", context);
         session.save();
 
         assertNotNull(uw);
@@ -245,8 +234,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testUnrestrictedFinderCorrectlyCreateWorkspace()
-            throws ClientException {
+    public void testUnrestrictedFinderCorrectlyCreateWorkspace() throws ClientException {
         UserWorkspaceService service = Framework.getLocalService(UserWorkspaceService.class);
         assertNotNull(service);
 

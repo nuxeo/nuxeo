@@ -26,7 +26,6 @@ import org.nuxeo.ecm.webengine.forms.validation.annotations.Required;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @FormValidator(MyFormValidator.class)
 public interface MyForm extends Form {
@@ -41,13 +40,15 @@ public interface MyForm extends Form {
 
     Integer getAge();
 
-    @Range(min=3, max=7)
+    @Range(min = 3, max = 7)
     Integer getNumber();
 
-    @Length(min=3) @Regex(".+@.+")
+    @Length(min = 3)
+    @Regex(".+@.+")
     String[] getEmails();
 
-    @Required @Length(min=2)
+    @Required
+    @Length(min = 2)
     String getPassword();
 
     @Required

@@ -36,22 +36,19 @@ import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Provides helper methods, declared as static, to be used by the rendering
- * framework.
+ * Provides helper methods, declared as static, to be used by the rendering framework.
  *
  * @since 5.5
  */
 public class LayoutFunctions {
 
-    public static WidgetTypeDefinition getWidgetTypeDefinition(String category,
-            String typeName) {
+    public static WidgetTypeDefinition getWidgetTypeDefinition(String category, String typeName) {
         LayoutStore layoutService = Framework.getService(LayoutStore.class);
         return layoutService.getWidgetTypeDefinition(category, typeName);
     }
 
     /**
-     * Returns a String representing each of the field definitions property
-     * name, separated by a space.
+     * Returns a String representing each of the field definitions property name, separated by a space.
      */
     public static String getFieldDefinitionsAsString(FieldDefinition[] defs) {
         StringBuilder buff = new StringBuilder();
@@ -63,19 +60,17 @@ public class LayoutFunctions {
         return buff.toString().trim();
     }
 
-    public static List<LayoutRow> getSelectedRows(Layout layout,
-            List<String> selectedRowNames, boolean showAlwaysSelected) {
+    public static List<LayoutRow> getSelectedRows(Layout layout, List<String> selectedRowNames,
+            boolean showAlwaysSelected) {
         LayoutRow[] rows = layout.getRows();
         List<LayoutRow> selectedRows = new ArrayList<LayoutRow>();
         if (rows != null) {
             for (LayoutRow row : rows) {
                 if (row.isAlwaysSelected() && showAlwaysSelected) {
                     selectedRows.add(row);
-                } else if (selectedRowNames == null
-                        && row.isSelectedByDefault() && !row.isAlwaysSelected()) {
+                } else if (selectedRowNames == null && row.isSelectedByDefault() && !row.isAlwaysSelected()) {
                     selectedRows.add(row);
-                } else if (selectedRowNames != null
-                        && selectedRowNames.contains(row.getName())) {
+                } else if (selectedRowNames != null && selectedRowNames.contains(row.getName())) {
                     selectedRows.add(row);
                 }
             }
@@ -85,14 +80,12 @@ public class LayoutFunctions {
         return selectedRows;
     }
 
-    public static List<LayoutRow> getNotSelectedRows(Layout layout,
-            List<String> selectedRowNames) {
+    public static List<LayoutRow> getNotSelectedRows(Layout layout, List<String> selectedRowNames) {
         LayoutRow[] rows = layout.getRows();
         List<LayoutRow> notSelectedRows = new ArrayList<LayoutRow>();
         if (rows != null) {
             for (LayoutRow row : rows) {
-                if (selectedRowNames == null && !row.isSelectedByDefault()
-                        && !row.isAlwaysSelected()) {
+                if (selectedRowNames == null && !row.isSelectedByDefault() && !row.isAlwaysSelected()) {
                     notSelectedRows.add(row);
                 } else if (selectedRowNames != null && !row.isAlwaysSelected()
                         && !selectedRowNames.contains(row.getName())) {
@@ -103,10 +96,8 @@ public class LayoutFunctions {
         return notSelectedRows;
     }
 
-    public static List<String> getDefaultSelectedRowNames(Layout layout,
-            boolean showAlwaysSelected) {
-        List<LayoutRow> selectedRows = getSelectedRows(layout, null,
-                showAlwaysSelected);
+    public static List<String> getDefaultSelectedRowNames(Layout layout, boolean showAlwaysSelected) {
+        List<LayoutRow> selectedRows = getSelectedRows(layout, null, showAlwaysSelected);
         List<String> selectedRowNames = null;
         if (selectedRows != null && !selectedRows.isEmpty()) {
             selectedRowNames = new ArrayList<String>();
@@ -118,8 +109,7 @@ public class LayoutFunctions {
     }
 
     /**
-     * Returns an identifier computed from this definition so that an identical
-     * definition will have the same id.
+     * Returns an identifier computed from this definition so that an identical definition will have the same id.
      *
      * @since 5.5
      */
@@ -135,8 +125,7 @@ public class LayoutFunctions {
         if (rows != null) {
             for (LayoutRowDefinition row : rows) {
                 if (row != null) {
-                    builder.append(computeLayoutRowDefinitionId(row)).append(
-                            ",");
+                    builder.append(computeLayoutRowDefinitionId(row)).append(",");
                 }
             }
         }
@@ -152,13 +141,11 @@ public class LayoutFunctions {
     }
 
     /**
-     * Returns an identifier computed from this definition so that an identical
-     * definition will have the same id.
+     * Returns an identifier computed from this definition so that an identical definition will have the same id.
      *
      * @since 5.5
      */
-    public static String computeLayoutRowDefinitionId(
-            LayoutRowDefinition layoutRowDef) {
+    public static String computeLayoutRowDefinitionId(LayoutRowDefinition layoutRowDef) {
         StringBuffer builder = new StringBuffer();
         builder.append(layoutRowDef.getName()).append(";");
         builder.append(layoutRowDef.isSelectedByDefault()).append(";");
@@ -167,9 +154,7 @@ public class LayoutFunctions {
         if (widgets != null) {
             for (WidgetReference widget : widgets) {
                 if (widget != null) {
-                    builder.append(
-                            widget.getName() + "(" + widget.getCategory() + ")").append(
-                            ",");
+                    builder.append(widget.getName() + "(" + widget.getCategory() + ")").append(",");
                 }
             }
         }
@@ -187,8 +172,7 @@ public class LayoutFunctions {
     }
 
     /**
-     * Returns an identifier computed from this definition so that an identical
-     * definition will have the same id.
+     * Returns an identifier computed from this definition so that an identical definition will have the same id.
      *
      * @since 5.5
      */
@@ -221,8 +205,7 @@ public class LayoutFunctions {
         if (subWidgets != null) {
             for (WidgetDefinition widget : subWidgets) {
                 if (widget != null) {
-                    builder.append(computeWidgetDefinitionId(widget)).append(
-                            ",");
+                    builder.append(computeWidgetDefinitionId(widget)).append(",");
                 }
             }
         }
@@ -232,9 +215,7 @@ public class LayoutFunctions {
         if (subWidgetRefs != null) {
             for (WidgetReference widget : subWidgetRefs) {
                 if (widget != null) {
-                    builder.append(
-                            widget.getName() + "(" + widget.getCategory() + ")").append(
-                            ",");
+                    builder.append(widget.getName() + "(" + widget.getCategory() + ")").append(",");
                 }
             }
         }

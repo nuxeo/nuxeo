@@ -22,8 +22,8 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.runtime.trackers.concurrent.ThreadEvent;
 
 /**
- * A {@link WorkHolder} adapts a {@link Work} to {@link Runnable} for queuing
- * and execution by a {@link ThreadPoolExecutor}.
+ * A {@link WorkHolder} adapts a {@link Work} to {@link Runnable} for queuing and execution by a
+ * {@link ThreadPoolExecutor}.
  * <p>
  * Calls (indirectly) {@link Work#work} and {@link Work#cleanUp}.
  *

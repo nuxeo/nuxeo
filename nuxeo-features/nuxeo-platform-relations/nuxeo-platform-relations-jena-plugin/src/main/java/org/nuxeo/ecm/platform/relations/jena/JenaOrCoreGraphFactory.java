@@ -27,11 +27,9 @@ import org.nuxeo.ecm.platform.relations.services.RelationService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * A factory that detects if a Jena graph or a core graph should be used, and
- * remembers it for future invocations.
+ * A factory that detects if a Jena graph or a core graph should be used, and remembers it for future invocations.
  * <p>
- * A Jena graph is used if it contains at least one relation for the given
- * graph.
+ * A Jena graph is used if it contains at least one relation for the given graph.
  */
 public class JenaOrCoreGraphFactory implements GraphFactory {
 
@@ -41,10 +39,8 @@ public class JenaOrCoreGraphFactory implements GraphFactory {
     protected static JenaGraph testJenaGraph;
 
     @Override
-    public Graph createGraph(GraphDescription graphDescription,
-            CoreSession session) {
-        RelationService service = (RelationService) Framework.getRuntime().getComponent(
-                RelationService.NAME);
+    public Graph createGraph(GraphDescription graphDescription, CoreSession session) {
+        RelationService service = (RelationService) Framework.getRuntime().getComponent(RelationService.NAME);
         String name = graphDescription.getName();
 
         Graph graph;

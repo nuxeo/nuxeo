@@ -32,7 +32,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationsComponentTest extends NXRuntimeTestCase {
 
@@ -46,7 +45,7 @@ public class AnnotationsComponentTest extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations");
         deployBundle("org.nuxeo.ecm.relations.jena");
-        deployTestContrib("org.nuxeo.ecm.annotations","test-ann-contrib.xml");
+        deployTestContrib("org.nuxeo.ecm.annotations", "test-ann-contrib.xml");
     }
 
     @Test
@@ -80,8 +79,7 @@ public class AnnotationsComponentTest extends NXRuntimeTestCase {
         AnnotationIDGenerator generator = configurationImpl.getIDGenerator();
         assertNotNull(generator);
         assertTrue(generator instanceof DefaultIDGenerator);
-        assertEquals("readAnnotation",
-                configurationImpl.getReadAnnotationPermission());
+        assertEquals("readAnnotation", configurationImpl.getReadAnnotationPermission());
     }
 
 }

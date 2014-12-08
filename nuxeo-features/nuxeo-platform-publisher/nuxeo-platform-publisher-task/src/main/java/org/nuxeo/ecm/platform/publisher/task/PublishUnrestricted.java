@@ -33,13 +33,12 @@ public class PublishUnrestricted extends UnrestrictedSessionRunner {
 
     private final boolean overwriteProxy;
 
-    public PublishUnrestricted(CoreSession session, DocumentModel docToPublish,
-            DocumentModel sectionToPublishTo) {
+    public PublishUnrestricted(CoreSession session, DocumentModel docToPublish, DocumentModel sectionToPublishTo) {
         this(session, docToPublish, sectionToPublishTo, true);
     }
 
-    public PublishUnrestricted(CoreSession session, DocumentModel docToPublish,
-            DocumentModel sectionToPublishTo, boolean overwriteProxy) {
+    public PublishUnrestricted(CoreSession session, DocumentModel docToPublish, DocumentModel sectionToPublishTo,
+            boolean overwriteProxy) {
         super(session);
         this.sectionToPublishTo = sectionToPublishTo;
         this.docToPublish = docToPublish;

@@ -28,8 +28,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
 /**
- * Base class for preview adapters that will use preprocessed HTML preview that
- * is stored inside the document.
+ * Base class for preview adapters that will use preprocessed HTML preview that is stored inside the document.
  *
  * @author tiry
  */

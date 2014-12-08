@@ -28,7 +28,6 @@ import org.nuxeo.common.utils.StringUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class JQueryTreeBuilder<T> {
 
@@ -75,8 +74,8 @@ public abstract class JQueryTreeBuilder<T> {
                 String childName = getName(obj);
                 if (expandName.equals(childName)) {
                     JSONArray jsonChildren = null;
-                    if (off < path.length-1) {
-                        jsonChildren = buildChildren(obj, path, off+1);
+                    if (off < path.length - 1) {
+                        jsonChildren = buildChildren(obj, path, off + 1);
                     } else {
                         jsonChildren = buildChildren(obj);
                     }

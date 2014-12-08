@@ -192,14 +192,11 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
             }
             dbHelper.setUp(repositoryFactoryClass);
             OSGiAdapter osgi = harness.getOSGiAdapter();
-            Bundle bundle = osgi.getRegistry().getBundle(
-                    "org.nuxeo.ecm.core.storage.sql.test");
+            Bundle bundle = osgi.getRegistry().getBundle("org.nuxeo.ecm.core.storage.sql.test");
             String contribPath = dbHelper.getDeploymentContrib();
             URL contribURL = bundle.getEntry(contribPath);
-            assertNotNull("deployment contrib " + contribPath + " not found",
-                    contribURL);
-            Contribution contrib = new ContributionLocation(repositoryName,
-                    contribURL);
+            assertNotNull("deployment contrib " + contribPath + " not found", contribURL);
+            Contribution contrib = new ContributionLocation(repositoryName, contribURL);
             harness.getContext().deploy(contrib);
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -268,18 +265,15 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
      * @return the session
      * @since 5.9.3
      */
-    public CoreSession openSessionAs(Principal principal)
-            throws ClientException {
+    public CoreSession openSessionAs(Principal principal) throws ClientException {
         return CoreInstance.openCoreSession(repositoryName, principal);
     }
 
-    public CoreSession openSessionAsAdminUser(String username)
-            throws ClientException {
+    public CoreSession openSessionAsAdminUser(String username) throws ClientException {
         return openSessionAs(username, true, false);
     }
 
-    public CoreSession openSessionAsAnonymousUser(String username)
-            throws ClientException {
+    public CoreSession openSessionAsAnonymousUser(String username) throws ClientException {
         return openSessionAs(username, false, true);
     }
 
@@ -287,10 +281,8 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
         return openSessionAs(SecurityConstants.SYSTEM_USERNAME, true, false);
     }
 
-    public CoreSession openSessionAs(String username, boolean isAdmin,
-            boolean isAnonymous) throws ClientException {
-        UserPrincipal principal = new UserPrincipal(username,
-                new ArrayList<String>(), isAnonymous, isAdmin);
+    public CoreSession openSessionAs(String username, boolean isAdmin, boolean isAnonymous) throws ClientException {
+        UserPrincipal principal = new UserPrincipal(username, new ArrayList<String>(), isAnonymous, isAdmin);
         return CoreInstance.openCoreSession(repositoryName, principal);
     }
 

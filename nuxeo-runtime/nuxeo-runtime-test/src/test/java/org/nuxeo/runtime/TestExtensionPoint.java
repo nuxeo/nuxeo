@@ -41,8 +41,7 @@ public class TestExtensionPoint extends NXRuntimeTestCase {
 
     @Test
     public void testOverride() {
-        ComponentWithXPoint co = (ComponentWithXPoint) Framework.getRuntime().getComponent(
-                ComponentWithXPoint.NAME);
+        ComponentWithXPoint co = (ComponentWithXPoint) Framework.getRuntime().getComponent(ComponentWithXPoint.NAME);
         DummyContribution[] contribs = co.getContributions();
         assertEquals(2, contribs.length);
         assertSame(contribs[0].getClass(), DummyContribution.class);

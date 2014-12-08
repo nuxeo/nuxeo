@@ -32,8 +32,7 @@ public class TestSQLBinariesIndexingOverride extends TXSQLRepositoryTestCase {
     @Override
     protected void deployRepositoryContrib() throws Exception {
         super.deployRepositoryContrib();
-        deployContrib("org.nuxeo.ecm.core.test.tests",
-                "OSGI-INF/test-override-indexing-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-override-indexing-contrib.xml");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
     }
@@ -79,8 +78,7 @@ public class TestSQLBinariesIndexingOverride extends TXSQLRepositoryTestCase {
         assertEquals(1, res.size());
         Map<String, String> map = session.getBinaryFulltext(res.get(0).getRef());
         assertTrue(map.containsValue("test"));
-        if (! (DatabaseHelper.DATABASE instanceof DatabaseMySQL
-                || DatabaseHelper.DATABASE instanceof DatabaseSQLServer)) {
+        if (!(DatabaseHelper.DATABASE instanceof DatabaseMySQL || DatabaseHelper.DATABASE instanceof DatabaseSQLServer)) {
             // we have 2 binaries field
             assertTrue(map.containsKey("binarytext"));
             assertTrue(map.containsKey("binarytext_binaries"));

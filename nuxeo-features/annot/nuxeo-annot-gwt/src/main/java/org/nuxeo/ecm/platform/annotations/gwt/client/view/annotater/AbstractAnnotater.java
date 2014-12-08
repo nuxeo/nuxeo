@@ -26,7 +26,6 @@ import com.google.gwt.user.client.Event;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public abstract class AbstractAnnotater implements Annotater {
 
@@ -36,15 +35,13 @@ public abstract class AbstractAnnotater implements Annotater {
 
     private boolean onMouseDown, onMouseMove = false;
 
-    public AbstractAnnotater(AnnotationController controller,
-            boolean eventPreventDefault) {
+    public AbstractAnnotater(AnnotationController controller, boolean eventPreventDefault) {
         this.controller = controller;
         this.eventPreventDefault = eventPreventDefault;
     }
 
     public void manageEvent(Event event) {
-        if (!controller.canCreateNewCreationPopup()
-                || !controller.canAnnotate()) {
+        if (!controller.canCreateNewCreationPopup() || !controller.canAnnotate()) {
             return;
         }
 

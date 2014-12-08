@@ -52,8 +52,7 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.storage");
-        deployContrib("org.nuxeo.ecm.core.storage.mem.tests",
-                "OSGI-INF/test-repo-types.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.mem.tests", "OSGI-INF/test-repo-types.xml");
         initRepository();
         openSession();
     }
@@ -75,8 +74,7 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         RepositoryFactory repositoryFactory = new MemRepositoryFactory();
         repositoryFactory.init(repositoryName);
-        Repository repository = new Repository(repositoryName, repositoryName,
-                null, repositoryFactory);
+        Repository repository = new Repository(repositoryName, repositoryName, null, repositoryFactory);
         repositoryManager.addRepository(repository);
     }
 
@@ -94,23 +92,18 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
         int finalOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
         int leakedOpenSessions = finalOpenSessions - initialOpenSessions;
         if (leakedOpenSessions != 0) {
-            log.error(String.format(
-                    "There are %s open session(s) at tear down; it seems "
-                            + "the test leaked %s session(s).",
-                    Integer.valueOf(finalOpenSessions),
+            log.error(String.format("There are %s open session(s) at tear down; it seems "
+                    + "the test leaked %s session(s).", Integer.valueOf(finalOpenSessions),
                     Integer.valueOf(leakedOpenSessions)));
             for (CoreInstance.RegistrationInfo info : CoreInstance.getInstance().getRegistrationInfos()) {
                 log.warn("Leaking session", info);
             }
         }
         int finalSingleConnections = ConnectionHelper.countConnectionReferences();
-        int leakedSingleConnections = finalSingleConnections
-                - initialSingleConnections;
+        int leakedSingleConnections = finalSingleConnections - initialSingleConnections;
         if (leakedSingleConnections > 0) {
-            log.error(String.format(
-                    "There are %s single datasource connection(s) open at tear down; "
-                            + "the test leaked %s connection(s).",
-                    Integer.valueOf(finalSingleConnections),
+            log.error(String.format("There are %s single datasource connection(s) open at tear down; "
+                    + "the test leaked %s connection(s).", Integer.valueOf(finalSingleConnections),
                     Integer.valueOf(leakedSingleConnections)));
         }
         ConnectionHelper.clearConnectionReferences();
@@ -138,8 +131,7 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
         return CoreInstance.openCoreSession(repositoryName, username);
     }
 
-    public CoreSession openSessionAs(NuxeoPrincipal principal)
-            throws ClientException {
+    public CoreSession openSessionAs(NuxeoPrincipal principal) throws ClientException {
         return CoreInstance.openCoreSession(repositoryName, principal);
     }
 

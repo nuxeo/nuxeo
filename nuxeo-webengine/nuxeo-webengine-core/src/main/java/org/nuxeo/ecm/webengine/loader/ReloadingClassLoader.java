@@ -22,13 +22,13 @@ import java.net.URL;
 import org.nuxeo.ecm.webengine.loader.store.ResourceStore;
 import org.nuxeo.ecm.webengine.loader.store.ResourceStoreClassLoader;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ReloadingClassLoader extends ClassLoader {
 
     private final ClassLoader parent;
+
     private volatile ResourceStoreClassLoader delegate;
 
     public ReloadingClassLoader(final ClassLoader pParent) {
@@ -70,8 +70,7 @@ public class ReloadingClassLoader extends ClassLoader {
     }
 
     @Override
-    public synchronized Class<?> loadClass(String name, boolean resolve)
-            throws ClassNotFoundException {
+    public synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         return delegate.loadClass(name, resolve);
     }
 

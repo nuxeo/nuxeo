@@ -15,14 +15,12 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
-
 /**
  * Plugin abstract class.
  * <p>
  * Default plugin behavior.
  *
  * @author <a href="mailto:akalogeropoulos@nuxeo.com">Andreas Kalogeropolos</a>
- *
  * @deprecated use {@link AbstractFileImporter}
  */
 @Deprecated

@@ -17,9 +17,8 @@ import org.nuxeo.ecm.automation.client.OperationRequest;
 
 /**
  * @author matic
- *
- * @deprecated in 5.7 (did not work in 5.6 either): pass Date instance
- *             directly to the {@link OperationRequest#setInput} method.
+ * @deprecated in 5.7 (did not work in 5.6 either): pass Date instance directly to the {@link OperationRequest#setInput}
+ *             method.
  */
 @Deprecated
 public class DateInput implements OperationInput {
@@ -44,7 +43,7 @@ public class DateInput implements OperationInput {
 
     @Override
     public String getInputRef() {
-        return "date:"+DateUtils.formatDate(date);
+        return "date:" + DateUtils.formatDate(date);
     }
 
 }

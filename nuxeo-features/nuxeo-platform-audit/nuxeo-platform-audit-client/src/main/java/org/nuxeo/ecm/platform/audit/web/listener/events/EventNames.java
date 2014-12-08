@@ -29,8 +29,7 @@ package org.nuxeo.ecm.platform.audit.web.listener.events;
 public class EventNames {
 
     /**
-     * Fired when a document selection changes (file, folder etc not workspace
-     * or above).
+     * Fired when a document selection changes (file, folder etc not workspace or above).
      */
     public static final String DOCUMENT_SELECTION_CHANGED = "documentSelectionChanged";
 
@@ -45,14 +44,13 @@ public class EventNames {
     public static final String DOCUMENT_CHANGED = "documentChanged";
 
     /**
-     * Fired when content root selection is changed ( like workspaces, section
-     * etc types ).
+     * Fired when content root selection is changed ( like workspaces, section etc types ).
      */
     public static final String CONTENT_ROOT_SELECTION_CHANGED = "contentRootSelectionChanged";
 
     /**
-     * Fired when the selected domain changes. Should be listened by components
-     * interested specifically in domain selection change.
+     * Fired when the selected domain changes. Should be listened by components interested specifically in domain
+     * selection change.
      */
     public static final String DOMAIN_SELECTION_CHANGED = "domainSelectionChanged";
 

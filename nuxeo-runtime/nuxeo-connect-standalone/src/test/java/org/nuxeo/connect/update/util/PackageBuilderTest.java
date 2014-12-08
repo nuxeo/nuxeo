@@ -36,10 +36,8 @@ public class PackageBuilderTest extends PackageTestCase {
     @Test
     public void testPackageBuilder() {
         PackageBuilder builder = new PackageBuilder();
-        builder.name("nuxeo-automation").version("5.3.2").type(
-                PackageType.ADDON);
-        builder.title("Nuxeo Automation").description(
-                "The automation framework");
+        builder.name("nuxeo-automation").version("5.3.2").type(PackageType.ADDON);
+        builder.title("Nuxeo Automation").description("The automation framework");
         builder.platform("dm-5.3.2");
         builder.dependency("nuxeo-core:5.3.2");
         builder.conflict("package-that-does-not-exist");
@@ -53,8 +51,7 @@ public class PackageBuilderTest extends PackageTestCase {
 
         XMap xmap = StandaloneUpdateService.createXmap();
         try {
-            PackageDefinitionImpl pdef = (PackageDefinitionImpl) xmap.load(new ByteArrayInputStream(
-                    xml.getBytes()));
+            PackageDefinitionImpl pdef = (PackageDefinitionImpl) xmap.load(new ByteArrayInputStream(xml.getBytes()));
             // System.out.println(pdef);
         } catch (IOException e) {
             fail("Could not create package definition");

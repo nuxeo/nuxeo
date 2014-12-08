@@ -63,8 +63,8 @@ public class StartupHelper implements Serializable {
 
     protected static final String DOMAIN_TYPE = "Domain";
 
-    protected static final String DOCUMENT_MANAGEMENT_TAB = WebActions.MAIN_TABS_CATEGORY
-            + ":" + WebActions.DOCUMENTS_MAIN_TAB_ID;
+    protected static final String DOCUMENT_MANAGEMENT_TAB = WebActions.MAIN_TABS_CATEGORY + ":"
+            + WebActions.DOCUMENTS_MAIN_TAB_ID;
 
     private static final long serialVersionUID = 3248972387619873245L;
 
@@ -92,8 +92,8 @@ public class StartupHelper implements Serializable {
     protected transient CoreSession documentManager;
 
     /**
-     * @deprecated since 5.6: use {@link RestHelper#setLocaleString(String)}
-     *             instead of {@link LocaleSelector#setLocaleString(String)}
+     * @deprecated since 5.6: use {@link RestHelper#setLocaleString(String)} instead of
+     *             {@link LocaleSelector#setLocaleString(String)}
      */
     @In(create = true)
     @Deprecated
@@ -103,9 +103,8 @@ public class StartupHelper implements Serializable {
     protected transient RestHelper restHelper;
 
     /**
-     * Initializes the context with the principal id, and try to connect to the
-     * default server if any. If several servers are available, let the user
-     * choose.
+     * Initializes the context with the principal id, and try to connect to the default server if any. If several
+     * servers are available, let the user choose.
      *
      * @return the view_id of the contextually computed startup page
      */
@@ -116,8 +115,7 @@ public class StartupHelper implements Serializable {
         // we try to select the server to go to the next screen
         if (navigationContext.getCurrentServerLocation() == null) {
             // update location
-            RepositoryLocation repLoc = new RepositoryLocation(
-                    repositoryManager.getDefaultRepositoryName());
+            RepositoryLocation repLoc = new RepositoryLocation(repositoryManager.getDefaultRepositoryName());
             navigationContext.setCurrentServerLocation(repLoc);
         }
 
@@ -126,15 +124,13 @@ public class StartupHelper implements Serializable {
         }
 
         if (Events.exists()) {
-            Events.instance().raiseEvent(EventNames.USER_SESSION_STARTED,
-                    documentManager);
+            Events.instance().raiseEvent(EventNames.USER_SESSION_STARTED, documentManager);
         }
 
         // select home page
 
         DocumentModel rootDocument = documentManager.getRootDocument();
-        if (!documentManager.hasPermission(rootDocument.getRef(),
-                SecurityConstants.READ_CHILDREN)) {
+        if (!documentManager.hasPermission(rootDocument.getRef(), SecurityConstants.READ_CHILDREN)) {
             // user cannot see the root but maybe she can see contained
             // documents thus forwarding her to her dashboard
             return dashboardNavigationHelper.navigateToDashboard();
@@ -151,11 +147,10 @@ public class StartupHelper implements Serializable {
     }
 
     /**
-     * Initializes the context with the principal id, and tries to connect to
-     * the default server if any then: - if the server has several domains,
-     * redirect to the list of domains - if the server has only one domain,
-     * select it and redirect to viewId - if the server is empty, create a new
-     * domain with title 'domainTitle' and redirect to it on viewId.
+     * Initializes the context with the principal id, and tries to connect to the default server if any then: - if the
+     * server has several domains, redirect to the list of domains - if the server has only one domain, select it and
+     * redirect to viewId - if the server is empty, create a new domain with title 'domainTitle' and redirect to it on
+     * viewId.
      * <p>
      * If several servers are available, let the user choose.
      *
@@ -175,25 +170,21 @@ public class StartupHelper implements Serializable {
                 return result;
             }
 
-            String query = "SELECT * FROM Domain WHERE " + NXQL.ECM_MIXINTYPE
-                    + " <> '" + FacetNames.HIDDEN_IN_NAVIGATION + "' AND "
-                    + NXQL.ECM_LIFECYCLESTATE + " <> '"
-                    + LifeCycleConstants.DELETED_STATE + "'"
-                    + " AND ecm:isCheckedInVersion = 0 "
+            String query = "SELECT * FROM Domain WHERE " + NXQL.ECM_MIXINTYPE + " <> '"
+                    + FacetNames.HIDDEN_IN_NAVIGATION + "' AND " + NXQL.ECM_LIFECYCLESTATE + " <> '"
+                    + LifeCycleConstants.DELETED_STATE + "'" + " AND ecm:isCheckedInVersion = 0 "
                     + " AND ecm:isProxy = 0 ";
             DocumentModelList domains = documentManager.query(query);
             if (domains.size() == 1) {
                 // select and go to the unique domain
                 webActions.setCurrentTabIds(DOCUMENT_MANAGEMENT_TAB);
-                return navigationContext.navigateToDocument(domains.get(0),
-                        viewId);
+                return navigationContext.navigateToDocument(domains.get(0), viewId);
             }
 
             // zero or several domains: let the user decide what to do if he has
             // right on the Root document
             DocumentModel rootDocument = documentManager.getRootDocument();
-            if (documentManager.hasPermission(rootDocument.getRef(),
-                    SecurityConstants.READ_CHILDREN)) {
+            if (documentManager.hasPermission(rootDocument.getRef(), SecurityConstants.READ_CHILDREN)) {
                 webActions.setCurrentTabIds(DOCUMENT_MANAGEMENT_TAB);
                 navigationContext.navigateToDocument(rootDocument);
                 return DOMAINS_VIEW;
@@ -205,9 +196,7 @@ public class StartupHelper implements Serializable {
             // hiding the cause of the problem to developers
             // TODO: remove this catch clause if we find a way not to make it
             // fail silently
-            log.error(
-                    "error while initializing the Seam context with a CoreSession instance: "
-                            + e.getMessage(), e);
+            log.error("error while initializing the Seam context with a CoreSession instance: " + e.getMessage(), e);
             return null;
         }
     }

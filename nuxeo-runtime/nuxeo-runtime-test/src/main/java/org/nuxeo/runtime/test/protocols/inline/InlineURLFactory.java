@@ -51,7 +51,7 @@ public class InlineURLFactory {
         } catch (Exception cause) {
             throw new RuntimeException("Cannot uninstall inline URLs", cause);
         } finally {
-           shf = null;
+            shf = null;
         }
 
     }
@@ -69,14 +69,13 @@ public class InlineURLFactory {
         try {
             return clazz.cast(ois.readObject());
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Cannot decode, object is not of class "
-                    + clazz.getSimpleName(), e);
+            throw new RuntimeException("Cannot decode, object is not of class " + clazz.getSimpleName(), e);
         }
     }
 
     public static <T> URL newURL(T content) throws IOException {
         byte[] data = marshall(content);
-        return newURL("application/java",data);
+        return newURL("application/java", data);
     }
 
     public static URL newURL(String mimetype, byte[] data) throws IOException {
@@ -100,7 +99,5 @@ public class InlineURLFactory {
         String data = matcher.group(2);
         return Base64.decode(data);
     }
-
-
 
 }

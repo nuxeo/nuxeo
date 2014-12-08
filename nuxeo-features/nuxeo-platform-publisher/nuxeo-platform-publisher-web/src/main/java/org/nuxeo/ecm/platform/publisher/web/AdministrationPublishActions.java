@@ -50,8 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("adminPublishActions")
 @Scope(ScopeType.CONVERSATION)
-public class AdministrationPublishActions extends AbstractPublishActions
-        implements Serializable {
+public class AdministrationPublishActions extends AbstractPublishActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -102,8 +101,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
         }
 
         if (currentSectionRootId != null) {
-            sectionsRoot = documentManager.getDocument(new IdRef(
-                    currentSectionRootId));
+            sectionsRoot = documentManager.getDocument(new IdRef(currentSectionRootId));
         }
 
         sectionsTree = getDocumentTreeNode(sectionsRoot);
@@ -115,8 +113,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
         this.currentSectionRootId = currentSectionRootId;
     }
 
-    public String getDomainNameFor(final DocumentModel sectionRoot)
-            throws ClientException {
+    public String getDomainNameFor(final DocumentModel sectionRoot) throws ClientException {
         final List<String> domainName = new ArrayList<>();
         new UnrestrictedSessionRunner(documentManager) {
             @Override
@@ -139,8 +136,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
         if (documentModel != null) {
             Filter filter = getTreeManager().getFilter(PUBLICATION_TREE_PLUGIN_NAME);
             Sorter sorter = getTreeManager().getSorter(PUBLICATION_TREE_PLUGIN_NAME);
-            documentTreeNode = new DocumentTreeNodeImpl(documentModel, filter,
-                    sorter);
+            documentTreeNode = new DocumentTreeNodeImpl(documentModel, filter, sorter);
         }
         return documentTreeNode;
     }
@@ -166,8 +162,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
 
     public DocumentModelList getSelectedSections() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        return getRootFinder().getSectionRootsForWorkspace(currentDocument,
-                true);
+        return getRootFinder().getSectionRootsForWorkspace(currentDocument, true);
     }
 
     public String removeSection(String sectionId) throws ClientException {
@@ -189,8 +184,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
     }
 
     @Override
-    protected DocumentModel getParentDocument(DocumentModel documentModel)
-            throws ClientException {
+    protected DocumentModel getParentDocument(DocumentModel documentModel) throws ClientException {
         return documentManager.getDocument(documentModel.getParentRef());
     }
 

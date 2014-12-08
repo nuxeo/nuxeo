@@ -11,13 +11,11 @@ package org.nuxeo.runtime.trackers.concurrent;
 import org.nuxeo.runtime.services.event.EventService;
 
 /**
- * {@link ThreadEvent} handler that should be implemented by consumers. Could
- * be enlisted in the @{link {@link EventService} through the use of a
- * {@link ThreadEventListener}.
+ * {@link ThreadEvent} handler that should be implemented by consumers. Could be enlisted in the @{link
+ * {@link EventService} through the use of a {@link ThreadEventListener}.
  *
  * @since 6.0
  * @author Stephane Lacoin at Nuxeo (aka matic)
- *
  */
 public interface ThreadEventHandler {
 

@@ -52,22 +52,19 @@ public abstract class AbstractSimpleConfigurationTest {
     @Inject
     protected LocalConfigurationService localConfigurationService;
 
-    public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef(
-            "/default-domain/workspaces/workspace");
+    public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace");
 
-    public static final DocumentRef CHILD_WORKSPACE_REF = new PathRef(
-            "/default-domain/workspaces/workspace/workspace2");
+    public static final DocumentRef CHILD_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace/workspace2");
 
-    public static final DocumentRef FOLDER_REF = new PathRef(
-            "/default-domain/workspaces/workspace/a-folder");
+    public static final DocumentRef FOLDER_REF = new PathRef("/default-domain/workspaces/workspace/a-folder");
 
-    protected DocumentModel initializeSimpleConfiguration(DocumentModel doc,
-            Map<String, String> parameters) throws ClientException {
+    protected DocumentModel initializeSimpleConfiguration(DocumentModel doc, Map<String, String> parameters)
+            throws ClientException {
         doc.addFacet(SIMPLE_CONFIGURATION_FACET);
         doc = session.saveDocument(doc);
 
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET, doc);
+        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
+                SIMPLE_CONFIGURATION_FACET, doc);
         simpleConfiguration.putAll(parameters);
         simpleConfiguration.save(session);
 
@@ -75,10 +72,8 @@ public abstract class AbstractSimpleConfigurationTest {
         return session.getDocument(doc.getRef());
     }
 
-    protected DocumentModel initializeSimpleConfiguration(DocumentModel doc)
-            throws ClientException {
-        return initializeSimpleConfiguration(doc,
-                Collections.<String, String> emptyMap());
+    protected DocumentModel initializeSimpleConfiguration(DocumentModel doc) throws ClientException {
+        return initializeSimpleConfiguration(doc, Collections.<String, String> emptyMap());
     }
 
     protected void addReadForEveryone(DocumentRef ref) throws ClientException {
@@ -86,8 +81,7 @@ public abstract class AbstractSimpleConfigurationTest {
         ACP acp = childWorkspace.getACP();
         ACL acl = acp.getOrCreateACL();
         acl.clear();
-        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ,
-                true));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true));
         childWorkspace.setACP(acp, true);
         session.saveDocument(childWorkspace);
         session.save();

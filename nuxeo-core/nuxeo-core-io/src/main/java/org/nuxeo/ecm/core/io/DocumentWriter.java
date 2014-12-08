@@ -51,8 +51,7 @@ public interface DocumentWriter {
      * @return the translation map.
      * @throws IOException
      */
-    DocumentTranslationMap write(Collection<ExportedDocument> docs)
-            throws IOException;
+    DocumentTranslationMap write(Collection<ExportedDocument> docs) throws IOException;
 
     /**
      * Closes the writer.

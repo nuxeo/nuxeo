@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DirectoryStack {
 
@@ -67,7 +66,6 @@ public class DirectoryStack {
      *
      * @param name the file name to lookup
      * @return the file in the canonical form
-     *
      * @throws IOException
      */
     public File getFile(String name) throws IOException {
@@ -105,10 +103,10 @@ public class DirectoryStack {
             vd.addDirectory(new File("/home/bstefanescu/src"));
 
             for (File file : vd.listFiles()) {
-                System.out.println("> "+file);
+                System.out.println("> " + file);
             }
-            System.out.println("dummy: "+vd.getFile("dummy"));
-            System.out.println("dev: "+vd.getFile("dev"));
+            System.out.println("dummy: " + vd.getFile("dummy"));
+            System.out.println("dev: " + vd.getFile("dev"));
         } catch (IOException e) {
             log.error(e, e);
         }

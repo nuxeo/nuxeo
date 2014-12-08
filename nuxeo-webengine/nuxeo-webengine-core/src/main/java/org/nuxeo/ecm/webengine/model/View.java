@@ -29,7 +29,9 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 public class View extends Template {
 
     protected String name;
+
     protected String ext;
+
     protected MediaType mediaType;
 
     protected View(WebContext ctx, Resource resource, String name) {

@@ -44,9 +44,8 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.schema.DocumentType;
 
 /**
- * Light weight {@link DocumentModel} implementation Only holds
- * {@link DocumentRef}, RepositoryName, name, path and context data. Used to
- * reduce memory footprint of {@link Event} stacked in {@link EventBundle}.
+ * Light weight {@link DocumentModel} implementation Only holds {@link DocumentRef}, RepositoryName, name, path and
+ * context data. Used to reduce memory footprint of {@link Event} stacked in {@link EventBundle}.
  *
  * @author Thierry Delprat
  */
@@ -94,8 +93,7 @@ public class ShallowDocumentModel implements DocumentModel {
             try {
                 lifecycleState = doc.getCurrentLifeCycleState();
             } catch (ClientException e) {
-                throw new ClientRuntimeException("Cannot get lifecycle state",
-                        e);
+                throw new ClientRuntimeException("Cannot get lifecycle state", e);
             }
         } else {
             lifecycleState = null;
@@ -184,8 +182,7 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public void accept(PropertyVisitor visitor, Object arg)
-            throws ClientException {
+    public void accept(PropertyVisitor visitor, Object arg) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -200,8 +197,7 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Collection<String> getAllowedStateTransitions()
-            throws ClientException {
+    public Collection<String> getAllowedStateTransitions() throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -302,26 +298,22 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Map<String, Object> getProperties(String schemaName)
-            throws ClientException {
+    public Map<String, Object> getProperties(String schemaName) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property getProperty(String xpath) throws PropertyException,
-            ClientException {
+    public Property getProperty(String xpath) throws PropertyException, ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object getProperty(String schemaName, String name)
-            throws ClientException {
+    public Object getProperty(String schemaName, String name) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Serializable getPropertyValue(String xpath)
-            throws PropertyException, ClientException {
+    public Serializable getPropertyValue(String xpath) throws PropertyException, ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -336,8 +328,8 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public <T extends Serializable> T getSystemProp(String systemProperty,
-            Class<T> type) throws ClientException, DocumentException {
+    public <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type) throws ClientException,
+            DocumentException {
         throw new UnsupportedOperationException();
     }
 
@@ -447,8 +439,7 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public void refresh(int refreshFlags, String[] schemas)
-            throws ClientException {
+    public void refresh(int refreshFlags, String[] schemas) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -488,14 +479,12 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public void setProperties(String schemaName, Map<String, Object> data)
-            throws ClientException {
+    public void setProperties(String schemaName, Map<String, Object> data) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setProperty(String schemaName, String name, Object value)
-            throws ClientException {
+    public void setProperty(String schemaName, String name, Object value) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -533,8 +522,7 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public DocumentRef checkIn(VersioningOption option, String checkinComment)
-            throws ClientException {
+    public DocumentRef checkIn(VersioningOption option, String checkinComment) throws ClientException {
         throw new UnsupportedOperationException();
     }
 

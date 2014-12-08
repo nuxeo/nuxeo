@@ -26,8 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.common.utils.URIUtils;
 
 /**
- * This servlet is bound to /api and dispatch calls to /site/api in oder to have
- * better looking URLs.
+ * This servlet is bound to /api and dispatch calls to /site/api in oder to have better looking URLs.
  *
  * @since 5.7.3
  */
@@ -39,8 +38,7 @@ public class APIServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         RequestDispatcher rd = req.getRequestDispatcher("/site/api"
                 + URIUtils.quoteURIPathComponent(req.getPathInfo(), false, false));

@@ -55,19 +55,17 @@ public class ErrorPageForwarder {
 
     private ServletContext servletContext;
 
-    public void forwardToErrorPage(HttpServletRequest request,
-            HttpServletResponse response, Throwable t, String exceptionMessage,
-            String userMessage, Boolean securityError,
-            ServletContext servletContext) throws ServletException, IOException {
-        forwardToErrorPage(request, response, getStackTraceAsString(t),
-                exceptionMessage, userMessage, securityError, servletContext);
+    public void forwardToErrorPage(HttpServletRequest request, HttpServletResponse response, Throwable t,
+            String exceptionMessage, String userMessage, Boolean securityError, ServletContext servletContext)
+            throws ServletException, IOException {
+        forwardToErrorPage(request, response, getStackTraceAsString(t), exceptionMessage, userMessage, securityError,
+                servletContext);
     }
 
     @SuppressWarnings("rawtypes")
-    public void forwardToErrorPage(HttpServletRequest request,
-            HttpServletResponse response, String stackTrace,
-            String exceptionMessage, String userMessage, Boolean securityError,
-            ServletContext servletContext) throws ServletException, IOException {
+    public void forwardToErrorPage(HttpServletRequest request, HttpServletResponse response, String stackTrace,
+            String exceptionMessage, String userMessage, Boolean securityError, ServletContext servletContext)
+            throws ServletException, IOException {
         log.error(stackTrace);
         this.servletContext = servletContext;
         // cut/paste from seam Exception filter.
@@ -78,11 +76,9 @@ public class ErrorPageForwarder {
         // if the event context was cleaned up, fish the conversation id
         // directly out of the ServletRequest attributes, else get it from
         // the event context
-        Manager manager = Contexts.isEventContextActive() ? (Manager) Contexts.getEventContext().get(
-                Manager.class)
+        Manager manager = Contexts.isEventContextActive() ? (Manager) Contexts.getEventContext().get(Manager.class)
                 : (Manager) request.getAttribute(Seam.getComponentName(Manager.class));
-        String conversationId = manager == null ? null
-                : manager.getCurrentConversationId();
+        String conversationId = manager == null ? null : manager.getCurrentConversationId();
         FacesLifecycle.beginExceptionRecovery(facesContext.getExternalContext());
         // If there is an existing long-running conversation on
         // the failed request, propagate it
@@ -102,8 +98,7 @@ public class ErrorPageForwarder {
         request.setAttribute("stackTrace", stackTrace);
         request.setAttribute("securityError", securityError);
         request.setAttribute("request_dump", getRequestDump(request));
-        request.getRequestDispatcher("/nuxeo_error.jsp").forward(request,
-                response);
+        request.getRequestDispatcher("/nuxeo_error.jsp").forward(request, response);
         // FacesLifecycle.endRequest( facesContext.getExternalContext() );
         // facesContext.release();
     }
@@ -132,27 +127,22 @@ public class ErrorPageForwarder {
                 continue;
             }
             Object obj = request.getAttribute(name);
-            builder.append(name).append(": ").append(obj.toString()).append(
-                    "\n");
+            builder.append(name).append(": ").append(obj.toString()).append("\n");
         }
         builder.append("\n");
         Collection<RegistrationInfo> infos = Framework.getRuntime().getComponentManager().getRegistrations();
         builder.append("Components:\n");
         for (RegistrationInfo info : infos) {
             builder.append(info.getComponent().getName()).append(",").append(
-                    info.isActivated() ? "activated" : "not activated").append(
-                    "\n");
+                    info.isActivated() ? "activated" : "not activated").append("\n");
         }
-        nuxeoErrorLog.trace("User Principal: " + request.getUserPrincipal()
-                + "\n" + builder.toString());
+        nuxeoErrorLog.trace("User Principal: " + request.getUserPrincipal() + "\n" + builder.toString());
         return builder.toString();
     }
 
-    private MockFacesContext createFacesContext(HttpServletRequest request,
-            HttpServletResponse response) {
-        MockFacesContext mockFacesContext = new MockFacesContext(
-                new MockExternalContext(servletContext, request, response),
-                new MockApplication());
+    private MockFacesContext createFacesContext(HttpServletRequest request, HttpServletResponse response) {
+        MockFacesContext mockFacesContext = new MockFacesContext(new MockExternalContext(servletContext, request,
+                response), new MockApplication());
         mockFacesContext.setViewRoot(new UIViewRoot());
         return mockFacesContext;
     }

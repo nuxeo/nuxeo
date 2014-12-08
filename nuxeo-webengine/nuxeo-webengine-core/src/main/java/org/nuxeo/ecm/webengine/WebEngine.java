@@ -70,8 +70,7 @@ public class WebEngine implements ResourceLocator {
     static Map<Object, Object> loadMimeTypes() {
         Map<Object, Object> mimeTypes = new HashMap<Object, Object>();
         Properties p = new Properties();
-        URL url = WebEngine.class.getClassLoader().getResource(
-                "OSGI-INF/mime.properties");
+        URL url = WebEngine.class.getClassLoader().getResource("OSGI-INF/mime.properties");
         InputStream in = null;
         try {
             in = url.openStream();
@@ -88,8 +87,7 @@ public class WebEngine implements ResourceLocator {
     public static WebContext getActiveContext() {
         RequestContext ctx = RequestContext.getActiveContext();
         if (ctx != null) {
-            return (WebContext) ctx.getRequest().getAttribute(
-                    WebContext.class.getName());
+            return (WebContext) ctx.getRequest().getAttribute(WebContext.class.getName());
         }
         return null;
     }
@@ -140,8 +138,7 @@ public class WebEngine implements ResourceLocator {
         if (skinPathPrefix == null) {
             // TODO: should put this in web.xml and not use jboss.home.dir to
             // test if on jboss
-            skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin"
-                    : "/skin";
+            skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin";
         }
 
         env = new HashMap<String, Object>();
@@ -168,29 +165,22 @@ public class WebEngine implements ResourceLocator {
     public void loadJspTaglib(GenericServlet servlet) {
         if (rendering instanceof FreemarkerEngine) {
             FreemarkerEngine fm = (FreemarkerEngine) rendering;
-            ServletContextHashModel servletContextModel = new ServletContextHashModel(
-                    servlet, fm.getObjectWrapper());
+            ServletContextHashModel servletContextModel = new ServletContextHashModel(servlet, fm.getObjectWrapper());
             fm.setSharedVariable("Application", servletContextModel);
-            fm.setSharedVariable("__FreeMarkerServlet.Application__",
-                    servletContextModel);
+            fm.setSharedVariable("__FreeMarkerServlet.Application__", servletContextModel);
             fm.setSharedVariable("Application", servletContextModel);
-            fm.setSharedVariable("__FreeMarkerServlet.Application__",
-                    servletContextModel);
-            fm.setSharedVariable("JspTaglibs",
-                    new TaglibFactory(servlet.getServletContext()));
+            fm.setSharedVariable("__FreeMarkerServlet.Application__", servletContextModel);
+            fm.setSharedVariable("JspTaglibs", new TaglibFactory(servlet.getServletContext()));
         }
     }
 
-    public void initJspRequestSupport(GenericServlet servlet,
-            HttpServletRequest request, HttpServletResponse response) {
+    public void initJspRequestSupport(GenericServlet servlet, HttpServletRequest request, HttpServletResponse response) {
         if (rendering instanceof FreemarkerEngine) {
             FreemarkerEngine fm = (FreemarkerEngine) rendering;
-            HttpRequestHashModel requestModel = new HttpRequestHashModel(
-                    request, response, fm.getObjectWrapper());
+            HttpRequestHashModel requestModel = new HttpRequestHashModel(request, response, fm.getObjectWrapper());
             fm.setSharedVariable("__FreeMarkerServlet.Request__", requestModel);
             fm.setSharedVariable("Request", requestModel);
-            fm.setSharedVariable("RequestParameters",
-                    new HttpRequestParametersHashModel(request));
+            fm.setSharedVariable("RequestParameters", new HttpRequestParametersHashModel(request));
 
             // HttpSessionHashModel sessionModel = null;
             // HttpSession session = request.getSession(false);
@@ -273,10 +263,8 @@ public class WebEngine implements ResourceLocator {
         if (moduleMgr == null) { // avoid synchronizing if not needed
             synchronized (this) {
                 /**
-                 * the duplicate if is used avoid synchronizing when no needed.
-                 * note that the this.moduleMgr member must be set at the end of
-                 * the synchronized block after the module manager is completely
-                 * initialized
+                 * the duplicate if is used avoid synchronizing when no needed. note that the this.moduleMgr member must
+                 * be set at the end of the synchronized block after the module manager is completely initialized
                  */
                 if (moduleMgr == null) {
                     ModuleManager moduleMgr = new ModuleManager(this);
@@ -332,8 +320,7 @@ public class WebEngine implements ResourceLocator {
     /**
      * Manage jax-rs root resource bindings
      *
-     * @deprecated resources are deprecated - you should use a jax-rs
-     *             application to declare more resources.
+     * @deprecated resources are deprecated - you should use a jax-rs application to declare more resources.
      */
     @Deprecated
     public void addResourceBinding(ResourceBinding binding) {
@@ -346,8 +333,7 @@ public class WebEngine implements ResourceLocator {
     }
 
     /**
-     * @deprecated resources are deprecated - you should use a jax-rs
-     *             application to declare more resources.
+     * @deprecated resources are deprecated - you should use a jax-rs application to declare more resources.
      */
     @Deprecated
     public void removeResourceBinding(ResourceBinding binding) {
@@ -355,8 +341,7 @@ public class WebEngine implements ResourceLocator {
     }
 
     /**
-     * @deprecated resources are deprecated - you should use a jax-rs
-     *             application to declare more resources.
+     * @deprecated resources are deprecated - you should use a jax-rs application to declare more resources.
      */
     @Deprecated
     public ResourceBinding[] getBindings() {

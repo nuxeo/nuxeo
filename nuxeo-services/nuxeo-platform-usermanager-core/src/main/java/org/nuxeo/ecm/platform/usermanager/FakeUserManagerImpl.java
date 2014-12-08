@@ -41,7 +41,6 @@ import org.nuxeo.runtime.services.event.Event;
 
 /**
  * @author Florent Guillaume
- *
  */
 public class FakeUserManagerImpl implements UserManager {
 
@@ -198,8 +197,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public boolean checkUsernamePassword(String username, String password)
-            throws ClientException {
+    public boolean checkUsernamePassword(String username, String password) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -212,14 +210,12 @@ public class FakeUserManagerImpl implements UserManager {
         }
     }
 
-    public List<String> getGroupsInGroup(String parentId)
-            throws ClientException {
+    public List<String> getGroupsInGroup(String parentId) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
-        NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(
-                SecurityConstants.ADMINISTRATOR, false, true);
+        NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(SecurityConstants.ADMINISTRATOR, false, true);
         principal.setGroups(Arrays.asList(SecurityConstants.ADMINISTRATORS));
         principal.setEmail("admin@example.com");
         return principal;
@@ -233,8 +229,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public List<String> getUsersInGroupAndSubGroups(String groupId)
-            throws ClientException {
+    public List<String> getUsersInGroupAndSubGroups(String groupId) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -242,8 +237,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public List<NuxeoPrincipal> searchPrincipals(String pattern)
-            throws ClientException {
+    public List<NuxeoPrincipal> searchPrincipals(String pattern) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -307,13 +301,11 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModel createGroup(DocumentModel groupModel)
-            throws ClientException {
+    public DocumentModel createGroup(DocumentModel groupModel) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModel createUser(DocumentModel userModel)
-            throws ClientException {
+    public DocumentModel createUser(DocumentModel userModel) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -349,13 +341,12 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext) throws ClientException {
+    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModelList searchUsers(Map<String, Serializable> filter,
-            Set<String> fulltext) throws ClientException {
+    public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -403,8 +394,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public void createPrincipal(NuxeoPrincipal principal)
-            throws ClientException {
+    public void createPrincipal(NuxeoPrincipal principal) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -412,8 +402,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public void deletePrincipal(NuxeoPrincipal principal)
-            throws ClientException {
+    public void deletePrincipal(NuxeoPrincipal principal) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -429,8 +418,8 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter,
-            Set<String> pattern) throws ClientException {
+    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter, Set<String> pattern)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -438,8 +427,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public void updatePrincipal(NuxeoPrincipal principal)
-            throws ClientException {
+    public void updatePrincipal(NuxeoPrincipal principal) throws ClientException {
         throw new UnsupportedOperationException();
     }
 

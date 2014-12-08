@@ -44,32 +44,26 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Web service Remoting session manager implemtation.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
-public class WSRemotingSessionManagerImpl extends DefaultComponent implements
-        WSRemotingSessionManager, DocumentLoader {
+public class WSRemotingSessionManagerImpl extends DefaultComponent implements WSRemotingSessionManager, DocumentLoader {
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.ws.session.WSRemotingSessionManagerImpl");
 
     private static final Log log = LogFactory.getLog(WSRemotingSessionManagerImpl.class);
 
-    private static final Map<String, WSRemotingSession> sessions
-            = new Hashtable<String, WSRemotingSession>();
+    private static final Map<String, WSRemotingSession> sessions = new Hashtable<String, WSRemotingSession>();
 
-    protected final HashMap<String,DocumentLoader> loaders =
-            new HashMap<String,DocumentLoader>();
+    protected final HashMap<String, DocumentLoader> loaders = new HashMap<String, DocumentLoader>();
 
     public void addSession(String sid, WSRemotingSession session) {
-        log.debug("Adding a new Web Service remoting session for username="
-                + session.getUsername());
+        log.debug("Adding a new Web Service remoting session for username=" + session.getUsername());
         sessions.put(sid, session);
     }
 
-    public WSRemotingSession createSession(String username, String password,
-            String repository, UserManager um, CoreSession session) {
-        return new WSRemotingSessionImpl(session, um, repository, username,
-                password);
+    public WSRemotingSession createSession(String username, String password, String repository, UserManager um,
+            CoreSession session) {
+        return new WSRemotingSessionImpl(session, um, repository, username, password);
     }
 
     public WSRemotingSession getSession(String sid) throws ClientException {
@@ -93,24 +87,20 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("loaders".equals(extensionPoint)) {
-            registerLoader((DocumentLoaderDescriptor)contribution);
+            registerLoader((DocumentLoaderDescriptor) contribution);
         }
     }
-
 
     protected void registerLoader(DocumentLoaderDescriptor desc) {
         loaders.put(desc.name, desc.instance);
     }
 
-
     @Override
-    public void fillProperties(DocumentModel doc,
-            List<DocumentProperty> props, WSRemotingSession rs)
+    public void fillProperties(DocumentModel doc, List<DocumentProperty> props, WSRemotingSession rs)
             throws ClientException {
-        for (DocumentLoader loader:loaders.values()) {
+        for (DocumentLoader loader : loaders.values()) {
             loader.fillProperties(doc, props, rs);
         }
     }

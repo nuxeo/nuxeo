@@ -38,15 +38,13 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class BundleManifestReader {
 
-
     private static final Log log = LogFactory.getLog(BundleManifestReader.class);
 
-    private static final Pattern PARAMS_PATTERN
-            = Pattern.compile("\\s*([^:\\s]+)\\s*:=\\s*([^;\\s]+)\\s*;?");
+    private static final Pattern PARAMS_PATTERN = Pattern.compile("\\s*([^:\\s]+)\\s*:=\\s*([^;\\s]+)\\s*;?");
 
     public static final String COMPONENT_HEADER = "Nuxeo-Component";
 
@@ -54,7 +52,7 @@ public final class BundleManifestReader {
 
     public static final String WEB_MODULE = "Nuxeo-WebModule";
 
-    public static String[] CUSTOM_HEADERS = {COMPONENT_HEADER, WEB_MODULE, ALLOW_HOST_OVERRIDE };
+    public static String[] CUSTOM_HEADERS = { COMPONENT_HEADER, WEB_MODULE, ALLOW_HOST_OVERRIDE };
 
     static { // we can add dynamically new headers through system properties
         String h = System.getProperty("org.nuxeo.manifest.headers");
@@ -100,14 +98,11 @@ public final class BundleManifestReader {
         return headers;
     }
 
-
-    public static Dictionary<String, String> getHeaders(Manifest mf)
-            throws BundleException {
+    public static Dictionary<String, String> getHeaders(Manifest mf) throws BundleException {
         Attributes attrs = mf.getMainAttributes();
         String symbolicName = attrs.getValue(Constants.BUNDLE_SYMBOLICNAME);
         if (symbolicName == null) {
-            throw new BundleException("Missing "
-                    + Constants.BUNDLE_SYMBOLICNAME);
+            throw new BundleException("Missing " + Constants.BUNDLE_SYMBOLICNAME);
         }
         Hashtable<String, String> headers = new Hashtable<String, String>();
         parseSymbolicName(headers, symbolicName);

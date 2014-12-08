@@ -36,8 +36,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ActionService extends DefaultComponent implements ActionManager {
 
-    public static final ComponentName ID = new ComponentName(
-            "org.nuxeo.ecm.platform.actions.ActionService");
+    public static final ComponentName ID = new ComponentName("org.nuxeo.ecm.platform.actions.ActionService");
 
     private static final long serialVersionUID = -5256555810901945824L;
 
@@ -62,8 +61,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     /**
      * Return the action registry
      *
-     * @deprecated since 5.5: use interface methods on ActionManager instead of
-     *             public methods on ActionService.
+     * @deprecated since 5.5: use interface methods on ActionManager instead of public methods on ActionService.
      */
     @Deprecated
     public final ActionRegistry getActionRegistry() {
@@ -73,8 +71,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     /**
      * Return the action filter registry
      *
-     * @deprecated since 5.5: use interface methods on ActionManager instead of
-     *             public methods on ActionService.
+     * @deprecated since 5.5: use interface methods on ActionManager instead of public methods on ActionService.
      */
     @Deprecated
     public final ActionFilterRegistry getFilterRegistry() {
@@ -96,20 +93,17 @@ public class ActionService extends DefaultComponent implements ActionManager {
             return false;
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Checking access for action '%s'...",
-                    action.getId()));
+            log.debug(String.format("Checking access for action '%s'...", action.getId()));
         }
 
         boolean granted = checkFilters(action, action.getFilterIds(), context);
         if (granted) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Granting access for action '%s'",
-                        action.getId()));
+                log.debug(String.format("Granting access for action '%s'", action.getId()));
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Denying access for action '%s'",
-                        action.getId()));
+                log.debug(String.format("Denying access for action '%s'", action.getId()));
             }
         }
         return granted;
@@ -126,8 +120,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     @Override
-    public List<Action> getActions(String category, ActionContext context,
-            boolean hideUnavailableActions) {
+    public List<Action> getActions(String category, ActionContext context, boolean hideUnavailableActions) {
         List<Action> actions = getActionRegistry().getActions(category);
         if (hideUnavailableActions) {
             applyFilters(context, actions);
@@ -145,8 +138,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     @Override
-    public Action getAction(String actionId, ActionContext context,
-            boolean hideUnavailableAction) {
+    public Action getAction(String actionId, ActionContext context, boolean hideUnavailableAction) {
         Action action = getActionRegistry().getAction(actionId);
         if (action != null) {
             if (hideUnavailableAction) {
@@ -226,8 +218,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         return checkFilters(null, filterIds, context);
     }
 
-    protected boolean checkFilters(Action action, List<String> filterIds,
-            ActionContext context) {
+    protected boolean checkFilters(Action action, List<String> filterIds, ActionContext context) {
         ActionFilterRegistry filterReg = getFilterRegistry();
         for (String filterId : filterIds) {
             ActionFilter filter = filterReg.getFilter(filterId);
@@ -237,8 +228,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
             if (!filter.accept(action, context)) {
                 // denying filter found => ignore following filters
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Filter '%s' denied access",
-                            filterId));
+                    log.debug(String.format("Filter '%s' denied access", filterId));
                 }
                 return false;
             }
@@ -250,8 +240,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("actions".equals(extensionPoint)) {
             actions.addContribution((Action) contribution);
         } else if ("filters".equals(extensionPoint)) {
@@ -261,14 +250,12 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 filters.addContribution((DefaultActionFilter) contribution);
             }
         } else if ("typeCompatibility".equals(extensionPoint)) {
-            actions.getRegistry().getTypeCategoryRelations().add(
-                    (TypeCompatibility) contribution);
+            actions.getRegistry().getTypeCategoryRelations().add((TypeCompatibility) contribution);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("actions".equals(extensionPoint)) {
             actions.removeContribution((Action) contribution);
         } else if ("filters".equals(extensionPoint)) {
@@ -281,16 +268,14 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     /**
-     * @deprecated seems not used in Nuxeo - should be removed - and anyway the
-     *             merge is not done
+     * @deprecated seems not used in Nuxeo - should be removed - and anyway the merge is not done
      * @param ff
      */
     @Deprecated
     protected void registerFilterFactory(FilterFactory ff) {
         getFilterRegistry().removeFilter(ff.id);
         try {
-            ActionFilter filter = (ActionFilter) Thread.currentThread().getContextClassLoader().loadClass(
-                    ff.className).newInstance();
+            ActionFilter filter = (ActionFilter) Thread.currentThread().getContextClassLoader().loadClass(ff.className).newInstance();
             filter.setId(ff.id);
             getFilterRegistry().addFilter(filter);
         } catch (ReflectiveOperationException e) {
@@ -299,8 +284,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     /**
-     * @deprecated seems not used in Nuxeo - should be removed - and anyway the
-     *             merge is not done
+     * @deprecated seems not used in Nuxeo - should be removed - and anyway the merge is not done
      * @param ff
      */
     @Deprecated

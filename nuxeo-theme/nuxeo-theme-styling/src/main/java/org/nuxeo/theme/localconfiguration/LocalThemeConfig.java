@@ -40,8 +40,7 @@ public interface LocalThemeConfig extends LocalConfiguration<LocalThemeConfig> {
     String getPage();
 
     /**
-     * Returns the configured perspective used in the {@code LocalPerspective}
-     * negociation scheme.
+     * Returns the configured perspective used in the {@code LocalPerspective} negociation scheme.
      */
     @Deprecated
     String getPerspective();

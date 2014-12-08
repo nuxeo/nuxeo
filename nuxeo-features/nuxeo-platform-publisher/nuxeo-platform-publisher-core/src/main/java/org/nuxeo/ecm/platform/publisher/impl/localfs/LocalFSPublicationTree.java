@@ -38,8 +38,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 
-public class LocalFSPublicationTree extends AbstractBasePublicationTree
-        implements PublicationTree {
+public class LocalFSPublicationTree extends AbstractBasePublicationTree implements PublicationTree {
     private static final long serialVersionUID = 1L;
 
     public static final String INDEX_FILENAME = "fspublication.index";
@@ -47,9 +46,8 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
     public static final String INDEX_FILENAME_TMP = INDEX_FILENAME + ".tmp";
 
     @Override
-    public void initTree(String sid, CoreSession coreSession,
-            Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName, String title) throws ClientException {
+    public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
+            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
         super.initTree(sid, coreSession, parameters, factory, configName, title);
         try {
             rootNode = new FSPublicationNode(rootPath, getTreeConfigName(), sid);
@@ -68,18 +66,15 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
         return "/";
     }
 
-    protected void findDocs(List<PublishedDocument> pubDocs, File container,
-            DocumentLocation docLoc) {
+    protected void findDocs(List<PublishedDocument> pubDocs, File container, DocumentLocation docLoc) {
         for (File child : container.listFiles()) {
             if (child.isDirectory()) {
                 findDocs(pubDocs, child, docLoc);
             } else {
                 try {
                     PublishedDocument pubDoc = new FSPublishedDocument(child);
-                    if (pubDoc.getSourceRepositoryName().equals(
-                            docLoc.getServerName())
-                            && pubDoc.getSourceDocumentRef().equals(
-                                    docLoc.getDocRef())) {
+                    if (pubDoc.getSourceRepositoryName().equals(docLoc.getServerName())
+                            && pubDoc.getSourceDocumentRef().equals(docLoc.getDocRef())) {
                         pubDocs.add(pubDoc);
                     }
                 } catch (NotFSPublishedDocumentException e) {
@@ -89,8 +84,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
         }
     }
 
-    public List<PublishedDocument> getExistingPublishedDocument(
-            DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
         List<PublishedDocument> pubDocs = null;
         pubDocs = loadExistingPublishedDocumentFromIndex(docLoc);
         if (pubDocs == null) {
@@ -104,8 +98,8 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
         return pubDocs;
     }
 
-    private List<PublishedDocument> loadExistingPublishedDocumentFromIndex(
-            DocumentLocation docLoc) throws ClientException {
+    private List<PublishedDocument> loadExistingPublishedDocumentFromIndex(DocumentLocation docLoc)
+            throws ClientException {
         File indexFile = new File(rootPath, INDEX_FILENAME);
         if (!indexFile.exists() || !indexFile.isFile()) {
             return null;
@@ -120,10 +114,8 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
                 File file = new File(filePath);
                 if (file.exists()) {
                     PublishedDocument pubDoc = new FSPublishedDocument(file);
-                    if (pubDoc.getSourceRepositoryName().equals(
-                            docLoc.getServerName())
-                            && pubDoc.getSourceDocumentRef().equals(
-                                    docLoc.getDocRef())) {
+                    if (pubDoc.getSourceRepositoryName().equals(docLoc.getServerName())
+                            && pubDoc.getSourceDocumentRef().equals(docLoc.getDocRef())) {
                         pubDocs.add(pubDoc);
                     }
                 }
@@ -142,8 +134,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
         return pubDocs;
     }
 
-    private void createIndex(List<PublishedDocument> pubDocs)
-            throws ClientException {
+    private void createIndex(List<PublishedDocument> pubDocs) throws ClientException {
         File indexFile = new File(rootPath, INDEX_FILENAME);
         BufferedWriter writer = null;
         try {
@@ -225,8 +216,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
         }
     }
 
-    private void removeFromIndex(PublishedDocument pubDoc)
-            throws ClientException {
+    private void removeFromIndex(PublishedDocument pubDoc) throws ClientException {
         File fileIndex = new File(rootPath, INDEX_FILENAME);
         File fileIndexTmp = new File(rootPath, INDEX_FILENAME_TMP);
 
@@ -273,24 +263,21 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
         PublishedDocument pubDoc = super.publish(doc, targetNode);
         addToIndex(pubDoc);
         return pubDoc;
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
         PublishedDocument pubDoc = super.publish(doc, targetNode, params);
         addToIndex(pubDoc);
         return pubDoc;
     }
 
-    public void unpublish(DocumentModel doc, PublicationNode targetNode)
-            throws ClientException {
+    public void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
         File container = new File(targetNode.getPath());
         for (File child : container.listFiles()) {
             try {
@@ -301,8 +288,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
         }
     }
 
-    private void unpublish(DocumentModel doc, File file)
-            throws ClientException, NotFSPublishedDocumentException {
+    private void unpublish(DocumentModel doc, File file) throws ClientException, NotFSPublishedDocumentException {
         FSPublishedDocument pubDoc = new FSPublishedDocument(file);
         if (pubDoc.getSourceRepositoryName().equals(doc.getRepositoryName())
                 && pubDoc.getSourceDocumentRef().equals(doc.getRef())) {

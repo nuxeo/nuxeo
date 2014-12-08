@@ -54,9 +54,8 @@ public class ThreadSafeRestletFilter extends Filter {
                 next.handle(request, response);
             } catch (ReflectiveOperationException e) {
                 log.error("Restlet handling error", e);
-                response.setEntity(
-                        "Error while getting a new Restlet instance: "
-                                + e.getMessage(), MediaType.TEXT_PLAIN);
+                response.setEntity("Error while getting a new Restlet instance: " + e.getMessage(),
+                        MediaType.TEXT_PLAIN);
             }
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);

@@ -22,20 +22,14 @@ import java.util.Map;
 import org.nuxeo.common.utils.FileVersion;
 
 /**
- * The version correspond to a JAR version that is required by some package. An
- * update version is defined by the JAR version, a relative path to the JAR file
- * and a list of packages requiring this version.
- *
- * The path points to a copy of the JAR version in the update manager storage.
- * (thus the path is relative to the update manager root)
- *
- * Let say you install a package pkg1 that requires the version 1.0 for the jar
- * X. If this version is not yet provided by another package a new version will
- * be created and the jar file copied in the update manager storage under the
- * destination 'path' (e.g. bundles/X-1.0.jar).
+ * The version correspond to a JAR version that is required by some package. An update version is defined by the JAR
+ * version, a relative path to the JAR file and a list of packages requiring this version. The path points to a copy of
+ * the JAR version in the update manager storage. (thus the path is relative to the update manager root) Let say you
+ * install a package pkg1 that requires the version 1.0 for the jar X. If this version is not yet provided by another
+ * package a new version will be created and the jar file copied in the update manager storage under the destination
+ * 'path' (e.g. bundles/X-1.0.jar).
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Version {
 

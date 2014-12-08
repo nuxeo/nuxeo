@@ -46,8 +46,7 @@ import org.restlet.data.Response;
 
 @Name("pluginUploadRestlet")
 @Scope(EVENT)
-public class PluginUploadRestlet extends BaseNuxeoRestlet implements
-        Serializable {
+public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -71,8 +70,7 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements
         for (String pathElement : pathElements) {
             if (pathElement != null && !pathElement.trim().equals("")) {
                 try {
-                    relativePath = relativePath + '/'
-                            + URLDecoder.decode(pathElement, "utf-8");
+                    relativePath = relativePath + '/' + URLDecoder.decode(pathElement, "utf-8");
                 } catch (UnsupportedEncodingException e) {
                     throw new IllegalArgumentException(e);
                 }
@@ -84,15 +82,13 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements
         try {
             if (navigationContext.getCurrentServerLocation() == null) {
                 // init context if needed
-                navigationContext.setCurrentServerLocation(new RepositoryLocation(
-                        repo));
+                navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
             }
 
             documentManager = navigationContext.getOrCreateDocumentManager();
             currentDocument = navigationContext.getCurrentDocument();
 
-            if (currentDocument == null
-                    || !currentDocument.getRef().toString().equals(docid)) {
+            if (currentDocument == null || !currentDocument.getRef().toString().equals(docid)) {
                 // init context if needed
                 currentDocument = documentManager.getDocument(new IdRef(docid));
                 navigationContext.setCurrentDocument(currentDocument);
@@ -113,8 +109,7 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements
 
             Blob blob = blobs.get(0);
             try {
-                returnCode = FileManageActions.addBinaryFileFromPlugin(blob,
-                        blob.getFilename(), relativePath);
+                returnCode = FileManageActions.addBinaryFileFromPlugin(blob, blob.getFilename(), relativePath);
             } catch (ClientException e) {
                 handleError(res, e);
                 return;

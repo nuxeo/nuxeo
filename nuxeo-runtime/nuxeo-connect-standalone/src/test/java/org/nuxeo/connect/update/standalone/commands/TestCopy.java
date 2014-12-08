@@ -47,8 +47,7 @@ public class TestCopy extends AbstractCommandTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        goldStandardFile = new File(Environment.getDefault().getConfig(),
-                "goldstandard.properties");
+        goldStandardFile = new File(Environment.getDefault().getConfig(), "goldstandard.properties");
         FileUtils.writeFile(goldStandardFile, "param1=value1");
     }
 
@@ -95,12 +94,9 @@ public class TestCopy extends AbstractCommandTest {
         assertEquals(IOUtils.createMd5(src), IOUtils.createMd5(dst));
         Properties goldstandard = new Properties();
         goldstandard.load(new FileInputStream(goldStandardFile));
-        assertEquals("Original property is missing", "value1",
-                goldstandard.getProperty("param1"));
-        assertEquals("Appended property is missing", "value2",
-                goldstandard.getProperty("param2"));
-        assertEquals("Appended property is missing", "value3",
-                goldstandard.getProperty("param3"));
+        assertEquals("Original property is missing", "value1", goldstandard.getProperty("param1"));
+        assertEquals("Appended property is missing", "value2", goldstandard.getProperty("param2"));
+        assertEquals("Appended property is missing", "value3", goldstandard.getProperty("param3"));
     }
 
     @Override
@@ -109,12 +105,9 @@ public class TestCopy extends AbstractCommandTest {
         assertFalse(getTargetFile().exists());
         Properties goldstandard = new Properties();
         goldstandard.load(new FileInputStream(goldStandardFile));
-        assertEquals("Original property is missing", "value1",
-                goldstandard.getProperty("param1"));
-        assertNull("Appended property must be removed",
-                goldstandard.getProperty("param2"));
-        assertNull("Appended property must be removed",
-                goldstandard.getProperty("param3"));
+        assertEquals("Original property is missing", "value1", goldstandard.getProperty("param1"));
+        assertNull("Appended property must be removed", goldstandard.getProperty("param2"));
+        assertNull("Appended property must be removed", goldstandard.getProperty("param3"));
     }
 
     protected File getTargetFile() {

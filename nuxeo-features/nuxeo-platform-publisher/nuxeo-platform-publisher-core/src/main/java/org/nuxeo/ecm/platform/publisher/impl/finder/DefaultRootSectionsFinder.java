@@ -36,25 +36,21 @@ import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
  *
  * @author tiry
  */
-public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder
-        implements RootSectionFinder {
+public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder implements RootSectionFinder {
 
     public DefaultRootSectionsFinder(CoreSession userSession) {
         super(userSession);
     }
 
-    protected void computeUserSectionRoots(DocumentModel currentDoc)
-            throws ClientException {
+    protected void computeUserSectionRoots(DocumentModel currentDoc) throws ClientException {
         this.currentDocument = currentDoc;
         this.runUnrestricted();
 
         if (currentDoc != null) {
             if (!unrestrictedSectionRootFromWorkspaceConfig.isEmpty()) {
-                accessibleSectionRoots = getFiltredSectionRoots(
-                        unrestrictedSectionRootFromWorkspaceConfig, true);
+                accessibleSectionRoots = getFiltredSectionRoots(unrestrictedSectionRootFromWorkspaceConfig, true);
             } else {
-                accessibleSectionRoots = getFiltredSectionRoots(
-                        unrestrictedDefaultSectionRoot, true);
+                accessibleSectionRoots = getFiltredSectionRoots(unrestrictedDefaultSectionRoot, true);
             }
         }
     }
@@ -63,8 +59,7 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder
         // SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain'
         // and (ecm:primaryType = 'Section' or ecm:primaryType = 'SectionRoot'
         // )
-        String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH "
-                + NXQL.escapeString(path) + " and (";
+        String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH " + NXQL.escapeString(path) + " and (";
 
         int i = 0;
         for (String type : getSectionTypes()) {
@@ -80,14 +75,12 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder
         return query;
     }
 
-    protected void computeUnrestrictedRoots(CoreSession session)
-            throws ClientException {
+    protected void computeUnrestrictedRoots(CoreSession session) throws ClientException {
 
         if (currentDocument != null) {
             /*
-             * Get the first parent having "publishing" schema. In order to void
-             * infinite loop, if the parent is 'Root' type just break
-             * (NXP-3359).
+             * Get the first parent having "publishing" schema. In order to void infinite loop, if the parent is 'Root'
+             * type just break (NXP-3359).
              */
             DocumentModel parentDocumentModel = currentDocument;
             while (!parentDocumentModel.hasSchema(SCHEMA_PUBLISHING)) {
@@ -97,8 +90,8 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder
                 parentDocumentModel = session.getDocument(parentDocumentModel.getParentRef());
             }
 
-            DocumentModelList sectionRootsFromWorkspaceConfig = getSectionRootsFromWorkspaceConfig(
-                    parentDocumentModel, session);
+            DocumentModelList sectionRootsFromWorkspaceConfig = getSectionRootsFromWorkspaceConfig(parentDocumentModel,
+                    session);
             unrestrictedSectionRootFromWorkspaceConfig = new ArrayList<String>();
             for (DocumentModel root : sectionRootsFromWorkspaceConfig) {
                 unrestrictedSectionRootFromWorkspaceConfig.add(root.getPathAsString());

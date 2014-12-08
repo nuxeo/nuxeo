@@ -62,8 +62,7 @@ public class ThemeConfigurationActions implements Serializable {
     protected String theme;
 
     /**
-     * @deprecated since 5.5: local theme configuration now only handles
-     *             flavors.
+     * @deprecated since 5.5: local theme configuration now only handles flavors.
      */
     @Deprecated
     public List<SelectItem> getAvailableThemes() {
@@ -75,8 +74,7 @@ public class ThemeConfigurationActions implements Serializable {
     }
 
     /**
-     * @deprecated since 5.5: local theme configuration now only handles
-     *             flavors.
+     * @deprecated since 5.5: local theme configuration now only handles flavors.
      */
     @Deprecated
     public List<SelectItem> getAvailablePages() {
@@ -90,22 +88,19 @@ public class ThemeConfigurationActions implements Serializable {
     }
 
     /**
-     * @deprecated since 5.5: local theme configuration now only handles
-     *             flavors.
+     * @deprecated since 5.5: local theme configuration now only handles flavors.
      */
     @Deprecated
     public List<SelectItem> getAvailablePerspectives() {
         List<SelectItem> selectItemList = new ArrayList<SelectItem>();
         for (PerspectiveType perspectiveType : PerspectiveManager.listPerspectives()) {
-            selectItemList.add(new SelectItem(perspectiveType.name,
-                    perspectiveType.title));
+            selectItemList.add(new SelectItem(perspectiveType.name, perspectiveType.title));
         }
         return selectItemList;
     }
 
     /**
-     * @deprecated since 5.5: local theme configuration now only handles
-     *             flavors.
+     * @deprecated since 5.5: local theme configuration now only handles flavors.
      */
     @Deprecated
     public void themeChange(ActionEvent event) {
@@ -114,14 +109,12 @@ public class ThemeConfigurationActions implements Serializable {
             theme = (String) ((ValueHolder) select).getValue();
         } else {
             log.error("Bad component returned " + select);
-            throw new AbortProcessingException("Bad component returned "
-                    + select);
+            throw new AbortProcessingException("Bad component returned " + select);
         }
     }
 
     /**
-     * Returns the layout to use for local configuration, to handle migration
-     * to a flavor model
+     * Returns the layout to use for local configuration, to handle migration to a flavor model
      *
      * @since 5.5
      * @return

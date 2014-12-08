@@ -49,16 +49,14 @@ public class DocumentLocationImpl implements DocumentLocation {
         }
     }
 
-    public DocumentLocationImpl(final String serverName, final IdRef idRef,
-            final PathRef pathRef) {
+    public DocumentLocationImpl(final String serverName, final IdRef idRef, final PathRef pathRef) {
         this.serverName = serverName;
         docRef = idRef;
         docIdRef = idRef;
         docPathRef = pathRef;
     }
 
-    public DocumentLocationImpl(final String serverName,
-            final DocumentRef docRef) {
+    public DocumentLocationImpl(final String serverName, final DocumentRef docRef) {
         this.serverName = serverName;
         this.docRef = docRef;
         if (docRef instanceof IdRef) {
@@ -95,35 +93,27 @@ public class DocumentLocationImpl implements DocumentLocation {
 
     @Override
     public String toString() {
-        return String.format(
-                "DocumentLocationImpl [docIdRef=%s, docPathRef=%s, docRef=%s, serverName=%s]",
-                docIdRef, docPathRef, docRef, serverName);
+        return String.format("DocumentLocationImpl [docIdRef=%s, docPathRef=%s, docRef=%s, serverName=%s]", docIdRef,
+                docPathRef, docRef, serverName);
     }
 
     /*
      * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     *
-     * Overrides the default to use the docRef and serverName fields for hash
-     * value tests.
+     * @see java.lang.Object#hashCode() Overrides the default to use the docRef and serverName fields for hash value
+     * tests.
      */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((docRef == null) ? 0 : docRef.hashCode());
-        result = prime * result
-                + ((serverName == null) ? 0 : serverName.hashCode());
+        result = prime * result + ((serverName == null) ? 0 : serverName.hashCode());
         return result;
     }
 
     /*
      * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     *
-     * Overrides the default to use the docRef and serverName fields for
+     * @see java.lang.Object#equals(java.lang.Object) Overrides the default to use the docRef and serverName fields for
      * equality tests.
      */
     @Override

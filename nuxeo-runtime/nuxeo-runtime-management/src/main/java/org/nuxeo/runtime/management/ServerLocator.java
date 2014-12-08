@@ -21,11 +21,12 @@ import javax.management.ObjectName;
 
 /**
  * @author matic
- *
  */
 public interface ServerLocator {
     MBeanServer lookupServer();
+
     MBeanServer lookupServer(ObjectName name);
+
     MBeanServer lookupServer(String domainName);
 
 }

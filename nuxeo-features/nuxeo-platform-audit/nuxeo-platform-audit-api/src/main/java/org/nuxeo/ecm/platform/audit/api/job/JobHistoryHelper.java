@@ -32,7 +32,9 @@ import org.nuxeo.runtime.api.Framework;
 public class JobHistoryHelper {
 
     public static final String JOB_STARTED_SUFFIX = "Started";
+
     public static final String JOB_ENDED_SUFFIX = "Ended";
+
     public static final String JOB_FAILED_SUFFIX = "Failed";
 
     protected AuditLogger logger;

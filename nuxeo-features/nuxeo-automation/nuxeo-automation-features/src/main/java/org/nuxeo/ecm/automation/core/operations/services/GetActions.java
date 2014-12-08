@@ -83,14 +83,12 @@ public class GetActions {
         return automation.getAdaptedValue(ctx, cdRef, DocumentModel.class);
     }
 
-    protected ActionContext getActionContext(DocumentModel currentDocument)
-            throws OperationException {
+    protected ActionContext getActionContext(DocumentModel currentDocument) throws OperationException {
         if (ctx.containsKey(SEAM_ACTION_CONTEXT)) {
             // if Seam Context has been initialized, use it
             return (ActionContext) ctx.get(SEAM_ACTION_CONTEXT);
         }
-        ActionContext actionContext = new ELActionContext(
-                new ExpressionContext(), new ExpressionFactoryImpl());
+        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
         actionContext.setDocumentManager(session);
         actionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
         if (currentDocument != null) {
@@ -116,8 +114,7 @@ public class GetActions {
         if (key == null) {
             return "";
         }
-        return I18NUtils.getMessageString("messages", key, new Object[0],
-                getLocale());
+        return I18NUtils.getMessageString("messages", key, new Object[0], getLocale());
     }
 
     @OperationMethod
@@ -153,8 +150,7 @@ public class GetActions {
             rows.add(obj);
         }
         try {
-            return new ByteArrayBlob(rows.toString().getBytes("UTF-8"),
-                    "application/json");
+            return new ByteArrayBlob(rows.toString().getBytes("UTF-8"), "application/json");
         } catch (UnsupportedEncodingException e) {
             // cannot happen
             throw new RuntimeException(e);

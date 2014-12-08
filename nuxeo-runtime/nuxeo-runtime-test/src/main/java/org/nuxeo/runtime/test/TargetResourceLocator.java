@@ -55,24 +55,21 @@ public class TargetResourceLocator {
         int depth = depthOfClass(name) + 1;
         Path path;
         try {
-            path = toPath(clazz.getResource(
-                    "/".concat(name).replace('.', '/').concat(".class")).toURI());
+            path = toPath(clazz.getResource("/".concat(name).replace('.', '/').concat(".class")).toURI());
             Path root = path.getRoot();
             if (path.getNameCount() > depth) {
                 path = path.subpath(0, path.getNameCount() - depth);
-                path =  root.resolve(path);
+                path = root.resolve(path);
             }
             return path;
         } catch (URISyntaxException | IOException cause) {
-            throw new AssertionError("Cannot convert " + name + " to base dir",
-                    cause);
+            throw new AssertionError("Cannot convert " + name + " to base dir", cause);
         }
     }
 
     public URL getTargetTestResource(String name) throws IOException {
         try {
-            final Enumeration<URL> resources = loader.getResources(
-                    name);
+            final Enumeration<URL> resources = loader.getResources(name);
             while (resources.hasMoreElements()) {
                 URL resource = resources.nextElement();
                 if (!resources.hasMoreElements()) {
@@ -97,7 +94,7 @@ public class TargetResourceLocator {
             return Paths.get(uri);
         }
         // work-around for jar paths on JDK7
-        try (FileSystem fs=FileSystems.newFileSystem(URI.create(array[0]), env)) {
+        try (FileSystem fs = FileSystems.newFileSystem(URI.create(array[0]), env)) {
             return fs.getPath(array[1]);
         }
     }

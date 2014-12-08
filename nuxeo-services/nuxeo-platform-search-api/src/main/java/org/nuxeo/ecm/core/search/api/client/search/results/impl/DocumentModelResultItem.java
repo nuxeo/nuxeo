@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 /*
  * @author Florent Guillaume
  */
-public class DocumentModelResultItem extends HashMap<String, Serializable>
-        implements ResultItem {
+public class DocumentModelResultItem extends HashMap<String, Serializable> implements ResultItem {
 
     private static final long serialVersionUID = 1L;
 

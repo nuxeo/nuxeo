@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.ui.web.util.DocumentsListsUtils;
 import org.nuxeo.runtime.api.Framework;
 
-public abstract class BaseDocumentsListsManager implements Serializable{
+public abstract class BaseDocumentsListsManager implements Serializable {
 
     private static final long serialVersionUID = 98757690654316L;
 
@@ -39,27 +39,20 @@ public abstract class BaseDocumentsListsManager implements Serializable{
 
     private transient DocumentsListsPersistenceManager persistenceManager;
 
-
     // ListName => DocumentModel List
-    protected final Map<String, List<DocumentModel>> documentsLists
-            = new HashMap<String, List<DocumentModel>>();
+    protected final Map<String, List<DocumentModel>> documentsLists = new HashMap<String, List<DocumentModel>>();
 
-    protected final Map<String, List<DocumentModel>> documentsListsPerConversation
-            = new HashMap<String, List<DocumentModel>>();
+    protected final Map<String, List<DocumentModel>> documentsListsPerConversation = new HashMap<String, List<DocumentModel>>();
 
     // EventName => ListName
-    protected final Map<String, List<String>> documentsLists_events
-            = new HashMap<String, List<String>>();
+    protected final Map<String, List<String>> documentsLists_events = new HashMap<String, List<String>>();
 
     // ListName => List Descriptor
-    protected final Map<String, DocumentsListDescriptor> documentsLists_descriptors
-            = new HashMap<String, DocumentsListDescriptor>();
-
+    protected final Map<String, DocumentsListDescriptor> documentsLists_descriptors = new HashMap<String, DocumentsListDescriptor>();
 
     protected DocumentsListsService getService() {
         if (dlService == null) {
-            dlService = (DocumentsListsService) Framework.getRuntime().getComponent(
-                    DocumentsListsService.NAME);
+            dlService = (DocumentsListsService) Framework.getRuntime().getComponent(DocumentsListsService.NAME);
         }
         return dlService;
     }
@@ -91,8 +84,7 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         List<DocumentModel> docList = getWorkingList(listName);
         DocumentsListDescriptor desc = getWorkingListDescriptor(listName);
         if (desc.getPersistent()) {
-            if (getPersistenceManager().clearPersistentList(userName,
-                    listName)) {
+            if (getPersistenceManager().clearPersistentList(userName, listName)) {
                 docList.clear();
             }
         } else {
@@ -101,7 +93,6 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         notifyListUpdated(listName);
         return docList;
     }
-
 
     public boolean isWorkingListEmpty(String listName) {
         if (!documentsLists.containsKey(listName)) {
@@ -115,33 +106,29 @@ public abstract class BaseDocumentsListsManager implements Serializable{
     public void removeFromAllLists(List<DocumentModel> documentsToRemove) {
         for (String listName : documentsLists.keySet()) {
             removeFromWorkingList(listName, documentsToRemove);
-            //DocumentsListsUtils.removeDocumentsFromList(
-            //        getWorkingList(listName), documentsToRemove);
+            // DocumentsListsUtils.removeDocumentsFromList(
+            // getWorkingList(listName), documentsToRemove);
             notifyListUpdated(listName);
         }
     }
-
 
     public void createWorkingList(String listName, DocumentsListDescriptor descriptor) {
         createWorkingList(listName, descriptor, null, null);
     }
 
-    public void createWorkingList(String listName,
-            DocumentsListDescriptor descriptor, CoreSession session,
+    public void createWorkingList(String listName, DocumentsListDescriptor descriptor, CoreSession session,
             String userName) {
 
         if (documentsLists.containsKey(listName)) {
             return;
         }
 
-        if (descriptor != null && descriptor.getPersistent()
-                && session != null && userName != null) {
+        if (descriptor != null && descriptor.getPersistent() && session != null && userName != null) {
             // load persistent list
             documentsLists.put(listName,
-                    getPersistenceManager().loadPersistentDocumentsLists(
-                            session, userName, listName));
+                    getPersistenceManager().loadPersistentDocumentsLists(session, userName, listName));
         } else {
-            // create empty  list
+            // create empty list
             documentsLists.put(listName, new ArrayList<DocumentModel>());
         }
 
@@ -168,11 +155,9 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         List<String> res = new ArrayList<String>();
 
         for (String listName : documentsLists_descriptors.keySet()) {
-            if (documentsLists_descriptors.get(listName).getCategory().equals(
-                    categoryName)) {
+            if (documentsLists_descriptors.get(listName).getCategory().equals(categoryName)) {
                 // default list in category is returned at start of the list !
-                if (documentsLists_descriptors.get(listName)
-                        .getDefaultInCategory()) {
+                if (documentsLists_descriptors.get(listName).getDefaultInCategory()) {
                     res.add(0, listName);
                 } else {
                     res.add(listName);
@@ -182,14 +167,12 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         return res;
     }
 
-    public List<DocumentModel> resetWorkingList(String listName,
-            List<DocumentModel> newDocList) {
+    public List<DocumentModel> resetWorkingList(String listName, List<DocumentModel> newDocList) {
         resetWorkingList(listName);
         return addToWorkingList(listName, newDocList);
     }
 
-    public List<DocumentModel> removeFromWorkingList(String listName,
-            List<DocumentModel> lst) {
+    public List<DocumentModel> removeFromWorkingList(String listName, List<DocumentModel> lst) {
         if (!documentsLists.containsKey(listName)) {
             return null;
         }
@@ -199,20 +182,18 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         // FIXME needs to be checked
         for (DocumentModel doc : lst) {
 
-            if (desc.getPersistent())
-            {
-            if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc));
+            if (desc.getPersistent()) {
+                if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc))
+                    ;
                 docList.remove(doc);
-            }
-            else
+            } else
                 docList.remove(doc);
         }
         notifyListUpdated(listName);
         return docList;
     }
 
-    public List<DocumentModel> removeFromWorkingList(String listName,
-            DocumentModel doc) {
+    public List<DocumentModel> removeFromWorkingList(String listName, DocumentModel doc) {
         if (!documentsLists.containsKey(listName)) {
             return null;
         }
@@ -220,24 +201,21 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         DocumentsListDescriptor desc = getWorkingListDescriptor(listName);
 
         // FIXME needs to be checked
-        if (desc.getPersistent())
-        {
-            if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc));
-                docList.remove(doc);
-        }
-        else
+        if (desc.getPersistent()) {
+            if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc))
+                ;
+            docList.remove(doc);
+        } else
             docList.remove(doc);
         notifyListUpdated(listName);
         return docList;
     }
 
-    public List<DocumentModel> addToWorkingList(String listName,
-            List<DocumentModel> docList) {
+    public List<DocumentModel> addToWorkingList(String listName, List<DocumentModel> docList) {
         return addToWorkingList(listName, docList, false);
     }
 
-    public List<DocumentModel> addToWorkingList(String listName,
-            List<DocumentModel> docList, Boolean forceAppend) {
+    public List<DocumentModel> addToWorkingList(String listName, List<DocumentModel> docList, Boolean forceAppend) {
         if (!documentsLists.containsKey(listName)) {
             return null;
         }
@@ -247,9 +225,7 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         Boolean currentListIsPersistent = false;
 
         if (currentDescriptor != null) {
-            if (!forceAppend
-                    && !getWorkingListDescriptor(
-                    listName).getSupportAppends()) {
+            if (!forceAppend && !getWorkingListDescriptor(listName).getSupportAppends()) {
                 currentDocList.clear();
             }
 
@@ -275,8 +251,7 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         return currentDocList;
     }
 
-    public List<DocumentModel> addToWorkingList(String listName,
-            DocumentModel doc) {
+    public List<DocumentModel> addToWorkingList(String listName, DocumentModel doc) {
         if (!documentsLists.containsKey(listName)) {
             return null;
         }

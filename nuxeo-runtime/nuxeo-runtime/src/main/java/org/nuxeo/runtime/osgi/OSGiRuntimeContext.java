@@ -23,13 +23,14 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OSGiRuntimeContext extends DefaultRuntimeContext {
 
     protected final Bundle bundle;
+
     protected String hostBundleId;
+
     protected Bundle hostBundle;
 
     public OSGiRuntimeContext(Bundle bundle) {
@@ -40,7 +41,7 @@ public class OSGiRuntimeContext extends DefaultRuntimeContext {
         super(runtime);
         this.bundle = bundle;
         // workaround to correctly handle fragment class loaders
-        hostBundleId = (String)bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+        hostBundleId = (String) bundle.getHeaders().get(Constants.FRAGMENT_HOST);
         if (hostBundleId != null) {
             int p = hostBundleId.indexOf(';');
             if (p > -1) { // remove version or other extra information if any
@@ -97,7 +98,7 @@ public class OSGiRuntimeContext extends DefaultRuntimeContext {
     public Bundle getHostBundle() {
         if (hostBundleId != null) {
             if (hostBundle == null && runtime instanceof OSGiRuntimeService) {
-                hostBundle = ((OSGiRuntimeService)runtime).findHostBundle(bundle);
+                hostBundle = ((OSGiRuntimeService) runtime).findHostBundle(bundle);
             }
         }
         return hostBundle;

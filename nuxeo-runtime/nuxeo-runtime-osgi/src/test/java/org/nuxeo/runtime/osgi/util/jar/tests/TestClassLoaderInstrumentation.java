@@ -1,4 +1,5 @@
 package org.nuxeo.runtime.osgi.util.jar.tests;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -82,23 +83,20 @@ public class TestClassLoaderInstrumentation {
         URLClassLoader cl = newClassLoader(bundles);
         URL template = cl.findResource("templates/FileOpen.ftl");
         // TODO check launchers
-        assertThat(template,notNullValue());
+        assertThat(template, notNullValue());
         Assert.fail();
     }
 
-    private URLClassLoader newClassLoader(File bundles)
-            throws MalformedURLException {
-        URL[] urls = new URL[] {
-                new File(bundles, "classes.jar").toURI().toURL(),
-                new File(bundles, "resources.jar").toURI().toURL()
-        };
+    private URLClassLoader newClassLoader(File bundles) throws MalformedURLException {
+        URL[] urls = new URL[] { new File(bundles, "classes.jar").toURI().toURL(),
+                new File(bundles, "resources.jar").toURI().toURL() };
         URLClassLoader cl = new URLClassLoader(urls);
         return cl;
     }
 
-
     @Test
-    public void canDeleteJar() throws FileNotFoundException, IOException, ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalAccessException, NoSuchMethodException, URLJarFileIntrospectionError {
+    public void canDeleteJar() throws FileNotFoundException, IOException, ClassNotFoundException, NoSuchFieldException,
+            SecurityException, IllegalAccessException, NoSuchMethodException, URLJarFileIntrospectionError {
         URL firstURL = jarBuilder.buildFirst();
         URL otherURL = jarBuilder.buildOther();
         URL[] jarURLs = new URL[] { firstURL, otherURL };
@@ -112,6 +110,5 @@ public class TestClassLoaderInstrumentation {
         assertThat(ucl.findResource("first.marker"), notNullValue());
         assertThat(ucl.findResource("other.marker"), nullValue());
     }
-
 
 }

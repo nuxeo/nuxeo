@@ -67,8 +67,7 @@ public class TestDialectQuerySyntax {
                 allowing(m).getDatabaseMinorVersion();
                 will(returnValue(0));
 
-                allowing(m).getColumns(with(any(String.class)),
-                        with(any(String.class)), with(any(String.class)),
+                allowing(m).getColumns(with(any(String.class)), with(any(String.class)), with(any(String.class)),
                         with(any(String.class)));
                 will(returnValue(getMockEmptyResultSet()));
 
@@ -105,12 +104,10 @@ public class TestDialectQuerySyntax {
         final Statement m = jmcontext.mock(Statement.class);
         jmcontext.checking(new Expectations() {
             {
-                allowing(m).executeQuery(
-                        with(new StringContains("is_read_committed_snapshot_on")));
+                allowing(m).executeQuery(with(new StringContains("is_read_committed_snapshot_on")));
                 will(returnValue(getMockResultSetReturningInt(1)));
 
-                allowing(m).executeQuery(
-                        with(new StringContains("EngineEdition")));
+                allowing(m).executeQuery(with(new StringContains("EngineEdition")));
                 will(returnValue(getMockResultSetReturningInt(2)));
 
                 allowing(m).close();
@@ -120,10 +117,8 @@ public class TestDialectQuerySyntax {
         return m;
     }
 
-    protected ResultSet getMockResultSetReturningInt(final int value)
-            throws SQLException {
-        final ResultSet m = jmcontext.mock(ResultSet.class,
-                "ResultSetReturningInt:" + value);
+    protected ResultSet getMockResultSetReturningInt(final int value) throws SQLException {
+        final ResultSet m = jmcontext.mock(ResultSet.class, "ResultSetReturningInt:" + value);
         jmcontext.checking(new Expectations() {
             {
                 allowing(m).next();
@@ -219,10 +214,8 @@ public class TestDialectQuerySyntax {
         assertDialectFT("\"foo bar\"", "\"foo bar\"");
         assertDialectFT("(\"foo bar\" AND baz)", "\"foo bar\" baz");
         assertDialectFT("(\"foo bar\" OR baz)", "\"foo bar\" OR baz");
-        assertDialectFT("((\"foo bar\" AND baz) OR \"gee man\")",
-                "\"foo bar\" baz OR \"gee man\"");
-        assertDialectFT("(\"foo bar\" NOT \"gee man\")",
-                "\"foo bar\" -\"gee man\"");
+        assertDialectFT("((\"foo bar\" AND baz) OR \"gee man\")", "\"foo bar\" baz OR \"gee man\"");
+        assertDialectFT("(\"foo bar\" NOT \"gee man\")", "\"foo bar\" -\"gee man\"");
         assertDialectFT("foo*", "foo*");
         assertDialectFT("(foo AND bar*)", "foo bar*");
     }
@@ -234,8 +227,7 @@ public class TestDialectQuerySyntax {
         assertPGPhraseBreak("[foo AND bar AND baz]", "\"foo bar\" baz");
         assertPGPhraseBreak("[foo AND bar AND baz]", "foo \"bar baz\"");
         assertPGPhraseBreak("[[foo AND bar] OR baz]", "\"foo bar\" OR baz");
-        assertPGPhraseBreak("[[foo AND bar] OR [gee AND man]]",
-                "\"foo bar\" OR \"gee man\"");
+        assertPGPhraseBreak("[[foo AND bar] OR [gee AND man]]", "\"foo bar\" OR \"gee man\"");
         assertPGPhraseBreak("foo", "foo -\"bar baz\"");
         assertPGPhraseBreak("foo", "foo OR -\"bar baz\"");
     }
@@ -247,10 +239,8 @@ public class TestDialectQuerySyntax {
         assertPGRemoveToplevelAndedWord("{foo bar}", "\"foo bar\"");
         assertPGRemoveToplevelAndedWord("{foo bar}", "\"foo bar\" baz");
         assertPGRemoveToplevelAndedWord("{bar baz}", "foo \"bar baz\"");
-        assertPGRemoveToplevelAndedWord("[{foo bar} OR baz]",
-                "\"foo bar\" OR baz");
-        assertPGRemoveToplevelAndedWord("[{foo bar} OR {gee man}]",
-                "\"foo bar\" OR \"gee man\"");
+        assertPGRemoveToplevelAndedWord("[{foo bar} OR baz]", "\"foo bar\" OR baz");
+        assertPGRemoveToplevelAndedWord("[{foo bar} OR {gee man}]", "\"foo bar\" OR \"gee man\"");
         assertPGRemoveToplevelAndedWord("~{bar baz}", "foo -\"bar baz\"");
         assertPGRemoveToplevelAndedWord(null, "foo OR -\"bar baz\"");
     }
@@ -262,23 +252,17 @@ public class TestDialectQuerySyntax {
         assertPGLikeSql("?? LIKE '% caf\u00e9 %'", "CAF\u00c9");
         assertPGLikeSql("(?? LIKE '% foo %' AND ?? LIKE '% bar %')", "foo bar");
         assertPGLikeSql("?? LIKE '% foo bar %'", "\"foo bar\"");
-        assertPGLikeSql("(?? LIKE '% foo bar %' AND ?? LIKE '% baz %')",
-                "\"foo bar\" baz");
-        assertPGLikeSql("(?? LIKE '% foo %' AND ?? LIKE '% bar baz %')",
-                "foo \"bar baz\"");
-        assertPGLikeSql("(?? LIKE '% foo bar %' OR ?? LIKE '% baz %')",
-                "\"foo bar\" OR baz");
-        assertPGLikeSql("(?? LIKE '% foo bar %' OR ?? LIKE '% gee man %')",
-                "\"foo bar\" OR \"gee man\"");
-        assertPGLikeSql("(?? LIKE '% foo %' AND ?? NOT LIKE '% bar baz %')",
-                "foo -\"bar baz\"");
+        assertPGLikeSql("(?? LIKE '% foo bar %' AND ?? LIKE '% baz %')", "\"foo bar\" baz");
+        assertPGLikeSql("(?? LIKE '% foo %' AND ?? LIKE '% bar baz %')", "foo \"bar baz\"");
+        assertPGLikeSql("(?? LIKE '% foo bar %' OR ?? LIKE '% baz %')", "\"foo bar\" OR baz");
+        assertPGLikeSql("(?? LIKE '% foo bar %' OR ?? LIKE '% gee man %')", "\"foo bar\" OR \"gee man\"");
+        assertPGLikeSql("(?? LIKE '% foo %' AND ?? NOT LIKE '% bar baz %')", "foo -\"bar baz\"");
         assertPGLikeSql("?? LIKE '% foo %'", "foo OR -\"bar baz\"");
     }
 
     @Test
     public void testPostgreSQL() throws Exception {
-        dialect = new DialectPostgreSQL(metadata, binaryManager,
-                repositoryDescriptor);
+        dialect = new DialectPostgreSQL(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("", "-foo");
         assertDialectFT("foo", "foo");
         assertDialectFT("foo", "foo :");
@@ -293,32 +277,25 @@ public class TestDialectQuerySyntax {
         assertDialectFT("((foo & bar) | baz)", "foo bar OR baz");
         assertDialectFT("((bar & ! foo) | baz)", "-foo bar OR baz");
         assertDialectFT("((foo & ! bar) | baz)", "foo -bar OR baz");
-        assertDialectFT("(foo & bar) @#AND#@ ?? LIKE '% foo bar %'",
-                "\"foo bar\"");
-        assertDialectFT("(foo & bar & baz) @#AND#@ ?? LIKE '% foo bar %'",
-                "\"foo bar\" baz");
-        assertDialectFT(
-                "(foo & bar & baz) @#AND#@ (?? LIKE '% foo bar %' AND ?? NOT LIKE '% gee man %')",
+        assertDialectFT("(foo & bar) @#AND#@ ?? LIKE '% foo bar %'", "\"foo bar\"");
+        assertDialectFT("(foo & bar & baz) @#AND#@ ?? LIKE '% foo bar %'", "\"foo bar\" baz");
+        assertDialectFT("(foo & bar & baz) @#AND#@ (?? LIKE '% foo bar %' AND ?? NOT LIKE '% gee man %')",
                 "\"foo bar\" baz -\"gee man\"");
-        assertDialectFT(
-                "((foo & bar) | baz) @#AND#@ (?? LIKE '% foo bar %' OR ?? LIKE '% baz %')",
+        assertDialectFT("((foo & bar) | baz) @#AND#@ (?? LIKE '% foo bar %' OR ?? LIKE '% baz %')",
                 "\"foo bar\" OR baz");
         assertDialectFT(
                 "((foo & bar & baz) | (gee & man)) @#AND#@ ((?? LIKE '% foo bar %' AND ?? LIKE '% baz %') OR ?? LIKE '% gee man %')",
                 "\"foo bar\" baz OR \"gee man\"");
-        assertDialectFT(
-                "(foo & bar) @#AND#@ (?? LIKE '% foo bar %' AND ?? NOT LIKE '% gee man %')",
+        assertDialectFT("(foo & bar) @#AND#@ (?? LIKE '% foo bar %' AND ?? NOT LIKE '% gee man %')",
                 "\"foo bar\" -\"gee man\"");
         assertDialectFT("foo:*", "foo*");
         assertDialectFT("(foo & bar:*)", "foo bar*");
-        assertDialectFT("(foo & bar:*) @#AND#@ ?? LIKE '% foo bar%'",
-                "\"foo bar*\"");
+        assertDialectFT("(foo & bar:*) @#AND#@ ?? LIKE '% foo bar%'", "\"foo bar*\"");
     }
 
     @Test
     public void testMySQL() throws Exception {
-        dialect = new DialectMySQL(metadata, binaryManager,
-                repositoryDescriptor);
+        dialect = new DialectMySQL(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("foo", "foo");
         assertDialectFT("foo", "foo :");
@@ -335,18 +312,15 @@ public class TestDialectQuerySyntax {
         assertDialectFT("\"foo bar\"", "\"foo bar\"");
         assertDialectFT("(+\"foo bar\" +baz)", "\"foo bar\" baz");
         assertDialectFT("(\"foo bar\" baz)", "\"foo bar\" OR baz");
-        assertDialectFT("((+\"foo bar\" +baz) \"gee man\")",
-                "\"foo bar\" baz OR \"gee man\"");
-        assertDialectFT("(+\"foo bar\" -\"gee man\")",
-                "\"foo bar\" -\"gee man\"");
+        assertDialectFT("((+\"foo bar\" +baz) \"gee man\")", "\"foo bar\" baz OR \"gee man\"");
+        assertDialectFT("(+\"foo bar\" -\"gee man\")", "\"foo bar\" -\"gee man\"");
         assertDialectFT("foo*", "foo*");
         assertDialectFT("(+foo +bar*)", "foo bar*");
     }
 
     @Test
     public void testOracle() throws Exception {
-        dialect = new DialectOracle(metadata, binaryManager,
-                repositoryDescriptor);
+        dialect = new DialectOracle(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("{foo}", "foo");
         assertDialectFT("{foo}", "foo :");
@@ -364,10 +338,8 @@ public class TestDialectQuerySyntax {
         assertDialectFT("{foo} {bar}", "\"foo bar\"");
         assertDialectFT("({foo} {bar} AND {baz})", "\"foo bar\" baz");
         assertDialectFT("({foo} {bar} OR {baz})", "\"foo bar\" OR baz");
-        assertDialectFT("(({foo} {bar} AND {baz}) OR {gee} {man})",
-                "\"foo bar\" baz OR \"gee man\"");
-        assertDialectFT("({foo} {bar} NOT {gee} {man})",
-                "\"foo bar\" -\"gee man\"");
+        assertDialectFT("(({foo} {bar} AND {baz}) OR {gee} {man})", "\"foo bar\" baz OR \"gee man\"");
+        assertDialectFT("({foo} {bar} NOT {gee} {man})", "\"foo bar\" -\"gee man\"");
         assertDialectFT("foo%", "foo*");
         assertDialectFT("({foo} AND bar%)", "foo bar*");
         assertDialectFT("{foo} bar%", "\"foo bar*\"");
@@ -378,8 +350,7 @@ public class TestDialectQuerySyntax {
 
     @Test
     public void testSQLServer() throws Exception {
-        dialect = new DialectSQLServer(metadata, binaryManager,
-                repositoryDescriptor);
+        dialect = new DialectSQLServer(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("\"foo\"", "foo");
         assertDialectFT("\"foo\"", "foo :");
@@ -391,17 +362,13 @@ public class TestDialectQuerySyntax {
         assertDialectFT("(\"foo\" OR \"bar\")", "foo OR bar");
         assertDialectFT("\"foo\"", "foo OR -bar");
         assertDialectFT("((\"foo\" AND \"bar\") OR \"baz\")", "foo bar OR baz");
-        assertDialectFT("((\"bar\" AND NOT \"foo\") OR \"baz\")",
-                "-foo bar OR baz");
-        assertDialectFT("((\"foo\" AND NOT \"bar\") OR \"baz\")",
-                "foo -bar OR baz");
+        assertDialectFT("((\"bar\" AND NOT \"foo\") OR \"baz\")", "-foo bar OR baz");
+        assertDialectFT("((\"foo\" AND NOT \"bar\") OR \"baz\")", "foo -bar OR baz");
         assertDialectFT("\"foo bar\"", "\"foo bar\"");
         assertDialectFT("(\"foo bar\" AND \"baz\")", "\"foo bar\" baz");
         assertDialectFT("(\"foo bar\" OR \"baz\")", "\"foo bar\" OR baz");
-        assertDialectFT("((\"foo bar\" AND \"baz\") OR \"gee man\")",
-                "\"foo bar\" \"baz\" OR \"gee man\"");
-        assertDialectFT("(\"foo bar\" AND NOT \"gee man\")",
-                "\"foo bar\" -\"gee man\"");
+        assertDialectFT("((\"foo bar\" AND \"baz\") OR \"gee man\")", "\"foo bar\" \"baz\" OR \"gee man\"");
+        assertDialectFT("(\"foo bar\" AND NOT \"gee man\")", "\"foo bar\" -\"gee man\"");
         assertDialectFT("\"foo*\"", "foo*");
         assertDialectFT("(\"foo\" AND \"bar*\")", "foo bar*");
         assertDialectFT("\"foo bar*\"", "\"foo bar*\"");

@@ -28,8 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * The class loader allows modifying the stores (adding/removing).
- * Mutable operations are thread safe.
+ * The class loader allows modifying the stores (adding/removing). Mutable operations are thread safe.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -38,14 +37,15 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
     private final Log log = LogFactory.getLog(ResourceStoreClassLoader.class);
 
     private volatile ResourceStore[] stores;
+
     private final LinkedHashSet<ResourceStore> cp; // class path
 
     public ResourceStoreClassLoader(final ClassLoader pParent) {
-        this (pParent, new LinkedHashSet<ResourceStore>());
+        this(pParent, new LinkedHashSet<ResourceStore>());
     }
 
     protected ResourceStoreClassLoader(final ClassLoader pParent, LinkedHashSet<ResourceStore> cp) {
-        super (pParent);
+        super(pParent);
         this.cp = cp;
         if (!cp.isEmpty()) {
             stores = cp.toArray(new ResourceStore[cp.size()]);
@@ -96,6 +96,7 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
 
     /**
      * Without this method getPackage() returns null
+     *
      * @param name
      */
     protected void doDefinePackage(String name) {
@@ -210,7 +211,7 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
         return url;
     }
 
-    //TODO implement this method if you want packages to be supported by this loader
+    // TODO implement this method if you want packages to be supported by this loader
     @Override
     protected Package getPackage(String name) {
         return super.getPackage(name);

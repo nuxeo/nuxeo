@@ -46,8 +46,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     public CoreSession session;
 
     /**
-     * Initial number of registered session at setup, to be compared with the
-     * number of sessions at tear down.
+     * Initial number of registered session at setup, to be compared with the number of sessions at tear down.
      */
     protected int initialOpenSessions;
 
@@ -80,8 +79,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     }
 
     protected void deployRepositoryContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test",
-                database.getDeploymentContrib());
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test", database.getDeploymentContrib());
     }
 
     @Override
@@ -93,22 +91,18 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         int finalOpenSessions = core.getNumberOfSessions();
         int leakedOpenSessions = finalOpenSessions - initialOpenSessions;
         if (leakedOpenSessions != 0) {
-            log.error(String.format(
-                    "There are %s open session(s) at tear down; it seems "
-                            + "the test leaked %s session(s).",
-                    Integer.valueOf(finalOpenSessions),
+            log.error(String.format("There are %s open session(s) at tear down; it seems "
+                    + "the test leaked %s session(s).", Integer.valueOf(finalOpenSessions),
                     Integer.valueOf(leakedOpenSessions)));
-            for (CoreInstance.RegistrationInfo info:core.getRegistrationInfos()) {
+            for (CoreInstance.RegistrationInfo info : core.getRegistrationInfos()) {
                 log.warn("Leaking session", info);
             }
         }
         int finalSingleConnections = ConnectionHelper.countConnectionReferences();
         int leakedSingleConnections = finalSingleConnections - initialSingleConnections;
         if (leakedSingleConnections > 0) {
-            log.error(String.format(
-                    "There are %s single datasource connection(s) open at tear down; "
-                            + "the test leaked %s connection(s).",
-                    Integer.valueOf(finalSingleConnections),
+            log.error(String.format("There are %s single datasource connection(s) open at tear down; "
+                    + "the test leaked %s connection(s).", Integer.valueOf(finalSingleConnections),
                     Integer.valueOf(leakedSingleConnections)));
         }
         ConnectionHelper.clearConnectionReferences();
@@ -136,8 +130,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         return CoreInstance.openCoreSession(database.repositoryName, username);
     }
 
-    public CoreSession openSessionAs(NuxeoPrincipal principal)
-            throws ClientException {
+    public CoreSession openSessionAs(NuxeoPrincipal principal) throws ClientException {
         return CoreInstance.openCoreSession(database.repositoryName, principal);
     }
 

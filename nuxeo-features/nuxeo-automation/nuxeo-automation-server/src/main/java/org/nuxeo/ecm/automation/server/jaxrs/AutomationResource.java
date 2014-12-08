@@ -73,16 +73,13 @@ public class AutomationResource extends ModuleRoot {
     }
 
     /**
-     * Gets the content of the blob or blobs (multipart/mixed) located by the
-     * given doc uid and property path.
+     * Gets the content of the blob or blobs (multipart/mixed) located by the given doc uid and property path.
      */
     @SuppressWarnings("unchecked")
     @GET
     @Path("/files/{uid}")
-    public Object getFile(@Context
-    HttpServletRequest request, @PathParam("uid")
-    String uid, @QueryParam("path")
-    String path) {
+    public Object getFile(@Context HttpServletRequest request, @PathParam("uid") String uid,
+            @QueryParam("path") String path) {
         try {
             CoreSession session = SessionFactory.getSession(request);
             DocumentModel doc = session.getDocument(new IdRef(uid));
@@ -120,8 +117,7 @@ public class AutomationResource extends ModuleRoot {
 
     @POST
     @Path("/login")
-    public Object login(@Context
-    HttpServletRequest request) {
+    public Object login(@Context HttpServletRequest request) {
         Principal p = request.getUserPrincipal();
         if (p instanceof NuxeoPrincipal) {
             NuxeoPrincipal np = (NuxeoPrincipal) p;
@@ -134,8 +130,7 @@ public class AutomationResource extends ModuleRoot {
     }
 
     @Path("/{oid}")
-    public Object getExecutable(@PathParam("oid")
-    String oid) {
+    public Object getExecutable(@PathParam("oid") String oid) {
         if (oid.startsWith(Constants.CHAIN_ID_PREFIX)) {
             oid = oid.substring(6);
             return new ChainResource(service, oid);
@@ -145,25 +140,18 @@ public class AutomationResource extends ModuleRoot {
                 return new OperationResource(service, op);
             } catch (OperationException cause) {
                 if (cause instanceof ConflictOperationException) {
-                    return WebException.newException(
-                            "Failed to invoke operation: " + oid, cause,
+                    return WebException.newException("Failed to invoke operation: " + oid, cause,
                             HttpServletResponse.SC_CONFLICT);
                 } else if (cause instanceof OperationNotFoundException) {
-                    return WebException.newException("Failed to invoke " +
-                                    "operation: " + oid, cause,
+                    return WebException.newException("Failed to invoke " + "operation: " + oid, cause,
                             HttpServletResponse.SC_NOT_FOUND);
                 } else {
-                    Throwable unWrapException = ExceptionHelper.unwrapException
-                            (cause);
+                    Throwable unWrapException = ExceptionHelper.unwrapException(cause);
                     if (unWrapException instanceof RestOperationException) {
-                        int customHttpStatus = ((RestOperationException)
-                                unWrapException).getStatus();
-                        throw WebException.newException(
-                                "Failed to invoke operation: " + oid, cause,
-                                customHttpStatus);
+                        int customHttpStatus = ((RestOperationException) unWrapException).getStatus();
+                        throw WebException.newException("Failed to invoke operation: " + oid, cause, customHttpStatus);
                     }
-                    throw WebException.newException(
-                            "Failed to invoke operation: " + oid, cause);
+                    throw WebException.newException("Failed to invoke operation: " + oid, cause);
                 }
             }
         }

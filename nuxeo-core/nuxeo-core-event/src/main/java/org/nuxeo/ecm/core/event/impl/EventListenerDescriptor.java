@@ -50,8 +50,8 @@ public class EventListenerDescriptor {
     protected Class<?> clazz;
 
     /**
-     * A script reference: URL, file path, or bundle entry.
-     * Runtime variable are expanded. To specify a bundle entry use the URL schema "bundle:"
+     * A script reference: URL, file path, or bundle entry. Runtime variable are expanded. To specify a bundle entry use
+     * the URL schema "bundle:"
      */
     @XNode("@script")
     protected String script;
@@ -143,14 +143,12 @@ public class EventListenerDescriptor {
                 }
             } else if (script != null) {
                 if (isPostCommit) {
-                    postCommitEventListener = new ScriptingPostCommitEventListener(
-                            getScript());
+                    postCommitEventListener = new ScriptingPostCommitEventListener(getScript());
                 } else {
                     inLineListener = new ScriptingEventListener(getScript());
                 }
             } else {
-                throw new IllegalArgumentException(
-                        "Listener extension must define either a class or a script");
+                throw new IllegalArgumentException("Listener extension must define either a class or a script");
             }
         } catch (ReflectiveOperationException | IOException e) {
             throw new RuntimeException(e);
@@ -196,7 +194,6 @@ public class EventListenerDescriptor {
     public Integer getTransactionTimeout() {
         return transactionTimeOut;
     }
-
 
     public void merge(EventListenerDescriptor other) {
 
@@ -249,8 +246,7 @@ public class EventListenerDescriptor {
     }
 
     /**
-     * Filters the event bundle to only keep events of interest to this
-     * listener.
+     * Filters the event bundle to only keep events of interest to this listener.
      *
      * @since 5.7
      */

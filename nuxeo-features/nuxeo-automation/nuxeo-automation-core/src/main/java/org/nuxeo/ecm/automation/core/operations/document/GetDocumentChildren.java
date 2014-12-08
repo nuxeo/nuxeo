@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = GetDocumentChildren.ID, category = Constants.CAT_DOCUMENT, label = "Get Children", description = "Get the children of a document. The list of children will become the input for the next operation")
@@ -33,12 +32,12 @@ public class GetDocumentChildren {
     @Context
     protected CoreSession session;
 
-    @OperationMethod(collector=DocumentModelListCollector.class)
+    @OperationMethod(collector = DocumentModelListCollector.class)
     public DocumentModelList run(DocumentModel doc) {
         return session.getChildren(doc.getRef());
     }
 
-    @OperationMethod(collector=DocumentModelListCollector.class)
+    @OperationMethod(collector = DocumentModelListCollector.class)
     public DocumentModelList run(DocumentRef doc) {
         return session.getChildren(doc);
     }

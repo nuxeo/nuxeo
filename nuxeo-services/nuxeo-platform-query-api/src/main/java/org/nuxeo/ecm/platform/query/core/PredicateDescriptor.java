@@ -26,8 +26,7 @@ import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 
 /**
- * Predicate descriptor accepting a schema and field, an operator, and a
- * parameter.
+ * Predicate descriptor accepting a schema and field, an operator, and a parameter.
  *
  * @author Anahide Tchertchian
  * @since 5.4

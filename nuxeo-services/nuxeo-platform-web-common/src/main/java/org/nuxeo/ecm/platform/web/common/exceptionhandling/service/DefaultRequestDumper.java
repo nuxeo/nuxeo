@@ -52,8 +52,7 @@ public class DefaultRequestDumper implements RequestDumper {
             } catch (Exception exc) { // TODO what exactly is caught?
                 ExceptionUtils.checkInterrupt(exc);
                 // avoid errors when printing the error dump
-                log.error("ERROR TRYING TO GET THIS REQUEST ATTRIBUTE VALUE: "
-                        + name);
+                log.error("ERROR TRYING TO GET THIS REQUEST ATTRIBUTE VALUE: " + name);
                 builder.append("ERROR TRYING TO GET THIS REQUEST ATTRIBUTE VALUE");
             }
             builder.append("\n");

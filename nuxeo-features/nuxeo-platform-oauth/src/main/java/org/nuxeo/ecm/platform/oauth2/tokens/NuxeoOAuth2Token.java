@@ -54,8 +54,7 @@ public class NuxeoOAuth2Token {
         refresh();
     }
 
-    public NuxeoOAuth2Token(String accessToken, String refreshToken,
-            Long expirationTimeMilliseconds) {
+    public NuxeoOAuth2Token(String accessToken, String refreshToken, Long expirationTimeMilliseconds) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expirationTimeMilliseconds = expirationTimeMilliseconds;
@@ -63,16 +62,14 @@ public class NuxeoOAuth2Token {
     }
 
     public NuxeoOAuth2Token(Credential credential) {
-        this(credential.getAccessToken(), credential.getRefreshToken(),
-                credential.getExpirationTimeMilliseconds());
+        this(credential.getAccessToken(), credential.getRefreshToken(), credential.getExpirationTimeMilliseconds());
     }
 
     public NuxeoOAuth2Token(DocumentModel entry) throws ClientException {
         this.id = (Long) entry.getProperty(SCHEMA, "id");
         this.accessToken = (String) entry.getProperty(SCHEMA, "accessToken");
         this.refreshToken = (String) entry.getProperty(SCHEMA, "refreshToken");
-        this.expirationTimeMilliseconds = (Long) entry.getProperty(SCHEMA,
-                "expirationTimeMilliseconds");
+        this.expirationTimeMilliseconds = (Long) entry.getProperty(SCHEMA, "expirationTimeMilliseconds");
         this.serviceName = (String) entry.getProperty(SCHEMA, "serviceName");
         this.nuxeoLogin = (String) entry.getProperty(SCHEMA, "nuxeoLogin");
         this.clientId = (String) entry.getProperty(SCHEMA, "clientId");
@@ -97,8 +94,7 @@ public class NuxeoOAuth2Token {
         m.put("refresh_token", refreshToken);
         m.put("token_type", "bearer");
         m.put("expires_in",
-                Math.floor((creationDate.getTimeInMillis()
-                        + expirationTimeMilliseconds - new Date().getTime()) / 1000));
+                Math.floor((creationDate.getTimeInMillis() + expirationTimeMilliseconds - new Date().getTime()) / 1000));
         return m;
     }
 
@@ -107,8 +103,7 @@ public class NuxeoOAuth2Token {
         entry.setProperty(SCHEMA, "nuxeoLogin", this.nuxeoLogin);
         entry.setProperty(SCHEMA, "accessToken", this.accessToken);
         entry.setProperty(SCHEMA, "refreshToken", this.refreshToken);
-        entry.setProperty(SCHEMA, "expirationTimeMilliseconds",
-                this.expirationTimeMilliseconds);
+        entry.setProperty(SCHEMA, "expirationTimeMilliseconds", this.expirationTimeMilliseconds);
         entry.setProperty(SCHEMA, "clientId", this.clientId);
     }
 

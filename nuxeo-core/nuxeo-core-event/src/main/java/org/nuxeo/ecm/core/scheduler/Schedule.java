@@ -21,8 +21,7 @@ import java.io.Serializable;
 /**
  * Schedule entry.
  * <p>
- * Holds information about a schedule, including the event to send,
- * the username to use to open the session, and the
+ * Holds information about a schedule, including the event to send, the username to use to open the session, and the
  * periodicity for the schedule.
  */
 public interface Schedule extends Serializable {
@@ -63,8 +62,7 @@ public interface Schedule extends Serializable {
     String getUsername();
 
     /**
-     * Returns true if the scheduler is enabled and the job scheduled for
-     * execution
+     * Returns true if the scheduler is enabled and the job scheduled for execution
      *
      * @since 5.7.3
      * @return

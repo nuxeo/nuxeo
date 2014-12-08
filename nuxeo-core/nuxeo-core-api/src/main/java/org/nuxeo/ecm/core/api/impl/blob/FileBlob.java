@@ -30,7 +30,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileBlob extends DefaultStreamBlob implements Serializable {
 
@@ -50,14 +49,12 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
         this(file, mimeType, encoding, null, null);
     }
 
-    public FileBlob(File file, String mimeType, String encoding,
-            String filename, String digest) {
+    public FileBlob(File file, String mimeType, String encoding, String filename, String digest) {
         this.file = file;
         this.mimeType = mimeType;
         this.encoding = encoding;
         this.digest = digest;
-        this.filename = filename != null ? filename
-                : file != null ? file.getName() : null;
+        this.filename = filename != null ? filename : file != null ? file.getName() : null;
     }
 
     public FileBlob(InputStream in) throws IOException {
@@ -68,8 +65,7 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
         this(in, ctype, null);
     }
 
-    public FileBlob(InputStream in, String mimeType, String encoding)
-            throws IOException {
+    public FileBlob(InputStream in, String mimeType, String encoding) throws IOException {
         this.mimeType = mimeType;
         this.encoding = encoding;
         OutputStream out = null;
@@ -108,8 +104,7 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
         return true;
     }
 
-    private void readObject(ObjectInputStream in)
-            throws ClassNotFoundException, IOException {
+    private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
         // always perform the default de-serialization first
         in.defaultReadObject();
         // create a temp file where we will put the blob content

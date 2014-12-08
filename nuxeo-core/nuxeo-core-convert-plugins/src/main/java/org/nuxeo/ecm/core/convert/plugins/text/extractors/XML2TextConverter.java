@@ -40,8 +40,7 @@ public class XML2TextConverter implements Converter {
     private static final Log log = LogFactory.getLog(XML2TextConverter.class);
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         InputStream stream = null;
         try {
@@ -49,10 +48,8 @@ public class XML2TextConverter implements Converter {
             Xml2TextHandler xml2text = new Xml2TextHandler();
             String text = xml2text.parse(stream);
 
-            return new SimpleCachableBlobHolder(new StringBlob(text,
-                    "text/plain"));
-        } catch (ClientException | IOException | SAXException
-                | ParserConfigurationException e) {
+            return new SimpleCachableBlobHolder(new StringBlob(text, "text/plain"));
+        } catch (ClientException | IOException | SAXException | ParserConfigurationException e) {
             throw new ConversionException("Error during XML2Text conversion", e);
         } finally {
             if (stream != null) {

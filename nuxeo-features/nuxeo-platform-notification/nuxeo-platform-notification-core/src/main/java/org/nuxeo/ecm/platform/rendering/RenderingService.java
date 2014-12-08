@@ -34,8 +34,7 @@ public interface RenderingService {
      * @return the result
      * @throws RenderingException
      */
-    Collection<RenderingResult> process(RenderingContext ctx)
-            throws RenderingException;
+    Collection<RenderingResult> process(RenderingContext ctx) throws RenderingException;
 
     RenderingEngine getEngine(String format);
 

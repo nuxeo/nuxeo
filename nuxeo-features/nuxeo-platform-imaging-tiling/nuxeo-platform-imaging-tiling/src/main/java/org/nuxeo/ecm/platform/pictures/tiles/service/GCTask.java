@@ -23,11 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
  * Task for GC dedicated Thread
  *
  * @author tiry
- *
  */
 public class GCTask implements Runnable {
 
@@ -41,8 +39,7 @@ public class GCTask implements Runnable {
 
     public static long getGCIntervalInMinutes() {
         if (GCInterval == 0) {
-            GCInterval = Long.parseLong(PictureTilingComponent.getEnvValue(
-                    GCINTERVAL_KEY, Long.toString(10)));
+            GCInterval = Long.parseLong(PictureTilingComponent.getEnvValue(GCINTERVAL_KEY, Long.toString(10)));
             log.debug("GC interval set to " + GCInterval);
         }
         return GCInterval;

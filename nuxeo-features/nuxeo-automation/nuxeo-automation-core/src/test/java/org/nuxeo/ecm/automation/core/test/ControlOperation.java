@@ -36,8 +36,7 @@ public class ControlOperation {
 
     @OperationMethod
     public void printInfo() throws Exception {
-        Helper.updateContext(ctx, "ctrl:void:void", message,
-                ((DocumentModel) ctx.getInput()).getTitle());
+        Helper.updateContext(ctx, "ctrl:void:void", message, ((DocumentModel) ctx.getInput()).getTitle());
     }
 
 }

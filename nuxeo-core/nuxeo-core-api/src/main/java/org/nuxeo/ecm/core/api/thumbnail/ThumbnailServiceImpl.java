@@ -28,13 +28,11 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Thumbnail service providing 3 kind of factories: by facet, by doctype, and
- * thumbnail default one
+ * Thumbnail service providing 3 kind of factories: by facet, by doctype, and thumbnail default one
  *
  * @since 5.7
  */
-public class ThumbnailServiceImpl extends DefaultComponent implements
-        ThumbnailService {
+public class ThumbnailServiceImpl extends DefaultComponent implements ThumbnailService {
 
     private static final Log log = LogFactory.getLog(BlobHolderAdapterComponent.class);
 
@@ -47,8 +45,7 @@ public class ThumbnailServiceImpl extends DefaultComponent implements
     protected static final Map<String, ThumbnailFactory> factoriesByFacets = new HashMap<String, ThumbnailFactory>();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (THUMBNAILFACTORY_EP.equals(extensionPoint)) {
             ThumbnailFactoryDescriptor desc = (ThumbnailFactoryDescriptor) contribution;
             String docType = desc.getDocType();
@@ -68,8 +65,7 @@ public class ThumbnailServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
     public Set<String> getFactoryByDocTypeNames() {
@@ -85,21 +81,18 @@ public class ThumbnailServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public Blob getThumbnail(DocumentModel doc, CoreSession session)
-            throws ClientException {
+    public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
         ThumbnailFactory factory = getThumbnailFactory(doc, session);
         return factory.getThumbnail(doc, session);
     }
 
     @Override
-    public Blob computeThumbnail(DocumentModel doc, CoreSession session)
-            throws ClientException {
+    public Blob computeThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
         ThumbnailFactory factory = getThumbnailFactory(doc, session);
         return factory.computeThumbnail(doc, session);
     }
 
-    public ThumbnailFactory getThumbnailFactory(DocumentModel doc,
-            CoreSession session) throws ClientException {
+    public ThumbnailFactory getThumbnailFactory(DocumentModel doc, CoreSession session) throws ClientException {
         if (factoriesByDocType.containsKey(doc.getType())) {
             ThumbnailFactory factory = factoriesByDocType.get(doc.getType());
             return factory;
@@ -110,8 +103,7 @@ public class ThumbnailServiceImpl extends DefaultComponent implements
             }
         }
         if (defaultFactory == null) {
-            throw new ClientException(
-                    "Please contribute a default thumbnail factory");
+            throw new ClientException("Please contribute a default thumbnail factory");
         }
         return defaultFactory;
     }

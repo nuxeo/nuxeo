@@ -26,7 +26,6 @@ import net.sf.json.JSONObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JSonTreeSerializer implements TreeItemVisitor {
 
@@ -54,7 +53,7 @@ public class JSonTreeSerializer implements TreeItemVisitor {
     }
 
     public JSONObject toJSON(TreeItem root) {
-        return (JSONObject)root.accept(this);
+        return (JSONObject) root.accept(this);
     }
 
     public Object visit(TreeItem item) {
@@ -64,7 +63,7 @@ public class JSonTreeSerializer implements TreeItemVisitor {
             if (children != null && children.length > 0) {
                 jsons = new JSONArray();
                 for (TreeItem child : children) {
-                    JSONObject childJson = (JSONObject)visit(child);
+                    JSONObject childJson = (JSONObject) visit(child);
                     jsons.add(childJson);
                 }
             }
@@ -77,13 +76,11 @@ public class JSonTreeSerializer implements TreeItemVisitor {
      */
     protected JSONObject item2JSON(TreeItem item, JSONArray children) {
         JSONObject json = new JSONObject();
-        json.element("text", item.getLabel())
-            .element("id", item.getPath().toString())
-            .element("href", getUrl(item));
+        json.element("text", item.getLabel()).element("id", item.getPath().toString()).element("href", getUrl(item));
         json.element("expanded", item.isExpanded());
-        if ( item.isContainer() ){
+        if (item.isContainer()) {
             if (item.isContainer()) {
-                if ( item.hasChildren()) {
+                if (item.hasChildren()) {
                     json.element("children", children);
                 } else {
                     json.element("hasChildren", true);

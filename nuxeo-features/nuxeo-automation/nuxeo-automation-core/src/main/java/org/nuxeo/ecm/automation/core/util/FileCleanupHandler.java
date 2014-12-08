@@ -19,8 +19,7 @@ import java.util.List;
 import org.nuxeo.ecm.automation.CleanupHandler;
 
 /**
- * Cleanup Handler that takes a list of files and remove them after the
- * operation chain was executed.
+ * Cleanup Handler that takes a list of files and remove them after the operation chain was executed.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

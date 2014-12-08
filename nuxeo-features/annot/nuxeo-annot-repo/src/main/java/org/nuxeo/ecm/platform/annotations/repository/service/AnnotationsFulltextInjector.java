@@ -33,7 +33,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author matic
- *
  */
 public class AnnotationsFulltextInjector {
 
@@ -45,13 +44,10 @@ public class AnnotationsFulltextInjector {
 
     public static final String ANNOTATION_RESOURCE_ID_PREFIX = "annotation_";
 
-    public boolean removeAnnotationText(DocumentModel doc,
-            String annotationId) throws ClientException {
+    public boolean removeAnnotationText(DocumentModel doc, String annotationId) throws ClientException {
         @SuppressWarnings("unchecked")
-        List<Map<String, String>> relatedResources = doc.getProperty(
-                RELATED_TEXT_LIST_PROPERTY).getValue(List.class);
-        String resourceIdToRemove = annotationId == null ? null
-                : makeResourceId(annotationId);
+        List<Map<String, String>> relatedResources = doc.getProperty(RELATED_TEXT_LIST_PROPERTY).getValue(List.class);
+        String resourceIdToRemove = annotationId == null ? null : makeResourceId(annotationId);
         List<Map<String, String>> resourcesToRemove = new ArrayList<Map<String, String>>();
         for (Map<String, String> resource : relatedResources) {
             String resourceId = resource.get(RELATED_TEXT_ID_PROPERTY);
@@ -61,30 +57,25 @@ public class AnnotationsFulltextInjector {
                 }
             } else {
                 // remove all annotations
-                if (resourceId == null
-                        || resourceId.startsWith(ANNOTATION_RESOURCE_ID_PREFIX)) {
+                if (resourceId == null || resourceId.startsWith(ANNOTATION_RESOURCE_ID_PREFIX)) {
                     resourcesToRemove.add(resource);
                 }
             }
         }
         if (!resourcesToRemove.isEmpty()) {
             relatedResources.removeAll(resourcesToRemove);
-            doc.setPropertyValue(RELATED_TEXT_LIST_PROPERTY,
-                    (Serializable) relatedResources);
+            doc.setPropertyValue(RELATED_TEXT_LIST_PROPERTY, (Serializable) relatedResources);
             return true;
         }
         return false;
     }
 
-
-    public void setAnnotationText(DocumentModel doc, String annotationId,
-            String annotationBody) throws ClientException {
+    public void setAnnotationText(DocumentModel doc, String annotationId, String annotationBody) throws ClientException {
         if (annotationBody == null) {
             return;
         }
         // strip HTML markup if any
-        BlobHolder bh = new SimpleBlobHolder(new StringBlob(annotationBody,
-                "text/html"));
+        BlobHolder bh = new SimpleBlobHolder(new StringBlob(annotationBody, "text/html"));
         ConversionService service = Framework.getService(ConversionService.class);
         if (service != null) {
             try {
@@ -94,14 +85,12 @@ public class AnnotationsFulltextInjector {
             }
         }
         @SuppressWarnings("unchecked")
-        List<Map<String, String>> relatedResources = doc.getProperty(
-                RELATED_TEXT_LIST_PROPERTY).getValue(List.class);
+        List<Map<String, String>> relatedResources = doc.getProperty(RELATED_TEXT_LIST_PROPERTY).getValue(List.class);
         HashMap<String, String> resource = new HashMap<String, String>();
         resource.put(RELATED_TEXT_ID_PROPERTY, makeResourceId(annotationId));
         resource.put(RELATED_TEXT_PROPERTY, annotationBody);
         relatedResources.add(resource);
-        doc.setPropertyValue(RELATED_TEXT_LIST_PROPERTY,
-                (Serializable) relatedResources);
+        doc.setPropertyValue(RELATED_TEXT_LIST_PROPERTY, (Serializable) relatedResources);
     }
 
     protected static String makeResourceId(String annotationId) {

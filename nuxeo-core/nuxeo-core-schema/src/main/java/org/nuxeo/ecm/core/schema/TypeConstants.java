@@ -18,7 +18,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class TypeConstants {
 
@@ -33,8 +32,7 @@ public final class TypeConstants {
     }
 
     /**
-     * Returns true if given type is named "content", as it's a reserved type
-     * name for blobs.
+     * Returns true if given type is named "content", as it's a reserved type name for blobs.
      */
     public static boolean isContentType(Type type) {
         if (type != null && type.getName().equals(CONTENT)) {

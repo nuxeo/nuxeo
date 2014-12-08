@@ -21,9 +21,7 @@ package org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 
 /**
- *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 public interface EJBPlacefulService extends PlacefulService {
 

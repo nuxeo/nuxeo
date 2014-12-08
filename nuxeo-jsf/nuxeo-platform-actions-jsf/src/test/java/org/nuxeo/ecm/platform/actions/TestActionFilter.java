@@ -50,10 +50,8 @@ public class TestActionFilter extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.actions", "OSGI-INF/actions-framework.xml");
-        deployContrib("org.nuxeo.ecm.actions.jsf.tests",
-                "test-filters-contrib.xml");
-        deployContrib("org.nuxeo.ecm.actions.jsf.tests",
-                "test-filters-override-contrib.xml");
+        deployContrib("org.nuxeo.ecm.actions.jsf.tests", "test-filters-contrib.xml");
+        deployContrib("org.nuxeo.ecm.actions.jsf.tests", "test-filters-override-contrib.xml");
         as = (ActionService) runtime.getComponent(ActionService.ID);
 
         facesContext = new MockFacesContext();
@@ -247,25 +245,20 @@ public class TestActionFilter extends NXRuntimeTestCase {
 
     @Test
     public void testGetAction() throws Exception {
-        deployContrib("org.nuxeo.ecm.actions.jsf.tests",
-                "test-actions-contrib.xml");
+        deployContrib("org.nuxeo.ecm.actions.jsf.tests", "test-actions-contrib.xml");
 
         DocumentModel doc = new MockDocumentModel("Workspace", new String[0]);
-        Action action = as.getAction("singleActionRetrievedWithFilter",
-                getActionContext(doc), true);
+        Action action = as.getAction("singleActionRetrievedWithFilter", getActionContext(doc), true);
         assertNotNull(action);
         assertTrue(action.getAvailable());
-        action = as.getAction("singleActionRetrievedWithFilter",
-                getActionContext(doc), false);
+        action = as.getAction("singleActionRetrievedWithFilter", getActionContext(doc), false);
         assertNotNull(action);
         assertTrue(action.getAvailable());
 
         doc = new MockDocumentModel("File", new String[0]);
-        action = as.getAction("singleActionRetrievedWithFilter",
-                getActionContext(doc), true);
+        action = as.getAction("singleActionRetrievedWithFilter", getActionContext(doc), true);
         assertNull(action);
-        action = as.getAction("singleActionRetrievedWithFilter",
-                getActionContext(doc), false);
+        action = as.getAction("singleActionRetrievedWithFilter", getActionContext(doc), false);
         assertNotNull(action);
         assertFalse(action.getAvailable());
     }

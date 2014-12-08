@@ -128,8 +128,7 @@ public class DocumentObject extends DefaultObject {
     public Response doPost() {
         String name = ctx.getForm().getString("name");
         DocumentModel newDoc = DocumentHelper.createDocument(ctx, doc, name);
-        String pathSegment = URIUtils.quoteURIPathComponent(newDoc.getName(),
-                true);
+        String pathSegment = URIUtils.quoteURIPathComponent(newDoc.getName(), true);
         return redirect(getPath() + '/' + pathSegment);
     }
 
@@ -145,9 +144,9 @@ public class DocumentObject extends DefaultObject {
         return doPut();
     }
 
-    //TODO implement HEAD
+    // TODO implement HEAD
     public Object doHead() {
-        return null; //TODO
+        return null; // TODO
     }
 
     @Path("{path}")

@@ -39,8 +39,7 @@ public class DocTypeEndPoint extends DefaultObject {
 
     @GET
     @Path("{name}")
-    public DocumentType getDocType(@PathParam("name")
-    String name) {
+    public DocumentType getDocType(@PathParam("name") String name) {
         SchemaManager sm = Framework.getLocalService(SchemaManager.class);
         DocumentType docType = sm.getDocumentType(name);
         return docType;

@@ -78,7 +78,6 @@ public interface ComputedGroupsService {
     /**
      * Searches for a computed group.
      */
-    List<String> searchComputedGroups(Map<String, Serializable> filter,
-            Set<String> fulltext);
+    List<String> searchComputedGroups(Map<String, Serializable> filter, Set<String> fulltext);
 
 }

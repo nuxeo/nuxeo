@@ -21,7 +21,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(BaseFeature.class)
 public class BaseTest {
 
-    @Inject FeaturesRunner runner;
+    @Inject
+    FeaturesRunner runner;
 
     @Test
     public void something() {

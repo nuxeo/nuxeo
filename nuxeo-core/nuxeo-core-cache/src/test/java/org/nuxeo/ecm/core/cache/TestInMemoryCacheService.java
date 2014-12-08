@@ -47,8 +47,7 @@ public class TestInMemoryCacheService {
 
     @Test
     public void getGuavaCache() {
-        InMemoryCacheImpl guavaCache = CacheFeature.unwrapImpl(
-                InMemoryCacheImpl.class, defaultCache);
+        InMemoryCacheImpl guavaCache = CacheFeature.unwrapImpl(InMemoryCacheImpl.class, defaultCache);
         Assert.assertNotNull(guavaCache);
     }
 

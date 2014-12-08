@@ -130,8 +130,7 @@ public class TagSelect2Support {
             if (currentDocument.isVersion()) {
                 DocumentModel liveDocument = documentManager.getSourceDocument(currentDocument.getRef());
                 if (!liveDocument.isCheckedOut()) {
-                    tagService.tag(documentManager, liveDocument.getId(),
-                            label, null);
+                    tagService.tag(documentManager, liveDocument.getId(), label, null);
                 }
             } else if (!currentDocument.isCheckedOut()) {
                 DocumentRef ref = documentManager.getBaseVersion(currentDocument.getRef());
@@ -143,8 +142,7 @@ public class TagSelect2Support {
             // force invalidation
             Contexts.getEventContext().remove("resolveDocumentTags");
         }
-        facesMessages.add(StatusMessage.Severity.INFO,
-                messages.get(messageKey), label);
+        facesMessages.add(StatusMessage.Severity.INFO, messages.get(messageKey), label);
         reset();
         return null;
     }
@@ -159,8 +157,7 @@ public class TagSelect2Support {
         if (currentDocument.isVersion()) {
             DocumentModel liveDocument = documentManager.getSourceDocument(currentDocument.getRef());
             if (!liveDocument.isCheckedOut()) {
-                tagService.untag(documentManager, liveDocument.getId(), label,
-                        null);
+                tagService.untag(documentManager, liveDocument.getId(), label, null);
             }
         } else if (!currentDocument.isCheckedOut()) {
             DocumentRef ref = documentManager.getBaseVersion(currentDocument.getRef());
@@ -170,8 +167,7 @@ public class TagSelect2Support {
         }
         // force invalidation
         Contexts.getEventContext().remove("currentDocumentTags");
-        facesMessages.add(StatusMessage.Severity.INFO,
-                messages.get("message.remove.tagging"), label);
+        facesMessages.add(StatusMessage.Severity.INFO, messages.get("message.remove.tagging"), label);
         reset();
         return null;
     }
@@ -185,13 +181,11 @@ public class TagSelect2Support {
         return tagService.isEnabled() ? tagService : null;
     }
 
-    public String encodeParameters(
-            final Map<String, Serializable> widgetProperties) {
+    public String encodeParameters(final Map<String, Serializable> widgetProperties) {
         return encodeCommonParameters(widgetProperties).toString();
     }
 
-    public String encodeParametersForCurrentDocument(
-            final Map<String, Serializable> widgetProperties) {
+    public String encodeParametersForCurrentDocument(final Map<String, Serializable> widgetProperties) {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("onAddEntryHandler", "addTagHandler");
         parameters.put("onRemoveEntryHandler", "removeTagHandler");
@@ -205,13 +199,11 @@ public class TagSelect2Support {
         return encodeCommonParameters(widgetProperties, parameters).toString();
     }
 
-    protected JSONObject encodeCommonParameters(
-            final Map<String, Serializable> widgetProperties) {
+    protected JSONObject encodeCommonParameters(final Map<String, Serializable> widgetProperties) {
         return encodeCommonParameters(widgetProperties, null);
     }
 
-    protected JSONObject encodeCommonParameters(
-            final Map<String, Serializable> widgetProperties,
+    protected JSONObject encodeCommonParameters(final Map<String, Serializable> widgetProperties,
             final Map<String, String> additionalParameters) {
         JSONObject obj = new JSONObject();
         obj.put("multiple", "true");

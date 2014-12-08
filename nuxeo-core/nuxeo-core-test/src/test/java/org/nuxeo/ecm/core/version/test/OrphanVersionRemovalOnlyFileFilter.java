@@ -7,12 +7,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.ecm.core.versioning.OrphanVersionRemovalFilter;
 
-public class OrphanVersionRemovalOnlyFileFilter implements
-        OrphanVersionRemovalFilter {
+public class OrphanVersionRemovalOnlyFileFilter implements OrphanVersionRemovalFilter {
 
     @Override
-    public List<String> getRemovableVersionIds(CoreSession session,
-            ShallowDocumentModel deletedLiveDoc, List<String> versionUUIDs) {
+    public List<String> getRemovableVersionIds(CoreSession session, ShallowDocumentModel deletedLiveDoc,
+            List<String> versionUUIDs) {
 
         if (deletedLiveDoc.getType().equals("File")) {
             return Collections.emptyList();

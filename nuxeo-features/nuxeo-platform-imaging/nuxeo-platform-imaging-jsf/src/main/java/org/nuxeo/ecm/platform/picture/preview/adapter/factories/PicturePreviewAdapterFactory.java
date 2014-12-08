@@ -21,11 +21,9 @@ import org.nuxeo.ecm.platform.preview.adapter.base.ConverterBasedHtmlPreviewAdap
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 
 /**
- *
  * Preview adapter factory for the Picture document type
  *
  * @author qlamerand
- *
  */
 public class PicturePreviewAdapterFactory implements PreviewAdapterFactory {
 
@@ -46,8 +44,7 @@ public class PicturePreviewAdapterFactory implements PreviewAdapterFactory {
         if (xpath != null) {
             adapter.setDefaultPreviewFieldXPath(xpath + "content");
         } else {
-            adapter.setDefaultPreviewFieldXPath(prAdapter.getFirstViewXPath()
-                    + "content");
+            adapter.setDefaultPreviewFieldXPath(prAdapter.getFirstViewXPath() + "content");
         }
 
         return adapter;

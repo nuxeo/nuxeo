@@ -49,47 +49,39 @@ public interface ContentViewService extends Serializable {
     ContentViewHeader getContentViewHeader(String name);
 
     /**
-     * Returns all the registered content view names, or an empty set if no
-     * content view is registered.
+     * Returns all the registered content view names, or an empty set if no content view is registered.
      */
     Set<String> getContentViewNames();
 
     /**
-     * Returns all the registered content view headers, or an empty set if no
-     * content view is registered.
+     * Returns all the registered content view headers, or an empty set if no content view is registered.
      */
     Set<ContentViewHeader> getContentViewHeaders();
 
     /**
-     * Returns all the registered content view names with given flag declared
-     * on their definition
+     * Returns all the registered content view names with given flag declared on their definition
      */
     Set<String> getContentViewNames(String flag);
 
     /**
-     * Returns all the registered content view headers with given flag declared
-     * on their definition
+     * Returns all the registered content view headers with given flag declared on their definition
      *
      * @since 5.4.2
      */
     Set<ContentViewHeader> getContentViewHeaders(String flag);
 
     /**
-     * Returns the page provider computed from the content view with given
-     * name. Its properties are resolved using current {@link FacesContext}
-     * instance if they are EL Expressions.
+     * Returns the page provider computed from the content view with given name. Its properties are resolved using
+     * current {@link FacesContext} instance if they are EL Expressions.
      * <p>
-     * If not null, parameters sortInfos and pageSize will override information
-     * computed in the XML file. If not null, currentPage will override default
-     * current page (0).
+     * If not null, parameters sortInfos and pageSize will override information computed in the XML file. If not null,
+     * currentPage will override default current page (0).
      *
      * @throws ClientException
      * @since 5.7
      */
-    PageProvider<?> getPageProvider(String contentViewName,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            DocumentModel searchDocument, Object... parameters)
-            throws ClientException;
+    PageProvider<?> getPageProvider(String contentViewName, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            DocumentModel searchDocument, Object... parameters) throws ClientException;
 
     /**
      * Returns the state of this content view.
@@ -105,15 +97,13 @@ public interface ContentViewService extends Serializable {
     /**
      * Restores a content view given a state.
      * <p>
-     * The core session is only useful when restoring a content view defining a
-     * page provider mapped to a document. It is used to initialize this
-     * document.
+     * The core session is only useful when restoring a content view defining a page provider mapped to a document. It
+     * is used to initialize this document.
      *
      * @see #saveContentView(ContentView)
      * @since 5.4.2
      * @throws ClientException
      */
-    ContentView restoreContentView(ContentViewState contentViewState)
-            throws ClientException;
+    ContentView restoreContentView(ContentViewState contentViewState) throws ClientException;
 
 }

@@ -47,13 +47,11 @@ public class TranslationHelper {
         return translation;
     }
 
-    public static Map<String, String> getTranslatedLabels(
-            Map<String, String> labels, String lang) {
+    public static Map<String, String> getTranslatedLabels(Map<String, String> labels, String lang) {
         if (labels != null) {
             Map<String, String> res = new HashMap<String, String>();
             for (Map.Entry<String, String> label : labels.entrySet()) {
-                res.put(label.getKey(),
-                        TranslationHelper.getTranslation(label.getValue(), lang));
+                res.put(label.getKey(), TranslationHelper.getTranslation(label.getValue(), lang));
             }
             return res;
         }

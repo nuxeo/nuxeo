@@ -21,7 +21,6 @@ import org.nuxeo.ecm.webengine.jaxrs.Utils.ClassRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("listener")
 public class ListenerDescriptor {
@@ -38,8 +37,7 @@ public class ListenerDescriptor {
         return ref;
     }
 
-    public ServletContextListener getListener()
-            throws ReflectiveOperationException, BundleNotFoundException {
+    public ServletContextListener getListener() throws ReflectiveOperationException, BundleNotFoundException {
         return (ServletContextListener) getClassRef().get().newInstance();
     }
 

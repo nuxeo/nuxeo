@@ -48,8 +48,7 @@ public class TestRepoStats {
 
     protected RepoStatInfo runRepoStatSync() throws Exception {
 
-        RepoStat runningStat = new RepoStat(session.getRepositoryName(), 5,
-                true);
+        RepoStat runningStat = new RepoStat(session.getRepositoryName(), 5, true);
         runningStat.run(new PathRef("/"));
         Thread.sleep(400);
         while (runningStat.isRunning()) {
@@ -97,8 +96,7 @@ public class TestRepoStats {
 
         // Add a version
 
-        blobDoc.getContextData().putScopedValue(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
+        blobDoc.getContextData().putScopedValue(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
         blobDoc = session.saveDocument(blobDoc);
 
         session.save();

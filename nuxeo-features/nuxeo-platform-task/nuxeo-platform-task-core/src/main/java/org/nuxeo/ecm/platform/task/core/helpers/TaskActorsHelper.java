@@ -39,8 +39,7 @@ public final class TaskActorsHelper {
     }
 
     /**
-     * Gets the task actors list: prefixed and unprefixed names of the principal
-     * and all its groups.
+     * Gets the task actors list: prefixed and unprefixed names of the principal and all its groups.
      * 
      * @param principal the principal
      * @return the actors and group

@@ -23,8 +23,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface ThumbnailFactory {
 
-    public Blob getThumbnail(DocumentModel doc, CoreSession session)
-            throws ClientException;
+    public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException;
 
     public Blob computeThumbnail(DocumentModel doc, CoreSession session);
 }

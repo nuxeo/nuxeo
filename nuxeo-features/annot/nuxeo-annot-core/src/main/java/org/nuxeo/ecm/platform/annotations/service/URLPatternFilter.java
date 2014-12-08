@@ -23,7 +23,6 @@ import java.util.List;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class URLPatternFilter {
 
@@ -33,8 +32,7 @@ public class URLPatternFilter {
 
     private final List<String> allows;
 
-    public URLPatternFilter(boolean allowDeny, List<String> denies,
-            List<String> allows) {
+    public URLPatternFilter(boolean allowDeny, List<String> denies, List<String> allows) {
         this.allowDeny = allowDeny;
         this.denies = denies;
         this.allows = allows;

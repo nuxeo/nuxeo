@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.pictures.tiles.tilers;
  * Dummy base class for PictureTilers
  *
  * @author tiry
- *
  */
 public abstract class BasePictureTiler implements PictureTiler {
 

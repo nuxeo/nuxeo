@@ -29,8 +29,7 @@ import org.nuxeo.ecm.platform.query.api.Aggregate;
  * @since 5.8
  */
 @SuppressWarnings("rawtypes")
-public class PaginableWithDelegate<T> extends ArrayList<T> implements
-        Paginable<T> {
+public class PaginableWithDelegate<T> extends ArrayList<T> implements Paginable<T> {
 
     /**
      *

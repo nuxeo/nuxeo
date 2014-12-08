@@ -22,7 +22,6 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 /**
  * @since 5.6
  * @author Thierry Martins <tm@nuxeo.com>
- *
  */
 @XObject("veto")
 public class NotificationListenerVetoDescriptor {
@@ -48,8 +47,7 @@ public class NotificationListenerVetoDescriptor {
         return notificationVeto;
     }
 
-    public void setNotificationVeto(
-            Class<? extends NotificationListenerVeto> notificationVeto) {
+    public void setNotificationVeto(Class<? extends NotificationListenerVeto> notificationVeto) {
         this.notificationVeto = notificationVeto;
     }
 

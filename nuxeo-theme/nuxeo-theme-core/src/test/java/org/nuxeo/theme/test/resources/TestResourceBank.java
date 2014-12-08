@@ -47,10 +47,8 @@ public class TestResourceBank extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         System.setProperty("nuxeo.url", "http://localhost:8090/nuxeo");
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "theme-bank-config.xml");
     }
 
@@ -58,14 +56,12 @@ public class TestResourceBank extends NXRuntimeTestCase {
     public void testGetRegisteredBanks() throws ThemeException {
         ResourceBank bank = ThemeManager.getResourceBank(BANK_NAME);
         assertEquals(BANK_NAME, bank.getName());
-        assertEquals("http://localhost:8080/nuxeo/site/theme-banks/test",
-                bank.getConnectionUrl());
+        assertEquals("http://localhost:8080/nuxeo/site/theme-banks/test", bank.getConnectionUrl());
 
         assertEquals(NUXEO_URL_PROPERTY, Framework.getProperty("nuxeo.url"));
         ResourceBank bankWithNuxeoUrl = ThemeManager.getResourceBank(BANK_WITH_NUXEO_URL_NAME);
         assertEquals(BANK_WITH_NUXEO_URL_NAME, bankWithNuxeoUrl.getName());
-        assertEquals(String.format("%s/site/theme-banks/test",
-                NUXEO_URL_PROPERTY), bankWithNuxeoUrl.getConnectionUrl());
+        assertEquals(String.format("%s/site/theme-banks/test", NUXEO_URL_PROPERTY), bankWithNuxeoUrl.getConnectionUrl());
     }
 
     @Test
@@ -75,60 +71,50 @@ public class TestResourceBank extends NXRuntimeTestCase {
 
     @Test
     public void testGetCollections() throws IOException {
-        assertEquals(COLLECTION_NAME,
-                BankManager.getCollections(BANK_NAME).get(0));
-        assertEquals(COLLECTION_NAME,
-                BankManager.getCollections(BANK_NAME).get(0));
-        assertEquals(COLLECTION_NAME,
-                BankManager.getCollections(BANK_NAME).get(0));
+        assertEquals(COLLECTION_NAME, BankManager.getCollections(BANK_NAME).get(0));
+        assertEquals(COLLECTION_NAME, BankManager.getCollections(BANK_NAME).get(0));
+        assertEquals(COLLECTION_NAME, BankManager.getCollections(BANK_NAME).get(0));
     }
 
     @Test
     public void testGetBankLogoFile() throws IOException {
         if (!isWindows()) {
-            assertTrue(BankManager.getBankLogoFile(BANK_NAME).getPath().endsWith(
-                    "/test/logo.png"));
+            assertTrue(BankManager.getBankLogoFile(BANK_NAME).getPath().endsWith("/test/logo.png"));
         } else {
-            assertTrue(BankManager.getBankLogoFile(BANK_NAME).getPath().endsWith(
-                    "\\test\\logo.png"));
+            assertTrue(BankManager.getBankLogoFile(BANK_NAME).getPath().endsWith("\\test\\logo.png"));
         }
     }
 
     @Test
     public void testGetImageFile() throws IOException {
         if (!isWindows()) {
-            assertTrue(BankManager.getImageFile(BANK_NAME, COLLECTION_NAME,
-                    "emoticon_smile.png").getPath().endsWith(
+            assertTrue(BankManager.getImageFile(BANK_NAME, COLLECTION_NAME, "emoticon_smile.png").getPath().endsWith(
                     "/test/Test/image/emoticon_smile.png"));
         } else {
-            assertTrue(BankManager.getImageFile(BANK_NAME, COLLECTION_NAME,
-                    "emoticon_smile.png").getPath().endsWith(
+            assertTrue(BankManager.getImageFile(BANK_NAME, COLLECTION_NAME, "emoticon_smile.png").getPath().endsWith(
                     "\\test\\Test\\image\\emoticon_smile.png"));
         }
     }
 
     @Test
     public void testGetStyleInfo() throws IOException {
-        Map styleInfo = (Map) BankManager.getInfo(BANK_NAME, COLLECTION_NAME,
-                "style").get("test.css");
+        Map styleInfo = (Map) BankManager.getInfo(BANK_NAME, COLLECTION_NAME, "style").get("test.css");
         assertEquals(styleInfo.get("description"), "Test skin");
         assertEquals(styleInfo.get("skin"), true);
     }
 
     @Test
     public void testGetStylePreviewFile() throws IOException {
-        assertEquals("test.png", BankManager.getStylePreviewFile(BANK_NAME,
-                COLLECTION_NAME, "test.css").getName());
-        assertEquals("style-preview.png", BankManager.getStylePreviewFile(
-                BANK_NAME, COLLECTION_NAME, "style-with-preview.css").getName());
+        assertEquals("test.png", BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME, "test.css").getName());
+        assertEquals("style-preview.png",
+                BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME, "style-with-preview.css").getName());
     }
 
     @Test
     public void testGetStylePreviewFileNotFound() throws IOException {
         boolean thrown = false;
         try {
-            BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME,
-                    "style-not-found.css");
+            BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME, "style-not-found.css");
         } catch (IOException e) {
             thrown = true;
         }
@@ -136,8 +122,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
 
         thrown = false;
         try {
-            BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME,
-                    "skin-without-preview.css");
+            BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME, "skin-without-preview.css");
         } catch (IOException e) {
             thrown = true;
         }
@@ -145,8 +130,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
 
         thrown = false;
         try {
-            BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME,
-                    "style-without-preview.css");
+            BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME, "style-without-preview.css");
         } catch (IOException e) {
             thrown = true;
         }
@@ -158,11 +142,9 @@ public class TestResourceBank extends NXRuntimeTestCase {
     public void testExportBankCollecton() throws IOException {
         byte[] data = BankManager.exportBankData(BANK_NAME, COLLECTION_NAME);
         ByteArrayInputStream is = new ByteArrayInputStream(data);
-        String[] filelist = { "image/", "image/emoticon_smile.png", "style/",
-                "style/style.css", "style/main.css", "style/test.css",
-                "style/test.png", "style/style-with-preview.css",
-                "style/info.txt", "style/style-preview.png", "preset/",
-                "preset/font/", "preset/color/", "preset/background/",
+        String[] filelist = { "image/", "image/emoticon_smile.png", "style/", "style/style.css", "style/main.css",
+                "style/test.css", "style/test.png", "style/style-with-preview.css", "style/info.txt",
+                "style/style-preview.png", "preset/", "preset/font/", "preset/color/", "preset/background/",
                 "preset/background/bg.properties", "preset/border/" };
         List<String> foundFiles = ZipUtils.getEntryNames(is);
         assertTrue(foundFiles.containsAll(Arrays.asList(filelist)));

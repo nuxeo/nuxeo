@@ -30,7 +30,6 @@ import org.nuxeo.runtime.api.Framework;
  * Simple Indexing Worker
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
@@ -42,17 +41,14 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
     @Override
     public String getTitle() {
-        String title = " ElasticSearch indexing for doc "
-                + cmd.getDocId() + " in repository "
-                + cmd.getRepository();
+        String title = " ElasticSearch indexing for doc " + cmd.getDocId() + " in repository " + cmd.getRepository();
         if (path != null) {
             title = title + " (" + path + ")";
         }
         return title;
     }
 
-    protected final List<String> recursableCommands = Arrays.asList(
-            IndexingCommand.UPDATE, IndexingCommand.INSERT,
+    protected final List<String> recursableCommands = Arrays.asList(IndexingCommand.UPDATE, IndexingCommand.INSERT,
             IndexingCommand.UPDATE_SECURITY);
 
     protected boolean needRecurse(IndexingCommand cmd) {

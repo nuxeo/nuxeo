@@ -46,22 +46,21 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebEngineModule extends Application implements ApplicationFactory {
 
     private final static Log log = LogFactory.getLog(WebEngineModule.class);
 
     public final static String WEBOBJECT_ANNO = "Lorg/nuxeo/ecm/webengine/model/WebObject;";
+
     public final static String WEBADAPTER_ANNO = "Lorg/nuxeo/ecm/webengine/model/WebAdapter;";
 
     protected Bundle bundle;
 
     protected ModuleConfiguration cfg;
 
-    void init(WebEngine engine, Bundle bundle, File configuration,
-            Map<String, String> attrs) throws ReflectiveOperationException,
-            IOException {
+    void init(WebEngine engine, Bundle bundle, File configuration, Map<String, String> attrs)
+            throws ReflectiveOperationException, IOException {
         this.bundle = bundle;
         loadModuleConfigurationFile(engine, configuration);
         if (attrs != null) {
@@ -79,13 +78,13 @@ public class WebEngineModule extends Application implements ApplicationFactory {
             }
         }
         if (cfg.name == null) {
-            throw new IllegalStateException("No name given for web module in bundle "+bundle.getSymbolicName());
+            throw new IllegalStateException("No name given for web module in bundle " + bundle.getSymbolicName());
         }
         initTypes(bundle, attrs.get("package"), engine);
     }
 
-    private void initTypes(Bundle bundle, String packageBase, WebEngine engine)
-            throws ReflectiveOperationException, IOException {
+    private void initTypes(Bundle bundle, String packageBase, WebEngine engine) throws ReflectiveOperationException,
+            IOException {
         cfg.types = getWebTypes();
         if (cfg.types == null) {
             // try the META-INF/web-types file
@@ -94,7 +93,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
                 // try scanning the bundle
                 scan(bundle, packageBase);
                 if (cfg.types == null) {
-                    throw new IllegalStateException("No web types defined in web module "+cfg.name+" from bundle "+bundle.getSymbolicName());
+                    throw new IllegalStateException("No web types defined in web module " + cfg.name + " from bundle "
+                            + bundle.getSymbolicName());
                 }
             } else {
                 initRoots(engine);
@@ -104,18 +104,17 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         }
     }
 
-    private void scan(Bundle bundle, String packageBase)
-            throws ReflectiveOperationException, IOException {
+    private void scan(Bundle bundle, String packageBase) throws ReflectiveOperationException, IOException {
         if (packageBase == null) {
             packageBase = "/";
         }
-        Scanner scanner = new Scanner(bundle, packageBase,
-                Scanner.PATH_ANNO, Scanner.PROVIDER_ANNO, WEBOBJECT_ANNO, WEBADAPTER_ANNO);
+        Scanner scanner = new Scanner(bundle, packageBase, Scanner.PATH_ANNO, Scanner.PROVIDER_ANNO, WEBOBJECT_ANNO,
+                WEBADAPTER_ANNO);
         scanner.scan();
         Collection<Class<?>> paths = scanner.getCollector(Scanner.PATH_ANNO);
         Collection<Class<?>> providers = scanner.getCollector(Scanner.PROVIDER_ANNO);
-        cfg.roots = new Class<?>[paths.size()+providers.size()];
-        int i=0;
+        cfg.roots = new Class<?>[paths.size() + providers.size()];
+        int i = 0;
         for (Class<?> cl : paths) {
             cfg.roots[i++] = cl;
         }
@@ -124,8 +123,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         }
         Collection<Class<?>> objs = scanner.getCollector(WEBOBJECT_ANNO);
         Collection<Class<?>> adapters = scanner.getCollector(WEBADAPTER_ANNO);
-        cfg.types = new Class<?>[objs.size()+adapters.size()];
-        i=0;
+        cfg.types = new Class<?>[objs.size() + adapters.size()];
+        i = 0;
         for (Class<?> cl : objs) {
             cfg.types[i++] = cl;
         }
@@ -134,8 +133,7 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         }
     }
 
-    private void loadMetaTypeFile(WebEngine engine)
-            throws ReflectiveOperationException, IOException {
+    private void loadMetaTypeFile(WebEngine engine) throws ReflectiveOperationException, IOException {
         URL url = bundle.getEntry(DefaultTypeLoader.WEB_TYPES_FILE);
         if (url != null) {
             InputStream in = url.openStream();
@@ -147,8 +145,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         }
     }
 
-    private static Class<?>[] readWebTypes(WebLoader loader, InputStream in)
-            throws ReflectiveOperationException, IOException {
+    private static Class<?>[] readWebTypes(WebLoader loader, InputStream in) throws ReflectiveOperationException,
+            IOException {
         HashSet<Class<?>> types = new HashSet<Class<?>>();
         BufferedReader reader = null;
         try {
@@ -186,22 +184,24 @@ public class WebEngineModule extends Application implements ApplicationFactory {
                 // compat mode - should be removed later
                 WebObject wo = cl.getAnnotation(WebObject.class);
                 if (wo != null && wo.type().equals(cfg.rootType)) {
-                    log.warn("Invalid web module "+cfg.name+" from bundle "+bundle.getSymbolicName()+". The root-type "+cl+" in module.xml is deprecated. Consider using @Path annotation on you root web objects.");
+                    log.warn("Invalid web module " + cfg.name + " from bundle " + bundle.getSymbolicName()
+                            + ". The root-type " + cl
+                            + " in module.xml is deprecated. Consider using @Path annotation on you root web objects.");
                 }
             }
         }
         if (roots.isEmpty()) {
-            log.error("No root web objects found in web module "+cfg.name+" from bundle "+bundle.getSymbolicName());
-            //throw new IllegalStateException("No root web objects found in web module "+cfg.name+" from bundle "+bundle.getSymbolicName());
+            log.error("No root web objects found in web module " + cfg.name + " from bundle "
+                    + bundle.getSymbolicName());
+            // throw new
+            // IllegalStateException("No root web objects found in web module "+cfg.name+" from bundle "+bundle.getSymbolicName());
         }
         cfg.roots = roots.toArray(new Class<?>[roots.size()]);
     }
 
-    private ModuleConfiguration loadModuleConfigurationFile(WebEngine engine,
-            File file) throws IOException {
+    private ModuleConfiguration loadModuleConfigurationFile(WebEngine engine, File file) throws IOException {
         if (file != null && file.isFile()) {
-            cfg = ModuleManager.readConfiguration(
-                    engine, file);
+            cfg = ModuleManager.readConfiguration(engine, file);
         } else {
             cfg = new ModuleConfiguration();
         }
@@ -243,8 +243,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
     }
 
     @Override
-    public Application getApplication(Bundle bundle, Map<String, String> args)
-            throws ReflectiveOperationException, IOException {
+    public Application getApplication(Bundle bundle, Map<String, String> args) throws ReflectiveOperationException,
+            IOException {
         return WebEngineModuleFactory.getApplication(this, bundle, args);
     }
 

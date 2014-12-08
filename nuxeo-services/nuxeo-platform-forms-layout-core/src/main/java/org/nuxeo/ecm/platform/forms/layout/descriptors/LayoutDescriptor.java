@@ -166,8 +166,7 @@ public class LayoutDescriptor {
     }
 
     /**
-     * Returns the categories for this layout, so that it can be stored in the
-     * corresponding registries.
+     * Returns the categories for this layout, so that it can be stored in the corresponding registries.
      *
      * @since 5.5
      */
@@ -212,8 +211,7 @@ public class LayoutDescriptor {
                 crenderingInfos.put(item.getKey(), clonedInfos);
             }
         }
-        LayoutDefinitionImpl clone = new LayoutDefinitionImpl(name,
-                getProperties(), ctemplates, crows, cwidgets);
+        LayoutDefinitionImpl clone = new LayoutDefinitionImpl(name, getProperties(), ctemplates, crows, cwidgets);
         clone.setRenderingInfos(crenderingInfos);
         clone.setType(getType());
         clone.setTypeCategory(getTypeCategory());

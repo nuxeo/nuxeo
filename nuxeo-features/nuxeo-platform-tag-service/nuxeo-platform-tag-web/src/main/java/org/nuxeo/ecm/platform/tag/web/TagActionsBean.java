@@ -58,8 +58,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This Seam bean provides support for tagging related actions which can be made
- * on the current document.
+ * This Seam bean provides support for tagging related actions which can be made on the current document.
  */
 @Name("tagActions")
 @Scope(CONVERSATION)
@@ -94,8 +93,7 @@ public class TagActionsBean implements Serializable {
     // 1);
 
     /**
-     * Keeps the tagging information that will be performed on the current
-     * document document.
+     * Keeps the tagging information that will be performed on the current document document.
      */
     private String tagLabel;
 
@@ -118,8 +116,7 @@ public class TagActionsBean implements Serializable {
     }
 
     /**
-     * Returns the list with distinct public tags (or owned by user) that are
-     * applied on the current document.
+     * Returns the list with distinct public tags (or owned by user) that are applied on the current document.
      */
     @Factory(value = "currentDocumentTags", scope = EVENT)
     public List<Tag> getDocumentTags() throws ClientException {
@@ -128,8 +125,7 @@ public class TagActionsBean implements Serializable {
             return new ArrayList<Tag>(0);
         } else {
             String docId = currentDocument.getId();
-            List<Tag> tags = getTagService().getDocumentTags(documentManager,
-                    docId, null);
+            List<Tag> tags = getTagService().getDocumentTags(documentManager, docId, null);
             Collections.sort(tags, Tag.LABEL_COMPARATOR);
             return tags;
         }
@@ -164,22 +160,19 @@ public class TagActionsBean implements Serializable {
             if (currentDocument.isVersion()) {
                 DocumentModel liveDocument = documentManager.getSourceDocument(currentDocument.getRef());
                 if (!liveDocument.isCheckedOut()) {
-                    tagService.tag(documentManager, liveDocument.getId(),
-                            tagLabel, null);
+                    tagService.tag(documentManager, liveDocument.getId(), tagLabel, null);
                 }
             } else if (!currentDocument.isCheckedOut()) {
                 DocumentRef ref = documentManager.getBaseVersion(currentDocument.getRef());
                 if (ref instanceof IdRef) {
-                    tagService.tag(documentManager, ref.toString(), tagLabel,
-                            null);
+                    tagService.tag(documentManager, ref.toString(), tagLabel, null);
                 }
             }
             messageKey = "message.add.new.tagging";
             // force invalidation
             Contexts.getEventContext().remove("currentDocumentTags");
         }
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get(messageKey), tagLabel);
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get(messageKey), tagLabel);
         reset();
         return null;
     }
@@ -197,8 +190,7 @@ public class TagActionsBean implements Serializable {
         if (currentDocument.isVersion()) {
             DocumentModel liveDocument = documentManager.getSourceDocument(currentDocument.getRef());
             if (!liveDocument.isCheckedOut()) {
-                tagService.untag(documentManager, liveDocument.getId(), label,
-                        null);
+                tagService.untag(documentManager, liveDocument.getId(), label, null);
             }
         } else if (!currentDocument.isCheckedOut()) {
             DocumentRef ref = documentManager.getBaseVersion(currentDocument.getRef());
@@ -210,20 +202,19 @@ public class TagActionsBean implements Serializable {
         reset();
         // force invalidation
         Contexts.getEventContext().remove("currentDocumentTags");
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get("message.remove.tagging"),
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("message.remove.tagging"),
                 label);
         return null;
     }
 
     /**
-     * Returns tag cloud info for the whole repository. For performance reasons,
-     * the security on underlying documents is not tested.
+     * Returns tag cloud info for the whole repository. For performance reasons, the security on underlying documents is
+     * not tested.
      */
     @Factory(value = "tagCloudOnAllDocuments", scope = EVENT)
     public List<Tag> getPopularCloudOnAllDocuments() throws ClientException {
-        List<Tag> cloud = getTagService().getTagCloud(documentManager, null,
-                null, Boolean.TRUE); // logarithmic 0-100 normalization
+        List<Tag> cloud = getTagService().getTagCloud(documentManager, null, null, Boolean.TRUE); // logarithmic 0-100
+                                                                                                  // normalization
         // change weight to a font size
         double min = 100;
         double max = 200;
@@ -245,8 +236,7 @@ public class TagActionsBean implements Serializable {
         if (StringUtils.isBlank(listLabel)) {
             return new DocumentModelListImpl(0);
         } else {
-            List<String> ids = getTagService().getTagDocumentIds(
-                    documentManager, listLabel, null);
+            List<String> ids = getTagService().getTagDocumentIds(documentManager, listLabel, null);
             DocumentModelList docs = new DocumentModelListImpl(ids.size());
             DocumentModel doc = null;
             for (String id : ids) {
@@ -269,8 +259,8 @@ public class TagActionsBean implements Serializable {
     }
 
     /**
-     * Returns <b>true</b> if the current logged user has permission to modify a
-     * tag that is applied on the current document.
+     * Returns <b>true</b> if the current logged user has permission to modify a tag that is applied on the current
+     * document.
      */
     public boolean canModifyTag(Tag tag) {
         return tag != null;
@@ -308,8 +298,7 @@ public class TagActionsBean implements Serializable {
 
     public List<Tag> getSuggestions(Object input) throws ClientException {
         String label = (String) input;
-        List<Tag> tags = getTagService().getSuggestions(documentManager, label,
-                null);
+        List<Tag> tags = getTagService().getSuggestions(documentManager, label, null);
         Collections.sort(tags, Tag.LABEL_COMPARATOR);
         if (tags.size() > 10) {
             tags = tags.subList(0, 10);
@@ -317,8 +306,7 @@ public class TagActionsBean implements Serializable {
 
         // add the typed tag as first suggestion if we can add new tag
         label = cleanLabel(label);
-        if (Boolean.TRUE.equals(canSelectNewTag)
-                && !tags.contains(new Tag(label, 0))) {
+        if (Boolean.TRUE.equals(canSelectNewTag) && !tags.contains(new Tag(label, 0))) {
             tags.add(0, new Tag(label, -1));
         }
 
@@ -336,10 +324,8 @@ public class TagActionsBean implements Serializable {
 
     @SuppressWarnings("unchecked")
     @Observer({ SELECTION_EDITED, DOCUMENTS_IMPORTED })
-    public void addTagsOnEvent(List<DocumentModel> documents,
-            DocumentModel docModel) throws ClientException {
-        List<String> tags = (List<String>) docModel.getContextData(
-                ScopeType.REQUEST, "bulk_tags");
+    public void addTagsOnEvent(List<DocumentModel> documents, DocumentModel docModel) throws ClientException {
+        List<String> tags = (List<String>) docModel.getContextData(ScopeType.REQUEST, "bulk_tags");
         if (tags != null && !tags.isEmpty()) {
             TagService tagService = Framework.getLocalService(TagService.class);
             String username = documentManager.getPrincipal().getName();

@@ -42,8 +42,7 @@ public class DefaultSession implements Session {
 
     protected String defaultSchemas = null;
 
-    public DefaultSession(AbstractAutomationClient client, Connector connector,
-            LoginInfo login) {
+    public DefaultSession(AbstractAutomationClient client, Connector connector, LoginInfo login) {
         this.client = client;
         this.connector = connector;
         this.login = login;
@@ -84,8 +83,7 @@ public class DefaultSession implements Session {
         String content = JsonMarshalling.writeRequest(request);
         String ctype;
         Object input = request.getInput();
-        if (input instanceof OperationInput
-                && ((OperationInput) input).isBinary()) {
+        if (input instanceof OperationInput && ((OperationInput) input).isBinary()) {
             MultipartInput mpinput = new MultipartInput();
             mpinput.setRequest(content);
             ctype = mpinput.getContentType();
@@ -95,8 +93,7 @@ public class DefaultSession implements Session {
             } else if (input instanceof Blobs) {
                 mpinput.setBlobs((Blobs) input);
             } else {
-                throw new IllegalArgumentException(
-                        "Unsupported binary input object: " + input);
+                throw new IllegalArgumentException("Unsupported binary input object: " + input);
             }
             req = new Request(Request.POST, request.getUrl(), mpinput);
         } else {

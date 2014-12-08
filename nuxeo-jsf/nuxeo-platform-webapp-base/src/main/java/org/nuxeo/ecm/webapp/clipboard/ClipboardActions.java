@@ -28,17 +28,16 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor;
 
 /**
- * Interface for clipboard template page action listener. Exposes methods for
- * handling user actions related to the copy/paste buttons from clipboard.xhtml
- * template.
+ * Interface for clipboard template page action listener. Exposes methods for handling user actions related to the
+ * copy/paste buttons from clipboard.xhtml template.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 public interface ClipboardActions {
 
     /**
-     * Called when the drag and drop is launched in the clipboard fragment.
-     * Copies the documents passed to the clipboard.
+     * Called when the drag and drop is launched in the clipboard fragment. Copies the documents passed to the
+     * clipboard.
      * <p>
      * The selection is added to the clipboard and to the WorkingList.
      *
@@ -67,8 +66,7 @@ public interface ClipboardActions {
     String moveWorkingList();
 
     /**
-     * Called when the drag and drop is launched in the body fragment.
-     * Pastes the documents passed to the clipboard.
+     * Called when the drag and drop is launched in the body fragment. Pastes the documents passed to the clipboard.
      *
      * @param docPaste the list of doc we want to paste
      */
@@ -82,7 +80,6 @@ public interface ClipboardActions {
     String pasteDocumentList(String listName) throws ClientException;
 
     String pasteDocumentListInside(String listName, String docId) throws ClientException;
-
 
     String pasteClipboard();
 
@@ -124,7 +121,7 @@ public interface ClipboardActions {
     /**
      * Checks if the documents from the clipboard can be moved into the given document
      */
-    boolean getCanMoveFromClipboardInside(DocumentModel document)throws ClientException;
+    boolean getCanMoveFromClipboardInside(DocumentModel document) throws ClientException;
 
     /**
      * Checks if the content of a given workList can be pasted.
@@ -177,8 +174,8 @@ public interface ClipboardActions {
     List<DocumentModel> getCurrentSelectedList();
 
     /*
-    List<DocumentModel> getWorkingList();
-    */
+     * List<DocumentModel> getWorkingList();
+     */
 
     /**
      * Returns the name of the current selected WorkList.
@@ -193,8 +190,7 @@ public interface ClipboardActions {
     void setCurrentSelectedList(String listId);
 
     /**
-     *  Returns the list of available lists
-     *  (ie: the lists from the CLIPBOARD Category).
+     * Returns the list of available lists (ie: the lists from the CLIPBOARD Category).
      */
     List<String> getAvailableLists();
 
@@ -204,16 +200,14 @@ public interface ClipboardActions {
     List<DocumentsListDescriptor> getDescriptorsForAvailableLists();
 
     /**
-     * Returns the list of available web actions for the currently selected
-     * DocumentList.
+     * Returns the list of available web actions for the currently selected DocumentList.
      *
      * @return the WebAction list
      */
     List<Action> getActionsForCurrentList();
 
     /**
-     * Returns the list of available web actions for the currently selected
-     * Documents.
+     * Returns the list of available web actions for the currently selected Documents.
      *
      * @return the WebAction list
      */
@@ -224,17 +218,14 @@ public interface ClipboardActions {
     /**
      * Checks for documents bulk editing action.
      *
-     * @return <code>true</code> if the current selected docs (from clipboard) are editable by
-     *         the current user
+     * @return <code>true</code> if the current selected docs (from clipboard) are editable by the current user
      */
     boolean getCanEditSelectedDocs() throws ClientException;
 
     /**
-     * Checks if documents in the specified list are editable so the bulk
-     * editing action can be invoked later.
+     * Checks if documents in the specified list are editable so the bulk editing action can be invoked later.
      *
-     * @return <code>true</code> if the docs from the specified working list
-     *         are editable by the current user
+     * @return <code>true</code> if the docs from the specified working list are editable by the current user
      */
     boolean getCanEditListDocs(String listName) throws ClientException;
 

@@ -43,22 +43,27 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractResourceType implements ResourceType {
 
     protected final ModuleImpl owner;
+
     protected final String name;
+
     protected int visibility = TypeVisibility.DEFAULT;
+
     protected AbstractResourceType superType;
+
     protected volatile ClassProxy clazz;
+
     protected volatile Guard guard = Guard.DEFAULT;
+
     protected volatile Set<String> facets;
+
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
 
-
-    protected AbstractResourceType(WebEngine engine, ModuleImpl module,
-            AbstractResourceType superType, String name, ClassProxy clazz, int visibility) {
+    protected AbstractResourceType(WebEngine engine, ModuleImpl module, AbstractResourceType superType, String name,
+            ClassProxy clazz, int visibility) {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
         owner = module;
         this.superType = superType;
@@ -101,15 +106,15 @@ public abstract class AbstractResourceType implements ResourceType {
 
     @SuppressWarnings("unchecked")
     public Class<Resource> getResourceClass() {
-        return (Class<Resource>)clazz.get();
+        return (Class<Resource>) clazz.get();
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Resource> T newInstance() {
         try {
-            return (T)clazz.get().newInstance();
+            return (T) clazz.get().newInstance();
         } catch (ReflectiveOperationException e) {
-            throw WebException.wrap("Failed to instantiate web object: "+clazz, e);
+            throw WebException.wrap("Failed to instantiate web object: " + clazz, e);
         }
     }
 
@@ -139,8 +144,7 @@ public abstract class AbstractResourceType implements ResourceType {
                 try {
                     guard = PermissionService.parse(g);
                 } catch (ParseException e) {
-                    throw WebException.wrap(
-                            "Failed to parse guard: "+g+" on WebObject "+c.getName(), e);
+                    throw WebException.wrap("Failed to parse guard: " + g + " on WebObject " + c.getName(), e);
                 }
             } else {
                 Class<?> gc = ag.type();
@@ -148,9 +152,8 @@ public abstract class AbstractResourceType implements ResourceType {
                     try {
                         guard = (Guard) gc.newInstance();
                     } catch (ReflectiveOperationException e) {
-                        throw WebException.wrap(
-                                "Failed to instantiate guard handler: "+gc.getName()
-                                +" on WebObject "+c.getName(), e);
+                        throw WebException.wrap("Failed to instantiate guard handler: " + gc.getName()
+                                + " on WebObject " + c.getName(), e);
                     }
                 }
             }
@@ -192,9 +195,8 @@ public abstract class AbstractResourceType implements ResourceType {
     }
 
     protected ScriptFile findSkinTemplate(Module module, String name) {
-        return module.getFile(new StringBuilder().append("views")
-                .append(File.separatorChar).append(this.name)
-                .append(File.separatorChar).append(name).toString());
+        return module.getFile(new StringBuilder().append("views").append(File.separatorChar).append(this.name).append(
+                File.separatorChar).append(name).toString());
     }
 
     protected ScriptFile findTypeTemplate(Module module, String name) {
@@ -208,7 +210,7 @@ public abstract class AbstractResourceType implements ResourceType {
             try {
                 return new ScriptFile(new File(url.toURI()));
             } catch (IOException | URISyntaxException e) {
-                throw WebException.wrap("Failed to convert URL to URI: "+url, e);
+                throw WebException.wrap("Failed to convert URL to URI: " + url, e);
             }
         }
         return null;
@@ -221,11 +223,9 @@ public abstract class AbstractResourceType implements ResourceType {
         if (p > -1) {
             path = path.substring(0, p);
             path = path.replace('.', '/');
-            return new StringBuilder().append('/').append(path)
-                    .append('/').append(fileName).toString();
+            return new StringBuilder().append('/').append(path).append('/').append(fileName).toString();
         }
-        return new StringBuilder().append('/')
-                .append(fileName).toString();
+        return new StringBuilder().append('/').append(fileName).toString();
     }
 
 }

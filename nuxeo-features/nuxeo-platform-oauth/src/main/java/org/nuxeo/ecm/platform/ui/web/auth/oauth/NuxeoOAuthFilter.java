@@ -102,8 +102,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             return true;
         }
 
-        if ("GET".equals(httpRequest.getMethod())
-                && httpRequest.getParameter("oauth_signature") != null) {
+        if ("GET".equals(httpRequest.getMethod()) && httpRequest.getParameter("oauth_signature") != null) {
             return true;
         } else if ("POST".equals(httpRequest.getMethod())
                 && "application/x-www-form-urlencoded".equals(httpRequest.getContentType())
@@ -115,8 +114,8 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         if (!accept(request)) {
             chain.doFilter(request, response);
             return;
@@ -143,7 +142,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         if (!(request instanceof HttpServletRequest)) {
             return false;
         }
-        HttpServletRequest httpRequest = (HttpServletRequest)request;
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
         String uri = httpRequest.getRequestURI();
         if (uri.contains("/oauth/")) {
             return true;
@@ -154,8 +153,8 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         return false;
     }
 
-    protected void process(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    protected void process(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -174,9 +173,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                 processAccessToken(httpRequest, httpResponse);
 
             } else {
-                httpResponse.sendError(
-                        HttpServletResponse.SC_METHOD_NOT_ALLOWED,
-                        "OAuth call not supported");
+                httpResponse.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "OAuth call not supported");
             }
             return;
         }
@@ -184,14 +181,12 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         // after a 3 legged nego)
         else if (isOAuthSignedRequest(httpRequest)) {
 
-            LoginContext loginContext = processSignedRequest(httpRequest,
-                    httpResponse);
+            LoginContext loginContext = processSignedRequest(httpRequest, httpResponse);
             // forward the call if authenticated
             if (loginContext != null) {
                 Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
                 try {
-                    chain.doFilter(new NuxeoSecuredRequestWrapper(httpRequest,
-                            principal), response);
+                    chain.doFilter(new NuxeoSecuredRequestWrapper(httpRequest, principal), response);
                 } finally {
                     try {
                         loginContext.logout();
@@ -212,9 +207,8 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         }
     }
 
-    protected void processAuthorize(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) throws IOException,
-            ServletException {
+    protected void processAuthorize(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+            throws IOException, ServletException {
 
         String token = httpRequest.getParameter(OAuth.OAUTH_TOKEN);
 
@@ -225,11 +219,9 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             // initial access => send to real login page
             String loginUrl = VirtualHostHelper.getBaseURL(httpRequest);
 
-            httpRequest.getSession(true).setAttribute("OAUTH-INFO",
-                    getOAuthTokenStore().getRequestToken(token));
+            httpRequest.getSession(true).setAttribute("OAUTH-INFO", getOAuthTokenStore().getRequestToken(token));
 
-            String redirectUrl = "oauthGrant.jsp" + "?" + OAuth.OAUTH_TOKEN
-                    + "=" + token;
+            String redirectUrl = "oauthGrant.jsp" + "?" + OAuth.OAUTH_TOKEN + "=" + token;
             redirectUrl = URLEncoder.encode(redirectUrl, "UTF-8");
             loginUrl = loginUrl + "login.jsp?requestedUrl=" + redirectUrl;
 
@@ -244,20 +236,19 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
             // XXX get what user has granted !!!
 
-            OAuthToken rToken = getOAuthTokenStore().addVerifierToRequestToken(
-                    token, Long.parseLong(duration));
+            OAuthToken rToken = getOAuthTokenStore().addVerifierToRequestToken(token, Long.parseLong(duration));
             rToken.setNuxeoLogin(nuxeo_login);
 
             String cbUrl = rToken.getCallbackUrl();
-            if (cbUrl==null) {
+            if (cbUrl == null) {
                 // get the callback url from the consumer ...
                 String consumerKey = rToken.getConsumerKey();
                 NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey);
-                if (consumer!=null) {
+                if (consumer != null) {
                     cbUrl = consumer.getCallbackURL();
                 }
 
-                if (cbUrl==null) {
+                if (cbUrl == null) {
                     // fall back to default Google oauth callback ...
                     cbUrl = "http://oauth.gmodules.com/gadgets/oauthcallback";
                 }
@@ -274,15 +265,13 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
     }
 
-    protected void processRequestToken(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) throws IOException,
-            ServletException {
+    protected void processRequestToken(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+            throws IOException, ServletException {
 
         OAuthMessage message = OAuthServlet.getMessage(httpRequest, null);
         String consumerKey = message.getConsumerKey();
 
-        NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
-                consumerKey, message.getSignatureMethod());
+        NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey, message.getSignatureMethod());
         if (consumer == null) {
             log.error("Consumer " + consumerKey + " is not registered");
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
@@ -305,8 +294,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         String callBack = message.getParameter(OAuth.OAUTH_CALLBACK);
 
         // XXX should not only use consumerKey !!!
-        OAuthToken rToken = getOAuthTokenStore().createRequestToken(
-                consumerKey, callBack);
+        OAuthToken rToken = getOAuthTokenStore().createRequestToken(consumerKey, callBack);
 
         httpResponse.setContentType("application/x-www-form-urlencoded");
         httpResponse.setStatus(HttpServletResponse.SC_OK);
@@ -326,16 +314,14 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         httpResponse.getWriter().write(sb.toString());
     }
 
-    protected void processAccessToken(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) throws IOException,
-            ServletException {
+    protected void processAccessToken(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+            throws IOException, ServletException {
 
         OAuthMessage message = OAuthServlet.getMessage(httpRequest, null);
         String consumerKey = message.getConsumerKey();
         String token = message.getToken();
 
-        NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
-                consumerKey, message.getSignatureMethod());
+        NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey, message.getSignatureMethod());
 
         if (consumer == null) {
             log.error("Consumer " + consumerKey + " is not registered");
@@ -369,9 +355,9 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         log.debug("OAuth verifier = " + verif);
 
-        boolean allowByPassVerifier=false;
+        boolean allowByPassVerifier = false;
 
-        if (verif==null) {
+        if (verif == null) {
             // here we don't have the verifier in the request
             // this is strictly prohibited in the spec
             // => see http://tools.ietf.org/html/rfc5849 page 11
@@ -385,8 +371,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         if (rToken.getVerifier().equals(verif) || allowByPassVerifier) {
 
             // Ok we can authenticate
-            OAuthToken aToken = getOAuthTokenStore().createAccessTokenFromRequestToken(
-                    rToken);
+            OAuthToken aToken = getOAuthTokenStore().createAccessTokenFromRequestToken(rToken);
 
             httpResponse.setContentType("application/x-www-form-urlencoded");
             httpResponse.setStatus(HttpServletResponse.SC_OK);
@@ -405,14 +390,12 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             httpResponse.getWriter().write(sb.toString());
         } else {
             log.error("Verifier does not match : can not continue");
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                    "Verifier is not correct");
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Verifier is not correct");
         }
     }
 
-    protected LoginContext processSignedRequest(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) throws IOException,
-            ServletException {
+    protected LoginContext processSignedRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+            throws IOException, ServletException {
 
         String URL = getRequestURL(httpRequest);
 
@@ -421,12 +404,10 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         String consumerKey = message.getConsumerKey();
         String signatureMethod = message.getSignatureMethod();
 
-        log.debug("Received OAuth signed request on "
-                + httpRequest.getRequestURI() + " with consumerKey="
+        log.debug("Received OAuth signed request on " + httpRequest.getRequestURI() + " with consumerKey="
                 + consumerKey + " and signature method " + signatureMethod);
 
-        NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
-                consumerKey, signatureMethod);
+        NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey, signatureMethod);
 
         if (consumer == null && consumerKey != null) {
             OAuthServerKeyManager okm = Framework.getLocalService(OAuthServerKeyManager.class);
@@ -437,18 +418,15 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         if (consumer == null) {
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
-            log.error("Consumer " + consumerKey
-                    + " is unknown, can not authenticated");
-            httpResponse.sendError(errCode, "Consumer " + consumerKey
-                    + " is not registered");
+            log.error("Consumer " + consumerKey + " is unknown, can not authenticated");
+            httpResponse.sendError(errCode, "Consumer " + consumerKey + " is not registered");
             return null;
         } else {
 
             OAuthAccessor accessor = new OAuthAccessor(consumer);
             OAuthValidator validator = getValidator();
 
-            OAuthToken aToken = getOAuthTokenStore().getAccessToken(
-                    message.getToken());
+            OAuthToken aToken = getOAuthTokenStore().getAccessToken(message.getToken());
 
             String targetLogin;
             if (aToken != null) {
@@ -464,8 +442,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     // We need to send a 403 to force client to ask for a new
                     // token in case the Access Token was deleted !!!
                     int errCode = HttpServletResponse.SC_UNAUTHORIZED;
-                    httpResponse.sendError(errCode,
-                            "Signed fetch is not allowed");
+                    httpResponse.sendError(errCode, "Signed fetch is not allowed");
                     return null;
                 }
                 targetLogin = consumer.getSignedFetchUser();
@@ -483,12 +460,10 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     return loginContext;
                 } else {
                     int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.USER_REFUSED);
-                    httpResponse.sendError(errCode,
-                            "No configured login information");
+                    httpResponse.sendError(errCode, "No configured login information");
                     return null;
                 }
-            } catch (OAuthException | URISyntaxException | IOException
-                    | LoginException e) {
+            } catch (OAuthException | URISyntaxException | IOException | LoginException e) {
                 log.error("Error while validating OAuth signature", e);
                 int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
                 httpResponse.sendError(errCode, "Can not validate signature");
@@ -498,19 +473,18 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
     }
 
     /**
-     * Get the URL used for this request by checking the X-Forwarded-Proto header used
-     * in the request.
+     * Get the URL used for this request by checking the X-Forwarded-Proto header used in the request.
+     *
      * @param httpRequest
      * @return
-     *
      * @since 5.9.5
      */
     public static String getRequestURL(HttpServletRequest httpRequest) {
         String URL = httpRequest.getRequestURL().toString();
         String forwardedProto = httpRequest.getHeader("X-Forwarded-Proto");
-        if(forwardedProto != null && !URL.startsWith(forwardedProto)) {
-                int protoDelimiterIndex = URL.indexOf("://");
-                URL = forwardedProto + URL.substring(protoDelimiterIndex);
+        if (forwardedProto != null && !URL.startsWith(forwardedProto)) {
+            int protoDelimiterIndex = URL.indexOf("://");
+            URL = forwardedProto + URL.substring(protoDelimiterIndex);
         }
         return URL;
     }

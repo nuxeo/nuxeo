@@ -22,11 +22,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 
 /**
- * A filter based on a list of others filters. To accept a document, all the
- * registered filters must accept it.
+ * A filter based on a list of others filters. To accept a document, all the registered filters must accept it.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class CompoundFilter implements Filter {
 

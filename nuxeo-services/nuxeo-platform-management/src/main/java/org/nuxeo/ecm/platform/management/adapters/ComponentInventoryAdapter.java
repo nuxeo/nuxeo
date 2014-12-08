@@ -28,8 +28,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class ComponentInventoryAdapter
-        implements ComponentInventoryMBean {
+public class ComponentInventoryAdapter implements ComponentInventoryMBean {
 
     protected final RegistrationInfo info;
 

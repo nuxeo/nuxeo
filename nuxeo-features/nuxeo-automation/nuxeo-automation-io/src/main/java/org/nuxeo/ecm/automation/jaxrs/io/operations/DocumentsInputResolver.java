@@ -17,7 +17,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 
 /**
  * @author matic
- *
  */
 public class DocumentsInputResolver implements InputResolver<DocumentRefList> {
 
@@ -35,7 +34,5 @@ public class DocumentsInputResolver implements InputResolver<DocumentRefList> {
         }
         return list;
     }
-
-
 
 }

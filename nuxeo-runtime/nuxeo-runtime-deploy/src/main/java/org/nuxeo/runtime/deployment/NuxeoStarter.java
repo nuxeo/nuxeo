@@ -48,21 +48,17 @@ import org.nuxeo.osgi.application.loader.FrameworkLoader;
 import org.osgi.framework.BundleException;
 
 /**
- * This is called at WAR startup and starts the Nuxeo OSGi runtime and registers
- * the Nuxeo bundles with it.
+ * This is called at WAR startup and starts the Nuxeo OSGi runtime and registers the Nuxeo bundles with it.
  * <p>
- * This class must be configured as a {@code <listener>/<listener-class>} in
- * {@code META-INF/web.xml}.
+ * This class must be configured as a {@code <listener>/<listener-class>} in {@code META-INF/web.xml}.
  * <p>
- * It uses servlet init parameters defined through
- * {@code <context-param>/<param-name>/<param-value>} in web.xml. Allowable
- * parameter names come from {@link org.nuxeo.common.Environment}, mainly
- * {@link org.nuxeo.common.Environment#NUXEO_RUNTIME_HOME NUXEO_RUNTIME_HOME}
- * and {@link org.nuxeo.common.Environment#NUXEO_CONFIG_DIR NUXEO_CONFIG_DIR},
- * but also {@link org.nuxeo.common.Environment#NUXEO_DATA_DIR NUXEO_DATA_DIR},
- * {@link org.nuxeo.common.Environment#NUXEO_LOG_DIR NUXEO_LOG_DIR},
- * {@link org.nuxeo.common.Environment#NUXEO_TMP_DIR NUXEO_TMP_DIR} and
- * {@link org.nuxeo.common.Environment#NUXEO_WEB_DIR NUXEO_WEB_DIR}.
+ * It uses servlet init parameters defined through {@code <context-param>/<param-name>/<param-value>} in web.xml.
+ * Allowable parameter names come from {@link org.nuxeo.common.Environment}, mainly
+ * {@link org.nuxeo.common.Environment#NUXEO_RUNTIME_HOME NUXEO_RUNTIME_HOME} and
+ * {@link org.nuxeo.common.Environment#NUXEO_CONFIG_DIR NUXEO_CONFIG_DIR}, but also
+ * {@link org.nuxeo.common.Environment#NUXEO_DATA_DIR NUXEO_DATA_DIR},
+ * {@link org.nuxeo.common.Environment#NUXEO_LOG_DIR NUXEO_LOG_DIR}, {@link org.nuxeo.common.Environment#NUXEO_TMP_DIR
+ * NUXEO_TMP_DIR} and {@link org.nuxeo.common.Environment#NUXEO_WEB_DIR NUXEO_WEB_DIR}.
  */
 public class NuxeoStarter implements ServletContextListener {
 
@@ -72,8 +68,8 @@ public class NuxeoStarter implements ServletContextListener {
     private static final String DEFAULT_HOME = "nuxeo";
 
     /**
-     * Name of the file listing Nuxeo bundles. If existing, this file will be
-     * used at start, else {@code "/WEB-INF/lib/"} will be scanned.
+     * Name of the file listing Nuxeo bundles. If existing, this file will be used at start, else
+     * {@code "/WEB-INF/lib/"} will be scanned.
      *
      * @since 5.9.3
      * @see #findBundles(ServletContext)
@@ -92,8 +88,7 @@ public class NuxeoStarter implements ServletContextListener {
             long finishedTime = System.currentTimeMillis();
             @SuppressWarnings("boxing")
             Double duration = (finishedTime - startTime) / 1000.0;
-            log.info(String.format("Nuxeo framework started in %.1f sec.",
-                    duration));
+            log.info(String.format("Nuxeo framework started in %.1f sec.", duration));
         } catch (IOException | BundleException e) {
             throw new RuntimeException(e);
         }
@@ -108,8 +103,7 @@ public class NuxeoStarter implements ServletContextListener {
         }
     }
 
-    protected void start(ServletContextEvent event) throws IOException,
-            BundleException {
+    protected void start(ServletContextEvent event) throws IOException, BundleException {
         ServletContext servletContext = event.getServletContext();
         findBundles(servletContext);
         findEnv(servletContext);
@@ -124,14 +118,11 @@ public class NuxeoStarter implements ServletContextListener {
         FrameworkLoader.stop();
     }
 
-    protected void findBundles(ServletContext servletContext)
-            throws IOException {
-        InputStream bundlesListStream = servletContext.getResourceAsStream("/WEB-INF/"
-                + NUXEO_BUNDLES_LIST);
+    protected void findBundles(ServletContext servletContext) throws IOException {
+        InputStream bundlesListStream = servletContext.getResourceAsStream("/WEB-INF/" + NUXEO_BUNDLES_LIST);
         if (bundlesListStream != null) {
             File lib = new File(servletContext.getRealPath("/WEB-INF/lib/"));
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(bundlesListStream))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(bundlesListStream))) {
                 String bundleName;
                 while ((bundleName = reader.readLine()) != null) {
                     bundleFiles.add(new File(lib, bundleName));
@@ -175,11 +166,9 @@ public class NuxeoStarter implements ServletContextListener {
             env.put(NUXEO_RUNTIME_HOME, home.getAbsolutePath());
         }
         // host
-        if (getClass().getClassLoader().getClass().getName().startsWith(
-                "org.jboss.classloader")) {
+        if (getClass().getClassLoader().getClass().getName().startsWith("org.jboss.classloader")) {
             env.put(FrameworkLoader.HOST_NAME, JBOSS_HOST);
-        } else if (servletContext.getClass().getName().startsWith(
-                "org.apache.catalina")) {
+        } else if (servletContext.getClass().getName().startsWith("org.apache.catalina")) {
             env.put(FrameworkLoader.HOST_NAME, TOMCAT_HOST);
         }
     }

@@ -45,80 +45,70 @@ import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
  * 
  * @author tiry
  */
-public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl
-        implements UserWorkspaceService {
+public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl implements UserWorkspaceService {
 
     private static final long serialVersionUID = 1L;
-    
+
     protected String getUserWorkspaceRootType() {
         return getComponent().getConfiguration().getUserWorkspaceRootType();
     }
-    
+
     protected String getUserWorkspaceType() {
         return getComponent().getConfiguration().getUserWorkspaceType();
     }
 
-    protected void setUserWorkspaceRootACL( DocumentModel doc) throws ClientException {
+    protected void setUserWorkspaceRootACL(DocumentModel doc) throws ClientException {
         ACP acp = new ACPImpl();
-        ACE denyEverything = new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false);
+        ACE denyEverything = new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
         ACL acl = new ACLImpl();
         acl.setACEs(new ACE[] { denyEverything });
         acp.addACL(acl);
         doc.setACP(acp, true);
     }
 
-    protected void setUserWorkspaceACL( DocumentModel doc, String userName) throws ClientException {
+    protected void setUserWorkspaceACL(DocumentModel doc, String userName) throws ClientException {
         ACP acp = new ACPImpl();
-        ACE grantEverything = new ACE(userName, SecurityConstants.EVERYTHING,
-                true);
+        ACE grantEverything = new ACE(userName, SecurityConstants.EVERYTHING, true);
         ACL acl = new ACLImpl();
         acl.setACEs(new ACE[] { grantEverything });
         acp.addACL(acl);
         doc.setACP(acp, true);
     }
 
-    protected DocumentModel doCreateUserWorkspacesRoot(
-            CoreSession unrestrictedSession, PathRef rootRef)
+    protected DocumentModel doCreateUserWorkspacesRoot(CoreSession unrestrictedSession, PathRef rootRef)
             throws ClientException {
 
         String parentPath = new Path(rootRef.toString()).removeLastSegments(1).toString();
         DocumentModel doc = unrestrictedSession.createDocumentModel(parentPath,
-                UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT,
-                getUserWorkspaceRootType());
-        doc.setProperty("dublincore", "title",
-                UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
+                UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT, getUserWorkspaceRootType());
+        doc.setProperty("dublincore", "title", UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
         doc.setProperty("dublincore", "description", "");
         doc = unrestrictedSession.createDocument(doc);
 
-        setUserWorkspaceRootACL(doc);        
+        setUserWorkspaceRootACL(doc);
 
         return doc;
     }
 
-    protected DocumentModel doCreateUserWorkspace(
-            CoreSession unrestrictedSession, PathRef wsRef,
-            Principal principal, String userName) throws ClientException {
+    protected DocumentModel doCreateUserWorkspace(CoreSession unrestrictedSession, PathRef wsRef, Principal principal,
+            String userName) throws ClientException {
 
         String parentPath = new Path(wsRef.toString()).removeLastSegments(1).toString();
         String wsName = new Path(wsRef.toString()).lastSegment();
-        DocumentModel doc = unrestrictedSession.createDocumentModel(parentPath,
-                wsName, getUserWorkspaceType());
+        DocumentModel doc = unrestrictedSession.createDocumentModel(parentPath, wsName, getUserWorkspaceType());
 
-        doc.setProperty("dublincore", "title",
-                buildUserWorkspaceTitle(principal, userName));
+        doc.setProperty("dublincore", "title", buildUserWorkspaceTitle(principal, userName));
         doc.setProperty("dublincore", "description", "");
         doc = unrestrictedSession.createDocument(doc);
-                
-        setUserWorkspaceACL(doc, userName);                
-        
+
+        setUserWorkspaceACL(doc, userName);
+
         /**
          * @since 5.7
          */
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("username", userName);
-        notifyEvent(unrestrictedSession, doc,
-                (NuxeoPrincipal) unrestrictedSession.getPrincipal(),
+        notifyEvent(unrestrictedSession, doc, (NuxeoPrincipal) unrestrictedSession.getPrincipal(),
                 DocumentEventTypes.USER_WORKSPACE_CREATED, properties);
         return doc;
     }

@@ -27,7 +27,6 @@ import com.google.gwt.user.client.ui.ToggleButton;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class HideManagerButton extends ToggleButton {
 
@@ -41,8 +40,7 @@ public class HideManagerButton extends ToggleButton {
 
     private IFrameElement previewFrame;
 
-    public HideManagerButton(AnnotationController controller, AnnotationManagerPanel panel,
-            Frame previewFrame) {
+    public HideManagerButton(AnnotationController controller, AnnotationManagerPanel panel, Frame previewFrame) {
         super();
         this.controller = controller;
         this.panel = panel;

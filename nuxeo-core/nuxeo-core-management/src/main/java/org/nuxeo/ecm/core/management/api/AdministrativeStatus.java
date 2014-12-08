@@ -44,8 +44,7 @@ public class AdministrativeStatus implements Serializable {
 
     protected String description;
 
-    public AdministrativeStatus(String state, String message,
-            Calendar modificationDate, String userLogin,
+    public AdministrativeStatus(String state, String message, Calendar modificationDate, String userLogin,
             String instanceIdentifier, String serviceIdentifier) {
         this.state = state;
         this.message = message;
@@ -102,8 +101,7 @@ public class AdministrativeStatus implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("administrativeStatus(%s,%s)", instanceIdentifier,
-                state);
+        return String.format("administrativeStatus(%s,%s)", instanceIdentifier, state);
     }
 
 }

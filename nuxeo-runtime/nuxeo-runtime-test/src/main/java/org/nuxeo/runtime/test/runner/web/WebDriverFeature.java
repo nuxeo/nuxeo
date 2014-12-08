@@ -43,8 +43,7 @@ public class WebDriverFeature extends SimpleFeature {
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         Class<?> classToTest = runner.getTargetTestClass();
-        Browser browser = FeaturesRunner.getScanner().getFirstAnnotation(
-                classToTest, Browser.class);
+        Browser browser = FeaturesRunner.getScanner().getFirstAnnotation(classToTest, Browser.class);
         DriverFactory factory;
         // test here if the driver factory is specified by environment
         String fcName = System.getProperty(DriverFactory.class.getName());
@@ -67,8 +66,7 @@ public class WebDriverFeature extends SimpleFeature {
         // get the home page and the url - first check for an url from the
         // environment
         String url = System.getProperty(HomePage.class.getName() + ".url");
-        HomePage home = FeaturesRunner.getScanner().getFirstAnnotation(
-                classToTest, HomePage.class);
+        HomePage home = FeaturesRunner.getScanner().getFirstAnnotation(classToTest, HomePage.class);
         if (home != null) {
             config.setHomePageClass(home.type());
             if (url == null) {
@@ -118,8 +116,7 @@ public class WebDriverFeature extends SimpleFeature {
             binder.bind(config.getHomePageClass()).toProvider(new Provider() {
                 @Override
                 public Object get() {
-                    Object obj = PageFactory.initElements(config.getDriver(),
-                            config.getHomePageClass());
+                    Object obj = PageFactory.initElements(config.getDriver(), config.getHomePageClass());
                     runner.getInjector().injectMembers(obj);
                     if (obj instanceof WebPage) {
                         ((WebPage) obj).ensureLoaded();

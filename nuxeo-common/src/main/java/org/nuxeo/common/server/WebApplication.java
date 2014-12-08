@@ -26,7 +26,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("webapp")
 public class WebApplication {
@@ -44,7 +43,7 @@ public class WebApplication {
     protected String path;
 
     @XNode("@warPreprocessing")
-    protected boolean warPreprocessing=false;
+    protected boolean warPreprocessing = false;
 
     public String getWebRoot() {
         return root;

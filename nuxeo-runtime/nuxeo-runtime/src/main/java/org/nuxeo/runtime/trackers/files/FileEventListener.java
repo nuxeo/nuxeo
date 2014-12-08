@@ -11,7 +11,6 @@ package org.nuxeo.runtime.trackers.files;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
-
 /*
  * Wrap a {@link FileEventHandler} for being enlisted in the
  * {@link EventService}.

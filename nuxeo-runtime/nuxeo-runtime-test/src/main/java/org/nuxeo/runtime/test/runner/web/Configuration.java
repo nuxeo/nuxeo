@@ -21,8 +21,7 @@ package org.nuxeo.runtime.test.runner.web;
 import org.openqa.selenium.WebDriver;
 
 /**
- * WebDriver test configuration that can be configured either from
- * system properties or for annotations.
+ * WebDriver test configuration that can be configured either from system properties or for annotations.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -47,7 +46,6 @@ public class Configuration {
      * The home page class
      */
     protected Class<?> homePageClass;
-
 
     public Configuration(DriverFactory factory) {
         this.factory = factory;

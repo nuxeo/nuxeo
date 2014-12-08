@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.ClientException;
  * Dummy implementation of the {@link ScanService} interface.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class DummyVirusScanner implements ScanService {
 
@@ -36,7 +35,7 @@ public class DummyVirusScanner implements ScanService {
 
     @Override
     public ScanResult scanBlob(Blob blob) throws ClientException {
-        if (blob!=null) {
+        if (blob != null) {
             doneFiles.add(blob.getFilename());
             if (blob.getFilename().contains("doFail")) {
                 throw new ClientException("Virus Scanner not available");

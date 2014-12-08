@@ -68,8 +68,8 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     }
 
     /**
-     * Work that waits in the fulltext updater queue, blocking other indexing
-     * work, until the main thread tells it to go ahead.
+     * Work that waits in the fulltext updater queue, blocking other indexing work, until the main thread tells it to go
+     * ahead.
      */
     public static class BlockingWork extends AbstractWork {
 
@@ -128,8 +128,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     }
 
     protected int jobDocs() throws ClientException {
-        String request = String.format(
-                "SELECT * from Document where ecm:fulltextJobId = '%s'", docId);
+        String request = String.format("SELECT * from Document where ecm:fulltextJobId = '%s'", docId);
         return session.query(request).size();
     }
 

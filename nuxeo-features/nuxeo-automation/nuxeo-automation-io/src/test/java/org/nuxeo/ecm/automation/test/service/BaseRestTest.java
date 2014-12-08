@@ -72,60 +72,50 @@ public class BaseRestTest {
      * @return
      * @throws java.io.IOException
      * @throws org.codehaus.jackson.JsonProcessingException
-     *
      */
-    protected JsonNode parseJson(String json) throws JsonProcessingException,
-        IOException {
+    protected JsonNode parseJson(String json) throws JsonProcessingException, IOException {
         ObjectMapper m = new ObjectMapper();
         return m.readTree(json);
     }
 
-    protected JsonNode parseJson(ByteArrayOutputStream out)
-            throws JsonProcessingException, IOException {
+    protected JsonNode parseJson(ByteArrayOutputStream out) throws JsonProcessingException, IOException {
         return parseJson(out.toString());
     }
 
     /**
-     * Returns the JSON representation of the document with all schemas. A
-     * category may be passed to have impact on the Content Enrichers.
+     * Returns the JSON representation of the document with all schemas. A category may be passed to have impact on the
+     * Content Enrichers.
      */
-    protected String getFullDocumentAsJson(DocumentModel doc, String category)
-            throws Exception {
+    protected String getFullDocumentAsJson(DocumentModel doc, String category) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = getJsonGenerator(out);
         // When it is written as Json with appropriate headers
-        JsonDocumentWriter.writeDocument(jg, doc, ALL_SCHEMAS, null,
-            getFakeHeaders(category), null);
+        JsonDocumentWriter.writeDocument(jg, doc, ALL_SCHEMAS, null, getFakeHeaders(category), null);
         jg.flush();
         return out.toString();
     }
 
     /**
-     * Returns the JSON representation of the document. A category may be passed
-     * to have impact on the Content Enrichers
+     * Returns the JSON representation of the document. A category may be passed to have impact on the Content Enrichers
      */
-    protected String getDocumentAsJson(DocumentModel doc, String category)
-            throws Exception {
+    protected String getDocumentAsJson(DocumentModel doc, String category) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = getJsonGenerator(out);
         // When it is written as Json with appropriate headers
-        JsonDocumentWriter.writeDocument(jg, doc, NO_SCHEMA,
-                new HashMap<String, String>(), getFakeHeaders(category), null);
+        JsonDocumentWriter.writeDocument(jg, doc, NO_SCHEMA, new HashMap<String, String>(), getFakeHeaders(category),
+                null);
         jg.flush();
         return out.toString();
     }
 
     /**
-     * Returns the JSON representation of these docs. A category may be passed
-     * to have impact on the Content Enrichers
+     * Returns the JSON representation of these docs. A category may be passed to have impact on the Content Enrichers
      */
-    protected String getDocumentsAsJson(List<DocumentModel> docs,
-            String category) throws Exception {
+    protected String getDocumentsAsJson(List<DocumentModel> docs, String category) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = getJsonGenerator(out);
         // When it is written as Json with appropriate headers
-        JsonDocumentListWriter.writeDocuments(jg, docs, NO_SCHEMA,
-            getFakeHeaders(category), null);
+        JsonDocumentListWriter.writeDocuments(jg, docs, NO_SCHEMA, getFakeHeaders(category), null);
         jg.flush();
         return out.toString();
     }
@@ -148,14 +138,11 @@ public class BaseRestTest {
     protected HttpHeaders getFakeHeaders(String category) {
         HttpHeaders headers = mock(HttpHeaders.class);
 
-        when(
-                headers.getRequestHeader(JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER)).thenReturn(
+        when(headers.getRequestHeader(JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER)).thenReturn(
                 Arrays.asList(NO_SCHEMA));
 
-        when(
-                headers.getRequestHeader(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER)).thenReturn(
-                Arrays.asList(new String[] { category == null ? "test"
-                        : category }));
+        when(headers.getRequestHeader(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER)).thenReturn(
+                Arrays.asList(new String[] { category == null ? "test" : category }));
         return headers;
     }
 }

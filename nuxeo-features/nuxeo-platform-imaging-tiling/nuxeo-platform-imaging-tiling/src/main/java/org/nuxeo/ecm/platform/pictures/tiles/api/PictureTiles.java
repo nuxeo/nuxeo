@@ -26,11 +26,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 
 /**
- * Interface for a collection of Tiles in a given format. Wraps underlying calls
- * to the TilingService
+ * Interface for a collection of Tiles in a given format. Wraps underlying calls to the TilingService
  *
  * @author tiry
- *
  */
 public interface PictureTiles {
 

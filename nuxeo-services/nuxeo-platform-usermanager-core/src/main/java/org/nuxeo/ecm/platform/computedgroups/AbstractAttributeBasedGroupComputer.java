@@ -30,13 +30,11 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
- * Base class for {@link GroupComputer} implementation that uses User attribute
- * to compute groups.
+ * Base class for {@link GroupComputer} implementation that uses User attribute to compute groups.
  *
  * @author Thierry Delprat
  */
-public abstract class AbstractAttributeBasedGroupComputer extends
-        AbstractGroupComputer {
+public abstract class AbstractAttributeBasedGroupComputer extends AbstractGroupComputer {
 
     protected abstract String getAttributeForGroupComputation();
 
@@ -46,8 +44,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends
         for (String userId : getUM().getUserIds()) {
             DocumentModel doc = getUM().getUserModel(userId);
             if (doc != null) {
-                String companyName = (String) doc.getProperty(
-                        getUM().getUserSchemaName(),
+                String companyName = (String) doc.getProperty(getUM().getUserSchemaName(),
                         getAttributeForGroupComputation());
                 if (!companies.contains(companyName)) {
                     companies.add(companyName);
@@ -74,8 +71,8 @@ public abstract class AbstractAttributeBasedGroupComputer extends
 
     public List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
         List<String> grpNames = new ArrayList<String>();
-        String property = (String) nuxeoPrincipal.getModel().getProperty(
-                getUM().getUserSchemaName(), getAttributeForGroupComputation());
+        String property = (String) nuxeoPrincipal.getModel().getProperty(getUM().getUserSchemaName(),
+                getAttributeForGroupComputation());
         if (property != null && !"".equals(property.trim())) {
             grpNames.add(property);
         }
@@ -91,8 +88,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends
     }
 
     @Override
-    public List<String> searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext) {
+    public List<String> searchGroups(Map<String, Serializable> filter, Set<String> fulltext) {
 
         List<String> companies = new ArrayList<String>();
 
@@ -103,8 +99,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends
             gFilter.put(getAttributeForGroupComputation(), grpName);
             gFulltext.add(getAttributeForGroupComputation());
             for (DocumentModel userDoc : getUM().searchUsers(gFilter, gFulltext)) {
-                String companyName = (String) userDoc.getProperty(
-                        getUM().getUserSchemaName(),
+                String companyName = (String) userDoc.getProperty(getUM().getUserSchemaName(),
                         getAttributeForGroupComputation());
                 if (!companies.contains(companyName)) {
                     companies.add(companyName);

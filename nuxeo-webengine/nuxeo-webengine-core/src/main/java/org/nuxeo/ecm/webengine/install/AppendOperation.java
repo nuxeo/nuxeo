@@ -29,7 +29,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("append")
 public class AppendOperation {
@@ -44,7 +43,7 @@ public class AppendOperation {
     protected boolean appendNewLine = true;
 
     public void run(Installer installer, File bundleDir, File installDir) throws IOException {
-        //ctx.getBundle().getEntryPaths(path);
+        // ctx.getBundle().getEntryPaths(path);
         File src = new File(bundleDir, path);
         if (src.isFile()) {
             String text = FileUtils.readFile(src);
@@ -65,7 +64,7 @@ public class AppendOperation {
                 out.close();
             }
         } else {
-            installer.logWarning("Could not find path: "+path+" to append");
+            installer.logWarning("Could not find path: " + path + " to append");
         }
     }
 

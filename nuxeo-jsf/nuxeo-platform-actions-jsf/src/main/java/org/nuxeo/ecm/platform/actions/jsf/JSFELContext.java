@@ -26,8 +26,7 @@ import javax.el.VariableMapper;
 import com.sun.faces.facelets.el.VariableMapperWrapper;
 
 /**
- * Wrapper around another EL context to allow override of the variable mapper
- * for some values in context.
+ * Wrapper around another EL context to allow override of the variable mapper for some values in context.
  *
  * @since 5.7.3
  */
@@ -40,8 +39,7 @@ public class JSFELContext extends ELContext {
     public JSFELContext(ELContext originalContext) {
         super();
         this.originalContext = originalContext;
-        this.variableMapper = new VariableMapperWrapper(
-                originalContext.getVariableMapper());
+        this.variableMapper = new VariableMapperWrapper(originalContext.getVariableMapper());
     }
 
     @Override

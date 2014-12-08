@@ -21,8 +21,7 @@ public class IgnoreNonPooledCondition implements ConditionalIgnoreRule.Condition
 
     @Override
     public boolean shouldIgnore() {
-        return !(DatabaseHelper.DATABASE instanceof DatabaseH2
-                || DatabaseHelper.DATABASE instanceof DatabasePostgreSQL);
+        return !(DatabaseHelper.DATABASE instanceof DatabaseH2 || DatabaseHelper.DATABASE instanceof DatabasePostgreSQL);
     }
 
 }

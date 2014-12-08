@@ -26,14 +26,12 @@ public final class NegotiationSelector extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws IOException {
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 
     @Override
-    protected void doPost(final HttpServletRequest request,
-            final HttpServletResponse response) throws IOException {
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 
         final String referrer = request.getHeader("referer");
         if (referrer == null) {

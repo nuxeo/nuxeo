@@ -31,8 +31,7 @@ import org.nuxeo.ecm.platform.preview.api.PreviewException;
 /**
  * @author Alexandre Russel
  */
-public class ImagePreviewer extends AbstractPreviewer implements
-        MimeTypePreviewer {
+public class ImagePreviewer extends AbstractPreviewer implements MimeTypePreviewer {
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         List<Blob> blobResults = new ArrayList<Blob>();

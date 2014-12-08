@@ -29,7 +29,7 @@ public class TestNuxeoGroupImpl {
         NuxeoGroup group = new NuxeoGroupImpl("mygroup");
 
         assertEquals("mygroup", group.getName());
-                assertEquals("mygroup", group.toString());
+        assertEquals("mygroup", group.toString());
 
         assertEquals(0, group.getMemberUsers().size());
         assertEquals(0, group.getMemberGroups().size());
@@ -48,7 +48,7 @@ public class TestNuxeoGroupImpl {
         assertEquals(parentGroups, group.getParentGroups());
     }
 
-    @SuppressWarnings({"ObjectEqualsNull"})
+    @SuppressWarnings({ "ObjectEqualsNull" })
     @Test
     public void testEquals() {
         NuxeoGroup group1 = new NuxeoGroupImpl("mygroup");

@@ -39,18 +39,14 @@ import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * This helper provides a way to get a JDBC connection, through
- * {@link #getConnection(String)}, that will return a connection wrapper able to
- * use a shared connection when used in transactional mode and
- * setAutoCommit(false) is called, and otherwise use a normal physical JDBC
- * connection.
+ * This helper provides a way to get a JDBC connection, through {@link #getConnection(String)}, that will return a
+ * connection wrapper able to use a shared connection when used in transactional mode and setAutoCommit(false) is
+ * called, and otherwise use a normal physical JDBC connection.
  * <p>
- * The physical connections are created from the datasource configured using the
- * framework property {@value #SINGLE_DS}.
+ * The physical connections are created from the datasource configured using the framework property {@value #SINGLE_DS}.
  * <p>
- * This helper is used to implement consistent resource management in a non-XA
- * context. Several users of the shared connection can call setAutoCommit(false)
- * then do transactional work and commit(). Only the commit() of the last user
+ * This helper is used to implement consistent resource management in a non-XA context. Several users of the shared
+ * connection can call setAutoCommit(false) then do transactional work and commit(). Only the commit() of the last user
  * will do an actual commit on the physical connection.
  *
  * @since 5.7
@@ -64,41 +60,36 @@ public class ConnectionHelper {
      * <p>
      * The shared connection is always in autoCommit=false.
      * <p>
-     * Things are removed from this map by a transaction synchronizer when the
-     * transaction finishes.
+     * Things are removed from this map by a transaction synchronizer when the transaction finishes.
      */
     private static ConcurrentMap<Transaction, SharedConnection> sharedConnections = new ConcurrentHashMap<Transaction, SharedConnection>();
 
     /**
-     * SharedConnectionSynchronization registered for the transaction, when
-     * sharing.
+     * SharedConnectionSynchronization registered for the transaction, when sharing.
      */
     private static ConcurrentMap<Transaction, SharedConnectionSynchronization> sharedSynchronizations = new ConcurrentHashMap<Transaction, SharedConnectionSynchronization>();
 
     /**
-     * Property holding a datasource name to use to replace all database
-     * accesses.
+     * Property holding a datasource name to use to replace all database accesses.
      */
     public static final String SINGLE_DS = "nuxeo.db.singleDataSource";
 
     /**
-     * Property holding one ore more datasource names (comma or space separated)
-     * for whose connections the single datasource is not used.
+     * Property holding one ore more datasource names (comma or space separated) for whose connections the single
+     * datasource is not used.
      */
     public static final String EXCLUDE_DS = "nuxeo.db.singleDataSource.exclude";
 
     /**
-     * Maximum number of time we retry a connection if the server says it's
-     * overloaded.
+     * Maximum number of time we retry a connection if the server says it's overloaded.
      */
     public static final int MAX_CONNECTION_TRIES = 3;
 
     /**
-     * Wrapper for a connection that delegates calls to either a private
-     * connection, or a per-transaction shared one if a transaction is started.
+     * Wrapper for a connection that delegates calls to either a private connection, or a per-transaction shared one if
+     * a transaction is started.
      * <p>
-     * Sharing is started on setAutoCommit(true), and ends on
-     * setAutoCommit(false) or close().
+     * Sharing is started on setAutoCommit(true), and ends on setAutoCommit(false) or close().
      */
     private static class ConnectionHandle implements InvocationHandler {
 
@@ -110,28 +101,25 @@ public class ConnectionHelper {
         private boolean autoCommit;
 
         /**
-         * The transaction in use at the time where sharing was started
-         * (autoCommit was set to false during a transaction).
+         * The transaction in use at the time where sharing was started (autoCommit was set to false during a
+         * transaction).
          * <p>
          * The sharedConnection is allocated on first use after that.
          */
         private Transaction transactionForShare;
 
         /**
-         * A local connection, allocated when the connection is used when
-         * sharedInTransaction == null.
+         * A local connection, allocated when the connection is used when sharedInTransaction == null.
          */
         private Connection localConnection;
 
         /**
-         * A shared connection, allocated when the connection is used when
-         * sharedInTransaction != null.
+         * A shared connection, allocated when the connection is used when sharedInTransaction != null.
          */
         private SharedConnection sharedConnection;
 
         /**
-         * True between the first use and the commit/rollback (in non-autoCommit
-         * mode and shared connection).
+         * True between the first use and the commit/rollback (in non-autoCommit mode and shared connection).
          */
         private boolean began;
 
@@ -140,8 +128,7 @@ public class ConnectionHelper {
             if (log.isDebugEnabled()) {
                 log.debug("Construct " + this);
                 if (log.isTraceEnabled()) {
-                    log.trace("Construct stacktrace " + this, new Exception(
-                            "debug"));
+                    log.trace("Construct stacktrace " + this, new Exception("debug"));
                 }
             }
         }
@@ -153,8 +140,7 @@ public class ConnectionHelper {
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             String methodName = method.getName();
             if (methodName.equals("isClosed")) {
                 return isClosed();
@@ -183,10 +169,8 @@ public class ConnectionHelper {
                 Transaction transaction = getTransaction();
                 if (transaction != transactionForShare) {
                     throw new SQLException("Calling method " + methodName
-                            + ", connection sharing started in transaction "
-                            + transactionForShare
-                            + " but it is now used in transaction "
-                            + transaction);
+                            + ", connection sharing started in transaction " + transactionForShare
+                            + " but it is now used in transaction " + transaction);
                 }
 
                 sharedConnectionAllocate();
@@ -195,26 +179,21 @@ public class ConnectionHelper {
                 // the connection
                 if (methodName.equals("commit")) {
                     if (autoCommit) {
-                        throw new SQLException(
-                                "Cannot commit outside of transaction", "25000");
+                        throw new SQLException("Cannot commit outside of transaction", "25000");
                     }
                     sharedConnectionCommit();
                     return null;
                 } else if (methodName.equals("rollback")) {
                     if (autoCommit) {
-                        throw new SQLException(
-                                "Cannot commit outside of transaction", "25000");
+                        throw new SQLException("Cannot commit outside of transaction", "25000");
                     }
                     if (args != null && args.length > 0) {
-                        throw new SQLException(
-                                "Not implemented: rollback(Savepoint)", "0A000");
+                        throw new SQLException("Not implemented: rollback(Savepoint)", "0A000");
                     }
                     sharedConnectionRollback();
                     return null;
-                } else if (methodName.equals("setSavepoint")
-                        || methodName.equals("releaseSavepoint")) {
-                    throw new SQLException("Not implemented: " + methodName,
-                            "0A000");
+                } else if (methodName.equals("setSavepoint") || methodName.equals("releaseSavepoint")) {
+                    throw new SQLException("Not implemented: " + methodName, "0A000");
                 }
 
                 sharedConnectionBegin(methodName);
@@ -254,13 +233,11 @@ public class ConnectionHelper {
             if (!autoCommit) {
                 // setting autoCommit = false
                 if (transactionForShare != null) {
-                    throw new AssertionError(
-                            "autoCommit=false when already sharing");
+                    throw new AssertionError("autoCommit=false when already sharing");
                 }
                 // not yet sharing
                 Transaction transaction = getTransaction();
-                if (transaction != null
-                        && transactionStatus(transaction) == Status.STATUS_ACTIVE) {
+                if (transaction != null && transactionStatus(transaction) == Status.STATUS_ACTIVE) {
                     // start sharing
                     transactionForShare = transaction;
                     if (localConnection != null) {
@@ -308,9 +285,7 @@ public class ConnectionHelper {
                 if (log.isDebugEnabled()) {
                     log.debug("Constructing physical connection " + this);
                     if (log.isTraceEnabled()) {
-                        log.trace(
-                                "Constructing physical connection stacktrace",
-                                new Exception("debug"));
+                        log.trace("Constructing physical connection stacktrace", new Exception("debug"));
                     }
                 }
                 localConnection = getPhysicalConnection();
@@ -334,11 +309,9 @@ public class ConnectionHelper {
             }
         }
 
-        private void sharedConnectionBegin(String methodName)
-                throws SQLException {
+        private void sharedConnectionBegin(String methodName) throws SQLException {
             if (sharedConnection == null) {
-                throw new SQLException("Cannot call " + methodName
-                        + " with transaction in state "
+                throw new SQLException("Cannot call " + methodName + " with transaction in state "
                         + transactionStatus(transactionForShare), "25000");
             }
             if (!autoCommit && !began) {
@@ -416,35 +389,29 @@ public class ConnectionHelper {
         }
 
         /**
-         * Gets the shared connection for the shared transaction, or allocates a
-         * new one. If allocating a new one, registers a synchronizer in order
-         * to remove it at transaction completion time.
+         * Gets the shared connection for the shared transaction, or allocates a new one. If allocating a new one,
+         * registers a synchronizer in order to remove it at transaction completion time.
          *
          * @param connection an existing local connection to reuse, or null
          */
-        private SharedConnection getSharedConnection(Connection connection)
-                throws SQLException {
+        private SharedConnection getSharedConnection(Connection connection) throws SQLException {
             SharedConnection sharedConnection = sharedConnections.get(transactionForShare);
             if (sharedConnection == null) {
                 // allocate a new shared connection
                 sharedConnection = new SharedConnection(connection);
                 if (log.isDebugEnabled()) {
-                    log.debug("Allocating new shared connection "
-                            + sharedConnection + " for " + this);
+                    log.debug("Allocating new shared connection " + sharedConnection + " for " + this);
                 }
-                if (sharedConnections.putIfAbsent(transactionForShare,
-                        sharedConnection) != null) {
+                if (sharedConnections.putIfAbsent(transactionForShare, sharedConnection) != null) {
                     // race condition but we are single-threaded in this
                     // transaction!
-                    throw new AssertionError(
-                            "Race condition in single transaction!");
+                    throw new AssertionError("Race condition in single transaction!");
                 }
                 // register a synchronizer to clear the map
                 SharedConnectionSynchronization.getInstance(transactionForShare);
             } else {
                 if (log.isDebugEnabled()) {
-                    log.debug("Reusing shared connection " + sharedConnection
-                            + " for " + this);
+                    log.debug("Reusing shared connection " + sharedConnection + " for " + this);
                 }
                 if (connection != null) {
                     // the local connection passed is not needed anymore
@@ -458,21 +425,17 @@ public class ConnectionHelper {
 
         @Override
         public String toString() {
-            return getClass().getSimpleName() + "@"
-                    + Integer.toHexString(System.identityHashCode(this));
+            return getClass().getSimpleName() + "@" + Integer.toHexString(System.identityHashCode(this));
         }
     }
 
     /**
-     * Shared connection, holding a physical connection use by several pieces of
-     * code in the same transaction (so not multi-threaded). It's always in mode
-     * autoCommit=false.
+     * Shared connection, holding a physical connection use by several pieces of code in the same transaction (so not
+     * multi-threaded). It's always in mode autoCommit=false.
      * <p>
-     * The last user to commit/rollback will do an actual commit/rollback on the
-     * physical connection.
+     * The last user to commit/rollback will do an actual commit/rollback on the physical connection.
      * <p>
-     * If a rollback is done but not by the last user, the connection will be
-     * marked rollback only.
+     * If a rollback is done but not by the last user, the connection will be marked rollback only.
      */
     private static class SharedConnection {
 
@@ -565,8 +528,7 @@ public class ConnectionHelper {
             if (log.isDebugEnabled()) {
                 log.debug("Constructing physical connection " + this);
                 if (log.isTraceEnabled()) {
-                    log.trace("Constructing physical connection stacktrace",
-                            new Exception("debug"));
+                    log.trace("Constructing physical connection stacktrace", new Exception("debug"));
                 }
             }
             connection = getPhysicalConnection();
@@ -577,8 +539,8 @@ public class ConnectionHelper {
         /** Called after transaction completion to free resources. */
         public void closeAfterTransaction(boolean mustRollback) {
             if (!handles.isEmpty()) {
-                log.error("Transaction ended with " + handles.size()
-                        + " connections not committed " + this + " " + handles);
+                log.error("Transaction ended with " + handles.size() + " connections not committed " + this + " "
+                        + handles);
             }
             if (connection == null) {
                 return;
@@ -590,9 +552,7 @@ public class ConnectionHelper {
                     connection.commit();
                 }
             } catch (SQLException cause) {
-                log.error(
-                        "Could not close endup connection at transaction end",
-                        cause);
+                log.error("Could not close endup connection at transaction end", cause);
             } finally {
                 close();
             }
@@ -604,9 +564,7 @@ public class ConnectionHelper {
                 logInvoke("close");
                 connection.close();
             } catch (SQLException e) {
-                log.error(
-                        "Could not close leftover connection at transaction end",
-                        e);
+                log.error("Could not close leftover connection at transaction end", e);
             } finally {
                 connection = null;
                 for (ConnectionHandle h : handles) {
@@ -618,17 +576,15 @@ public class ConnectionHelper {
 
         @Override
         public String toString() {
-            return getClass().getSimpleName() + "@"
-                    + Integer.toHexString(System.identityHashCode(this));
+            return getClass().getSimpleName() + "@" + Integer.toHexString(System.identityHashCode(this));
         }
     }
 
     /**
-     * In addition to closing the shared connection, also acts as a delegate for
-     * other synchronizers that must run before it.
+     * In addition to closing the shared connection, also acts as a delegate for other synchronizers that must run
+     * before it.
      */
-    private static class SharedConnectionSynchronization implements
-            Synchronization {
+    private static class SharedConnectionSynchronization implements Synchronization {
 
         private final Transaction transaction;
 
@@ -637,22 +593,18 @@ public class ConnectionHelper {
         private final List<Synchronization> syncsLast;
 
         /**
-         * Gets the instance or creates it. If creating, registers with the
-         * actual transaction.
+         * Gets the instance or creates it. If creating, registers with the actual transaction.
          */
         // not synchronized as the transaction is already thread-local
         // and we use a ConcurrentHashMap
-        public static SharedConnectionSynchronization getInstance(
-                Transaction transaction) {
+        public static SharedConnectionSynchronization getInstance(Transaction transaction) {
             SharedConnectionSynchronization scs = sharedSynchronizations.get(transaction);
             if (scs == null) {
                 scs = new SharedConnectionSynchronization(transaction);
                 try {
                     transaction.registerSynchronization(scs);
-                } catch (IllegalStateException | RollbackException
-                        | SystemException e) {
-                    throw new RuntimeException(
-                            "Cannot register synchronization", e);
+                } catch (IllegalStateException | RollbackException | SystemException e) {
+                    throw new RuntimeException("Cannot register synchronization", e);
                 }
                 sharedSynchronizations.put(transaction, scs);
             }
@@ -707,8 +659,7 @@ public class ConnectionHelper {
         }
 
         /**
-         * After completion, removes the shared connection from the map and
-         * closes it.
+         * After completion, removes the shared connection from the map and closes it.
          */
         @Override
         public void afterCompletion(int status) {
@@ -730,9 +681,7 @@ public class ConnectionHelper {
                 try {
                     sync.afterCompletion(status);
                 } catch (RuntimeException e) {
-                    log.warn(
-                            "Unexpected exception from afterCompletion; continuing",
-                            e);
+                    log.warn("Unexpected exception from afterCompletion; continuing", e);
                 }
             }
         }
@@ -756,11 +705,10 @@ public class ConnectionHelper {
     }
 
     /**
-     * Tries to unwrap the connection to get the real physical one (returned by
-     * the original datasource).
+     * Tries to unwrap the connection to get the real physical one (returned by the original datasource).
      * <p>
-     * This should only be used by code that needs to cast the connection to a
-     * driver-specific class to use driver-specific features.
+     * This should only be used by code that needs to cast the connection to a driver-specific class to use
+     * driver-specific features.
      *
      * @throws SQLException if no actual physical connection was allocated yet
      */
@@ -773,7 +721,7 @@ public class ConnectionHelper {
             }
         }
         if (connection instanceof org.tranql.connector.jdbc.ConnectionHandle) {
-            return ((org.tranql.connector.jdbc.ConnectionHandle)connection).getAssociation().getPhysicalConnection();
+            return ((org.tranql.connector.jdbc.ConnectionHandle) connection).getAssociation().getPhysicalConnection();
         }
         // now try Apache DBCP unwrap (standard or Tomcat), to skip datasource
         // wrapping layers
@@ -789,19 +737,16 @@ public class ConnectionHelper {
             } else {
                 connection = delegate;
             }
-        } catch (NoSuchMethodException | SecurityException
-                | IllegalAccessException | InvocationTargetException e) {
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | InvocationTargetException e) {
             // ignore missing method, connection not coming from Apache pool
         }
         return connection;
     }
 
     /**
-     * Checks if single transaction-local datasource mode will be used for the
-     * given datasource name.
+     * Checks if single transaction-local datasource mode will be used for the given datasource name.
      *
-     * @return {@code true} if using a single transaction-local connection for
-     *         this datasource
+     * @return {@code true} if using a single transaction-local connection for this datasource
      */
     public static boolean useSingleConnection(String dataSourceName) {
         if (dataSourceName != null) {
@@ -822,66 +767,55 @@ public class ConnectionHelper {
     }
 
     /**
-     * Gets the fake name we use to pass to ConnectionHelper.getConnection, in
-     * order for exclusions on these connections to be possible.
+     * Gets the fake name we use to pass to ConnectionHelper.getConnection, in order for exclusions on these connections
+     * to be possible.
      */
-    public static String getPseudoDataSourceNameForRepository(
-            String repositoryName) {
+    public static String getPseudoDataSourceNameForRepository(String repositoryName) {
         return "repository_" + repositoryName;
     }
 
     /**
-     * Gets a new reference to the transaction-local JDBC connection for the
-     * given dataSource. The connection <strong>MUST</strong> be closed in a
-     * finally block when code is done using it.
+     * Gets a new reference to the transaction-local JDBC connection for the given dataSource. The connection
+     * <strong>MUST</strong> be closed in a finally block when code is done using it.
      * <p>
-     * If the passed dataSource name is in the exclusion list, null will be
-     * returned.
+     * If the passed dataSource name is in the exclusion list, null will be returned.
      *
-     * @param dataSourceName the datasource for which the connection is
-     *            requested
-     * @return a new reference to the connection, or {@code null} if single
-     *         datasource connection sharing is not in effect
+     * @param dataSourceName the datasource for which the connection is requested
+     * @return a new reference to the connection, or {@code null} if single datasource connection sharing is not in
+     *         effect
      * @throws ResourceException
      */
-    public static Connection getConnection(String dataSourceName)
-            throws SQLException {
+    public static Connection getConnection(String dataSourceName) throws SQLException {
         return getConnection(dataSourceName, false);
     }
 
     /**
-     * Gets a new reference to the transaction-local JDBC connection for the
-     * given dataSource. The connection <strong>MUST</strong> be closed in a
-     * finally block when code is done using it.
+     * Gets a new reference to the transaction-local JDBC connection for the given dataSource. The connection
+     * <strong>MUST</strong> be closed in a finally block when code is done using it.
      * <p>
-     * If the passed dataSource name is in the exclusion list, null will be
-     * returned.
+     * If the passed dataSource name is in the exclusion list, null will be returned.
      * <p>
-     * If noSharing is requested, the connection will never come from the
-     * transaction-local and will always be newly allocated.
+     * If noSharing is requested, the connection will never come from the transaction-local and will always be newly
+     * allocated.
      *
-     * @param dataSourceName the datasource for which the connection is
-     *            requested
-     * @param noSharing {@code true} if this connection must not be shared with
-     *            others
-     * @return a new reference to the connection, or {@code null} if single
-     *         datasource connection sharing is not in effect
+     * @param dataSourceName the datasource for which the connection is requested
+     * @param noSharing {@code true} if this connection must not be shared with others
+     * @return a new reference to the connection, or {@code null} if single datasource connection sharing is not in
+     *         effect
      * @throws ResourceException
      */
-    public static Connection getConnection(String dataSourceName,
-            boolean noSharing) throws SQLException {
+    public static Connection getConnection(String dataSourceName, boolean noSharing) throws SQLException {
         if (!useSingleConnection(dataSourceName)) {
             DataSource ds = getDataSource(dataSourceName);
             if (ds instanceof PooledDataSource) {
-                return ((PooledDataSource)ds).getConnection(noSharing);
+                return ((PooledDataSource) ds).getConnection(noSharing);
             }
             return getPhysicalConnection(dataSourceName);
         }
         return getConnection(noSharing);
     }
 
-    private static Connection getConnection(boolean noSharing)
-            throws SQLException {
+    private static Connection getConnection(boolean noSharing) throws SQLException {
         String dataSourceName = Framework.getProperty(SINGLE_DS);
         if (StringUtils.isBlank(dataSourceName)) {
             return null;
@@ -889,9 +823,8 @@ public class ConnectionHelper {
         if (noSharing) {
             return getPhysicalConnection(dataSourceName);
         }
-        return (Connection) Proxy.newProxyInstance(
-                Connection.class.getClassLoader(),
-                new Class[] { Connection.class }, new ConnectionHandle());
+        return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[] { Connection.class },
+                new ConnectionHandle());
     }
 
     private static Connection getPhysicalConnection() throws SQLException {
@@ -901,14 +834,12 @@ public class ConnectionHelper {
     /**
      * Gets a physical connection from a datasource name.
      * <p>
-     * A few retries are done to work around databases that have problems with
-     * many open/close in a row.
+     * A few retries are done to work around databases that have problems with many open/close in a row.
      *
      * @param dataSourceName the datasource name
      * @return the connection
      */
-    private static Connection getPhysicalConnection(String dataSourceName)
-            throws SQLException {
+    private static Connection getPhysicalConnection(String dataSourceName) throws SQLException {
         DataSource dataSource = getDataSource(dataSourceName);
         for (int tryNo = 0;; tryNo++) {
             try {
@@ -926,9 +857,7 @@ public class ConnectionHelper {
                 // Happens when connections are open too fast (unit tests)
                 // -> retry a few times after a small delay
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Connections open too fast, retrying in %ds: %s",
-                            Integer.valueOf(tryNo),
+                    log.debug(String.format("Connections open too fast, retrying in %ds: %s", Integer.valueOf(tryNo),
                             e.getMessage().replace("\n", " ")));
                 }
                 try {
@@ -943,14 +872,12 @@ public class ConnectionHelper {
     }
 
     /**
-     * Gets a datasource from a datasource name, or in test mode use test
-     * connection parameters.
+     * Gets a datasource from a datasource name, or in test mode use test connection parameters.
      *
      * @param dataSourceName the datasource name
      * @return the datasource
      */
-    private static DataSource getDataSource(String dataSourceName)
-            throws SQLException {
+    private static DataSource getDataSource(String dataSourceName) throws SQLException {
         try {
             return DataSourceHelper.getDataSource(dataSourceName);
         } catch (NamingException e) {
@@ -962,8 +889,7 @@ public class ConnectionHelper {
                     return new DataSourceFromUrl(url, user, password); // driver?
                 }
             }
-            throw new SQLException("Cannot find datasource: " + dataSourceName,
-                    e);
+            throw new SQLException("Cannot find datasource: " + dataSourceName, e);
         }
     }
 
@@ -989,35 +915,29 @@ public class ConnectionHelper {
     }
 
     /**
-     * If sharing is in effect, registers a synchronization with the current
-     * transaction, making sure it runs before the
+     * If sharing is in effect, registers a synchronization with the current transaction, making sure it runs before the
      * {@link SharedConnectionSynchronization}.
      *
      * @return {@code true}
      */
-    public static boolean registerSynchronization(Synchronization sync)
-            throws SystemException {
+    public static boolean registerSynchronization(Synchronization sync) throws SystemException {
         return registerSynchronization(sync, true);
     }
 
     /**
-     * If sharing is in effect, registers a synchronization with the current
-     * transaction, making sure the {@link Synchronization#afterCompletion}
-     * method runs after the {@link SharedConnectionSynchronization}.
+     * If sharing is in effect, registers a synchronization with the current transaction, making sure the
+     * {@link Synchronization#afterCompletion} method runs after the {@link SharedConnectionSynchronization}.
      *
      * @return {@code true}
      */
-    public static boolean registerSynchronizationLast(Synchronization sync)
-            throws SystemException {
+    public static boolean registerSynchronizationLast(Synchronization sync) throws SystemException {
         return registerSynchronization(sync, false);
     }
 
-    private static boolean registerSynchronization(Synchronization sync,
-            boolean first) throws SystemException {
+    private static boolean registerSynchronization(Synchronization sync, boolean first) throws SystemException {
         Transaction transaction = getTransaction();
         if (transaction == null) {
-            throw new SystemException(
-                    "Cannot register synchronization: no transaction");
+            throw new SystemException("Cannot register synchronization: no transaction");
         }
         // We always do the lookup and registration to the actual transaction
         // even if there is no shared connection yet.

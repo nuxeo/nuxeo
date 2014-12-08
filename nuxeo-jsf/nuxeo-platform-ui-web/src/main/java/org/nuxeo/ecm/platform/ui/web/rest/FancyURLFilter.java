@@ -45,8 +45,8 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Filter used to decode URLs and wrap requests to enable encoding. This filter
- * is useful because Nuxeo support pluggable URL patterns
+ * Filter used to decode URLs and wrap requests to enable encoding. This filter is useful because Nuxeo support
+ * pluggable URL patterns
  *
  * @author tiry
  */
@@ -74,15 +74,14 @@ public class FancyURLFilter implements Filter {
         urlService = null;
     }
 
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         try {
             getUrlService();
             // initialize its view id manager if necessary
-            urlService.initViewIdManager(servletContext, httpRequest,
-                    httpResponse);
+            urlService.initViewIdManager(servletContext, httpRequest, httpResponse);
 
             // check if this is an URL that needs to be parsed
             if (urlService.isCandidateForDecoding(httpRequest)) {
@@ -96,8 +95,7 @@ public class FancyURLFilter implements Filter {
                     String jsfOutcome = docView.getViewId();
 
                     // get target page according to navigation rules
-                    String target = urlService.getViewIdFromOutcome(jsfOutcome,
-                            httpRequest);
+                    String target = urlService.getViewIdFromOutcome(jsfOutcome, httpRequest);
 
                     // dispatch
                     RequestDispatcher dispatcher;
@@ -110,12 +108,10 @@ public class FancyURLFilter implements Filter {
                     }
                     // set force encoding in case forward triggers a
                     // redirect (when a seam page is processed for instance).
-                    request.setAttribute(
-                            URLPolicyService.FORCE_URL_ENCODING_REQUEST_KEY,
-                            Boolean.TRUE);
+                    request.setAttribute(URLPolicyService.FORCE_URL_ENCODING_REQUEST_KEY, Boolean.TRUE);
                     // forward request to the target viewId
-                    dispatcher.forward(new FancyURLRequestWrapper(httpRequest,
-                            docView), wrapResponse(httpRequest, httpResponse));
+                    dispatcher.forward(new FancyURLRequestWrapper(httpRequest, docView),
+                            wrapResponse(httpRequest, httpResponse));
                     return;
                 }
             }
@@ -127,16 +123,14 @@ public class FancyURLFilter implements Filter {
         } catch (IOException e) {
             String url = httpRequest.getRequestURL().toString();
             if (ExceptionHelper.isClientAbortError(e)) {
-                log.debug(String.format("Client disconnected from URL %s : %s",
-                        url, e.getMessage()));
+                log.debug(String.format("Client disconnected from URL %s : %s", url, e.getMessage()));
             } else {
                 throw new IOException("On requestURL: " + url, e);
             }
         } catch (ServletException e) {
             String url = httpRequest.getRequestURL().toString();
             if (ExceptionHelper.isClientAbortError(e)) {
-                log.debug(String.format("Client disconnected from URL %s : %s",
-                        url, e.getMessage()));
+                log.debug(String.format("Client disconnected from URL %s : %s", url, e.getMessage()));
             } else {
                 throw new ServletException("On requestURL: " + url, e);
             }
@@ -144,8 +138,7 @@ public class FancyURLFilter implements Filter {
 
     }
 
-    protected ServletResponse wrapResponse(HttpServletRequest request,
-            HttpServletResponse response) {
+    protected ServletResponse wrapResponse(HttpServletRequest request, HttpServletResponse response) {
         return new FancyURLResponseWrapper(response, request);
     }
 

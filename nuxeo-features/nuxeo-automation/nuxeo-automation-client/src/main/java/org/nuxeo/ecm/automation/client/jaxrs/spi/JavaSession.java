@@ -29,9 +29,8 @@ import org.nuxeo.ecm.automation.client.model.OperationRegistry;
 /**
  * Abstract class for sessions running on real JVMs.
  * <p>
- * When your implementation is designed for running in environment that supports
- * limited Java API like GWT or portable devices you may need to directly implement
- * the {@link Session} interface.
+ * When your implementation is designed for running in environment that supports limited Java API like GWT or portable
+ * devices you may need to directly implement the {@link Session} interface.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -43,15 +42,14 @@ public abstract class JavaSession implements Session {
 
     protected final OperationRegistry registry;
 
-
     public JavaSession(JavaClient client, LoginInfo login, OperationRegistry registry) {
         this.client = client;
         this.login = login;
         this.registry = registry;
     }
 
-    protected OperationRequest createOperationRequest(JavaSession session,
-            OperationDocumentation op, Map<String, Object> ctx) {
+    protected OperationRequest createOperationRequest(JavaSession session, OperationDocumentation op,
+            Map<String, Object> ctx) {
         return new JavaOperationRequest(session, op, ctx);
     }
 
@@ -93,7 +91,6 @@ public abstract class JavaSession implements Session {
     public Map<String, OperationDocumentation> getOperations() {
         return registry.getOperations();
     }
-
 
     @Override
     public void close() {

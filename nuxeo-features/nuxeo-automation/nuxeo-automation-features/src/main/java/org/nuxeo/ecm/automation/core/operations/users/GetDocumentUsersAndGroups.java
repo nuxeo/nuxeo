@@ -63,20 +63,20 @@ public class GetDocumentUsersAndGroups {
     @Param(name = "variable name")
     protected String key;
 
-    @Param(name = "ignore groups", required = false, values = {"false"})
+    @Param(name = "ignore groups", required = false, values = { "false" })
     protected boolean ignoreGroups = false;
 
-    @Param(name = "resolve groups", required = false, values = {"false"})
+    @Param(name = "resolve groups", required = false, values = { "false" })
     protected boolean resolveGroups = false;
 
-    @Param(name = "prefix identifiers", required = false, values = {"false"})
+    @Param(name = "prefix identifiers", required = false, values = { "false" })
     protected boolean prefixIds = false;
 
     @OperationMethod
     public DocumentModel run(DocumentModel input) {
         PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
-        Set<String> result = ph.getUserAndGroupIdsForPermission(input,
-                permission, ignoreGroups, resolveGroups, prefixIds);
+        Set<String> result = ph.getUserAndGroupIdsForPermission(input, permission, ignoreGroups, resolveGroups,
+                prefixIds);
         ctx.put(key, new StringList(result));
         return input;
     }

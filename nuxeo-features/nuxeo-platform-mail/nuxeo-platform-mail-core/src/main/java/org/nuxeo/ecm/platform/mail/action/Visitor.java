@@ -44,11 +44,9 @@ public class Visitor {
      * @param folder
      * @param initialContext context variables passed to each execution context
      */
-    public void visit(Folder folder, ExecutionContext initialContext)
-            throws MessagingException {
+    public void visit(Folder folder, ExecutionContext initialContext) throws MessagingException {
         for (Message message : folder.getMessages()) {
-            ExecutionContext context = new ExecutionContext(message,
-                    initialContext);
+            ExecutionContext context = new ExecutionContext(message, initialContext);
             for (MessageAction action : pipe) {
                 action.reset(context);
                 boolean result = action.execute(context);
@@ -74,11 +72,9 @@ public class Visitor {
      * @param messages
      * @param initialContext context variables passed to each execution context
      */
-    public void visit(Message[] messages, ExecutionContext initialContext)
-            throws MessagingException {
+    public void visit(Message[] messages, ExecutionContext initialContext) throws MessagingException {
         for (Message message : messages) {
-            ExecutionContext context = new ExecutionContext(message,
-                    initialContext);
+            ExecutionContext context = new ExecutionContext(message, initialContext);
             for (MessageAction action : pipe) {
                 action.reset(context);
                 boolean result = action.execute(context);

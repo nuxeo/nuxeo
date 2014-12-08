@@ -36,7 +36,6 @@ import org.nuxeo.runtime.api.Framework;
  * Data model implementation.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DataModelImpl implements DataModel {
 
@@ -134,8 +133,7 @@ public class DataModelImpl implements DataModel {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + getSchema()
-                + (dp.isDirty() ? "*" : "") + ')';
+        return getClass().getSimpleName() + '(' + getSchema() + (dp.isDirty() ? "*" : "") + ')';
     }
 
     @Override

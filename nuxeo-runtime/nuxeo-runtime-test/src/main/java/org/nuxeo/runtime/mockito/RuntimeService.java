@@ -22,8 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Anotating a field with NXMock in a test, injects a mock in that field and
- * binds it to the the service manager.
+ * Anotating a field with NXMock in a test, injects a mock in that field and binds it to the the service manager.
  *
  * @since 5.7.8
  */

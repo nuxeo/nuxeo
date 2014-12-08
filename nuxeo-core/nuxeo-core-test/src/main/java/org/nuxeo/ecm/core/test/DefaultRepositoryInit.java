@@ -23,30 +23,24 @@ public class DefaultRepositoryInit implements RepositoryInit {
 
     @Override
     public void populate(CoreSession session) throws ClientException {
-        DocumentModel doc = session.createDocumentModel("/", "default-domain",
-                "Domain");
+        DocumentModel doc = session.createDocumentModel("/", "default-domain", "Domain");
         doc.setProperty("dublincore", "title", "Default domain");
         doc = session.createDocument(doc);
 
-        doc = session.createDocumentModel("/default-domain/", "workspaces",
-                "WorkspaceRoot");
+        doc = session.createDocumentModel("/default-domain/", "workspaces", "WorkspaceRoot");
         doc.setProperty("dublincore", "title", "Workspaces");
         doc = session.createDocument(doc);
 
-        doc = session.createDocumentModel("/default-domain/", "sections",
-                "SectionRoot");
+        doc = session.createDocumentModel("/default-domain/", "sections", "SectionRoot");
         doc.setProperty("dublincore", "title", "Workspaces");
         doc = session.createDocument(doc);
 
-        doc = session.createDocumentModel("/default-domain/", "templates",
-                "TemplateRoot");
+        doc = session.createDocumentModel("/default-domain/", "templates", "TemplateRoot");
         doc.setProperty("dublincore", "title", "Templates");
-        doc.setProperty("dublincore", "description",
-                "Root of workspaces templates");
+        doc.setProperty("dublincore", "description", "Root of workspaces templates");
         doc = session.createDocument(doc);
 
-        doc = session.createDocumentModel("/default-domain/workspaces", "test",
-                "Workspace");
+        doc = session.createDocumentModel("/default-domain/workspaces", "test", "Workspace");
         doc.setProperty("dublincore", "title", "workspace");
         doc = session.createDocument(doc);
     }

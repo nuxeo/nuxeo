@@ -50,23 +50,15 @@ import org.nuxeo.ecm.platform.audit.api.comment.UIAuditComment;
  * Log entry implementation.
  */
 @Entity(name = "LogEntry")
-@NamedQueries( {
-        @NamedQuery(name = "LogEntry.removeByEventIdAndPath",
-                query = "delete LogEntry log where log.eventId = :eventId and log.docPath like :pathPattern"),
-        @NamedQuery(name = "LogEntry.findByDocument",
-                query = "from LogEntry log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
-        @NamedQuery(name = "LogEntry.findAll",
-                query = "from LogEntry log order by log.eventDate DESC"),
-        @NamedQuery(name = "LogEntry.findByEventIdAndPath",
-                query = "from LogEntry log where log.eventId=:eventId and log.docPath LIKE :pathPattern"),
-        @NamedQuery(name = "LogEntry.findByHavingExtendedInfo",
-                query = "from LogEntry log where log.extendedInfos['one'] is not null order by log.eventDate DESC"),
-        @NamedQuery(name = "LogEntry.countEventsById",
-                query = "select count(log.eventId) from LogEntry log where log.eventId=:eventId"),
-        @NamedQuery(name = "LogEntry.findEventIds",
-                query = "select distinct log.eventId from LogEntry log")
-        })
-        @Table(name = "NXP_LOGS")
+@NamedQueries({
+        @NamedQuery(name = "LogEntry.removeByEventIdAndPath", query = "delete LogEntry log where log.eventId = :eventId and log.docPath like :pathPattern"),
+        @NamedQuery(name = "LogEntry.findByDocument", query = "from LogEntry log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
+        @NamedQuery(name = "LogEntry.findAll", query = "from LogEntry log order by log.eventDate DESC"),
+        @NamedQuery(name = "LogEntry.findByEventIdAndPath", query = "from LogEntry log where log.eventId=:eventId and log.docPath LIKE :pathPattern"),
+        @NamedQuery(name = "LogEntry.findByHavingExtendedInfo", query = "from LogEntry log where log.extendedInfos['one'] is not null order by log.eventDate DESC"),
+        @NamedQuery(name = "LogEntry.countEventsById", query = "select count(log.eventId) from LogEntry log where log.eventId=:eventId"),
+        @NamedQuery(name = "LogEntry.findEventIds", query = "select distinct log.eventId from LogEntry log") })
+@Table(name = "NXP_LOGS")
 public class LogEntryImpl implements LogEntry {
 
     private static final long serialVersionUID = 3037187381843636097L;
@@ -98,7 +90,6 @@ public class LogEntryImpl implements LogEntry {
     protected transient UIAuditComment uiComment;
 
     private Map<String, ExtendedInfoImpl> extendedInfos = new HashMap<String, ExtendedInfoImpl>();
-
 
     /**
      * @return the log identifier
@@ -165,12 +156,11 @@ public class LogEntryImpl implements LogEntry {
     public void setEventDate(Date eventDate) {
         this.eventDate = eventDate;
     }
+
     /**
-     * @return the date of the log insertion: this up to max transaction timeout
-     *         later than eventDate.
-     *
-     *         This date is useful for services such as Nuxeo Drive that need
-     *         fine grained incremental near-monotonic access to the audit log.
+     * @return the date of the log insertion: this up to max transaction timeout later than eventDate. This date is
+     *         useful for services such as Nuxeo Drive that need fine grained incremental near-monotonic access to the
+     *         audit log.
      * @since 5.7
      * @since 5.6-HF16
      */
@@ -189,8 +179,7 @@ public class LogEntryImpl implements LogEntry {
     /**
      * Returns the doc UUID related to the log entry.
      * <p>
-     * It might be null if the event that originated the event is noe bound to
-     * any document.
+     * It might be null if the event that originated the event is noe bound to any document.
      *
      * @return the doc UUID related to the log entry.
      */
@@ -216,8 +205,7 @@ public class LogEntryImpl implements LogEntry {
     /**
      * Returns the doc path related to the log entry.
      * <p>
-     * It might be null if the event that originated the event is noe bound to
-     * any document.
+     * It might be null if the event that originated the event is noe bound to any document.
      *
      * @return the doc path related to the log entry.
      */
@@ -235,8 +223,7 @@ public class LogEntryImpl implements LogEntry {
     /**
      * Returns the doc type related to the log entry.
      * <p>
-     * It might be null if the event that originated the event is not bound to
-     * any document.
+     * It might be null if the event that originated the event is not bound to any document.
      *
      * @return the doc type related to the log entry.
      */
@@ -254,8 +241,7 @@ public class LogEntryImpl implements LogEntry {
     /**
      * Returns the category for this log entry.
      * <p>
-     * This is defined at client level. Categories are not restricted in any
-     * ways.
+     * This is defined at client level. Categories are not restricted in any ways.
      *
      * @return the category for this log entry.
      */
@@ -289,8 +275,7 @@ public class LogEntryImpl implements LogEntry {
     /**
      * Return the life cycle if the document related to the log entry.
      * <p>
-     * It might be null if the event that originated the event is noe bound to
-     * any document.
+     * It might be null if the event that originated the event is noe bound to any document.
      *
      * @return the life cycle if the document related to the log entry.
      */
@@ -321,28 +306,27 @@ public class LogEntryImpl implements LogEntry {
         this.repositoryId = repositoryId;
     }
 
-//    public Map<String, ExtendedInfoImpl> getExtendedInfosImpl() {
-//        return extendedInfos;
-//    }
-//
-//    public void setExtendedInfosImpl(Map<String, ExtendedInfoImpl> infos) {
-//        extendedInfos = infos;
-//    }
+    // public Map<String, ExtendedInfoImpl> getExtendedInfosImpl() {
+    // return extendedInfos;
+    // }
+    //
+    // public void setExtendedInfosImpl(Map<String, ExtendedInfoImpl> infos) {
+    // extendedInfos = infos;
+    // }
 
     @Override
     @OneToMany(cascade = CascadeType.ALL, targetEntity = ExtendedInfoImpl.class)
-    @JoinTable(name = "NXP_LOGS_MAPEXTINFOS", joinColumns = { @JoinColumn(name = "LOG_FK") },
-            inverseJoinColumns = { @JoinColumn(name = "INFO_FK") })
-    @org.hibernate.annotations.MapKey(columns={@Column(name="mapkey",nullable=false)})
+    @JoinTable(name = "NXP_LOGS_MAPEXTINFOS", joinColumns = { @JoinColumn(name = "LOG_FK") }, inverseJoinColumns = { @JoinColumn(name = "INFO_FK") })
+    @org.hibernate.annotations.MapKey(columns = { @Column(name = "mapkey", nullable = false) })
     public Map<String, ExtendedInfo> getExtendedInfos() {
-        return (Map)extendedInfos;
-        //return (Map)getExtendedInfosImpl();
+        return (Map) extendedInfos;
+        // return (Map)getExtendedInfosImpl();
     }
 
     @Override
     public void setExtendedInfos(Map<String, ExtendedInfo> infos) {
-        extendedInfos = (Map)infos;
-        //setExtendedInfosImpl((Map)infos);
+        extendedInfos = (Map) infos;
+        // setExtendedInfosImpl((Map)infos);
     }
 
     @Override
@@ -358,7 +342,7 @@ public class LogEntryImpl implements LogEntry {
 
     @Override
     public void setPreprocessedComment(UIAuditComment uiComment) {
-        this.uiComment=uiComment;
+        this.uiComment = uiComment;
     }
 
 }

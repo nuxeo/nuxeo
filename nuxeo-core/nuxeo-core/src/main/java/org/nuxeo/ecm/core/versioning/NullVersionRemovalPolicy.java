@@ -28,8 +28,7 @@ public class NullVersionRemovalPolicy implements VersionRemovalPolicy {
     private static final Log log = LogFactory.getLog(NullVersionRemovalPolicy.class);
 
     @Override
-    public void removeVersions(Session session, Document doc,
-            CoreSession coreSession) {
+    public void removeVersions(Session session, Document doc, CoreSession coreSession) {
         log.debug("Removing no versions");
         // do nothing
     }

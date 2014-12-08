@@ -21,15 +21,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
-public final class FollowTransitionUnrestricted extends
-        UnrestrictedSessionRunner {
+public final class FollowTransitionUnrestricted extends UnrestrictedSessionRunner {
 
     public final DocumentRef docRef;
 
     public final String transition;
 
-    public FollowTransitionUnrestricted(CoreSession session,
-            DocumentRef docRef, String transition) {
+    public FollowTransitionUnrestricted(CoreSession session, DocumentRef docRef, String transition) {
         super(session);
         this.docRef = docRef;
         this.transition = transition;

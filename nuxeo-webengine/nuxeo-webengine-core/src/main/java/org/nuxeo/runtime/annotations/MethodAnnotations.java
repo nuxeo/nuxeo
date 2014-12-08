@@ -58,7 +58,7 @@ class MethodAnnotations {
                     Class<?> annoType = anno.annotationType();
                     Annotation a = entry.annos.get(annoType);
                     if (a == null) {
-                        //TODO support merging annotations?
+                        // TODO support merging annotations?
                         entry.annos.put(anno.annotationType(), anno);
                         entry.method = m;
                     } else {
@@ -81,7 +81,7 @@ class MethodAnnotations {
                     Class<?> annoType = anno.annotationType();
                     Annotation a = entry.annos.get(annoType);
                     if (a == null) {
-                        //TODO support merging annotations?
+                        // TODO support merging annotations?
                         entry.annos.put(anno.annotationType(), anno);
                     } else {
                         entry.annos.put(anno.annotationType(), anno);
@@ -95,7 +95,9 @@ class MethodAnnotations {
 
     static class Entry {
         final Class<?>[] parameterTypes; // store as member to avoid cloning when calling getParameterTypes()
+
         Method method;
+
         final Map<Class<? extends Annotation>, Annotation> annos;
 
         Entry(Method method, Annotation[] annos) {

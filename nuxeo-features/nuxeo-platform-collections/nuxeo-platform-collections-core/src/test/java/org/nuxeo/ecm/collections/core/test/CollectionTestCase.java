@@ -43,12 +43,10 @@ import com.google.inject.Inject;
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({TransactionalFeature.class, PlatformFeature.class})
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.web.common"})
+@Features({ TransactionalFeature.class, PlatformFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.collections.core",
+        "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.ecm.platform.web.common" })
 public class CollectionTestCase {
 
     @Inject
@@ -76,16 +74,14 @@ public class CollectionTestCase {
 
     protected static final int WORK_TIME_OUT_MS = 5000;
 
-    public static List<DocumentModel> createTestFiles(CoreSession session, final int nbFile)
-            throws ClientException {
-        DocumentModel testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+    public static List<DocumentModel> createTestFiles(CoreSession session, final int nbFile) throws ClientException {
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         List<DocumentModel> result = new ArrayList<DocumentModel>();
         for (int i = 1; i <= nbFile; i++) {
-            DocumentModel testFile = session.createDocumentModel(
-                    testWorkspace.getPath().toString(), TEST_FILE_NAME + i,
-                    "File");
+            DocumentModel testFile = session.createDocumentModel(testWorkspace.getPath().toString(),
+                    TEST_FILE_NAME + i, "File");
             testFile = session.createDocument(testFile);
             result.add(testFile);
         }
@@ -96,11 +92,9 @@ public class CollectionTestCase {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        workManager.awaitCompletion(CollectionConstants.COLLECTION_QUEUE_ID,
-                WORK_TIME_OUT_MS, TimeUnit.MILLISECONDS);
+        workManager.awaitCompletion(CollectionConstants.COLLECTION_QUEUE_ID, WORK_TIME_OUT_MS, TimeUnit.MILLISECONDS);
 
-        assertEquals(0, workManager.getQueueSize(
-                CollectionConstants.COLLECTION_QUEUE_ID, null));
+        assertEquals(0, workManager.getQueueSize(CollectionConstants.COLLECTION_QUEUE_ID, null));
     }
 
 }

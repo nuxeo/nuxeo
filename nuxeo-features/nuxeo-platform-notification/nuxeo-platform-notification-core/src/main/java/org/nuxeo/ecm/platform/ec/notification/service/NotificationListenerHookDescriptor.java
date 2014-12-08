@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerHook;
  */
 @XObject("hookListener")
 public class NotificationListenerHookDescriptor {
-    
+
     @XNode("@name")
     public String name;
 

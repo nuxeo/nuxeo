@@ -47,8 +47,7 @@ public class TestJenaOrCoreGraphFactory extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
-        deployContrib("org.nuxeo.ecm.relations.jena.tests",
-                "jena-or-core-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.relations.jena.tests", "jena-or-core-test-contrib.xml");
         service = (RelationService) Framework.getService(RelationManager.class);
     }
 
@@ -72,11 +71,9 @@ public class TestJenaOrCoreGraphFactory extends SQLRepositoryTestCase {
         assertTrue(service.graphRegistry.containsKey("jenagraph"));
 
         // put some stuff in the graph
-        QNameResource doc = new QNameResourceImpl(
-                RelationConstants.DOCUMENT_NAMESPACE, database.repositoryName
-                        + "/00010000-2c86-46fa-909e-02494bcb0001");
-        QNameResource isBasedOn = new QNameResourceImpl(DC_TERMS_NS,
-                "IsBasedOn");
+        QNameResource doc = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, database.repositoryName
+                + "/00010000-2c86-46fa-909e-02494bcb0001");
+        QNameResource isBasedOn = new QNameResourceImpl(DC_TERMS_NS, "IsBasedOn");
         jenaGraph.add(new StatementImpl(doc, isBasedOn, doc));
 
         // reuse in-memory jena graph for next lookup

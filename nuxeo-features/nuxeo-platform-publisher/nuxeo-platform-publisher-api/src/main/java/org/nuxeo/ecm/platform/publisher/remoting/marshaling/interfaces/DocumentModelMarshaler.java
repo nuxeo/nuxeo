@@ -24,15 +24,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Interface for {@link DocumentModel} marshaler
  *
  * @author tiry
- *
  */
 public interface DocumentModelMarshaler {
 
-    String marshalDocument(DocumentModel doc)
-            throws PublishingMarshalingException;;
+    String marshalDocument(DocumentModel doc) throws PublishingMarshalingException;;
 
-    DocumentModel unMarshalDocument(String data, CoreSession coreSession)
-            throws PublishingMarshalingException;;
+    DocumentModel unMarshalDocument(String data, CoreSession coreSession) throws PublishingMarshalingException;;
 
     void setOriginatingServer(String serverName);
 }

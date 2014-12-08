@@ -30,32 +30,38 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("web-adapter")
 public class AdapterDescriptor extends TypeDescriptor {
 
     @XNode("@class")
-    void setClass(Class<?> clazz) { this.clazz = new StaticClassProxy(clazz); }
+    void setClass(Class<?> clazz) {
+        this.clazz = new StaticClassProxy(clazz);
+    }
 
     @XNode("@type")
-    void setType(String type) { this.type = type; }
+    void setType(String type) {
+        this.type = type;
+    }
 
     @XNode("@name")
     public String name;
 
     @XNode("@fragment")
-    void setFragment(String fragment) { this.fragment = fragment; }
+    void setFragment(String fragment) {
+        this.fragment = fragment;
+    }
 
     @XNode("@superType")
-    void setSuperType(String superType) { this.superType = superType; }
+    void setSuperType(String superType) {
+        this.superType = superType;
+    }
 
-    @XNode(value="targetType")
+    @XNode(value = "targetType")
     public String targetType = ResourceType.ROOT_TYPE_NAME;
 
-    @XNodeList(value="facet", type=String[].class, componentType=String.class, nullByDefault=true)
+    @XNodeList(value = "facet", type = String[].class, componentType = String.class, nullByDefault = true)
     public String[] facets;
-
 
     public AdapterDescriptor() {
     }
@@ -65,8 +71,8 @@ public class AdapterDescriptor extends TypeDescriptor {
         this.name = name;
     }
 
-    public AdapterDescriptor(ClassProxy clazz, String name, String type, String superType,
-            String targetType, String[] facets) {
+    public AdapterDescriptor(ClassProxy clazz, String name, String type, String superType, String targetType,
+            String[] facets) {
         super(clazz, type, superType);
         this.name = name;
         if (facets != null && facets.length > 0) {
@@ -120,8 +126,8 @@ public class AdapterDescriptor extends TypeDescriptor {
     }
 
     public static AdapterDescriptor fromAnnotation(ClassProxy clazz, WebAdapter type) {
-        return  new AdapterDescriptor(clazz, type.name(), type.type(), type.superType(),
-                type.targetType(), type.facets());
+        return new AdapterDescriptor(clazz, type.name(), type.type(), type.superType(), type.targetType(),
+                type.facets());
     }
 
 }

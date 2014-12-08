@@ -27,8 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XMemberAnnotation(XMemberAnnotation.NODE_LIST)
 @Target({ ElementType.FIELD, ElementType.METHOD })
@@ -62,8 +61,7 @@ public @interface XNodeList {
     Class componentType();
 
     /**
-     * Whether the container should be set to null when not specified in the
-     * XML file.
+     * Whether the container should be set to null when not specified in the XML file.
      */
     boolean nullByDefault() default false;
 }

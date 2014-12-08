@@ -19,14 +19,12 @@ package org.nuxeo.ecm.platform.contentview.jsf;
 import java.io.Serializable;
 
 /**
- * Holds needed information about a content view to select it from UI, or to
- * selected one of its result layouts from UI
+ * Holds needed information about a content view to select it from UI, or to selected one of its result layouts from UI
  *
  * @author Anahide Tchertchian
  * @since 5.4
  */
-public class ContentViewHeader implements Serializable,
-        Comparable<ContentViewHeader> {
+public class ContentViewHeader implements Serializable, Comparable<ContentViewHeader> {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,8 +36,7 @@ public class ContentViewHeader implements Serializable,
 
     protected String iconPath;
 
-    public ContentViewHeader(String name, String title, boolean translateTitle,
-            String iconPath) {
+    public ContentViewHeader(String name, String title, boolean translateTitle, String iconPath) {
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;
@@ -81,8 +78,7 @@ public class ContentViewHeader implements Serializable,
         }
 
         ContentViewHeader otherContentViewHeader = (ContentViewHeader) other;
-        return name == null ? otherContentViewHeader.name == null
-                : name.equals(otherContentViewHeader.name);
+        return name == null ? otherContentViewHeader.name == null : name.equals(otherContentViewHeader.name);
     }
 
     @Override
@@ -111,8 +107,7 @@ public class ContentViewHeader implements Serializable,
 
     @Override
     public String toString() {
-        return String.format("ContentViewHeader [name=%s, title=%s, "
-                + "translateTitle=%s, iconPath=%s]", name, title,
+        return String.format("ContentViewHeader [name=%s, title=%s, " + "translateTitle=%s, iconPath=%s]", name, title,
                 Boolean.valueOf(translateTitle), iconPath);
     }
 

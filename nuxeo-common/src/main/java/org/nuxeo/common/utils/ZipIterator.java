@@ -45,7 +45,9 @@ public class ZipIterator implements Iterator<ZipEntry> {
     private static final Log log = LogFactory.getLog(ZipIterator.class);
 
     private final ZipInputStream zin;
+
     private final ZipEntryFilter filter;
+
     private ZipEntry zentry;
 
     public ZipIterator(ZipInputStream zin, ZipEntryFilter filter) throws IOException {
@@ -77,7 +79,6 @@ public class ZipIterator implements Iterator<ZipEntry> {
     public ZipIterator(InputStream in, ZipEntryFilter filter) throws IOException {
         this(new ZipInputStream(in), filter);
     }
-
 
     public ZipEntry getNextEntry() throws IOException {
         ZipEntry ze = zin.getNextEntry();

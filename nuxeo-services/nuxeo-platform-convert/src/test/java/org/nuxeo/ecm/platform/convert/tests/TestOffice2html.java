@@ -27,8 +27,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestOffice2html extends BaseConverterTest {
 
-    protected void doTestHtmlConverter(String srcMT, String fileName)
-            throws Exception {
+    protected void doTestHtmlConverter(String srcMT, String fileName) throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 

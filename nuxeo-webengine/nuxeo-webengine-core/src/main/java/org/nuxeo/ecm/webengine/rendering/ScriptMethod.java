@@ -38,7 +38,6 @@ import freemarker.template.TemplateModelIterator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ScriptMethod implements TemplateMethodModelEx {
 
@@ -48,18 +47,18 @@ public class ScriptMethod implements TemplateMethodModelEx {
             throw new TemplateModelException("Invalid number of arguments for script(...) method");
         }
 
-        SimpleScalar val = (SimpleScalar)arguments.get(0);
+        SimpleScalar val = (SimpleScalar) arguments.get(0);
         if (val == null) {
             throw new TemplateModelException("src attribute is required");
         }
         String src = val.getAsString();
 
-        Map<String,Object> args = new HashMap<String, Object>();
+        Map<String, Object> args = new HashMap<String, Object>();
         if (arguments.size() > 1) {
             Object o = arguments.get(1);
             if (o instanceof SimpleScalar) {
                 String arg = ((SimpleScalar) o).getAsString();
-                args.put("_args", new String[] {arg});
+                args.put("_args", new String[] { arg });
             } else if (!(o instanceof TemplateHashModelEx)) {
                 throw new TemplateModelException("second argument should be a map");
             } else {
@@ -87,7 +86,7 @@ public class ScriptMethod implements TemplateMethodModelEx {
             try {
                 return ctx.runScript(src, args);
             } catch (WebException e) {
-                throw new TemplateModelException("Failed to run script: "+src, e);
+                throw new TemplateModelException("Failed to run script: " + src, e);
             }
         } else {
             throw new IllegalStateException("Not In a Web Context");

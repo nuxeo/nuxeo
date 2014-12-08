@@ -17,8 +17,7 @@ package org.nuxeo.ecm.platform.audit.api;
 /**
  * NXAudit event types.
  * <p>
- * For now, used by the content history Seam listener to be notified for logs
- * invalidation using the Seam event service.
+ * For now, used by the content history Seam listener to be notified for logs invalidation using the Seam event service.
  * <p>
  * Might useful for other kind of event based notifications.
  *

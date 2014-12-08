@@ -32,8 +32,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Abstract WebObject class that handle retrieve, deletion and update of
- * {@link NuxeoPrincipal} or {@link NuxeoGroup}.
+ * Abstract WebObject class that handle retrieve, deletion and update of {@link NuxeoPrincipal} or {@link NuxeoGroup}.
  *
  * @since 5.7.3
  */
@@ -47,8 +46,7 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
     @Override
     protected void initialize(Object... args) {
         if (args.length < 1) {
-            throw new IllegalArgumentException(
-                    "UserObject takes at least one parameter");
+            throw new IllegalArgumentException("UserObject takes at least one parameter");
         }
         um = Framework.getLocalService(UserManager.class);
         currentArtifact = (T) args[0];
@@ -83,32 +81,27 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
     protected void checkUpdateGuardPreconditions() throws ClientException {
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!principal.isAdministrator()) {
-            if ((!principal.isMemberOf("powerusers"))
-                    || !isAPowerUserEditableArtifact()) {
+            if ((!principal.isMemberOf("powerusers")) || !isAPowerUserEditableArtifact()) {
 
-                throw new WebSecurityException(
-                        "User is not allowed to edit users");
+                throw new WebSecurityException("User is not allowed to edit users");
             }
         }
     }
 
     /**
-     * Check that the current artifact is editable by a power user. Basically
-     * this means not an admin user or not an admin group.
+     * Check that the current artifact is editable by a power user. Basically this means not an admin user or not an
+     * admin group.
      *
      * @return
-     *
      */
     protected abstract boolean isAPowerUserEditableArtifact();
 
     /**
-     * Updates the current artifact by the one given in parameters in the
-     * underlying persistence system.
+     * Updates the current artifact by the one given in parameters in the underlying persistence system.
      *
      * @param artifact the artifact that has been retrieved from request.
      * @return the updated artifact.
      * @throws ClientException
-     *
      */
     protected abstract T updateArtifact(T artifact) throws ClientException;
 
@@ -116,7 +109,6 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
      * Deletes the current artifact in the underlying persistence system.
      *
      * @throws ClientException
-     *
      */
     protected abstract void deleteArtifact() throws ClientException;
 

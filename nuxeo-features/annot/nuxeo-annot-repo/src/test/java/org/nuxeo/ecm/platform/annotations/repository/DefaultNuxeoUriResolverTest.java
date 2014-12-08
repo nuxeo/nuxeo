@@ -28,7 +28,6 @@ import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class DefaultNuxeoUriResolverTest extends AbstractRepositoryTestCase {
 
@@ -42,10 +41,10 @@ public class DefaultNuxeoUriResolverTest extends AbstractRepositoryTestCase {
 
     @Test
     public void testGetDocumentRef() throws AnnotationException {
-           assertNotNull(uri);
-           resolver = new DefaultNuxeoUriResolver();
-           DocumentRef ref = resolver.getDocumentRef(uri);
-           assertNotNull(ref);
+        assertNotNull(uri);
+        resolver = new DefaultNuxeoUriResolver();
+        DocumentRef ref = resolver.getDocumentRef(uri);
+        assertNotNull(ref);
     }
 
 }

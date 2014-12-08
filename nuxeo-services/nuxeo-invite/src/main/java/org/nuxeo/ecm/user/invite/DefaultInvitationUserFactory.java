@@ -32,48 +32,37 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
     private static final Log log = LogFactory.getLog(DefaultInvitationUserFactory.class);
 
     @Override
-    public void doPostUserCreation(CoreSession session,
-            DocumentModel registrationDoc, NuxeoPrincipal user)
+    public void doPostUserCreation(CoreSession session, DocumentModel registrationDoc, NuxeoPrincipal user)
             throws ClientException, UserRegistrationException {
         // Nothing to do in the default implementation
     }
 
     @Override
-    public NuxeoPrincipal doCreateUser(CoreSession session,
-            DocumentModel registrationDoc,UserRegistrationConfiguration configuration) throws ClientException,
-            UserRegistrationException {
+    public NuxeoPrincipal doCreateUser(CoreSession session, DocumentModel registrationDoc,
+            UserRegistrationConfiguration configuration) throws ClientException, UserRegistrationException {
         UserManager userManager = Framework.getService(UserManager.class);
-        
+
         String email = (String) registrationDoc.getPropertyValue(configuration.getUserInfoEmailField());
         if (email == null) {
-            throw new UserRegistrationException(
-                    "Email address must be specififed");
+            throw new UserRegistrationException("Email address must be specififed");
         }
 
         String login = (String) registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField());
         NuxeoPrincipal user = userManager.getPrincipal(login);
         if (user == null) {
             DocumentModel newUserDoc = userManager.getBareUserModel();
-            newUserDoc.setPropertyValue(
-                    UserConfig.USERNAME_COLUMN,
-                    login);
-            newUserDoc.setPropertyValue(
-                    UserConfig.PASSWORD_COLUMN,
+            newUserDoc.setPropertyValue(UserConfig.USERNAME_COLUMN, login);
+            newUserDoc.setPropertyValue(UserConfig.PASSWORD_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoPasswordField()));
-            newUserDoc.setPropertyValue(
-                    UserConfig.FIRSTNAME_COLUMN,
+            newUserDoc.setPropertyValue(UserConfig.FIRSTNAME_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoFirstnameField()));
-            newUserDoc.setPropertyValue(
-                    UserConfig.LASTNAME_COLUMN,
+            newUserDoc.setPropertyValue(UserConfig.LASTNAME_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoLastnameField()));
-            newUserDoc.setPropertyValue(
-                    UserConfig.EMAIL_COLUMN,
+            newUserDoc.setPropertyValue(UserConfig.EMAIL_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoEmailField()));
-            newUserDoc.setPropertyValue(
-                    UserConfig.COMPANY_COLUMN,
+            newUserDoc.setPropertyValue(UserConfig.COMPANY_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoCompanyField()));
-            newUserDoc.setPropertyValue(
-                    UserConfig.GROUPS_COLUMN,
+            newUserDoc.setPropertyValue(UserConfig.GROUPS_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoGroupsField()));
             userManager.createUser(newUserDoc);
             user = userManager.getPrincipal(login);
@@ -81,8 +70,7 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
             log.info("New user created:" + user.getName());
         } else {
             if (!email.equals(((NuxeoPrincipalImpl) user).getEmail())) {
-                throw new UserRegistrationException(
-                        "This login is not available");
+                throw new UserRegistrationException("This login is not available");
             }
         }
         return user;

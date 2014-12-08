@@ -28,10 +28,9 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentWriter;
 
 /**
- * This class plays a role in the export pipe.It is used to generate xml files
- * that have a nuxeo specific format.Each file contains information about a
- * document model such as,general information like name, uid or document type,
- * and information about the schemas that the document includes.
+ * This class plays a role in the export pipe.It is used to generate xml files that have a nuxeo specific format.Each
+ * file contains information about a document model such as,general information like name, uid or document type, and
+ * information about the schemas that the document includes.
  *
  * @author btatar
  */
@@ -70,17 +69,15 @@ public class XMLDirectoryWriter extends AbstractDocumentWriter {
     @Override
     public DocumentTranslationMap write(ExportedDocument doc) throws IOException {
 
-        File file = new File(getDestination() + File.separator
-                + doc.getPath().toString());
+        File file = new File(getDestination() + File.separator + doc.getPath().toString());
         if (!file.mkdirs()) {
-            throw new IOException("Cannot create target directory: "
-                    + file.getAbsolutePath());
+            throw new IOException("Cannot create target directory: " + file.getAbsolutePath());
         }
         OutputFormat format = AbstractDocumentWriter.createPrettyPrint();
         XMLWriter writer = null;
         try {
-            writer = new XMLWriter(new FileOutputStream(file.getAbsolutePath()
-                    + File.separator + "document.xml"), format);
+            writer = new XMLWriter(new FileOutputStream(file.getAbsolutePath() + File.separator + "document.xml"),
+                    format);
             writer.write(doc.getDocument());
         } finally {
             if (writer != null) {
@@ -89,8 +86,7 @@ public class XMLDirectoryWriter extends AbstractDocumentWriter {
         }
         Map<String, Blob> blobs = doc.getBlobs();
         for (Map.Entry<String, Blob> entry : blobs.entrySet()) {
-            String blobPath = file.getAbsolutePath() + File.separator
-                    + entry.getKey();
+            String blobPath = file.getAbsolutePath() + File.separator + entry.getKey();
             entry.getValue().transferTo(new File(blobPath));
         }
 
@@ -98,8 +94,8 @@ public class XMLDirectoryWriter extends AbstractDocumentWriter {
         for (Map.Entry<String, Document> entry : doc.getDocuments().entrySet()) {
             writer = null;
             try {
-                writer = new XMLWriter(new FileOutputStream(file.getAbsolutePath()
-                        + File.separator + entry.getKey() + ".xml"), format);
+                writer = new XMLWriter(new FileOutputStream(file.getAbsolutePath() + File.separator + entry.getKey()
+                        + ".xml"), format);
                 writer.write(entry.getValue());
             } finally {
                 if (writer != null) {

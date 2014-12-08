@@ -22,8 +22,8 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This helper is now a simple wrapper around the service API. This class is now
- * deprecated, please use {@link PublisherService}.getRootSectionFinder
+ * This helper is now a simple wrapper around the service API. This class is now deprecated, please use
+ * {@link PublisherService}.getRootSectionFinder
  * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
@@ -34,10 +34,8 @@ public class RootSectionsFinderHelper {
         // Helper class
     }
 
-    public static RootSectionFinder getRootSectionsFinder(
-            CoreSession coreSession) {
-        return Framework.getLocalService(PublisherService.class).getRootSectionFinder(
-                coreSession);
+    public static RootSectionFinder getRootSectionsFinder(CoreSession coreSession) {
+        return Framework.getLocalService(PublisherService.class).getRootSectionFinder(coreSession);
     }
 
 }

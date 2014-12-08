@@ -33,8 +33,7 @@ import com.sun.faces.renderkit.html_basic.SelectManyCheckboxListRenderer;
 /**
  * @since 6.0
  */
-public class NxSelectManyCheckboxListRenderer extends
-        SelectManyCheckboxListRenderer {
+public class NxSelectManyCheckboxListRenderer extends SelectManyCheckboxListRenderer {
 
     final String MORE_LESS_LIMIT_PROPERTY = "moreLessLimit";
 
@@ -43,52 +42,39 @@ public class NxSelectManyCheckboxListRenderer extends
     public static final String RENDERER_TYPE = "org.nuxeo.NxSelectManyCheckboxList";
 
     @Override
-    public void encodeEnd(FacesContext context, UIComponent component)
-            throws IOException {
+    public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
 
         super.encodeEnd(context, component);
 
-        final String moreLessLimit = (String) component.getAttributes().get(
-                MORE_LESS_LIMIT_PROPERTY);
+        final String moreLessLimit = (String) component.getAttributes().get(MORE_LESS_LIMIT_PROPERTY);
         if (moreLessLimit != null) {
             ResponseWriter writer = context.getResponseWriter();
             final int moreLessLimitInt = Integer.parseInt(moreLessLimit);
             writer.startElement("a", component);
             writer.writeAttribute("href", "#", null);
-            writer.writeAttribute(
-                    "onclick",
-                    "nuxeo.utils.moreLessTableRows('"
-                            + component.getClientId() + "', true, "
-                            + moreLessLimitInt + ");return false;", null);
+            writer.writeAttribute("onclick", "nuxeo.utils.moreLessTableRows('" + component.getClientId() + "', true, "
+                    + moreLessLimitInt + ");return false;", null);
             writer.writeAttribute("class", "nx-less-more-ctrl nx-more", null);
             writer.write(ComponentUtils.translate(context, "label.vocabulary.more"));
             writer.endElement("a");
 
             writer.startElement("a", component);
             writer.writeAttribute("href", "#", null);
-            writer.writeAttribute(
-                    "onclick",
-                    "nuxeo.utils.moreLessTableRows('"
-                            + component.getClientId() + "', false, "
-                            + moreLessLimitInt + ");return false;", null);
+            writer.writeAttribute("onclick", "nuxeo.utils.moreLessTableRows('" + component.getClientId() + "', false, "
+                    + moreLessLimitInt + ");return false;", null);
             writer.writeAttribute("class", "nx-less-more-ctrl nx-less", null);
             writer.write(ComponentUtils.translate(context, "label.vocabulary.less"));
             writer.endElement("a");
 
             writer.startElement("script", component);
-            writer.write("jQuery(document).ready(function(){nuxeo.utils.moreLessTableRows('"
-                    + component.getClientId()
-                    + "', false, "
-                    + moreLessLimitInt
-                    + ");});");
+            writer.write("jQuery(document).ready(function(){nuxeo.utils.moreLessTableRows('" + component.getClientId()
+                    + "', false, " + moreLessLimitInt + ");});");
             writer.endElement("script");
         }
 
-        Iterator<SelectItem> items =
-                RenderKitUtils.getSelectItems(context, component);
+        Iterator<SelectItem> items = RenderKitUtils.getSelectItems(context, component);
         if (!items.hasNext()) {
-            final String emptyChoiceMessage = (String) component.getAttributes().get(
-                    EMPTY_CHOICE_PROPERTY);
+            final String emptyChoiceMessage = (String) component.getAttributes().get(EMPTY_CHOICE_PROPERTY);
             if (StringUtils.isNotBlank(emptyChoiceMessage)) {
                 ResponseWriter writer = context.getResponseWriter();
                 writer.startElement("div", component);

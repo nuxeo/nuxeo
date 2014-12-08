@@ -44,7 +44,6 @@ import org.nuxeo.runtime.management.ManagementRuntimeException;
 
 /**
  * @author matic
- *
  */
 public class ModelMBeanIntrospector {
 
@@ -52,17 +51,13 @@ public class ModelMBeanIntrospector {
 
     protected ModelMBeanInfo managementInfo;
 
-    protected final Map<String, ModelMBeanAttributeInfo> attributesInfo
-            = new HashMap<String, ModelMBeanAttributeInfo>();
+    protected final Map<String, ModelMBeanAttributeInfo> attributesInfo = new HashMap<String, ModelMBeanAttributeInfo>();
 
-    protected final Map<String, ModelMBeanConstructorInfo> constructorsInfo
-            = new HashMap<String, ModelMBeanConstructorInfo>();
+    protected final Map<String, ModelMBeanConstructorInfo> constructorsInfo = new HashMap<String, ModelMBeanConstructorInfo>();
 
-    protected final Map<String, ModelMBeanOperationInfo> operationsInfo
-            = new HashMap<String, ModelMBeanOperationInfo>();
+    protected final Map<String, ModelMBeanOperationInfo> operationsInfo = new HashMap<String, ModelMBeanOperationInfo>();
 
-    protected final Map<String, ModelMBeanNotificationInfo> notificationsInfo
-            = new HashMap<String, ModelMBeanNotificationInfo>();
+    protected final Map<String, ModelMBeanNotificationInfo> notificationsInfo = new HashMap<String, ModelMBeanNotificationInfo>();
 
     public ModelMBeanIntrospector(Class<?> clazz) {
         this.clazz = clazz;
@@ -90,8 +85,7 @@ public class ModelMBeanIntrospector {
             try {
                 beanInfo = Introspector.getBeanInfo(iface);
             } catch (java.beans.IntrospectionException e) {
-                throw ManagementRuntimeException.wrap("Cannot introspect "
-                        + iface, e);
+                throw ManagementRuntimeException.wrap("Cannot introspect " + iface, e);
             }
             doCollectAttributes(iface, beanInfo);
             doCollectConstructors(iface, beanInfo);
@@ -100,17 +94,11 @@ public class ModelMBeanIntrospector {
         }
 
         // Assemble model mbean infos
-        managementInfo = new ModelMBeanInfoSupport(
-                clazz.getCanonicalName(),
-                "",
-                attributesInfo.values().toArray(
-                        new ModelMBeanAttributeInfo[attributesInfo.size()]),
-                constructorsInfo.values().toArray(
-                        new ModelMBeanConstructorInfo[constructorsInfo.size()]),
-                operationsInfo.values().toArray(
-                        new ModelMBeanOperationInfo[operationsInfo.size()]),
-                notificationsInfo.values().toArray(
-                        new ModelMBeanNotificationInfo[notificationsInfo.size()]));
+        managementInfo = new ModelMBeanInfoSupport(clazz.getCanonicalName(), "", attributesInfo.values().toArray(
+                new ModelMBeanAttributeInfo[attributesInfo.size()]), constructorsInfo.values().toArray(
+                new ModelMBeanConstructorInfo[constructorsInfo.size()]), operationsInfo.values().toArray(
+                new ModelMBeanOperationInfo[operationsInfo.size()]), notificationsInfo.values().toArray(
+                new ModelMBeanNotificationInfo[notificationsInfo.size()]));
 
         return managementInfo;
     }
@@ -159,8 +147,7 @@ public class ModelMBeanIntrospector {
             }
             ModelMBeanAttributeInfo attributeInfo = null;
             try {
-                Descriptor descriptor =
-                    doGetDescriptor(propertyInfo, "attribute");
+                Descriptor descriptor = doGetDescriptor(propertyInfo, "attribute");
                 Method readMethod = propertyInfo.getReadMethod();
                 Method writeMethod = propertyInfo.getWriteMethod();
                 if (readMethod != null) {
@@ -169,12 +156,8 @@ public class ModelMBeanIntrospector {
                 if (writeMethod != null) {
                     descriptor.setField("setMethod", writeMethod.getName());
                 }
-                attributeInfo = new ModelMBeanAttributeInfo(
-                        propertyInfo.getName(),
-                        propertyInfo.getShortDescription(),
-                        propertyInfo.getReadMethod(),
-                        propertyInfo.getWriteMethod(),
-                        descriptor);
+                attributeInfo = new ModelMBeanAttributeInfo(propertyInfo.getName(), propertyInfo.getShortDescription(),
+                        propertyInfo.getReadMethod(), propertyInfo.getWriteMethod(), descriptor);
 
             } catch (IntrospectionException e) {
                 continue;
@@ -199,25 +182,22 @@ public class ModelMBeanIntrospector {
             Class<?> returnType = method.getReturnType();
             boolean returnValue = returnType != null && !void.class.equals(returnType);
             if ((name.startsWith("get") && hasParameters && returnValue)
-                    || (name.startsWith("is")
-                            && !hasParameters && boolean.class.equals(returnType))) {
+                    || (name.startsWith("is") && !hasParameters && boolean.class.equals(returnType))) {
                 descriptor.setField("role", "getter");
-            }  else if (methodInfo.getName().startsWith("set")
-                    && void.class.equals(returnType)
-                    && hasParameters && parameters.length == 1) {
-//                doFixAttribute(clazz, methodInfo.getName());
+            } else if (methodInfo.getName().startsWith("set") && void.class.equals(returnType) && hasParameters
+                    && parameters.length == 1) {
+                // doFixAttribute(clazz, methodInfo.getName());
                 descriptor.setField("role", "setter");
             } else {
                 descriptor.setField("role", "operation");
             }
-            ModelMBeanOperationInfo operationInfo = new ModelMBeanOperationInfo(
-                    methodInfo.getShortDescription(), methodInfo.getMethod(), descriptor);
+            ModelMBeanOperationInfo operationInfo = new ModelMBeanOperationInfo(methodInfo.getShortDescription(),
+                    methodInfo.getMethod(), descriptor);
             operationsInfo.put(operationInfo.getName(), operationInfo);
         }
     }
 
-    protected Descriptor doGetDescriptor(FeatureDescriptor info,
-            String descriptorType) {
+    protected Descriptor doGetDescriptor(FeatureDescriptor info, String descriptorType) {
         Descriptor descriptor = new DescriptorSupport();
         descriptor.setField("name", info.getName());
         descriptor.setField("displayName", info.getDisplayName());
@@ -231,8 +211,7 @@ public class ModelMBeanIntrospector {
     protected String doExtractMethodSuffix(String operationName) {
         Matcher matcher = attributePattern.matcher(operationName);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException(operationName
-                    + " does not match");
+            throw new IllegalArgumentException(operationName + " does not match");
         }
         return matcher.group(2);
     }

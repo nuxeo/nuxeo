@@ -34,29 +34,30 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FormManager implements InvocationHandler, Form {
 
     protected Map<String, Object> map;
-    protected Map<String, String[]> fields;
-    protected List<String> unknownKeys;
-    protected FormDescriptor fd;
 
+    protected Map<String, String[]> fields;
+
+    protected List<String> unknownKeys;
+
+    protected FormDescriptor fd;
 
     public FormManager(FormDescriptor fd) {
         this.fd = fd;
         unknownKeys = new ArrayList<String>();
         map = new HashMap<String, Object>(); // remove any previous data
         fields = new HashMap<String, String[]>(); // remove any previous data
-        //TODO when implementing file upload - remove here any previously created file
+        // TODO when implementing file upload - remove here any previously created file
     }
 
     public Collection<String> unknownKeys() {
         return unknownKeys;
     }
 
-    public Map<String,String[]> fields() {
+    public Map<String, String[]> fields() {
         return fields;
     }
 
@@ -67,7 +68,7 @@ public class FormManager implements InvocationHandler, Form {
         for (String key : data.getKeys()) {
             String[] values = data.getList(key);
             if (values != null) {
-                int k=0;
+                int k = 0;
                 for (String v : values) {
                     if (v.length() == 0) {
                         k++;
@@ -123,8 +124,7 @@ public class FormManager implements InvocationHandler, Form {
         }
     }
 
-    public Object invoke(Object proxy, Method method, Object[] args)
-            throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (method.getDeclaringClass() == Form.class) {
             try {
                 return method.invoke(this, args);
@@ -141,7 +141,7 @@ public class FormManager implements InvocationHandler, Form {
                 }
             }
         }
-        throw new UnsupportedOperationException("Method unsupported: "+method);
+        throw new UnsupportedOperationException("Method unsupported: " + method);
     }
 
     protected static Map<Class<?>, FormDescriptor> forms = new Hashtable<Class<?>, FormDescriptor>();
@@ -149,11 +149,8 @@ public class FormManager implements InvocationHandler, Form {
     @SuppressWarnings("unchecked")
     public static <T> T newProxy(Class<T> type) {
         WebEngine we = Framework.getService(WebEngine.class);
-        ClassLoader cl = we != null ? we.getWebLoader().getClassLoader()
-                : FormManager.class.getClassLoader();
-        return (T)Proxy.newProxyInstance(cl,
-                new Class<?>[] {type},
-                new FormManager(getDescriptor(type)));
+        ClassLoader cl = we != null ? we.getWebLoader().getClassLoader() : FormManager.class.getClassLoader();
+        return (T) Proxy.newProxyInstance(cl, new Class<?>[] { type }, new FormManager(getDescriptor(type)));
     }
 
     public void flushCache() {

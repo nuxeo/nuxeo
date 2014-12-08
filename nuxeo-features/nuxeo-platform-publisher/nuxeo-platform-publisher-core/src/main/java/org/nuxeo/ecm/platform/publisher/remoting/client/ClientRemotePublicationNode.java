@@ -25,8 +25,7 @@ import org.nuxeo.ecm.platform.publisher.impl.service.ProxyNode;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublicationNode;
 
 /**
- * {@link PublicationNode} implementation that points to a remote tree on a
- * remote server.
+ * {@link PublicationNode} implementation that points to a remote tree on a remote server.
  *
  * @author tiry
  */
@@ -48,10 +47,8 @@ public class ClientRemotePublicationNode extends AbstractRemotableNode {
 
     protected String treeName;
 
-    public ClientRemotePublicationNode(String treeConfigName, String sid,
-            PublicationNode node, String serverSessionId,
-            RemotePublicationTreeManager service, String targetTreeName)
-            throws ClientException {
+    public ClientRemotePublicationNode(String treeConfigName, String sid, PublicationNode node, String serverSessionId,
+            RemotePublicationTreeManager service, String targetTreeName) throws ClientException {
         this.serverSessionId = serverSessionId;
         this.sessionId = sid;
         this.service = service;
@@ -64,20 +61,17 @@ public class ClientRemotePublicationNode extends AbstractRemotableNode {
     }
 
     @Override
-    protected PublicationNode switchToServerNode(PublicationNode node)
-            throws ClientException {
+    protected PublicationNode switchToServerNode(PublicationNode node) throws ClientException {
 
         if (node instanceof ClientRemotePublicationNode) {
             ClientRemotePublicationNode cNode = (ClientRemotePublicationNode) node;
-            return new BasicPublicationNode(cNode.getNodeType(),
-                    cNode.getPath(), cNode.getTitle(),
+            return new BasicPublicationNode(cNode.getNodeType(), cNode.getPath(), cNode.getTitle(),
                     cNode.getUnwrappedTreeName(), serverSessionId);
         }
         if (node instanceof ProxyNode) {
             ProxyNode rNode = (ProxyNode) node;
-            return new BasicPublicationNode(rNode.getNodeType(),
-                    rNode.getPath(), rNode.getTitle(), getTargetTreeName(),
-                    serverSessionId);
+            return new BasicPublicationNode(rNode.getNodeType(), rNode.getPath(), rNode.getTitle(),
+                    getTargetTreeName(), serverSessionId);
         } else {
             return node;
         }
@@ -88,10 +82,8 @@ public class ClientRemotePublicationNode extends AbstractRemotableNode {
     }
 
     @Override
-    protected PublicationNode switchToClientNode(PublicationNode node)
-            throws ClientException {
-        return new ClientRemotePublicationNode(treeName, sessionId, node,
-                serverSessionId, service, getTargetTreeName());
+    protected PublicationNode switchToClientNode(PublicationNode node) throws ClientException {
+        return new ClientRemotePublicationNode(treeName, sessionId, node, serverSessionId, service, getTargetTreeName());
     }
 
     @Override
@@ -100,8 +92,7 @@ public class ClientRemotePublicationNode extends AbstractRemotableNode {
     }
 
     @Override
-    protected RemotePublicationTreeManager getPublisher()
-            throws ClientException {
+    protected RemotePublicationTreeManager getPublisher() throws ClientException {
         return service;
     }
 

@@ -107,8 +107,7 @@ public class NuxeoCorsFilterDescriptor implements Serializable, Cloneable {
     }
 
     public boolean isMatching(HttpServletRequest request) {
-        return !StringUtils.isEmpty(pattern)
-                && request.getRequestURI().matches(pattern);
+        return !StringUtils.isEmpty(pattern) && request.getRequestURI().matches(pattern);
     }
 
     public NuxeoCorsFilterDescriptor clone() throws CloneNotSupportedException {

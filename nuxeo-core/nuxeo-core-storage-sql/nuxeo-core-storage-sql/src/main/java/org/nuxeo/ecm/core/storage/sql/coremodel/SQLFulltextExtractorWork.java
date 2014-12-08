@@ -23,8 +23,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Work task that does fulltext extraction from the blobs of the given document.
  * <p>
- * The extracted fulltext is then passed to the single-threaded
- * {@link FulltextUpdaterWork}.
+ * The extracted fulltext is then passed to the single-threaded {@link FulltextUpdaterWork}.
  *
  * @since 5.7
  */
@@ -33,8 +32,7 @@ public class SQLFulltextExtractorWork extends FulltextExtractorWork {
     private static final long serialVersionUID = 1L;
 
     public SQLFulltextExtractorWork(String repositoryName, String docId) {
-        super(repositoryName, docId, repositoryName + ':' + docId
-                + ":sqlFulltextExtractor", true);
+        super(repositoryName, docId, repositoryName + ':' + docId + ":sqlFulltextExtractor", true);
     }
 
     private static final Log log = LogFactory.getLog(SQLFulltextExtractorWork.class);
@@ -49,9 +47,7 @@ public class SQLFulltextExtractorWork extends FulltextExtractorWork {
             try {
                 fulltextParser = fulltextParserClass.newInstance();
             } catch (InstantiationException e) {
-                log.error(
-                        "Failed to instantiate "
-                                + fulltextParserClass.getCanonicalName(), e);
+                log.error("Failed to instantiate " + fulltextParserClass.getCanonicalName(), e);
             } catch (IllegalAccessException e) {
                 log.error(e);
             }

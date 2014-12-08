@@ -73,16 +73,14 @@ public class ComponentManagerImpl implements ComponentManager {
     @Override
     public synchronized Map<ComponentName, Set<ComponentName>> getPendingRegistrations() {
         // TODO the set value is not cloned
-        return new HashMap<ComponentName, Set<ComponentName>>(
-                reg.getPendingComponents());
+        return new HashMap<ComponentName, Set<ComponentName>>(reg.getPendingComponents());
     }
 
     public synchronized Collection<ComponentName> getNeededRegistrations() {
         return pendingExtensions.keySet();
     }
 
-    public synchronized Collection<Extension> getPendingExtensions(
-            ComponentName name) {
+    public synchronized Collection<Extension> getPendingExtensions(ComponentName name) {
         return pendingExtensions.get(name);
     }
 
@@ -130,8 +128,7 @@ public class ComponentManagerImpl implements ComponentManager {
         RegistrationInfoImpl ri = (RegistrationInfoImpl) regInfo;
         ComponentName name = ri.getName();
         if (blacklist.contains(name.getName())) {
-            log.warn("Component " + name.getName()
-                    + " was blacklisted. Ignoring.");
+            log.warn("Component " + name.getName() + " was blacklisted. Ignoring.");
             return;
         }
         if (reg.contains(name)) {
@@ -151,8 +148,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
         for (ComponentName n : ri.getAliases()) {
             if (reg.contains(n)) {
-                String msg = "Duplicate component name: " + n + " (alias for "
-                        + name + ")";
+                String msg = "Duplicate component name: " + n + " (alias for " + name + ")";
                 log.error(msg);
                 Framework.getRuntime().getWarnings().add(msg);
                 return;
@@ -164,8 +160,7 @@ public class ComponentManagerImpl implements ComponentManager {
         try {
             log.info("Registering component: " + name);
             if (!reg.addComponent(ri)) {
-                log.info("Registration delayed for component: " + name
-                        + ". Waiting for: "
+                log.info("Registration delayed for component: " + name + ". Waiting for: "
                         + reg.getMissingDependencies(ri.getName()));
             }
         } catch (Exception e) { // deals with interrupt below
@@ -207,25 +202,23 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     @Override
-    public ComponentInstance getComponentProvidingService(
-            Class<?> serviceClass) {
+    public ComponentInstance getComponentProvidingService(Class<?> serviceClass) {
         RegistrationInfoImpl ri = services.get(serviceClass.getName());
         if (ri != null && ri.isActivated()) {
             return ri.getComponent();
         }
-        synchronized(this) {
-	    if (ri != null && !ri.isActivated()) {
-		if (ri.isResolved()) {
-			ri.activate();
-			return ri.getComponent();
-		} else {
-		    // Hack to avoid messages during TypeService activation
-		    if (!serviceClass.getSimpleName().equals("TypeProvider")) {
-			log.debug("The component exposing the service "
-				  + serviceClass + " is not resolved");
-		    }
-		}
-	    }
+        synchronized (this) {
+            if (ri != null && !ri.isActivated()) {
+                if (ri.isResolved()) {
+                    ri.activate();
+                    return ri.getComponent();
+                } else {
+                    // Hack to avoid messages during TypeService activation
+                    if (!serviceClass.getSimpleName().equals("TypeProvider")) {
+                        log.debug("The component exposing the service " + serviceClass + " is not resolved");
+                    }
+                }
+            }
         }
         return null;
     }
@@ -269,12 +262,10 @@ public class ComponentManagerImpl implements ComponentManager {
             loadContributions(ri, extension);
             ri.component.registerExtension(extension);
             sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
-                    ((ComponentInstanceImpl) extension.getComponent()).ri,
-                    extension));
+                    ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
         } else { // put the extension in the pending queue
             if (log.isDebugEnabled()) {
-                log.debug("Enqueue contributed extension to pending queue: "
-                        + extension);
+                log.debug("Enqueue contributed extension to pending queue: " + extension);
             }
             Set<Extension> extensions = pendingExtensions.get(name);
             if (extensions == null) {
@@ -286,8 +277,7 @@ public class ComponentManagerImpl implements ComponentManager {
             }
             extensions.add(extension);
             sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_PENDING,
-                    ((ComponentInstanceImpl) extension.getComponent()).ri,
-                    extension));
+                    ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
         }
     }
 
@@ -314,8 +304,7 @@ public class ComponentManagerImpl implements ComponentManager {
             }
         }
         sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_UNREGISTERED,
-                ((ComponentInstanceImpl) extension.getComponent()).ri,
-                extension));
+                ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
     }
 
     public static void loadContributions(RegistrationInfoImpl ri, Extension xt) {

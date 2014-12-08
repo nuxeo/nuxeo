@@ -37,25 +37,22 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * <p>
  * Accepts the following methods:
  * <ul>
- * <li> GET - get the Lock Owner if any
- * <li> POST - Lock the document using current login information as the lock owner
- * <li> DELETE - Delete the lock
+ * <li>GET - get the Lock Owner if any
+ * <li>POST - Lock the document using current login information as the lock owner
+ * <li>DELETE - Delete the lock
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebAdapter(name="lock", type="LockService", targetType="Document")
+@WebAdapter(name = "lock", type = "LockService", targetType = "Document")
 public class LockService extends DefaultAdapter {
 
     @GET
     public Object doGet() {
         try {
-            DocumentModel  doc =getTarget().getAdapter(DocumentModel.class);
+            DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
             Lock lock = ctx.getCoreSession().getLockInfo(doc.getRef());
-            return lock.getOwner()
-                    + '/'
-                    + ISODateTimeFormat.dateTime().print(
-                            new DateTime(lock.getCreated()));
+            return lock.getOwner() + '/' + ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated()));
         } catch (ClientException e) {
             throw WebException.wrap("Failed to get lock on document", e);
         }
@@ -64,10 +61,10 @@ public class LockService extends DefaultAdapter {
     @DELETE
     public Object removeLock() {
         try {
-            DocumentModel  doc =getTarget().getAdapter(DocumentModel.class);
+            DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
             ctx.getCoreSession().removeLock(doc.getRef());
             doc.refresh();
-            return null; //TODO
+            return null; // TODO
         } catch (ClientException e) {
             throw WebException.wrap("Failed to unlock document", e);
         }
@@ -76,10 +73,10 @@ public class LockService extends DefaultAdapter {
     @POST
     public Object doPost() {
         try {
-            DocumentModel  doc =getTarget().getAdapter(DocumentModel.class);
+            DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
             ctx.getCoreSession().setLock(doc.getRef());
             doc.refresh();
-            return null; //TODO
+            return null; // TODO
         } catch (ClientException e) {
             throw WebException.wrap("Failed to lock document", e);
         }

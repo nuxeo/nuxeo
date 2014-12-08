@@ -65,39 +65,32 @@ public class TestRelationDocument {
     @Before
     public void init() throws ClientException {
 
-        file1 = session.createDocument(session.createDocumentModel("/",
-                "file1", "File"));
+        file1 = session.createDocument(session.createDocumentModel("/", "file1", "File"));
     }
 
     @Test
     public void testRelationDocument() throws ClientException {
 
         // Add a text relation to file1
-        QNameResource docResource = (QNameResource) relationManager.getResource(
-                RelationConstants.DOCUMENT_NAMESPACE, file1, null);
-        Resource predicate = new ResourceImpl(
-                "http://purl.org/dc/terms/Requires");
+        QNameResource docResource = (QNameResource) relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE,
+                file1, null);
+        Resource predicate = new ResourceImpl("http://purl.org/dc/terms/Requires");
         Node object = new LiteralImpl("The related text");
         Statement statement = new StatementImpl(docResource, predicate, object);
-        statement.addProperty(RelationConstants.COMMENT, new LiteralImpl(
-                "The relation comment"));
+        statement.addProperty(RelationConstants.COMMENT, new LiteralImpl("The relation comment"));
         Graph graph = relationManager.getGraph("myrelations", session);
         graph.add(statement);
         session.save();
 
         // Check file1 relation document
         DocumentModelList docRelations = session.query(String.format(
-                "select * from Relation where relation:source = '%s'",
-                file1.getId()));
+                "select * from Relation where relation:source = '%s'", file1.getId()));
         assertEquals(1, docRelations.size());
         DocumentModel relation = docRelations.get(0);
-        assertEquals("http://purl.org/dc/terms/Requires",
-                relation.getPropertyValue("relation:predicate"));
-        assertEquals("The related text",
-                relation.getPropertyValue("relation:targetString"));
+        assertEquals("http://purl.org/dc/terms/Requires", relation.getPropertyValue("relation:predicate"));
+        assertEquals("The related text", relation.getPropertyValue("relation:targetString"));
         assertEquals("Administrator", relation.getPropertyValue("dc:creator"));
-        assertEquals("The relation comment",
-                relation.getPropertyValue("dc:description"));
+        assertEquals("The relation comment", relation.getPropertyValue("dc:description"));
     }
 
 }

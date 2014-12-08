@@ -45,8 +45,7 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
     /**
      * {@inheritDoc}
      */
-    public InputStream exportXML(DocumentModel doc, CoreSession session)
-            throws ClientException {
+    public InputStream exportXML(DocumentModel doc, CoreSession session) throws ClientException {
 
         byte[] xmlExportByteArray = exportXMLAsByteArray(doc, session);
         return new ByteArrayInputStream(xmlExportByteArray);
@@ -55,8 +54,7 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
     /**
      * {@inheritDoc}
      */
-    public InputSource exportXMLAsInputSource(DocumentModel doc,
-            CoreSession session) throws ClientException {
+    public InputSource exportXMLAsInputSource(DocumentModel doc, CoreSession session) throws ClientException {
 
         InputStream xmlExportInputStream = exportXML(doc, session);
         return new InputSource(xmlExportInputStream);
@@ -65,13 +63,11 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
     /**
      * {@inheritDoc}
      */
-    public final byte[] exportXMLAsByteArray(DocumentModel doc,
-            CoreSession session) throws ClientException {
+    public final byte[] exportXMLAsByteArray(DocumentModel doc, CoreSession session) throws ClientException {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         DocumentWriter documentWriter = new XMLDocumentWriter(outputStream);
-        DocumentReader documentReader = new TypedSingleDocumentReader(session,
-                doc);
+        DocumentReader documentReader = new TypedSingleDocumentReader(session, doc);
 
         DocumentPipe pipe = new DocumentPipeImpl();
         pipe.setReader(documentReader);
@@ -80,8 +76,7 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
         try {
             pipe.run();
         } catch (IOException e) {
-            throw new ClientException(
-                    "Error while trying to export the document to XML.", e);
+            throw new ClientException("Error while trying to export the document to XML.", e);
         } finally {
             if (documentReader != null) {
                 documentReader.close();

@@ -35,8 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class SerializableInputStream extends InputStream implements
-        Serializable {
+public class SerializableInputStream extends InputStream implements Serializable {
 
     public static final int IN_MEM_LIMIT = 1024 * 64;
 
@@ -118,8 +117,7 @@ public class SerializableInputStream extends InputStream implements
         return in.skip(n);
     }
 
-    private void readObject(ObjectInputStream in)
-            throws ClassNotFoundException, IOException {
+    private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
         // always perform the default de-serialization first
         in.defaultReadObject();
         // create a temp file where we will put the blob content

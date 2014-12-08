@@ -28,11 +28,16 @@ public class EventDescriptor implements Serializable {
 
     private static final long serialVersionUID = 987698679871L;
 
-    private  String eventId;
-    private  String eventDate;
-    private  String docPath;
-    private  String docUUID;
-    private  String lifeCycle;
+    private String eventId;
+
+    private String eventDate;
+
+    private String docPath;
+
+    private String docUUID;
+
+    private String lifeCycle;
+
     private String repoId;
 
     public EventDescriptor() {
@@ -51,8 +56,7 @@ public class EventDescriptor implements Serializable {
      * @deprecated since 5.4.2, use the other constructor
      */
     @Deprecated
-    public EventDescriptor(String eventId, Date eventDate, String docPath,
-            String docUUID, String lifeCycle) {
+    public EventDescriptor(String eventId, Date eventDate, String docPath, String docUUID, String lifeCycle) {
         this.eventDate = eventDate.toString();
         this.eventId = eventId;
         this.docPath = docPath;

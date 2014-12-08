@@ -71,8 +71,7 @@ public class ContainerDescriptor {
     public CommandContext context;
 
     /**
-     * The files to process. If this is not null, directories specified in the
-     * configuration are ignored.
+     * The files to process. If this is not null, directories specified in the configuration are ignored.
      */
     public File[] files;
 

@@ -48,7 +48,7 @@ public class TestACE {
         assertEquals("write", ace.getPermission());
     }
 
-    @SuppressWarnings({"ObjectEqualsNull"})
+    @SuppressWarnings({ "ObjectEqualsNull" })
     @Test
     public void testEquals() {
         ACE ace2 = new ACE("bogdan", "write", false);

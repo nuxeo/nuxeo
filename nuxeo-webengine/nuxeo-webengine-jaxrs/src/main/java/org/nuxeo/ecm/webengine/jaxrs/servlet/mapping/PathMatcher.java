@@ -16,7 +16,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PathMatcher {
 
@@ -49,8 +48,7 @@ public class PathMatcher {
                 // no more matchers => matched
                 return true;
             }
-            if (moff == matchers.length - 1
-                    && matchers[moff] == SegmentMatcher.ANY) {
+            if (moff == matchers.length - 1 && matchers[moff] == SegmentMatcher.ANY) {
                 // it remains one matcher which is any path => matched
                 return true;
             }
@@ -91,7 +89,7 @@ public class PathMatcher {
     }
 
     public static PathMatcher compile(Path path) {
-        //TODO handle / case
+        // TODO handle / case
         ArrayList<SegmentMatcher> matchers = new ArrayList<SegmentMatcher>();
         for (String segment : path.segments) {
             if (segment.length() == 0) {
@@ -101,20 +99,17 @@ public class PathMatcher {
                 addAnyMatcher(matchers, SegmentMatcher.ANY);
             } else if ("*".equals(segment)) {
                 addAnyMatcher(matchers, SegmentMatcher.ANY_SEGMENT);
-            } else if (segment.charAt(0) == '('
-                    && segment.charAt(segment.length() - 1) == ')') {
-                matchers.add(new RegexSegmentMatcher(segment.substring(1,
-                        segment.length() - 1)));
+            } else if (segment.charAt(0) == '(' && segment.charAt(segment.length() - 1) == ')') {
+                matchers.add(new RegexSegmentMatcher(segment.substring(1, segment.length() - 1)));
             } else {
                 matchers.add(createSegmentMatcher(segment));
             }
         }
-        return new PathMatcher(
-                matchers.toArray(new SegmentMatcher[matchers.size()]));
+        return new PathMatcher(matchers.toArray(new SegmentMatcher[matchers.size()]));
     }
 
     private static void addAnyMatcher(List<SegmentMatcher> matchers, SegmentMatcher matcher) {
-        if (!matchers.isEmpty() && matchers.get(matchers.size()-1) == matcher) {
+        if (!matchers.isEmpty() && matchers.get(matchers.size() - 1) == matcher) {
             return;
         }
         matchers.add(matcher);
@@ -127,14 +122,13 @@ public class PathMatcher {
         return new WildcardSegmentMatcher(segment);
     }
 
-
     @Override
     public String toString() {
         if (matchers.length == 0) {
             return "/**";
         }
         StringBuilder buf = new StringBuilder();
-        for (int i=0; i<matchers.length; i++) {
+        for (int i = 0; i < matchers.length; i++) {
             buf.append("/").append(matchers[i]);
         }
         return buf.toString();

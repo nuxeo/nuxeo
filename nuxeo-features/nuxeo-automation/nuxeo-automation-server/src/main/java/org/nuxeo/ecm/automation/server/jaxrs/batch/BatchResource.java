@@ -64,7 +64,6 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @author Antoine Taillefer
- *
  */
 @WebObject(type = "batch")
 public class BatchResource extends AbstractResource<ResourceTypeImpl> {
@@ -80,22 +79,19 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected Response buildFromString(String message) {
-        return Response.ok(message, MediaType.APPLICATION_JSON).header(
-                "Content-Length", message.length()).build();
+        return Response.ok(message, MediaType.APPLICATION_JSON).header("Content-Length", message.length()).build();
     }
 
     protected Response buildHtmlFromString(String message) {
         message = "<html>" + message + "</html>";
-        return Response.ok(message, MediaType.TEXT_HTML_TYPE).header(
-                "Content-Length", message.length()).build();
+        return Response.ok(message, MediaType.TEXT_HTML_TYPE).header("Content-Length", message.length()).build();
     }
 
     protected Response buildFromMap(Map<String, String> map) throws IOException {
         return buildFromMap(map, false);
     }
 
-    protected Response buildFromMap(Map<String, String> map, boolean html)
-            throws IOException {
+    protected Response buildFromMap(Map<String, String> map, boolean html) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         ByteArrayOutputStream out = new ByteArrayOutputStream(128);
         mapper.writeValue(out, map);
@@ -109,21 +105,17 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
     }
 
     /**
-     *
-     * @deprecated since 5.7.2. The timeout is managed by the
-     *             {@link BatchManager#execute} method.
+     * @deprecated since 5.7.2. The timeout is managed by the {@link BatchManager#execute} method.
      */
     @Deprecated
     protected int getUploadWaitTimeout() {
-        String t = Framework.getProperty("org.nuxeo.batch.upload.wait.timeout",
-                "5");
+        String t = Framework.getProperty("org.nuxeo.batch.upload.wait.timeout", "5");
         return Integer.parseInt(t);
     }
 
     @POST
     @Path("/upload")
-    public Object doPost(@Context
-    HttpServletRequest request) throws IOException {
+    public Object doPost(@Context HttpServletRequest request) throws IOException {
 
         boolean useIFrame = false;
 
@@ -174,8 +166,7 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
     @POST
     @Produces("application/json")
     @Path("/execute")
-    public Object exec(@Context
-    HttpServletRequest request, ExecutionRequest xreq) {
+    public Object exec(@Context HttpServletRequest request, ExecutionRequest xreq) {
 
         Map<String, Object> params = xreq.getParams();
         String batchId = (String) params.get(REQUEST_BATCH_ID);
@@ -187,45 +178,38 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
         final BatchManager bm = Framework.getLocalService(BatchManager.class);
         // register commit hook for cleanup
         request.setAttribute(REQUEST_BATCH_ID, batchId);
-        RequestContext.getActiveContext(request).addRequestCleanupHandler(
-                new RequestCleanupHandler() {
-                    @Override
-                    public void cleanup(HttpServletRequest req) {
-                        String bid = (String) req.getAttribute(REQUEST_BATCH_ID);
-                        bm.clean(bid);
-                    }
+        RequestContext.getActiveContext(request).addRequestCleanupHandler(new RequestCleanupHandler() {
+            @Override
+            public void cleanup(HttpServletRequest req) {
+                String bid = (String) req.getAttribute(REQUEST_BATCH_ID);
+                bm.clean(bid);
+            }
 
-                });
+        });
 
         try {
-            OperationContext ctx = xreq.createContext(request,
-                    getCoreSession(request));
+            OperationContext ctx = xreq.createContext(request, getCoreSession(request));
 
             Object result;
             if (StringUtils.isEmpty(fileIdx)) {
-                result = bm.execute(batchId, operationId,
-                        getCoreSession(request), ctx, params);
+                result = bm.execute(batchId, operationId, getCoreSession(request), ctx, params);
             } else {
-                result = bm.execute(batchId, fileIdx, operationId,
-                        getCoreSession(request), ctx, params);
+                result = bm.execute(batchId, fileIdx, operationId, getCoreSession(request), ctx, params);
             }
             return ResponseHelper.getResponse(result, request);
         } catch (ClientException | MessagingException | IOException e) {
             log.error("Error while executing automation batch ", e);
             if (WebException.isSecurityError(e)) {
-                return Response.status(Status.FORBIDDEN).entity(
-                        "{\"error\" : \"" + e.getMessage() + "\"}").build();
+                return Response.status(Status.FORBIDDEN).entity("{\"error\" : \"" + e.getMessage() + "\"}").build();
             } else {
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
-                        "{\"error\" : \"" + e.getMessage() + "\"}").build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("{\"error\" : \"" + e.getMessage() + "\"}").build();
             }
         }
     }
 
     @GET
     @Path("/files/{batchId}")
-    public Object getFilesBatch(@PathParam(REQUEST_BATCH_ID) String batchId)
-            throws IOException {
+    public Object getFilesBatch(@PathParam(REQUEST_BATCH_ID) String batchId) throws IOException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         List<Blob> blobs = bm.getBlobs(batchId);
 
@@ -245,8 +229,7 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
 
     @GET
     @Path("/drop/{batchId}")
-    public Object dropBatch(@PathParam(REQUEST_BATCH_ID) String batchId)
-            throws IOException {
+    public Object dropBatch(@PathParam(REQUEST_BATCH_ID) String batchId) throws IOException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.clean(batchId);
 

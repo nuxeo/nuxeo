@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.annotations.gwt.server.configuration.WebPermission
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
- *
  */
 public interface WebAnnotationConfigurationService {
 

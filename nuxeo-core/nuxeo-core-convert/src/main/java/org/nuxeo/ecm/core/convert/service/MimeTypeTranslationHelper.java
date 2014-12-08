@@ -58,8 +58,7 @@ public class MimeTypeTranslationHelper {
         }
 
         dstMappings.put(dMt, dco);
-        log.debug("Added converter " + desc.getSourceMimeTypes() + " to "
-                + desc.getDestinationMimeType());
+        log.debug("Added converter " + desc.getSourceMimeTypes() + " to " + desc.getDestinationMimeType());
     }
 
     public String getConverterName(String sourceMimeType, String destMimeType) {
@@ -80,8 +79,7 @@ public class MimeTypeTranslationHelper {
         return null;
     }
 
-    public List<String> getConverterNames(String sourceMimeType,
-            String destMimeType) {
+    public List<String> getConverterNames(String sourceMimeType, String destMimeType) {
         List<ConvertOption> sco = srcMappings.get(sourceMimeType);
         List<String> converterNames = new ArrayList<>();
         if (sco == null) {

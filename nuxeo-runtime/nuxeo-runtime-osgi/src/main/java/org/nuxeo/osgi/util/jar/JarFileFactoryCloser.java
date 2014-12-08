@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author matic
- *
  */
 public class JarFileFactoryCloser {
 
@@ -58,46 +57,38 @@ public class JarFileFactoryCloser {
         }
     }
 
-    protected void introspectClasses() throws ClassNotFoundException,
-            SecurityException, NoSuchFieldException, IllegalAccessException,
-            NoSuchMethodException {
+    protected void introspectClasses() throws ClassNotFoundException, SecurityException, NoSuchFieldException,
+            IllegalAccessException, NoSuchMethodException {
         Class<?> jarURLConnectionClass = loadClass("sun.net.www.protocol.jar.JarURLConnection");
         Field jarFileFactoryField = jarURLConnectionClass.getDeclaredField("factory");
         jarFileFactoryField.setAccessible(true);
         factory = jarFileFactoryField.get(null);
         Class<?> factoryClass = loadClass("sun.net.www.protocol.jar.JarFileFactory");
-        factoryGetMethod = factoryClass.getMethod("get",
-                new Class<?>[] { URL.class });
+        factoryGetMethod = factoryClass.getMethod("get", new Class<?>[] { URL.class });
         factoryGetMethod.setAccessible(true);
-        factoryCloseMethod = factoryClass.getMethod("close",
-                new Class<?>[] { JarFile.class });
+        factoryCloseMethod = factoryClass.getMethod("close", new Class<?>[] { JarFile.class });
         factoryCloseMethod.setAccessible(true);
         ok = true;
     }
 
-    protected static Class<?> loadClass(String name)
-            throws ClassNotFoundException {
+    protected static Class<?> loadClass(String name) throws ClassNotFoundException {
         return URLClassLoaderCloser.class.getClassLoader().loadClass(name);
     }
 
-    public void close(URL location) throws IOException  {
+    public void close(URL location) throws IOException {
         if (!ok) {
             return;
         }
         JarFile jar = null;
         try {
-            jar = (JarFile) factoryGetMethod.invoke(factory,
-                    new Object[] { location });
+            jar = (JarFile) factoryGetMethod.invoke(factory, new Object[] { location });
             factoryCloseMethod.invoke(factory, jar);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(
-                    "Cannot use reflection on jar file factory", e);
+            throw new RuntimeException("Cannot use reflection on jar file factory", e);
         } catch (InvocationTargetException e) {
-            throw new RuntimeException(
-                    "Cannot use reflection on jar file factory", e);
+            throw new RuntimeException("Cannot use reflection on jar file factory", e);
         }
         jar.close();
     }
-
 
 }

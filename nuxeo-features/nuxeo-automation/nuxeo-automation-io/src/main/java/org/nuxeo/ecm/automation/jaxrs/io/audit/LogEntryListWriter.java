@@ -42,8 +42,7 @@ public class LogEntryListWriter extends EntityListWriter<LogEntry> {
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
         if (LogEntryList.class.isAssignableFrom(arg0)) {
             return true;
         } else {
@@ -52,8 +51,7 @@ public class LogEntryListWriter extends EntityListWriter<LogEntry> {
     }
 
     @Override
-    protected void writeItem(JsonGenerator jg, LogEntry item)
-            throws ClientException, IOException {
+    protected void writeItem(JsonGenerator jg, LogEntry item) throws ClientException, IOException {
         LogEntryWriter ngw = new LogEntryWriter();
         ngw.writeEntity(jg, item);
     }

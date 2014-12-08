@@ -29,12 +29,10 @@ public class Resources {
 
     private static final Log log = LogFactory.getLog(Resources.class);
 
-    public static String render(Map<String, String> params,
-            boolean virtualHosting) {
+    public static String render(Map<String, String> params, boolean virtualHosting) {
         StringBuilder sb = new StringBuilder();
 
-        String resourcePath = VirtualHostHelper.getContextPathProperty()
-                + "/nxthemes-lib/";
+        String resourcePath = VirtualHostHelper.getContextPathProperty() + "/nxthemes-lib/";
         final String themeUrl = params.get("themeUrl");
         final String path = params.get("path");
         final String basepath = params.get("basepath");
@@ -76,29 +74,24 @@ public class Resources {
         combinedScripts.deleteCharAt(combinedScripts.length() - 1);
 
         long timestamp = getTimestamp(themeUrl);
-        combinedStyles.append("?path=").append(path).append("&amp;basepath=").append(
-                basepath).append("&amp;timestamp=").append(timestamp);
-        combinedScripts.append("?path=").append(path).append("&amp;basepath=").append(
-                basepath).append("&amp;timestamp=").append(timestamp);
+        combinedStyles.append("?path=").append(path).append("&amp;basepath=").append(basepath).append("&amp;timestamp=").append(
+                timestamp);
+        combinedScripts.append("?path=").append(path).append("&amp;basepath=").append(basepath).append(
+                "&amp;timestamp=").append(timestamp);
 
         // styles
         if (hasStyles) {
-            sb.append(String.format(
-                    "<link type=\"text/css\" rel=\"stylesheet\" media=\"all\" href=\"%s\"/>",
+            sb.append(String.format("<link type=\"text/css\" rel=\"stylesheet\" media=\"all\" href=\"%s\"/>",
                     combinedStyles.toString()));
         }
 
         final String contextPath = params.get("contextPath");
         // scripts
-        sb.append(String.format("<script type=\"text/javascript\"><!--\n"
-                + "var nxthemesPath = \"%s\";\n"
-                + "var nxthemesBasePath = \"%s\";\n"
-                + "var nxContextPath = \"%s\";\n" + "//--></script>\n", path,
+        sb.append(String.format("<script type=\"text/javascript\"><!--\n" + "var nxthemesPath = \"%s\";\n"
+                + "var nxthemesBasePath = \"%s\";\n" + "var nxContextPath = \"%s\";\n" + "//--></script>\n", path,
                 nxthemeBasePath, contextPath));
         if (hasScripts) {
-            sb.append(String.format(
-                    "<script type=\"text/javascript\" src=\"%s\"></script>",
-                    combinedScripts.toString()));
+            sb.append(String.format("<script type=\"text/javascript\" src=\"%s\"></script>", combinedScripts.toString()));
         }
 
         // Flush local resources
@@ -107,8 +100,7 @@ public class Resources {
     }
 
     /**
-     * Return the timestamp to use for resources URL, useful to work-around
-     * caching when hot-reloading theme resources.
+     * Return the timestamp to use for resources URL, useful to work-around caching when hot-reloading theme resources.
      *
      * @since 5.6
      * @param themeUrl
@@ -117,14 +109,13 @@ public class Resources {
         long timestamp = 0;
         if (themeUrl != null) {
             try {
-                Long val = Manager.getThemeManager().getLastModified(
-                        new URL(themeUrl));
+                Long val = Manager.getThemeManager().getLastModified(new URL(themeUrl));
                 if (val != null) {
                     timestamp = val.longValue();
                 }
             } catch (MalformedURLException e) {
-                log.warn(String.format("Error while generating last modified"
-                        + " timestamp for theme url '%s'", themeUrl), e);
+                log.warn(String.format("Error while generating last modified" + " timestamp for theme url '%s'",
+                        themeUrl), e);
             }
         }
         return timestamp;

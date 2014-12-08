@@ -30,7 +30,6 @@ import java.util.jar.Manifest;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class JarUtils {
 

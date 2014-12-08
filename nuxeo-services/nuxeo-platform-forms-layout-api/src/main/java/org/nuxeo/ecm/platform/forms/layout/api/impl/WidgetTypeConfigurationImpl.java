@@ -73,10 +73,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     @SuppressWarnings({ "unchecked" })
     public WidgetTypeConfigurationImpl() {
-        this(null, null, null, null, false, Collections.EMPTY_MAP,
-                Collections.EMPTY_LIST, false, false, false, false,
-                Collections.EMPTY_LIST, Collections.EMPTY_LIST,
-                Collections.EMPTY_LIST, Collections.EMPTY_LIST,
+        this(null, null, null, null, false, Collections.EMPTY_MAP, Collections.EMPTY_LIST, false, false, false, false,
+                Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
                 Collections.EMPTY_MAP);
     }
 
@@ -84,17 +82,13 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
      * @deprecated since 5.6: use setters instead
      */
     @Deprecated
-    public WidgetTypeConfigurationImpl(String sinceVersion, String title,
-            String description, String demoId, boolean demoPreviewEnabled,
-            Map<String, Serializable> properties, List<String> supportedModes,
-            boolean acceptingSubWidgets, boolean list, boolean complex,
-            List<String> supportedFieldTypes, List<String> defaultFieldTypes,
-            List<FieldDefinition> defaultFieldDefinitions,
-            List<String> categories,
+    public WidgetTypeConfigurationImpl(String sinceVersion, String title, String description, String demoId,
+            boolean demoPreviewEnabled, Map<String, Serializable> properties, List<String> supportedModes,
+            boolean acceptingSubWidgets, boolean list, boolean complex, List<String> supportedFieldTypes,
+            List<String> defaultFieldTypes, List<FieldDefinition> defaultFieldDefinitions, List<String> categories,
             Map<String, List<LayoutDefinition>> propertyLayouts) {
-        this(sinceVersion, title, description, demoId, demoPreviewEnabled,
-                properties, supportedModes, acceptingSubWidgets, list, complex,
-                false, supportedFieldTypes, defaultFieldTypes,
+        this(sinceVersion, title, description, demoId, demoPreviewEnabled, properties, supportedModes,
+                acceptingSubWidgets, list, complex, false, supportedFieldTypes, defaultFieldTypes,
                 defaultFieldDefinitions, categories, propertyLayouts);
     }
 
@@ -102,14 +96,11 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
      * @deprecated since 5.6: use setters instead
      */
     @Deprecated
-    public WidgetTypeConfigurationImpl(String sinceVersion, String title,
-            String description, String demoId, boolean demoPreviewEnabled,
-            Map<String, Serializable> properties, List<String> supportedModes,
-            boolean acceptingSubWidgets, boolean list, boolean complex,
-            boolean containingForm, List<String> supportedFieldTypes,
-            List<String> defaultFieldTypes,
-            List<FieldDefinition> defaultFieldDefinitions,
-            List<String> categories,
+    public WidgetTypeConfigurationImpl(String sinceVersion, String title, String description, String demoId,
+            boolean demoPreviewEnabled, Map<String, Serializable> properties, List<String> supportedModes,
+            boolean acceptingSubWidgets, boolean list, boolean complex, boolean containingForm,
+            List<String> supportedFieldTypes, List<String> defaultFieldTypes,
+            List<FieldDefinition> defaultFieldDefinitions, List<String> categories,
             Map<String, List<LayoutDefinition>> propertyLayouts) {
         super();
         this.sinceVersion = sinceVersion;
@@ -213,8 +204,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         return propertyLayouts;
     }
 
-    public List<LayoutDefinition> getLayouts(
-            Map<String, List<LayoutDefinition>> allLayouts, String mode,
+    public List<LayoutDefinition> getLayouts(Map<String, List<LayoutDefinition>> allLayouts, String mode,
             String additionalMode) {
         if (allLayouts != null) {
             List<LayoutDefinition> res = new ArrayList<LayoutDefinition>();
@@ -233,8 +223,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         return null;
     }
 
-    public List<LayoutDefinition> getPropertyLayouts(String mode,
-            String additionalMode) {
+    public List<LayoutDefinition> getPropertyLayouts(String mode, String additionalMode) {
         return getLayouts(propertyLayouts, mode, additionalMode);
     }
 
@@ -339,8 +328,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     /**
      * @since 5.6
      */
-    public void setDefaultFieldDefinitions(
-            List<FieldDefinition> defaultFieldDefinitions) {
+    public void setDefaultFieldDefinitions(List<FieldDefinition> defaultFieldDefinitions) {
         this.defaultFieldDefinitions = defaultFieldDefinitions;
     }
 
@@ -354,8 +342,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     /**
      * @since 5.6
      */
-    public void setPropertyLayouts(
-            Map<String, List<LayoutDefinition>> propertyLayouts) {
+    public void setPropertyLayouts(Map<String, List<LayoutDefinition>> propertyLayouts) {
         this.propertyLayouts = propertyLayouts;
     }
 
@@ -402,8 +389,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     /**
      * @since 5.7.3
      */
-    public void setDefaultPropertyValues(
-            Map<String, Map<String, Serializable>> values) {
+    public void setDefaultPropertyValues(Map<String, Map<String, Serializable>> values) {
         this.defaultPropertyValues = values;
     }
 
@@ -436,8 +422,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     /**
      * @since 6.0
      */
-    public void setDefaultControlValues(
-            Map<String, Map<String, Serializable>> values) {
+    public void setDefaultControlValues(Map<String, Map<String, Serializable>> values) {
         this.defaultControlValues = values;
     }
 
@@ -447,8 +432,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     }
 
     @Override
-    public List<LayoutDefinition> getFieldLayouts(String mode,
-            String additionalMode) {
+    public List<LayoutDefinition> getFieldLayouts(String mode, String additionalMode) {
         return getLayouts(fieldLayouts, mode, additionalMode);
     }
 

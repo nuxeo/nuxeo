@@ -38,8 +38,7 @@ import java.io.IOException;
  */
 public class JsonFactoryManagerImpl implements JsonFactoryManager {
 
-    public static final String REST_STACK_DISPLAY = "org.nuxeo.rest.stack" +
-            ".enable";
+    public static final String REST_STACK_DISPLAY = "org.nuxeo.rest.stack" + ".enable";
 
     protected boolean stackDisplay;
 
@@ -54,24 +53,21 @@ public class JsonFactoryManagerImpl implements JsonFactoryManager {
         }
 
         @Override
-        protected void serializeFields(Object bean, JsonGenerator jgen,
-                SerializerProvider provider) throws IOException,
-                JsonGenerationException {
+        protected void serializeFields(Object bean, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException, JsonGenerationException {
             serializeClassName(bean, jgen, provider);
             super.serializeFields(bean, jgen, provider);
         }
 
         @Override
-        protected void serializeFieldsFiltered(Object bean, JsonGenerator jgen,
-                SerializerProvider provider) throws IOException,
-                JsonGenerationException {
+        protected void serializeFieldsFiltered(Object bean, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException, JsonGenerationException {
             serializeClassName(bean, jgen, provider);
             super.serializeFieldsFiltered(bean, jgen, provider);
         }
 
-        protected void serializeClassName(Object bean, JsonGenerator jgen,
-                SerializerProvider provider) throws JsonGenerationException,
-                IOException {
+        protected void serializeClassName(Object bean, JsonGenerator jgen, SerializerProvider provider)
+                throws JsonGenerationException, IOException {
             jgen.writeFieldName("className");
             jgen.writeString(bean.getClass().getName());
         }
@@ -91,8 +87,7 @@ public class JsonFactoryManagerImpl implements JsonFactoryManager {
     public JsonFactory createFactory() {
         JsonFactory factory = new JsonFactory();
         final ObjectMapper oc = new ObjectMapper(factory);
-        final SimpleModule module = new SimpleModule("webengine",
-                Version.unknownVersion()) {
+        final SimpleModule module = new SimpleModule("webengine", Version.unknownVersion()) {
 
             @Override
             public void setupModule(SetupContext context) {
@@ -101,16 +96,12 @@ public class JsonFactoryManagerImpl implements JsonFactoryManager {
                 context.addBeanSerializerModifier(new BeanSerializerModifier() {
 
                     @Override
-                    public JsonSerializer<?> modifySerializer(
-                            SerializationConfig config,
-                            BasicBeanDescription beanDesc,
-                            JsonSerializer<?> serializer) {
+                    public JsonSerializer<?> modifySerializer(SerializationConfig config,
+                            BasicBeanDescription beanDesc, JsonSerializer<?> serializer) {
                         if (!Throwable.class.isAssignableFrom(beanDesc.getBeanClass())) {
-                            return super.modifySerializer(config, beanDesc,
-                                    serializer);
+                            return super.modifySerializer(config, beanDesc, serializer);
                         }
-                        return new ThrowableSerializer(
-                                (BeanSerializer) serializer);
+                        return new ThrowableSerializer((BeanSerializer) serializer);
                     }
                 });
             }

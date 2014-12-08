@@ -74,8 +74,7 @@ public class ModuleImpl implements Module {
     protected final String skinPathPrefix;
 
     /**
-     * @deprecated Use {@link WebApplication} to declare modules - modules may
-     *             have multiple roots
+     * @deprecated Use {@link WebApplication} to declare modules - modules may have multiple roots
      * @return
      */
     @Deprecated
@@ -88,13 +87,11 @@ public class ModuleImpl implements Module {
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
-    public ModuleImpl(WebEngine engine, ModuleImpl superModule,
-            ModuleConfiguration config) {
+    public ModuleImpl(WebEngine engine, ModuleImpl superModule, ModuleConfiguration config) {
         this.engine = engine;
         this.superModule = superModule;
         configuration = config;
-        skinPathPrefix = new StringBuilder().append(engine.getSkinPathPrefix()).append(
-                '/').append(config.name).toString();
+        skinPathPrefix = new StringBuilder().append(engine.getSkinPathPrefix()).append('/').append(config.name).toString();
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
         loadConfiguration();
         reloadMessages();
@@ -102,8 +99,8 @@ public class ModuleImpl implements Module {
     }
 
     /**
-     * Whether or not this module has a GUI and should be listed in available
-     * GUI module list. For example, REST modules usually don't have a GUI.
+     * Whether or not this module has a GUI and should be listed in available GUI module list. For example, REST modules
+     * usually don't have a GUI.
      *
      * @return true if headless (no GUI is provided), false otherwise
      */
@@ -119,8 +116,7 @@ public class ModuleImpl implements Module {
     }
 
     public boolean hasNature(String natureId) {
-        return configuration.natures != null
-                && configuration.natures.contains(natureId);
+        return configuration.natures != null && configuration.natures.contains(natureId);
     }
 
     @Override
@@ -151,8 +147,7 @@ public class ModuleImpl implements Module {
         // force type registry creation if needed
         getTypeRegistry();
         if (rootType == null) {
-            throw new IllegalStateException(
-                    "You use new web module declaration - should not call this compat. method");
+            throw new IllegalStateException("You use new web module declaration - should not call this compat. method");
         }
         return rootType;
     }
@@ -318,8 +313,7 @@ public class ModuleImpl implements Module {
     }
 
     /**
-     * @deprecated resources are deprecated - you should use a jax-rs
-     *             application to declare more resources.
+     * @deprecated resources are deprecated - you should use a jax-rs application to declare more resources.
      */
     @Deprecated
     public void flushRootResourcesCache() {
@@ -356,7 +350,7 @@ public class ModuleImpl implements Module {
                     dirStack.addDirectory(skin);
                 }
             }
-            for (File fragmentDir:configuration.fragmentDirectories) {
+            for (File fragmentDir : configuration.fragmentDirectories) {
                 File fragmentSkin = getSkinDir(fragmentDir);
                 if (fragmentSkin.isDirectory()) {
                     dirStack.addDirectory(fragmentSkin);
@@ -423,8 +417,8 @@ public class ModuleImpl implements Module {
     }
 
     /**
-     * TODO There are no more reasons to lazy load the type registry since
-     * module are lazy loaded. Type registry must be loaded at module creation
+     * TODO There are no more reasons to lazy load the type registry since module are lazy loaded. Type registry must be
+     * loaded at module creation
      */
     public TypeRegistry createTypeRegistry() {
         // double s = System.currentTimeMillis();
@@ -432,15 +426,12 @@ public class ModuleImpl implements Module {
         // install types from super modules
         if (superModule != null) { // TODO add type reg listener on super
                                    // modules to update types when needed?
-            typeReg = new TypeRegistry(superModule.getTypeRegistry(), engine,
-                    this);
+            typeReg = new TypeRegistry(superModule.getTypeRegistry(), engine, this);
         } else {
-            typeReg = new TypeRegistry(new TypeRegistry(engine, null), engine,
-                    this);
+            typeReg = new TypeRegistry(new TypeRegistry(engine, null), engine, this);
         }
         if (configuration.directory.isDirectory()) {
-            DefaultTypeLoader loader = new DefaultTypeLoader(this, typeReg,
-                    configuration.directory);
+            DefaultTypeLoader loader = new DefaultTypeLoader(this, typeReg, configuration.directory);
             loader.load();
         }
         // System.out.println(">>>>>>>>>>>>>"+((System.currentTimeMillis()-s)/1000));
@@ -453,8 +444,7 @@ public class ModuleImpl implements Module {
     }
 
     public void reloadMessages() {
-        messages = new Messages(superModule != null ? superModule.getMessages()
-                : null, this);
+        messages = new Messages(superModule != null ? superModule.getMessages() : null, this);
     }
 
     @Override
@@ -466,10 +456,8 @@ public class ModuleImpl implements Module {
     @SuppressWarnings("unchecked")
     public Map<String, String> getMessages(String language) {
         log.info("Loading i18n files for module " + configuration.name);
-        File file = new File(
-                configuration.directory,
-                new StringBuilder().append("/i18n/messages_").append(language).append(
-                        ".properties").toString());
+        File file = new File(configuration.directory,
+                new StringBuilder().append("/i18n/messages_").append(language).append(".properties").toString());
         InputStream in = null;
         try {
             in = new FileInputStream(file);

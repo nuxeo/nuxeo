@@ -23,10 +23,8 @@ public final class FragmentTag extends StandaloneFilter {
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
         // postpone the rendering
         if (info.isRenderingPostponed(cache)) {
-            String markup = String.format(
-                    "<@nxthemes_fragment uid=\"%s\" engine=\"%s\" mode=\"%s\" />",
-                    info.getElement().getUid().toString(),
-                    info.getEngine().getTypeName(), info.getViewMode());
+            String markup = String.format("<@nxthemes_fragment uid=\"%s\" engine=\"%s\" mode=\"%s\" />",
+                    info.getElement().getUid().toString(), info.getEngine().getTypeName(), info.getViewMode());
             info.setMarkup(markup);
         }
         return info;

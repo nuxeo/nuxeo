@@ -36,8 +36,8 @@ public class DirectoryFactoryProxy implements DirectoryFactory {
     }
 
     /**
-     * Returns the name of the component that's going to be lookup up, as it's
-     * the one knowing about its own registered directories.
+     * Returns the name of the component that's going to be lookup up, as it's the one knowing about its own registered
+     * directories.
      *
      * @since 5.6
      */
@@ -47,13 +47,11 @@ public class DirectoryFactoryProxy implements DirectoryFactory {
 
     private DirectoryFactory getRealObject() {
         if (factory == null) {
-            factory = (DirectoryFactory) Framework.getRuntime().getComponent(
-                    componentName);
+            factory = (DirectoryFactory) Framework.getRuntime().getComponent(componentName);
         }
         if (factory == null) {
-            throw new RuntimeException(String.format(
-                    "No Runtime component found for directory "
-                            + "factory '%s'", componentName));
+            throw new RuntimeException(String.format("No Runtime component found for directory " + "factory '%s'",
+                    componentName));
         }
         return factory;
     }

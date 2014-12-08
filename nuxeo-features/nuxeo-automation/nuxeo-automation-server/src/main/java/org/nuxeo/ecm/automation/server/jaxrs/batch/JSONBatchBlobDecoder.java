@@ -26,7 +26,6 @@ import org.nuxeo.runtime.api.Framework;
  * Uses a JSON definition to retrive a Blob uploaded in a batch
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class JSONBatchBlobDecoder implements JSONBlobDecoder {
 
@@ -44,11 +43,11 @@ public class JSONBatchBlobDecoder implements JSONBlobDecoder {
         if (jsonObject.has("upload-fileId")) {
             fileId = jsonObject.get("upload-fileId").getTextValue();
         }
-        if (fileId!=null) {
+        if (fileId != null) {
             BatchManager bm = Framework.getLocalService(BatchManager.class);
             blob = bm.getBlob(batchId, fileId);
 
-            if (RequestContext.getActiveContext()!=null) {
+            if (RequestContext.getActiveContext() != null) {
                 RequestContext.getActiveContext().addRequestCleanupHandler(new RequestCleanupHandler() {
                     @Override
                     public void cleanup(HttpServletRequest request) {

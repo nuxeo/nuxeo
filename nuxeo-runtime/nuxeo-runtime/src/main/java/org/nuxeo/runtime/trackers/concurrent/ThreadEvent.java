@@ -14,26 +14,18 @@ import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.trackers.files.FileEventTracker;
 
 /**
- * Runtime events that be fired once a thread is about to enter in the nuxeo
- * runtime or leave it. Could be used for cleaning resource such as the
- * {@link FileEventTracker}.
- *
- * Producers should use the static {@link ThreadEvent#onEnter(Object, boolean)}
- * and {@link ThreadEvent#onLeave(Object)} factory methods and fire events by
- * invoking the event's {@link ThreadEvent#send()} method.
- *
- * Consumers should implements the {@link ThreadEventHandler} interface and
- * register it in the {@link EventService} using the {@link ThreadEventListener}
- * wrapper.
+ * Runtime events that be fired once a thread is about to enter in the nuxeo runtime or leave it. Could be used for
+ * cleaning resource such as the {@link FileEventTracker}. Producers should use the static
+ * {@link ThreadEvent#onEnter(Object, boolean)} and {@link ThreadEvent#onLeave(Object)} factory methods and fire events
+ * by invoking the event's {@link ThreadEvent#send()} method. Consumers should implements the {@link ThreadEventHandler}
+ * interface and register it in the {@link EventService} using the {@link ThreadEventListener} wrapper.
  *
  * @since 6.0
  * @author Stephane Lacoin at Nuxeo (aka matic)
- *
  */
 public abstract class ThreadEvent extends Event {
 
-    public ThreadEvent(Class<? extends ThreadEvent> type, Object source,
-            Object data) {
+    public ThreadEvent(Class<? extends ThreadEvent> type, Object source, Object data) {
         super(ThreadEvent.class.getName(), type.getSimpleName(), source, data);
     }
 
@@ -79,12 +71,10 @@ public abstract class ThreadEvent extends Event {
     }
 
     public static void listen(ThreadEventListener aListener) {
-        Framework.getService(EventService.class).addListener(
-                ThreadEvent.class.getName(), aListener);
+        Framework.getService(EventService.class).addListener(ThreadEvent.class.getName(), aListener);
     }
 
     public static void ignore(ThreadEventListener aListener) {
-        Framework.getService(EventService.class).removeListener(
-                ThreadEvent.class.getName(), aListener);
+        Framework.getService(EventService.class).removeListener(ThreadEvent.class.getName(), aListener);
     }
 }

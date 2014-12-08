@@ -19,15 +19,13 @@ package org.nuxeo.runtime.management.stopwatchs;
 import java.io.Serializable;
 import java.util.Map;
 
-
 /**
  * @author matic
- *
  */
-public interface StopwatchMXBean  extends org.javasimon.jmx.StopwatchMXBean  {
+public interface StopwatchMXBean extends org.javasimon.jmx.StopwatchMXBean {
 
-	String sampleAsString();
+    String sampleAsString();
 
-	Map<String,Serializable> sampleAsMap();
+    Map<String, Serializable> sampleAsMap();
 
 }

@@ -35,7 +35,6 @@ import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class TestDocumentPreviewCodec {
 
@@ -46,16 +45,14 @@ public class TestDocumentPreviewCodec {
         final String uuid = "29942295-8683-4e65-917b-f7e7f98e4ad5";
         final String serverName = "default";
         final String propertyPath = "default";
-        final String url = "restAPI/preview/" + serverName + "/" + uuid + "/"
-                + propertyPath + "/";
+        final String url = "restAPI/preview/" + serverName + "/" + uuid + "/" + propertyPath + "/";
 
         DocumentView docView = documentPreviewCodec.getDocumentViewFromUrl(url);
 
         assertNotNull(docView);
         assertNotNull(docView.getDocumentLocation());
         assertEquals(uuid, docView.getDocumentLocation().getDocRef().toString());
-        assertEquals(serverName,
-                docView.getDocumentLocation().getServerName());
+        assertEquals(serverName, docView.getDocumentLocation().getServerName());
 
         Map<String, String> params = docView.getParameters();
         assertTrue(params.containsValue(propertyPath));
@@ -66,11 +63,9 @@ public class TestDocumentPreviewCodec {
         final String uuid = "29942295-8683-4e65-917b-f7e7f98e4ad5";
         final String serverName = "default";
         final String propertyPath = "default";
-        final String expectedUrl = "restAPI/preview/" + serverName + "/" + uuid
-                + "/" + propertyPath + "/";
+        final String expectedUrl = "restAPI/preview/" + serverName + "/" + uuid + "/" + propertyPath + "/";
 
-        DocumentLocation docLoc = new DocumentLocationImpl(serverName,
-                new IdRef(uuid));
+        DocumentLocation docLoc = new DocumentLocationImpl(serverName, new IdRef(uuid));
         Map<String, String> params = new HashMap<String, String>();
         params.put("PROPERTY_PATH_KEY", propertyPath);
         DocumentView docView = new DocumentViewImpl(docLoc, null, params);

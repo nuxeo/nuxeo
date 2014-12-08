@@ -71,8 +71,7 @@ public class MessageActionPipeDescriptor {
      */
     public void merge(MessageActionPipeDescriptor descriptor) {
         for (String actionName : descriptor.getActions().keySet()) {
-            actionDescriptorsRegistry.put(actionName,
-                    descriptor.getActions().get(actionName));
+            actionDescriptorsRegistry.put(actionName, descriptor.getActions().get(actionName));
         }
         pipe = new MessageActionPipe();
     }
@@ -83,8 +82,7 @@ public class MessageActionPipeDescriptor {
     public MessageActionPipe getPipe() {
         if (pipe.isEmpty()) {
             fillMissingActionDestination();
-            MessageActionDescriptor initialAction = getActions().get(
-                    START_ACTION);
+            MessageActionDescriptor initialAction = getActions().get(START_ACTION);
             addAction(initialAction);
         }
         return pipe;
@@ -102,8 +100,7 @@ public class MessageActionPipeDescriptor {
     }
 
     /**
-     * Fill empty destination using registering order to preserve backward
-     * compatibility.
+     * Fill empty destination using registering order to preserve backward compatibility.
      */
     private void fillMissingActionDestination() {
         for (int i = 0; i < actions.length - 1; i++) {

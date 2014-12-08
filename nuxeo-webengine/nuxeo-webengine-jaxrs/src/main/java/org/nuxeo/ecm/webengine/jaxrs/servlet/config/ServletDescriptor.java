@@ -29,7 +29,6 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("servlet")
 public class ServletDescriptor {
@@ -52,10 +51,10 @@ public class ServletDescriptor {
     /**
      * Must use hashtable since it extends Dictionary
      */
-    @XNodeMap(value="properties/property", key="@name", type=HashMap.class, componentType=String.class, trim=true, nullByDefault=false)
+    @XNodeMap(value = "properties/property", key = "@name", type = HashMap.class, componentType = String.class, trim = true, nullByDefault = false)
     protected HashMap<String, String> initParams;
 
-    @XNodeList(value="filters", type=ArrayList.class, componentType=FilterSetDescriptor.class, nullByDefault=false)
+    @XNodeList(value = "filters", type = ArrayList.class, componentType = FilterSetDescriptor.class, nullByDefault = false)
     protected ArrayList<FilterSetDescriptor> filters;
 
     @XNode("listeners")
@@ -94,8 +93,7 @@ public class ServletDescriptor {
         return ref;
     }
 
-    public HttpServlet getServlet() throws ReflectiveOperationException,
-            BundleNotFoundException {
+    public HttpServlet getServlet() throws ReflectiveOperationException, BundleNotFoundException {
         return (HttpServlet) getClassRef().get().newInstance();
     }
 
@@ -115,16 +113,15 @@ public class ServletDescriptor {
         List<FilterSetDescriptor> list = ServletRegistry.getInstance().getFiltersFor(name);
         int len1 = list.size();
         int len2 = filters.size();
-        FilterSet[] filterSets = new FilterSet[len1+len2];
-        for (int i=0; i<len1; i++) {
+        FilterSet[] filterSets = new FilterSet[len1 + len2];
+        for (int i = 0; i < len1; i++) {
             filterSets[i] = list.get(i).getFilterSet();
         }
-        for (int i=0; i<len2; i++) {
-            filterSets[i+len1] = filters.get(i).getFilterSet();
+        for (int i = 0; i < len2; i++) {
+            filterSets[i + len1] = filters.get(i).getFilterSet();
         }
         return filterSets;
     }
-
 
     @Override
     public String toString() {

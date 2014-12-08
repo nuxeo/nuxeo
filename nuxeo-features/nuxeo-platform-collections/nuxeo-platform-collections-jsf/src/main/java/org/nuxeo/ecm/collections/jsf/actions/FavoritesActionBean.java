@@ -44,13 +44,11 @@ import org.nuxeo.runtime.api.Framework;
 public class FavoritesActionBean {
 
     public void addCurrentDocumentToFavorites() throws ClientException {
-        final NavigationContext navigationContext = (NavigationContext) Component.getInstance(
-                "navigationContext", true);
+        final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
             final FavoritesManager favoritesManager = Framework.getLocalService(FavoritesManager.class);
-            final CoreSession session = (CoreSession) Component.getInstance(
-                    "documentManager", true);
+            final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
             if (!favoritesManager.isFavorite(currentDocument, session)) {
                 favoritesManager.addToFavorites(currentDocument, session);
 
@@ -58,40 +56,32 @@ public class FavoritesActionBean {
 
                 Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
 
-                final FacesMessages facesMessages = (FacesMessages) Component.getInstance(
-                        "facesMessages", true);
-                facesMessages.add(StatusMessage.Severity.INFO,
-                        Messages.instance().get("favorites.addedToFavorites"));
+                final FacesMessages facesMessages = (FacesMessages) Component.getInstance("facesMessages", true);
+                facesMessages.add(StatusMessage.Severity.INFO, Messages.instance().get("favorites.addedToFavorites"));
             }
 
         }
     }
 
-    public boolean canCurrentDocumentBeAddedToFavorites()
-            throws ClientException {
-        final NavigationContext navigationContext = (NavigationContext) Component.getInstance(
-                "navigationContext", true);
+    public boolean canCurrentDocumentBeAddedToFavorites() throws ClientException {
+        final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
             final FavoritesManager favoritesManager = Framework.getLocalService(FavoritesManager.class);
             final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
-            final CoreSession session = (CoreSession) Component.getInstance(
-                    "documentManager", true);
+            final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
             return collectionManager.isCollectable(currentDocument)
                     && !favoritesManager.isFavorite(currentDocument, session);
         }
         return false;
     }
 
-    public boolean canCurrentDocumentBeRemovedFromFavorites()
-            throws ClientException {
-        final NavigationContext navigationContext = (NavigationContext) Component.getInstance(
-                "navigationContext", true);
+    public boolean canCurrentDocumentBeRemovedFromFavorites() throws ClientException {
+        final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
             final FavoritesManager favoritesManager = Framework.getLocalService(FavoritesManager.class);
-            final CoreSession session = (CoreSession) Component.getInstance(
-                    "documentManager", true);
+            final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
             return favoritesManager.isFavorite(currentDocument, session);
         }
         return false;
@@ -100,22 +90,17 @@ public class FavoritesActionBean {
     @Factory(value = "currentUserFavorites", scope = ScopeType.SESSION)
     public DocumentModel getCurrentFavorites() throws ClientException {
         FavoritesManager favoritesManager = Framework.getLocalService(FavoritesManager.class);
-        final NavigationContext navigationContext = (NavigationContext) Component.getInstance(
-                "navigationContext", true);
-        final CoreSession session = (CoreSession) Component.getInstance(
-                "documentManager", true);
-        return favoritesManager.getFavorites(
-                navigationContext.getCurrentDomain(), session);
+        final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
+        final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
+        return favoritesManager.getFavorites(navigationContext.getCurrentDomain(), session);
     }
 
     public void removeCurrentDocumentFromFavorites() throws ClientException {
-        final NavigationContext navigationContext = (NavigationContext) Component.getInstance(
-                "navigationContext", true);
+        final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
             final FavoritesManager favoritesManager = Framework.getLocalService(FavoritesManager.class);
-            final CoreSession session = (CoreSession) Component.getInstance(
-                    "documentManager", true);
+            final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
             if (favoritesManager.isFavorite(currentDocument, session)) {
                 favoritesManager.removeFromFavorites(currentDocument, session);
 
@@ -123,12 +108,9 @@ public class FavoritesActionBean {
 
                 Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
 
-                final FacesMessages facesMessages = (FacesMessages) Component.getInstance(
-                        "facesMessages", true);
-                facesMessages.add(
-                        StatusMessage.Severity.INFO,
-                        Messages.instance().get(
-                                "favorites.removedFromFavorites"));
+                final FacesMessages facesMessages = (FacesMessages) Component.getInstance("facesMessages", true);
+                facesMessages.add(StatusMessage.Severity.INFO,
+                        Messages.instance().get("favorites.removedFromFavorites"));
             }
 
         }

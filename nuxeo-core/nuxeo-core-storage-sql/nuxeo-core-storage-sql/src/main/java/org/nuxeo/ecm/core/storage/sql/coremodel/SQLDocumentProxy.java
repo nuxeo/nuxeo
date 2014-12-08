@@ -46,8 +46,7 @@ public class SQLDocumentProxy implements SQLDocument {
 
     // private SQLDocumentVersion version;
 
-    protected SQLDocumentProxy(Document proxy, Document target)
-            throws DocumentException {
+    protected SQLDocumentProxy(Document proxy, Document target) throws DocumentException {
         this.proxy = proxy;
         this.target = target;
     }
@@ -78,8 +77,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     /**
-     * Checks if the given property should be resolved on the proxy or the
-     * target.
+     * Checks if the given property should be resolved on the proxy or the target.
      */
     protected boolean isPropertyForProxy(String xpath) throws DocumentException {
         return isSchemaForProxy(getSchema(xpath));
@@ -173,8 +171,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public Map<String, Serializable> readPrefetch(ComplexType complexType,
-            Set<String> xpaths) throws PropertyException {
+    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) throws PropertyException {
         if (isSchemaForProxy(complexType.getName())) {
             return proxy.readPrefetch(complexType, xpaths);
         } else {
@@ -192,14 +189,12 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public void setSystemProp(String name, Serializable value)
-            throws DocumentException {
+    public void setSystemProp(String name, Serializable value) throws DocumentException {
         target.setSystemProp(name, value);
     }
 
     @Override
-    public <T extends Serializable> T getSystemProp(String name, Class<T> type)
-            throws DocumentException {
+    public <T extends Serializable> T getSystemProp(String name, Class<T> type) throws DocumentException {
         return target.getSystemProp(name, type);
     }
 
@@ -248,8 +243,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public void setCurrentLifeCycleState(String state)
-            throws LifeCycleException {
+    public void setCurrentLifeCycleState(String state) throws LifeCycleException {
         target.setCurrentLifeCycleState(state);
     }
 
@@ -259,8 +253,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public Collection<String> getAllowedStateTransitions()
-            throws LifeCycleException {
+    public Collection<String> getAllowedStateTransitions() throws LifeCycleException {
         return target.getAllowedStateTransitions();
     }
 
@@ -301,8 +294,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public Document checkIn(String label, String checkinComment)
-            throws DocumentException {
+    public Document checkIn(String label, String checkinComment) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
@@ -407,8 +399,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public Document addChild(String name, String typeName)
-            throws DocumentException {
+    public Document addChild(String name, String typeName) throws DocumentException {
         return proxy.addChild(name, typeName);
     }
 
@@ -432,8 +423,7 @@ public class SQLDocumentProxy implements SQLDocument {
             throw new DocumentException("Cannot write proxy: " + this);
         }
         if (!target.getVersionSeriesId().equals(getVersionSeriesId())) {
-            throw new DocumentException(
-                    "Cannot set proxy target to different version series");
+            throw new DocumentException("Cannot set proxy target to different version series");
         }
         getSession().setProxyTarget(proxy, target);
         this.target = target;
@@ -453,8 +443,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public void setPropertyValue(String name, Serializable value)
-            throws DocumentException {
+    public void setPropertyValue(String name, Serializable value) throws DocumentException {
         if (isPropertyForProxy(name)) {
             proxy.setPropertyValue(name, value);
         } else {
@@ -468,8 +457,7 @@ public class SQLDocumentProxy implements SQLDocument {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + target + ','
-                + proxy.getUUID() + ')';
+        return getClass().getSimpleName() + '(' + target + ',' + proxy.getUUID() + ')';
     }
 
     @Override

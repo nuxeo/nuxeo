@@ -34,19 +34,17 @@ import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
 public class MoveCommand implements Command {
 
     protected final Path src;
+
     protected final Path dst;
+
     protected final PathFilter filter;
 
     /**
      * Constructor for copy command.
      *
-     * @param src
-     *            the path relative to the root container. The path will be made
-     *            absolute if not already
-     * @param dst
-     *            the path relative to teh root container of the destination. If
-     *            it is ending with a slash '/' the destination path is treated
-     *            as a directory
+     * @param src the path relative to the root container. The path will be made absolute if not already
+     * @param dst the path relative to teh root container of the destination. If it is ending with a slash '/' the
+     *            destination path is treated as a directory
      */
     public MoveCommand(Path src, Path dst) {
         this(src, dst, null);
@@ -65,14 +63,13 @@ public class MoveCommand implements Command {
         File dstFile = new File(baseDir, ctx.expandVars(dst.toString()));
 
         if (!srcFile.exists()) {
-            throw new FileNotFoundException("Could not find the file "
-                    + srcFile.getAbsolutePath() + " to move.");
+            throw new FileNotFoundException("Could not find the file " + srcFile.getAbsolutePath() + " to move.");
         }
 
         if (filter != null && !filter.accept(new Path(dstFile.getAbsolutePath()))) {
             return;
         }
-      
+
         if (!dstFile.exists()) {
             if (dst.hasTrailingSeparator()) {
                 dstFile.mkdirs();
@@ -84,11 +81,11 @@ public class MoveCommand implements Command {
                 }
             }
         }
-        
+
         if (dstFile.exists()) {
             dstFile.delete();
         }
-        
+
         srcFile.renameTo(dstFile);
     }
 
@@ -99,8 +96,7 @@ public class MoveCommand implements Command {
 
     @Override
     public String toString(CommandContext ctx) {
-        return "copy " + ctx.expandVars(src.toString()) + " > " +
-                ctx.expandVars(dst.toString());
+        return "copy " + ctx.expandVars(src.toString()) + " > " + ctx.expandVars(dst.toString());
     }
 
 }

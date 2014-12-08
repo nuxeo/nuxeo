@@ -41,12 +41,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(OAuthFeature.class)
-public class TestServiceProviderService  {
+public class TestServiceProviderService {
 
+    @Inject
+    OAuthServiceProviderRegistry providerRegistry = Framework.getLocalService(OAuthServiceProviderRegistry.class);
 
-   @Inject OAuthServiceProviderRegistry providerRegistry = Framework.getLocalService(OAuthServiceProviderRegistry.class);
-
-   @Inject OAuth2ServiceProviderRegistry providerRegistry2 = Framework.getLocalService(OAuth2ServiceProviderRegistry.class);
+    @Inject
+    OAuth2ServiceProviderRegistry providerRegistry2 = Framework.getLocalService(OAuth2ServiceProviderRegistry.class);
 
     @Test
     public void testServiceLookup2() throws Exception {
@@ -56,14 +57,12 @@ public class TestServiceProviderService  {
     @Test
     public void testServiceRW() throws Exception {
 
-        NuxeoOAuthServiceProvider p = providerRegistry.addReadOnlyProvider("a",
-                null, "b", null, null);
+        NuxeoOAuthServiceProvider p = providerRegistry.addReadOnlyProvider("a", null, "b", null, null);
         assertNotNull(p);
         assertNotNull(p.getGadgetUrl());
         assertNotNull(p.getId());
 
-        NuxeoOAuthServiceProvider p2 = providerRegistry.getProvider(
-                p.getGadgetUrl(), p.getServiceName());
+        NuxeoOAuthServiceProvider p2 = providerRegistry.getProvider(p.getGadgetUrl(), p.getServiceName());
         assertEquals(p.getId(), p2.getId());
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
@@ -106,32 +105,26 @@ public class TestServiceProviderService  {
 
         assertEquals(5, providerRegistry.listProviders().size());
 
-        NuxeoOAuthServiceProvider p3 = providerRegistry.getProvider(
-                "http://127.0.0.1:8080/nuxeo/gadget1", null);
+        NuxeoOAuthServiceProvider p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget1", null);
         assertNotNull(p3);
         assertEquals("key1", p3.getConsumerKey());
 
-        p3 = providerRegistry.getProvider(
-                "http://localhost:8080/nuxeo/gadget1", null);
+        p3 = providerRegistry.getProvider("http://localhost:8080/nuxeo/gadget1", null);
         assertNotNull(p3);
         assertEquals("key1", p3.getConsumerKey());
 
-        p3 = providerRegistry.getProvider(
-                "http://127.0.0.1:8080/nuxeo/gadget1", "undeclaredservice");
+        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget1", "undeclaredservice");
         assertNotNull(p3);
         assertEquals("key1", p3.getConsumerKey());
 
-        p3 = providerRegistry.getProvider(
-                "http://127.0.0.1:8080/nuxeo/gadget2", null);
+        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget2", null);
         assertNotNull(p3);
         assertEquals("key2", p3.getConsumerKey());
 
-        p3 = providerRegistry.getProvider(
-                "http://127.0.0.1:8080/nuxeo/gadget3", null);
+        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget3", null);
         assertNull(p3);
 
-        p3 = providerRegistry.getProvider(
-                "http://127.0.0.1:8080/nuxeo/gadget3", "sn1");
+        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget3", "sn1");
         assertNotNull(p3);
         assertEquals("key3", p3.getConsumerKey());
 

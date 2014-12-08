@@ -34,8 +34,7 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 /**
  * Markdown to text converter.
  * <p>
- * It basically returns a {@link StringBlob} with the markdown text and the
- * plain/text mime type.
+ * It basically returns a {@link StringBlob} with the markdown text and the plain/text mime type.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.6
@@ -45,8 +44,7 @@ public class MD2TextConverter implements Converter {
     private static final Log LOGGER = LogFactory.getLog(MD2TextConverter.class);
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         try {
             Blob blob = blobHolder.getBlob();
@@ -55,8 +53,7 @@ public class MD2TextConverter implements Converter {
                 return blobHolder;
             }
             String text = blob.getString();
-            return new SimpleCachableBlobHolder(new StringBlob(text,
-                    "text/plain"));
+            return new SimpleCachableBlobHolder(new StringBlob(text, "text/plain"));
         } catch (ClientException | IOException e) {
             throw new ConversionException("Error during MD2Text conversion", e);
         }

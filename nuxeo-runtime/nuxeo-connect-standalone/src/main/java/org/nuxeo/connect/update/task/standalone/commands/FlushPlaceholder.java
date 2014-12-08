@@ -39,14 +39,12 @@ public class FlushPlaceholder extends PostInstallCommand {
     }
 
     @Override
-    protected void doValidate(Task task, ValidationStatus status)
-            throws PackageException {
+    protected void doValidate(Task task, ValidationStatus status) throws PackageException {
         // nothing to do
     }
 
     @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
-            throws PackageException {
+    protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         // standalone mode: nothing to do
         return new FlushPlaceholder();
     }

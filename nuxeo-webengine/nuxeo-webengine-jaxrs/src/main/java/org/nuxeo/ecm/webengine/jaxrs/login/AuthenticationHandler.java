@@ -19,14 +19,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
- * Initiate an authentication for the given HTTP request.
- *
- * Implementations are responsible to detect whether the request contains
- * any known authentication data and perform the authentication if needed.
+ * Initiate an authentication for the given HTTP request. Implementations are responsible to detect whether the request
+ * contains any known authentication data and perform the authentication if needed.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface AuthenticationHandler {
 
@@ -35,14 +31,13 @@ public interface AuthenticationHandler {
      *
      * @param properties
      */
-    void init(Map<String,String> properties);
+    void init(Map<String, String> properties);
 
     /**
-     * Handle the authentication if the request contains any known authentication data.
-     * If authentication was done returns the resulting LoginContext otherwise returns null.
-     * If authentication failed throws {@link LoginException} and the implementation <b>must</b>
-     * finish the request by correctly responding to the client or redirecting
-     * to another page - through the given response object.
+     * Handle the authentication if the request contains any known authentication data. If authentication was done
+     * returns the resulting LoginContext otherwise returns null. If authentication failed throws {@link LoginException}
+     * and the implementation <b>must</b> finish the request by correctly responding to the client or redirecting to
+     * another page - through the given response object.
      *
      * @param request the http request
      * @param response the http response

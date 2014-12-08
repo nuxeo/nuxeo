@@ -47,7 +47,7 @@ public class AuditLog {
     @Param(name = "event", widget = Constants.W_AUDIT_EVENT)
     protected String event;
 
-    @Param(name = "category", required = false, values = {"Automation"})
+    @Param(name = "category", required = false, values = { "Automation" })
     protected String category = "Automation";
 
     @Param(name = "comment", required = false, widget = Constants.W_MULTILINE_TEXT)
@@ -61,7 +61,6 @@ public class AuditLog {
         logger.addLogEntries(Collections.singletonList(entry));
         return doc;
     }
-
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) {

@@ -31,8 +31,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  *
  * @since 6.0
  */
-public final class CacheRegistry extends
-        ContributionFragmentRegistry<CacheDescriptor> {
+public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescriptor> {
 
     private static final Log log = LogFactory.getLog(CacheRegistry.class);
 
@@ -45,8 +44,7 @@ public final class CacheRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, CacheDescriptor descriptor,
-            CacheDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, CacheDescriptor descriptor, CacheDescriptor newOrigContrib) {
         String name = descriptor.name;
         if (name == null) {
             throw new RuntimeException("The cache name must not be null!");
@@ -57,10 +55,8 @@ public final class CacheRegistry extends
         }
 
         if (caches.containsKey(name)) {
-            throw new IllegalStateException(
-                    String.format(
-                            "Another cache has already been registered for the given name %s",
-                            name));
+            throw new IllegalStateException(String.format(
+                    "Another cache has already been registered for the given name %s", name));
         }
 
         caches.put(name, descriptor);
@@ -106,16 +102,14 @@ public final class CacheRegistry extends
     }
 
     public CacheAttributesChecker getCache(String name) {
-        if(caches.containsKey(name))
-        {
+        if (caches.containsKey(name)) {
             return caches.get(name).cacheChecker;
         }
         return null;
     }
 
     public List<CacheAttributesChecker> getCaches() {
-        List<CacheAttributesChecker> res = new ArrayList<CacheAttributesChecker>(
-                caches.size());
+        List<CacheAttributesChecker> res = new ArrayList<CacheAttributesChecker>(caches.size());
         for (CacheDescriptor desc : caches.values()) {
             res.add(desc.cacheChecker);
         }
@@ -123,8 +117,7 @@ public final class CacheRegistry extends
     }
 
     public void start() {
-        RuntimeException errors = new RuntimeException(
-                "Cannot start caches, check suppressed error");
+        RuntimeException errors = new RuntimeException("Cannot start caches, check suppressed error");
         for (CacheDescriptor desc : caches.values()) {
             try {
                 desc.start();
@@ -138,8 +131,7 @@ public final class CacheRegistry extends
     }
 
     public void stop() {
-        RuntimeException errors = new RuntimeException(
-                "Cannot stop caches, check suppressed error");
+        RuntimeException errors = new RuntimeException("Cannot stop caches, check suppressed error");
         for (CacheDescriptor desc : caches.values()) {
             try {
                 desc.stop();

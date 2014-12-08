@@ -49,8 +49,7 @@ public interface IOManager extends Serializable {
     /**
      * Adds an adapter with given name and definition.
      */
-    void addAdapter(String name, IOResourceAdapter adapter)
-            throws ClientException;
+    void addAdapter(String name, IOResourceAdapter adapter) throws ClientException;
 
     /**
      * Removes adapter with given name.
@@ -58,55 +57,43 @@ public interface IOManager extends Serializable {
     void removeAdapter(String name) throws ClientException;
 
     /**
-     * Import document and resources described by given input stream at given
-     * document location.
+     * Import document and resources described by given input stream at given document location.
      *
-     * @param in stream representing the documents and resources to import. Can
-     *            be a zip file of a group of export files. The service is
-     *            responsible for unzipping and redirecting import to specific
-     *            import services.
+     * @param in stream representing the documents and resources to import. Can be a zip file of a group of export
+     *            files. The service is responsible for unzipping and redirecting import to specific import services.
      * @param repo the repository name.
-     * @param root Optional location of document that must be taken as root of
-     *            the import (can be null).
+     * @param root Optional location of document that must be taken as root of the import (can be null).
      */
-    void importDocumentsAndResources(InputStream in, String repo,
-            DocumentRef root) throws IOException, ClientException,
-            ImportDocumentException;
+    void importDocumentsAndResources(InputStream in, String repo, DocumentRef root) throws IOException,
+            ClientException, ImportDocumentException;
 
     /**
      * Export documents and resources.
      *
-     * @param out stream that can be turned into a zip holding a group of file for
-     *            each additional resources types.
+     * @param out stream that can be turned into a zip holding a group of file for each additional resources types.
      * @param repo TODO
      * @param sources locations of documents to export.
      * @param recurse recurse into sources children
      * @param format export format. XXX see what format is actually accepted.
      * @param ioAdapters list of adapters to use for additional resources.
      */
-    void exportDocumentsAndResources(OutputStream out, String repo,
-            Collection<DocumentRef> sources, boolean recurse, String format,
-            Collection<String> ioAdapters) throws IOException, ClientException,
-            ExportDocumentException;
+    void exportDocumentsAndResources(OutputStream out, String repo, Collection<DocumentRef> sources, boolean recurse,
+            String format, Collection<String> ioAdapters) throws IOException, ClientException, ExportDocumentException;
 
     /**
      * Copy documents and resources to another location (on a same machine).
      *
      * @param repo the initial repository name.
      * @param sources locations of documents to export.
-     * @param targetLocation location of the document where copies must be
-     *            placed.
+     * @param targetLocation location of the document where copies must be placed.
      * @param ioAdapters list of adapters to use for additional resources.
      * @return the list of copied documents references.
      */
-    Collection<DocumentRef> copyDocumentsAndResources(String repo,
-            Collection<DocumentRef> sources, DocumentLocation targetLocation,
-            Collection<String> ioAdapters) throws ClientException;
+    Collection<DocumentRef> copyDocumentsAndResources(String repo, Collection<DocumentRef> sources,
+            DocumentLocation targetLocation, Collection<String> ioAdapters) throws ClientException;
 
-    void importFromStream(InputStream in,
-            DocumentLocation targetLocation, String docReaderFactoryClassName,
-            Map<String, Object> rFactoryParams,
-            String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
+    void importFromStream(InputStream in, DocumentLocation targetLocation, String docReaderFactoryClassName,
+            Map<String, Object> rFactoryParams, String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
             throws ClientException;
 
 }

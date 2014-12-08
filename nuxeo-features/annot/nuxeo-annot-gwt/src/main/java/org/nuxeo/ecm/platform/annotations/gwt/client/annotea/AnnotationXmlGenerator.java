@@ -29,7 +29,6 @@ import com.google.gwt.user.client.Window;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class AnnotationXmlGenerator {
 
@@ -40,18 +39,13 @@ public class AnnotationXmlGenerator {
     private String annotationXml = "<?xml version=\"1.0\"?>"
             + "<r:RDF xmlns:a=\"http://www.w3.org/2000/10/annotation-ns#\" xmlns:r=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\""
             + "    xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:h=\"http://www.w3.org/1999/xx/http#\""
-            + "    xmlns:nx=\"http://www.nuxeo.org/document/uid/\">"
-            + "    <r:Description>"
+            + "    xmlns:nx=\"http://www.nuxeo.org/document/uid/\">" + "    <r:Description>"
             + "      <r:type r:resource=\"http://www.w3.org/2000/10/annotation-ns#Annotation\" />"
-            + "      <r:type r:resource=\"${uri}\" />"
-            + "      <a:annotates r:resource=\"${annotates}\" /> "
-            + "      <a:context>${context}</a:context> "
-            + "      <a:body r:parseType=\"Literal\">${body}</a:body>"
-            + "      ${fields}" + "      ${startContainer}"
-            + "      ${endContainer}" + "    </r:Description></r:RDF> ";
+            + "      <r:type r:resource=\"${uri}\" />" + "      <a:annotates r:resource=\"${annotates}\" /> "
+            + "      <a:context>${context}</a:context> " + "      <a:body r:parseType=\"Literal\">${body}</a:body>"
+            + "      ${fields}" + "      ${startContainer}" + "      ${endContainer}" + "    </r:Description></r:RDF> ";
 
-    public AnnotationXmlGenerator(WebConfiguration webConfiguration,
-            Annotation annotation) {
+    public AnnotationXmlGenerator(WebConfiguration webConfiguration, Annotation annotation) {
         this.webConfiguration = webConfiguration;
         this.annotation = annotation;
     }
@@ -69,22 +63,19 @@ public class AnnotationXmlGenerator {
 
     private void replaceURI() {
         AnnotationDefinition annotationDefinition = webConfiguration.getAnnotationDefinition(annotation.getShortType());
-        annotationXml = annotationXml.replace("${uri}",
-                annotationDefinition.getUri());
+        annotationXml = annotationXml.replace("${uri}", annotationDefinition.getUri());
 
     }
 
     private void replaceXPointer() {
         XPointer xpointer = annotation.getXpointer();
-        annotationXml = annotationXml.replace("${context}",
-                xpointer.getXpointerString());
+        annotationXml = annotationXml.replace("${context}", xpointer.getXpointerString());
     }
 
     private void replaceAnnotate() {
         String href = Window.Location.getHref();
         if (href.contains("?")) {
-            annotationXml = annotationXml.replace("${annotates}",
-                    href.substring(0, href.indexOf('?')));
+            annotationXml = annotationXml.replace("${annotates}", href.substring(0, href.indexOf('?')));
         } else {
             annotationXml = annotationXml.replace("${annotates}", href);
         }
@@ -98,9 +89,8 @@ public class AnnotationXmlGenerator {
     private void replaceFields() {
         String fields = "";
         for (String fieldName : annotation.getFields().keySet()) {
-            fields += "<nx:" + fieldName + " r:parseType=\"Literal\">"
-                    + annotation.getFields().get(fieldName) + "</nx:"
-                    + fieldName + ">";
+            fields += "<nx:" + fieldName + " r:parseType=\"Literal\">" + annotation.getFields().get(fieldName)
+                    + "</nx:" + fieldName + ">";
         }
         annotationXml = annotationXml.replace("${fields}", fields);
     }
@@ -109,8 +99,7 @@ public class AnnotationXmlGenerator {
         String replacement = "";
         if (annotation.hasStartContainer()) {
             replacement = "<nx:startContainer r:parseType=\"Literal\">"
-                    + annotation.getStartContainer().generateString()
-                    + "</nx:startContainer>";
+                    + annotation.getStartContainer().generateString() + "</nx:startContainer>";
 
         }
         annotationXml = annotationXml.replace("${startContainer}", replacement);
@@ -120,8 +109,7 @@ public class AnnotationXmlGenerator {
     private void replaceEndContainer() {
         String replacement = "";
         if (annotation.hasEndContainer()) {
-            replacement = "<nx:endContainer r:parseType=\"Literal\">"
-                    + annotation.getEndContainer().generateString()
+            replacement = "<nx:endContainer r:parseType=\"Literal\">" + annotation.getEndContainer().generateString()
                     + "</nx:endContainer>";
         }
         annotationXml = annotationXml.replace("${endContainer}", replacement);

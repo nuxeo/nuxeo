@@ -42,9 +42,11 @@ import static org.junit.Assert.*;
 public class TestServer {
 
     private static final String FACINATING_CONTENT = "facinating content.";
+
     private static final String TEST_EMAIL_SERVER = "Test email server";
 
     private Message message;
+
     private final Properties props = new Properties();
 
     @Before

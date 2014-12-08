@@ -50,7 +50,7 @@ public class PermissionGuard implements Guard {
             CoreSession session = context.getAdapter(CoreSession.class);
             DocumentModel doc = context.getAdapter(DocumentModel.class);
             return session.hasPermission(doc.getRef(), perm);
-        }catch (ClientException e) {
+        } catch (ClientException e) {
             return false;
         }
     }

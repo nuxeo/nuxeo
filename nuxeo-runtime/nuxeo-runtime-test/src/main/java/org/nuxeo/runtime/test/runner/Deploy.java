@@ -29,22 +29,25 @@ import java.lang.annotation.Target;
  * <p>
  * Deployable artifacts are either bundles either components:
  * <ul>
- * <li> A bundle entry is represented by the bundle symbolic name.
- * <li> A component entry is represented by an URI of the form: symbolicName:componentXmlPath,
- * where symbolicName is the symbolic name of the bundle owning the component.
+ * <li>A bundle entry is represented by the bundle symbolic name.
+ * <li>A component entry is represented by an URI of the form: symbolicName:componentXmlPath, where symbolicName is the
+ * symbolic name of the bundle owning the component.
  * </ul>
  * Example with one module:
+ *
  * <pre>
  * @Deploy("org.nuxeo.runtime")
  * </pre>
+ *
  * Example with several modules:
+ *
  * <pre>
  * @Deploy({"org.nuxeo.runtime", "org.nuxeo.core:OSGI-INF/component.xml"})
  * </pre>
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.TYPE, ElementType.METHOD })
+@Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface Deploy {
     /**
      * The artifact ID (symbolic name or bundle resource URI).

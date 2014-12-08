@@ -40,12 +40,9 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
- *
- *
  * @since 5.7.3
  */
-public class JSONDocumentModelListReader implements
-        MessageBodyReader<DocumentModelList> {
+public class JSONDocumentModelListReader implements MessageBodyReader<DocumentModelList> {
 
     @Context
     private HttpServletRequest request;
@@ -54,21 +51,18 @@ public class JSONDocumentModelListReader implements
     JsonFactory factory;
 
     @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return DocumentModelList.class.isAssignableFrom(type);
     }
 
     @Override
-    public DocumentModelList readFrom(Class<DocumentModelList> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public DocumentModelList readFrom(Class<DocumentModelList> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
         String content = IOUtils.toString(entityStream);
         if (content.isEmpty()) {
             if (content.isEmpty()) {
-                throw new WebException("No content in request body",
-                        Response.Status.BAD_REQUEST.getStatusCode());
+                throw new WebException("No content in request body", Response.Status.BAD_REQUEST.getStatusCode());
             }
 
         }
@@ -81,8 +75,7 @@ public class JSONDocumentModelListReader implements
      * @return
      * @since 5.7.3
      */
-    public DocumentModelList readRequest(String content,
-            MultivaluedMap<String, String> httpHeaders,
+    public DocumentModelList readRequest(String content, MultivaluedMap<String, String> httpHeaders,
             HttpServletRequest request) throws IOException {
 
         JsonParser jp = factory.createJsonParser(content);
@@ -97,8 +90,7 @@ public class JSONDocumentModelListReader implements
      * @return
      * @since TODO
      */
-    public static DocumentModelList readRequest(JsonParser jp,
-            MultivaluedMap<String, String> httpHeaders,
+    public static DocumentModelList readRequest(JsonParser jp, MultivaluedMap<String, String> httpHeaders,
             HttpServletRequest request) throws IOException {
         DocumentModelList result = null;
         jp.nextToken(); // skip {
@@ -111,8 +103,7 @@ public class JSONDocumentModelListReader implements
             } else if ("entity-type".equals(key)) {
                 String entityType = jp.readValueAs(String.class);
                 if (!"documents".equals(entityType)) {
-                    throw new WebApplicationException(
-                            Response.Status.BAD_REQUEST);
+                    throw new WebApplicationException(Response.Status.BAD_REQUEST);
                 }
             }
             tok = jp.nextToken();
@@ -133,8 +124,7 @@ public class JSONDocumentModelListReader implements
      * @since 5.7.3
      */
     private static DocumentModelList readDocumentEntriesFromJson(JsonParser jp,
-            MultivaluedMap<String, String> httpHeaders,
-            HttpServletRequest request) throws IOException {
+            MultivaluedMap<String, String> httpHeaders, HttpServletRequest request) throws IOException {
 
         DocumentModelList entries = new DocumentModelListImpl();
 
@@ -142,8 +132,7 @@ public class JSONDocumentModelListReader implements
 
         while (jp.nextToken() == JsonToken.START_OBJECT) {
 
-            DocumentModel doc = JSONDocumentModelReader.readJson(jp,
-                    httpHeaders, request);
+            DocumentModel doc = JSONDocumentModelReader.readJson(jp, httpHeaders, request);
             entries.add(doc);
         }
 

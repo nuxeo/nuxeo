@@ -27,7 +27,7 @@ import org.nuxeo.runtime.deployment.preprocessor.install.Command;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class MkdirCommand implements Command {
 

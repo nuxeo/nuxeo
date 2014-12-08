@@ -38,8 +38,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Used in post methods to rewrite the url with needed get params. Encapsulates
- * response into a wrapper.
+ * Used in post methods to rewrite the url with needed get params. Encapsulates response into a wrapper.
  */
 public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
 
@@ -52,19 +51,16 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
     }
 
     /**
-     * @deprecated since 5.5: use constructor without the
-     *             {@link StaticNavigationHandler} that is now wrapped into the
+     * @deprecated since 5.5: use constructor without the {@link StaticNavigationHandler} that is now wrapped into the
      *             {@link URLPolicyService}
      */
     @Deprecated
-    public FancyURLResponseWrapper(HttpServletResponse response,
-            HttpServletRequest request,
+    public FancyURLResponseWrapper(HttpServletResponse response, HttpServletRequest request,
             StaticNavigationHandler navigationHandler) {
         this(response, request);
     }
 
-    public FancyURLResponseWrapper(HttpServletResponse response,
-            HttpServletRequest request) {
+    public FancyURLResponseWrapper(HttpServletResponse response, HttpServletRequest request) {
         super(response);
         this.request = request;
     }
@@ -74,11 +70,9 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
     }
 
     /**
-     * Rewrites url for given document view but extracts view id from the
-     * original url.
+     * Rewrites url for given document view but extracts view id from the original url.
      */
-    protected String rewriteUrl(String url, DocumentView docView,
-            URLPolicyService service) {
+    protected String rewriteUrl(String url, DocumentView docView, URLPolicyService service) {
         // try to get outcome that was saved in request by
         // FancyNavigationHandler
         String newViewId = (String) request.getAttribute(URLPolicyService.POST_OUTCOME_REQUEST_KEY);
@@ -115,8 +109,7 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
                         url = rewriteUrl(url, docView, pservice);
                     }
                 } else {
-                    URL serverURL = new URL(
-                            VirtualHostHelper.getServerURL(request));
+                    URL serverURL = new URL(VirtualHostHelper.getServerURL(request));
                     URL rewrittenURL = new URL(serverURL, url);
                     url = rewrittenURL.toString();
                 }

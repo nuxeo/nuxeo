@@ -18,8 +18,7 @@ import java.util.Set;
 /**
  * A set of invalidations.
  * <p>
- * Records both modified and deleted fragments, as well as "parents modified"
- * fragments.
+ * Records both modified and deleted fragments, as well as "parents modified" fragments.
  */
 public class Invalidations implements Serializable {
 
@@ -39,15 +38,13 @@ public class Invalidations implements Serializable {
     public static final int DELETED = 2;
 
     /**
-     * Maximum number of invalidations kept, after which only {@link #all} is
-     * set. This avoids accumulating too many invalidations in memory, at the
-     * expense of more coarse-grained invalidations.
+     * Maximum number of invalidations kept, after which only {@link #all} is set. This avoids accumulating too many
+     * invalidations in memory, at the expense of more coarse-grained invalidations.
      */
     public static final int MAX_SIZE = 10000;
 
     /**
-     * Used locally when invalidating everything, or when too many invalidations
-     * have been received.
+     * Used locally when invalidating everything, or when too many invalidations have been received.
      */
     public boolean all;
 
@@ -165,8 +162,7 @@ public class Invalidations implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(
-                this.getClass().getSimpleName() + '(');
+        StringBuilder sb = new StringBuilder(this.getClass().getSimpleName() + '(');
         if (all) {
             sb.append("all=true");
         }

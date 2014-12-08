@@ -44,8 +44,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
 
 /**
- * Helper class to manage Seam Hot Reload Most of the code comes from Jboss
- * Seam 2.0.3-RC1 Debug package (HotDeployFilter)
+ * Helper class to manage Seam Hot Reload Most of the code comes from Jboss Seam 2.0.3-RC1 Debug package
+ * (HotDeployFilter)
  */
 public class SeamHotReloadHelper {
 
@@ -55,8 +55,7 @@ public class SeamHotReloadHelper {
     public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP;
 
     public static boolean isHotReloadEnabled() {
-        String sysProp = System.getProperty(
-                ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP, "false");
+        String sysProp = System.getProperty(ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP, "false");
         return Boolean.TRUE.equals(Boolean.valueOf(sysProp));
     }
 
@@ -73,14 +72,11 @@ public class SeamHotReloadHelper {
             // TODO: check if this would be needed for Studio hot reload (?)
             flushWebResources();
         } catch (ReflectiveOperationException | JMException e) {
-            log.error(
-                    "Cannot flush web resources, did you start with the sdk profile active ?",
-                    e);
+            log.error("Cannot flush web resources, did you start with the sdk profile active ?", e);
         }
     }
 
-    public static Set<String> reloadSeamComponents(
-            HttpServletRequest httpRequest) {
+    public static Set<String> reloadSeamComponents(HttpServletRequest httpRequest) {
 
         ServletContext servletContext = httpRequest.getSession().getServletContext();
 
@@ -98,8 +94,7 @@ public class SeamHotReloadHelper {
         return init.getHotDeployableComponents();
     }
 
-    public static Set<String> getHotDeployableComponents(
-            HttpServletRequest httpRequest) {
+    public static Set<String> getHotDeployableComponents(HttpServletRequest httpRequest) {
         ServletContext servletContext = httpRequest.getSession().getServletContext();
         Init init = (Init) servletContext.getAttribute(Seam.getComponentName(Init.class));
         return init.getHotDeployableComponents();
@@ -111,8 +106,7 @@ public class SeamHotReloadHelper {
      *
      * @since 5.5
      */
-    protected static void flushWebResources()
-            throws ReflectiveOperationException, JMException {
+    protected static void flushWebResources() throws ReflectiveOperationException, JMException {
         ObjectName on = new ObjectName("org.nuxeo:type=sdk,name=web-resources");
         MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
         if (mbs.isRegistered(on)) {

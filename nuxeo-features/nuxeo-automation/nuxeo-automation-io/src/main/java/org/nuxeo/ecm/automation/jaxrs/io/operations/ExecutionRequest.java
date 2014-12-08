@@ -32,13 +32,13 @@ public class ExecutionRequest {
     protected Map<String, Object> params;
 
     public ExecutionRequest() {
-        this (null);
+        this(null);
     }
 
     public ExecutionRequest(Object input) {
         restOperationContext = new RestOperationContext();
         this.input = input;
-        this.params = new HashMap<String, Object>();
+        params = new HashMap<String, Object>();
     }
 
     public void setInput(Object input) {
@@ -78,8 +78,7 @@ public class ExecutionRequest {
         return params;
     }
 
-    public OperationContext createContext(HttpServletRequest request,
-            CoreSession session) {
+    public OperationContext createContext(HttpServletRequest request, CoreSession session) {
         restOperationContext.addRequestCleanupHandler(request);
         restOperationContext.setCoreSession(session);
         restOperationContext.setInput(input);

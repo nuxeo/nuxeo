@@ -37,14 +37,12 @@ public class MultipartBlobs extends MimeMultipart {
         super("mixed");
     }
 
-    public MultipartBlobs(List<Blob> blobs) throws MessagingException,
-            IOException {
+    public MultipartBlobs(List<Blob> blobs) throws MessagingException, IOException {
         super("mixed");
         addBlobs(blobs);
     }
 
-    public void addBlobs(List<Blob> blobs) throws MessagingException,
-            IOException {
+    public void addBlobs(List<Blob> blobs) throws MessagingException, IOException {
         for (Blob blob : blobs) {
             addBlob(blob);
         }
@@ -52,8 +50,8 @@ public class MultipartBlobs extends MimeMultipart {
 
     public void addBlob(Blob blob) throws MessagingException, IOException {
         MimeBodyPart part = new MimeBodyPart();
-        part.setDataHandler(new DataHandler(new InputStreamDataSource(
-                blob.getStream(), blob.getMimeType(), blob.getFilename())));
+        part.setDataHandler(new DataHandler(new InputStreamDataSource(blob.getStream(), blob.getMimeType(),
+                blob.getFilename())));
         part.setDisposition("attachment");
         String filename = blob.getFilename();
         if (filename != null) {

@@ -41,8 +41,7 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 public class MSOffice2TextConverter implements Converter {
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         File f = null;
         OutputStream fas = null;
@@ -60,14 +59,11 @@ public class MSOffice2TextConverter implements Converter {
             fas = new FileOutputStream(f);
             fas.write(bytes);
 
-            Blob blob = new FileBlob(new FileInputStream(f), "text/plain",
-                    "UTF-8");
+            Blob blob = new FileBlob(new FileInputStream(f), "text/plain", "UTF-8");
 
             return new SimpleCachableBlobHolder(blob);
-        } catch (ClientException | IOException | OpenXML4JException
-                | XmlException e) {
-            throw new ConversionException(
-                    "Error during MSOffice2Text conversion", e);
+        } catch (ClientException | IOException | OpenXML4JException | XmlException e) {
+            throw new ConversionException("Error during MSOffice2Text conversion", e);
         } finally {
             if (fas != null) {
                 try {

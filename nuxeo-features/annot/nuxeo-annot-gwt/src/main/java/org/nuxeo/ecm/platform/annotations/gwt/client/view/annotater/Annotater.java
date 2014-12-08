@@ -23,7 +23,6 @@ import com.google.gwt.user.client.Event;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public interface Annotater {
 

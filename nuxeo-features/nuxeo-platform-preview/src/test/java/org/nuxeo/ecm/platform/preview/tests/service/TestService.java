@@ -49,15 +49,12 @@ import com.google.inject.Inject;
  * Test Preview adapter management service registration
  *
  * @author tiry
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.convert",
-        "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core",
-        "org.nuxeo.ecm.platform.preview",
-        "org.nuxeo.ecm.platform.dublincore"})
+        "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core",
+        "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore" })
 public class TestService {
 
     @Test
@@ -84,7 +81,8 @@ public class TestService {
 
     protected final Pattern charsetPattern = Pattern.compile("content=\".*;\\s*charset=(.*)\"");
 
-    public void checkLatin1(DocumentModel doc, String name, String mtype) throws IOException, ClientException, MimetypeNotFoundException, MimetypeDetectionException {
+    public void checkLatin1(DocumentModel doc, String name, String mtype) throws IOException, ClientException,
+            MimetypeNotFoundException, MimetypeDetectionException {
         File file = new File(getClass().getResource("/" + name).getPath());
         Blob blob = new FileBlob(file);
         blob.setMimeType(mtype);
@@ -96,9 +94,10 @@ public class TestService {
         Assert.assertThat(matcher.find(), Matchers.is(true));
         String charset = matcher.group();
         if ("windows-1252".equals(charset)) {
-            Assert.assertThat(htmlContent, Matchers.containsString("test de pr&Atilde;&copy;visualisation avant rattachement"));
+            Assert.assertThat(htmlContent,
+                    Matchers.containsString("test de pr&Atilde;&copy;visualisation avant rattachement"));
         } else {
             Assert.assertThat(htmlContent, Matchers.containsString("test de prévisualisation avant rattachement"));
         }
-     }
+    }
 }

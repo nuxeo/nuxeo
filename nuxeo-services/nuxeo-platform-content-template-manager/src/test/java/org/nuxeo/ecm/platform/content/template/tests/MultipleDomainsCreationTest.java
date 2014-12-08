@@ -52,8 +52,7 @@ public class MultipleDomainsCreationTest {
         assertNotNull(session.getDocument(new PathRef("/domain2")));
         assertNotNull(session.getDocument(new PathRef("/domain3")));
 
-        assertEquals(3,
-                session.getChildren(session.getRootDocument().getRef()).size());
+        assertEquals(3, session.getChildren(session.getRootDocument().getRef()).size());
     }
 
     @Test

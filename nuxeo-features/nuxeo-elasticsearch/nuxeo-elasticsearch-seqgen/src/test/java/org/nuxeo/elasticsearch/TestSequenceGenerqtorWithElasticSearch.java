@@ -40,15 +40,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
-@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit",
-        "org.nuxeo.elasticsearch.seqgen" })
+@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit", "org.nuxeo.elasticsearch.seqgen" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.seqgen:elasticsearch-test-contrib.xml" })
 public class TestSequenceGenerqtorWithElasticSearch {
 
-    protected @Inject
-    CoreSession session;
+    protected @Inject CoreSession session;
 
     @Inject
     protected ElasticSearchAdmin esa;
@@ -66,10 +64,8 @@ public class TestSequenceGenerqtorWithElasticSearch {
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
-        esa.getClient().admin().indices().prepareFlush(
-                ESSequenceGeneratorComponent.IDX_NAME).execute().actionGet();
-        esa.getClient().admin().indices().prepareRefresh(
-                ESSequenceGeneratorComponent.IDX_NAME).execute().actionGet();
+        esa.getClient().admin().indices().prepareFlush(ESSequenceGeneratorComponent.IDX_NAME).execute().actionGet();
+        esa.getClient().admin().indices().prepareRefresh(ESSequenceGeneratorComponent.IDX_NAME).execute().actionGet();
 
         TransactionHelper.startTransaction();
     }
@@ -95,9 +91,8 @@ public class TestSequenceGenerqtorWithElasticSearch {
         int nbCalls = 5000;
 
         final SequenceGenerator sg = Framework.getService(SequenceGenerator.class);
-        ThreadPoolExecutor tpe = new ThreadPoolExecutor(5, 5, 500L,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(
-                        nbCalls + 1));
+        ThreadPoolExecutor tpe = new ThreadPoolExecutor(5, 5, 500L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(nbCalls + 1));
 
         for (int i = 0; i < nbCalls; i++) {
             tpe.submit(new Runnable() {

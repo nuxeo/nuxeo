@@ -31,7 +31,6 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author Max Stepanov
- *
  */
 public class DOMUtil {
 
@@ -44,13 +43,13 @@ public class DOMUtil {
         }
         short nodeType = node.getNodeType();
         String subpath;
-        if(nodeType == Node.ELEMENT_NODE || nodeType == Node.TEXT_NODE) {
+        if (nodeType == Node.ELEMENT_NODE || nodeType == Node.TEXT_NODE) {
             String localName = node.getLocalName().toLowerCase();
             int pos = 0;
             Node sibling = node.getPreviousSibling();
             while (sibling != null) {
                 if (sibling.getNodeType() == nodeType) {
-                    if(localName.equals(sibling.getLocalName().toLowerCase())) {
+                    if (localName.equals(sibling.getLocalName().toLowerCase())) {
                         ++pos;
                     }
                 }
@@ -60,13 +59,13 @@ public class DOMUtil {
                 localName = "text()";
             }
 
-            if(pos == 0) {
+            if (pos == 0) {
                 subpath = localName;
             } else {
                 subpath = MessageFormat.format("{0}[{1}]", localName, new Integer(pos));
             }
         } else {
-            System.err.println("Unsupported type "+nodeType);
+            System.err.println("Unsupported type " + nodeType);
             subpath = "unknown";
         }
         Node parent = node.getParentNode();
@@ -78,19 +77,19 @@ public class DOMUtil {
     }
 
     public static Node findNodeByXPath(Node base, String xpath) {
-        if("/".equals(xpath)) {
+        if ("/".equals(xpath)) {
             return base;
         }
         Node node = base;
         StringTokenizer tok = new StringTokenizer(xpath, "/");
-        while(tok.hasMoreTokens()) {
+        while (tok.hasMoreTokens()) {
             String subpath = tok.nextToken();
             String localName;
             int nodePos = 0;
             int index = subpath.indexOf('[');
-            if(index > 0) {
+            if (index > 0) {
                 localName = subpath.substring(0, index).toLowerCase();
-                nodePos = Integer.parseInt(subpath.substring(index+1, subpath.indexOf(']')));
+                nodePos = Integer.parseInt(subpath.substring(index + 1, subpath.indexOf(']')));
             } else {
                 localName = subpath.toLowerCase();
             }
@@ -101,10 +100,9 @@ public class DOMUtil {
             }
             node = node.getFirstChild();
             int pos = 0;
-            while(node != null) {
-                if (node.getNodeType() == nodeType
-                        && localName.equals(node.getLocalName().toLowerCase())) {
-                    if(pos == nodePos) {
+            while (node != null) {
+                if (node.getNodeType() == nodeType && localName.equals(node.getLocalName().toLowerCase())) {
+                    if (pos == nodePos) {
                         break;
                     }
                     ++pos;
@@ -114,31 +112,23 @@ public class DOMUtil {
         }
         return node;
         /*
-        try {
-            XPathFactory factory = XPathFactory.newInstance();
-            XPath xpath = factory.newXPath();
-            XPathExpression expr = xpath.compile(path);
-            return (Node) expr.evaluate(document, XPathConstants.NODE);
-        } catch (XPathExpressionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (DOMException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        */
+         * try { XPathFactory factory = XPathFactory.newInstance(); XPath xpath = factory.newXPath(); XPathExpression
+         * expr = xpath.compile(path); return (Node) expr.evaluate(document, XPathConstants.NODE); } catch
+         * (XPathExpressionException e) { // TODO Auto-generated catch block e.printStackTrace(); } catch (DOMException
+         * e) { // TODO Auto-generated catch block e.printStackTrace(); }
+         */
 
     }
 
     public static Node getNodeAtPosition(Node parent, int offset) {
-        if(offset <0) {
+        if (offset < 0) {
             return null;
         } else if (offset == 0) {
             return parent.getFirstChild();
         }
         NodeList nodes = parent.getChildNodes();
         int count = nodes.getLength();
-        if(offset < count) {
+        if (offset < count) {
             return nodes.item(offset);
         }
         return null;
@@ -146,7 +136,7 @@ public class DOMUtil {
 
     public static int getNodePosition(Node node) {
         int pos = -1;
-        while(node != null) {
+        while (node != null) {
             ++pos;
             node = node.getPreviousSibling();
         }
@@ -159,14 +149,13 @@ public class DOMUtil {
         sb.append('<').append(tagName);
         NamedNodeMap attrs = element.getAttributes();
         int count = attrs.getLength();
-        for(int i = 0; i < count; ++i) {
+        for (int i = 0; i < count; ++i) {
             Attr attr = (Attr) attrs.item(i);
             if (attr.getSpecified()) {
-                sb.append(' ').append(attr.getName()).append("=\"")
-                        .append(attr.getValue()).append('"');
+                sb.append(' ').append(attr.getName()).append("=\"").append(attr.getValue()).append('"');
             }
         }
-        if("br".equals(tagName.toLowerCase())) {
+        if ("br".equals(tagName.toLowerCase())) {
             sb.append("/>");
         } else {
             sb.append("></").append(tagName).append('>');
@@ -178,15 +167,15 @@ public class DOMUtil {
         StringBuilder sb = new StringBuilder();
         Stack<Node> stack = new Stack<Node>();
         int level = 0;
-        while(node != null || !stack.isEmpty()) {
+        while (node != null || !stack.isEmpty()) {
             if (node == null) {
                 do {
                     node = stack.pop();
                     --level;
-                } while(node == null && !stack.isEmpty());
+                } while (node == null && !stack.isEmpty());
                 continue;
             }
-            for(int i = 0; i < level; ++i) {
+            for (int i = 0; i < level; ++i) {
                 sb.append(' ');
             }
             sb.append(node.getNodeName()).append(" <").append(node.getNodeValue()).append(">\n");

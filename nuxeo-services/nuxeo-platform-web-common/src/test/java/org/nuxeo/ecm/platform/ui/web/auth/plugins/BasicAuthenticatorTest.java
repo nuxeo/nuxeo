@@ -33,8 +33,6 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 
 /**
- *
- *
  * @since 5.9.2
  */
 public class BasicAuthenticatorTest {
@@ -54,31 +52,25 @@ public class BasicAuthenticatorTest {
     }
 
     @Test
-    public void itDoesntSentBAHeaderWhenExcludeHeaderIsPresent()
-            throws Exception {
+    public void itDoesntSentBAHeaderWhenExcludeHeaderIsPresent() throws Exception {
 
-        HttpServletRequest req = getRequestWithHeader("X-Authorization-token",
-                "bla");
+        HttpServletRequest req = getRequestWithHeader("X-Authorization-token", "bla");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
         ba.handleLoginPrompt(req, resp, "/");
 
-        verify(resp, never()).addHeader(eq(BasicAuthenticator.BA_HEADER_NAME),
-                anyString());
+        verify(resp, never()).addHeader(eq(BasicAuthenticator.BA_HEADER_NAME), anyString());
     }
 
     @Test
     public void itDoesntSendBaHeaderWhenExcludedCookieIsPresnt() throws Exception {
-        HttpServletRequest req = getRequestWithCookie("X-Authorization-token",
-                "bla");
+        HttpServletRequest req = getRequestWithCookie("X-Authorization-token", "bla");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
         ba.handleLoginPrompt(req, resp, "/");
 
-        verify(resp, never()).addHeader(eq(BasicAuthenticator.BA_HEADER_NAME),
-                anyString());
+        verify(resp, never()).addHeader(eq(BasicAuthenticator.BA_HEADER_NAME), anyString());
     }
-
 
     @Test
     public void itSendsABAHeaderWhenNoExcludeHeaderIsSet() throws Exception {
@@ -88,38 +80,31 @@ public class BasicAuthenticatorTest {
         HttpServletResponse resp = mock(HttpServletResponse.class);
         ba.handleLoginPrompt(req, resp, "/");
 
-        verify(resp).addHeader(eq(BasicAuthenticator.BA_HEADER_NAME),
-                anyString());
+        verify(resp).addHeader(eq(BasicAuthenticator.BA_HEADER_NAME), anyString());
 
     }
 
-
-    private HttpServletRequest getRequestWithCookie(String cookieName,
-            String value) {
+    private HttpServletRequest getRequestWithCookie(String cookieName, String value) {
         return getMockRequest(cookieName, value, false, true);
     }
 
-
-    private HttpServletRequest getRequestWithHeader(String headerName,
-            String value) {
+    private HttpServletRequest getRequestWithHeader(String headerName, String value) {
         return getMockRequest(headerName, value, true, false);
     }
 
     /**
      * Mocks a request with a mocked header or cookie
+     *
      * @param name
      * @param value
      * @param header adds a header if true
      * @param cookie adds a cookie if true
      * @return
-     *
      */
-    private HttpServletRequest getMockRequest(String name, String value,
-            boolean header, boolean cookie) {
+    private HttpServletRequest getMockRequest(String name, String value, boolean header, boolean cookie) {
         HttpServletRequest req = mock(HttpServletRequest.class);
         if (cookie && value != null) {
-            when(req.getCookies()).thenReturn(
-                    new Cookie[] { new Cookie(name, value) });
+            when(req.getCookies()).thenReturn(new Cookie[] { new Cookie(name, value) });
         }
         if (header && value != null) {
             when(req.getHeader(name)).thenReturn(value);

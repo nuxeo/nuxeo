@@ -101,8 +101,7 @@ public class WebException extends WebApplicationException {
 
     public WebException(String message, Throwable cause, int status) {
         if (cause == null) {
-            throw new IllegalArgumentException(
-                    "the cause parameter cannot be null");
+            throw new IllegalArgumentException("the cause parameter cannot be null");
         }
         this.status = status == -1 ? getStatus(cause) : status;
         this.cause = cause;
@@ -112,8 +111,7 @@ public class WebException extends WebApplicationException {
 
     public WebException(String message, Throwable cause) {
         if (cause == null) {
-            throw new IllegalArgumentException(
-                    "the cause parameter cannot be null");
+            throw new IllegalArgumentException("the cause parameter cannot be null");
         }
         this.status = getStatus(cause);
         this.cause = cause;
@@ -129,11 +127,9 @@ public class WebException extends WebApplicationException {
         return newException(null, cause);
     }
 
-    public static WebException newException(String message,
-            Throwable cause, int status) {
+    public static WebException newException(String message, Throwable cause, int status) {
         if (cause == null) {
-            throw new IllegalArgumentException(
-                    "the cause parameter cannot be null");
+            throw new IllegalArgumentException("the cause parameter cannot be null");
         }
         return new WebException(message, cause, status);
     }
@@ -165,14 +161,12 @@ public class WebException extends WebApplicationException {
                 notFound = true;
             } else if (cause != null && cause.getMessage() != null) {
                 // not sure if this is still needed (?) see NXP-9636
-                if (cause.getMessage().contains(
-                        "org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
+                if (cause.getMessage().contains("org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
                     notFound = true;
                 }
             }
             if (notFound) {
-                return new WebResourceNotFoundException(message,
-                        cause);
+                return new WebResourceNotFoundException(message, cause);
             } else {
                 return new WebDocumentException(message, exception);
             }
@@ -203,13 +197,10 @@ public class WebException extends WebApplicationException {
             log.warn("Possible infinite loop! Check the exception wrapping.");
             return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         }
-        if ((cause instanceof DocumentSecurityException)
-                || (cause instanceof SecurityException)
-                || "javax.ejb.EJBAccessException".equals(cause.getClass()
-                .getName())) {
+        if ((cause instanceof DocumentSecurityException) || (cause instanceof SecurityException)
+                || "javax.ejb.EJBAccessException".equals(cause.getClass().getName())) {
             return HttpServletResponse.SC_FORBIDDEN;
-        } else if (cause instanceof NoSuchDocumentException || cause
-                instanceof WebResourceNotFoundException) {
+        } else if (cause instanceof NoSuchDocumentException || cause instanceof WebResourceNotFoundException) {
             return HttpServletResponse.SC_NOT_FOUND;
         } else if (cause instanceof InvalidOperationException) {
             return HttpServletResponse.SC_BAD_REQUEST;
@@ -225,8 +216,7 @@ public class WebException extends WebApplicationException {
             return getStatus(parent, depth - 1);
         }
         if (cause.getMessage() != null
-                && cause.getMessage().contains(
-                "org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
+                && cause.getMessage().contains("org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
             log.warn("Badly wrapped exception: found a NoSuchDocumentException"
                     + " message but no NoSuchDocumentException", cause);
             return HttpServletResponse.SC_NOT_FOUND;
@@ -287,16 +277,14 @@ public class WebException extends WebApplicationException {
      */
     protected Response toWebModuleResponse(WebContext ctx) {
         ModuleResource mr = (ModuleResource) ctx.head();
-        Object result = mr.handleError((WebApplicationException)
-                this.getCause());
+        Object result = mr.handleError((WebApplicationException) this.getCause());
         if (result instanceof Response) {
             return (Response) result;
         }
         if (result instanceof WebException) {
             status = ((WebException) result).getStatus();
         }
-        return Response.fromResponse(getResponse()).status
-                (status).entity(result).build();
+        return Response.fromResponse(getResponse()).status(status).entity(result).build();
     }
 
     public int getStatus() {

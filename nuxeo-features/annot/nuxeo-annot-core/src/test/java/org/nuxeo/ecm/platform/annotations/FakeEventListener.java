@@ -27,39 +27,31 @@ import org.nuxeo.ecm.platform.annotations.service.EventListener;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class FakeEventListener implements EventListener {
 
-    public void afterAnnotationCreated(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void afterAnnotationCreated(Principal principal, Annotation annotation) throws AnnotationException {
     }
 
-    public void afterAnnotationDeleted(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void afterAnnotationDeleted(Principal principal, Annotation annotation) throws AnnotationException {
     }
 
-    public void afterAnnotationRead(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void afterAnnotationRead(Principal principal, Annotation annotation) throws AnnotationException {
     }
 
-    public void afterAnnotationUpdated(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void afterAnnotationUpdated(Principal principal, Annotation annotation) throws AnnotationException {
     }
 
-    public void beforeAnnotationCreated(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void beforeAnnotationCreated(Principal principal, Annotation annotation) throws AnnotationException {
     }
 
-    public void beforeAnnotationDeleted(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void beforeAnnotationDeleted(Principal principal, Annotation annotation) throws AnnotationException {
     }
 
     public void beforeAnnotationRead(Principal principal, String annotationId) throws AnnotationException {
     }
 
-    public void beforeAnnotationUpdated(Principal principal, Annotation annotation)
-            throws AnnotationException {
+    public void beforeAnnotationUpdated(Principal principal, Annotation annotation) throws AnnotationException {
     }
 
 }

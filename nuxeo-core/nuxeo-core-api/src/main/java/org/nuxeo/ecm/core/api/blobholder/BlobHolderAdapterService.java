@@ -19,11 +19,10 @@ import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- * Service interface for creating the right {@link BlobHolder} adapter depending
- * on the {@link DocumentModel} type.
+ * Service interface for creating the right {@link BlobHolder} adapter depending on the {@link DocumentModel} type.
  * <p>
- * Also provides APIs for external blob adapters, handling blobs that are not
- * stored in the repository (stored in the file system for instance).
+ * Also provides APIs for external blob adapters, handling blobs that are not stored in the repository (stored in the
+ * file system for instance).
  *
  * @author tiry
  * @author Anahide Tchertchian
@@ -36,11 +35,10 @@ public interface BlobHolderAdapterService {
      * Returns an external blob from given uri.
      *
      * @see ExternalBlobAdapter
-     * @param uri the uri describing what adapter handles the file and the
-     *            needed info to retrieve it.
+     * @param uri the uri describing what adapter handles the file and the needed info to retrieve it.
      * @return the resolved blob.
-     * @throws PropertyException if the blob cannot be retrieved (if adapter
-     *             cannot retrieve it or if file is not found for instance)
+     * @throws PropertyException if the blob cannot be retrieved (if adapter cannot retrieve it or if file is not found
+     *             for instance)
      */
     Blob getExternalBlobForUri(String uri) throws PropertyException;
 

@@ -26,11 +26,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.8
  */
-public class BusinessAdapterListWriter extends EntityListWriter<BusinessAdapter>{
+public class BusinessAdapterListWriter extends EntityListWriter<BusinessAdapter> {
 
     @Override
     protected String getEntityType() {
@@ -38,8 +36,7 @@ public class BusinessAdapterListWriter extends EntityListWriter<BusinessAdapter>
     }
 
     @Override
-    protected void writeItem(JsonGenerator jg, BusinessAdapter item)
-            throws ClientException, IOException {
+    protected void writeItem(JsonGenerator jg, BusinessAdapter item) throws ClientException, IOException {
         ObjectCodecService service = Framework.getLocalService(ObjectCodecService.class);
         service.write(jg, item);
     }

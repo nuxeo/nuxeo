@@ -23,7 +23,6 @@ import java.util.List;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface AnnotationsRepositoryConfigurationService {
     List<AnnotatedDocumentEventListener> getEventListeners();

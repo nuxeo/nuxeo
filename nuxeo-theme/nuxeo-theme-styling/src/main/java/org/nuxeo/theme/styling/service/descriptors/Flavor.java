@@ -25,16 +25,13 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * A flavor represents the set of information that can be used to switch the
- * theme styling on a given page.
+ * A flavor represents the set of information that can be used to switch the theme styling on a given page.
  * <p>
- * It holds presets that can be referenced in CSS files, as well as logo
- * information. It can extend another flavor, in case it will its logo and
- * presets. The name and label are not inherited.
+ * It holds presets that can be referenced in CSS files, as well as logo information. It can extend another flavor, in
+ * case it will its logo and presets. The name and label are not inherited.
  * <p>
- * At registration, presets and log information are merged of a previous
- * contribution with the same name already held that kind of information. When
- * emptying the list of presets.
+ * At registration, presets and log information are merged of a previous contribution with the same name already held
+ * that kind of information. When emptying the list of presets.
  *
  * @since 5.5
  */

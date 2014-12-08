@@ -54,14 +54,12 @@ public class TestOauth2Challenge {
     public void initOAuthClient() throws ClientException {
 
         if (!clientRegistry.hasClient(CLIENT_ID)) {
-            OAuth2Client oauthClient = new OAuth2Client("Dummy", CLIENT_ID,
-                    CLIENT_SECRET);
+            OAuth2Client oauthClient = new OAuth2Client("Dummy", CLIENT_ID, CLIENT_SECRET);
             assertTrue(clientRegistry.registerClient(oauthClient));
         }
 
         ClientConfig config = new DefaultClientConfig();
-        config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS,
-                false);
+        config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, false);
         // First client to request like a "Client" as OAuth RFC describe it
         client = Client.create(config);
 
@@ -100,10 +98,8 @@ public class TestOauth2Challenge {
     }
 
     @Test
-    public void tokenShouldCreateAndRefreshWithDummyAuthorization()
-            throws IOException {
-        AuthorizationRequest request = new TestAuthorizationRequest(CLIENT_ID,
-                "code", null, "Dummy", new Date());
+    public void tokenShouldCreateAndRefreshWithDummyAuthorization() throws IOException {
+        AuthorizationRequest request = new TestAuthorizationRequest(CLIENT_ID, "code", null, "Dummy", new Date());
         TestAuthorizationRequest.getRequests().put("fake", request);
 
         // Request a token
@@ -120,7 +116,7 @@ public class TestOauth2Challenge {
 
         ObjectMapper obj = new ObjectMapper();
 
-        Map<?,?> token = obj.readValue(json, Map.class);
+        Map<?, ?> token = obj.readValue(json, Map.class);
         assertNotNull(token);
         String accessToken = (String) token.get("access_token");
         assertEquals(32, accessToken.length());
@@ -133,13 +129,12 @@ public class TestOauth2Challenge {
         assertEquals(200, cr.getStatus());
 
         json = cr.getEntity(String.class);
-        Map<?,?> refreshed = obj.readValue(json, Map.class);
+        Map<?, ?> refreshed = obj.readValue(json, Map.class);
 
         assertNotSame(refreshed.get("access_token"), token.get("access_token"));
     }
 
-    protected ClientResponse responseFromTokenWith(
-            Map<String, String> queryParams) {
+    protected ClientResponse responseFromTokenWith(Map<String, String> queryParams) {
         WebResource wr = client.resource(BASE_URL).path("oauth2").path("token");
 
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
@@ -150,10 +145,8 @@ public class TestOauth2Challenge {
         return wr.queryParams(params).get(ClientResponse.class);
     }
 
-    protected ClientResponse responseFromAuthorizationWith(
-            Map<String, String> queryParams) {
-        WebResource wr = client.resource(BASE_URL).path("oauth2").path(
-                "authorization");
+    protected ClientResponse responseFromAuthorizationWith(Map<String, String> queryParams) {
+        WebResource wr = client.resource(BASE_URL).path("oauth2").path("authorization");
 
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         for (Map.Entry<String, String> entry : queryParams.entrySet()) {

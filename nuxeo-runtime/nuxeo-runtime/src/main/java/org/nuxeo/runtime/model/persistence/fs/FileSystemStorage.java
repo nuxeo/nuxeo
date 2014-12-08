@@ -36,7 +36,6 @@ import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileSystemStorage implements ContributionStorage {
 
@@ -86,14 +85,12 @@ public class FileSystemStorage implements ContributionStorage {
     public static void loadMetadata(Contribution contrib) {
         try {
             DocumentBuilder docBuilder = factory.newDocumentBuilder();
-            Document doc = docBuilder.parse(new ByteArrayInputStream(
-                    contrib.getContent().getBytes()));
+            Document doc = docBuilder.parse(new ByteArrayInputStream(contrib.getContent().getBytes()));
             Element root = doc.getDocumentElement();
             contrib.setDisabled(Boolean.parseBoolean(root.getAttribute("disabled")));
             Node node = root.getFirstChild();
             while (node != null) {
-                if (node.getNodeType() == Node.ELEMENT_NODE
-                        && "documentation".equals(node.getNodeName())) {
+                if (node.getNodeType() == Node.ELEMENT_NODE && "documentation".equals(node.getNodeName())) {
                     break;
                 }
                 node = node.getNextSibling();
@@ -111,8 +108,7 @@ public class FileSystemStorage implements ContributionStorage {
             } else {
                 contrib.setDescription("");
             }
-        } catch (ParserConfigurationException | SAXException | IOException
-                | DOMException e) {
+        } catch (ParserConfigurationException | SAXException | IOException | DOMException e) {
             log.error("Failed to read contribution metadata", e);
         }
     }
@@ -170,8 +166,7 @@ public class FileSystemStorage implements ContributionStorage {
         }
         Document doc;
         try {
-            doc = docBuilder.parse(new ByteArrayInputStream(
-                    content.getBytes()));
+            doc = docBuilder.parse(new ByteArrayInputStream(content.getBytes()));
         } catch (SAXException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -183,8 +178,7 @@ public class FileSystemStorage implements ContributionStorage {
         }
         Node node = root.getFirstChild();
         while (node != null) {
-            if (node.getNodeType() == Node.ELEMENT_NODE
-                    && "documentation".equals(node.getNodeName())) {
+            if (node.getNodeType() == Node.ELEMENT_NODE && "documentation".equals(node.getNodeName())) {
                 break;
             }
             node = node.getNextSibling();

@@ -46,8 +46,7 @@ public class LockManagerDescriptor {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + name + ',' + klass.getName()
-                + ')';
+        return getClass().getSimpleName() + '(' + name + ',' + klass.getName() + ')';
     }
 
 }

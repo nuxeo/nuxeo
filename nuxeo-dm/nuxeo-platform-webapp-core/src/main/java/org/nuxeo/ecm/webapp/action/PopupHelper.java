@@ -110,15 +110,13 @@ public class PopupHelper implements Serializable {
     }
 
     public List<Action> getAvailablePopupActions(String popupDocId) {
-        return webActions.getActionsList(POPUP_CATEGORY,
-                createActionContext(popupDocId));
+        return webActions.getActionsList(POPUP_CATEGORY, createActionContext(popupDocId));
     }
 
     @WebRemote
     public List<String> getAvailableActionId(String popupDocId) {
         List<Action> availableActions = getAvailablePopupActions(popupDocId);
-        List<String> availableActionsIds = new ArrayList<String>(
-                availableActions.size());
+        List<String> availableActionsIds = new ArrayList<String>(availableActions.size());
         for (Action act : availableActions) {
             availableActionsIds.add(act.getId());
         }
@@ -136,8 +134,7 @@ public class PopupHelper implements Serializable {
         }
 
         List<Action> availableActions = getAvailablePopupActions(popupDocId);
-        List<String> availableActionsIds = new ArrayList<String>(
-                availableActions.size());
+        List<String> availableActionsIds = new ArrayList<String>(availableActions.size());
         for (Action act : availableActions) {
             availableActionsIds.add(act.getId());
         }
@@ -171,8 +168,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String getNavigationURL(String docId, String tabId)
-            throws ClientException {
+    public String getNavigationURL(String docId, String tabId) throws ClientException {
         Map<String, String> params = new HashMap<String, String>();
 
         if (tabId != null) {
@@ -181,8 +177,7 @@ public class PopupHelper implements Serializable {
 
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
 
-        return DocumentModelFunctions.documentUrl(null, doc, null, params,
-                false);
+        return DocumentModelFunctions.documentUrl(null, doc, null, params, false);
     }
 
     @WebRemote
@@ -192,8 +187,7 @@ public class PopupHelper implements Serializable {
             params.put("tabId", tabId);
         }
 
-        return DocumentModelFunctions.documentUrl(null, currentContainer, null,
-                params, false);
+        return DocumentModelFunctions.documentUrl(null, currentContainer, null, params, false);
     }
 
     @WebRemote
@@ -202,12 +196,12 @@ public class PopupHelper implements Serializable {
     }
 
     protected HttpServletRequest getRequest() {
-        HttpServletRequest request =  ServletContexts.instance().getRequest();
-        if (request!=null) {
+        HttpServletRequest request = ServletContexts.instance().getRequest();
+        if (request != null) {
             return request;
         }
         FacesContext context = FacesContext.getCurrentInstance();
-        if (context!=null) {
+        if (context != null) {
             return (HttpServletRequest) context.getExternalContext().getRequest();
         }
         return null;
@@ -222,8 +216,7 @@ public class PopupHelper implements Serializable {
         if (subTabId != null) {
             params.put("subTabId", subTabId);
         }
-        return DocumentModelFunctions.documentUrl(null, currentPopupDocument,
-                null, params, false,getRequest());
+        return DocumentModelFunctions.documentUrl(null, currentPopupDocument, null, params, false, getRequest());
     }
 
     protected Map<String, String> getCurrentTabParameters() {
@@ -241,8 +234,7 @@ public class PopupHelper implements Serializable {
 
     @WebRemote
     public String getCurrentURL() {
-        return DocumentModelFunctions.documentUrl(null, currentContainer, null,
-                getCurrentTabParameters(), false);
+        return DocumentModelFunctions.documentUrl(null, currentContainer, null, getCurrentTabParameters(), false);
     }
 
     @WebRemote
@@ -250,8 +242,7 @@ public class PopupHelper implements Serializable {
         if (!isDocumentDeleted(currentContainer)) {
             currentParent = currentContainer;
         }
-        return DocumentModelFunctions.documentUrl(null, currentParent, null,
-                getCurrentTabParameters(), false);
+        return DocumentModelFunctions.documentUrl(null, currentParent, null, getCurrentTabParameters(), false);
     }
 
     @WebRemote
@@ -264,8 +255,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String editTitle(String docId, String newTitle)
-            throws ClientException {
+    public String editTitle(String docId, String newTitle) throws ClientException {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
         doc.setProperty("dublincore", "title", newTitle);
         documentManager.saveDocument(doc);
@@ -274,16 +264,14 @@ public class PopupHelper implements Serializable {
     }
 
     public boolean getIsCurrentContainerDirectParent() throws ClientException {
-        if (documentManager != null && currentContainer != null
-                && currentPopupDocument != null) {
+        if (documentManager != null && currentContainer != null && currentPopupDocument != null) {
             DocumentModel parent = documentManager.getParentDocument(currentPopupDocument.getRef());
             return currentContainer.equals(parent);
         }
         return false;
     }
 
-    public boolean isDocumentHasBlobAttached(DocumentModel documentModel)
-            throws ClientException {
+    public boolean isDocumentHasBlobAttached(DocumentModel documentModel) throws ClientException {
         if (documentModel.hasSchema("file")) {
             Blob blob = (Blob) documentModel.getProperty("file", "content");
             return blob != null;
@@ -292,8 +280,7 @@ public class PopupHelper implements Serializable {
         }
     }
 
-    public boolean isDocumentHasBlobs(DocumentModel documentModel)
-            throws ClientException {
+    public boolean isDocumentHasBlobs(DocumentModel documentModel) throws ClientException {
         BlobHolder bh = documentModel.getAdapter(BlobHolder.class);
         if (bh != null) {
             List<Blob> docBlobs = bh.getBlobs();
@@ -308,38 +295,32 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String downloadDocument(String docId, String blobPropertyName,
-            String filenamePropertyName) throws ClientException {
-        DocumentModel documentModel = documentManager.getDocument(new IdRef(
-                docId));
+    public String downloadDocument(String docId, String blobPropertyName, String filenamePropertyName)
+            throws ClientException {
+        DocumentModel documentModel = documentManager.getDocument(new IdRef(docId));
         String filename = (String) documentModel.getPropertyValue(filenamePropertyName);
-        return DocumentModelFunctions.fileUrl("downloadFile", documentModel,
-                blobPropertyName, filename);
+        return DocumentModelFunctions.fileUrl("downloadFile", documentModel, blobPropertyName, filename);
     }
 
     @WebRemote
     public String lockDocument(String docId) throws ClientException {
-        DocumentModel documentModel = documentManager.getDocument(new IdRef(
-                docId));
+        DocumentModel documentModel = documentManager.getDocument(new IdRef(docId));
         return lockActions.lockDocument(documentModel);
     }
 
     @WebRemote
     public String unlockDocument(String docId) throws ClientException {
-        DocumentModel documentModel = documentManager.getDocument(new IdRef(
-                docId));
+        DocumentModel documentModel = documentManager.getDocument(new IdRef(docId));
         return lockActions.unlockDocument(documentModel);
     }
 
     @WebRemote
     public String sendEmail(String docId) throws ClientException {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
-        return DocumentModelFunctions.documentUrl(null, doc,
-                "send_notification_email", null, false);
+        return DocumentModelFunctions.documentUrl(null, doc, "send_notification_email", null, false);
     }
 
-    private DocumentModel getFirstParentAfterDelete(DocumentModel doc)
-            throws ClientException {
+    private DocumentModel getFirstParentAfterDelete(DocumentModel doc) throws ClientException {
         List<DocumentModel> parents = documentManager.getParentDocuments(doc.getRef());
         parents.remove(doc);
         Collections.reverse(parents);

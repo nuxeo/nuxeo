@@ -21,9 +21,8 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * Class to implement mandatory check attributes before calling implementation
- * of cache This enable to have the same behavior for any use of cache for all
- * implementation of cache
+ * Class to implement mandatory check attributes before calling implementation of cache This enable to have the same
+ * behavior for any use of cache for all implementation of cache
  *
  * @since 6.0
  */
@@ -45,8 +44,7 @@ public class CacheAttributesChecker extends AbstractCache {
 
     @Override
     public Serializable get(String key) throws IOException {
-        if(key == null)
-        {
+        if (key == null) {
             return null;
         }
         return cache.get(key);
@@ -55,8 +53,7 @@ public class CacheAttributesChecker extends AbstractCache {
     @Override
     public void invalidate(String key) throws IOException {
         if (key == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Can't invalidate a null key for the cache '%s'!", name));
+            throw new IllegalArgumentException(String.format("Can't invalidate a null key for the cache '%s'!", name));
         }
         cache.invalidate(key);
     }
@@ -69,12 +66,10 @@ public class CacheAttributesChecker extends AbstractCache {
     @Override
     public void put(String key, Serializable value) throws IOException {
         if (key == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Can't put a null key for the cache '%s'!", name));
+            throw new IllegalArgumentException(String.format("Can't put a null key for the cache '%s'!", name));
         }
         if (value == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Can't put a null value for the cache '%s'!", name));
+            throw new IllegalArgumentException(String.format("Can't put a null value for the cache '%s'!", name));
         }
         cache.put(key, value);
     }

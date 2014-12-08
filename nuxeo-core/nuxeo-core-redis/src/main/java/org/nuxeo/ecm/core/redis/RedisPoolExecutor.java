@@ -24,8 +24,7 @@ public class RedisPoolExecutor implements RedisExecutor {
     }
 
     @Override
-    public <T> T execute(RedisCallable<T> callable) throws IOException,
-            JedisException {
+    public <T> T execute(RedisCallable<T> callable) throws IOException, JedisException {
         Jedis jedis = pool.getResource();
         boolean brokenResource = false;
         try {

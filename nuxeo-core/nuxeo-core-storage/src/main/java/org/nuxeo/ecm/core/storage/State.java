@@ -47,13 +47,11 @@ public class State implements Serializable {
 
     private static final int DEBUG_MAX_ARRAY = 10;
 
-    public static final State EMPTY = new State(
-            Collections.<String, Serializable> emptyMap());
+    public static final State EMPTY = new State(Collections.<String, Serializable> emptyMap());
 
     /** Initial key order for the {@link #toString} method. */
-    private static final Set<String> TO_STRING_KEY_ORDER = new LinkedHashSet<>(
-            Arrays.asList(new String[] { "ecm:id", "ecm:primaryType",
-                    "ecm:name", "ecm:parentId", "ecm:isVersion", "ecm:isProxy" }));
+    private static final Set<String> TO_STRING_KEY_ORDER = new LinkedHashSet<>(Arrays.asList(new String[] { "ecm:id",
+            "ecm:primaryType", "ecm:name", "ecm:parentId", "ecm:isVersion", "ecm:isProxy" }));
 
     /**
      * A diff for a {@link State}.
@@ -93,8 +91,7 @@ public class State implements Serializable {
     /**
      * A diff for an array or {@link List}.
      * <p>
-     * This diff is applied onto an existing array/{@link List} in the following
-     * manner:
+     * This diff is applied onto an existing array/{@link List} in the following manner:
      * <ul>
      * <li>{@link #diff}, if any, is applied,
      * <li>{@link #rpush}, if any, is applied.
@@ -107,14 +104,13 @@ public class State implements Serializable {
         private static final long serialVersionUID = 1L;
 
         /**
-         * Whether this {@link ListDiff} applies to an array ({@code true}) or a
-         * {@link List} ({@code false}).
+         * Whether this {@link ListDiff} applies to an array ({@code true}) or a {@link List} ({@code false}).
          */
         public boolean isArray;
 
         /**
-         * If diff is not {@code null}, each element of the list is applied to
-         * the existing array/{@link List}. An element can be:
+         * If diff is not {@code null}, each element of the list is applied to the existing array/{@link List}. An
+         * element can be:
          * <ul>
          * <li>a {@link StateDiff}, to be applied on a {@link State},
          * <li>an actual value to be set (including {@code null}),
@@ -124,17 +120,14 @@ public class State implements Serializable {
         public List<Object> diff;
 
         /**
-         * If rpush is not {@code null}, this is appended to the right of the
-         * existing array/{@link List}.
+         * If rpush is not {@code null}, this is appended to the right of the existing array/{@link List}.
          */
         public List<Object> rpush;
 
         @Override
         public String toString() {
-            return getClass().getSimpleName() + '('
-                    + (isArray ? "array" : "list")
-                    + (diff == null ? "" : ", DIFF " + diff)
-                    + (rpush == null ? "" : ", RPUSH " + rpush) + ')';
+            return getClass().getSimpleName() + '(' + (isArray ? "array" : "list")
+                    + (diff == null ? "" : ", DIFF " + diff) + (rpush == null ? "" : ", RPUSH " + rpush) + ')';
         }
     }
 
@@ -157,8 +150,7 @@ public class State implements Serializable {
     /**
      * Constructor with default capacity, optionally thread-safe.
      *
-     * @param threadSafe if {@code true}, then a {@link ConcurrentHashMap} is
-     *            used
+     * @param threadSafe if {@code true}, then a {@link ConcurrentHashMap} is used
      */
     public State(boolean threadSafe) {
         this(0, threadSafe);
@@ -174,17 +166,13 @@ public class State implements Serializable {
     /**
      * Constructor for a given default size, optionally thread-safe.
      *
-     * @param threadSafe if {@code true}, then a {@link ConcurrentHashMap} is
-     *            used
+     * @param threadSafe if {@code true}, then a {@link ConcurrentHashMap} is used
      */
     public State(int size, boolean threadSafe) {
-        int initialCapacity = Math.max(
-                (int) (size / HASHMAP_DEFAULT_LOAD_FACTOR) + 1,
-                HASHMAP_DEFAULT_INITIAL_CAPACITY);
+        int initialCapacity = Math.max((int) (size / HASHMAP_DEFAULT_LOAD_FACTOR) + 1, HASHMAP_DEFAULT_INITIAL_CAPACITY);
         float loadFactor = HASHMAP_DEFAULT_LOAD_FACTOR;
         if (threadSafe) {
-            map = new ConcurrentHashMap<String, Serializable>(initialCapacity,
-                    loadFactor);
+            map = new ConcurrentHashMap<String, Serializable>(initialCapacity, loadFactor);
         } else {
             map = new HashMap<>(initialCapacity, loadFactor);
         }
@@ -249,8 +237,7 @@ public class State implements Serializable {
     /**
      * Removes the mapping for a key.
      *
-     * @return the previous value associated with the key, or {@code null} if
-     *         there was no mapping for the key
+     * @return the previous value associated with the key, or {@code null} if there was no mapping for the key
      */
     public Serializable remove(Object key) {
         return map.remove(key);
@@ -278,8 +265,7 @@ public class State implements Serializable {
     }
 
     /**
-     * Overridden to display Calendars and arrays better, and truncate long
-     * strings and arrays.
+     * Overridden to display Calendars and arrays better, and truncate long strings and arrays.
      * <p>
      * Also displays some keys first (ecm:id, ecm:name, ecm:primaryType)
      */
@@ -328,8 +314,7 @@ public class State implements Serializable {
         if (value instanceof String) {
             String v = (String) value;
             if (v.length() > DEBUG_MAX_STRING) {
-                v = v.substring(0, DEBUG_MAX_STRING) + "...(" + v.length()
-                        + " chars)...";
+                v = v.substring(0, DEBUG_MAX_STRING) + "...(" + v.length() + " chars)...";
             }
             buf.append(v);
         } else if (value instanceof Calendar) {
@@ -342,9 +327,7 @@ public class State implements Serializable {
             } else {
                 sign = '+';
             }
-            buf.append(String.format(
-                    "Calendar(%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d)",
-                    cal.get(Calendar.YEAR), //
+            buf.append(String.format("Calendar(%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d)", cal.get(Calendar.YEAR), //
                     cal.get(Calendar.MONTH) + 1, //
                     cal.get(Calendar.DAY_OF_MONTH), //
                     cal.get(Calendar.HOUR_OF_DAY), //

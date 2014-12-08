@@ -21,12 +21,10 @@ import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class InputStreamSource extends AbstractStreamSource {
 
     protected InputStream in;
-
 
     public InputStreamSource(InputStream in) {
         this.in = in;

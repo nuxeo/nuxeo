@@ -27,13 +27,12 @@ public class ContributionLocation extends AbstractContribution {
         this.location = location;
     }
 
-     @Override
+    @Override
     public InputStream getStream() {
         try {
             return location.openStream();
         } catch (IOException e) {
-            throw new RuntimeException("Cannot get '".concat(name).concat(
-                    "' content"), e);
+            throw new RuntimeException("Cannot get '".concat(name).concat("' content"), e);
         }
     }
 
@@ -42,8 +41,7 @@ public class ContributionLocation extends AbstractContribution {
         try {
             return FileUtils.read(location.openStream());
         } catch (IOException e) {
-            throw new RuntimeException("Cannot get '".concat(name).concat(
-                    "' content"), e);
+            throw new RuntimeException("Cannot get '".concat(name).concat("' content"), e);
         }
     }
 

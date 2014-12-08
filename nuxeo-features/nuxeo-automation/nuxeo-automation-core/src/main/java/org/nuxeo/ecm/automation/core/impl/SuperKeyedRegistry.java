@@ -18,17 +18,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * A registry which is inheriting values from super keys. The super key
- * relation is defined by the derived classes by overriding
- * {@link #getSuperKeys(Object)} method. The registry is thread safe and is
- * optimized for lookups. A concurrent cache is dynamically updated when a
- * value is retrieved from a super entry. The cache is removed each time a
- * modification is made on the registry using {@link #put(Object, Object)} or
- * {@link #remove(Object)} methods. Thus, for maximum performance you need to
- * avoid modifying the registry after lookups were done: at application startup
- * build the registry, at runtime perform lookups, at shutdown remove entries.
- * The root key is passed in the constructor and is used to stop looking in
- * super entries.
+ * A registry which is inheriting values from super keys. The super key relation is defined by the derived classes by
+ * overriding {@link #getSuperKeys(Object)} method. The registry is thread safe and is optimized for lookups. A
+ * concurrent cache is dynamically updated when a value is retrieved from a super entry. The cache is removed each time
+ * a modification is made on the registry using {@link #put(Object, Object)} or {@link #remove(Object)} methods. Thus,
+ * for maximum performance you need to avoid modifying the registry after lookups were done: at application startup
+ * build the registry, at runtime perform lookups, at shutdown remove entries. The root key is passed in the constructor
+ * and is used to stop looking in super entries.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -39,8 +35,7 @@ public abstract class SuperKeyedRegistry<K, V> {
     protected Map<K, V> registry;
 
     /**
-     * the cache map used for lookups. Object is used for the value to be able
-     * to insert NULL values.
+     * the cache map used for lookups. Object is used for the value to be able to insert NULL values.
      */
     protected volatile ConcurrentMap<K, Object> lookup;
 
@@ -80,9 +75,8 @@ public abstract class SuperKeyedRegistry<K, V> {
     protected abstract List<K> getSuperKeys(K key);
 
     /**
-     * Override this in order to disable caching some specific keys. For
-     * example when using java classes as keys you may want to avoid caching
-     * proxy classes. The default is to return true. (cache is enabled)
+     * Override this in order to disable caching some specific keys. For example when using java classes as keys you may
+     * want to avoid caching proxy classes. The default is to return true. (cache is enabled)
      */
     protected boolean isCachingEnabled(K key) {
         return true;

@@ -23,16 +23,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Service that allows to copy a set of metadata from a source to a target
- * document
+ * Service that allows to copy a set of metadata from a source to a target document
  *
  * @since 5.6
  */
 public interface PropertiesMappingService {
 
     /**
-     * Gets a map of xpaths defining properties on the target and source
-     * documents
+     * Gets a map of xpaths defining properties on the target and source documents
      *
      * @param mappingName
      * @return
@@ -40,8 +38,8 @@ public interface PropertiesMappingService {
     Map<String, String> getMapping(String mappingName);
 
     /**
-     * Copies the properties defined by the given xpaths in the mapping from the
-     * target to the source document. Assumes that the xpaths are valid.
+     * Copies the properties defined by the given xpaths in the mapping from the target to the source document. Assumes
+     * that the xpaths are valid.
      *
      * @param session
      * @param sourceDoc
@@ -49,7 +47,7 @@ public interface PropertiesMappingService {
      * @param mappingName
      * @throws ClientException if trying to map incompatible types
      */
-    void mapProperties(CoreSession session, DocumentModel sourceDoc,
-            DocumentModel targetDoc, String mappingName) throws ClientException;
+    void mapProperties(CoreSession session, DocumentModel sourceDoc, DocumentModel targetDoc, String mappingName)
+            throws ClientException;
 
 }

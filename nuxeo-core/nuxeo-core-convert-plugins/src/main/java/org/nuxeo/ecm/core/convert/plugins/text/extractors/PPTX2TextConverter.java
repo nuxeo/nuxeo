@@ -36,8 +36,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 /**
- * Pptx to text converter: parses the Open XML presentation document to read its
- * content.
+ * Pptx to text converter: parses the Open XML presentation document to read its content.
  */
 public class PPTX2TextConverter extends XmlZip2TextConverter {
 
@@ -45,8 +44,8 @@ public class PPTX2TextConverter extends XmlZip2TextConverter {
 
     private static final String PRESENTATION_SLIDE_ZIP_ENTRY_NAME_PREFIX = "ppt/slides/slide";
 
-    protected void readXmlZipContent(ZipInputStream zis, XMLReader reader,
-            StringBuilder sb) throws IOException, SAXException {
+    protected void readXmlZipContent(ZipInputStream zis, XMLReader reader, StringBuilder sb) throws IOException,
+            SAXException {
 
         Set<PresentationSlide> slides = new TreeSet<PresentationSlide>();
 
@@ -65,10 +64,8 @@ public class PPTX2TextConverter extends XmlZip2TextConverter {
                 if (slideNumber > -1) {
                     OpenXmlContentHandler contentHandler = new OpenXmlContentHandler();
                     reader.setContentHandler(contentHandler);
-                    reader.parse(new InputSource(new ByteArrayInputStream(
-                            IOUtils.toByteArray(zis))));
-                    slides.add(new PresentationSlide(
-                            contentHandler.getContent(), slideNumber));
+                    reader.parse(new InputSource(new ByteArrayInputStream(IOUtils.toByteArray(zis))));
+                    slides.add(new PresentationSlide(contentHandler.getContent(), slideNumber));
                 }
             }
             zipEntry = zis.getNextEntry();

@@ -29,8 +29,7 @@ public class TestPerspectiveConfiguration {
         XMap xmap = new XMap();
         xmap.register(PerspectiveType.class);
 
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                "perspective-xmap.xml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("perspective-xmap.xml");
 
         PerspectiveType perspective = (PerspectiveType) xmap.load(url);
         assertEquals("view", perspective.getTypeName());

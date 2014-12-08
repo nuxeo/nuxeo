@@ -108,9 +108,8 @@ public class TestQueryVisitor {
         operands.add(((Expression) pred.lvalue).rvalue);
         operands.add(pred.rvalue);
         operands.add(new BooleanLiteral(true));
-        query = new SQLQuery(query.select, query.from, new WhereClause(
-                new MultiExpression(Operator.AND, operands)), query.groupBy,
-                query.having, query.orderBy);
+        query = new SQLQuery(query.select, query.from, new WhereClause(new MultiExpression(Operator.AND, operands)),
+                query.groupBy, query.having, query.orderBy);
         v = new PrintVisitor();
         v.visitQuery(query);
         assertEquals(expected, v.toString());

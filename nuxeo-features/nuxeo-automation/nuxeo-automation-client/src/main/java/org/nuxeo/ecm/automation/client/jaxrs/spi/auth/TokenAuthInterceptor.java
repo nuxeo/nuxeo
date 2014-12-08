@@ -46,8 +46,7 @@ public class TokenAuthInterceptor extends RequestInterceptor {
     }
 
     @Override
-    public ClientResponse handle(ClientRequest cr)
-            throws ClientHandlerException {
+    public ClientResponse handle(ClientRequest cr) throws ClientHandlerException {
         if (!cr.getHeaders().containsKey(TOKEN_HEADER)) {
             cr.getHeaders().add(TOKEN_HEADER, token);
         }

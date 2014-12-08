@@ -33,59 +33,46 @@ public interface TaskProvider extends Serializable {
 
     /**
      * @param coreSession
-     * @return A list of task instances where the current user is an actor.
-     * Doesn't take into account tasks that were delegated to this user.
-     *
+     * @return A list of task instances where the current user is an actor. Doesn't take into account tasks that were
+     *         delegated to this user.
      * @throws IllegalStateException If the currentUser is null.
      */
-    List<Task> getCurrentTaskInstances(CoreSession coreSession)
-            throws ClientException;
+    List<Task> getCurrentTaskInstances(CoreSession coreSession) throws ClientException;
 
     /**
-     * Provide @param sortInfo to handle sort page-provider contributions
-     * (see {@link #getCurrentTaskInstances})
+     * Provide @param sortInfo to handle sort page-provider contributions (see {@link #getCurrentTaskInstances})
      *
      * @since 5.9.3
      */
-    List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos)
-            throws ClientException;
+    List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos) throws ClientException;
 
     /**
-     * Returns a list of task instances assigned to one of the actors in the
-     * list or to its pool.
-     * Doesn't take into account tasks that were delegated to these users.
-     *
-     * The query is done in unrestricted mode and so the documents linked to the
-     * tasks are detached.
+     * Returns a list of task instances assigned to one of the actors in the list or to its pool. Doesn't take into
+     * account tasks that were delegated to these users. The query is done in unrestricted mode and so the documents
+     * linked to the tasks are detached.
      *
      * @since 5.5
-     *
      * @param actors a list used as actorId to retrieve the tasks.
      * @param coreSession
      * @return
      * @throws ClientException
      */
-    List<Task> getCurrentTaskInstances(List<String> actors,
-            CoreSession coreSession) throws ClientException;
+    List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession) throws ClientException;
 
     /**
-     * Provide @param sortInfo to handle sort page-provider contributions
-     * (see {@link #getCurrentTaskInstances})
+     * Provide @param sortInfo to handle sort page-provider contributions (see {@link #getCurrentTaskInstances})
      *
      * @since 5.9.3
      */
-    List<Task> getCurrentTaskInstances(List<String> actors,
-            CoreSession coreSession, List<SortInfo> sortInfos) throws ClientException;
+    List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession, List<SortInfo> sortInfos)
+            throws ClientException;
 
     /**
-     * Returns the list of task instances associated with this document for
-     * which the user is the actor or belongs to the pooled actor list.
-     * Doesn't take into account tasks that were delegated to this user.
+     * Returns the list of task instances associated with this document for which the user is the actor or belongs to
+     * the pooled actor list. Doesn't take into account tasks that were delegated to this user.
      * <p>
-     * If the user is null, then it returns all task instances for the document.
-     *
-     * The query is done in unrestricted mode and so the documents linked to the
-     * tasks are detached.
+     * If the user is null, then it returns all task instances for the document. The query is done in unrestricted mode
+     * and so the documents linked to the tasks are detached.
      *
      * @param dm the document.
      * @param user
@@ -93,16 +80,12 @@ public interface TaskProvider extends Serializable {
      * @return
      * @throws ClientException
      */
-    List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user,
-            CoreSession coreSssion) throws ClientException;
+    List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSssion) throws ClientException;
 
     /**
-     * Returns the list of task instances associated with this document assigned
-     * to one of the actor in the list or its pool.
-     * Doesn't take into account tasks that were delegated to these users.
-     *
-     * The query is done in unrestricted mode and so the documents linked to the
-     * tasks are detached.
+     * Returns the list of task instances associated with this document assigned to one of the actor in the list or its
+     * pool. Doesn't take into account tasks that were delegated to these users. The query is done in unrestricted mode
+     * and so the documents linked to the tasks are detached.
      *
      * @param dm
      * @param actors
@@ -110,94 +93,70 @@ public interface TaskProvider extends Serializable {
      * @return
      * @throws ClientException
      */
-    List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
-            CoreSession coreSession) throws ClientException;
+    List<Task> getTaskInstances(DocumentModel dm, List<String> actors, CoreSession coreSession) throws ClientException;
 
     /**
-     * Returns the list of task instances associated with this document assigned
-     * to one of the actor in the list or its pool. If the parameter
-     * {@code includeDelegatedTasks} is true, takes into account tasks that were
-     * delegated to these users.
-     *
-     * The query is done in unrestricted mode and so the documents linked to the
-     * tasks are detached.
+     * Returns the list of task instances associated with this document assigned to one of the actor in the list or its
+     * pool. If the parameter {@code includeDelegatedTasks} is true, takes into account tasks that were delegated to
+     * these users. The query is done in unrestricted mode and so the documents linked to the tasks are detached.
      *
      * @since 5.8
      */
-    List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
-            boolean includeDelegatedTasks, CoreSession session)
-            throws ClientException;
+    List<Task> getTaskInstances(DocumentModel dm, List<String> actors, boolean includeDelegatedTasks,
+            CoreSession session) throws ClientException;
 
     /**
      * Returns all the tasks instances for the given {@code processId}.
      * <p>
-     * The query is done in unrestricted mode and so the documents linked to the
-     * tasks are detached.
+     * The query is done in unrestricted mode and so the documents linked to the tasks are detached.
      *
      * @since 5.6
      */
-    List<Task> getAllTaskInstances(String processId, CoreSession session)
-            throws ClientException;
+    List<Task> getAllTaskInstances(String processId, CoreSession session) throws ClientException;
 
     /**
-     * Returns all the tasks instances for the given {@code processId} and where
-     * the user is the actor or belongs to the pooled actor list.
-     * Doesn't take into account tasks that were delegated to this user.
+     * Returns all the tasks instances for the given {@code processId} and where the user is the actor or belongs to the
+     * pooled actor list. Doesn't take into account tasks that were delegated to this user.
      * <p>
-     * The query is done in unrestricted mode and so the documents linked to the
-     * tasks are detached.
+     * The query is done in unrestricted mode and so the documents linked to the tasks are detached.
      *
      * @since 5.6
      */
-    List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user,
-            CoreSession session) throws ClientException;
+    List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user, CoreSession session) throws ClientException;
 
     /**
-     * Returns all the tasks instances for the given {@code processId} which
-     * assigned to one of the actor in the list or its pool.
-     * Doesn't take into account tasks that were delegated to these users.
+     * Returns all the tasks instances for the given {@code processId} which assigned to one of the actor in the list or
+     * its pool. Doesn't take into account tasks that were delegated to these users.
      * <p>
-     * The query is done in unrestricted mode and so the documents linked to the
-     * tasks are detached.
+     * The query is done in unrestricted mode and so the documents linked to the tasks are detached.
      *
      * @since 5.6
      */
-    List<Task> getAllTaskInstances(String processId, List<String> actors,
-            CoreSession session) throws ClientException;
+    List<Task> getAllTaskInstances(String processId, List<String> actors, CoreSession session) throws ClientException;
 
     /**
      * Ends the task
      *
      * @since 5.6
-     *
-     * @param coreSession the session to use when notifying and resolving of
-     *            referenced document for notification.
+     * @param coreSession the session to use when notifying and resolving of referenced document for notification.
      * @param principal principal used when notifying
      * @param task the instance to end
-     * @param comment string added to the task comments and used as a
-     *            notification comment
+     * @param comment string added to the task comments and used as a notification comment
      * @param eventName the core event name to use when notifying
-     * @param isValidated boolean marker to state if the task was validated or
-     *            rejected
-     * @throws ClientException when trying to end a task without being granted
-     *             the right to do so (see
-     *             {@link #canEndTask(NuxeoPrincipal, Task)}), or when any other
-     *             error occurs
+     * @param isValidated boolean marker to state if the task was validated or rejected
+     * @throws ClientException when trying to end a task without being granted the right to do so (see
+     *             {@link #canEndTask(NuxeoPrincipal, Task)}), or when any other error occurs
      * @return the name of the Seam event to raise
      */
-    String endTask(CoreSession coreSession, NuxeoPrincipal principal,
-            Task task, String comment, String eventName, boolean isValidated)
-            throws ClientException;
+    String endTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment, String eventName,
+            boolean isValidated) throws ClientException;
 
     /**
-     * Returns all the tasks instances for the given {@code processId}
-     * originating from the given {@code nodeId}.
+     * Returns all the tasks instances for the given {@code processId} originating from the given {@code nodeId}.
      * <p>
-     * The query is done in unrestricted mode and so the documents linked to the
-     * tasks are detached.
+     * The query is done in unrestricted mode and so the documents linked to the tasks are detached.
      *
      * @since 5.7
      */
-    List<Task> getAllTaskInstances(String processId, String nodeId,
-            CoreSession session) throws ClientException;
+    List<Task> getAllTaskInstances(String processId, String nodeId, CoreSession session) throws ClientException;
 }

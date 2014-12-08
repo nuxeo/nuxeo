@@ -63,7 +63,6 @@ public interface EditorImageActions {
      * List of result of the searched the videos.
      *
      * @return The list of results.
-     *
      * @since 5.9.5
      */
     List<DocumentModel> getSearchVideosResults();
@@ -74,7 +73,6 @@ public interface EditorImageActions {
      * Return true if the search has results.
      *
      * @return If the search has results.
-     *
      * @since 5.9.5
      */
     boolean getHasSearchVideosResults();
@@ -97,8 +95,7 @@ public interface EditorImageActions {
      * @param video The video document.
      * @param type The type of video.
      * @return The URL of the selected video.
-     *
      * @since 5.9.5
      */
-    String getURLVideo(DocumentModel video, String type) throws ClientException ;
+    String getURLVideo(DocumentModel video, String type) throws ClientException;
 }

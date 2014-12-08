@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 public class IdentityConverter implements Converter {
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         try {
             Blob inputBlob = blobHolder.getBlob();

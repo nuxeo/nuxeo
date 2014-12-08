@@ -35,13 +35,12 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 /**
- * Dummy test invoker: does all marshaling work but directly calls the
- * {@link TestInvokationHandler} without any network.
+ * Dummy test invoker: does all marshaling work but directly calls the {@link TestInvokationHandler} without any
+ * network.
  *
  * @author tiry
  */
-public class DefaultRemotePublicationInvoker implements
-        RemotePublicationInvoker {
+public class DefaultRemotePublicationInvoker implements RemotePublicationInvoker {
 
     protected String baseURL;
 
@@ -55,8 +54,7 @@ public class DefaultRemotePublicationInvoker implements
 
     protected boolean useTestMode = false;
 
-    public void init(String baseURL, String userName, String password,
-            RemotePublisherMarshaler marshaler) {
+    public void init(String baseURL, String userName, String password, RemotePublisherMarshaler marshaler) {
         this.baseURL = baseURL;
         this.userName = userName;
         this.password = password;
@@ -70,8 +68,7 @@ public class DefaultRemotePublicationInvoker implements
         }
     }
 
-    public Object invoke(String methodName, List<Object> params)
-            throws ClientException {
+    public Object invoke(String methodName, List<Object> params) throws ClientException {
 
         String marshaledData = marshaler.marshallParameters(params);
 
@@ -82,8 +79,7 @@ public class DefaultRemotePublicationInvoker implements
         return marshaler.unMarshallResult(result);
     }
 
-    protected String doInvoke(String methodName, String marshaledData)
-            throws ClientException {
+    protected String doInvoke(String methodName, String marshaledData) throws ClientException {
 
         if (useTestMode) {
             return testPublicationHandler.invoke(methodName, marshaledData);
@@ -99,8 +95,7 @@ public class DefaultRemotePublicationInvoker implements
         }
     }
 
-    protected String doHttpCall(String methodName, String marshaledData)
-            throws ClientException, IOException {
+    protected String doHttpCall(String methodName, String marshaledData) throws ClientException, IOException {
 
         HttpClient httpClient = new DefaultHttpClient();
 
@@ -125,8 +120,7 @@ public class DefaultRemotePublicationInvoker implements
         if (responseEntity == null) {
             return null;
         }
-        InputStreamReader isr = new InputStreamReader(
-                responseEntity.getContent(), "UTF-8");
+        InputStreamReader isr = new InputStreamReader(responseEntity.getContent(), "UTF-8");
 
         BufferedReader br = new BufferedReader(isr);
 

@@ -48,8 +48,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import java.util.List;
 
 /**
- * This object basically overrides the default DocumentObject that doesn't know
- * how to produce/consume JSON
+ * This object basically overrides the default DocumentObject that doesn't know how to produce/consume JSON
  *
  * @since 5.7.2
  */
@@ -71,20 +70,17 @@ public class JSONDocumentObject extends DocumentObject {
     }
 
     /**
-     * @return the document or the last version document in case of
-     * versioning handled
+     * @return the document or the last version document in case of versioning handled
      */
     @PUT
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public DocumentModel doPut(DocumentModel inputDoc,
-            @Context HttpHeaders headers) throws ClientException {
+    public DocumentModel doPut(DocumentModel inputDoc, @Context HttpHeaders headers) throws ClientException {
         JSONDocumentModelReader.applyPropertyValues(inputDoc, doc);
         CoreSession session = ctx.getCoreSession();
         versioningDocFromHeaderIfExists(headers);
         doc = session.saveDocument(doc);
         session.save();
-        return isVersioning ? session.getLastDocumentVersion(doc.getRef()) :
-                doc;
+        return isVersioning ? session.getLastDocumentVersion(doc.getRef()) : doc;
     }
 
     @POST
@@ -92,14 +88,12 @@ public class JSONDocumentObject extends DocumentObject {
     public Response doPost(DocumentModel inputDoc) throws ClientException {
         CoreSession session = ctx.getCoreSession();
 
-        if (StringUtils.isBlank(inputDoc.getType())
-                || StringUtils.isBlank(inputDoc.getName())) {
-            return Response.status(Status.BAD_REQUEST).entity(
-                    "type or name property is missing").build();
+        if (StringUtils.isBlank(inputDoc.getType()) || StringUtils.isBlank(inputDoc.getName())) {
+            return Response.status(Status.BAD_REQUEST).entity("type or name property is missing").build();
         }
 
-        DocumentModel createdDoc = session.createDocumentModel(
-                doc.getPathAsString(), inputDoc.getName(), inputDoc.getType());
+        DocumentModel createdDoc = session.createDocumentModel(doc.getPathAsString(), inputDoc.getName(),
+                inputDoc.getType());
         JSONDocumentModelReader.applyPropertyValues(inputDoc, createdDoc);
         createdDoc = session.createDocument(createdDoc);
         session.save();
@@ -150,18 +144,13 @@ public class JSONDocumentObject extends DocumentObject {
      *
      * @param headers X-Versioning-Option Header
      */
-    private void versioningDocFromHeaderIfExists(HttpHeaders headers) throws
-            ClientException {
+    private void versioningDocFromHeaderIfExists(HttpHeaders headers) throws ClientException {
         isVersioning = false;
-        List<String> versionHeader = headers.getRequestHeader
-                (RestConstants.X_VERSIONING_OPTION);
+        List<String> versionHeader = headers.getRequestHeader(RestConstants.X_VERSIONING_OPTION);
         if (versionHeader != null && versionHeader.size() != 0) {
-            VersioningOption versioningOption = VersioningOption.valueOf
-                    (versionHeader.get(0).toUpperCase());
-            if (versioningOption != null && !versioningOption.equals
-                    (VersioningOption.NONE)) {
-                doc.putContextData(VersioningService.VERSIONING_OPTION,
-                        versioningOption);
+            VersioningOption versioningOption = VersioningOption.valueOf(versionHeader.get(0).toUpperCase());
+            if (versioningOption != null && !versioningOption.equals(VersioningOption.NONE)) {
+                doc.putContextData(VersioningService.VERSIONING_OPTION, versioningOption);
                 isVersioning = true;
             }
         }

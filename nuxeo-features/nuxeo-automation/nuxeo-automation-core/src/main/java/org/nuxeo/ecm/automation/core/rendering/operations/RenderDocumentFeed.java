@@ -46,22 +46,21 @@ public class RenderDocumentFeed {
     @Param(name = "template", widget = Constants.W_TEMPLATE_RESOURCE)
     protected String template;
 
-    @Param(name = "type", widget = Constants.W_OPTION, required = false, values = {"ftl", "mvel"})
+    @Param(name = "type", widget = Constants.W_OPTION, required = false, values = { "ftl", "mvel" })
     protected String type = "ftl";
 
-    @Param(name = "filename", required = false, values="output.ftl")
+    @Param(name = "filename", required = false, values = "output.ftl")
     protected String name = "output.ftl";
 
-    @Param(name = "mimetype", required = false, values="text/xml")
+    @Param(name = "mimetype", required = false, values = "text/xml")
     protected String mimeType = "text/xml";
 
     @Param(name = "charset", required = false)
     protected String charset = "UTF-8";
 
-
     @OperationMethod
-    public Blob run(DocumentModelList docs) throws OperationException,
-            RenderingException, TemplateException, IOException {
+    public Blob run(DocumentModelList docs) throws OperationException, RenderingException, TemplateException,
+            IOException {
         String content = RenderingService.getInstance().render(type, template, ctx);
         StringBlob blob = new StringBlob(content);
         blob.setFilename(name);

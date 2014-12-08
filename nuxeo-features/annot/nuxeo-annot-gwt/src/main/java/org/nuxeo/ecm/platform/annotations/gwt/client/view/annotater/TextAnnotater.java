@@ -36,7 +36,6 @@ import com.google.gwt.user.client.Event;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class TextAnnotater extends AbstractAnnotater {
 
@@ -48,8 +47,7 @@ public class TextAnnotater extends AbstractAnnotater {
 
     @Override
     public void onMouseUp(Event event) {
-        Log.debug("TextAnnotater#onMouseUp; eventId= " + event.getType()
-                + "; source: " + event.getCurrentTarget());
+        Log.debug("TextAnnotater#onMouseUp; eventId= " + event.getType() + "; source: " + event.getCurrentTarget());
         Range currentRange = Utils.getCurrentRange(Document.get());
         if (currentRange != null && currentRange.getSelectedText().length() != 0) {
             Element startElement = Element.as(currentRange.getStartContainer());
@@ -63,8 +61,7 @@ public class TextAnnotater extends AbstractAnnotater {
             annotation.setStartContainer(startContainer);
             annotation.setEndContainer(endContainer);
 
-            NewAnnotationPopup popup = new NewAnnotationPopup(startElement,
-                    controller, false, "local");
+            NewAnnotationPopup popup = new NewAnnotationPopup(startElement, controller, false, "local");
             controller.setNewAnnotationPopup(popup);
             addAnnotationPopup();
         } else {
@@ -77,9 +74,9 @@ public class TextAnnotater extends AbstractAnnotater {
     private Container getStartContainer(Range range) {
         Node startNode = range.getStartContainer();
         int startOffset = range.getStartOffset();
-        //Window.alert("startOffset: " + startOffset);
+        // Window.alert("startOffset: " + startOffset);
         startOffset = computeNewOffset(startNode, startOffset);
-        //Window.alert("startOffset after compute: " + startOffset);
+        // Window.alert("startOffset after compute: " + startOffset);
 
         if (startNode.getNodeType() == Node.TEXT_NODE) {
             return getCustomContainer(startNode, startOffset);

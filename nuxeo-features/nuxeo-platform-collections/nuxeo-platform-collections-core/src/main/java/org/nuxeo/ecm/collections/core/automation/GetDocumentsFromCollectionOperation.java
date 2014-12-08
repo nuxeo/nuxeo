@@ -50,19 +50,15 @@ public class GetDocumentsFromCollectionOperation {
     protected AutomationService service;
 
     @OperationMethod
-    public PaginableDocumentModelListImpl run(DocumentModel collection)
-            throws OperationException {
+    public PaginableDocumentModelListImpl run(DocumentModel collection) throws OperationException {
         Map<String, Object> vars = ctx.getVars();
         vars.put("searchTerm", collection.getId());
-        vars.put("providerName",
-                CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER);
+        vars.put("providerName", CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER);
 
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
-                vars);
+        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
 
         OperationChain chain = new OperationChain("operation");
-        OperationParameters oparams = new OperationParameters(
-                DocumentPageProviderOperation.ID, vars);
+        OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, vars);
         chain.add(oparams);
         return (PaginableDocumentModelListImpl) service.run(subctx, chain);
     }

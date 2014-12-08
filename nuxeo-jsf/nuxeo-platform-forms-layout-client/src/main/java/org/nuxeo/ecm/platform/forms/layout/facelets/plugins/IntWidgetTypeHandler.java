@@ -52,9 +52,8 @@ public class IntWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final long serialVersionUID = 1495841177711755669L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
@@ -67,46 +66,35 @@ public class IntWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else {
             attributes = helper.getTagAttributes(widgetId, widget);
         }
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
-                subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
-                    tagConfig, widget.getTagConfigId(), new TagAttributesImpl(
-                            new TagAttribute[0]), leaf,
-                    NumberConverter.CONVERTER_ID);
+            ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(tagConfig, widget.getTagConfigId(),
+                    new TagAttributesImpl(new TagAttribute[0]), leaf, NumberConverter.CONVERTER_ID);
             ConverterHandler convert = new ConvertNumberHandler(convertConfig);
-            FaceletHandler nextHandler = new CompositeFaceletHandler(
-                    new FaceletHandler[] { convert, leaf });
-            ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, nextHandler,
+            FaceletHandler nextHandler = new CompositeFaceletHandler(new FaceletHandler[] { convert, leaf });
+            ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, nextHandler,
                     HtmlInputText.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(
-                    widgetTagConfigId, msgId, widgetId, null);
+            ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else if (BuiltinWidgetModes.CSV.equals(mode)) {
             // default on text without any converter to ease format
             // configuration
-            ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
+            ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
             return output;
         } else {
             // default on text with int converter for other modes
-            ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
-                    tagConfig, widget.getTagConfigId(), new TagAttributesImpl(
-                            new TagAttribute[0]), leaf,
-                    NumberConverter.CONVERTER_ID);
+            ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(tagConfig, widget.getTagConfigId(),
+                    new TagAttributesImpl(new TagAttribute[0]), leaf, NumberConverter.CONVERTER_ID);
             ConverterHandler convert = new ConvertNumberHandler(convertConfig);
-            ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, convert,
+            ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, convert,
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributesImpl(new TagAttribute[0]), output,
-                        UIHtmlText.class.getName(), null);
+                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
+                        output, UIHtmlText.class.getName(), null);
             } else {
                 return output;
             }

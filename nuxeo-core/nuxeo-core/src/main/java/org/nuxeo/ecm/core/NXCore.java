@@ -36,17 +36,14 @@ public final class NXCore {
      * Returns the life cycle service.
      *
      * @see LifeCycleServiceImpl
-     *
      * @return the life cycle service
      */
     public static LifeCycleService getLifeCycleService() {
-        return (LifeCycleService) Framework.getRuntime().getComponent(
-                LifeCycleServiceImpl.NAME);
+        return (LifeCycleService) Framework.getRuntime().getComponent(LifeCycleServiceImpl.NAME);
     }
 
     public static SecurityService getSecurityService() {
-        return (SecurityService) Framework.getRuntime().getComponent(
-                SecurityService.NAME);
+        return (SecurityService) Framework.getRuntime().getComponent(SecurityService.NAME);
     }
 
 }

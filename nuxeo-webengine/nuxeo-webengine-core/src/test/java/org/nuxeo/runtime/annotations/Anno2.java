@@ -26,10 +26,9 @@ import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface Anno2 {
 
     String value() default "N/A";

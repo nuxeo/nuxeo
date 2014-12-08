@@ -34,18 +34,15 @@ import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.osgi.framework.Bundle;
 
 /**
- *
- * A component that can be used to deploy external contribution or components files
- * from the file system.
+ * A component that can be used to deploy external contribution or components files from the file system.
  * <p>
- * When a componentProvider extension is deployed all components provided by the extension
- * are deployed.
+ * When a componentProvider extension is deployed all components provided by the extension are deployed.
  * <p>
  * To resolve external files the following method is used:
  * <ul>
- * <li> if the context of the component providing the contirbution is an OSGiRuntimeContext
- * then the component bundle location will be used to resolve the external file
- * <li> otherwise the external file is resolved relative to the current working directory
+ * <li>if the context of the component providing the contirbution is an OSGiRuntimeContext then the component bundle
+ * location will be used to resolve the external file
+ * <li>otherwise the external file is resolved relative to the current working directory
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -53,9 +50,9 @@ import org.osgi.framework.Bundle;
 public class DeploymentService extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName(
-        "org.nuxeo.runtime.services.deployment.DeploymentService");
+            "org.nuxeo.runtime.services.deployment.DeploymentService");
 
-    private static final Log log =  LogFactory.getLog(DeploymentService.class);
+    private static final Log log = LogFactory.getLog(DeploymentService.class);
 
     private Map<String, DeploymentDescriptor> deployments;
 
@@ -70,8 +67,7 @@ public class DeploymentService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("deployments")) {
             DeploymentDescriptor deployment = (DeploymentDescriptor) contribution;
             deployments.put(deployment.src, deployment);
@@ -94,7 +90,7 @@ public class DeploymentService extends DefaultComponent {
                 if (srcFile.isDirectory()) {
                     files = srcFile.listFiles();
                 } else {
-                    files = new File[] {srcFile};
+                    files = new File[] { srcFile };
                 }
                 for (File file : files) {
                     try {
@@ -112,8 +108,7 @@ public class DeploymentService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("deployments")) {
             DeploymentDescriptor provider = (DeploymentDescriptor) contribution;
             provider = deployments.get(provider.src);

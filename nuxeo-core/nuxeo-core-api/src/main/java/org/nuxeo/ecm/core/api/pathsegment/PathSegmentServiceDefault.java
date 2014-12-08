@@ -19,8 +19,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Service generating a path segment from the title by just removing slashes and
- * limiting size.
+ * Service generating a path segment from the title by just removing slashes and limiting size.
  */
 public class PathSegmentServiceDefault implements PathSegmentService {
 
@@ -28,8 +27,7 @@ public class PathSegmentServiceDefault implements PathSegmentService {
 
     public static final String NUXEO_MAX_SEGMENT_SIZE_PROPERTY = "nuxeo.path.segment.maxsize";
 
-    public int maxSize = Integer.parseInt(Framework.getProperty(
-            NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
+    public int maxSize = Integer.parseInt(Framework.getProperty(NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
 
     @Override
     public String generatePathSegment(DocumentModel doc) throws ClientException {

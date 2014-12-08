@@ -20,7 +20,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("adapter")
 public class DocumentAdapterDescriptor {
@@ -35,7 +35,6 @@ public class DocumentAdapterDescriptor {
 
     private DocumentAdapterFactory factory;
 
-
     public DocumentAdapterDescriptor() {
     }
 
@@ -49,8 +48,7 @@ public class DocumentAdapterDescriptor {
      * Used by XMap to set the factory.
      */
     @XNode("@factory")
-    void setFactory(Class<DocumentAdapterFactory> factoryClass)
-            throws ReflectiveOperationException {
+    void setFactory(Class<DocumentAdapterFactory> factoryClass) throws ReflectiveOperationException {
         try {
             factory = factoryClass.newInstance();
         } catch (ReflectiveOperationException e) {

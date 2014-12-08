@@ -70,9 +70,8 @@ public class AddPermission {
 
     protected void addPermission(DocumentModel doc) throws ClientException {
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
-        boolean permissionChanged = DocumentPermissionHelper.addPermission(acp,
-                aclName, user, permission, blockInheritance,
-                session.getPrincipal().getName());
+        boolean permissionChanged = DocumentPermissionHelper.addPermission(acp, aclName, user, permission,
+                blockInheritance, session.getPrincipal().getName());
         if (permissionChanged) {
             doc.setACP(acp, true);
         }

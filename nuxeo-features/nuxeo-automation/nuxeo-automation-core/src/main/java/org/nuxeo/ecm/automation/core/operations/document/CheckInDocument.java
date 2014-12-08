@@ -47,15 +47,13 @@ public class CheckInDocument {
     protected String versionVarName;
 
     protected VersioningOption getVersioningOption() {
-        return "major".equalsIgnoreCase(version) ? VersioningOption.MAJOR
-                : VersioningOption.MINOR;
+        return "major".equalsIgnoreCase(version) ? VersioningOption.MAJOR : VersioningOption.MINOR;
     }
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef doc) {
         if (session.isCheckedOut(doc)) {
-            DocumentRef ver = session.checkIn(doc, getVersioningOption(),
-                    comment);
+            DocumentRef ver = session.checkIn(doc, getVersioningOption(), comment);
             if (versionVarName != null) {
                 ctx.put(versionVarName, ver);
             }
@@ -67,23 +65,20 @@ public class CheckInDocument {
         return session.getDocument(doc);
     }
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
         if (doc.isCheckedOut()) {
-            DocumentRef ver = session.checkIn(doc.getRef(),
-                    getVersioningOption(), comment);
+            DocumentRef ver = session.checkIn(doc.getRef(), getVersioningOption(), comment);
             doc.refresh(DocumentModel.REFRESH_STATE, null);
             if (versionVarName != null) {
                 ctx.put(versionVarName, ver);
             }
         } else {
             if (versionVarName != null) {
-                ctx.put(versionVarName,
-                        session.getLastDocumentVersion(doc.getRef()));
+                ctx.put(versionVarName, session.getLastDocumentVersion(doc.getRef()));
             }
         }
         return doc;
     }
-
 
 }

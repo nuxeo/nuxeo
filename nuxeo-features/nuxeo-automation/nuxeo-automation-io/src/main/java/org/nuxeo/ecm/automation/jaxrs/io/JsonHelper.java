@@ -26,8 +26,6 @@ import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.7.3
  */
 public final class JsonHelper {
@@ -39,10 +37,8 @@ public final class JsonHelper {
      * @param out
      * @return
      * @throws IOException
-     *
      */
-    public static JsonGenerator createJsonGenerator(JsonFactory jsonFactory,
-            OutputStream out) throws IOException {
+    public static JsonGenerator createJsonGenerator(JsonFactory jsonFactory, OutputStream out) throws IOException {
         return jsonFactory.createJsonGenerator(out, JsonEncoding.UTF8);
     }
 
@@ -50,7 +46,6 @@ public final class JsonHelper {
      * @param out
      * @return
      * @throws IOException
-     *
      */
     public static JsonGenerator createJsonGenerator(OutputStream out) throws IOException {
         JsonFactory jsonFactory = Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();

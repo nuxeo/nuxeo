@@ -16,7 +16,6 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class EventStatsImpl implements EventStats {
 

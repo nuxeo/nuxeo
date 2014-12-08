@@ -32,10 +32,9 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper",
-        "org.nuxeo.connect.update", "org.nuxeo.runtime.reload" })
-public class TestConfig extends
-        org.nuxeo.connect.update.standalone.commands.TestConfig {
+@Deploy({ "org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper", "org.nuxeo.connect.update",
+        "org.nuxeo.runtime.reload" })
+public class TestConfig extends org.nuxeo.connect.update.standalone.commands.TestConfig {
 
     @Inject
     PackageUpdateService injectedService;

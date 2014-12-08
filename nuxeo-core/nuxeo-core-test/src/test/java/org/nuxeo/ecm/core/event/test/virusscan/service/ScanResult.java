@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.event.test.virusscan.service;
  * Encapsulate result from a virus scan on a Blob
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class ScanResult {
 

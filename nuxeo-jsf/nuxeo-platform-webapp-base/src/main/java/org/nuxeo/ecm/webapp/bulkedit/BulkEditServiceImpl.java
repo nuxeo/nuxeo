@@ -39,8 +39,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @since 5.7.3
  */
-public class BulkEditServiceImpl extends DefaultComponent implements
-        BulkEditService {
+public class BulkEditServiceImpl extends DefaultComponent implements BulkEditService {
 
     public static final String VERSIONING_EP = "versioning";
 
@@ -51,8 +50,8 @@ public class BulkEditServiceImpl extends DefaultComponent implements
     protected VersioningOption defaultVersioningOption = DEFAULT_VERSIONING_OPTION;
 
     @Override
-    public void updateDocuments(CoreSession session, DocumentModel sourceDoc,
-            List<DocumentModel> targetDocs) throws ClientException {
+    public void updateDocuments(CoreSession session, DocumentModel sourceDoc, List<DocumentModel> targetDocs)
+            throws ClientException {
         List<String> propertiesToCopy = getPropertiesToCopy(sourceDoc);
         if (propertiesToCopy.isEmpty()) {
             return;
@@ -63,8 +62,7 @@ public class BulkEditServiceImpl extends DefaultComponent implements
             for (String propertyToCopy : propertiesToCopy) {
                 try {
                     checkIn(targetDoc);
-                    targetDoc.setPropertyValue(propertyToCopy,
-                            sourceDoc.getPropertyValue(propertyToCopy));
+                    targetDoc.setPropertyValue(propertyToCopy, sourceDoc.getPropertyValue(propertyToCopy));
                 } catch (PropertyNotFoundException e) {
                     String message = "%s property does not exist on %s";
                     log.warn(String.format(message, propertyToCopy, targetDoc));
@@ -75,18 +73,16 @@ public class BulkEditServiceImpl extends DefaultComponent implements
     }
 
     /**
-     * Extracts the properties to be copied from {@code sourceDoc}. The
-     * properties are stored in the ContextData of {@code sourceDoc}: the key is
-     * the xpath property, the value is {@code true} if the property has to be
-     * copied, {@code false otherwise}.
+     * Extracts the properties to be copied from {@code sourceDoc}. The properties are stored in the ContextData of
+     * {@code sourceDoc}: the key is the xpath property, the value is {@code true} if the property has to be copied,
+     * {@code false otherwise}.
      */
     protected List<String> getPropertiesToCopy(DocumentModel sourceDoc) {
         List<String> propertiesToCopy = new ArrayList<String>();
         for (Map.Entry<String, Serializable> entry : sourceDoc.getContextData().entrySet()) {
             String key = entry.getKey();
             if (key.startsWith(BULK_EDIT_PREFIX)) {
-                String[] properties = key.replace(BULK_EDIT_PREFIX, "").split(
-                        " ");
+                String[] properties = key.replace(BULK_EDIT_PREFIX, "").split(" ");
                 Serializable value = entry.getValue();
                 if (value instanceof Boolean && (Boolean) value) {
                     for (String property : properties) {
@@ -101,8 +97,7 @@ public class BulkEditServiceImpl extends DefaultComponent implements
     }
 
     protected void checkIn(DocumentModel doc) throws ClientException {
-        if (defaultVersioningOption != null
-                && defaultVersioningOption != VersioningOption.NONE) {
+        if (defaultVersioningOption != null && defaultVersioningOption != VersioningOption.NONE) {
             if (doc.isCheckedOut()) {
                 doc.checkIn(defaultVersioningOption, null);
             }
@@ -110,8 +105,7 @@ public class BulkEditServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (VERSIONING_EP.equals(extensionPoint)) {
             VersioningDescriptor desc = (VersioningDescriptor) contribution;
             String defaultVer = desc.getDefaultVersioningOption();
@@ -119,9 +113,8 @@ public class BulkEditServiceImpl extends DefaultComponent implements
                 try {
                     defaultVersioningOption = VersioningOption.valueOf(defaultVer.toUpperCase(Locale.ENGLISH));
                 } catch (IllegalArgumentException e) {
-                    log.warn(String.format(
-                            "Illegal versioning option: %s, using %s instead",
-                            defaultVer, DEFAULT_VERSIONING_OPTION));
+                    log.warn(String.format("Illegal versioning option: %s, using %s instead", defaultVer,
+                            DEFAULT_VERSIONING_OPTION));
                     defaultVersioningOption = DEFAULT_VERSIONING_OPTION;
                 }
             }
@@ -129,8 +122,7 @@ public class BulkEditServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (VERSIONING_EP.equals(extensionPoint)) {
             defaultVersioningOption = DEFAULT_VERSIONING_OPTION;
         }

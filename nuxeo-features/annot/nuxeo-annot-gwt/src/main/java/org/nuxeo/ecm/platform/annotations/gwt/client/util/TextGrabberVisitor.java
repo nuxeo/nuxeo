@@ -25,20 +25,21 @@ import com.google.gwt.dom.client.Text;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class TextGrabberVisitor implements NodeProcessor {
     private StringBuilder builder = new StringBuilder();
+
     public boolean doBreak() {
         return false;
     }
 
     public void process(Node node) {
-        if(node.getNodeType() == Node.TEXT_NODE) {
+        if (node.getNodeType() == Node.TEXT_NODE) {
             Text text = (Text) node;
             builder.append(text.getNodeValue());
         }
     }
+
     public String getText() {
         Log.debug("offset text: " + builder.toString());
         return builder.toString();

@@ -18,7 +18,6 @@ import org.nuxeo.common.collections.SerializableArrayMap;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SelectList extends SerializableArrayMap<String, Operand> {
 

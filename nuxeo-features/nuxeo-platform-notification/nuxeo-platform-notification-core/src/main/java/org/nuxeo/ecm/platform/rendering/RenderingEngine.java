@@ -19,9 +19,8 @@
 package org.nuxeo.ecm.platform.rendering;
 
 /**
- * A RenderingEngine will be instantiated by the RenderingService according with
- * the descriptor specified for it. The specific implementation of a RenderingEngine
- * must be in classpath for it to be instantiated and used.
+ * A RenderingEngine will be instantiated by the RenderingService according with the descriptor specified for it. The
+ * specific implementation of a RenderingEngine must be in classpath for it to be instantiated and used.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
@@ -32,8 +31,7 @@ public interface RenderingEngine {
     /**
      * Processes the given context and return a rendering result.
      * <p>
-     * The processing must never return null. If some error occurs it must
-     * throw an exception.
+     * The processing must never return null. If some error occurs it must throw an exception.
      *
      * @param ctx the context to process
      */

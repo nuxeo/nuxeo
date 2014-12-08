@@ -30,7 +30,6 @@ import static org.nuxeo.ecm.platform.pictures.tiles.gwt.client.TilingPreviewCons
 
 /**
  * @author Alexandre Russel
- *
  */
 public class TilingController {
 
@@ -51,10 +50,10 @@ public class TilingController {
     }
 
     private native void setPointerAdapter(String adapter)/*-{
-                  top[adapter] = function(i,j,k,l) {
-                    return @org.nuxeo.ecm.platform.pictures.tiles.gwt.client.controller.TilingController::filterPoint(IIII)(i,j,k,l);
-                  };
-                }-*/;
+                                                         top[adapter] = function(i,j,k,l) {
+                                                         return @org.nuxeo.ecm.platform.pictures.tiles.gwt.client.controller.TilingController::filterPoint(IIII)(i,j,k,l);
+                                                         };
+                                                         }-*/;
 
     public static String filterPoint(int i, int j, int k, int l) {
         double zoom = model.getCurrentZoom();
@@ -74,8 +73,7 @@ public class TilingController {
         // + zoomedAx + " ,zoomedAy=" + zoomedAy + " ,zoomedBx="
         // + zoomedBx + " ,zoomedBy=" + zoomedBy);
 
-        if (zoomedAx > startX && zoomedBx < endX && zoomedAy > startY
-                && zoomedBy < endY) {
+        if (zoomedAx > startX && zoomedBx < endX && zoomedAy > startY && zoomedBy < endY) {
             int Ax = (int) Math.round(zoomedAx);
             int Ay = (int) Math.round(zoomedAy);
             int Bx = Math.round(Ax + (zoomedBx - zoomedAx));
@@ -87,11 +85,9 @@ public class TilingController {
         return "";
     }
 
-    public static String filterPath(Element image, String xpath, int i, int j,
-            int k, int l) {
+    public static String filterPath(Element image, String xpath, int i, int j, int k, int l) {
         String src = image.getAttribute("src");
-        int x = Integer.parseInt(src.substring(src.lastIndexOf("?x=") + 3,
-                src.lastIndexOf("&y=")));
+        int x = Integer.parseInt(src.substring(src.lastIndexOf("?x=") + 3, src.lastIndexOf("&y=")));
         int y = Integer.parseInt(src.substring(src.lastIndexOf("&y=") + 3, src.lastIndexOf("&date=")));
         float zommedAx = i + x * model.getTileWidth();
         float zommedAy = j + y * model.getTileHeight();
@@ -105,8 +101,7 @@ public class TilingController {
         int finalBy = (int) Math.round(zommedBy / zoom);
         // Window.alert("filterPath: #xpointer(image-range(//img,[" + finalAx
         // + "," + finalAy + "],[" + finalBx + "," + finalBy + "]))");
-        return "#xpointer(image-range(//img,[" + finalAx + "," + finalAy
-                + "],[" + finalBx + "," + finalBy + "]))";
+        return "#xpointer(image-range(//img,[" + finalAx + "," + finalAy + "],[" + finalBx + "," + finalBy + "]))";
     }
 
     public void updateAnnotationDecoration() {
@@ -114,14 +109,14 @@ public class TilingController {
     }
 
     public native void updateAnnotationView(String functionName)/*-{
-                if(functionName && top[functionName]) {
-                                        top[functionName](true);
-                                        }
-                                    }-*/;
+                                                                if(functionName && top[functionName]) {
+                                                                top[functionName](true);
+                                                                }
+                                                                }-*/;
 
     public native void setfilterPath(String xfilter)/*-{
-                    top[xfilter] = function(image, xpath, i, j, k, l){
-                        return @org.nuxeo.ecm.platform.pictures.tiles.gwt.client.controller.TilingController::filterPath(Lcom/google/gwt/user/client/Element;Ljava/lang/String;IIII)(image,xpath,i,j,k,l);
-                    };
-                }-*/;
+                                                    top[xfilter] = function(image, xpath, i, j, k, l){
+                                                    return @org.nuxeo.ecm.platform.pictures.tiles.gwt.client.controller.TilingController::filterPath(Lcom/google/gwt/user/client/Element;Ljava/lang/String;IIII)(image,xpath,i,j,k,l);
+                                                    };
+                                                    }-*/;
 }

@@ -27,10 +27,9 @@ import org.mortbay.jetty.Server;
 
 import com.google.inject.Inject;
 
-
 @RunWith(FeaturesRunner.class)
 @Features(JettyFeature.class)
-@Jetty(port=9090)
+@Jetty(port = 9090)
 public class JettyTest {
 
     @Inject

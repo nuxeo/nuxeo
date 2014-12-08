@@ -63,8 +63,7 @@ public final class ElementRenderer {
         String markup = "";
         if (element.isLeaf()) {
             if (!(element instanceof Fragment)) {
-                log.error(String.format(
-                        "Leaf nodes must be fragments, ignoring element: %s",
+                log.error(String.format("Leaf nodes must be fragments, ignoring element: %s",
                         element.getElementType().getTypeName()));
                 return info;
             }
@@ -74,8 +73,7 @@ public final class ElementRenderer {
             } catch (ModelException e) {
                 if (info.isDirty()) {
                     final String fragmentName = fragment.getFragmentType().getTypeName();
-                    log.error("Rendering of fragment '" + fragmentName
-                            + "' failed.", e);
+                    log.error("Rendering of fragment '" + fragmentName + "' failed.", e);
                     return info;
                 }
             }
@@ -84,8 +82,7 @@ public final class ElementRenderer {
             }
         } else {
             for (Node child : element.getChildrenInContext(themeUrl)) {
-                final RenderingInfo childInfo = new RenderingInfo(
-                        (Element) child, themeUrl);
+                final RenderingInfo childInfo = new RenderingInfo((Element) child, themeUrl);
                 final RenderingInfo renderedChild = render(childInfo);
                 if (renderedChild == null) {
                     continue;
@@ -97,8 +94,7 @@ public final class ElementRenderer {
 
         info.setMarkup(markup);
 
-        final RendererType renderer = engine.getRenderers().get(
-                element.getElementType().getTypeName());
+        final RendererType renderer = engine.getRenderers().get(element.getElementType().getTypeName());
 
         if (renderer == null) {
             return info;
@@ -110,13 +106,11 @@ public final class ElementRenderer {
         for (final String filterName : renderer.getFilters()) {
 
             // Look for a filter for the current engine
-            FilterType filterType = getFilterFor(engineName, filterName,
-                    templateEngineName, viewMode);
+            FilterType filterType = getFilterFor(engineName, filterName, templateEngineName, viewMode);
 
             // Fall back to no specific engine
             if (filterType == null) {
-                filterType = getFilterFor("*", filterName, templateEngineName,
-                        viewMode);
+                filterType = getFilterFor("*", filterName, templateEngineName, viewMode);
             }
 
             if (filterType == null) {
@@ -134,11 +128,9 @@ public final class ElementRenderer {
 
             if (filterTypeFamily == FilterTypeFamily.FORMAT) {
                 final FormatType formatType = ((FormatFilter) filter).getFormatType();
-                final Format format = ElementFormatter.getFormatByType(element,
-                        formatType);
+                final Format format = ElementFormatter.getFormatByType(element, formatType);
                 if (format == null) {
-                    log.debug("Could not find '" + formatType.getTypeName()
-                            + "' format for: "
+                    log.debug("Could not find '" + formatType.getTypeName() + "' format for: "
                             + element.getElementType().getTypeName());
                     continue;
                 }
@@ -159,22 +151,19 @@ public final class ElementRenderer {
         return info;
     }
 
-    private static FilterType getFilterFor(final String engineName,
-            final String filterName, final String templateEngineName,
-            final String viewMode) {
+    private static FilterType getFilterFor(final String engineName, final String filterName,
+            final String templateEngineName, final String viewMode) {
 
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
 
         // get the filter for this specified template engine and view mode
-        FilterType filterType = (FilterType) typeRegistry.lookup(
-                TypeFamily.FILTER, String.format("%s/%s/%s/%s", engineName,
-                        templateEngineName, viewMode, filterName));
+        FilterType filterType = (FilterType) typeRegistry.lookup(TypeFamily.FILTER,
+                String.format("%s/%s/%s/%s", engineName, templateEngineName, viewMode, filterName));
 
         // fall back to unspecified view mode
         if (filterType == null) {
             filterType = (FilterType) typeRegistry.lookup(TypeFamily.FILTER,
-                    String.format("%s/%s/*/%s", engineName, templateEngineName,
-                            filterName));
+                    String.format("%s/%s/*/%s", engineName, templateEngineName, filterName));
         }
 
         // fall back to unspecified template engine and view mode

@@ -39,14 +39,17 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptor>{
+public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptor> {
 
     protected final Map<String, AbstractResourceType> types;
+
     protected final Map<String, AdapterType> adapters;
+
     protected final ModuleImpl module;
+
     protected final WebEngine engine; // cannot use module.getEngine() since module may be null
+
     protected ClassProxy docObjectClass;
 
     public TypeRegistry(TypeRegistry parent, WebEngine engine, ModuleImpl module) {
@@ -68,8 +71,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void registerRootType() {
-        TypeDescriptor root = new TypeDescriptor(
-                new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null);
+        TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME,
+                null);
         registerType(root);
     }
 
@@ -203,7 +206,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         if (mgr != null) {
             DocumentType doctype = mgr.getDocumentType(typeName);
             if (doctype != null) { // this is a document type - register a default web type
-                DocumentType superSuperType = (DocumentType)doctype.getSuperType();
+                DocumentType superSuperType = (DocumentType) doctype.getSuperType();
                 String superSuperTypeName = ResourceType.ROOT_TYPE_NAME;
                 if (superSuperType != null) {
                     superSuperTypeName = superSuperType.getName();
@@ -212,12 +215,11 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
                     if (docObjectClass == null) {
                         docObjectClass = engine.getWebLoader().getClassProxy("org.nuxeo.ecm.core.rest.DocumentObject");
                     }
-                    TypeDescriptor superWebType = new TypeDescriptor(
-                            docObjectClass, typeName, superSuperTypeName);
+                    TypeDescriptor superWebType = new TypeDescriptor(docObjectClass, typeName, superSuperTypeName);
                     registerType(superWebType);
                     return true;
                 } catch (ClassNotFoundException e) {
-                    //TODO
+                    // TODO
                     System.err.println("Cannot find document resource class. Automatic Core Type support will be disabled ");
                 }
             }
@@ -238,8 +240,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             object.clazz = fragment.clazz;
         }
         if (object.isAdapter()) {
-            AdapterDescriptor so = (AdapterDescriptor)object;
-            AdapterDescriptor sf = (AdapterDescriptor)fragment;
+            AdapterDescriptor so = (AdapterDescriptor) object;
+            AdapterDescriptor sf = (AdapterDescriptor) fragment;
             if (sf.facets != null && sf.facets.length > 0) {
                 List<String> list = new ArrayList<String>();
                 if (so.facets != null && so.facets.length > 0) {
@@ -254,23 +256,22 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     @Override
-    protected void applySuperFragment(TypeDescriptor object,
-            TypeDescriptor superFragment) {
+    protected void applySuperFragment(TypeDescriptor object, TypeDescriptor superFragment) {
         // do not inherit from parents
     }
 
     @Override
     protected void installContribution(String key, TypeDescriptor object) {
         if (object.isAdapter()) {
-            installAdapterContribution(key, (AdapterDescriptor)object);
+            installAdapterContribution(key, (AdapterDescriptor) object);
         } else {
             installTypeContribution(key, object);
         }
     }
 
     protected void installTypeContribution(String key, TypeDescriptor object) {
-        AbstractResourceType type = new ResourceTypeImpl(
-                engine, module, null, object.type, object.clazz, object.visibility);
+        AbstractResourceType type = new ResourceTypeImpl(engine, module, null, object.type, object.clazz,
+                object.visibility);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved
@@ -291,8 +292,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void installAdapterContribution(String key, AdapterDescriptor object) {
-        AdapterTypeImpl type = new AdapterTypeImpl(
-                engine, module, null, object.type, object.name, object.clazz, object.visibility);
+        AdapterTypeImpl type = new AdapterTypeImpl(engine, module, null, object.type, object.name, object.clazz,
+                object.visibility);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved
@@ -330,12 +331,12 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected void updateAdapterContribution(String key, AdapterDescriptor object) {
         AbstractResourceType t = types.get(key);
         if (t instanceof AdapterTypeImpl) { // update the type class
-            AdapterTypeImpl adapter = (AdapterTypeImpl)t;
+            AdapterTypeImpl adapter = (AdapterTypeImpl) t;
             adapter.clazz = object.clazz;
             adapter.loadAnnotations(engine.getAnnotationManager());
             t.flushCache();
         } else { // install the type - this should never happen since it is an update!
-            throw new IllegalStateException("Updating an adapter type which is not registered: "+key);
+            throw new IllegalStateException("Updating an adapter type which is not registered: " + key);
         }
     }
 
@@ -343,7 +344,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected void uninstallContribution(String key, TypeDescriptor value) {
         AbstractResourceType t = types.remove(key);
         if (t instanceof AdapterTypeImpl) {
-            adapters.remove(((AdapterTypeImpl)t).name);
+            adapters.remove(((AdapterTypeImpl) t).name);
         }
     }
 

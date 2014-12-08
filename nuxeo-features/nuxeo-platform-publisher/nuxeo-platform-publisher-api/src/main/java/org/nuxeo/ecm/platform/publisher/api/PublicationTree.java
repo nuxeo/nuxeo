@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Interface for the publication tree. A Publication Tree is a generic view on a
- * set of PublicationNode.
+ * Interface for the publication tree. A Publication Tree is a generic view on a set of PublicationNode.
  *
  * @author tiry
  */
@@ -35,22 +34,18 @@ public interface PublicationTree extends PublicationNode {
 
     PublicationNode getNodeByPath(String path) throws ClientException;
 
-    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode)
+    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException;
+
+    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException;
 
-    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode,
-            Map<String, String> params) throws ClientException;
-
-    void unpublish(DocumentModel doc, PublicationNode targetNode)
-            throws ClientException;
+    void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException;
 
     void unpublish(PublishedDocument publishedDocument) throws ClientException;
 
-    List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc)
-            throws ClientException;
+    List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException;
 
-    List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node)
-            throws ClientException;
+    List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) throws ClientException;
 
     String getConfigName();
 
@@ -58,9 +53,8 @@ public interface PublicationTree extends PublicationNode {
 
     String getTreeTitle();
 
-    void initTree(String sid, CoreSession coreSession,
-            Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName, String title) throws ClientException;
+    void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
+            PublishedDocumentFactory factory, String configName, String title) throws ClientException;
 
     /**
      * Sets the current document on which the tree will be based, if needed.
@@ -80,34 +74,28 @@ public interface PublicationTree extends PublicationNode {
     /**
      * A validator (the current user) approves the publication.
      *
-     * @param publishedDocument the current published document that will be
-     *            approved
+     * @param publishedDocument the current published document that will be approved
      * @param comment
      */
-    void validatorPublishDocument(PublishedDocument publishedDocument, String comment)
-            throws ClientException;
+    void validatorPublishDocument(PublishedDocument publishedDocument, String comment) throws ClientException;
 
     /**
      * A validator (the current user) rejects the publication.
      *
-     * @param publishedDocument the currently published document that will be
-     *            rejected
+     * @param publishedDocument the currently published document that will be rejected
      * @param comment
      */
-    void validatorRejectPublication(PublishedDocument publishedDocument,
-            String comment) throws ClientException;
+    void validatorRejectPublication(PublishedDocument publishedDocument, String comment) throws ClientException;
 
     /**
-     * Returns {@code true} if the current user can publish to the specified publicationNode,
-     * {@code false} otherwise.
+     * Returns {@code true} if the current user can publish to the specified publicationNode, {@code false} otherwise.
      *
      * @return {@code true} if the current user can publish to the specified publicationNode, {@code false} otherwise.
      */
     boolean canPublishTo(PublicationNode publicationNode) throws ClientException;
 
     /**
-     * Returns {@code true} if the current user can unpublish the given publishedDocument,
-     * {@code false} otherwise.
+     * Returns {@code true} if the current user can unpublish the given publishedDocument, {@code false} otherwise.
      *
      * @return {@code true} if the current user can unpublish the given publishedDocument, {@code false} otherwise.
      */
@@ -116,16 +104,16 @@ public interface PublicationTree extends PublicationNode {
     boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException;
 
     /**
-     * Returns {@code true} if the current user can manage the publishing of the given publishedDocument,
-     * ie approve or reject the document.
+     * Returns {@code true} if the current user can manage the publishing of the given publishedDocument, ie approve or
+     * reject the document.
      */
     boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException;
 
     PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException;
 
     /**
-     * Returns {@code true} if the given {@code documentModel} is a PublicationNode of the current tree,
-     * {@code false} otherwise.
+     * Returns {@code true} if the given {@code documentModel} is a PublicationNode of the current tree, {@code false}
+     * otherwise.
      */
     boolean isPublicationNode(DocumentModel documentModel) throws ClientException;
 

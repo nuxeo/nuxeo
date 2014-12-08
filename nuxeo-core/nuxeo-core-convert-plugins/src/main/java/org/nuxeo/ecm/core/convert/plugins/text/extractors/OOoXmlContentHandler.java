@@ -44,8 +44,7 @@ public class OOoXmlContentHandler extends DefaultHandler {
     }
 
     @Override
-    public void startElement(String namespaceURI, String localName,
-            String qName, Attributes atts) throws SAXException {
+    public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         path.push(qName);
 
         // Detect spreadsheet
@@ -81,15 +80,13 @@ public class OOoXmlContentHandler extends DefaultHandler {
         }
 
         // Page (Impress only): add a new line if not the first one
-        if (qName.equals("draw:page")
-                && !"page1".equals(atts.getValue("draw:name"))) {
+        if (qName.equals("draw:page") && !"page1".equals(atts.getValue("draw:name"))) {
             sb.append("\n");
         }
     }
 
     @Override
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
+    public void characters(char[] ch, int start, int length) throws SAXException {
         if (dumpText) {
             String content = String.valueOf(ch, start, length);
             sb.append(content);
@@ -97,8 +94,7 @@ public class OOoXmlContentHandler extends DefaultHandler {
     }
 
     @Override
-    public void endElement(String namespaceURI, String localName, String qName)
-            throws SAXException {
+    public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         path.pop();
         if (path.isEmpty() || !path.lastElement().startsWith("text:")) {
             dumpText = false;

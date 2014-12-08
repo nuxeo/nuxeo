@@ -31,8 +31,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Messages {
 
     protected final Messages parent;
+
     protected final MessagesProvider provider;
+
     protected final Map<String, MessagesBundle> messages;
+
     protected MessagesBundle defaultMessages;
 
     protected static final String BUILT_IN_DEFAULT_LANG = "en";
@@ -46,8 +49,7 @@ public class Messages {
         if (defaultMessages == null) {
             defaultMessages = new MessagesBundle(null, new HashMap<String, String>());
         }
-        if (defaultMessages.messages.size() == 0
-                && !BUILT_IN_DEFAULT_LANG.equals(serverDefaultLang)) {
+        if (defaultMessages.messages.size() == 0 && !BUILT_IN_DEFAULT_LANG.equals(serverDefaultLang)) {
             defaultMessages = getMessagesBundle(BUILT_IN_DEFAULT_LANG);
         }
     }
@@ -78,11 +80,8 @@ public class Messages {
         if (bundle != null) {
             return bundle.getObject(key);
         }
-        throw new MissingResourceException("Can't find resource for bundle "
-                + this.getClass().getName()
-                + ", key " + key,
-                Messages.class.getName(),
-                key);
+        throw new MissingResourceException("Can't find resource for bundle " + this.getClass().getName() + ", key "
+                + key, Messages.class.getName(), key);
     }
 
     public Object getObject(String key) {

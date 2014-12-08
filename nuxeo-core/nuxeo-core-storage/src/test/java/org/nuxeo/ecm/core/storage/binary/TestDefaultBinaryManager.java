@@ -65,16 +65,14 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
         assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
 
         // other binary we'll GC
-        binaryManager.getBinary(new ByteArrayInputStream(
-                "abc".getBytes("UTF-8")));
+        binaryManager.getBinary(new ByteArrayInputStream("abc".getBytes("UTF-8")));
         assertEquals(2, countFiles(binaryManager.getStorageDir()));
 
         // sleep before GC to pass its time threshold
         Thread.sleep(3 * 1000);
 
         // create another binary after time threshold, it won't be GCed
-        binaryManager.getBinary(new ByteArrayInputStream(
-                "defg".getBytes("UTF-8")));
+        binaryManager.getBinary(new ByteArrayInputStream("defg".getBytes("UTF-8")));
         assertEquals(3, countFiles(binaryManager.getStorageDir()));
 
         // GC in non-delete mode

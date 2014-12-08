@@ -40,8 +40,7 @@ public class UIDGenerator1 extends AbstractUIDGenerator {
 
         // should assume that P2 is always defined
 
-        return (isPropValueDefined(P1, doc) ? str(P1, doc) : str(P2, doc))
-                + year;
+        return (isPropValueDefined(P1, doc) ? str(P1, doc) : str(P2, doc)) + year;
     }
 
     public String createUID(DocumentModel doc) throws DocumentException {

@@ -28,10 +28,9 @@ import org.nuxeo.ecm.platform.uidgen.AbstractUIDGenerator;
 
 public class UIDGCoreDocument extends AbstractUIDGenerator {
 
-     private static final String NFORMAT = "%05d";
+    private static final String NFORMAT = "%05d";
 
-    public String getSequenceKey(DocumentModel document)
-            throws DocumentException {
+    public String getSequenceKey(DocumentModel document) throws DocumentException {
         assert document != null;
 
         Calendar cal = new GregorianCalendar();

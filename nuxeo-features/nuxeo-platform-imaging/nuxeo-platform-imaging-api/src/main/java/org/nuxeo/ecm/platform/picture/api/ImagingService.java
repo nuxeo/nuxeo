@@ -41,8 +41,7 @@ public interface ImagingService {
     List<PictureConversion> getPictureConversions();
 
     /**
-     * Returns a {@link org.nuxeo.ecm.platform.picture.api.PictureConversion}
-     * given its {@code id}.
+     * Returns a {@link org.nuxeo.ecm.platform.picture.api.PictureConversion} given its {@code id}.
      *
      * @since 7.1
      */
@@ -87,13 +86,10 @@ public interface ImagingService {
     String getImageMimeType(Blob blob);
 
     /**
-     * Retrieves the {@link ImageInfo} of the {@link Blob} that is received as
-     * parameter.
+     * Retrieves the {@link ImageInfo} of the {@link Blob} that is received as parameter.
      * <p>
-     * The information provided by the <b>ImageInfo</b>, like width, height or
-     * format, is obtained using ImageMagick (see
-     * http://www.imagemagick.org/script/index.php for more details on
-     * ImageMagick).
+     * The information provided by the <b>ImageInfo</b>, like width, height or format, is obtained using ImageMagick
+     * (see http://www.imagemagick.org/script/index.php for more details on ImageMagick).
      *
      * @param blob the blob of a picture
      * @return the {@link ImageInfo} of a blob
@@ -104,15 +100,14 @@ public interface ImagingService {
      * Returns the value a configuration which name is received as parameter.
      *
      * @param configurationName the name of the configuration
-     * @return the value of the configuration, which can be null in case no
-     *         configuration with the specified name was registered
+     * @return the value of the configuration, which can be null in case no configuration with the specified name was
+     *         registered
      */
     String getConfigurationValue(String configurationName);
 
     /**
-     * Returns the value a configuration which name is received as parameter. In
-     * case no configuration with the specified name was registered, the
-     * received <b>defaultValue</b> parameter will be returned.
+     * Returns the value a configuration which name is received as parameter. In case no configuration with the
+     * specified name was registered, the received <b>defaultValue</b> parameter will be returned.
      *
      * @param configurationName the name of the configuration
      * @param defaultValue the value of the configuration
@@ -120,109 +115,86 @@ public interface ImagingService {
     String getConfigurationValue(String configurationName, String defaultValue);
 
     /**
-     * Sets the value of a configuration which could be used by the
-     * ImagingService.
+     * Sets the value of a configuration which could be used by the ImagingService.
      *
      * @param configurationName the name of the configuration
      * @param configurationValue the value of the configuration
      */
-    void setConfigurationValue(String configurationName,
-            String configurationValue);
+    void setConfigurationValue(String configurationName, String configurationValue);
 
     /**
-     * Computes a {@link PictureView} for the given {@code blob} and
-     * {@code pictureConversion}.
+     * Computes a {@link PictureView} for the given {@code blob} and {@code pictureConversion}.
      *
-     * @param convert true if the {@code blob} is converted to fit the
-     *            {@code pictureConversion}, false if the {@code blob} is put as
-     *            it in the PictureView (without any conversion)
+     * @param convert true if the {@code blob} is converted to fit the {@code pictureConversion}, false if the
+     *            {@code blob} is put as it in the PictureView (without any conversion)
      * @return the computed picture view
      * @since 5.7
      */
-    PictureView computeViewFor(Blob blob, PictureConversion pictureConversion,
-            boolean convert) throws IOException, ClientException;
-
-    /**
-     * Computes a {@link PictureView} for the given {@code blob} and
-     * {@code pictureConversion}.
-     *
-     * @param imageInfo the {@code ImageInfo} to use when computing the view
-     * @param convert true if the {@code blob} is converted to fit the
-     *            {@code pictureConversion}, false if the {@code blob} is put as
-     *            it in the PictureView (without any conversion)
-     * @return the computed picture view
-     * @since 5.7
-     */
-    PictureView computeViewFor(Blob blob, PictureConversion pictureConversion,
-            ImageInfo imageInfo, boolean convert) throws IOException,
+    PictureView computeViewFor(Blob blob, PictureConversion pictureConversion, boolean convert) throws IOException,
             ClientException;
 
     /**
-     * Computes a List of {@link PictureView}s for the given {@code blob} and
-     * {@code pictureConversions}.
+     * Computes a {@link PictureView} for the given {@code blob} and {@code pictureConversion}.
      *
-     * @param convert true if the {@code blob} is converted to fit each
-     *            {@code PictureConversion}, false if the {@code blob} is put as
-     *            it in the PictureView (without any conversion)
-     * @return the computed picture views as a List of {@code PictureView}s
+     * @param imageInfo the {@code ImageInfo} to use when computing the view
+     * @param convert true if the {@code blob} is converted to fit the {@code pictureConversion}, false if the
+     *            {@code blob} is put as it in the PictureView (without any conversion)
+     * @return the computed picture view
      * @since 5.7
      */
-    List<PictureView> computeViewsFor(Blob blob,
-            List<PictureConversion> pictureConversions, boolean convert)
+    PictureView computeViewFor(Blob blob, PictureConversion pictureConversion, ImageInfo imageInfo, boolean convert)
             throws IOException, ClientException;
 
     /**
-     * Computes a List of {@link PictureView}s for the given {@code blob} and
-     * {@code pictureConversions}.
+     * Computes a List of {@link PictureView}s for the given {@code blob} and {@code pictureConversions}.
      *
-     * @param imageInfo the {@code ImageInfo} to use when computing the view
-     * @param convert true if the {@code blob} is converted to fit each
-     *            {@code PictureConversion}, false if the {@code blob} is put as
-     *            it in the PictureView (without any conversion)
+     * @param convert true if the {@code blob} is converted to fit each {@code PictureConversion}, false if the
+     *            {@code blob} is put as it in the PictureView (without any conversion)
      * @return the computed picture views as a List of {@code PictureView}s
      * @since 5.7
      */
-    List<PictureView> computeViewsFor(Blob blob,
-            List<PictureConversion> pictureConversions, ImageInfo imageInfo,
-            boolean convert) throws IOException, ClientException;
-
-    /**
-     * Computes a List of all {@link PictureView}s for each {@link Blob} of
-     * {@code blobs}.
-     *
-     * @param convert true if the {@code blob} is converted to fit each
-     *            {@code PictureConversion}, false if the {@code blob} is put as
-     *            it in the PictureView (without any conversion)
-     * @since 5.7
-     */
-    List<List<PictureView>> computeViewsFor(List<Blob> blobs,
-            List<PictureConversion> pictureConversions, boolean convert)
+    List<PictureView> computeViewsFor(Blob blob, List<PictureConversion> pictureConversions, boolean convert)
             throws IOException, ClientException;
 
     /**
-     * Computes a List of all {@link PictureView}s for each {@link Blob} of
-     * {@code blobs}.
+     * Computes a List of {@link PictureView}s for the given {@code blob} and {@code pictureConversions}.
      *
      * @param imageInfo the {@code ImageInfo} to use when computing the view
-     * @param convert true if the {@code blob} is converted to fit each
-     *            {@code PictureConversion}, false if the {@code blob} is put as
-     *            it in the PictureView (without any conversion)
+     * @param convert true if the {@code blob} is converted to fit each {@code PictureConversion}, false if the
+     *            {@code blob} is put as it in the PictureView (without any conversion)
+     * @return the computed picture views as a List of {@code PictureView}s
      * @since 5.7
      */
-    List<List<PictureView>> computeViewsFor(List<Blob> blobs,
-            List<PictureConversion> pictureConversions, ImageInfo imageInfo,
+    List<PictureView> computeViewsFor(Blob blob, List<PictureConversion> pictureConversions, ImageInfo imageInfo,
             boolean convert) throws IOException, ClientException;
 
     /**
-     * Compute all the registered {@link PictureConversion}
+     * Computes a List of all {@link PictureView}s for each {@link Blob} of {@code blobs}.
      *
-     * For each picture template the
-     * {@link ImagingService#computeViewFor(Blob, PictureConversion, ImageInfo, boolean)}
-     * method is call
+     * @param convert true if the {@code blob} is converted to fit each {@code PictureConversion}, false if the
+     *            {@code blob} is put as it in the PictureView (without any conversion)
+     * @since 5.7
+     */
+    List<List<PictureView>> computeViewsFor(List<Blob> blobs, List<PictureConversion> pictureConversions,
+            boolean convert) throws IOException, ClientException;
+
+    /**
+     * Computes a List of all {@link PictureView}s for each {@link Blob} of {@code blobs}.
+     *
+     * @param imageInfo the {@code ImageInfo} to use when computing the view
+     * @param convert true if the {@code blob} is converted to fit each {@code PictureConversion}, false if the
+     *            {@code blob} is put as it in the PictureView (without any conversion)
+     * @since 5.7
+     */
+    List<List<PictureView>> computeViewsFor(List<Blob> blobs, List<PictureConversion> pictureConversions,
+            ImageInfo imageInfo, boolean convert) throws IOException, ClientException;
+
+    /**
+     * Compute all the registered {@link PictureConversion} For each picture template the
+     * {@link ImagingService#computeViewFor(Blob, PictureConversion, ImageInfo, boolean)} method is call
      *
      * @since 7.1
      */
-    List<PictureView> computeViewFor(DocumentModel doc, Blob blob,
-            boolean convert) throws ClientException, IOException;
+    List<PictureView> computeViewFor(DocumentModel doc, Blob blob, boolean convert) throws ClientException, IOException;
 
 }

@@ -13,8 +13,7 @@
 package org.nuxeo.ecm.core.query.sql.model;
 
 /**
- * A default implementation of a visitor that visits depth-first in standard
- * expression order.
+ * A default implementation of a visitor that visits depth-first in standard expression order.
  *
  * @author Florent Guillaume
  */

@@ -56,8 +56,7 @@ public interface ResultSet extends List<ResultItem> {
     /**
      * Returns the amount of actual matching results.
      * <p>
-     * This is in contrast to getRange() that returns the maximum
-     * number of results per page.
+     * This is in contrast to getRange() that returns the maximum number of results per page.
      *
      * @return the amount of actual matching results.
      */
@@ -76,7 +75,6 @@ public interface ResultSet extends List<ResultItem> {
      *
      * @param offset the new offset
      * @param range the new range
-     *
      * @return a new, updated ResultSet
      * @throws SearchException
      */
@@ -94,7 +92,6 @@ public interface ResultSet extends List<ResultItem> {
      * Goes to requested page.
      *
      * @param page the page to go to
-     *
      * @return the next computed page or null if there is none.
      * @throws SearchException
      */

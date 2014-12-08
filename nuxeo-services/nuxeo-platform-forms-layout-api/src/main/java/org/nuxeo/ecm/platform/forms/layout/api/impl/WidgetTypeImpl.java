@@ -46,8 +46,7 @@ public class WidgetTypeImpl implements WidgetType {
         super();
     }
 
-    public WidgetTypeImpl(String name, Class<?> typeClass,
-            Map<String, String> properties) {
+    public WidgetTypeImpl(String name, Class<?> typeClass, Map<String, String> properties) {
         this.name = name;
         this.typeClass = typeClass;
         this.properties = properties;

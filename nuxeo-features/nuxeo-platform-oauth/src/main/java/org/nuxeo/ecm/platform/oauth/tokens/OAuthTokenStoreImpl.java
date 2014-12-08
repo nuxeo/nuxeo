@@ -39,14 +39,12 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Service implementation for {@link OAuthTokenStore}.
  * <p>
- * This service is responsible for managing storage of the {@link OAuthToken}.
- * A simple SQL Directory is used for ACCESS Token whereas a simple in memory
- * storage is used for REQUEST Tokens.
+ * This service is responsible for managing storage of the {@link OAuthToken}. A simple SQL Directory is used for ACCESS
+ * Token whereas a simple in memory storage is used for REQUEST Tokens.
  *
  * @author tiry
  */
-public class OAuthTokenStoreImpl extends DefaultComponent implements
-        OAuthTokenStore {
+public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenStore {
 
     protected static final Log log = LogFactory.getLog(OAuthTokenStoreImpl.class);
 
@@ -66,8 +64,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
 
     @Override
     public OAuthToken createAccessTokenFromRequestToken(OAuthToken requestToken) {
-        NuxeoOAuthToken aToken = new NuxeoOAuthToken(
-                (NuxeoOAuthToken) requestToken);
+        NuxeoOAuthToken aToken = new NuxeoOAuthToken((NuxeoOAuthToken) requestToken);
         String token = "NX-AT-" + UUID.randomUUID().toString();
         aToken.token = token;
         aToken.tokenSecret = "NX-ATS-" + UUID.randomUUID().toString();
@@ -84,8 +81,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
     }
 
     @Override
-    public NuxeoOAuthToken getClientAccessToken(String appId, String owner)
-            throws ClientException {
+    public NuxeoOAuthToken getClientAccessToken(String appId, String owner) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {
@@ -110,8 +106,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
     }
 
     @Override
-    public void removeClientAccessToken(String appId, String owner)
-            throws ClientException {
+    public void removeClientAccessToken(String appId, String owner) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {
@@ -137,8 +132,8 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
     }
 
     @Override
-    public void storeClientAccessToken(String consumerKey, String callBack,
-            String token, String tokenSecret, String appId, String owner) {
+    public void storeClientAccessToken(String consumerKey, String callBack, String token, String tokenSecret,
+            String appId, String owner) {
         NuxeoOAuthToken aToken = new NuxeoOAuthToken(consumerKey, callBack);
         aToken.token = token;
         aToken.tokenSecret = tokenSecret;
@@ -155,8 +150,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
         }
     }
 
-    protected NuxeoOAuthToken getTokenFromDirectory(String token)
-            throws ClientException {
+    protected NuxeoOAuthToken getTokenFromDirectory(String token) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {
@@ -173,13 +167,11 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
         }
     }
 
-    protected NuxeoOAuthToken getTokenFromDirectoryEntry(DocumentModel entry)
-            throws ClientException {
+    protected NuxeoOAuthToken getTokenFromDirectoryEntry(DocumentModel entry) throws ClientException {
         return new NuxeoOAuthToken(entry);
     }
 
-    protected NuxeoOAuthToken storeAccessTokenAsDirectoryEntry(
-            NuxeoOAuthToken aToken) throws ClientException {
+    protected NuxeoOAuthToken storeAccessTokenAsDirectoryEntry(NuxeoOAuthToken aToken) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {
@@ -206,11 +198,9 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
     public OAuthToken createRequestToken(String consumerKey, String callBack) {
 
         NuxeoOAuthToken rToken = new NuxeoOAuthToken(consumerKey, callBack);
-        String token = "NX-RT-" + consumerKey + "-"
-                + UUID.randomUUID().toString();
+        String token = "NX-RT-" + consumerKey + "-" + UUID.randomUUID().toString();
         rToken.token = token;
-        rToken.tokenSecret = "NX-RTS-" + consumerKey
-                + UUID.randomUUID().toString();
+        rToken.tokenSecret = "NX-RTS-" + consumerKey + UUID.randomUUID().toString();
         rToken.type = OAuthToken.Type.REQUEST;
         requestTokenStore.put(token, rToken);
 

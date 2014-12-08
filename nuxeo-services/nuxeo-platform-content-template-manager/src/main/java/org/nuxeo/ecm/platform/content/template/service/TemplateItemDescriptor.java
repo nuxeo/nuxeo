@@ -31,7 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Template item descriptor. Immutable.
  */
 @XObject(value = "templateItem")
-public class TemplateItemDescriptor  implements Serializable {
+public class TemplateItemDescriptor implements Serializable {
 
     private static final long serialVersionUID = 18765764747899L;
 

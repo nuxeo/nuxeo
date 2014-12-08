@@ -27,7 +27,6 @@ public class ResourceResolver {
 
     private static ResourceResolver instance = DEFAULT;
 
-
     /**
      * Gets the current resolver (thread local).
      */

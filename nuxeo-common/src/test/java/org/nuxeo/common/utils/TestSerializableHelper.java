@@ -45,4 +45,3 @@ class SerializableClass implements Serializable {
 
 class NonSerializableClass {
 }
-

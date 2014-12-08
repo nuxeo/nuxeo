@@ -21,7 +21,6 @@ import java.util.List;
  * Holds the list of member users and subgroups for a group.
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public interface NuxeoGroup extends Serializable {
 

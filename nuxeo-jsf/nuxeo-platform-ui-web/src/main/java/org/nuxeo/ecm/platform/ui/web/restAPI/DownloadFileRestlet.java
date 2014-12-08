@@ -53,8 +53,7 @@ import org.restlet.resource.OutputRepresentation;
  */
 @Name("downloadFileRestlet")
 @Scope(EVENT)
-public class DownloadFileRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants, Serializable {
+public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditConstants, Serializable {
 
     private static final long serialVersionUID = -2163290273836947871L;
 
@@ -74,8 +73,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements
 
         DocumentModel dm;
         try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(
-                    repo));
+            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
             String docid = (String) req.getAttributes().get("docid");
             if (docid != null) {
@@ -93,27 +91,20 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements
             final String filename;
             final Blob blob;
 
-            String blobPropertyName = getQueryParamValue(req,
-                    BLOB_PROPERTY_NAME, null);
-            String filenamePropertyName = getQueryParamValue(req,
-                    FILENAME_PROPERTY_NAME, null);
+            String blobPropertyName = getQueryParamValue(req, BLOB_PROPERTY_NAME, null);
+            String filenamePropertyName = getQueryParamValue(req, FILENAME_PROPERTY_NAME, null);
             if (blobPropertyName != null && filenamePropertyName != null) {
                 filename = (String) dm.getPropertyValue(filenamePropertyName);
                 blob = (Blob) dm.getPropertyValue(blobPropertyName);
             } else {
-                String schemaName = getQueryParamValue(req, SCHEMA,
-                        DEFAULT_SCHEMA);
-                String blobFieldName = getQueryParamValue(req, BLOB_FIELD,
-                        DEFAULT_BLOB_FIELD);
-                String filenameFieldName = getQueryParamValue(req,
-                        FILENAME_FIELD, DEFAULT_FILENAME_FIELD);
-                filename = (String) dm.getProperty(schemaName,
-                        filenameFieldName);
+                String schemaName = getQueryParamValue(req, SCHEMA, DEFAULT_SCHEMA);
+                String blobFieldName = getQueryParamValue(req, BLOB_FIELD, DEFAULT_BLOB_FIELD);
+                String filenameFieldName = getQueryParamValue(req, FILENAME_FIELD, DEFAULT_FILENAME_FIELD);
+                filename = (String) dm.getProperty(schemaName, filenameFieldName);
                 blob = (Blob) dm.getProperty(schemaName, blobFieldName);
             }
 
-            final File tempfile = File.createTempFile(
-                    "nuxeo-downloadrestlet-tmp", "");
+            final File tempfile = File.createTempFile("nuxeo-downloadrestlet-tmp", "");
             blob.transferTo(tempfile);
             res.setEntity(new OutputRepresentation(null) {
                 @Override
@@ -130,8 +121,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements
             });
             HttpServletResponse response = getHttpResponse(res);
 
-            response.setHeader("Content-Disposition", "attachment; filename=\""
-                    + filename + "\";");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\";");
             // TODO: add mimetype here too
 
         } catch (ClientException | IOException e) {

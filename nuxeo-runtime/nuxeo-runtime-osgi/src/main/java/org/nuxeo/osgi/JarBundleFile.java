@@ -47,7 +47,6 @@ import org.osgi.framework.Constants;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JarBundleFile implements BundleFile {
 
@@ -66,13 +65,13 @@ public class JarBundleFile implements BundleFile {
         try {
             urlBase = "jar:" + new File(jarFile.getName()).toURI().toURL() + "!/";
         } catch (MalformedURLException e) {
-            log.error("Failed to convert bundle location to an URL: "+jarFile.getName()+". Bundle getEntry will not work.", e);
+            log.error("Failed to convert bundle location to an URL: " + jarFile.getName()
+                    + ". Bundle getEntry will not work.", e);
         }
     }
 
     @Override
-    public Enumeration<URL> findEntries(String name, String pattern,
-            boolean recurse) {
+    public Enumeration<URL> findEntries(String name, String pattern, boolean recurse) {
         if (name.startsWith("/")) {
             name = name.substring(1);
         }
@@ -80,8 +79,8 @@ public class JarBundleFile implements BundleFile {
         if (name.length() == 0) {
             name = null;
             prefix = "";
-        } else if (!name.endsWith("/") ){
-            prefix = name+"/";
+        } else if (!name.endsWith("/")) {
+            prefix = name + "/";
         } else {
             prefix = name;
         }
@@ -107,7 +106,7 @@ public class JarBundleFile implements BundleFile {
                         }
                     }
                 }
-                String n = i > -1 ? ename.substring(i+1) : ename;
+                String n = i > -1 ? ename.substring(i + 1) : ename;
                 if (filter.match(n)) {
                     result.add(getEntryUrl(ename));
                 }
@@ -136,8 +135,7 @@ public class JarBundleFile implements BundleFile {
 
     @Override
     public Enumeration<String> getEntryPaths(String path) {
-        throw new UnsupportedOperationException(
-                "The operation BundleFile.geEntryPaths() was not yet implemented");
+        throw new UnsupportedOperationException("The operation BundleFile.geEntryPaths() was not yet implemented");
     }
 
     @Override
@@ -185,8 +183,7 @@ public class JarBundleFile implements BundleFile {
             return null;
         }
         String[] paths = StringUtils.split(cp, ',', true);
-        URL base = new URL("jar:"
-                + new File(jarFile.getName()).toURI().toURL().toExternalForm() + "!/");
+        URL base = new URL("jar:" + new File(jarFile.getName()).toURI().toURL().toExternalForm() + "!/");
         String fileName = getFileName();
         List<BundleFile> nested = new ArrayList<BundleFile>();
         for (String path : paths) {
@@ -200,8 +197,7 @@ public class JarBundleFile implements BundleFile {
                 extractNestedJar(jarFile, path, dest);
                 nested.add(new NestedJarBundleFile(location, dest));
             } catch (FileNotFoundException e) {
-                log.error("A nested jar is referenced in manifest but not found: "
-                        + location);
+                log.error("A nested jar is referenced in manifest but not found: " + location);
             } catch (IOException e) {
                 log.error(e);
             }
@@ -236,8 +232,7 @@ public class JarBundleFile implements BundleFile {
 
     @Override
     public Collection<BundleFile> findNestedBundles(File tmpDir) throws IOException {
-        URL base = new URL("jar:"
-                + new File(jarFile.getName()).toURI().toURL().toExternalForm() + "!/");
+        URL base = new URL("jar:" + new File(jarFile.getName()).toURI().toURL().toExternalForm() + "!/");
         String fileName = getFileName();
         Enumeration<JarEntry> entries = jarFile.entries();
         List<BundleFile> nested = new ArrayList<BundleFile>();
@@ -258,10 +253,8 @@ public class JarBundleFile implements BundleFile {
     @Override
     public String getSymbolicName() {
         try {
-            String value = jarFile.getManifest().getMainAttributes().getValue(
-                    Constants.BUNDLE_SYMBOLICNAME);
-            return value != null ? BundleManifestReader.removePropertiesFromHeaderValue(value)
-                    : null;
+            String value = jarFile.getManifest().getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
+            return value != null ? BundleManifestReader.removePropertiesFromHeaderValue(value) : null;
         } catch (IOException e) {
             return null;
         }

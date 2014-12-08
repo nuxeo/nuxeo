@@ -36,18 +36,16 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class, CacheFeature.class, RedisFeature.class})
+@Features({ CoreFeature.class, CacheFeature.class, RedisFeature.class })
 public class TestRedisLockManager {
 
     protected static void assertTimeEquals(Calendar expected, Lock lock) {
-        assertEquals(expected.getTimeInMillis(),
-                lock.getCreated().getTimeInMillis());
+        assertEquals(expected.getTimeInMillis(), lock.getCreated().getTimeInMillis());
     }
 
     @Test
     public void testRedisLockManager() throws Exception {
-        LockManager lockManager = Framework.getLocalService(
-                LockManagerService.class).getLockManager("default");
+        LockManager lockManager = Framework.getLocalService(LockManagerService.class).getLockManager("default");
         String id = "1234";
 
         // no lock initially present

@@ -25,29 +25,27 @@ import org.nuxeo.common.utils.Path;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface TreeItem extends Serializable {
 
     int NONE = 0;
+
     int DATA = 1;
+
     int CHILDREN = 2;
+
     int BOTH = 3;
 
     /**
      * Gets the item path.
      * <p>
-     * The path is uniquely identifying the item in its tree and is consistent
-     * with the tree structure so the parent item will have the same path as the
-     * child minus the last segment. The root item path will always be "/". (The
-     * root item should not be displayed in the tree - it has no label or other
-     * properties.)
+     * The path is uniquely identifying the item in its tree and is consistent with the tree structure so the parent
+     * item will have the same path as the child minus the last segment. The root item path will always be "/". (The
+     * root item should not be displayed in the tree - it has no label or other properties.)
      * <p>
-     * Paths are useful to locate items in the tree using
-     * <code>find</find> methods.
+     * Paths are useful to locate items in the tree using <code>find</find> methods.
      *
      * @return the item path
-     *
      * @see #find(Path)
      * @see #findAndReveal(Path)
      * @see TreeModel#find(Path)
@@ -58,10 +56,9 @@ public interface TreeItem extends Serializable {
     /**
      * Gets the object attached to this item.
      * <p>
-     * The nature of the object
-     * depends on the registered content provider which will populate the tree
-     * branches when {@link ContentProvider#getChildren(Object)} is called. The
-     * root item is specified by using {@link TreeModel#setInput(Object)}
+     * The nature of the object depends on the registered content provider which will populate the tree branches when
+     * {@link ContentProvider#getChildren(Object)} is called. The root item is specified by using
+     * {@link TreeModel#setInput(Object)}
      *
      * @return the attached object or null if none
      */
@@ -103,16 +100,14 @@ public interface TreeItem extends Serializable {
     /**
      * Gets the cached children.
      * <p>
-     * The children items are created using the content provider
-     * the first time you call {@link #expand()}
+     * The children items are created using the content provider the first time you call {@link #expand()}
      */
     TreeItem[] getChildren();
 
     /**
      * Gets the child item given its name.
      * <p>
-     * This method will force loading children using the provider if not already
-     * loaded or if invalidated.
+     * This method will force loading children using the provider if not already loaded or if invalidated.
      *
      * @param name the name of the child item
      * @return the child item or null if none
@@ -131,8 +126,7 @@ public interface TreeItem extends Serializable {
     /**
      * Finds the item given its relative path to that item.
      * <p>
-     * This method will search only the loaded items - it
-     * will not make additional calls to provider to get new items.
+     * This method will search only the loaded items - it will not make additional calls to provider to get new items.
      *
      * @param path the item path to find
      * @return the item or null if none.
@@ -140,11 +134,10 @@ public interface TreeItem extends Serializable {
     TreeItem find(Path path);
 
     /**
-     * Finds the item given its relative path to that item and expand all its parents
-     * so that the item will be visible in the tree.
+     * Finds the item given its relative path to that item and expand all its parents so that the item will be visible
+     * in the tree.
      * <p>
-     * The item itself will not be expanded. Use {@link #expand()} on the returned item
-     * if you want so.
+     * The item itself will not be expanded. Use {@link #expand()} on the returned item if you want so.
      * <p>
      * This method is loading any parent if not already loaded by using the registered provider.
      *
@@ -156,8 +149,7 @@ public interface TreeItem extends Serializable {
     /**
      * Expands the item.
      * <p>
-     * This will load children items from the provider
-     * if they are not already loaded or if invalidated.
+     * This will load children items from the provider if they are not already loaded or if invalidated.
      */
     TreeItem[] expand();
 
@@ -167,11 +159,9 @@ public interface TreeItem extends Serializable {
     void collapse();
 
     /**
-     * Reloads item information like label, properties and children depending
-     * on the specified refresh type.
+     * Reloads item information like label, properties and children depending on the specified refresh type.
      * <p>
-     * The argument is used to specify the type of refresh and can have
-     * one of the following values:
+     * The argument is used to specify the type of refresh and can have one of the following values:
      * <ul>
      * <li>{@link #DATA} - to refresh only item data like labels
      * <li>{@link #CHILDREN} - to refresh only item children
@@ -185,15 +175,14 @@ public interface TreeItem extends Serializable {
     /**
      * Invalidates the item.
      * <p>
-     * This will force reloading item data and/or children
-     * next time item and/or children are accessed.
-     * The argument is used to specify the type of invalidation and can have
-     * one of the following values:
+     * This will force reloading item data and/or children next time item and/or children are accessed. The argument is
+     * used to specify the type of invalidation and can have one of the following values:
      * <ul>
      * <li>{@link #DATA} - to invalidate only item data like labels
      * <li>{@link #CHILDREN} - to invalidate only item children
      * <li>{@link #BOTH} - to invalidate both data and children
      * </ul>
+     *
      * @param type of invalidation
      */
     void invalidate(int type);

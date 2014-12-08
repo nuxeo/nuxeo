@@ -66,8 +66,7 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
 
         // encrypt
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        String digest = binaryManager.storeAndDigest(new ByteArrayInputStream(
-                CONTENT.getBytes(UTF8)), out);
+        String digest = binaryManager.storeAndDigest(new ByteArrayInputStream(CONTENT.getBytes(UTF8)), out);
         assertEquals(CONTENT_MD5, digest);
         byte[] encrypted = out.toByteArray();
 
@@ -88,8 +87,7 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
             assertFalse(CONTENT.equals(new String(out.toByteArray(), UTF8)));
         } catch (NuxeoException e) {
             String message = e.getMessage();
-            assertTrue(message,
-                    message.contains("Given final block not properly padded"));
+            assertTrue(message, message.contains("Given final block not properly padded"));
         }
 
         binaryManager.close();
@@ -101,8 +99,7 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
         keyStoreFile.delete();
         createKeyStore(keyStoreFile);
 
-        String options = String.format("%s=%s,%s=%s,%s=%s,%s=%s,%s=%s",
-                PARAM_KEY_STORE_TYPE, KEY_STORE_TYPE, //
+        String options = String.format("%s=%s,%s=%s,%s=%s,%s=%s,%s=%s", PARAM_KEY_STORE_TYPE, KEY_STORE_TYPE, //
                 PARAM_KEY_STORE_FILE, keyStoreFile.getPath(), //
                 PARAM_KEY_STORE_PASSWORD, KEY_STORE_PASSWORD, //
                 PARAM_KEY_ALIAS, KEY_ALIAS, //
@@ -114,8 +111,7 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
 
         // encrypt
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        String digest = binaryManager.storeAndDigest(new ByteArrayInputStream(
-                CONTENT.getBytes(UTF8)), out);
+        String digest = binaryManager.storeAndDigest(new ByteArrayInputStream(CONTENT.getBytes(UTF8)), out);
         assertEquals(CONTENT_MD5, digest);
         byte[] encrypted = out.toByteArray();
 
@@ -128,8 +124,7 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
         binaryManager.close();
     }
 
-    protected void createKeyStore(File file) throws GeneralSecurityException,
-            IOException {
+    protected void createKeyStore(File file) throws GeneralSecurityException, IOException {
         AESBinaryManager.setUnlimitedJCEPolicy();
 
         KeyGenerator kgen = KeyGenerator.getInstance("AES");

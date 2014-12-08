@@ -33,13 +33,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class UIComment implements Comparable, Serializable {
 
     private static final long serialVersionUID = 2457051749449691092L;
 
-    //final Comment comment;
+    // final Comment comment;
 
     private final DocumentModel comment;
 
@@ -81,7 +80,7 @@ public class UIComment implements Comparable, Serializable {
         return new ListDataModel(children);
     }
 
-    //TODO : override equals and hashCode
+    // TODO : override equals and hashCode
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -107,15 +106,13 @@ public class UIComment implements Comparable, Serializable {
         DocumentModel other = ((UIComment) o).comment;
         Calendar myDate;
         try {
-            myDate = (Calendar) comment.getProperty("dublincore",
-                    "created");
+            myDate = (Calendar) comment.getProperty("dublincore", "created");
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
         Calendar otherDate;
         try {
-            otherDate = (Calendar) other.getProperty("dublincore",
-                    "created");
+            otherDate = (Calendar) other.getProperty("dublincore", "created");
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }

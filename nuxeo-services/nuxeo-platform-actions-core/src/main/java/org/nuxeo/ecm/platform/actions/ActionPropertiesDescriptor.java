@@ -77,8 +77,7 @@ public class ActionPropertiesDescriptor implements Serializable {
         return listProperties;
     }
 
-    public void setListProperties(
-            Map<String, ActionPropertyListDescriptor> listProperties) {
+    public void setListProperties(Map<String, ActionPropertyListDescriptor> listProperties) {
         this.listProperties = listProperties;
     }
 
@@ -86,8 +85,7 @@ public class ActionPropertiesDescriptor implements Serializable {
         return mapProperties;
     }
 
-    public void setMapProperties(
-            Map<String, ActionPropertiesDescriptor> mapProperties) {
+    public void setMapProperties(Map<String, ActionPropertiesDescriptor> mapProperties) {
         this.mapProperties = mapProperties;
     }
 

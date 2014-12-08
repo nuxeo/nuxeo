@@ -26,19 +26,18 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 public class CanRollbackDatabaseTest {
 
     @LocalDeploy("org.nuxeo.ecm.core.management:ds-contrib-with-fatal.xml")
-    @Test(expected=TransactionRuntimeException.class)
+    @Test(expected = TransactionRuntimeException.class)
     public void testFatalRollback() throws NamingException, SQLException {
         insertWrongReference();
     }
 
     @LocalDeploy("org.nuxeo.ecm.core.management:ds-contrib.xml")
-    @Test(expected=SQLException.class)
+    @Test(expected = SQLException.class)
     public void testNoFatalRollback() throws NamingException, SQLException {
         insertWrongReference();
     }
 
-    private void insertWrongReference() throws NamingException, SQLException,
-            AssertionFailedError {
+    private void insertWrongReference() throws NamingException, SQLException, AssertionFailedError {
         DataSource ds = DataSourceHelper.getDataSource("jdbc/repository_test");
         {
             try (Connection db = ds.getConnection()) {
@@ -55,8 +54,7 @@ public class CanRollbackDatabaseTest {
                     TransactionHelper.startTransaction();
                     try (Connection db = ds.getConnection()) {
                         try (Statement st = db.createStatement()) {
-                            try (ResultSet rs = st
-                                .executeQuery("SELECT id from hierarchy where id = 'pfouh'")) {
+                            try (ResultSet rs = st.executeQuery("SELECT id from hierarchy where id = 'pfouh'")) {
                                 if (rs.next()) {
                                     throw new AssertionFailedError("connection was not rollbacked");
                                 }
@@ -67,6 +65,5 @@ public class CanRollbackDatabaseTest {
             }
         }
     }
-
 
 }

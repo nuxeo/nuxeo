@@ -34,8 +34,7 @@ public class DocumentListZipExporter {
 
     private static final String SUMMARY_FILENAME = "INDEX.txt";
 
-    public File exportWorklistAsZip(List<DocumentModel> documents,
-            CoreSession documentManager, boolean exportAllBlobs)
+    public File exportWorklistAsZip(List<DocumentModel> documents, CoreSession documentManager, boolean exportAllBlobs)
             throws ClientException, IOException {
         StringBuilder blobList = new StringBuilder();
 
@@ -63,11 +62,9 @@ public class DocumentListZipExporter {
 
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (doc.isFolder() && !isEmptyFolder(doc, documentManager)) {
-                addFolderToZip("", out, doc, data, documentManager, blobList,
-                        exportAllBlobs);
+                addFolderToZip("", out, doc, data, documentManager, blobList, exportAllBlobs);
             } else if (bh != null) {
-                addBlobHolderToZip("", out, doc, data, blobList, bh,
-                        exportAllBlobs);
+                addBlobHolderToZip("", out, doc, data, blobList, bh, exportAllBlobs);
             }
         }
         if (blobList.length() > 1) {
@@ -82,10 +79,9 @@ public class DocumentListZipExporter {
         return tmpFile;
     }
 
-    private void addFolderToZip(String path, ZipOutputStream out,
-            DocumentModel doc, byte[] data, CoreSession documentManager,
-            StringBuilder blobList, boolean exportAllBlobs)
-            throws ClientException, IOException {
+    private void addFolderToZip(String path, ZipOutputStream out, DocumentModel doc, byte[] data,
+            CoreSession documentManager, StringBuilder blobList, boolean exportAllBlobs) throws ClientException,
+            IOException {
 
         String title = doc.getTitle();
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
@@ -101,25 +97,20 @@ public class DocumentListZipExporter {
             } else {
                 newPath = path + "/" + title;
             }
-            if (docChild.isFolder()
-                    && !isEmptyFolder(docChild, documentManager)) {
-                addFolderToZip(newPath, out, docChild, data, documentManager,
-                        blobList, exportAllBlobs);
+            if (docChild.isFolder() && !isEmptyFolder(docChild, documentManager)) {
+                addFolderToZip(newPath, out, docChild, data, documentManager, blobList, exportAllBlobs);
             } else if (bh != null) {
-                addBlobHolderToZip(newPath, out, docChild, data, blobList, bh,
-                        exportAllBlobs);
+                addBlobHolderToZip(newPath, out, docChild, data, blobList, bh, exportAllBlobs);
             }
         }
     }
 
-    private boolean isEmptyFolder(DocumentModel doc, CoreSession documentManager)
-            throws ClientException {
+    private boolean isEmptyFolder(DocumentModel doc, CoreSession documentManager) throws ClientException {
 
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
             // If there is a blob or a folder, it is not empty.
-            if (docChild.getAdapter(BlobHolder.class) != null
-                    || docChild.isFolder()) {
+            if (docChild.getAdapter(BlobHolder.class) != null || docChild.isFolder()) {
                 return false;
             }
         }
@@ -129,13 +120,11 @@ public class DocumentListZipExporter {
     /**
      * Writes a summary file and puts it in the archive.
      */
-    private void addSummaryToZip(ZipOutputStream out, byte[] data,
-            StringBuilder sb) throws IOException {
+    private void addSummaryToZip(ZipOutputStream out, byte[] data, StringBuilder sb) throws IOException {
 
         Blob content = new StringBlob(sb.toString());
 
-        BufferedInputStream buffi = new BufferedInputStream(
-                content.getStream(), BUFFER);
+        BufferedInputStream buffi = new BufferedInputStream(content.getStream(), BUFFER);
 
         ZipEntry entry = new ZipEntry(SUMMARY_FILENAME);
         out.putNextEntry(entry);
@@ -149,10 +138,8 @@ public class DocumentListZipExporter {
         buffi.close();
     }
 
-    private void addBlobHolderToZip(String path, ZipOutputStream out,
-            DocumentModel doc, byte[] data, StringBuilder blobList,
-            BlobHolder bh, boolean exportAllBlobs) throws IOException,
-            ClientException {
+    private void addBlobHolderToZip(String path, ZipOutputStream out, DocumentModel doc, byte[] data,
+            StringBuilder blobList, BlobHolder bh, boolean exportAllBlobs) throws IOException, ClientException {
         List<Blob> blobs = new ArrayList<Blob>();
 
         if (exportAllBlobs) {
@@ -167,8 +154,7 @@ public class DocumentListZipExporter {
         }
 
         if (blobs.size() > 0) { // add document info
-            SimpleDateFormat format = new SimpleDateFormat(
-                    "dd-MM-yyyy HH:mm:ss");
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             if (path.length() > 0) {
                 blobList.append(path).append('/');
             }
@@ -188,8 +174,7 @@ public class DocumentListZipExporter {
                 // use a default value
                 fileName = "file.bin";
             }
-            BufferedInputStream buffi = new BufferedInputStream(
-                    content.getStream(), BUFFER);
+            BufferedInputStream buffi = new BufferedInputStream(content.getStream(), BUFFER);
 
             // Workaround to deal with duplicate file names.
             int tryCount = 0;
@@ -201,8 +186,7 @@ public class DocumentListZipExporter {
                     if (tryCount == 0) {
                         entryName = fileName;
                     } else {
-                        entryName = formatFileName(fileName, "(" + tryCount
-                                + ")");
+                        entryName = formatFileName(fileName, "(" + tryCount + ")");
                     }
                     if (path.length() == 0) {
                         entryPath = entryName;
@@ -232,16 +216,14 @@ public class DocumentListZipExporter {
     private String formatFileName(String filename, String count) {
         StringBuilder sb = new StringBuilder();
         CharSequence name = filename.subSequence(0, filename.lastIndexOf("."));
-        CharSequence extension = filename.subSequence(
-                filename.lastIndexOf("."), filename.length());
+        CharSequence extension = filename.subSequence(filename.lastIndexOf("."), filename.length());
         sb.append(name).append(count).append(extension);
         return sb.toString();
     }
 
     protected String escapeEntryPath(String path) {
         String zipEntryEncoding = Framework.getProperty(ZIP_ENTRY_ENCODING_PROPERTY);
-        if (zipEntryEncoding != null
-                && zipEntryEncoding.equals(ZIP_ENTRY_ENCODING_OPTIONS.ascii.toString())) {
+        if (zipEntryEncoding != null && zipEntryEncoding.equals(ZIP_ENTRY_ENCODING_OPTIONS.ascii.toString())) {
             return StringUtils.toAscii(path);
         }
         return path;

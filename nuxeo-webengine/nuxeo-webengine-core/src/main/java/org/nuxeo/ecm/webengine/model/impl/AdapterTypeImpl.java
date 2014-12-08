@@ -35,17 +35,18 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AdapterTypeImpl extends AbstractResourceType implements AdapterType {
 
     // we are using arrays and not sets since the targetTypes and targetFacets have usually very small sizes
     protected String targetType;
+
     protected String[] targetFacets;
+
     protected final String adapterName;
 
-
-    public AdapterTypeImpl(WebEngine engine, ModuleImpl module, ResourceTypeImpl superType, String name, String adapterName, ClassProxy clazz, int visibility) {
+    public AdapterTypeImpl(WebEngine engine, ModuleImpl module, ResourceTypeImpl superType, String name,
+            String adapterName, ClassProxy clazz, int visibility) {
         super(engine, module, superType, name, clazz, visibility);
         this.adapterName = adapterName;
     }
@@ -95,7 +96,7 @@ public class AdapterTypeImpl extends AbstractResourceType implements AdapterType
             try {
                 guard = PermissionService.parse(g);
             } catch (ParseException e) {
-                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+c.getName(), e);
+                throw WebException.wrap("Failed to parse guard: " + g + " on WebObject " + c.getName(), e);
             }
         } else {
             loadGuardFromAnnoation(c);

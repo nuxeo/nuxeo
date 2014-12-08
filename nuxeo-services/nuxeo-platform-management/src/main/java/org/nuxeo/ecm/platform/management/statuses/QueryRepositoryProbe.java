@@ -38,7 +38,7 @@ public class QueryRepositoryProbe implements org.nuxeo.ecm.core.management.api.P
         @Override
         public void run() throws ClientException {
             DocumentModelList list = session.query(queryString, null, 1, 0, false);
-            info =" selected " + list.size() + " documents";
+            info = " selected " + list.size() + " documents";
         }
 
     }

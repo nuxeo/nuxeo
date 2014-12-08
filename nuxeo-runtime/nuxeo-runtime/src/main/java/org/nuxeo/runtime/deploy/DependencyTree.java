@@ -26,9 +26,8 @@ import java.util.Set;
 import java.util.Vector;
 
 /**
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * TODO this was copied from nuxeo.commons and fixed - should put it back with all modifs
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> TODO this was copied from nuxeo.commons and fixed -
+ *         should put it back with all modifs
  */
 // TODO handle dependencies cycles.
 public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>> {
@@ -50,11 +49,11 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         return registry.values().iterator();
     }
 
-    public Entry<K,T> add(K key, T object, K ... requires) {
+    public Entry<K, T> add(K key, T object, K... requires) {
         return add(key, object, Arrays.asList(requires));
     }
 
-    public Entry<K,T> add(K key, T object, Collection<K> requires) {
+    public Entry<K, T> add(K key, T object, Collection<K> requires) {
         Entry<K, T> entry = registry.get(key);
         if (entry == null) {
             entry = new Entry<K, T>(key, object);
@@ -62,7 +61,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         } else if (entry.object == null) {
             entry.object = object;
         } else {
-            //TODO object already exists
+            // TODO object already exists
             return entry;
         }
         updateDependencies(entry, requires);
@@ -87,7 +86,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         }
     }
 
-    public void unregister(Entry <K, T> entry) {
+    public void unregister(Entry<K, T> entry) {
         if (entry.isResolved()) {
             unresolve(entry);
         }
@@ -109,19 +108,19 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     }
 
     private void resolveEntry(Entry<K, T> entry) {
-        //synchronize () {
+        // synchronize () {
         resolved.add(entry);
         entry.isResolved = true;
-        //}
+        // }
         // notify listener
         resolved(entry);
     }
 
     private void unresolveEntry(Entry<K, T> entry) {
-        //synchronize () {
+        // synchronize () {
         resolved.remove(entry);
         entry.isResolved = false;
-        //}
+        // }
         unresolved(entry);
     }
 
@@ -282,14 +281,20 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     }
 
     public static final int PHANTOM = 0;
+
     public static final int REGISTERED = 1;
+
     public static final int RESOLVED = 3;
 
     public static class Entry<K, T> {
         private final K key;
+
         private T object;
+
         private Set<Entry<K, T>> waitsFor;
+
         private Set<Entry<K, T>> dependsOnMe;
+
         private boolean isResolved = false;
 
         public Entry(K key, T object) {
@@ -336,7 +341,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
             dependsOnMe.add(entry);
         }
 
-        public Set<Entry<K, T>>getDependsOnMe() {
+        public Set<Entry<K, T>> getDependsOnMe() {
             return dependsOnMe;
         }
 
@@ -368,7 +373,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
             if (!(obj instanceof Entry)) {
                 return false;
             }
-            return key.equals(((Entry<?,?>) obj).key);
+            return key.equals(((Entry<?, ?>) obj).key);
         }
 
         @Override

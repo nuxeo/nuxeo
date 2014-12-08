@@ -16,11 +16,11 @@ public class ThreadDeadlocksRunner {
 
     protected boolean isRepoOwned = false;
 
-    public  void run() {
+    public void run() {
         Thread t = new Thread() {
             public void run() {
                 try {
-                    synchronized(ThreadDeadlocksRunner.this) {
+                    synchronized (ThreadDeadlocksRunner.this) {
                         if (!isRepoOwned) {
                             ThreadDeadlocksRunner.this.wait();
                         }
@@ -81,7 +81,7 @@ public class ThreadDeadlocksRunner {
 
         final ThreadDeadlocksDetector detector = new ThreadDeadlocksDetector();
 
-        detector.schedule(10*1000, new ThreadDeadlocksDetector.KillListener());
+        detector.schedule(10 * 1000, new ThreadDeadlocksDetector.KillListener());
 
         new ThreadDeadlocksRunner().run();
     }

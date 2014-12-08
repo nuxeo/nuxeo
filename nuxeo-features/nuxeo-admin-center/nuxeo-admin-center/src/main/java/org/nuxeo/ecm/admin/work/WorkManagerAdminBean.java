@@ -34,8 +34,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Seam bean that wraps the {@link WorkManager} service to provide a JSF admin
- * UI.
+ * Seam bean that wraps the {@link WorkManager} service to provide a JSF admin UI.
  */
 @Name("workManagerAdmin")
 @Scope(ScopeType.PAGE)
@@ -58,8 +57,7 @@ public class WorkManagerAdminBean implements Serializable {
         for (String queueId : workQueueIds) {
             List<Work> running = workManager.listWork(queueId, State.RUNNING);
             int scheduled = workManager.getQueueSize(queueId, State.SCHEDULED);
-            int completed = workManager.getQueueSize(queueId,
-                    State.COMPLETED);
+            int completed = workManager.getQueueSize(queueId, State.COMPLETED);
             Map<String, Object> map = new HashMap<String, Object>();
             info.add(map);
             map.put("id", queueId);

@@ -118,8 +118,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     @Override
     @SuppressWarnings("unchecked")
     public String getFileurlPicture() throws ClientException {
-        ArrayList<Map<String, Object>> views = (ArrayList) getCurrentDocument().getProperty(
-                "picture", "views");
+        ArrayList<Map<String, Object>> views = (ArrayList) getCurrentDocument().getProperty("picture", "views");
         return views.get(index).get("title") + ":content";
     }
 
@@ -132,8 +131,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     protected void initSelectItems() throws ClientException {
         selectItems = new ArrayList<Map<String, Object>>();
         DocumentModel doc = getCurrentDocument();
-        ArrayList<Map<String, Object>> views = (ArrayList) doc.getProperty(
-                "picture", "views");
+        ArrayList<Map<String, Object>> views = (ArrayList) doc.getProperty("picture", "views");
         for (int i = 0; i < views.size(); i++) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("title", views.get(i).get("title"));
@@ -183,41 +181,33 @@ public class PictureManagerBean implements PictureManager, Serializable {
             ArrayList<Map<String, Object>> pictureConversions = null;
             if (parent.getType().equals("PictureBook")) {
                 // Use PictureBook Properties
-                pictureConversions = (ArrayList<Map<String, Object>>) parent.getProperty(
-                        "picturebook", "picturetemplates");
+                pictureConversions = (ArrayList<Map<String, Object>>) parent.getProperty("picturebook",
+                        "picturetemplates");
             }
             PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
-            boolean status = picture.fillPictureViews(fileContent, filename,
-                    title, pictureConversions);
+            boolean status = picture.fillPictureViews(fileContent, filename, title, pictureConversions);
             if (!status) {
                 documentManager.cancel();
                 log.info("Picture type unsupported.");
-                FacesMessages.instance().add(
-                        StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "label.picture.upload.error"));
+                FacesMessages.instance().add(StatusMessage.Severity.ERROR,
+                        resourcesAccessor.getMessages().get("label.picture.upload.error"));
 
-                return navigationContext.getActionResult(
-                        navigationContext.getCurrentDocument(), UserAction.VIEW);
+                return navigationContext.getActionResult(navigationContext.getCurrentDocument(), UserAction.VIEW);
             } else {
                 doc = documentManager.createDocument(doc);
                 documentManager.saveDocument(doc);
 
-                Events.instance().raiseEvent(
-                        EventNames.DOCUMENT_CHILDREN_CHANGED, parent);
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, parent);
 
                 documentManager.save();
             }
         } catch (ClientException | IOException e) {
             log.error("Picture Creation failed", e);
             documentManager.cancel();
-            FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.picture.upload.error"));
+            FacesMessage message = FacesMessages.createFacesMessage(FacesMessage.SEVERITY_ERROR,
+                    resourcesAccessor.getMessages().get("label.picture.upload.error"));
             FacesMessages.instance().add(message);
-            return navigationContext.getActionResult(
-                    navigationContext.getCurrentDocument(), UserAction.VIEW);
+            return navigationContext.getActionResult(navigationContext.getCurrentDocument(), UserAction.VIEW);
         }
         return navigationContext.getActionResult(doc, UserAction.AFTER_CREATE);
     }
@@ -258,8 +248,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @Override
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED })
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED })
     @BypassInterceptors
     public void resetFields() {
         filename = "";
@@ -270,12 +259,11 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @WebRemote
-    public String remoteDownload(String patternName, String docID,
-            String blobPropertyName, String filename) throws ClientException {
+    public String remoteDownload(String patternName, String docID, String blobPropertyName, String filename)
+            throws ClientException {
         IdRef docref = new IdRef(docID);
         DocumentModel doc = documentManager.getDocument(docref);
-        return DocumentModelFunctions.fileUrl(patternName, doc,
-                blobPropertyName, filename);
+        return DocumentModelFunctions.fileUrl(patternName, doc, blobPropertyName, filename);
     }
 
     @WebRemote
@@ -289,15 +277,13 @@ public class PictureManagerBean implements PictureManager, Serializable {
             DocumentLocation docLoc = docView.getDocumentLocation();
             // fix for NXP-1799
             if (documentManager == null) {
-                RepositoryLocation loc = new RepositoryLocation(
-                        docLoc.getServerName());
+                RepositoryLocation loc = new RepositoryLocation(docLoc.getServerName());
                 navigationContext.setCurrentServerLocation(loc);
                 documentManager = navigationContext.getOrCreateDocumentManager();
             }
             DocumentModel doc = documentManager.getDocument(docLoc.getDocRef());
             if (doc != null) {
-                String[] propertyPath = docView.getParameter(
-                        DocumentFileCodec.FILE_PROPERTY_PATH_KEY).split(":");
+                String[] propertyPath = docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY).split(":");
                 String title = null;
                 String field = null;
                 Property datamodel = null;

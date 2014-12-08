@@ -30,15 +30,14 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ComponentRegistry {
 
     private final Log log = LogFactory.getLog(ComponentRegistry.class);
 
     /**
-     * All registered components including unresolved ones. You can check the
-     * state of a component for getting the unresolved ones.
+     * All registered components including unresolved ones. You can check the state of a component for getting the
+     * unresolved ones.
      */
     protected Map<ComponentName, RegistrationInfoImpl> components;
 
@@ -46,14 +45,13 @@ public class ComponentRegistry {
     protected Map<ComponentName, ComponentName> aliases;
 
     /**
-     * Maps a component name to a set of component names that are depending on
-     * that component. Values are always unaliased.
+     * Maps a component name to a set of component names that are depending on that component. Values are always
+     * unaliased.
      */
     protected MappedSet requirements;
 
     /**
-     * Map pending components to the set of unresolved components they are
-     * waiting for. Key is always unaliased.
+     * Map pending components to the set of unresolved components they are waiting for. Key is always unaliased.
      */
     protected MappedSet pendings;
 
@@ -85,9 +83,8 @@ public class ComponentRegistry {
     }
 
     /**
-     * Fill the pending map with all unresolved dependencies of the given
-     * component. Returns false if no unresolved dependencies are found,
-     * otherwise returns true.
+     * Fill the pending map with all unresolved dependencies of the given component. Returns false if no unresolved
+     * dependencies are found, otherwise returns true.
      *
      * @param ri
      * @return
@@ -110,10 +107,8 @@ public class ComponentRegistry {
     }
 
     /**
-     *
      * @param ri
-     * @return true if the component was resolved, false if the component is
-     *         pending
+     * @return true if the component was resolved, false if the component is pending
      */
     public boolean addComponent(RegistrationInfoImpl ri) {
         ComponentName name = ri.getName();
@@ -166,8 +161,7 @@ public class ComponentRegistry {
     }
 
     public RegistrationInfoImpl[] getComponentsArray() {
-        return components.values().toArray(
-                new RegistrationInfoImpl[components.size()]);
+        return components.values().toArray(new RegistrationInfoImpl[components.size()]);
     }
 
     public Map<ComponentName, Set<ComponentName>> getPendingComponents() {

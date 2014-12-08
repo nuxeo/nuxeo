@@ -31,16 +31,14 @@ import java.net.URL;
  * <p>
  * This is wrapping an URL as returned by the class loader.
  * <p>
- * The URL class cannot be used directly because it already has
- * a factory associated to it that constructs the URL using its constructor.
+ * The URL class cannot be used directly because it already has a factory associated to it that constructs the URL using
+ * its constructor.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Resource {
 
     private final URL url;
-
 
     public Resource(URL url) {
         this.url = url;

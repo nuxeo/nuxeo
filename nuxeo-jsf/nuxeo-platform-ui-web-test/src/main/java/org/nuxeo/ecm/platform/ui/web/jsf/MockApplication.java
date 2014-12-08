@@ -42,19 +42,16 @@ import javax.faces.validator.Validator;
 import org.jboss.el.ExpressionFactoryImpl;
 
 /**
- * Mock application, providing expressions resolutions using the
- * {@link MockFacesContext}, and providing an {@link ExternalContext}
- * implemented by {@link MockExternalContext}
+ * Mock application, providing expressions resolutions using the {@link MockFacesContext}, and providing an
+ * {@link ExternalContext} implemented by {@link MockExternalContext}
  *
  * @since 5.7.3
  */
 public class MockApplication extends Application {
 
     @Override
-    public Object evaluateExpressionGet(FacesContext context,
-            String expression, Class expectedType) throws ELException {
-        return ((MockFacesContext) context).evaluateExpressionGet(context,
-                expression, expectedType);
+    public Object evaluateExpressionGet(FacesContext context, String expression, Class expectedType) throws ELException {
+        return ((MockFacesContext) context).evaluateExpressionGet(context, expression, expectedType);
     }
 
     @Override
@@ -74,14 +71,13 @@ public class MockApplication extends Application {
     }
 
     @Override
-    public UIComponent createComponent(String componentType)
-            throws FacesException {
+    public UIComponent createComponent(String componentType) throws FacesException {
         return null;
     }
 
     @Override
-    public UIComponent createComponent(ValueBinding componentBinding,
-            FacesContext context, String componentType) throws FacesException {
+    public UIComponent createComponent(ValueBinding componentBinding, FacesContext context, String componentType)
+            throws FacesException {
         return null;
     }
 
@@ -96,8 +92,7 @@ public class MockApplication extends Application {
     }
 
     @Override
-    public MethodBinding createMethodBinding(String ref, Class[] params)
-            throws ReferenceSyntaxException {
+    public MethodBinding createMethodBinding(String ref, Class[] params) throws ReferenceSyntaxException {
         return null;
     }
 
@@ -107,8 +102,7 @@ public class MockApplication extends Application {
     }
 
     @Override
-    public ValueBinding createValueBinding(String ref)
-            throws ReferenceSyntaxException {
+    public ValueBinding createValueBinding(String ref) throws ReferenceSyntaxException {
         return null;
     }
 

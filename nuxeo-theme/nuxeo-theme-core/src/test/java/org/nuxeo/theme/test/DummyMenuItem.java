@@ -28,8 +28,7 @@ public class DummyMenuItem extends AbstractModel {
 
     private String icon;
 
-    public DummyMenuItem(String title, String description, String url,
-            boolean selected, String icon) {
+    public DummyMenuItem(String title, String description, String url, boolean selected, String icon) {
         this.title = title;
         this.description = description;
         this.url = url;

@@ -30,7 +30,6 @@ import org.nuxeo.connect.update.PackageException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LocalPackageData implements PackageData {
 
@@ -50,9 +49,7 @@ public class LocalPackageData implements PackageData {
             this.loader = new GroovyClassLoader(parent);
             loader.addURL(root.toURI().toURL());
         } catch (MalformedURLException e) {
-            throw new RuntimeException(
-                    "Failed to create package class loader. Invalid package root: "
-                            + root, e);
+            throw new RuntimeException("Failed to create package class loader. Invalid package root: " + root, e);
         }
     }
 
@@ -84,8 +81,7 @@ public class LocalPackageData implements PackageData {
         try {
             return loader.loadClass(name);
         } catch (ClassNotFoundException e) {
-            throw new PackageException("Failed to load class " + name
-                    + " from package: " + root.getName());
+            throw new PackageException("Failed to load class " + name + " from package: " + root.getName());
         }
     }
 

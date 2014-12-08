@@ -30,13 +30,11 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author matic
- *
  */
 public class TagsLoader implements DocumentLoader {
 
     @Override
-    public void fillProperties(DocumentModel doc,
-            List<DocumentProperty> props, WSRemotingSession rs)
+    public void fillProperties(DocumentModel doc, List<DocumentProperty> props, WSRemotingSession rs)
             throws ClientException {
         CoreSession session = rs.getDocumentManager();
         TagService srv = Framework.getLocalService(TagService.class);
@@ -46,7 +44,7 @@ public class TagsLoader implements DocumentLoader {
         List<Tag> tags = srv.getDocumentTags(session, doc.getId(), rs.getUsername());
         String value = "";
         String sep = "";
-        for (Tag tag:tags) {
+        for (Tag tag : tags) {
             value = value + sep + tag.getLabel();
             sep = ",";
         }

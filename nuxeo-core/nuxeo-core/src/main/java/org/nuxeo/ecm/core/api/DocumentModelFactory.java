@@ -45,8 +45,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Bridge between a {@link DocumentModel} and a {@link Document} for creation /
- * update.
+ * Bridge between a {@link DocumentModel} and a {@link Document} for creation / update.
  */
 public class DocumentModelFactory {
 
@@ -56,8 +55,7 @@ public class DocumentModelFactory {
     private DocumentModelFactory() {
     }
 
-    public static DocumentModelImpl createDocumentModel(Document doc)
-            throws DocumentException {
+    public static DocumentModelImpl createDocumentModel(Document doc) throws DocumentException {
         DocumentType docType = doc.getType();
         String[] schemas;
         if (docType == null) {
@@ -76,8 +74,7 @@ public class DocumentModelFactory {
      * @return the new document model
      * @throws DocumentException
      */
-    public static DocumentModelImpl createDocumentModel(Document doc,
-            String[] schemas) throws DocumentException {
+    public static DocumentModelImpl createDocumentModel(Document doc, String[] schemas) throws DocumentException {
 
         DocumentType type = doc.getType();
         if (type == null) {
@@ -88,16 +85,14 @@ public class DocumentModelFactory {
 
         DocumentRef docRef = new IdRef(doc.getUUID());
         Document parent = doc.getParent();
-        DocumentRef parentRef = parent == null ? null : new IdRef(
-                parent.getUUID());
+        DocumentRef parentRef = parent == null ? null : new IdRef(parent.getUUID());
 
         // Compute document source id if exists
         Document sourceDoc = doc.getSourceDocument();
         String sourceId = sourceDoc == null ? null : sourceDoc.getUUID();
 
         // Immutable flag
-        boolean immutable = doc.isVersion()
-                || (doc.isProxy() && sourceDoc.isVersion());
+        boolean immutable = doc.isVersion() || (doc.isProxy() && sourceDoc.isVersion());
 
         // Instance facets
         Set<String> facets = new HashSet<String>(Arrays.asList(doc.getFacets()));
@@ -114,9 +109,8 @@ public class DocumentModelFactory {
 
         // create the document model
         // lock is unused
-        DocumentModelImpl docModel = new DocumentModelImpl(sid, type.getName(),
-                doc.getUUID(), path, docRef, parentRef, null, facets, sourceId,
-                repositoryName, doc.isProxy());
+        DocumentModelImpl docModel = new DocumentModelImpl(sid, type.getName(), doc.getUUID(), path, docRef, parentRef,
+                null, facets, sourceId, repositoryName, doc.isProxy());
 
         docModel.setPosInternal(doc.getPos());
 
@@ -132,8 +126,7 @@ public class DocumentModelFactory {
         Prefetch prefetch;
         String[] prefetchSchemas;
         if (prefetchInfo != null) {
-            Set<String> docSchemas = new HashSet<String>(
-                    Arrays.asList(docModel.getSchemas()));
+            Set<String> docSchemas = new HashSet<String>(Arrays.asList(docModel.getSchemas()));
             prefetch = getPrefetch(doc, prefetchInfo, docSchemas);
             prefetchSchemas = prefetchInfo.getSchemas();
         } else {
@@ -147,8 +140,7 @@ public class DocumentModelFactory {
             schemas = prefetchSchemas;
         }
         if (schemas != null) {
-            Set<String> validSchemas = new HashSet<String>(
-                    Arrays.asList(docModel.getSchemas()));
+            Set<String> validSchemas = new HashSet<String>(Arrays.asList(docModel.getSchemas()));
             for (String schemaName : schemas) {
                 if (validSchemas.contains(schemaName)) {
                     loadSchemas.add(schemaName);
@@ -177,16 +169,14 @@ public class DocumentModelFactory {
             String lifeCyclePolicy = doc.getLifeCyclePolicy();
             docModel.prefetchLifeCyclePolicy(lifeCyclePolicy);
         } catch (LifeCycleException e) {
-            log.debug("Cannot prefetch lifecycle for doc: " + doc.getName()
-                    + ". Error: " + e.getMessage());
+            log.debug("Cannot prefetch lifecycle for doc: " + doc.getName() + ". Error: " + e.getMessage());
         }
 
         return docModel;
     }
 
     /**
-     * Returns a document model computed from its type, querying the
-     * {@link SchemaManager} service.
+     * Returns a document model computed from its type, querying the {@link SchemaManager} service.
      * <p>
      * The created document model is not linked to any core session.
      *
@@ -212,11 +202,10 @@ public class DocumentModelFactory {
      * @return the document model
      * @throws DocumentException
      */
-    public static DocumentModelImpl createDocumentModel(String sessionId,
-            DocumentType docType) throws DocumentException {
-        DocumentModelImpl docModel = new DocumentModelImpl(sessionId,
-                docType.getName(), null, null, null, null, null, null, null,
-                null, null);
+    public static DocumentModelImpl createDocumentModel(String sessionId, DocumentType docType)
+            throws DocumentException {
+        DocumentModelImpl docModel = new DocumentModelImpl(sessionId, docType.getName(), null, null, null, null, null,
+                null, null, null, null);
         for (Schema schema : docType.getSchemas()) {
             docModel.addDataModel(createDataModel(null, schema));
         }
@@ -224,11 +213,9 @@ public class DocumentModelFactory {
     }
 
     /**
-     * Creates a data model from a document and a schema. If the document is
-     * null, just creates empty data models.
+     * Creates a data model from a document and a schema. If the document is null, just creates empty data models.
      */
-    public static DataModel createDataModel(Document doc, Schema schema)
-            throws DocumentException {
+    public static DataModel createDataModel(Document doc, Schema schema) throws DocumentException {
         DocumentPart part = new DocumentPartImpl(schema);
         if (doc != null) {
             try {
@@ -241,14 +228,12 @@ public class DocumentModelFactory {
     }
 
     /**
-     * Writes a document model to a document. Returns the re-read document
-     * model.
+     * Writes a document model to a document. Returns the re-read document model.
      */
-    public static DocumentModel writeDocumentModel(DocumentModel docModel,
-            Document doc) throws DocumentException, ClientException {
+    public static DocumentModel writeDocumentModel(DocumentModel docModel, Document doc) throws DocumentException,
+            ClientException {
         if (!(docModel instanceof DocumentModelImpl)) {
-            throw new ClientRuntimeException("Must be a DocumentModelImpl: "
-                    + docModel);
+            throw new ClientRuntimeException("Must be a DocumentModelImpl: " + docModel);
         }
 
         boolean changed = false;
@@ -288,18 +273,14 @@ public class DocumentModelFactory {
     }
 
     /**
-     * Gets what's to refresh in a model (except for the ACPs, which need the
-     * session).
+     * Gets what's to refresh in a model (except for the ACPs, which need the session).
      */
-    public static DocumentModelRefresh refreshDocumentModel(Document doc,
-            int flags, String[] schemas) throws DocumentException,
-            LifeCycleException {
+    public static DocumentModelRefresh refreshDocumentModel(Document doc, int flags, String[] schemas)
+            throws DocumentException, LifeCycleException {
         DocumentModelRefresh refresh = new DocumentModelRefresh();
 
-        refresh.instanceFacets = new HashSet<String>(
-                Arrays.asList(doc.getFacets()));
-        Set<String> docSchemas = DocumentModelImpl.computeSchemas(
-                doc.getType(), refresh.instanceFacets, doc.isProxy());
+        refresh.instanceFacets = new HashSet<String>(Arrays.asList(doc.getFacets()));
+        Set<String> docSchemas = DocumentModelImpl.computeSchemas(doc.getType(), refresh.instanceFacets, doc.isProxy());
 
         if ((flags & DocumentModel.REFRESH_PREFETCH) != 0) {
             PrefetchInfo prefetchInfo = doc.getType().getPrefetchInfo();
@@ -327,8 +308,7 @@ public class DocumentModelFactory {
             TypeProvider typeProvider = Framework.getLocalService(SchemaManager.class);
             DocumentPart[] parts = new DocumentPart[schemas.length];
             for (int i = 0; i < schemas.length; i++) {
-                DocumentPart part = new DocumentPartImpl(
-                        typeProvider.getSchema(schemas[i]));
+                DocumentPart part = new DocumentPartImpl(typeProvider.getSchema(schemas[i]));
                 doc.readDocumentPart(part);
                 parts[i] = part;
             }
@@ -341,8 +321,7 @@ public class DocumentModelFactory {
     /**
      * Prefetches from a document.
      */
-    protected static Prefetch getPrefetch(Document doc,
-            PrefetchInfo prefetchInfo, Set<String> docSchemas) {
+    protected static Prefetch getPrefetch(Document doc, PrefetchInfo prefetchInfo, Set<String> docSchemas) {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
 
         // individual fields
@@ -376,8 +355,7 @@ public class DocumentModelFactory {
             // find xpaths for this schema
             Set<String> schemaXpaths = new HashSet<String>();
             for (String xpath : xpaths) {
-                String sn = DocumentModelImpl.getXPathSchemaName(xpath,
-                        docSchemas, null);
+                String sn = DocumentModelImpl.getXPathSchemaName(xpath, docSchemas, null);
                 if (schemaName.equals(sn)) {
                     schemaXpaths.add(xpath);
                 }
@@ -392,8 +370,7 @@ public class DocumentModelFactory {
                 String xpath = en.getKey();
                 Serializable value = en.getValue();
                 String[] returnName = new String[1];
-                String sn = DocumentModelImpl.getXPathSchemaName(xpath,
-                        docSchemas, returnName);
+                String sn = DocumentModelImpl.getXPathSchemaName(xpath, docSchemas, returnName);
                 String name = returnName[0];
                 prefetch.put(xpath, sn, name, value);
             }
@@ -420,25 +397,22 @@ public class DocumentModelFactory {
     }
 
     /**
-     * Create an empty documentmodel for a given type with its id already setted. This
-     * can be useful when trying to attach a documentmodel that has been serialized
-     * and modified.
+     * Create an empty documentmodel for a given type with its id already setted. This can be useful when trying to
+     * attach a documentmodel that has been serialized and modified.
      *
      * @param type
      * @param id
      * @return
      * @throws DocumentException
-     *
      * @since 5.7.2
      */
     public static DocumentModel createDocumentModel(String type, String id) throws DocumentException {
         SchemaManager sm = Framework.getLocalService(SchemaManager.class);
         DocumentType docType = sm.getDocumentType(type);
-        DocumentModel doc = new DocumentModelImpl(null,
-                docType.getName(), id, null, null, new IdRef(id), null, null, null,
-                null, null);
+        DocumentModel doc = new DocumentModelImpl(null, docType.getName(), id, null, null, new IdRef(id), null, null,
+                null, null, null);
         for (Schema schema : docType.getSchemas()) {
-            ((DocumentModelImpl)doc).addDataModel(createDataModel(null, schema));
+            ((DocumentModelImpl) doc).addDataModel(createDataModel(null, schema));
         }
         return doc;
     }

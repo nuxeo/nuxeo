@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * XMap descriptor for contributed thumbnail factories.
+ *
  * @since 5.7
  */
 @XObject("thumbnailFactory")
@@ -53,7 +54,7 @@ public class ThumbnailFactoryDescriptor implements Serializable {
         return facet;
     }
 
-    public ThumbnailFactory getFactory()  {
+    public ThumbnailFactory getFactory() {
         try {
             return (ThumbnailFactory) factoryClass.newInstance();
         } catch (ReflectiveOperationException e) {

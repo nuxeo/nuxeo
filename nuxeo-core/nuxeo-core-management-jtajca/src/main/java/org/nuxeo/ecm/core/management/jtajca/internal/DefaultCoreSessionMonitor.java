@@ -31,15 +31,13 @@ public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
         return toInfos(toSortedRegistration(CoreInstance.getInstance().getRegistrationInfos()));
     }
 
-    public RegistrationInfo[] toSortedRegistration(
-            Collection<RegistrationInfo> infos) {
+    public RegistrationInfo[] toSortedRegistration(Collection<RegistrationInfo> infos) {
         RegistrationInfo[] sortedInfos = infos.toArray(new RegistrationInfo[infos.size()]);
         Arrays.sort(sortedInfos, new Comparator<RegistrationInfo>() {
 
             @Override
             public int compare(RegistrationInfo o1, RegistrationInfo o2) {
-                return o2.session.getSessionId().compareTo(
-                        o1.session.getSessionId());
+                return o2.session.getSessionId().compareTo(o1.session.getSessionId());
             }
 
         });

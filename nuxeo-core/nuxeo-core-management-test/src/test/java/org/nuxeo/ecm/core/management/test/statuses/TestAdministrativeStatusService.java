@@ -50,8 +50,8 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.management", //
-    "org.nuxeo.ecm.core.management", //
-    "org.nuxeo.ecm.core.management.test" })
+        "org.nuxeo.ecm.core.management", //
+        "org.nuxeo.ecm.core.management.test" })
 public class TestAdministrativeStatusService {
 
     @Inject
@@ -100,8 +100,7 @@ public class TestAdministrativeStatusService {
         assertTrue(RuntimeListener.isServerActivatedEventTriggered());
         assertFalse(RuntimeListener.isServerPassivatedEventTriggered());
 
-        status = localManager.deactivateNuxeoInstance(
-                "Nuxeo Server is down for maintenance", "system");
+        status = localManager.deactivateNuxeoInstance("Nuxeo Server is down for maintenance", "system");
         assertTrue(status.isPassive());
         assertTrue(AdministrativeStatusChangeListener.isServerPassivatedEventTriggered());
         assertTrue(RuntimeListener.isServerPassivatedEventTriggered());
@@ -118,8 +117,7 @@ public class TestAdministrativeStatusService {
         AdministrativeStatus status = localManager.getStatus(serviceId);
         assertTrue(status.isPassive());
 
-        status = localManager.activate(serviceId, "Hi Nuxeo Users from Admin",
-                "Administrator");
+        status = localManager.activate(serviceId, "Hi Nuxeo Users from Admin", "Administrator");
         assertTrue(status.isActive());
 
         status = localManager.deactivate(serviceId, "", "Administrator");
@@ -162,8 +160,7 @@ public class TestAdministrativeStatusService {
         AdministrativeStatusManager sm = globalManager.getStatusManager("MyClusterNode2");
         assertNotNull(sm);
 
-        AdministrativeStatus status = sm.deactivateNuxeoInstance(
-                "ClusterNode2 is deactivated for now", "system");
+        AdministrativeStatus status = sm.deactivateNuxeoInstance("ClusterNode2 is deactivated for now", "system");
         assertNotNull(status);
 
         // check that we now have 2 instances
@@ -171,12 +168,10 @@ public class TestAdministrativeStatusService {
         assertEquals(2, instances.size());
 
         // update status on the same service on both nodes
-        globalManager.setStatus(serviceId, AdministrativeStatus.ACTIVE,
-                "Yo Man", "system");
+        globalManager.setStatus(serviceId, AdministrativeStatus.ACTIVE, "Yo Man", "system");
 
         AdministrativeStatus statusNode1 = globalManager.getStatusManager(
-                globalManager.getLocalNuxeoInstanceIdentifier()).getStatus(
-                serviceId);
+                globalManager.getLocalNuxeoInstanceIdentifier()).getStatus(serviceId);
         assertNotNull(statusNode1);
         assertEquals("Yo Man", statusNode1.getMessage());
 

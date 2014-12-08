@@ -40,8 +40,7 @@ import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
 public class ThemeStylesRenderer extends ScriptStyleBaseRenderer {
 
     @Override
-    protected void startElement(ResponseWriter writer, UIComponent component)
-            throws IOException {
+    protected void startElement(ResponseWriter writer, UIComponent component) throws IOException {
     }
 
     @Override
@@ -49,8 +48,7 @@ public class ThemeStylesRenderer extends ScriptStyleBaseRenderer {
     }
 
     @Override
-    public void encodeEnd(FacesContext context, UIComponent component)
-            throws IOException {
+    public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
 
         Map<String, Object> attributes = component.getAttributes();
         String cache = (String) attributes.get("cache");
@@ -71,15 +69,14 @@ public class ThemeStylesRenderer extends ScriptStyleBaseRenderer {
         params.put("themeName", theme);
         params.put("path", externalContext.getRequestContextPath());
         // FIXME: use configuration
-        String basePath = Framework.getProperty("org.nuxeo.ecm.contextPath",
-                "/nuxeo");
+        String basePath = Framework.getProperty("org.nuxeo.ecm.contextPath", "/nuxeo");
         params.put("basepath", basePath);
         String collectionName = ThemeManager.getCollectionNameByUrl(themeUrl);
         params.put("collection", collectionName);
 
         Boolean virtualHosting = Utils.isVirtualHosting((HttpServletRequest) externalContext.getRequest());
-        writer.write(ThemeStyles.render(params, Boolean.parseBoolean(cache),
-                Boolean.parseBoolean(inline), virtualHosting));
+        writer.write(ThemeStyles.render(params, Boolean.parseBoolean(cache), Boolean.parseBoolean(inline),
+                virtualHosting));
     }
 
 }

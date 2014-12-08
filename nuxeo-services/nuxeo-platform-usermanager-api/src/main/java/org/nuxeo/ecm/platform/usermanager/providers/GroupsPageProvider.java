@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @since 5.4.2
  */
-public class GroupsPageProvider extends
-        AbstractGroupsPageProvider<DocumentModel> {
+public class GroupsPageProvider extends AbstractGroupsPageProvider<DocumentModel> {
 
     @Override
     public List<DocumentModel> getCurrentPage() {

@@ -25,6 +25,7 @@ import org.nuxeo.runtime.model.Extension;
 public abstract class Contribution implements Cloneable {
 
     protected Extension extension;
+
     protected String contributionId;
 
     public abstract void install(ManagedComponent comp, Contribution contrib);
@@ -86,8 +87,7 @@ public abstract class Contribution implements Cloneable {
             return false;
         }
         if (obj instanceof Contribution) {
-            return getClass() == obj.getClass()
-                    && contributionId.equals(((Contribution) obj).contributionId);
+            return getClass() == obj.getClass() && contributionId.equals(((Contribution) obj).contributionId);
         }
         return false;
     }

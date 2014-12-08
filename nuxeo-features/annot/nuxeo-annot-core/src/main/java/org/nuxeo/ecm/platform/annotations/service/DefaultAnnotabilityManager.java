@@ -23,7 +23,6 @@ import java.net.URI;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class DefaultAnnotabilityManager implements AnnotabilityManager {
 

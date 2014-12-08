@@ -27,8 +27,7 @@ import org.nuxeo.ecm.core.schema.types.QName;
 /**
  * Exporter for a document's values into a map.
  * <p>
- * The values of the first-level keys of the map may be prefixed (standard
- * prefix:name naming) or not.
+ * The values of the first-level keys of the map may be prefixed (standard prefix:name naming) or not.
  */
 @SuppressWarnings("unchecked")
 public class ValueExporter implements PropertyVisitor {
@@ -50,8 +49,7 @@ public class ValueExporter implements PropertyVisitor {
         return result;
     }
 
-    public Map<String, Serializable> run(DocumentPart dp)
-            throws PropertyException {
+    public Map<String, Serializable> run(DocumentPart dp) throws PropertyException {
         dp.accept(this, result);
         return result;
     }
@@ -67,8 +65,7 @@ public class ValueExporter implements PropertyVisitor {
     }
 
     @Override
-    public Object visit(MapProperty property, Object arg)
-            throws PropertyException {
+    public Object visit(MapProperty property, Object arg) throws PropertyException {
 
         Serializable value;
         if (property.isContainer()) {
@@ -94,8 +91,7 @@ public class ValueExporter implements PropertyVisitor {
     }
 
     @Override
-    public Object visit(ListProperty property, Object arg)
-            throws PropertyException {
+    public Object visit(ListProperty property, Object arg) throws PropertyException {
         Serializable value;
         if (property.isContainer()) {
             value = new ArrayList<Serializable>();
@@ -111,8 +107,7 @@ public class ValueExporter implements PropertyVisitor {
     }
 
     @Override
-    public Object visit(ScalarProperty property, Object arg)
-            throws PropertyException {
+    public Object visit(ScalarProperty property, Object arg) throws PropertyException {
         Serializable value = property.getValue();
         if (property.getParent().isList()) {
             ((Collection<Serializable>) arg).add(value);

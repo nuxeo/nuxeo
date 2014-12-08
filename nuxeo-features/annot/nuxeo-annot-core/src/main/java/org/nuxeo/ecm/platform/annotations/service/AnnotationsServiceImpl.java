@@ -45,7 +45,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationsServiceImpl implements AnnotationsService {
 
@@ -71,19 +70,17 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         resolver = configuration.getUriResolver();
     }
 
-    public Annotation addAnnotation(Annotation annotation, NuxeoPrincipal user,
-            String baseUrl) throws AnnotationException {
+    public Annotation addAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl)
+            throws AnnotationException {
         String id = idGenerator.getNext();
         return addAnnotation(annotation, user, baseUrl, id);
     }
 
-    private Annotation addAnnotation(Annotation annotation,
-            NuxeoPrincipal user, String baseUrl, String id)
+    private Annotation addAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl, String id)
             throws AnnotationException {
         try {
             Graph graph = relationManager.getGraphByName(AnnotationsConstants.DEFAULT_GRAPH_NAME);
-            Resource resource = new ResourceImpl(
-                    AnnotationsConstants.DEFAULT_BASE_URI + id);
+            Resource resource = new ResourceImpl(AnnotationsConstants.DEFAULT_BASE_URI + id);
             annotation.setSubject(resource);
             mapper.updateMetadata(annotation, user);
             graph.add(annotation.getStatements());
@@ -94,8 +91,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
 
     }
 
-    public void deleteAnnotation(Annotation annotation, NuxeoPrincipal user)
-            throws AnnotationException {
+    public void deleteAnnotation(Annotation annotation, NuxeoPrincipal user) throws AnnotationException {
         try {
             Graph graph = relationManager.getGraphByName(AnnotationsConstants.DEFAULT_GRAPH_NAME);
             graph.remove(annotation.getStatements());
@@ -104,15 +100,13 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         }
     }
 
-    public void deleteAnnotationFor(URI uri, Annotation annotation,
-            NuxeoPrincipal user) throws AnnotationException {
+    public void deleteAnnotationFor(URI uri, Annotation annotation, NuxeoPrincipal user) throws AnnotationException {
         List<Statement> statementsToDelete = new ArrayList<Statement>();
 
         boolean removeAllAnnotationStatements = true;
         List<Statement> statements = annotation.getStatements();
         for (Statement statement : statements) {
-            if (statement.getPredicate().equals(
-                    AnnotationsConstants.a_annotates)) {
+            if (statement.getPredicate().equals(AnnotationsConstants.a_annotates)) {
                 Resource resource = (Resource) statement.getObject();
                 if (uri.toString().equals(resource.getUri())) {
                     statementsToDelete.add(statement);
@@ -129,8 +123,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         graph.remove(statementsToDelete);
     }
 
-    public Annotation getAnnotation(String id, NuxeoPrincipal user,
-            String baseUrl) throws AnnotationException {
+    public Annotation getAnnotation(String id, NuxeoPrincipal user, String baseUrl) throws AnnotationException {
         Annotation annotation = null;
         String uri = AnnotationsConstants.DEFAULT_BASE_URI + id;
         String query = GET_ANN_QUERY.replaceFirst("source", uri);
@@ -139,8 +132,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
             QueryResult result = graph.query(query, "sparql", null);
             List<Statement> statements = new ArrayList<Statement>();
             for (Map<String, Node> map : result.getResults()) {
-                Statement statement = new StatementImpl(new ResourceImpl(uri),
-                        map.get("p"), map.get("o"));
+                Statement statement = new StatementImpl(new ResourceImpl(uri), map.get("p"), map.get("o"));
                 statements.add(statement);
             }
             annotation = annotationManager.getAnnotation(statements);
@@ -150,21 +142,18 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         return annotation;
     }
 
-    public String getAnnotationBody(String id, NuxeoPrincipal name)
-            throws AnnotationException {
+    public String getAnnotationBody(String id, NuxeoPrincipal name) throws AnnotationException {
         String uri = AnnotationsConstants.DEFAULT_BASE_URI + "body/" + id;
         try {
             Graph graph = relationManager.getGraphByName(AnnotationsConstants.DEFAULT_GRAPH_NAME);
-            List<Node> result = graph.getObjects(new ResourceImpl(uri),
-                    AnnotationsConstants.nx_body_content);
+            List<Node> result = graph.getObjects(new ResourceImpl(uri), AnnotationsConstants.nx_body_content);
             return ((Literal) result.get(0)).getValue();
         } catch (ClientException e) {
             throw new AnnotationException(e);
         }
     }
 
-    public List<Annotation> queryAnnotations(URI uri,
-            Map<String, String> filters, NuxeoPrincipal user)
+    public List<Annotation> queryAnnotations(URI uri, Map<String, String> filters, NuxeoPrincipal user)
             throws AnnotationException {
         AnnotationQuery query = new AnnotationQuery();
         Graph graph = null;
@@ -174,13 +163,12 @@ public class AnnotationsServiceImpl implements AnnotationsService {
             throw new AnnotationException(e);
         }
         List<URI> uris = resolver.getSearchURI(uri);
-        List<Annotation> annotations = query.getAnnotationsForURIs(uris, graph,
-                filters);
+        List<Annotation> annotations = query.getAnnotationsForURIs(uris, graph, filters);
         return annotations;
     }
 
-    public Annotation updateAnnotation(Annotation annotation,
-            NuxeoPrincipal user, String baseUrl) throws AnnotationException {
+    public Annotation updateAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl)
+            throws AnnotationException {
         try {
             String id = annotation.getId();
             deleteAnnotation(annotation, user);

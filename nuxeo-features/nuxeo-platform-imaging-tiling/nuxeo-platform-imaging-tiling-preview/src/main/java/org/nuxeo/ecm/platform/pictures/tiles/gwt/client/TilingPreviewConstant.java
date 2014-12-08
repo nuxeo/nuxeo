@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.pictures.tiles.gwt.client;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface TilingPreviewConstant {
     String ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_XPOINTER_FILTER = "org_nuxeo_ecm_platform_pictures_tiles_gwt_client_XPointerFilter";

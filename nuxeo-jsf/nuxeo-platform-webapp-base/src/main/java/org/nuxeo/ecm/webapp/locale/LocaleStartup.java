@@ -42,8 +42,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Initialize the locale when the user session is entered. Enables client to
- * send their timezone id through AJAX (not yet implemented).
+ * Initialize the locale when the user session is entered. Enables client to send their timezone id through AJAX (not
+ * yet implemented).
  *
  * @since 5.6
  */
@@ -60,8 +60,7 @@ public class LocaleStartup implements Serializable {
         if (!Contexts.isSessionContextActive()) {
             return null;
         }
-        return (LocaleStartup) Component.getInstance(LocaleStartup.class,
-                ScopeType.SESSION);
+        return (LocaleStartup) Component.getInstance(LocaleStartup.class, ScopeType.SESSION);
     }
 
     @In(create = true)
@@ -84,9 +83,8 @@ public class LocaleStartup implements Serializable {
     }
 
     /**
-     * Getting the timezone from the cookies and initialize Seam timezone. The
-     * nxtimezone.js contains methods to set the cookie with the browser
-     * timezone.
+     * Getting the timezone from the cookies and initialize Seam timezone. The nxtimezone.js contains methods to set the
+     * cookie with the browser timezone.
      */
     public void setupTimeZone(CoreSession session) {
         // Not using LocaleProvider to get persisted timezone because it is too
@@ -100,12 +98,9 @@ public class LocaleStartup implements Serializable {
     public void setupLocale(CoreSession session) {
         Locale locale = null;
         try {
-            locale = Framework.getLocalService(LocaleProvider.class).getLocale(
-                    session);
+            locale = Framework.getLocalService(LocaleProvider.class).getLocale(session);
         } catch (ClientException e) {
-            log.warn(
-                    "Couldn't get locale from LocaleProvider, trying request locale and default locale",
-                    e);
+            log.warn("Couldn't get locale from LocaleProvider, trying request locale and default locale", e);
         }
         setupLocale(locale);
     }
@@ -116,12 +111,9 @@ public class LocaleStartup implements Serializable {
     public void setupLocale(DocumentModel userProfileDoc) {
         Locale locale = null;
         try {
-            locale = Framework.getLocalService(LocaleProvider.class).getLocale(
-                    userProfileDoc);
+            locale = Framework.getLocalService(LocaleProvider.class).getLocale(userProfileDoc);
         } catch (ClientException e) {
-            log.warn(
-                    "Couldn't get locale from LocaleProvider, trying request locale and default locale",
-                    e);
+            log.warn("Couldn't get locale from LocaleProvider, trying request locale and default locale", e);
         }
         setupLocale(locale);
     }

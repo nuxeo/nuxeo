@@ -45,8 +45,8 @@ public class ACPImpl implements ACP {
     }
 
     /**
-     * This method must append the ACL and not insert it since it is used to
-     * append the inherited ACL which is the less significant ACL.
+     * This method must append the ACL and not insert it since it is used to append the inherited ACL which is the less
+     * significant ACL.
      */
     @Override
     public void addACL(ACL acl) {
@@ -143,8 +143,7 @@ public class ACPImpl implements ACP {
             access = Access.UNKNOWN;
             FOUND_ACE: for (ACL acl : acls) {
                 for (ACE ace : acl) {
-                    if (permissionsMatch(ace, permission)
-                            && principalsMatch(ace, principal)) {
+                    if (permissionsMatch(ace, permission) && principalsMatch(ace, principal)) {
                         access = ace.isGranted() ? Access.GRANT : Access.DENY;
                         break FOUND_ACE;
                     }
@@ -170,8 +169,7 @@ public class ACPImpl implements ACP {
         return Access.UNKNOWN;
     }
 
-    public static Access getAccess(ACE ace, String[] principals,
-            String[] permissions) {
+    public static Access getAccess(ACE ace, String[] principals, String[] permissions) {
         String acePerm = ace.getPermission();
         String aceUser = ace.getUsername();
 
@@ -257,8 +255,7 @@ public class ACPImpl implements ACP {
     }
 
     @Override
-    public void setRules(String aclName, UserEntry[] userEntries,
-            boolean overwrite) {
+    public void setRules(String aclName, UserEntry[] userEntries, boolean overwrite) {
 
         ACL acl = getACL(aclName);
         if (acl == null) { // create the loca ACL
@@ -292,8 +289,7 @@ public class ACPImpl implements ACP {
 
     // Serialization.
 
-    private void readObject(ObjectInputStream in)
-            throws ClassNotFoundException, IOException {
+    private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
         // always perform the default de-serialization first
         in.defaultReadObject();
         // initialize cache to avoid NPE
@@ -301,9 +297,8 @@ public class ACPImpl implements ACP {
     }
 
     /*
-     * NXP-1822 Rux: method for validating in one shot the users allowed to
-     * perform an oration. It gets the list of individual permissions which
-     * supposedly all grant.
+     * NXP-1822 Rux: method for validating in one shot the users allowed to perform an oration. It gets the list of
+     * individual permissions which supposedly all grant.
      */
     @Override
     public String[] listUsernamesForAnyPermission(Set<String> perms) {

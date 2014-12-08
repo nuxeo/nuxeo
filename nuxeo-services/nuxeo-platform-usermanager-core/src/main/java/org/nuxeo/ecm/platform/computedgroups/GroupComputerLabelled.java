@@ -17,13 +17,10 @@
 package org.nuxeo.ecm.platform.computedgroups;
 
 /**
- * Group Computer implementing this interface will expose Group with specific
- * label.
- * Group Computer implementing only {@link GroupComputer} will expose group with
- * label is the same as groupId
+ * Group Computer implementing this interface will expose Group with specific label. Group Computer implementing only
+ * {@link GroupComputer} will expose group with label is the same as groupId
  *
  * @since 5.7.3
- *
  */
 public interface GroupComputerLabelled extends GroupComputer {
 

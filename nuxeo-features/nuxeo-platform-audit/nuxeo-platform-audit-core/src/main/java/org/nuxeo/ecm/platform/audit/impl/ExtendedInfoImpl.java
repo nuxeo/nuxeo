@@ -122,7 +122,6 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         }
 
         @Column(name = "LOG_EXTINFO_LONG")
-
         public Long getLongValue() {
             return longValue;
         }
@@ -155,7 +154,6 @@ public class ExtendedInfoImpl implements ExtendedInfo {
 
         @Column(name = "LOG_EXTINFO_DATE")
         @Temporal(value = TemporalType.TIMESTAMP)
-
         public Date getDateValue() {
             return dateValue;
         }
@@ -187,7 +185,6 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         }
 
         @Column(name = "LOG_EXTINFO_STRING")
-
         public String getStringValue() {
             return stringValue;
         }
@@ -219,7 +216,6 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         }
 
         @Column(name = "LOG_EXTINFO_DOUBLE")
-
         public Double getDoubleValue() {
             return doubleValue;
         }
@@ -251,7 +247,6 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         }
 
         @Column(name = "LOG_EXTINFO_BOOLEAN")
-
         public Boolean getBooleanValue() {
             return booleanValue;
         }
@@ -284,7 +279,6 @@ public class ExtendedInfoImpl implements ExtendedInfo {
 
         @Column(name = "LOG_EXTINFO_BLOB")
         @Lob
-
         public Serializable getBlobValue() {
             return blobValue;
         }

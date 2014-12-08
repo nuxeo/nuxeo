@@ -16,23 +16,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
- * Useful to make suites using different configurations.
- * Usage:
+ * Useful to make suites using different configurations. Usage:
+ *
  * <pre>
- * @RepositoryConfigs({
- *   @RepositoryConfig(type=BackendType.H2),
- *   @RepositoryConfig(type=BackendType.JCR)
- * })
- * @SuiteClasses( { Test1.class, Test2.class } )
- * @RunWith(MultiNuxeoCoreRunner.class)
+ * &#064;RepositoryConfigs({ @RepositoryConfig(type = BackendType.H2), @RepositoryConfig(type = BackendType.JCR) })
+ * &#064;SuiteClasses({ Test1.class, Test2.class })
+ * &#064;RunWith(MultiNuxeoCoreRunner.class)
  * public class MySuite {
  * }
  * </pre>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

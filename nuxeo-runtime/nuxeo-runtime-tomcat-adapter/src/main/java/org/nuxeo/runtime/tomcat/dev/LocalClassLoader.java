@@ -1,4 +1,5 @@
 package org.nuxeo.runtime.tomcat.dev;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -23,12 +24,10 @@ import java.util.Enumeration;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public interface LocalClassLoader {
 
-    Class<?> loadLocalClass(String name, boolean resolve)
-            throws ClassNotFoundException;
+    Class<?> loadLocalClass(String name, boolean resolve) throws ClassNotFoundException;
 
     Class<?> loadClass(String name) throws ClassNotFoundException;
 

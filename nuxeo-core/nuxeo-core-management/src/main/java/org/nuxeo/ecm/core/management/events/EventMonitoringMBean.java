@@ -40,7 +40,6 @@ public interface EventMonitoringMBean {
      */
     void setAsyncHandlersTrackingEnabled(boolean collectAsyncHandlersExecTime);
 
-
     /**
      * Tells if time tracking is active for Sync event handlers.
      */
@@ -87,8 +86,7 @@ public interface EventMonitoringMBean {
     void setBlockSyncPostCommitHandlers(boolean blockSyncPostCommitHandlers);
 
     /**
-     * Get a summary of all registered listeners
-     * (name - type - enabled).
+     * Get a summary of all registered listeners (name - type - enabled).
      */
     String getListenersConfig();
 
@@ -98,8 +96,7 @@ public interface EventMonitoringMBean {
     void setListenerEnabledFlag(String listenerName, boolean enabled);
 
     /**
-     * Getter for bulkMode processing.
-     * Bulk mode may be used by listeners to drop some processing.
+     * Getter for bulkMode processing. Bulk mode may be used by listeners to drop some processing.
      */
     boolean isBulkModeEnabled();
 

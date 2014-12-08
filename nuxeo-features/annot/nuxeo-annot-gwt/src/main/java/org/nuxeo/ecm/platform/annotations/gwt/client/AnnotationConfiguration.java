@@ -25,7 +25,6 @@ import java.util.MissingResourceException;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationConfiguration {
     private static final String ANNOTATION_CSS_URL = "annotationCssUrl";

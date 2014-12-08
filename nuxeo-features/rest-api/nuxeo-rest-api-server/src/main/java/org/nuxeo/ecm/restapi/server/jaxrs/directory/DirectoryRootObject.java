@@ -23,11 +23,9 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
- *
- *
  * @since 5.7.8
  */
-@WebObject(type="directory")
+@WebObject(type = "directory")
 public class DirectoryRootObject extends DefaultObject {
 
     @Path("{directoryName}")

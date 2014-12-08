@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.relations.api.Resource;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class AnnotationsServiceTest extends AbstractAnnotationTest {
     private static final String HTTP_MYEXEMPLE_COM_NUXEO_ANNOTATIONS = "http://myexemple.com/nuxeo/Annotations/";
@@ -39,8 +38,7 @@ public class AnnotationsServiceTest extends AbstractAnnotationTest {
     public void testAddAnnotation() throws Exception {
         assertNotNull(annotation);
 
-        Annotation result = service.addAnnotation(annotation, user,
-                HTTP_MYEXEMPLE_COM_NUXEO_ANNOTATIONS);
+        Annotation result = service.addAnnotation(annotation, user, HTTP_MYEXEMPLE_COM_NUXEO_ANNOTATIONS);
         assertNotNull(result);
 
         Resource subject = result.getSubject();
@@ -52,13 +50,12 @@ public class AnnotationsServiceTest extends AbstractAnnotationTest {
                 context);
 
         String annIdUri = subject.getUri();
-        String annId = annIdUri.substring(annIdUri.lastIndexOf("/"),
-                annIdUri.length());
+        String annId = annIdUri.substring(annIdUri.lastIndexOf("/"), annIdUri.length());
         assertNotNull(annId);
 
         waitForAsyncCompletion();
-        List<Annotation> annotations = service.queryAnnotations(new URI(
-                "http://www.w3.org/2005/Incubator/"), null, user);
+        List<Annotation> annotations = service.queryAnnotations(new URI("http://www.w3.org/2005/Incubator/"), null,
+                user);
         assertNotNull(annotations);
 
         // assertEquals(1, annotations.size()); TODO eclipse gave one result and maven two

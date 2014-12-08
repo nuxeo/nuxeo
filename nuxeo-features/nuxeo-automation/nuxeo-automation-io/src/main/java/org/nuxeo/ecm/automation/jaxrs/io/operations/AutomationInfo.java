@@ -44,8 +44,7 @@ public class AutomationInfo {
         }
         chains = new ArrayList<OperationDocumentation>();
         for (OperationChain chain : service.getOperationChains()) {
-            OperationDocumentation doc = new OperationDocumentation(
-                    chain.getId());
+            OperationDocumentation doc = new OperationDocumentation(chain.getId());
             doc.description = chain.getDescription();
             doc.category = "Chain";
             doc.label = doc.id;
@@ -57,8 +56,7 @@ public class AutomationInfo {
             } else if (ops.size() == 1) {
                 OperationDocumentation opdoc = map.get(ops.get(0).id());
                 if (opdoc == null) {
-                    log.error("Unable to find Operation " + ops.get(0).id()
-                            + " that is used by chain " + chain.getId()
+                    log.error("Unable to find Operation " + ops.get(0).id() + " that is used by chain " + chain.getId()
                             + ", chain will be discarded");
                     continue;
                 }
@@ -68,8 +66,7 @@ public class AutomationInfo {
                 for (OperationParameters o : ops) {
                     OperationDocumentation opdoc = map.get(o.id());
                     if (opdoc == null) {
-                        log.error("Unable to find Operation " + o.id()
-                                + " that is used by chain " + chain.getId()
+                        log.error("Unable to find Operation " + o.id() + " that is used by chain " + chain.getId()
                                 + ", chain will be discarded");
                         continue;
                     }
@@ -93,8 +90,7 @@ public class AutomationInfo {
         }
     }
 
-    protected void checkPath(String in, List<String[]> sigs, int offset,
-            List<String> result) {
+    protected void checkPath(String in, List<String[]> sigs, int offset, List<String> result) {
         boolean last = sigs.size() - 1 == offset;
         String[] sig = sigs.get(offset);
         for (int i = 0; i < sig.length; i += 2) {

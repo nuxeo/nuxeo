@@ -41,20 +41,17 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- *
  */
 public class NXThemesHeadDirective implements TemplateDirectiveModel {
 
-    public void execute(Environment env, Map params, TemplateModel[] loopVars,
-            TemplateDirectiveBody body) throws TemplateException, IOException {
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+            throws TemplateException, IOException {
 
         if (!params.isEmpty()) {
-            throw new TemplateModelException(
-                    "This directive doesn't allow parameters.");
+            throw new TemplateModelException("This directive doesn't allow parameters.");
         }
         if (loopVars.length != 0) {
-            throw new TemplateModelException(
-                    "This directive doesn't allow loop variables.");
+            throw new TemplateModelException("This directive doesn't allow loop variables.");
         }
         if (body != null) {
             throw new TemplateModelException("Didn't expect a body");

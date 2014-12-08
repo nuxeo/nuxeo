@@ -82,15 +82,14 @@ public class EventHandler {
     protected Boolean isAdministrator;
 
     /**
-     * @deprecated since 5.7: expression evaluation was inverted so a new
-     *             attribute condition has been defined, see NXP-8630
+     * @deprecated since 5.7: expression evaluation was inverted so a new attribute condition has been defined, see
+     *             NXP-8630
      */
     @Deprecated
     protected String expression;
 
     /**
-     * @since 5.7: added to replace the 'expression' element as its evaluation
-     *        is inverted
+     * @since 5.7: added to replace the 'expression' element as its evaluation is inverted
      */
     protected String condition;
 
@@ -197,7 +196,6 @@ public class EventHandler {
     }
 
     /**
-     *
      * @since 5.9.1
      */
     public void setCondition(String condition) {
@@ -243,21 +241,17 @@ public class EventHandler {
     /**
      * Checks if this handler should run for the event and operation context.
      *
-     * @param quick If {@code true}, then this method may not check all filter
-     *            parameters like {@code filter/expression} and just return
-     *            {@code true} to avoid costly evaluations on
-     *            {@link ShallowDocumentModel} instances
+     * @param quick If {@code true}, then this method may not check all filter parameters like {@code filter/expression}
+     *            and just return {@code true} to avoid costly evaluations on {@link ShallowDocumentModel} instances
      */
-    public boolean isEnabled(OperationContext ctx, EventContext eventCtx,
-            boolean quick) throws ClientException {
+    public boolean isEnabled(OperationContext ctx, EventContext eventCtx, boolean quick) throws ClientException {
         Object obj = ctx.getInput();
         DocumentModel doc = null;
         if (obj instanceof DocumentModel) {
             doc = (DocumentModel) obj;
         }
         if (doctypes != null) {
-            if (doc == null
-                    || (!doctypes.isEmpty() && !doctypes.contains(doc.getType()))) {
+            if (doc == null || (!doctypes.isEmpty() && !doctypes.contains(doc.getType()))) {
                 return false;
             }
         }
@@ -288,8 +282,7 @@ public class EventHandler {
             }
         }
         if (pathStartsWith != null) {
-            if (doc == null
-                    || !doc.getPathAsString().startsWith(pathStartsWith)) {
+            if (doc == null || !doc.getPathAsString().startsWith(pathStartsWith)) {
                 return false;
             }
         }
@@ -315,8 +308,8 @@ public class EventHandler {
             return true;
         }
         /*
-         * The following are not evaluated in quick mode, as we need a full
-         * DocumentModelImpl to evaluate most expressions.
+         * The following are not evaluated in quick mode, as we need a full DocumentModelImpl to evaluate most
+         * expressions.
          */
         if (!org.apache.commons.lang.StringUtils.isBlank(condition)) {
             Expression expr = Scripting.newExpression(condition);
@@ -326,11 +319,9 @@ public class EventHandler {
         } else if (!org.apache.commons.lang.StringUtils.isBlank(expression)) {
             // BBB
             if (log.isWarnEnabled()) {
-                log.warn(String.format(
-                        "The 'expression' element with value '%s' "
-                                + "on event handler for chain '%s' is deprecated: please use the 'condition'"
-                                + " attribute instead, as its evaluation will not be inverted.",
-                        expression, chainId));
+                log.warn(String.format("The 'expression' element with value '%s' "
+                        + "on event handler for chain '%s' is deprecated: please use the 'condition'"
+                        + " attribute instead, as its evaluation will not be inverted.", expression, chainId));
             }
             Expression expr = Scripting.newExpression(expression);
             if (Boolean.TRUE.equals(expr.eval(ctx))) {

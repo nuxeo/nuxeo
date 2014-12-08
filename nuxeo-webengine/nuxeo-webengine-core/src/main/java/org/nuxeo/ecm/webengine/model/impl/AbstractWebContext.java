@@ -72,7 +72,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractWebContext implements WebContext {
 
@@ -317,8 +316,7 @@ public abstract class AbstractWebContext implements WebContext {
     public Resource newObject(String typeName, Object... args) {
         ResourceType type = module.getType(typeName);
         if (type == null) {
-            throw new WebResourceNotFoundException("No Such Object Type: "
-                    + typeName);
+            throw new WebResourceNotFoundException("No Such Object Type: " + typeName);
         }
         return newObject(type, args);
     }
@@ -339,8 +337,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     @Override
-    public AdapterResource newAdapter(Resource ctx, String serviceName,
-            Object... args) {
+    public AdapterResource newAdapter(Resource ctx, String serviceName, Object... args) {
         AdapterType st = module.getAdapter(ctx, serviceName);
         AdapterResource service = (AdapterResource) st.newInstance();
         try {
@@ -415,8 +412,7 @@ public abstract class AbstractWebContext implements WebContext {
                 // apache server.
                 webenginePath = "";
             }
-            basePath = webenginePath != null ? webenginePath
-                    : getDefaultBasePath();
+            basePath = webenginePath != null ? webenginePath : getDefaultBasePath();
         }
         return basePath;
     }
@@ -450,8 +446,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     @Override
     public StringBuilder getServerURL() {
-        StringBuilder url = new StringBuilder(
-                VirtualHostHelper.getServerURL(request));
+        StringBuilder url = new StringBuilder(VirtualHostHelper.getServerURL(request));
         if (url.toString().endsWith("/")) {
             url.deleteCharAt(url.length() - 1);
         }
@@ -498,8 +493,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     /**
-     * This method is working only for root objects that implement
-     * {@link ModuleResource}
+     * This method is working only for root objects that implement {@link ModuleResource}
      */
     @Override
     public String getUrlPath(DocumentModel document) {
@@ -587,8 +581,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     public void pushScriptFile(File file) {
         if (scriptExecutionStack.size() > 64) { // stack limit
-            throw new IllegalStateException(
-                    "Script execution stack overflowed. More than 64 calls between scripts");
+            throw new IllegalStateException("Script execution stack overflowed. More than 64 calls between scripts");
         }
         if (file == null) {
             throw new IllegalArgumentException("Cannot push a null file");
@@ -599,8 +592,7 @@ public abstract class AbstractWebContext implements WebContext {
     public File popScriptFile() {
         int size = scriptExecutionStack.size();
         if (size == 0) {
-            throw new IllegalStateException(
-                    "Script execution stack underflowed. No script path to pop");
+            throw new IllegalStateException("Script execution stack underflowed. No script path to pop");
         }
         return scriptExecutionStack.remove(size - 1);
     }
@@ -634,8 +626,7 @@ public abstract class AbstractWebContext implements WebContext {
         if (script != null) {
             render(script, ctx, writer);
         } else {
-            throw new WebResourceNotFoundException("Template not found: "
-                    + template);
+            throw new WebResourceNotFoundException("Template not found: " + template);
         }
     }
 
@@ -680,8 +671,7 @@ public abstract class AbstractWebContext implements WebContext {
         if (sf != null) {
             return runScript(sf, args);
         } else {
-            throw new WebResourceNotFoundException("Script not found: "
-                    + script);
+            throw new WebResourceNotFoundException("Script not found: " + script);
         }
     }
 
@@ -782,16 +772,12 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     /**
-     * Can be used by the application to disable injecting repository sessions
-     * in scripting context. If the application is not deploying a repository
-     * injecting a repository session will throw exceptions each time rendering
-     * is used.
+     * Can be used by the application to disable injecting repository sessions in scripting context. If the application
+     * is not deploying a repository injecting a repository session will throw exceptions each time rendering is used.
      *
-     * @param isRepositoryDisabled true to disable repository session injection,
-     *            false otherwise
+     * @param isRepositoryDisabled true to disable repository session injection, false otherwise
      */
-    public static void setIsRepositorySupportDisabled(
-            boolean isRepositoryDisabled) {
+    public static void setIsRepositorySupportDisabled(boolean isRepositoryDisabled) {
         AbstractWebContext.isRepositoryDisabled = isRepositoryDisabled;
     }
 

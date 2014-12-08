@@ -25,7 +25,6 @@ import javax.naming.NamingException;
  *
  * @author Stephane Lacoin (aka matic)
  * @since 5.5
- *
  */
 public class InitialContextAccessor extends InitialContext {
 
@@ -57,7 +56,7 @@ public class InitialContextAccessor extends InitialContext {
     }
 
     /**
-     *  Try writing in JNDI space
+     * Try writing in JNDI space
      *
      * @param ctx
      * @return true if JNDI space is writable

@@ -25,15 +25,11 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
- *
  * @since 5.7.3
  */
 public class IOComponent extends DefaultComponent {
 
-
     protected static final String XP_CODECS = "codecs";
-
 
     private JsonFactoryManager jsonFactoryManager;
 
@@ -46,8 +42,7 @@ public class IOComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_CODECS.equals(extensionPoint)) {
             CodecDescriptor codec = (CodecDescriptor) contribution;
             codecs.addCodec(codec.newInstance());
@@ -55,25 +50,22 @@ public class IOComponent extends DefaultComponent {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_CODECS.equals(extensionPoint)) {
             CodecDescriptor codec = (CodecDescriptor) contribution;
             codecs.removeCodec(codec.newInstance().getJavaType());
         }
     }
 
-
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (ObjectCodecService.class.isAssignableFrom(adapter)) {
             return adapter.cast(codecs);
-        } else  if(JsonFactoryManager.class.isAssignableFrom(adapter)) {
+        } else if (JsonFactoryManager.class.isAssignableFrom(adapter)) {
             return adapter.cast(jsonFactoryManager);
         }
         return null;
     }
-
 
     @Override
     public void applicationStarted(ComponentContext context) {

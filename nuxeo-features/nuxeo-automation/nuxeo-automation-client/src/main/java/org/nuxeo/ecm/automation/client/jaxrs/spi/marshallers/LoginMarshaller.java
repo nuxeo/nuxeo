@@ -23,7 +23,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
 
 /**
  * @author matic
- *
  */
 public class LoginMarshaller implements JsonMarshaller<LoginInfo> {
 
@@ -60,8 +59,7 @@ public class LoginMarshaller implements JsonMarshaller<LoginInfo> {
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
         return new LoginInfo(username, groups, isAdmin);
     }

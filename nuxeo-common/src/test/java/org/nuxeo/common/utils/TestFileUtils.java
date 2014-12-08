@@ -34,11 +34,8 @@ public class TestFileUtils {
 
     @Test
     public void testReadFromStreamWithPredefinedData() throws IOException {
-        final byte[] data = {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 123, 3,
-                3, 4, 5, 2, 13, 34, 5, 56, 31, 34, 5, 65, 3, 4, 34, 3, 4, 34,
-                34, 24, 3, 1, 65, 67, 68, 7, 58, 7, 8, 75, 98, 7, 9, 5, 7, 45,
-                7, 43, 6, };
+        final byte[] data = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 123, 3, 3, 4, 5, 2, 13, 34, 5, 56, 31, 34, 5, 65, 3, 4, 34,
+                3, 4, 34, 34, 24, 3, 1, 65, 67, 68, 7, 58, 7, 8, 75, 98, 7, 9, 5, 7, 45, 7, 43, 6, };
 
         final InputStream is = new ByteArrayInputStream(data);
         final byte[] readData = FileUtils.readBytes(is);
@@ -97,7 +94,7 @@ public class TestFileUtils {
         String testFilename = FileUtils.getResourcePathFromContext("test-xmap.xml");
         assertFalse(testFilename.equals(""));
 
-        //TODO: create a temp file with blank
+        // TODO: create a temp file with blank
         // the main problem is to access it with a getResource
         // so that the blanks are encoded
         File file = FileUtils.getResourceFileFromContext("test-xmap.xml");

@@ -23,8 +23,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 /**
  * Default filter for tree elements.
  * <p>
- * Filters using facets and types criteria. Also filters documents that are in
- * the "deleted" life cycle state.
+ * Filters using facets and types criteria. Also filters documents that are in the "deleted" life cycle state.
  *
  * @author Anahide Tchertchian
  */

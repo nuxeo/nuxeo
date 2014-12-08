@@ -30,7 +30,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationsRepositoryComponent extends DefaultComponent {
 
@@ -43,10 +42,8 @@ public class AnnotationsRepositoryComponent extends DefaultComponent {
     protected AnnotationsFulltextInjector injector;
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
-        ExtensionPoint point = Enum.valueOf(ExtensionPoint.class,
-                extensionPoint);
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        ExtensionPoint point = Enum.valueOf(ExtensionPoint.class, extensionPoint);
         switch (point) {
         case documentAnnotability:
             DocumentAnnotability annotability = newInstance(((DocumentAnnotabilityDescriptor) contribution).getKlass());

@@ -30,13 +30,11 @@ public class ImagingTilingActions implements Serializable {
     public static final String DEFAULT_HEIGHT_THRESHOLD = "1200";
 
     public int getTilingWidthThreshold() {
-        return Integer.valueOf(PictureTilingComponent.getEnvValue(
-                WIDTH_THRESHOLD_PARAM, DEFAULT_WIDTH_THRESHOLD));
+        return Integer.valueOf(PictureTilingComponent.getEnvValue(WIDTH_THRESHOLD_PARAM, DEFAULT_WIDTH_THRESHOLD));
     }
 
     public int getTilingHeightThreshold() {
-        return Integer.valueOf(PictureTilingComponent.getEnvValue(
-                HEIGHT_THRESHOLD_PARAM, DEFAULT_HEIGHT_THRESHOLD));
+        return Integer.valueOf(PictureTilingComponent.getEnvValue(HEIGHT_THRESHOLD_PARAM, DEFAULT_HEIGHT_THRESHOLD));
     }
 
 }

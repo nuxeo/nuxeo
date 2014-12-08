@@ -16,18 +16,15 @@
  *
  */
 
-
 package org.nuxeo.ecm.core.event.test.virusscan.service;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Interface that should be implemented to encapsulate call to a Virus Scanning
- * service : command line or WebService
+ * Interface that should be implemented to encapsulate call to a Virus Scanning service : command line or WebService
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public interface ScanService {
 

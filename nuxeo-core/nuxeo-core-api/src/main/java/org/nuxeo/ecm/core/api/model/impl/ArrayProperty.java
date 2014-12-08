@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ArrayProperty extends ScalarProperty {
 
@@ -37,7 +36,6 @@ public class ArrayProperty extends ScalarProperty {
     public ArrayProperty(Property parent, Field field, int flags) {
         super(parent, field, flags);
     }
-
 
     @Override
     public ListType getType() {
@@ -55,8 +53,7 @@ public class ArrayProperty extends ScalarProperty {
     }
 
     @Override
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
             return (Serializable) value;
         }
@@ -70,8 +67,7 @@ public class ArrayProperty extends ScalarProperty {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T convertTo(Serializable value, Class<T> toType)
-            throws PropertyConversionException {
+    public <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException {
         if (toType.isArray()) {
             return (T) PrimitiveArrays.toObjectArray(value);
         } else if (Collection.class.isAssignableFrom(toType)) {

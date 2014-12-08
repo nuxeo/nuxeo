@@ -39,8 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Abstract Nuxeo Web Service.
  * <p>
- * Extend this if you want to share the Web Service remoting sessions with the
- * other Nuxeo platform web services.
+ * Extend this if you want to share the Web Service remoting sessions with the other Nuxeo platform web services.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -51,8 +50,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     private WSRemotingSessionManager sessionsManager;
 
     /**
-     * Returns the platform service that deals with shared Web Service remote
-     * sessions.
+     * Returns the platform service that deals with shared Web Service remote sessions.
      *
      * @return a <code>WSRemotiungSessionManager</code> service
      */
@@ -65,8 +63,9 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
 
     @PermitAll
     @WebMethod
-    public String connectOnRepository(@WebParam(name = "userName") String username, @WebParam(name = "password") String password, @WebParam(name = "repositoryName") String repositoryName) throws ClientException
-    {
+    public String connectOnRepository(@WebParam(name = "userName") String username,
+            @WebParam(name = "password") String password, @WebParam(name = "repositoryName") String repositoryName)
+            throws ClientException {
         String sid = null;
         try {
             // :FIXME: won't work all the time...
@@ -86,16 +85,14 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     @Override
     @PermitAll
     @WebMethod
-    public String connect(@WebParam(name = "userName") String username, @WebParam(name = "password")String password)
+    public String connect(@WebParam(name = "userName") String username, @WebParam(name = "password") String password)
             throws ClientException {
         return connectOnRepository(username, password, null);
     }
 
-
     /*
-     * @PermitAll @WebMethod public String connect(String username, String
-     * password, String repository) throws ClientException { return
-     * _connect(username, password, repository); }
+     * @PermitAll @WebMethod public String connect(String username, String password, String repository) throws
+     * ClientException { return _connect(username, password, repository); }
      */
 
     /**
@@ -107,15 +104,13 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
      * @return a Nuxeo core session identifier.
      * @throws ClientException
      */
-    private String _connect(String username, String password,
-            String repositoryName) throws ClientException {
+    private String _connect(String username, String password, String repositoryName) throws ClientException {
         // Login before doing anything.
         login(username, password);
         CoreSession session = CoreInstance.openCoreSession(repositoryName);
         String sid = session.getSessionId();
         UserManager userMgr = Framework.getService(UserManager.class);
-        WSRemotingSession rs = new WSRemotingSessionImpl(session, userMgr,
-                repositoryName, username, password);
+        WSRemotingSession rs = new WSRemotingSessionImpl(session, userMgr, repositoryName, username, password);
         getSessionsManager().addSession(sid, rs);
         return sid;
     }
@@ -128,13 +123,11 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     }
 
     /**
-     * Initializes a new user session from the credentials bound the Web Service
-     * remote session.
+     * Initializes a new user session from the credentials bound the Web Service remote session.
      *
      * @throws ClientException
      */
-    protected void login(String username, String password)
-            throws ClientException {
+    protected void login(String username, String password) throws ClientException {
         try {
             Framework.login(username, password);
         } catch (LoginException e) {

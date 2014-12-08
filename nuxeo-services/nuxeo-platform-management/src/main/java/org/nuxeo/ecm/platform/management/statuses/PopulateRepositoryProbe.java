@@ -29,14 +29,15 @@ import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
  */
 public class PopulateRepositoryProbe implements Probe {
 
-        public static class Runner extends DocumentStoreSessionRunner {
+    public static class Runner extends DocumentStoreSessionRunner {
 
         protected String info;
 
         @Override
         public void run() throws ClientException {
             DocumentModel rootDocument = session.getRootDocument();
-            String name = String.format("%s:%x", PopulateRepositoryProbe.class.getSimpleName(), Calendar.getInstance().getTimeInMillis());
+            String name = String.format("%s:%x", PopulateRepositoryProbe.class.getSimpleName(),
+                    Calendar.getInstance().getTimeInMillis());
             DocumentModel doc = session.createDocumentModel(rootDocument.getPathAsString(), name, "File");
             doc.setProperty("dublincore", "title", name);
             doc.setProperty("uid", "major_version", 1L);
@@ -55,7 +56,7 @@ public class PopulateRepositoryProbe implements Probe {
         } catch (ClientException e) {
             return ProbeStatus.newError(e);
         }
-        return  ProbeStatus.newSuccess(runner.info);
+        return ProbeStatus.newSuccess(runner.info);
     }
 
 }

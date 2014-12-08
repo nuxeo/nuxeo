@@ -71,22 +71,17 @@ public class NuxeoAliasBean implements Serializable {
             log.debug("Adding alias variable mapper with null id");
         }
         if (vms.containsKey(id) && log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Overriding alias variable mapper with id '%s'", id));
+            log.trace(String.format("Overriding alias variable mapper with id '%s'", id));
         }
         vms.put(id, vm);
         if (log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Expose alias variable mapper with id '%s': %s", id,
-                    vm.getVariables()));
+            log.trace(String.format("Expose alias variable mapper with id '%s': %s", id, vm.getVariables()));
         }
     }
 
     public void remove(String id) {
         if (log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Remove alias variable mapper with id '%s' from request",
-                    id));
+            log.trace(String.format("Remove alias variable mapper with id '%s' from request", id));
         }
         if (id == null) {
             log.debug("Remove alias variable mapper with null id");

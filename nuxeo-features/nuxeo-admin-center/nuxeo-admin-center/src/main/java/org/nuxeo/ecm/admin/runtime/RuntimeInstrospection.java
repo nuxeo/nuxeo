@@ -62,8 +62,7 @@ public class RuntimeInstrospection {
             List<SimplifiedBundleInfo> bundles = new ArrayList<>();
             for (RegistrationInfo ri : registrations) {
                 Bundle bundle = ri.getContext().getBundle();
-                if (bundle != null
-                        && !bundleIds.contains(bundle.getSymbolicName())) {
+                if (bundle != null && !bundleIds.contains(bundle.getSymbolicName())) {
                     SimplifiedBundleInfo bi = getBundleSimplifiedInfo(bundle);
                     bundleIds.add(bundle.getSymbolicName());
                     if (bi != null) {
@@ -109,11 +108,9 @@ public class RuntimeInstrospection {
                 ZipEntry entry = entries.nextElement();
                 if (entry.getName().endsWith("pom.properties")) {
                     try (InputStream pomStream = zFile.getInputStream(entry)) {
-                        PropertyResourceBundle prb = new PropertyResourceBundle(
-                                pomStream);
+                        PropertyResourceBundle prb = new PropertyResourceBundle(pomStream);
                         String version = prb.getString("version");
-                        result = new SimplifiedBundleInfo(
-                                bundle.getSymbolicName(), version);
+                        result = new SimplifiedBundleInfo(bundle.getSymbolicName(), version);
                     }
                     break;
                 }
@@ -125,8 +122,7 @@ public class RuntimeInstrospection {
             // Fall back on the filename to extract a version
             try {
                 Version version = new Version(jarFile.getName());
-                result = new SimplifiedBundleInfo(bundle.getSymbolicName(),
-                        version.toString());
+                result = new SimplifiedBundleInfo(bundle.getSymbolicName(), version.toString());
             } catch (NumberFormatException e) {
                 log.debug(e.getMessage());
             }
@@ -135,12 +131,10 @@ public class RuntimeInstrospection {
             // Fall back on the MANIFEST Bundle-Version
             try {
                 org.osgi.framework.Version version = bundle.getVersion();
-                result = new SimplifiedBundleInfo(bundle.getSymbolicName(),
-                        version.toString());
+                result = new SimplifiedBundleInfo(bundle.getSymbolicName(), version.toString());
             } catch (RuntimeException e) {
                 log.debug(e.getMessage());
-                result = new SimplifiedBundleInfo(bundle.getSymbolicName(),
-                        "unknown");
+                result = new SimplifiedBundleInfo(bundle.getSymbolicName(), "unknown");
             }
         }
         return result;

@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 
 /**
  * @author Alexandre Russel
- *
  */
 @XObject("urlResolver")
 public class UriResolverDescriptor {

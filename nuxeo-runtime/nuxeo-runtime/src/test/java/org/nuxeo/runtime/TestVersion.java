@@ -45,7 +45,7 @@ public class TestVersion {
         assertEquals("3.1.0", version.toString());
     }
 
-    @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsBetweenInconvertibleTypes"})
+    @SuppressWarnings({ "SimplifiableJUnitAssertion", "EqualsBetweenInconvertibleTypes" })
     @Test
     public void testEquals() {
         assertTrue(version.equals(new Version(1, 2, 3)));

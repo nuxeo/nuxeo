@@ -40,16 +40,14 @@ public class TestFullTextUtils {
     }
 
     protected static void checkParseFullText(String expected, String text) {
-        assertEquals(new HashSet<String>(Arrays.asList(expected.split(" "))),
-                FullTextUtils.parseFullText(text, true));
+        assertEquals(new HashSet<String>(Arrays.asList(expected.split(" "))), FullTextUtils.parseFullText(text, true));
     }
 
     @Test
     public void testParseFullText() throws Exception {
         checkParseFullText("brown dog fail fox jump lazy over quick",
                 "The quick brown fox jumps over the lazy dog -- and fails!");
-        checkParseFullText("aime cafe jure pas",
-                "J'aime PAS le caf\u00e9, je te jure.");
+        checkParseFullText("aime cafe jure pas", "J'aime PAS le caf\u00e9, je te jure.");
         checkParseFullText("007 bond jame thx1138", "James Bond 007 && THX1138");
     }
 

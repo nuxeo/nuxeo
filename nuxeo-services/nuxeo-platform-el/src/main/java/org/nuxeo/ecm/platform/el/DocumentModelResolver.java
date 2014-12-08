@@ -40,18 +40,14 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
  * Resolves expressions for the {@link DocumentModel} framework.
  * <p>
  * To specify a property on a document mode, the following syntax is available:
- * <code>myDocumentModel.dublincore.title</code> where 'dublincore' is the
- * schema name and 'title' is the field name. It can be used to get or set the
- * document title: {@code <h:outputText value="#
- * {currentDocument.dublincore.title}" />} or {@code <h:inputText value="#
- * {currentDocument.dublincore.title}" />}.
+ * <code>myDocumentModel.dublincore.title</code> where 'dublincore' is the schema name and 'title' is the field name. It
+ * can be used to get or set the document title: {@code <h:outputText value="# {currentDocument.dublincore.title}" />}
+ * or {@code <h:inputText value="# {currentDocument.dublincore.title}" />}.
  * <p>
- * Simple document properties are get/set directly: for instance, the above
- * expression will return a String value on get, and set this String on the
- * document for set. Complex properties (maps and lists) are get/set through
- * the {@link Property} object controlling their value: on get, sub properties
- * will be resolved at the next iteration, and on set, they will be set on the
- * property instance so the document model is aware of the change.
+ * Simple document properties are get/set directly: for instance, the above expression will return a String value on
+ * get, and set this String on the document for set. Complex properties (maps and lists) are get/set through the
+ * {@link Property} object controlling their value: on get, sub properties will be resolved at the next iteration, and
+ * on set, they will be set on the property instance so the document model is aware of the change.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -73,16 +69,14 @@ public class DocumentModelResolver extends BeanELResolver {
                 type = DocumentPropertyContext.class;
                 context.setPropertyResolved(true);
             }
-        } else if (base instanceof DocumentPropertyContext
-                || base instanceof Property) {
+        } else if (base instanceof DocumentPropertyContext || base instanceof Property) {
             type = Object.class;
             if (base instanceof DocumentPropertyContext) {
                 DocumentPropertyContext ctx = (DocumentPropertyContext) base;
                 try {
                     Property docProperty = getDocumentProperty(ctx, property);
                     if (docProperty.isContainer()) {
-                        Property subProperty = getDocumentProperty(docProperty,
-                                property);
+                        Property subProperty = getDocumentProperty(docProperty, property);
                         if (subProperty.isList()) {
                             type = List.class;
                         }
@@ -96,8 +90,7 @@ public class DocumentModelResolver extends BeanELResolver {
             } else if (base instanceof Property) {
                 try {
                     Property docProperty = (Property) base;
-                    Property subProperty = getDocumentProperty(docProperty,
-                            property);
+                    Property subProperty = getDocumentProperty(docProperty, property);
                     if (subProperty.isList()) {
                         type = List.class;
                     }
@@ -125,8 +118,7 @@ public class DocumentModelResolver extends BeanELResolver {
                 // try document getters first to resolve doc.id for instance
                 value = super.getValue(context, base, property);
             } catch (PropertyNotFoundException e) {
-                value = new DocumentPropertyContext((DocumentModel) base,
-                        (String) property);
+                value = new DocumentPropertyContext((DocumentModel) base, (String) property);
                 context.setPropertyResolved(true);
             }
         } else if (base instanceof DocumentPropertyContext) {
@@ -142,8 +134,7 @@ public class DocumentModelResolver extends BeanELResolver {
         } else if (base instanceof Property) {
             try {
                 Property docProperty = (Property) base;
-                Property subProperty = getDocumentProperty(docProperty,
-                        property);
+                Property subProperty = getDocumentProperty(docProperty, property);
                 value = getDocumentPropertyValue(subProperty);
             } catch (PropertyException pe) {
                 try {
@@ -161,19 +152,17 @@ public class DocumentModelResolver extends BeanELResolver {
         return value;
     }
 
-    private static String getDocumentPropertyName(DocumentPropertyContext ctx,
-            Object propertyValue) {
+    private static String getDocumentPropertyName(DocumentPropertyContext ctx, Object propertyValue) {
         return ctx.schema + ":" + propertyValue;
     }
 
-    private static Property getDocumentProperty(DocumentPropertyContext ctx,
-            Object propertyValue) throws ClientException {
+    private static Property getDocumentProperty(DocumentPropertyContext ctx, Object propertyValue)
+            throws ClientException {
         return ctx.doc.getProperty(getDocumentPropertyName(ctx, propertyValue));
     }
 
     @SuppressWarnings("boxing")
-    private static Property getDocumentProperty(Property docProperty,
-            Object propertyValue) throws PropertyException {
+    private static Property getDocumentProperty(Property docProperty, Object propertyValue) throws PropertyException {
         Property subProperty = null;
         if ((docProperty instanceof ArrayProperty || docProperty instanceof ListProperty)
                 && propertyValue instanceof Long) {
@@ -184,20 +173,17 @@ public class DocumentModelResolver extends BeanELResolver {
             if (idx < docProperty.size()) {
                 subProperty = docProperty.get((Integer) propertyValue);
             }
-        } else if (docProperty instanceof ComplexProperty
-                && propertyValue instanceof String) {
+        } else if (docProperty instanceof ComplexProperty && propertyValue instanceof String) {
             subProperty = docProperty.get((String) propertyValue);
         }
         if (subProperty == null) {
-            throw new PropertyException(String.format(
-                    "Could not resolve subproperty '%s' under '%s'",
-                    propertyValue, docProperty.getPath()));
+            throw new PropertyException(String.format("Could not resolve subproperty '%s' under '%s'", propertyValue,
+                    docProperty.getPath()));
         }
         return subProperty;
     }
 
-    private static Object getDocumentPropertyValue(Property docProperty)
-            throws PropertyException {
+    private static Object getDocumentPropertyValue(Property docProperty) throws PropertyException {
         if (docProperty == null) {
             throw new PropertyException("Null property");
         }
@@ -216,8 +202,7 @@ public class DocumentModelResolver extends BeanELResolver {
         try {
             readOnly = super.isReadOnly(context, base, property);
         } catch (PropertyNotFoundException e) {
-            if (base instanceof DocumentModel
-                    || base instanceof DocumentPropertyContext) {
+            if (base instanceof DocumentModel || base instanceof DocumentPropertyContext) {
                 readOnly = false;
                 context.setPropertyResolved(true);
             } else if (base instanceof Property) {
@@ -229,8 +214,7 @@ public class DocumentModelResolver extends BeanELResolver {
     }
 
     @Override
-    public void setValue(ELContext context, Object base, Object property,
-            Object value) {
+    public void setValue(ELContext context, Object base, Object property, Object value) {
         if (base instanceof DocumentModel) {
             try {
                 super.setValue(context, base, property, value);
@@ -241,9 +225,7 @@ public class DocumentModelResolver extends BeanELResolver {
             DocumentPropertyContext ctx = (DocumentPropertyContext) base;
             value = FieldAdapterManager.getValueForStorage(value);
             try {
-                ctx.doc.setPropertyValue(
-                        getDocumentPropertyName(ctx, property),
-                        (Serializable) value);
+                ctx.doc.setPropertyValue(getDocumentPropertyName(ctx, property), (Serializable) value);
             } catch (ClientException e) {
                 // avoid errors here too
                 log.warn(e.getMessage());
@@ -252,8 +234,7 @@ public class DocumentModelResolver extends BeanELResolver {
         } else if (base instanceof Property) {
             try {
                 Property docProperty = (Property) base;
-                Property subProperty = getDocumentProperty(docProperty,
-                        property);
+                Property subProperty = getDocumentProperty(docProperty, property);
                 value = FieldAdapterManager.getValueForStorage(value);
                 subProperty.setValue(value);
             } catch (PropertyException pe) {

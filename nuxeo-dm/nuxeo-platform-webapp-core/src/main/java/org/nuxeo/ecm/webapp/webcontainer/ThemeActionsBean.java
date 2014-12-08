@@ -52,8 +52,7 @@ public class ThemeActionsBean implements ThemeActions {
     protected String getDefaultTheme(ExternalContext ec) {
         // get the negotiation strategy
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        ApplicationType app = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, ec.getRequestContextPath());
+        ApplicationType app = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION, ec.getRequestContextPath());
         NegotiationDef negotiation = app.getNegotiation();
         return negotiation.getDefaultTheme();
     }
@@ -62,8 +61,7 @@ public class ThemeActionsBean implements ThemeActions {
         FacesContext faces = FacesContext.getCurrentInstance();
         final ExternalContext ec = faces.getExternalContext();
         String flavor = (String) ec.getRequestMap().get(
-                Negotiator.NEGOTIATION_RESULT_PREFIX
-                        + Negotiator.NEGOTIATION_OBJECT.collection.name());
+                Negotiator.NEGOTIATION_RESULT_PREFIX + Negotiator.NEGOTIATION_OBJECT.collection.name());
         return getLogo(flavor);
     }
 

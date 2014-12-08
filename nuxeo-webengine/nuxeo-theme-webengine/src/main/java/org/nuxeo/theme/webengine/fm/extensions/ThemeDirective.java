@@ -64,12 +64,11 @@ public class ThemeDirective implements TemplateDirectiveModel {
 
     private final Map<URL, Long> lastRefreshedMap = new HashMap<URL, Long>();
 
-    public void execute(Environment env, Map params, TemplateModel[] loopVars,
-            TemplateDirectiveBody body) throws TemplateException, IOException {
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+            throws TemplateException, IOException {
 
         if (loopVars.length != 0) {
-            throw new TemplateModelException(
-                    "This directive doesn't allow loop variables.");
+            throw new TemplateModelException("This directive doesn't allow loop variables.");
         }
         if (body == null) {
             throw new TemplateModelException("Expecting a body");
@@ -107,8 +106,8 @@ public class ThemeDirective implements TemplateDirectiveModel {
 
         // Apply the theme template
         BufferedReader reader = new BufferedReader(new StringReader(rendered));
-        Template tpl = new Template(themeUrl.toString(), reader,
-                env.getConfiguration(), env.getTemplate().getEncoding());
+        Template tpl = new Template(themeUrl.toString(), reader, env.getConfiguration(),
+                env.getTemplate().getEncoding());
         env.include(tpl);
 
         reader.close();
@@ -149,17 +148,15 @@ public class ThemeDirective implements TemplateDirectiveModel {
         return false;
     }
 
-    private static URL getThemeUrlAndSetupRequest(WebContext context,
-            String strategy) throws IOException {
+    private static URL getThemeUrlAndSetupRequest(WebContext context, String strategy) throws IOException {
         HttpServletRequest request = context.getRequest();
         URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
         if (themeUrl != null) {
             return themeUrl;
         }
 
-        final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
-                TypeFamily.APPLICATION, context.getModulePath(),
-                context.getModule().getName());
+        final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(TypeFamily.APPLICATION,
+                context.getModulePath(), context.getModule().getName());
 
         if (application == null) {
             log.error(getErrorMessage("Application not set for: ", context));
@@ -172,19 +169,15 @@ public class ThemeDirective implements TemplateDirectiveModel {
             return null;
         }
 
-        request.setAttribute("org.nuxeo.theme.default.theme",
-                negotiation.getDefaultTheme());
-        request.setAttribute("org.nuxeo.theme.default.engine",
-                negotiation.getDefaultEngine());
-        request.setAttribute("org.nuxeo.theme.default.perspective",
-                negotiation.getDefaultPerspective());
+        request.setAttribute("org.nuxeo.theme.default.theme", negotiation.getDefaultTheme());
+        request.setAttribute("org.nuxeo.theme.default.engine", negotiation.getDefaultEngine());
+        request.setAttribute("org.nuxeo.theme.default.perspective", negotiation.getDefaultPerspective());
         if (strategy == null) {
             strategy = negotiation.getStrategy();
         }
 
         if (strategy == null) {
-            log.error(getErrorMessage("Negotiation strategy not set for: ",
-                    context));
+            log.error(getErrorMessage("Negotiation strategy not set for: ", context));
             return null;
         }
 
@@ -192,8 +185,7 @@ public class ThemeDirective implements TemplateDirectiveModel {
             final String spec = new WebNegotiator(strategy, context, request).getSpec();
             themeUrl = new URL(spec);
         } catch (NegotiationException e) {
-            log.error(getErrorMessage(
-                    "Could not get negotiation information for: ", context));
+            log.error(getErrorMessage("Could not get negotiation information for: ", context));
             return null;
         }
 

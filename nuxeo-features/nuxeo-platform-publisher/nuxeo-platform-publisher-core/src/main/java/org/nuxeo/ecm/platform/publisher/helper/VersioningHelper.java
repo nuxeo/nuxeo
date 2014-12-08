@@ -37,8 +37,7 @@ public class VersioningHelper {
         try {
             return service.getVersionLabel(doc);
         } catch (ClientException e) {
-            log.error("Unable to get VersionLabel for: "
-                    + doc.getPathAsString(), e);
+            log.error("Unable to get VersionLabel for: " + doc.getPathAsString(), e);
             return null;
         }
     }

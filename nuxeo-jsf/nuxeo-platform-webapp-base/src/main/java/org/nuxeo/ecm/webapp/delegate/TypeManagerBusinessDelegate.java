@@ -37,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 @Name("typeManager")
 @Scope(CONVERSATION)
@@ -55,8 +54,7 @@ public class TypeManagerBusinessDelegate implements Serializable {
     }
 
     /**
-     * Acquires a new {@link TypeManager} reference. The related EJB may be
-     * deployed on a local or remote AppServer.
+     * Acquires a new {@link TypeManager} reference. The related EJB may be deployed on a local or remote AppServer.
      *
      * @return
      * @throws ClientException
@@ -73,7 +71,7 @@ public class TypeManagerBusinessDelegate implements Serializable {
     @PermitAll
     public void destroy() {
         if (null != typeManager) {
-            //typeManager.remove();
+            // typeManager.remove();
             typeManager = null;
         }
     }

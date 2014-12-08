@@ -63,11 +63,9 @@ import org.osgi.framework.FrameworkListener;
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-public class OSGiRuntimeService extends AbstractRuntimeService implements
-        FrameworkListener {
+public class OSGiRuntimeService extends AbstractRuntimeService implements FrameworkListener {
 
-    public static final ComponentName FRAMEWORK_STARTED_COMP = new ComponentName(
-            "org.nuxeo.runtime.started");
+    public static final ComponentName FRAMEWORK_STARTED_COMP = new ComponentName("org.nuxeo.runtime.started");
 
     /** Can be used to change the runtime home directory */
     public static final String PROP_HOME_DIR = "org.nuxeo.runtime.home";
@@ -96,9 +94,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     private boolean appStarted = false;
 
     /**
-     * OSGi doesn't provide a method to lookup bundles by symbolic name. This
-     * table is used to map symbolic names to bundles. This map is not handling
-     * bundle versions.
+     * OSGi doesn't provide a method to lookup bundles by symbolic name. This table is used to map symbolic names to
+     * bundles. This map is not handling bundle versions.
      */
     final Map<String, Bundle> bundles;
 
@@ -108,8 +105,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         this(new OSGiRuntimeContext(context.getBundle()), context);
     }
 
-    public OSGiRuntimeService(OSGiRuntimeContext runtimeContext,
-            BundleContext context) {
+    public OSGiRuntimeService(OSGiRuntimeContext runtimeContext, BundleContext context) {
         super(runtimeContext);
         bundleContext = context;
         bundles = new ConcurrentHashMap<String, Bundle>();
@@ -222,8 +218,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         while (tok.hasMoreTokens()) {
             String path = tok.nextToken();
             URL url = bundle.getEntry(path);
-            log.debug("Loading component for: " + name + " path: " + path
-                    + " url: " + url);
+            log.debug("Loading component for: " + name + " path: " + path + " url: " + url);
             if (url != null) {
                 try {
                     ctx.deploy(url);
@@ -232,12 +227,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                     // exception
                     log.error("Error deploying resource: " + url);
                     Framework.handleDevError(e);
-                    throw new RuntimeServiceException("Cannot deploy: " + url,
-                            e);
+                    throw new RuntimeServiceException("Cannot deploy: " + url, e);
                 }
             } else {
-                String message = "Unknown component '" + path
-                        + "' referenced by bundle '" + name + "'";
+                String message = "Unknown component '" + path + "' referenced by bundle '" + name + "'";
                 log.error(message + ". Check the MANIFEST.MF");
                 Framework.handleDevError(null);
                 warnings.add(message);
@@ -251,8 +244,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     protected boolean loadConfigurationFromProvider() throws IOException {
         // TODO use a OSGi service for this.
-        Iterable<URL> provider = Environment.getDefault()
-            .getConfigurationProvider();
+        Iterable<URL> provider = Environment.getDefault().getConfigurationProvider();
         if (provider == null) {
             return false;
         }
@@ -287,8 +279,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     protected void loadConfig() throws IOException {
         Environment env = Environment.getDefault();
         if (env != null) {
-            log.debug("Configuration: host application: "
-                    + env.getHostApplicationName());
+            log.debug("Configuration: host application: " + env.getHostApplicationName());
         } else {
             log.warn("Configuration: no host application");
             return;
@@ -337,8 +328,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             });
             printDeploymentOrderInfo(names);
             for (String name : names) {
-                if (name.endsWith("-config.xml")
-                        || name.endsWith("-bundle.xml")) {
+                if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {
                     // TODO
                     // because of some dep bugs (regarding the deployment of
                     // demo-ds.xml)
@@ -348,17 +338,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                     // NuxeoDeployer
                     if (isNotJBoss4) {
                         File file = new File(dir, name);
-                        log.debug("Configuration: deploy config component: "
-                                + name);
+                        log.debug("Configuration: deploy config component: " + name);
                         try {
                             context.deploy(file.toURI().toURL());
                         } catch (IOException e) {
-                            throw new IllegalArgumentException(
-                                    "Cannot load config from " + file, e);
+                            throw new IllegalArgumentException("Cannot load config from " + file, e);
                         }
                     }
-                } else if (name.endsWith(".config") || name.endsWith(".ini")
-                        || name.endsWith(".properties")) {
+                } else if (name.endsWith(".config") || name.endsWith(".ini") || name.endsWith(".properties")) {
                     File file = new File(dir, name);
                     log.debug("Configuration: loading properties: " + name);
                     loadProperties(file);
@@ -382,8 +369,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             for (String fileName : fileNames) {
                 buf.append("\n\t" + fileName);
             }
-            log.debug("Deployment order of configuration files: "
-                    + buf.toString());
+            log.debug("Deployment order of configuration files: " + buf.toString());
         }
     }
 
@@ -400,10 +386,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             });
             Properties props = new Properties();
             for (String name : names) {
-                if (name.endsWith(".config") || name.endsWith(".ini")
-                        || name.endsWith(".properties")) {
-                    FileInputStream in = new FileInputStream(
-                            new File(dir, name));
+                if (name.endsWith(".config") || name.endsWith(".ini") || name.endsWith(".properties")) {
+                    FileInputStream in = new FileInputStream(new File(dir, name));
                     try {
                         props.load(in);
                     } finally {
@@ -454,8 +438,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         Properties props = new Properties();
         props.load(in);
         for (Entry<Object, Object> prop : props.entrySet()) {
-            properties
-                .put(prop.getKey().toString(), prop.getValue().toString());
+            properties.put(prop.getKey().toString(), prop.getValue().toString());
         }
     }
 
@@ -498,22 +481,19 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     protected void notifyComponentsOnStarted() {
-        List<RegistrationInfo> ris = new ArrayList<RegistrationInfo>(
-                manager.getRegistrations());
+        List<RegistrationInfo> ris = new ArrayList<RegistrationInfo>(manager.getRegistrations());
         Collections.sort(ris, new RIApplicationStartedComparator());
         for (RegistrationInfo ri : ris) {
             try {
                 ri.notifyApplicationStarted();
             } catch (Exception e) { // deals with interrupt below
                 ExceptionUtils.checkInterrupt(e);
-                log.error("Failed to notify component '" + ri.getName()
-                        + "' on application started", e);
+                log.error("Failed to notify component '" + ri.getName() + "' on application started", e);
             }
         }
     }
 
-    protected static class RIApplicationStartedComparator implements
-            Comparator<RegistrationInfo> {
+    protected static class RIApplicationStartedComparator implements Comparator<RegistrationInfo> {
         @Override
         public int compare(RegistrationInfo r1, RegistrationInfo r2) {
             int cmp = Integer.compare(r1.getApplicationStartedOrder(), r2.getApplicationStartedOrder());
@@ -568,8 +548,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     protected void deployFrameworkStartedComponent() {
-        RegistrationInfoImpl ri = new RegistrationInfoImpl(
-                FRAMEWORK_STARTED_COMP);
+        RegistrationInfoImpl ri = new RegistrationInfoImpl(FRAMEWORK_STARTED_COMP);
         ri.setContext(context);
         // this will register any pending components that waits for the
         // framework to be started
@@ -577,10 +556,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     public Bundle findHostBundle(Bundle bundle) {
-        String hostId = (String) bundle.getHeaders().get(
-                Constants.FRAGMENT_HOST);
-        log.debug("Looking for host bundle: " + bundle.getSymbolicName()
-                + " host id: " + hostId);
+        String hostId = (String) bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+        log.debug("Looking for host bundle: " + bundle.getSymbolicName() + " host id: " + hostId);
         if (hostId != null) {
             int p = hostId.indexOf(';');
             if (p > -1) { // remove version or other extra information if any
@@ -600,25 +577,20 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     protected File getEclipseBundleFileUsingReflection(Bundle bundle) {
         try {
-            Object proxy = bundle.getClass().getMethod("getLoaderProxy")
-                .invoke(bundle);
-            Object loader = proxy.getClass().getMethod("getBundleLoader")
-                .invoke(proxy);
-            URL root = (URL) loader.getClass()
-                .getMethod("findResource", String.class).invoke(loader, "/");
+            Object proxy = bundle.getClass().getMethod("getLoaderProxy").invoke(bundle);
+            Object loader = proxy.getClass().getMethod("getBundleLoader").invoke(proxy);
+            URL root = (URL) loader.getClass().getMethod("findResource", String.class).invoke(loader, "/");
             Field field = root.getClass().getDeclaredField("handler");
             field.setAccessible(true);
             Object handler = field.get(root);
-            Field entryField = handler.getClass().getSuperclass()
-                .getDeclaredField("bundleEntry");
+            Field entryField = handler.getClass().getSuperclass().getDeclaredField("bundleEntry");
             entryField.setAccessible(true);
             Object entry = entryField.get(handler);
             Field fileField = entry.getClass().getDeclaredField("file");
             fileField.setAccessible(true);
             return (File) fileField.get(entry);
         } catch (ReflectiveOperationException e) {
-            log.error("Cannot access to eclipse bundle system files of "
-                    + bundle.getSymbolicName());
+            log.error("Cannot access to eclipse bundle system files of " + bundle.getSymbolicName());
             return null;
         }
     }
@@ -637,8 +609,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             try {
                 file = FileUtils.urlToFile(location);
             } catch (MalformedURLException e) {
-                log.error("getBundleFile: Unable to create " + " for bundle: "
-                        + name + " as URI: " + location);
+                log.error("getBundleFile: Unable to create " + " for bundle: " + name + " as URI: " + location);
                 return null;
             }
         } else { // may be a file path - this happens when using
@@ -649,8 +620,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             log.debug("getBundleFile: " + name + " bound to file: " + file);
             return file;
         } else {
-            log.debug("getBundleFile: " + name
-                    + " cannot bind to nonexistent file: " + file);
+            log.debug("getBundleFile: " + name + " cannot bind to nonexistent file: " + file);
             return null;
         }
     }

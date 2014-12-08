@@ -16,12 +16,11 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RootResource extends BundleResource {
 
     public RootResource() {
-        super (ResourceContext.getContext());
+        super(ResourceContext.getContext());
         context.pushBundleFor(this);
     }
 

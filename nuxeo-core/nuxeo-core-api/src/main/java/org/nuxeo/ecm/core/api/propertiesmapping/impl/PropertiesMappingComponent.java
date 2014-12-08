@@ -36,15 +36,11 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
- * Service that allows to copy a set of metadata from a source to a target
- * document
+ * Service that allows to copy a set of metadata from a source to a target document
  *
  * @since 5.6
- *
  */
-public class PropertiesMappingComponent extends DefaultComponent implements
-        PropertiesMappingService {
+public class PropertiesMappingComponent extends DefaultComponent implements PropertiesMappingService {
 
     public static final Log log = LogFactory.getLog(PropertiesMappingComponent.class);
 
@@ -53,8 +49,7 @@ public class PropertiesMappingComponent extends DefaultComponent implements
     protected PropertiesMappingContributionRegistry mappingsRegistry = new PropertiesMappingContributionRegistry();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (MAPPING_EP.equals(extensionPoint)) {
             PropertiesMappingDescriptor desc = (PropertiesMappingDescriptor) contribution;
             mappingsRegistry.addContribution(desc);
@@ -67,8 +62,8 @@ public class PropertiesMappingComponent extends DefaultComponent implements
     }
 
     @Override
-    public void mapProperties(CoreSession session, DocumentModel sourceDoc,
-            DocumentModel targetDoc, String mapping) throws ClientException {
+    public void mapProperties(CoreSession session, DocumentModel sourceDoc, DocumentModel targetDoc, String mapping)
+            throws ClientException {
         Map<String, String> properties = getMapping(mapping);
         for (String keyProp : properties.keySet()) {
             try {
@@ -80,13 +75,11 @@ public class PropertiesMappingComponent extends DefaultComponent implements
                 Type targetType = targetProperty.getType();
 
                 if (!compatibleTypes(targetType, sourceType)) {
-                    throw new ClientException(String.format(
-                            "Invliad mapping.Can not map %s on type %s ",
-                            sourceType, targetType));
+                    throw new ClientException(String.format("Invliad mapping.Can not map %s on type %s ", sourceType,
+                            targetType));
                 }
 
-                targetDoc.setPropertyValue(targetProperty.getPath(),
-                        sourceProperty.getValue());
+                targetDoc.setPropertyValue(targetProperty.getPath(), sourceProperty.getValue());
             } catch (PropertyNotFoundException e) {
                 // if invalid xpath
                 throw new ClientException(e);
@@ -102,20 +95,17 @@ public class PropertiesMappingComponent extends DefaultComponent implements
         if (sourceType.isComplexType()) {
             for (Field field : ((ComplexType) sourceType).getFields()) {
                 Field targetField = ((ComplexType) targetType).getField(field.getName());
-                if (targetField == null
-                        || !field.getType().equals(targetField.getType())) {
+                if (targetField == null || !field.getType().equals(targetField.getType())) {
                     return false;
                 }
             }
         }
         if (sourceType.isListType()) {
-            if (!((ListType) sourceType).getFieldType().equals(
-                    ((ListType) targetType).getFieldType())) {
+            if (!((ListType) sourceType).getFieldType().equals(((ListType) targetType).getFieldType())) {
                 return false;
             }
             if (((ListType) sourceType).getFieldType().isComplexType()) {
-                return compatibleTypes(((ListType) targetType).getFieldType(),
-                        ((ListType) sourceType).getFieldType());
+                return compatibleTypes(((ListType) targetType).getFieldType(), ((ListType) sourceType).getFieldType());
             }
         }
         return true;

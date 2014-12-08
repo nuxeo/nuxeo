@@ -19,18 +19,17 @@ import java.io.Serializable;
 /**
  * A component name.
  * <p>
- * Component names are strings of the form <code>type:name</code>
- * The type part is optional - when missing the type is assumed to be "service".
+ * Component names are strings of the form <code>type:name</code> The type part is optional - when missing the type is
+ * assumed to be "service".
  * <p>
  * Example of valid component names:
- *
  * <ul>
- * <li> repository:my.repo
- * <li> service:my.service
- * <li> my.component
+ * <li>repository:my.repo
+ * <li>service:my.service
+ * <li>my.component
  * </ul>
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ComponentName implements Serializable {
 
@@ -39,7 +38,9 @@ public class ComponentName implements Serializable {
     private static final long serialVersionUID = -7686792831111487156L;
 
     private final String type;
+
     private final String name;
+
     private final String rawName;
 
     /**

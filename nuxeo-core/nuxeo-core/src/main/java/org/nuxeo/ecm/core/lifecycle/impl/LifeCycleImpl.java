@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleTransition;
  * Life cycle implementation.
  *
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycle
- *
  * @author Julien Anguenot
  * @author Florent Guillaume
  */
@@ -41,10 +40,8 @@ public class LifeCycleImpl implements LifeCycle {
 
     private final Collection<LifeCycleTransition> transitions;
 
-    public LifeCycleImpl(String name, String defaultInitialStateName,
-            Collection<String> initialStateNames,
-            Collection<LifeCycleState> states,
-            Collection<LifeCycleTransition> transitions) {
+    public LifeCycleImpl(String name, String defaultInitialStateName, Collection<String> initialStateNames,
+            Collection<LifeCycleState> states, Collection<LifeCycleTransition> transitions) {
         this.name = name;
         this.defaultInitialStateName = defaultInitialStateName;
         this.initialStateNames = initialStateNames;
@@ -85,8 +82,7 @@ public class LifeCycleImpl implements LifeCycle {
     }
 
     @Override
-    public Collection<String> getAllowedStateTransitionsFrom(String stateName)
-            throws LifeCycleException {
+    public Collection<String> getAllowedStateTransitionsFrom(String stateName) throws LifeCycleException {
         LifeCycleState lifeCycleState = getStateByName(stateName);
         if (lifeCycleState != null) {
             return lifeCycleState.getAllowedStateTransitions();

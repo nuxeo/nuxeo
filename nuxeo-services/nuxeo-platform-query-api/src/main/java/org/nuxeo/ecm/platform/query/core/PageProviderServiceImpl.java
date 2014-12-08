@@ -37,13 +37,11 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-
 /**
  * @author Anahide Tchertchian
  * @since 5.4
  */
-public class PageProviderServiceImpl extends DefaultComponent implements
-        PageProviderService {
+public class PageProviderServiceImpl extends DefaultComponent implements PageProviderService {
 
     private static final long serialVersionUID = 1L;
 
@@ -69,11 +67,9 @@ public class PageProviderServiceImpl extends DefaultComponent implements
         return def;
     }
 
-    public PageProvider<?> getPageProvider(String name,
-            PageProviderDefinition desc, DocumentModel searchDocument,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
-            throws ClientException {
+    public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
+            Object... parameters) throws ClientException {
         if (desc == null) {
             return null;
         }
@@ -117,8 +113,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
         return pageProvider;
     }
 
-    protected PageProvider<?> newPageProviderInstance(String name, PageProviderDefinition desc)
-            throws ClientException {
+    protected PageProvider<?> newPageProviderInstance(String name, PageProviderDefinition desc) throws ClientException {
         PageProvider<?> ret;
         if (desc instanceof CoreQueryPageProviderDescriptor) {
             ret = newCoreQueryPageProviderInstance(name);
@@ -126,8 +121,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
             Class<PageProvider<?>> klass = ((GenericPageProviderDescriptor) desc).getPageProviderClass();
             ret = newPageProviderInstance(name, klass);
         } else {
-            throw new ClientException(String.format(
-                    "Invalid page provider definition with name '%s'", name));
+            throw new ClientException(String.format("Invalid page provider definition with name '%s'", name));
         }
         ret.setName(name);
         ret.setDefinition(desc);
@@ -150,57 +144,46 @@ public class PageProviderServiceImpl extends DefaultComponent implements
         PageProvider<?> ret;
         if (klass == null) {
             throw new ClientException(String.format(
-                    "Cannot find class for page provider definition with name '%s': check"
-                            + " ERROR logs at startup", name));
+                    "Cannot find class for page provider definition with name '%s': check" + " ERROR logs at startup",
+                    name));
         }
         try {
             ret = klass.newInstance();
         } catch (ReflectiveOperationException e) {
             throw new ClientException(String.format(
-                    "Cannot create an instance of class %s for page provider definition"
-                            + " with name '%s'", klass.getName(), name), e);
+                    "Cannot create an instance of class %s for page provider definition" + " with name '%s'",
+                    klass.getName(), name), e);
         }
         return ret;
     }
 
     @Deprecated
     @Override
-    public PageProvider<?> getPageProvider(String name,
-            PageProviderDefinition desc, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
+    public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters)
             throws ClientException {
-        return getPageProvider(name, desc, null, sortInfos, pageSize,
-                currentPage, properties, parameters);
+        return getPageProvider(name, desc, null, sortInfos, pageSize, currentPage, properties, parameters);
     }
 
     @Override
-    public PageProvider<?> getPageProvider(String name,
-            DocumentModel searchDocument, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
+    public PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters)
             throws ClientException {
         PageProviderDefinition desc = providerReg.getPageProvider(name);
         if (desc == null) {
-            throw new ClientException(String.format(
-                    "Could not resolve page provider with name '%s'", name));
+            throw new ClientException(String.format("Could not resolve page provider with name '%s'", name));
         }
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize,
-                currentPage, properties, parameters);
+        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, parameters);
     }
 
     @Override
-    public PageProvider<?> getPageProvider(String name,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
-            throws ClientException {
-        return getPageProvider(name, (DocumentModel) null, sortInfos, pageSize,
-                currentPage, properties, parameters);
+    public PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, Object... parameters) throws ClientException {
+        return getPageProvider(name, (DocumentModel) null, sortInfos, pageSize, currentPage, properties, parameters);
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (PROVIDER_EP.equals(extensionPoint)) {
             PageProviderDefinition desc = (PageProviderDefinition) contribution;
             registerPageProviderDefinition(desc);
@@ -211,8 +194,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (PROVIDER_EP.equals(extensionPoint)) {
             PageProviderDefinition desc = (PageProviderDefinition) contribution;
             unregisterPageProviderDefinition(desc);

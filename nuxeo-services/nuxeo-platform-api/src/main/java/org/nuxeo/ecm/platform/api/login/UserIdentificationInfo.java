@@ -24,10 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
-* Encapsulates some information about a user and how it must be authenticated.
-*
-* @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
-*/
+ * Encapsulates some information about a user and how it must be authenticated.
+ *
+ * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
+ */
 public class UserIdentificationInfo implements Serializable {
 
     private static final long serialVersionUID = 6894397878763275157L;
@@ -42,7 +42,7 @@ public class UserIdentificationInfo implements Serializable {
 
     protected String loginPluginName;
 
-    protected final Map<String, String> loginParameters = new HashMap<String,String>();
+    protected final Map<String, String> loginParameters = new HashMap<String, String>();
 
     public UserIdentificationInfo(String userName, String password) {
         this.userName = userName;
@@ -55,8 +55,7 @@ public class UserIdentificationInfo implements Serializable {
     }
 
     /**
-     * Returns the name of the Authentication Plugin used to get user identity
-     * (FORM,BASIC,CAS2 ...).
+     * Returns the name of the Authentication Plugin used to get user identity (FORM,BASIC,CAS2 ...).
      */
     public String getAuthPluginName() {
         return authPluginName;

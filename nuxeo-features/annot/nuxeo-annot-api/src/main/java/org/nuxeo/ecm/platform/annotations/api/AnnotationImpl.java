@@ -51,8 +51,8 @@ public class AnnotationImpl implements Annotation, Serializable {
 
     @Override
     public Resource getSubject() {
-        QueryResult result = graph.query("SELECT ?s WHERE {?s <"
-                + AnnotationsConstants.A_BODY + "> ?o}", "sparql", null);
+        QueryResult result = graph.query("SELECT ?s WHERE {?s <" + AnnotationsConstants.A_BODY + "> ?o}", "sparql",
+                null);
         Node node = result.getResults().get(0).get("s");
         return node.isBlank() ? null : (Resource) node;
     }
@@ -64,8 +64,8 @@ public class AnnotationImpl implements Annotation, Serializable {
 
     @Override
     public URI getAnnotates() throws AnnotationException {
-        QueryResult result = graph.query("SELECT ?o WHERE {?s <"
-                + AnnotationsConstants.A_ANNOTATES + "> ?o}", "sparql", null);
+        QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.A_ANNOTATES + "> ?o}",
+                "sparql", null);
         Node node = result.getResults().get(0).get("o");
         try {
             return node.isBlank() ? null : new URI(((Resource) node).getUri());
@@ -76,8 +76,8 @@ public class AnnotationImpl implements Annotation, Serializable {
 
     @Override
     public URI getBody() throws AnnotationException {
-        QueryResult result = graph.query("SELECT ?o WHERE {?s <"
-                + AnnotationsConstants.A_BODY + "> ?o}", "sparql", null);
+        QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.A_BODY + "> ?o}", "sparql",
+                null);
         Node node = result.getResults().get(0).get("o");
         try {
             return node.isBlank() ? null : new URI(((Resource) node).getUri());
@@ -88,8 +88,8 @@ public class AnnotationImpl implements Annotation, Serializable {
 
     @Override
     public String getBodyAsText() {
-        QueryResult result = graph.query("SELECT ?o WHERE {?s <"
-                + AnnotationsConstants.A_BODY + "> ?o}", "sparql", null);
+        QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.A_BODY + "> ?o}", "sparql",
+                null);
         Node node = result.getResults().get(0).get("o");
         if (node.isLiteral()) {
             Literal literal = (Literal) node;
@@ -104,8 +104,8 @@ public class AnnotationImpl implements Annotation, Serializable {
 
     @Override
     public void setBodyText(String text) {
-        QueryResult result = graph.query("SELECT ?s WHERE {?s <"
-                + AnnotationsConstants.A_BODY + "> ?o}", "sparql", null);
+        QueryResult result = graph.query("SELECT ?s WHERE {?s <" + AnnotationsConstants.A_BODY + "> ?o}", "sparql",
+                null);
         Node s = result.getResults().get(0).get("s");
         Resource p = new ResourceImpl(AnnotationsConstants.A_BODY);
         graph.remove(graph.getStatements(new StatementImpl(s, p, null)));
@@ -116,8 +116,8 @@ public class AnnotationImpl implements Annotation, Serializable {
 
     @Override
     public String getContext() throws AnnotationException {
-        QueryResult result = graph.query("SELECT ?o WHERE {?s <"
-                + AnnotationsConstants.A_CONTEXT + "> ?o}", "sparql", null);
+        QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.A_CONTEXT + "> ?o}", "sparql",
+                null);
         Node node = result.getResults().get(0).get("o");
         return node.isBlank() ? null : ((Literal) node).getValue();
     }
@@ -155,8 +155,8 @@ public class AnnotationImpl implements Annotation, Serializable {
 
     @Override
     public String getCreator() {
-        QueryResult result = graph.query("SELECT ?o WHERE {?s <"
-                + AnnotationsConstants.D_CREATOR + "> ?o .}", "sparql", null);
+        QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.D_CREATOR + "> ?o .}",
+                "sparql", null);
         if (result.getCount() == 0) {
             return null;
         }
@@ -166,8 +166,7 @@ public class AnnotationImpl implements Annotation, Serializable {
 
     @Override
     public void addMetadata(String predicate, String value) {
-        Statement statement = new StatementImpl(getSubject(), new ResourceImpl(
-                predicate), new LiteralImpl(value));
+        Statement statement = new StatementImpl(getSubject(), new ResourceImpl(predicate), new LiteralImpl(value));
         graph.add(statement);
     }
 

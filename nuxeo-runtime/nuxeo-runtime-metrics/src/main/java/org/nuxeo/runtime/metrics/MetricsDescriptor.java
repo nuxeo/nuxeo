@@ -81,27 +81,23 @@ public class MetricsDescriptor implements Serializable {
         public static final String PREFIX_PROPERTY = "metrics.graphite.prefix";
 
         @XNode("@enabled")
-        protected Boolean enabled = Boolean.valueOf(Framework.getProperty(
-                ENABLED_PROPERTY, "false"));
+        protected Boolean enabled = Boolean.valueOf(Framework.getProperty(ENABLED_PROPERTY, "false"));
 
         @XNode("@host")
         public String host = Framework.getProperty(HOST_PROPERTY, "0.0.0.0");
 
         @XNode("@port")
-        public Integer port = Integer.valueOf(Framework.getProperty(
-                PORT_PROPERTY, "2030"));
+        public Integer port = Integer.valueOf(Framework.getProperty(PORT_PROPERTY, "2030"));
 
         @XNode("@periodInSecond")
-        public Integer period = Integer.valueOf(Framework.getProperty(
-                PERIOD_PROPERTY, "10"));
+        public Integer period = Integer.valueOf(Framework.getProperty(PERIOD_PROPERTY, "10"));
 
         @XNode("@prefix")
         public String prefix = prefix();
 
         public String prefix() {
             if (prefix == null) {
-                prefix = Framework.getProperty(PREFIX_PROPERTY,
-                        "servers.${hostname}.nuxeo");
+                prefix = Framework.getProperty(PREFIX_PROPERTY, "servers.${hostname}.nuxeo");
             }
             String hostname;
             try {
@@ -114,10 +110,8 @@ public class MetricsDescriptor implements Serializable {
 
         @Override
         public String toString() {
-            return String.format(
-                    "graphiteReporter %s prefix: %s, host: %s, port: %d, period: %d",
-                    enabled ? "enabled" : "disabled", prefix, host, port,
-                    period);
+            return String.format("graphiteReporter %s prefix: %s, host: %s, port: %d, period: %d", enabled ? "enabled"
+                    : "disabled", prefix, host, port, period);
         }
 
         protected GraphiteReporter reporter;
@@ -128,9 +122,8 @@ public class MetricsDescriptor implements Serializable {
             }
             InetSocketAddress address = new InetSocketAddress(host, port);
             Graphite graphite = new Graphite(address);
-            reporter = GraphiteReporter.forRegistry(registry).convertRatesTo(
-                    TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MICROSECONDS).prefixedWith(
-                    prefix()).build(graphite);
+            reporter = GraphiteReporter.forRegistry(registry).convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(
+                    TimeUnit.MICROSECONDS).prefixedWith(prefix()).build(graphite);
             reporter.start(period, TimeUnit.SECONDS);
         }
 
@@ -166,15 +159,13 @@ public class MetricsDescriptor implements Serializable {
 
         public int getPeriod() {
             if (period == null) {
-                period = Integer.valueOf(Framework.getProperty(PERIOD_PROPERTY,
-                        "10"));
+                period = Integer.valueOf(Framework.getProperty(PERIOD_PROPERTY, "10"));
             }
             return period;
         }
 
         protected File outputDir() {
-            String path = Framework.getProperty(OUTPUT_PROPERTY,
-                    Framework.getProperty(Environment.NUXEO_LOG_DIR));
+            String path = Framework.getProperty(OUTPUT_PROPERTY, Framework.getProperty(Environment.NUXEO_LOG_DIR));
             DateFormat df = new SimpleDateFormat("yyyyMMdd-HHmmss");
             Date today = Calendar.getInstance().getTime();
             outputDir = new File(path, "metrics-" + df.format(today));
@@ -183,9 +174,8 @@ public class MetricsDescriptor implements Serializable {
 
         @Override
         public String toString() {
-            return String.format("csvReporter %s, outputDir: %s, period: %d",
-                    enabled ? "enabled" : "disabled", outputDir().toString(),
-                    getPeriod());
+            return String.format("csvReporter %s, outputDir: %s, period: %d", enabled ? "enabled" : "disabled",
+                    outputDir().toString(), getPeriod());
         }
 
         protected CsvReporter reporter;
@@ -201,8 +191,7 @@ public class MetricsDescriptor implements Serializable {
                 reporter.start(Long.valueOf(period), TimeUnit.SECONDS);
             } else {
                 enabled = false;
-                LogFactory.getLog(MetricsServiceImpl.class).error(
-                        "Invalid output directory, disabling: " + this);
+                LogFactory.getLog(MetricsServiceImpl.class).error("Invalid output directory, disabling: " + this);
             }
         }
 
@@ -225,15 +214,13 @@ public class MetricsDescriptor implements Serializable {
         public static final String ENABLED_PROPERTY = "metrics.log4j.enabled";
 
         @XNode("@enabled")
-        protected boolean enabled = Boolean.getBoolean(Framework.getProperty(
-                ENABLED_PROPERTY, "false"));
+        protected boolean enabled = Boolean.getBoolean(Framework.getProperty(ENABLED_PROPERTY, "false"));
 
         private InstrumentedAppender appender;
 
         @Override
         public String toString() {
-            return String.format("log4jInstrumentation %s", enabled ? "enabled"
-                    : "disabled");
+            return String.format("log4jInstrumentation %s", enabled ? "enabled" : "disabled");
         }
 
         public void enable(MetricRegistry registry) {
@@ -264,23 +251,19 @@ public class MetricsDescriptor implements Serializable {
         public static final String ENABLED_PROPERTY = "metrics.tomcat.enabled";
 
         @XNode("@enabled")
-        protected boolean enabled = Boolean.parseBoolean(Framework.getProperty(
-                ENABLED_PROPERTY, "false"));
+        protected boolean enabled = Boolean.parseBoolean(Framework.getProperty(ENABLED_PROPERTY, "false"));
 
         @Override
         public String toString() {
-            return String.format("tomcatInstrumentation %s",
-                    enabled ? "enabled" : "disabled");
+            return String.format("tomcatInstrumentation %s", enabled ? "enabled" : "disabled");
         }
 
-        protected void registerTomcatGauge(String mbean, String attribute,
-                MetricRegistry registry, String name) {
+        protected void registerTomcatGauge(String mbean, String attribute, MetricRegistry registry, String name) {
             try {
-                registry.register(MetricRegistry.name("tomcat", name),
-                        new JmxAttributeGauge(new ObjectName(mbean), attribute));
+                registry.register(MetricRegistry.name("tomcat", name), new JmxAttributeGauge(new ObjectName(mbean),
+                        attribute));
             } catch (MalformedObjectNameException | IllegalArgumentException e) {
-                throw new UnsupportedOperationException(
-                        "Cannot compute object name of " + mbean, e);
+                throw new UnsupportedOperationException("Cannot compute object name of " + mbean, e);
             }
         }
 
@@ -292,29 +275,21 @@ public class MetricsDescriptor implements Serializable {
             // TODO: do not hard code the common datasource
             // nameenable(registry)
             String pool = "Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"";
-            String connector = String.format(
-                    "Catalina:type=ThreadPool,name=\"http-bio-%s-%s\"",
+            String connector = String.format("Catalina:type=ThreadPool,name=\"http-bio-%s-%s\"",
                     Framework.getProperty("nuxeo.bind.address", "0.0.0.0"),
                     Framework.getProperty("nuxeo.bind.port", "8080"));
-            String requestProcessor = String.format(
-                    "Catalina:type=GlobalRequestProcessor,name=\"http-bio-%s-%s\"",
+            String requestProcessor = String.format("Catalina:type=GlobalRequestProcessor,name=\"http-bio-%s-%s\"",
                     Framework.getProperty("nuxeo.bind.address", "0.0.0.0"),
                     Framework.getProperty("nuxeo.bind.port", "8080"));
             String manager = "Catalina:type=Manager,context=/nuxeo,host=localhost";
             registerTomcatGauge(pool, "numActive", registry, "jdbc-numActive");
             registerTomcatGauge(pool, "numIdle", registry, "jdbc-numIdle");
-            registerTomcatGauge(connector, "currentThreadCount", registry,
-                    "currentThreadCount");
-            registerTomcatGauge(connector, "currentThreadsBusy", registry,
-                    "currentThreadBusy");
-            registerTomcatGauge(requestProcessor, "errorCount", registry,
-                    "errorCount");
-            registerTomcatGauge(requestProcessor, "requestCount", registry,
-                    "requestCount");
-            registerTomcatGauge(requestProcessor, "processingTime", registry,
-                    "processingTime");
-            registerTomcatGauge(manager, "activeSessions", registry,
-                    "activeSessions");
+            registerTomcatGauge(connector, "currentThreadCount", registry, "currentThreadCount");
+            registerTomcatGauge(connector, "currentThreadsBusy", registry, "currentThreadBusy");
+            registerTomcatGauge(requestProcessor, "errorCount", registry, "errorCount");
+            registerTomcatGauge(requestProcessor, "requestCount", registry, "requestCount");
+            registerTomcatGauge(requestProcessor, "processingTime", registry, "processingTime");
+            registerTomcatGauge(manager, "activeSessions", registry, "activeSessions");
         }
 
         public void disable(MetricRegistry registry) {
@@ -335,8 +310,7 @@ public class MetricsDescriptor implements Serializable {
         public static final String ENABLED_PROPERTY = "metrics.jvm.enabled";
 
         @XNode("@enabled")
-        protected boolean enabled = Boolean.parseBoolean(Framework.getProperty(
-                ENABLED_PROPERTY, "true"));
+        protected boolean enabled = Boolean.parseBoolean(Framework.getProperty(ENABLED_PROPERTY, "true"));
 
         public void enable(MetricRegistry registry) {
             if (!enabled) {
@@ -346,10 +320,8 @@ public class MetricsDescriptor implements Serializable {
             registry.register("jvm.garbage", new GarbageCollectorMetricSet());
             registry.register("jvm.threads", new ThreadStatesGaugeSet());
             registry.register("jvm.files", new FileDescriptorRatioGauge());
-            registry.register(
-                    "jvm.buffers",
-                    new BufferPoolMetricSet(Framework.getLocalService(
-                            ServerLocator.class).lookupServer()));
+            registry.register("jvm.buffers", new BufferPoolMetricSet(
+                    Framework.getLocalService(ServerLocator.class).lookupServer()));
         }
 
         public void disable(MetricRegistry registry) {

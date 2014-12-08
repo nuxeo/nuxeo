@@ -85,8 +85,7 @@ public class WidgetTypeDescriptor {
     }
 
     /**
-     * Returns the categories for this widget type, so that it can be stored in
-     * the corresponding registries.
+     * Returns the categories for this widget type, so that it can be stored in the corresponding registries.
      *
      * @since 5.5
      */
@@ -95,8 +94,8 @@ public class WidgetTypeDescriptor {
     }
 
     public WidgetTypeDefinition getWidgetTypeDefinition() {
-        WidgetTypeDefinitionImpl res = new WidgetTypeDefinitionImpl(name,
-                handlerClassName, properties, getConfiguration());
+        WidgetTypeDefinitionImpl res = new WidgetTypeDefinitionImpl(name, handlerClassName, properties,
+                getConfiguration());
         res.setAliases(getAliases());
         return res;
 

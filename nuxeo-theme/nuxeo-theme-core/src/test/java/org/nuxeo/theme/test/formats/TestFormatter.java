@@ -30,10 +30,8 @@ public class TestFormatter extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
     @Test
@@ -48,8 +46,7 @@ public class TestFormatter extends NXRuntimeTestCase {
 
         assertTrue(ElementFormatter.getFormatsFor(fragment).isEmpty());
         assertNull(ElementFormatter.getFormatFor(fragment, "widget"));
-        assertNull(ElementFormatter.getFormatByType(fragment,
-                widget.getFormatType()));
+        assertNull(ElementFormatter.getFormatByType(fragment, widget.getFormatType()));
         assertFalse(ElementFormatter.getElementsFor(widget).contains(fragment));
 
         // Add format
@@ -57,9 +54,7 @@ public class TestFormatter extends NXRuntimeTestCase {
 
         assertTrue(ElementFormatter.getFormatsFor(fragment).contains(widget));
         assertSame(widget, ElementFormatter.getFormatFor(fragment, "widget"));
-        assertEquals(
-                ElementFormatter.getFormatByType(fragment,
-                        widget.getFormatType()), widget);
+        assertEquals(ElementFormatter.getFormatByType(fragment, widget.getFormatType()), widget);
         assertTrue(ElementFormatter.getElementsFor(widget).contains(fragment));
 
         // Replace format
@@ -77,8 +72,7 @@ public class TestFormatter extends NXRuntimeTestCase {
 
         assertTrue(ElementFormatter.getFormatsFor(fragment).isEmpty());
         assertNull(ElementFormatter.getFormatFor(fragment, "widget"));
-        assertNull(ElementFormatter.getFormatByType(fragment,
-                widget2.getFormatType()));
+        assertNull(ElementFormatter.getFormatByType(fragment, widget2.getFormatType()));
         assertFalse(ElementFormatter.getElementsFor(widget2).contains(fragment));
     }
 

@@ -24,11 +24,10 @@ import java.util.List;
 /**
  * Base interface for references between directory fields.
  * <p>
- * References are used to leverage SQL joins or attributes that store a list of
- * distinguished names in LDAP servers (e.g. uniqueMember).
+ * References are used to leverage SQL joins or attributes that store a list of distinguished names in LDAP servers
+ * (e.g. uniqueMember).
  * <p>
- * In nuxeo directories, references are special entry fields that are string
- * list of entry ids of a target directory.
+ * In nuxeo directories, references are special entry fields that are string list of entry ids of a target directory.
  *
  * @author ogrisel
  */
@@ -44,27 +43,21 @@ public interface Reference {
 
     void setTargetDirectoryName(String targetDirectoryName);
 
-    void addLinks(String sourceId, List<String> targetIds)
-            throws DirectoryException;
+    void addLinks(String sourceId, List<String> targetIds) throws DirectoryException;
 
-    void addLinks(List<String> sourceIds, String targetId)
-            throws DirectoryException;
+    void addLinks(List<String> sourceIds, String targetId) throws DirectoryException;
 
     void removeLinksForSource(String sourceId) throws DirectoryException;
 
     void removeLinksForTarget(String targetId) throws DirectoryException;
 
-    List<String> getTargetIdsForSource(String sourceId)
-            throws DirectoryException;
+    List<String> getTargetIdsForSource(String sourceId) throws DirectoryException;
 
-    List<String> getSourceIdsForTarget(String targetId)
-            throws DirectoryException;
+    List<String> getSourceIdsForTarget(String targetId) throws DirectoryException;
 
-    void setTargetIdsForSource(String sourceId, List<String> targetIds)
-            throws DirectoryException;
+    void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException;
 
-    void setSourceIdsForTarget(String targetId, List<String> sourceIds)
-            throws DirectoryException;
+    void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException;
 
     /**
      * Returns a clone, added for hot reload support.

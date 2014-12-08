@@ -28,7 +28,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Quentin Lamerand</a>
- *
  */
 @XObject("filter")
 public class FilterDescriptor {

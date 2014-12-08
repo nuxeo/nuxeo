@@ -40,13 +40,10 @@ public class DistributionInfo {
         Properties distProps = new Properties();
         distProps.load(new FileInputStream(distFile));
         name = distProps.getProperty(Environment.DISTRIBUTION_NAME, "unknown");
-        server = distProps.getProperty("org.nuxeo.distribution.server",
-                "unknown");
-        version = distProps.getProperty(Environment.DISTRIBUTION_VERSION,
-                "unknown");
+        server = distProps.getProperty("org.nuxeo.distribution.server", "unknown");
+        version = distProps.getProperty(Environment.DISTRIBUTION_VERSION, "unknown");
         date = distProps.getProperty("org.nuxeo.distribution.date", "unknown");
-        packaging = distProps.getProperty("org.nuxeo.distribution.package",
-                "unknown");
+        packaging = distProps.getProperty("org.nuxeo.distribution.package", "unknown");
     }
 
     @XmlElement()

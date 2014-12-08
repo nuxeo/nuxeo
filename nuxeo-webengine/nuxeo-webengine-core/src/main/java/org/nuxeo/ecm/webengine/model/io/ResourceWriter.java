@@ -34,15 +34,12 @@ import org.nuxeo.ecm.webengine.model.Resource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Produces({"text/html", "*/*"})
+@Produces({ "text/html", "*/*" })
 public class ResourceWriter implements MessageBodyWriter<Resource> {
 
-    public void writeTo(Resource t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(Resource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
 
         try {
             t.getView("index").render(entityStream);
@@ -51,14 +48,12 @@ public class ResourceWriter implements MessageBodyWriter<Resource> {
         }
     }
 
-    public long getSize(Resource arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(Resource arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         // TODO Auto-generated method stub
         return -1;
     }
 
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return Resource.class.isAssignableFrom(arg0);
     }
 

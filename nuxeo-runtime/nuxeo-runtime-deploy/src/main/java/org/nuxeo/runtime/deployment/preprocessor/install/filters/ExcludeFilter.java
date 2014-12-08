@@ -22,8 +22,7 @@ package org.nuxeo.runtime.deployment.preprocessor.install.filters;
 import org.nuxeo.common.utils.Path;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ExcludeFilter extends AbstractFilter {
 

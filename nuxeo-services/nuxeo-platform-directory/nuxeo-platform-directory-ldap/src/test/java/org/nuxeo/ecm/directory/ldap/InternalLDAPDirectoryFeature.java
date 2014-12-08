@@ -47,8 +47,7 @@ import com.google.inject.Provider;
  */
 @Features({ SQLDirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@LocalDeploy({
-        "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/LDAPDirectoryFactory.xml",
+@LocalDeploy({ "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/LDAPDirectoryFactory.xml",
         "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml",
         "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml" })
 public class InternalLDAPDirectoryFeature extends SimpleFeature {
@@ -94,15 +93,14 @@ public class InternalLDAPDirectoryFeature extends SimpleFeature {
     }
 
     protected void bindEmbeddedServer(Binder binder) {
-        binder.bind(MockLdapServer.class).toProvider(
-                new Provider<MockLdapServer>() {
+        binder.bind(MockLdapServer.class).toProvider(new Provider<MockLdapServer>() {
 
-                    @Override
-                    public MockLdapServer get() {
-                        return getEmbeddedLDAP();
-                    }
+            @Override
+            public MockLdapServer get() {
+                return getEmbeddedLDAP();
+            }
 
-                });
+        });
     }
 
     public void stopEmbeddedLDAP() {
@@ -117,8 +115,8 @@ public class InternalLDAPDirectoryFeature extends SimpleFeature {
 
     protected void loadDataFromLdif(String ldif, DirContext ctx) {
         List<LdifLoadFilter> filters = new ArrayList<LdifLoadFilter>();
-        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif),
-                filters, Thread.currentThread().getContextClassLoader());
+        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters,
+                Thread.currentThread().getContextClassLoader());
         loader.execute();
     }
 

@@ -25,8 +25,7 @@ import java.util.Map;
 /**
  * Layout interface.
  * <p>
- * A layout is a group of {@link Widget} instances, built from a
- * {@link LayoutDefinition} in a given mode.
+ * A layout is a group of {@link Widget} instances, built from a {@link LayoutDefinition} in a given mode.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -38,18 +37,15 @@ public interface Layout extends Serializable {
     String getId();
 
     /**
-     * Returns the unique identifier of this widget to be used in tag
-     * configuration.
+     * Returns the unique identifier of this widget to be used in tag configuration.
      * <p>
-     * In JSF, layouts are rendered dynamically and re-use the tag
-     * configuration of the tag rendering them when adding handlers to the
-     * facelet hierarchy. Since this tag identifier is used to perform some
-     * kind of caching on the JSF layer, it needs to change when the layout
-     * definition changes, so that JSF components are not mistaken for another
+     * In JSF, layouts are rendered dynamically and re-use the tag configuration of the tag rendering them when adding
+     * handlers to the facelet hierarchy. Since this tag identifier is used to perform some kind of caching on the JSF
+     * layer, it needs to change when the layout definition changes, so that JSF components are not mistaken for another
      * one.
      * <p>
-     * This identifier is unique to a given layout definition and always
-     * returns the same result given the same layout definition.
+     * This identifier is unique to a given layout definition and always returns the same result given the same layout
+     * definition.
      *
      * @since 5.4.2
      */
@@ -124,8 +120,7 @@ public interface Layout extends Serializable {
     /**
      * Get properties to use in this mode.
      * <p>
-     * The way that properties will be mapped to rendered components is managed
-     * by the widget type.
+     * The way that properties will be mapped to rendered components is managed by the widget type.
      *
      * @since 5.3.1
      */
@@ -141,8 +136,8 @@ public interface Layout extends Serializable {
     Serializable getProperty(String name);
 
     /**
-     * Sets property with given name on the layout. If there is already a
-     * property with this name on the layout, it will be overridden.
+     * Sets property with given name on the layout. If there is already a property with this name on the layout, it will
+     * be overridden.
      *
      * @param name the property name.
      * @param value the property value or null if not found.
@@ -165,8 +160,8 @@ public interface Layout extends Serializable {
     void setValueName(String valueName);
 
     /**
-     * Return true if this layout was generated from configuration on a
-     * service, and not generated on-the-fly using dynamic behaviors.
+     * Return true if this layout was generated from configuration on a service, and not generated on-the-fly using
+     * dynamic behaviors.
      *
      * @since 6.0
      */
@@ -175,8 +170,7 @@ public interface Layout extends Serializable {
     /**
      * Returns the template to use for dev mode.
      * <p>
-     * Is retrieved from layout definition templates, or from layout type
-     * templates, using the {@link BuiltinModes#DEV}.
+     * Is retrieved from layout definition templates, or from layout type templates, using the {@link BuiltinModes#DEV}.
      *
      * @since 6.0
      */

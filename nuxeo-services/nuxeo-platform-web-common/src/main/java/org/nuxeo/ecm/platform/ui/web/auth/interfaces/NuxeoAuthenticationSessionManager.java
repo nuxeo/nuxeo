@@ -30,8 +30,8 @@ import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 public interface NuxeoAuthenticationSessionManager {
 
     /**
-     * Checks whether or not this request was made to perform login.
-     * This is tested by the authentication filter to decide if a switch user is needed.
+     * Checks whether or not this request was made to perform login. This is tested by the authentication filter to
+     * decide if a switch user is needed.
      */
     boolean needResetLogin(ServletRequest req);
 

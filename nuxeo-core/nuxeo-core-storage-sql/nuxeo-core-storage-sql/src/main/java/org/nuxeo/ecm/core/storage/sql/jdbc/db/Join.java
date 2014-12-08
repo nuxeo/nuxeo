@@ -42,8 +42,7 @@ public class Join implements Serializable, Comparable<Join> {
     public final String tableAlias;
 
     /**
-     * Parameter if table name is an expression that contains a "?", or
-     * {@code null}.
+     * Parameter if table name is an expression that contains a "?", or {@code null}.
      */
     public final String tableParam;
 
@@ -72,15 +71,13 @@ public class Join implements Serializable, Comparable<Join> {
         this.tableParam = tableParam;
     }
 
-    public Join(int kind, String table, String tableAlias, String tableParam,
-            Column column1, Column column2) {
+    public Join(int kind, String table, String tableAlias, String tableParam, Column column1, Column column2) {
         this(kind, table, tableAlias, tableParam);
         this.column1 = column1;
         this.column2 = column2;
     }
 
-    public Join(int kind, String table, String tableAlias, String tableParam,
-            String on1, String on2) {
+    public Join(int kind, String table, String tableAlias, String tableParam, String on1, String on2) {
         this(kind, table, tableAlias, tableParam);
         this.on1 = on1;
         this.on2 = on2;
@@ -110,8 +107,7 @@ public class Join implements Serializable, Comparable<Join> {
         if (tableAlias == null) {
             return table;
         } else {
-            return table + " " + dialect.openQuote() + tableAlias
-                    + dialect.closeQuote();
+            return table + " " + dialect.openQuote() + tableAlias + dialect.closeQuote();
         }
     }
 
@@ -142,14 +138,11 @@ public class Join implements Serializable, Comparable<Join> {
     public String toSql(Dialect dialect) {
         switch (kind) {
         case INNER:
-            return String.format(" JOIN %s ON %s", getTable(dialect),
-                    getClause(dialect));
+            return String.format(" JOIN %s ON %s", getTable(dialect), getClause(dialect));
         case LEFT:
-            return String.format(" LEFT JOIN %s ON %s", getTable(dialect),
-                    getClause(dialect));
+            return String.format(" LEFT JOIN %s ON %s", getTable(dialect), getClause(dialect));
         case RIGHT:
-            return String.format(" RIGHT JOIN %s ON %s", getTable(dialect),
-                    getClause(dialect));
+            return String.format(" RIGHT JOIN %s ON %s", getTable(dialect), getClause(dialect));
         case IMPLICIT:
             return String.format(", %s", getTable(dialect));
         default:

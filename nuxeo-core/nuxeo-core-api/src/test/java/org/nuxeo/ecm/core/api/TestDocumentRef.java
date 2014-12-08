@@ -20,10 +20,11 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-@SuppressWarnings({"EqualsBetweenInconvertibleTypes"})
+@SuppressWarnings({ "EqualsBetweenInconvertibleTypes" })
 public class TestDocumentRef {
 
     protected PathRef pathref;
+
     protected IdRef idref;
 
     @Before
@@ -50,7 +51,7 @@ public class TestDocumentRef {
         assertEquals("some_uid", idref.reference());
     }
 
-    @SuppressWarnings({"SimplifiableJUnitAssertion"})
+    @SuppressWarnings({ "SimplifiableJUnitAssertion" })
     @Test
     public void testEqualsObject() {
         assertTrue(idref.equals(idref));

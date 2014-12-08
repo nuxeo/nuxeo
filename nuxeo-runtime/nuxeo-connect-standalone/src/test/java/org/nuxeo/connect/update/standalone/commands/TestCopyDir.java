@@ -76,16 +76,12 @@ public class TestCopyDir extends AbstractCommandTest {
         FileUtils.writeFile(jarFile, "anything");
         builder.addEntry("bundles/" + newFilename, new FileInputStream(jarFile));
         FileUtils.writeFile(jarFile, "new SNAPSHOT content");
-        builder.addEntry("bundles/" + snapshotFilename, new FileInputStream(
-                jarFile));
-        builder.addEntry("bundles/" + notToDeployFilename, new FileInputStream(
-                jarFile));
+        builder.addEntry("bundles/" + snapshotFilename, new FileInputStream(jarFile));
+        builder.addEntry("bundles/" + notToDeployFilename, new FileInputStream(jarFile));
         File xmlFile = File.createTempFile("test-config", ".xml");
         Framework.trackFile(xmlFile, builder);
         FileUtils.writeFile(xmlFile, "anything");
-        builder.addEntry(
-                "templates/collaboration/config/" + testConfigFilename,
-                new FileInputStream(xmlFile));
+        builder.addEntry("templates/collaboration/config/" + testConfigFilename, new FileInputStream(xmlFile));
     }
 
     @Override
@@ -111,8 +107,7 @@ public class TestCopyDir extends AbstractCommandTest {
         File src = pkg.getData().getEntry("bundles/" + newFilename);
         assertTrue(newFilename + " was not installed", newFile.isFile());
         assertEquals(IOUtils.createMd5(src), IOUtils.createMd5(newFile));
-        assertFalse(deprecatedFilename + " was not replaced",
-                deprecatedFile.exists());
+        assertFalse(deprecatedFilename + " was not replaced", deprecatedFile.exists());
         BufferedReader reader = new BufferedReader(new FileReader(snapshotFile));
         try {
             String line = reader.readLine();
@@ -123,10 +118,8 @@ public class TestCopyDir extends AbstractCommandTest {
         assertFalse("New feature was copied whereas 'upgradeOnly=true'",
                 new File(bundles, notToDeployFilename).exists());
 
-        File templates = new File(Environment.getDefault().getHome(),
-                "templates");
-        File configFile = new File(templates, "collaboration/config/"
-                + testConfigFilename);
+        File templates = new File(Environment.getDefault().getHome(), "templates");
+        File configFile = new File(templates, "collaboration/config/" + testConfigFilename);
         assertTrue(configFile.exists());
     }
 
@@ -134,8 +127,7 @@ public class TestCopyDir extends AbstractCommandTest {
     protected void uninstallDone(Task task, Throwable error) throws Exception {
         super.uninstallDone(task, error);
         assertFalse(newFilename + " was not removed", newFile.exists());
-        assertTrue(deprecatedFilename + " was not copy back",
-                deprecatedFile.exists());
+        assertTrue(deprecatedFilename + " was not copy back", deprecatedFile.exists());
         BufferedReader reader = new BufferedReader(new FileReader(snapshotFile));
         try {
             String line = reader.readLine();
@@ -144,10 +136,8 @@ public class TestCopyDir extends AbstractCommandTest {
             org.apache.commons.io.IOUtils.closeQuietly(reader);
         }
 
-        File templates = new File(Environment.getDefault().getHome(),
-                "templates");
-        File configFile = new File(templates, "collaboration/config/"
-                + testConfigFilename);
+        File templates = new File(Environment.getDefault().getHome(), "templates");
+        File configFile = new File(templates, "collaboration/config/" + testConfigFilename);
         assertFalse(configFile.exists());
     }
 

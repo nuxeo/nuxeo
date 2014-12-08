@@ -28,15 +28,14 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 /**
- * Docx to text converter: parses the Open XML text document to read its
- * content.
+ * Docx to text converter: parses the Open XML text document to read its content.
  */
 public class DOCX2TextConverter extends XmlZip2TextConverter {
 
     private static final String WORD_DOCUMENT_ZIP_ENTRY_NAME = "word/document.xml";
 
-    protected void readXmlZipContent(ZipInputStream zis, XMLReader reader,
-            StringBuilder sb) throws IOException, SAXException {
+    protected void readXmlZipContent(ZipInputStream zis, XMLReader reader, StringBuilder sb) throws IOException,
+            SAXException {
 
         ZipEntry zipEntry = zis.getNextEntry();
         while (zipEntry != null) {

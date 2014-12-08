@@ -24,24 +24,20 @@ import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutConversionContex
 import org.nuxeo.ecm.platform.forms.layout.io.plugins.helpers.TranslationHelper;
 
 /**
- * Converter that replaces labels to translate by their translation in a given
- * language.
+ * Converter that replaces labels to translate by their translation in a given language.
  *
  * @since 5.5
  */
 public class WidgetLabeli18nConverter extends AbstractWidgetDefinitionConverter {
 
     @Override
-    public WidgetDefinition getWidgetDefinition(WidgetDefinition orig,
-            LayoutConversionContext ctx) {
+    public WidgetDefinition getWidgetDefinition(WidgetDefinition orig, LayoutConversionContext ctx) {
         String lang = ctx.getLanguage();
         if (orig.isTranslated() && lang != null) {
             // translate widget labels
             WidgetDefinition clone = getClonedWidget(orig);
-            Map<String, String> labels = TranslationHelper.getTranslatedLabels(
-                    clone.getLabels(), lang);
-            Map<String, String> helpLabels = TranslationHelper.getTranslatedLabels(
-                    clone.getHelpLabels(), lang);
+            Map<String, String> labels = TranslationHelper.getTranslatedLabels(clone.getLabels(), lang);
+            Map<String, String> helpLabels = TranslationHelper.getTranslatedLabels(clone.getHelpLabels(), lang);
             clone.setLabels(labels);
             clone.setHelpLabels(helpLabels);
             return clone;

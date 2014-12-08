@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.relations.api.Resource;
  * Resource.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class ResourceImpl extends AbstractNode implements Resource {
 
@@ -72,8 +71,7 @@ public class ResourceImpl extends AbstractNode implements Resource {
             return false;
         }
         ResourceImpl otherResource = (ResourceImpl) other;
-        return uri == null ? otherResource.uri == null : uri
-                .equals(otherResource.uri);
+        return uri == null ? otherResource.uri == null : uri.equals(otherResource.uri);
     }
 
     @Override

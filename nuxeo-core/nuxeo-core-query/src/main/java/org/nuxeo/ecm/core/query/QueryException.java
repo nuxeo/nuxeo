@@ -14,21 +14,16 @@
 
 package org.nuxeo.ecm.core.query;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class QueryException extends Exception {
 
-
     private static final long serialVersionUID = -3557588796412733083L;
-
 
     public QueryException() {
 
     }
-
 
     public QueryException(String message) {
         super(message);

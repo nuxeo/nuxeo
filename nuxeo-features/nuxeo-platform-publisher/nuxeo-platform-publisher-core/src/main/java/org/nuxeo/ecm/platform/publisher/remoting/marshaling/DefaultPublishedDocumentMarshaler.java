@@ -30,47 +30,41 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.Publishin
  * {@link PublishedDocument} marshaler using simple XML representation.
  *
  * @author tiry
- *
  */
-public class DefaultPublishedDocumentMarshaler extends
-        AbstractDefaultXMLMarshaler implements PublishedDocumentMarshaler {
+public class DefaultPublishedDocumentMarshaler extends AbstractDefaultXMLMarshaler implements
+        PublishedDocumentMarshaler {
 
-    protected static QName rootTag = DocumentFactory.getInstance().createQName(
-            "publishedDocument", publisherSerializerNSPrefix,
+    protected static QName rootTag = DocumentFactory.getInstance().createQName("publishedDocument",
+            publisherSerializerNSPrefix, publisherSerializerNS);
+
+    protected static QName sourceRefTag = DocumentFactory.getInstance().createQName("sourceRef",
+            publisherSerializerNSPrefix, publisherSerializerNS);
+
+    protected static QName repositoryNameTag = DocumentFactory.getInstance().createQName("repositoryName",
+            publisherSerializerNSPrefix, publisherSerializerNS);
+
+    protected static QName serverNameTag = DocumentFactory.getInstance().createQName("serverName",
+            publisherSerializerNSPrefix, publisherSerializerNS);
+
+    protected static QName versionLabelTag = DocumentFactory.getInstance().createQName("versionLabel",
+            publisherSerializerNSPrefix, publisherSerializerNS);
+
+    protected static QName pathTag = DocumentFactory.getInstance().createQName("path", publisherSerializerNSPrefix,
             publisherSerializerNS);
 
-    protected static QName sourceRefTag = DocumentFactory.getInstance().createQName(
-            "sourceRef", publisherSerializerNSPrefix, publisherSerializerNS);
+    protected static QName parentPathTag = DocumentFactory.getInstance().createQName("parentPath",
+            publisherSerializerNSPrefix, publisherSerializerNS);
 
-    protected static QName repositoryNameTag = DocumentFactory.getInstance().createQName(
-            "repositoryName", publisherSerializerNSPrefix,
-            publisherSerializerNS);
-
-    protected static QName serverNameTag = DocumentFactory.getInstance().createQName(
-            "serverName", publisherSerializerNSPrefix, publisherSerializerNS);
-
-    protected static QName versionLabelTag = DocumentFactory.getInstance().createQName(
-            "versionLabel", publisherSerializerNSPrefix, publisherSerializerNS);
-
-    protected static QName pathTag = DocumentFactory.getInstance().createQName(
-            "path", publisherSerializerNSPrefix, publisherSerializerNS);
-
-    protected static QName parentPathTag = DocumentFactory.getInstance().createQName(
-            "parentPath", publisherSerializerNSPrefix, publisherSerializerNS);
-
-    protected static QName isPendingTag = DocumentFactory.getInstance().createQName(
-            "isPending", publisherSerializerNSPrefix, publisherSerializerNS);
+    protected static QName isPendingTag = DocumentFactory.getInstance().createQName("isPending",
+            publisherSerializerNSPrefix, publisherSerializerNS);
 
     public String marshalPublishedDocument(PublishedDocument pubDoc) {
         if (pubDoc == null)
             return "";
 
-        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(
-                rootTag);
-        rootElem.addNamespace(publisherSerializerNSPrefix,
-                publisherSerializerNS);
-        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(
-                rootElem);
+        org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(rootTag);
+        rootElem.addNamespace(publisherSerializerNSPrefix, publisherSerializerNS);
+        org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(rootElem);
 
         org.dom4j.Element sourceElem = rootElem.addElement(sourceRefTag);
         sourceElem.setText(pubDoc.getSourceDocumentRef().toString());
@@ -99,8 +93,7 @@ public class DefaultPublishedDocumentMarshaler extends
 
     }
 
-    public PublishedDocument unMarshalPublishedDocument(String data)
-            throws PublishingMarshalingException {
+    public PublishedDocument unMarshalPublishedDocument(String data) throws PublishingMarshalingException {
 
         PublishedDocument pubDoc;
         try {
@@ -119,14 +112,11 @@ public class DefaultPublishedDocumentMarshaler extends
             String version = rootElem.element(versionLabelTag).getTextTrim();
             String path = rootElem.element(pathTag).getTextTrim();
             String parentPath = rootElem.element(parentPathTag).getTextTrim();
-            boolean isPending = Boolean.parseBoolean(rootElem.element(
-                    isPendingTag).getTextTrim());
+            boolean isPending = Boolean.parseBoolean(rootElem.element(isPendingTag).getTextTrim());
 
-            pubDoc = new BasicPublishedDocument(docRef, repo, server, version,
-                    path, parentPath, isPending);
+            pubDoc = new BasicPublishedDocument(docRef, repo, server, version, path, parentPath, isPending);
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException(
-                    "Unable to unmarshal Published Document", e);
+            throw new PublishingMarshalingException("Unable to unmarshal Published Document", e);
         }
         return pubDoc;
     }

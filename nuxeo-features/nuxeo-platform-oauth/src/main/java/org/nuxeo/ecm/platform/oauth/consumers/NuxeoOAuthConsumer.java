@@ -31,10 +31,9 @@ import net.oauth.signature.RSA_SHA1;
 import net.oauth.signature.pem.PEMReader;
 
 /**
- * Represents a application that uses OAuth to consume a Web Service from Nuxeo.
- * This class holds informations such and keys and name for a consumer
- * application. The simple mapping to DocumentModel is also provided to make
- * storage in SQL Directory easier.
+ * Represents a application that uses OAuth to consume a Web Service from Nuxeo. This class holds informations such and
+ * keys and name for a consumer application. The simple mapping to DocumentModel is also provided to make storage in SQL
+ * Directory easier.
  *
  * @author tiry
  */
@@ -43,8 +42,11 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
     public static final String ALLOW_SIGNEDFETCH = "allowSignedFetch";
 
     public static final String SIGNEDFETCH_NONE = "none";
+
     public static final String SIGNEDFETCH_OPENSOCIAL_VIEWER = "opensocial:viewer";
+
     public static final String SIGNEDFETCH_OPENSOCIAL_OWNER = "opensocial:owner";
+
     public static final String SIGNEDFETCH_DEDICATED_USER = "nuxeo:user";
 
     public static final String SCHEMA = "oauthConsumer";
@@ -54,20 +56,22 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
     private static final long serialVersionUID = 1L;
 
     protected String publicKey;
+
     protected String description;
+
     protected String signedFetchSupport = SIGNEDFETCH_NONE;
+
     protected String dedicatedLogin;
 
     protected boolean enabled = true;
 
     protected boolean allowBypassVerifier = false;
 
-    public static NuxeoOAuthConsumer createFromDirectoryEntry(
-            DocumentModel entry, String keyType) throws ClientException {
+    public static NuxeoOAuthConsumer createFromDirectoryEntry(DocumentModel entry, String keyType)
+            throws ClientException {
         String callbackURL = (String) entry.getProperty(SCHEMA, "callbackURL");
         String consumerKey = (String) entry.getProperty(SCHEMA, "consumerKey");
-        String consumerSecret = (String) entry.getProperty(SCHEMA,
-                "consumerSecret");
+        String consumerSecret = (String) entry.getProperty(SCHEMA, "consumerSecret");
         String rsaKey = (String) entry.getProperty(SCHEMA, "publicKey");
 
         NuxeoOAuthConsumer consumer = new NuxeoOAuthConsumer(callbackURL, consumerKey, consumerSecret, null);
@@ -99,13 +103,12 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
         return consumer;
     }
 
-    public NuxeoOAuthConsumer(String callbackURL, String consumerKey,
-            String consumerSecret, OAuthServiceProvider serviceProvider) {
+    public NuxeoOAuthConsumer(String callbackURL, String consumerKey, String consumerSecret,
+            OAuthServiceProvider serviceProvider) {
         super(callbackURL, consumerKey, consumerSecret, serviceProvider);
     }
 
-    protected DocumentModel asDocumentModel(DocumentModel entry)
-            throws ClientException {
+    protected DocumentModel asDocumentModel(DocumentModel entry) throws ClientException {
         entry.setProperty(SCHEMA, "callbackURL", callbackURL);
         entry.setProperty(SCHEMA, "consumerKey", consumerKey);
         entry.setProperty(SCHEMA, "consumerSecret", consumerSecret);
@@ -115,11 +118,9 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
         entry.setProperty(SCHEMA, "signedFetchSupport", signedFetchSupport);
         entry.setProperty(SCHEMA, "dedicatedLogin", dedicatedLogin);
         entry.setProperty(SCHEMA, "enabled", Boolean.valueOf(enabled));
-        entry.setProperty(SCHEMA, "allowBypassVerifier",
-                Boolean.valueOf(allowBypassVerifier));
+        entry.setProperty(SCHEMA, "allowBypassVerifier", Boolean.valueOf(allowBypassVerifier));
         return entry;
     }
-
 
     public String getCallbackURL() {
         return callbackURL;

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.rendering;
 
 /**
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
- *
  */
 public class RenderingException extends Exception {
 

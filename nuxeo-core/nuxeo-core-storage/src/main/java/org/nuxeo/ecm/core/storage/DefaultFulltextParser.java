@@ -28,11 +28,10 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Default fulltext parser, based on word and punctuation split, and lowercase
- * normalization.
+ * Default fulltext parser, based on word and punctuation split, and lowercase normalization.
  * <p>
- * The regexp used can be configured using the system property
- * {@value #WORD_SPLIT_PROP}. The default is {@value #WORD_SPLIT_DEF}.
+ * The regexp used can be configured using the system property {@value #WORD_SPLIT_PROP}. The default is
+ * {@value #WORD_SPLIT_DEF}.
  *
  * @since 5.9.5
  */
@@ -42,8 +41,8 @@ public class DefaultFulltextParser implements FulltextParser {
 
     public static final String WORD_SPLIT_DEF = "[\\s\\p{Punct}]+";
 
-    protected static final Pattern WORD_SPLIT_PATTERN = Pattern.compile(Framework.getProperty(
-            WORD_SPLIT_PROP, WORD_SPLIT_DEF));
+    protected static final Pattern WORD_SPLIT_PATTERN = Pattern.compile(Framework.getProperty(WORD_SPLIT_PROP,
+            WORD_SPLIT_DEF));
 
     @Override
     public String parse(String s, String path) {
@@ -55,8 +54,7 @@ public class DefaultFulltextParser implements FulltextParser {
     /**
      * {@inheritDoc}
      * <p>
-     * The default implementation normalizes text to lowercase and removes
-     * punctuation.
+     * The default implementation normalizes text to lowercase and removes punctuation.
      * <p>
      * This can be subclassed.
      */

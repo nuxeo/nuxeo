@@ -77,8 +77,7 @@ public final class DocumentModelUtils {
             String fieldName = getFieldName(propertyName);
             return doc.getProperty(schemaName, fieldName);
         } catch (PropertyException e) {
-            log.warn("Error trying to get property " + propertyName + ". "
-                    + e.getMessage());
+            log.warn("Error trying to get property " + propertyName + ". " + e.getMessage());
             if (log.isDebugEnabled()) {
                 log.debug(e);
             }
@@ -93,8 +92,7 @@ public final class DocumentModelUtils {
      * @param propertyPath the property path
      * @return the property value or <code>null</code> if an error occured.
      */
-    public static Object getComplexPropertyValue(DocumentModel doc,
-            String propertyPath) {
+    public static Object getComplexPropertyValue(DocumentModel doc, String propertyPath) {
         try {
             return doc.getPropertyValue(propertyPath);
         } catch (PropertyException e) {
@@ -105,14 +103,12 @@ public final class DocumentModelUtils {
     /**
      * Obtains the schema name from the full propertyName.
      *
-     * @throws IllegalArgumentException if the propertyName does not have a
-     *             schema:field pattern
+     * @throws IllegalArgumentException if the propertyName does not have a schema:field pattern
      */
     public static String getSchemaName(String propertyName) {
         String[] s = propertyName.split(":");
         if (s.length != 2) {
-            throw new IllegalArgumentException("offending value: "
-                    + propertyName);
+            throw new IllegalArgumentException("offending value: " + propertyName);
         }
         String prefix = s[0];
         Schema schema = null;
@@ -129,14 +125,12 @@ public final class DocumentModelUtils {
     /**
      * Obtains the field name from the full propertyName.
      *
-     * @throws IllegalArgumentException if the propertyName does not have a
-     *             schema:field pattern
+     * @throws IllegalArgumentException if the propertyName does not have a schema:field pattern
      */
     public static String getFieldName(String propertyName) {
         int index = propertyName.indexOf(":");
         if (index == -1) {
-            throw new IllegalArgumentException("offending value: "
-                    + propertyName);
+            throw new IllegalArgumentException("offending value: " + propertyName);
         }
         return propertyName.substring(index + 1);
     }
@@ -161,8 +155,7 @@ public final class DocumentModelUtils {
     public static Map<String, Object> getProperties(DocumentModel docModel) {
         final String[] schemas = docModel.getSchemas();
         if (schemas == null) {
-            throw new IllegalStateException(
-                    "schemas are not declared for docModel " + docModel);
+            throw new IllegalStateException("schemas are not declared for docModel " + docModel);
         }
         final Map<String, Object> allProps = new HashMap<String, Object>();
         for (String schemaName : schemas) {

@@ -40,8 +40,7 @@ public final class BooleanType extends PrimitiveType {
         if (value instanceof Boolean) {
             return value;
         } else if (value instanceof Number) {
-            return ((Number) value).intValue() != 0 ? Boolean.TRUE
-                    : Boolean.FALSE;
+            return ((Number) value).intValue() != 0 ? Boolean.TRUE : Boolean.FALSE;
         } else {
             return Boolean.valueOf((String) value);
         }
@@ -61,8 +60,7 @@ public final class BooleanType extends PrimitiveType {
         if (value instanceof Boolean) {
             return value.toString();
         } else if (value instanceof Number) {
-            return ((Number) value).intValue() != 0 ? Boolean.TRUE.toString()
-                    : Boolean.FALSE.toString();
+            return ((Number) value).intValue() != 0 ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
         } else {
             return value != null ? (String) value : "";
         }

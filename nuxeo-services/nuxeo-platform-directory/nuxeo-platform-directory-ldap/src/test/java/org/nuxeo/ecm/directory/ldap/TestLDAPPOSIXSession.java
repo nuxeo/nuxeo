@@ -66,13 +66,11 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             DocumentModel entry = session.getEntry("administrators");
             assertNotNull(entry);
             assertEquals("administrators", entry.getId());
-            assertEquals("administrators", entry.getProperty(
-                    TestLDAPSession.GROUP_SCHEMANAME, "groupname"));
+            assertEquals("administrators", entry.getProperty(TestLDAPSession.GROUP_SCHEMANAME, "groupname"));
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 // LDAP references do not work with the internal test server
-                List<String> members = (List<String>) entry.getProperty(
-                        GROUP_SCHEMANAME, "members");
+                List<String> members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
                 assertNotNull(members);
                 assertEquals(1, members.size());
                 assertTrue(members.contains("Administrator"));
@@ -81,13 +79,11 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             entry = session.getEntry("members");
             assertNotNull(entry);
             assertEquals("members", entry.getId());
-            assertEquals("members",
-                    entry.getProperty(GROUP_SCHEMANAME, "groupname"));
+            assertEquals("members", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 // LDAP references do not work with the internal test server
-                List<String> members = (List<String>) entry.getProperty(
-                        GROUP_SCHEMANAME, "members");
+                List<String> members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
                 assertEquals(3, members.size());
                 assertTrue(members.contains("Administrator"));
                 assertTrue(members.contains("user1"));
@@ -96,13 +92,11 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             entry = session.getEntry("submembers");
             assertNotNull(entry);
             assertEquals("submembers", entry.getId());
-            assertEquals("submembers",
-                    entry.getProperty(GROUP_SCHEMANAME, "groupname"));
+            assertEquals("submembers", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 // LDAP references do not work with the internal test server
-                assertEquals(Arrays.asList("user2"),
-                        entry.getProperty(GROUP_SCHEMANAME, "members"));
+                assertEquals(Arrays.asList("user2"), entry.getProperty(GROUP_SCHEMANAME, "members"));
             }
         } finally {
             session.close();
@@ -123,8 +117,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 DocumentModel dm = session.createEntry(map);
                 dm = session.getEntry("group2");
                 assertNotNull(dm);
-                assertEquals(Arrays.asList("user1", "user2"),
-                        dm.getProperty(GROUP_SCHEMANAME, "members"));
+                assertEquals(Arrays.asList("user1", "user2"), dm.getProperty(GROUP_SCHEMANAME, "members"));
 
                 map = new HashMap<String, Object>();
                 map.put("groupname", "group1");
@@ -133,8 +126,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 dm = session.createEntry(map);
                 dm = session.getEntry("group1");
                 assertNotNull(dm);
-                assertEquals(Arrays.asList("Administrator"),
-                        dm.getProperty(GROUP_SCHEMANAME, "members"));
+                assertEquals(Arrays.asList("Administrator"), dm.getProperty(GROUP_SCHEMANAME, "members"));
 
                 dm = session.getEntry("group2");
                 assertNotNull(dm);
@@ -147,11 +139,9 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 dm = session.getEntry("emptygroup");
                 assertNotNull(dm);
                 assertEquals("emptygroup", dm.getId());
-                assertEquals("emptygroup",
-                        dm.getProperty(GROUP_SCHEMANAME, "groupname"));
+                assertEquals("emptygroup", dm.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-                assertEquals(Arrays.asList(),
-                        dm.getProperty(GROUP_SCHEMANAME, "members"));
+                assertEquals(Arrays.asList(), dm.getProperty(GROUP_SCHEMANAME, "members"));
             } finally {
                 session.close();
             }
@@ -174,32 +164,25 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 entry.setProperty(USER_SCHEMANAME, "firstName", "toto");
                 entry.setProperty(USER_SCHEMANAME, "lastName", "");
                 entry.setProperty(USER_SCHEMANAME, "password", "toto");
-                entry.setProperty(USER_SCHEMANAME, "intField",
-                        Long.valueOf(123));
+                entry.setProperty(USER_SCHEMANAME, "intField", Long.valueOf(123));
 
                 // try to tweak the DN read-only field
-                entry.setProperty(USER_SCHEMANAME, "dn",
-                        "cn=this,ou=is,ou=a,ou=fake,o=dn");
+                entry.setProperty(USER_SCHEMANAME, "dn", "cn=this,ou=is,ou=a,ou=fake,o=dn");
 
-                entry.setProperty(USER_SCHEMANAME, "employeeType",
-                        Arrays.asList("item3", "item4"));
+                entry.setProperty(USER_SCHEMANAME, "employeeType", Arrays.asList("item3", "item4"));
                 List<String> groups = Arrays.asList("administrators", "members");
                 entry.setProperty(USER_SCHEMANAME, "groups", groups);
                 session.updateEntry(entry);
 
                 entry = session.getEntry("user1");
                 assertNotNull(entry);
-                assertEquals("toto",
-                        entry.getProperty(USER_SCHEMANAME, "firstName"));
+                assertEquals("toto", entry.getProperty(USER_SCHEMANAME, "firstName"));
                 assertEquals("", entry.getProperty(USER_SCHEMANAME, "lastName"));
-                assertEquals(Long.valueOf(123),
-                        entry.getProperty(USER_SCHEMANAME, "intField"));
-                assertEquals(Arrays.asList("item3", "item4"),
-                        entry.getProperty(USER_SCHEMANAME, "employeeType"));
+                assertEquals(Long.valueOf(123), entry.getProperty(USER_SCHEMANAME, "intField"));
+                assertEquals(Arrays.asList("item3", "item4"), entry.getProperty(USER_SCHEMANAME, "employeeType"));
                 if (HAS_DYNGROUP_SCHEMA) {
-                    assertEquals(Arrays.asList("administrators", "dyngroup1",
-                            "dyngroup2", "members"), entry.getProperty(
-                            USER_SCHEMANAME, "groups"));
+                    assertEquals(Arrays.asList("administrators", "dyngroup1", "dyngroup2", "members"),
+                            entry.getProperty(USER_SCHEMANAME, "groups"));
                 } else {
                     assertEquals(Arrays.asList("administrators", "members"),
                             entry.getProperty(USER_SCHEMANAME, "groups"));
@@ -208,8 +191,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 // check that the referenced groups where edited properly
                 entry = groupSession.getEntry("administrators");
                 assertNotNull(entry);
-                assertEquals(Arrays.asList("Administrator", "user1"),
-                        entry.getProperty(GROUP_SCHEMANAME, "members"));
+                assertEquals(Arrays.asList("Administrator", "user1"), entry.getProperty(GROUP_SCHEMANAME, "members"));
 
                 entry = groupSession.getEntry("members");
                 assertNotNull(entry);
@@ -224,8 +206,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             try {
                 DocumentModel entry = session.getEntry("administrators");
                 assertNotNull(entry);
-                assertEquals(Arrays.asList("Administrator", "user1"),
-                        entry.getProperty(GROUP_SCHEMANAME, "members"));
+                assertEquals(Arrays.asList("Administrator", "user1"), entry.getProperty(GROUP_SCHEMANAME, "members"));
             } finally {
                 session.close();
             }
@@ -243,34 +224,27 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
 
                 // check that this entry is editable:
                 assertFalse(BaseSession.isReadOnlyEntry(entry));
-                assertEquals(
-                        "cn=members,ou=editable,ou=groups,dc=example,dc=com",
+                assertEquals("cn=members,ou=editable,ou=groups,dc=example,dc=com",
                         entry.getProperty(GROUP_SCHEMANAME, "dn"));
 
                 // edit description and members but not subGroups
                 entry.setProperty(GROUP_SCHEMANAME, "description", "blablabla");
-                entry.setProperty(GROUP_SCHEMANAME, "members",
-                        Arrays.asList("user1", "user2"));
+                entry.setProperty(GROUP_SCHEMANAME, "members", Arrays.asList("user1", "user2"));
                 session.updateEntry(entry);
 
                 entry = session.getEntry("members");
                 assertNotNull(entry);
-                assertEquals("blablabla",
-                        entry.getProperty(GROUP_SCHEMANAME, "description"));
-                assertEquals(Arrays.asList("user1", "user2"),
-                        entry.getProperty(GROUP_SCHEMANAME, "members"));
+                assertEquals("blablabla", entry.getProperty(GROUP_SCHEMANAME, "description"));
+                assertEquals(Arrays.asList("user1", "user2"), entry.getProperty(GROUP_SCHEMANAME, "members"));
 
                 // edit both members and subGroups at the same time
-                entry.setProperty(GROUP_SCHEMANAME, "members",
-                        Arrays.asList("user1", "user3"));
+                entry.setProperty(GROUP_SCHEMANAME, "members", Arrays.asList("user1", "user3"));
                 session.updateEntry(entry);
 
                 entry = session.getEntry("members");
                 assertNotNull(entry);
-                assertEquals("blablabla",
-                        entry.getProperty(GROUP_SCHEMANAME, "description"));
-                assertEquals(Arrays.asList("user1", "user3"),
-                        entry.getProperty(GROUP_SCHEMANAME, "members"));
+                assertEquals("blablabla", entry.getProperty(GROUP_SCHEMANAME, "description"));
+                assertEquals(Arrays.asList("user1", "user3"), entry.getProperty(GROUP_SCHEMANAME, "members"));
             } finally {
                 session.close();
             }
@@ -289,41 +263,32 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             DocumentModel entry = session.getEntry("dyngroup1");
             assertNotNull(entry);
             assertEquals("dyngroup1", entry.getId());
-            assertEquals("dyngroup1",
-                    entry.getProperty(GROUP_SCHEMANAME, "groupname"));
+            assertEquals("dyngroup1", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-            List<String> members = (List<String>) entry.getProperty(
-                    GROUP_SCHEMANAME, "members");
+            List<String> members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
             assertEquals(Arrays.asList("user1", "user3"), members);
 
-            List<String> subGroups = (List<String>) entry.getProperty(
-                    GROUP_SCHEMANAME, "subGroups");
-            assertEquals(Arrays.asList("subgroup", "submembers", "subsubgroup",
-                    "subsubsubgroup"), subGroups);
+            List<String> subGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "subGroups");
+            assertEquals(Arrays.asList("subgroup", "submembers", "subsubgroup", "subsubsubgroup"), subGroups);
 
-            List<String> parentGroups = (List<String>) entry.getProperty(
-                    GROUP_SCHEMANAME, "parentGroups");
+            List<String> parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "parentGroups");
             assertNotNull(parentGroups);
             assertEquals(0, parentGroups.size());
 
             entry = session.getEntry("dyngroup2");
             assertNotNull(entry);
             assertEquals("dyngroup2", entry.getId());
-            assertEquals("dyngroup2",
-                    entry.getProperty(GROUP_SCHEMANAME, "groupname"));
+            assertEquals("dyngroup2", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-            members = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
-                    "members");
+            members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
             assertEquals(Arrays.asList("user1", "user3"), members);
             // user4 is not there since userDirectory is scoped 'onelevel'
 
-            subGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
-                    "subGroups");
+            subGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "subGroups");
             assertNotNull(subGroups);
             assertEquals(0, subGroups.size());
 
-            parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
-                    "parentGroups");
+            parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "parentGroups");
             assertNotNull(parentGroups);
             assertEquals(0, parentGroups.size());
 
@@ -332,20 +297,16 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             entry = session.getEntry("submembers");
             assertNotNull(entry);
             assertEquals("submembers", entry.getId());
-            assertEquals("submembers",
-                    entry.getProperty(GROUP_SCHEMANAME, "groupname"));
+            assertEquals("submembers", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-            members = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
-                    "members");
+            members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
             assertEquals(Arrays.asList("user2"), members);
 
-            subGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
-                    "subGroups");
+            subGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "subGroups");
             assertNotNull(subGroups);
             assertEquals(0, subGroups.size());
 
-            parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
-                    "parentGroups");
+            parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "parentGroups");
             assertEquals(Arrays.asList("dyngroup1"), parentGroups);
         } finally {
             session.close();
@@ -356,8 +317,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @Test
     public void testGetMandatoryAttributes() throws ClientException {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            LDAPSession session = (LDAPSession) getLDAPDirectory(
-                    "userDirectory").getSession();
+            LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
             try {
                 List<String> mandatoryAttributes = session.getMandatoryAttributes();
                 assertEquals(Arrays.asList("sn", "cn"), mandatoryAttributes);
@@ -367,8 +327,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             session = (LDAPSession) getLDAPDirectory("groupDirectory").getSession();
             try {
                 List<String> mandatoryAttributes = session.getMandatoryAttributes();
-                List<String> expectedAttributes = Arrays.asList("cn",
-                        "gidNumber");
+                List<String> expectedAttributes = Arrays.asList("cn", "gidNumber");
                 Collections.sort(mandatoryAttributes);
                 assertEquals(expectedAttributes, mandatoryAttributes);
             } finally {

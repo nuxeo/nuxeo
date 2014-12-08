@@ -19,8 +19,6 @@ package org.nuxeo.ecm.platform.relations.api.exceptions;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * 
- * 
  * @since 5.9.2
  */
 public class RelationAlreadyExistsException extends ClientException {

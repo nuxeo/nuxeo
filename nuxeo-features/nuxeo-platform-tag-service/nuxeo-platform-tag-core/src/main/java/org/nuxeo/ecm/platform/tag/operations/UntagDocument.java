@@ -30,13 +30,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.tag.TagService;
 
 /**
- * @since 7.1
- * Untag document from one or several 'tags'.
+ * @since 7.1 Untag document from one or several 'tags'.
  */
-@Operation(id = UntagDocument.ID, category = Constants.CAT_SERVICES,
-        label = "Untag Document", description = "Untag document from one or " +
-        "several 'tags'.",
-        since = "7.1", addToStudio = true)
+@Operation(id = UntagDocument.ID, category = Constants.CAT_SERVICES, label = "Untag Document", description = "Untag document from one or "
+        + "several 'tags'.", since = "7.1", addToStudio = true)
 public class UntagDocument {
 
     public static final String ID = "Services.UntagDocument";
@@ -47,16 +44,14 @@ public class UntagDocument {
     @Context
     protected CoreSession session;
 
-    @Param(name = "tags", required = true, description = "Labels or tags " +
-            "separated by comma.")
+    @Param(name = "tags", required = true, description = "Labels or tags " + "separated by comma.")
     protected StringList tags;
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel document) throws ClientException {
         if (tags != null) {
             for (String tag : tags) {
-                tagService.untag(session, document.getId(), tag,
-                        session.getPrincipal().getName());
+                tagService.untag(session, document.getId(), tag, session.getPrincipal().getName());
             }
         }
         return document;

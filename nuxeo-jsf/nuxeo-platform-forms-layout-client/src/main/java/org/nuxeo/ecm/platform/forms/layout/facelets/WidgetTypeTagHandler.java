@@ -57,9 +57,8 @@ import com.sun.faces.facelets.el.VariableMapperWrapper;
 /**
  * Widget type tag handler.
  * <p>
- * Applies a {@link WidgetTypeHandler} resolved from a widget created for given
- * type name and mode, and uses other tag attributes to fill the widget
- * properties.
+ * Applies a {@link WidgetTypeHandler} resolved from a widget created for given type name and mode, and uses other tag
+ * attributes to fill the widget properties.
  * <p>
  * Does not handle sub widgets.
  *
@@ -97,9 +96,8 @@ public class WidgetTypeTagHandler extends TagHandler {
     protected final TagAttribute widgetName;
 
     /**
-     * Convenient attribute to remove the "template" property from widget
-     * properties (and avoid stack overflow errors when using another widget
-     * type in a widget template, for compatibility code for instance).
+     * Convenient attribute to remove the "template" property from widget properties (and avoid stack overflow errors
+     * when using another widget type in a widget template, for compatibility code for instance).
      *
      * @since 5.6
      */
@@ -114,9 +112,8 @@ public class WidgetTypeTagHandler extends TagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "name", "category",
-            "mode", "value", "type", "field", "fields", "widgetName", "label",
-            "helpLabel", "translated", "properties", "ignoreTemplateProperty",
+    protected final String[] reservedVarsArray = { "id", "name", "category", "mode", "value", "type", "field",
+            "fields", "widgetName", "label", "helpLabel", "translated", "properties", "ignoreTemplateProperty",
             "subWidgets", "resolveOnly" };
 
     public WidgetTypeTagHandler(TagConfig config) {
@@ -141,8 +138,7 @@ public class WidgetTypeTagHandler extends TagHandler {
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, ELException {
+    public final void apply(FaceletContext ctx, UIComponent parent) throws IOException, ELException {
         WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
         // compute field definitions
@@ -152,8 +148,7 @@ public class WidgetTypeTagHandler extends TagHandler {
             if (fieldValue instanceof FieldDefinition) {
                 fieldsValue.add((FieldDefinition) fieldValue);
             } else if (fieldValue instanceof String) {
-                fieldsValue.add(new FieldDefinitionImpl(null,
-                        (String) fieldValue));
+                fieldsValue.add(new FieldDefinitionImpl(null, (String) fieldValue));
             } else {
                 log.error("Invalid field item => discard: " + fieldValue);
             }
@@ -175,8 +170,7 @@ public class WidgetTypeTagHandler extends TagHandler {
         List<String> reservedVars = Arrays.asList(reservedVarsArray);
         Map<String, Serializable> widgetProps = new HashMap<String, Serializable>();
         if (properties != null) {
-            Map<String, Serializable> propertiesValue = (Map<String, Serializable>) properties.getObject(
-                    ctx, Map.class);
+            Map<String, Serializable> propertiesValue = (Map<String, Serializable>) properties.getObject(ctx, Map.class);
             if (propertiesValue != null) {
                 widgetProps.putAll(propertiesValue);
             }
@@ -185,16 +179,13 @@ public class WidgetTypeTagHandler extends TagHandler {
         // do not propagate value the value attribute to the widget
         // properties if field definitions should be taken into account
         // instead
-        String widgetPropertyMarker = RenderVariables.widgetVariables.widgetProperty.name()
-                + "_";
+        String widgetPropertyMarker = RenderVariables.widgetVariables.widgetProperty.name() + "_";
         boolean includeValueInProps = fieldsValue.isEmpty();
         for (TagAttribute var : vars) {
             String localName = var.getLocalName();
-            if ((!reservedVars.contains(localName))
-                    || ("value".equals(localName) && includeValueInProps)) {
+            if ((!reservedVars.contains(localName)) || ("value".equals(localName) && includeValueInProps)) {
                 String varName = localName;
-                if (localName != null
-                        && localName.startsWith(widgetPropertyMarker)) {
+                if (localName != null && localName.startsWith(widgetPropertyMarker)) {
                     varName = localName.substring(widgetPropertyMarker.length());
                 }
                 widgetProps.put(varName, var.getValue());
@@ -241,37 +232,30 @@ public class WidgetTypeTagHandler extends TagHandler {
 
         Widget[] subWidgetsValue = null;
         if (subWidgets != null) {
-            subWidgetsValue = (Widget[]) subWidgets.getObject(ctx,
-                    Widget[].class);
+            subWidgetsValue = (Widget[]) subWidgets.getObject(ctx, Widget[].class);
         }
 
         // avoid double markers
-        if (widgetNameValue != null
-                && widgetNameValue.startsWith(FaceletHandlerHelper.WIDGET_ID_PREFIX)) {
+        if (widgetNameValue != null && widgetNameValue.startsWith(FaceletHandlerHelper.WIDGET_ID_PREFIX)) {
             widgetNameValue = widgetNameValue.substring(FaceletHandlerHelper.WIDGET_ID_PREFIX.length());
         }
         if (StringUtils.isBlank(widgetNameValue)) {
             widgetNameValue = typeValue;
         }
-        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(widgetNameValue,
-                typeValue, labelValue, helpLabelValue,
-                translatedValue.booleanValue(), null, fieldsValue, widgetProps,
-                null);
+        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(widgetNameValue, typeValue, labelValue, helpLabelValue,
+                translatedValue.booleanValue(), null, fieldsValue, widgetProps, null);
         wDef.setTypeCategory(categoryValue);
         wDef.setDynamic(true);
-        Widget widget = layoutService.createWidget(ctx, wDef, modeValue,
-                valueName, subWidgetsValue);
+        Widget widget = layoutService.createWidget(ctx, wDef, modeValue, valueName, subWidgetsValue);
 
         // expose widget variable
         VariableMapper orig = ctx.getVariableMapper();
         VariableMapper vm = new VariableMapperWrapper(orig);
         ctx.setVariableMapper(vm);
-        ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(
-                widget, Widget.class);
+        ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(widget, Widget.class);
         vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
         vm.setVariable(
-                String.format("%s_%s",
-                        RenderVariables.widgetVariables.widget.name(),
+                String.format("%s_%s", RenderVariables.widgetVariables.widget.name(),
                         Integer.valueOf(widget.getLevel())), widgetVe);
         // TODO NXP-13280: expose widget controls too when they can be
         // retrieved from tag attributes
@@ -295,15 +279,12 @@ public class WidgetTypeTagHandler extends TagHandler {
                 // anymore, could not reproduce the corresponding bug, to
                 // remove after complementary tests.
                 String setTagConfigId = widget.getTagConfigId();
-                ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(
-                        this.config, setTagConfigId,
-                        RenderVariables.widgetVariables.widget.name(),
-                        "#{widget}", "true", "true", nextHandler);
+                ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(this.config, setTagConfigId,
+                        RenderVariables.widgetVariables.widget.name(), "#{widget}", "true", "true", nextHandler);
                 FaceletHandler handler = new SetTagHandler(aliasConfig);
                 handler.apply(ctx, parent);
             } else {
-                WidgetTagHandler.applyWidgetHandler(ctx, parent, config,
-                        widget, value, true, nextHandler);
+                WidgetTagHandler.applyWidgetHandler(ctx, parent, config, widget, value, true, nextHandler);
             }
         } finally {
             ctx.setVariableMapper(orig);

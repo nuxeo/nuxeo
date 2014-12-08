@@ -31,8 +31,8 @@ import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.GLOB
 import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.PASSIVATED_EVENT;
 
 /**
- * Listen for {@link AdministrativeStatus} changes and set the necessary flag in {@link AdminStatusHelper}
- * so that web infrastructure can directly use the Helper.
+ * Listen for {@link AdministrativeStatus} changes and set the necessary flag in {@link AdminStatusHelper} so that web
+ * infrastructure can directly use the Helper.
  *
  * @author tiry
  */

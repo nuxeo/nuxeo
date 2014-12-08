@@ -22,7 +22,6 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FieldsBuilder {
 
@@ -44,7 +43,7 @@ public class FieldsBuilder {
         this.map = map;
     }
 
-    public FieldsBuilder put(String key, String ... value) {
+    public FieldsBuilder put(String key, String... value) {
         map.put(key, value);
         return this;
     }
@@ -54,7 +53,7 @@ public class FieldsBuilder {
         return this;
     }
 
-    public Map<String,String[]> fields() {
+    public Map<String, String[]> fields() {
         return map;
     }
 }

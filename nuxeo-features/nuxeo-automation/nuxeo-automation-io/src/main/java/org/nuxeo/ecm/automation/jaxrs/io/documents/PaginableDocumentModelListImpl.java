@@ -21,8 +21,7 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-public class PaginableDocumentModelListImpl extends
-        PaginablePageProvider<DocumentModel> implements
+public class PaginableDocumentModelListImpl extends PaginablePageProvider<DocumentModel> implements
         PaginableDocumentModelList {
 
     private static final long serialVersionUID = 1L;
@@ -34,15 +33,12 @@ public class PaginableDocumentModelListImpl extends
     }
 
     /**
-     * Creates a {@code PaginableDocumentModelListImpl} with more display
-     * information.
+     * Creates a {@code PaginableDocumentModelListImpl} with more display information.
      *
-     * @param documentLinkBuilder the name of what will be used to compute the
-     *            document URLs, usually a codec name.
+     * @param documentLinkBuilder the name of what will be used to compute the document URLs, usually a codec name.
      * @since 5.6
      */
-    public PaginableDocumentModelListImpl(PageProvider<DocumentModel> provider,
-            String documentLinkBuilder) {
+    public PaginableDocumentModelListImpl(PageProvider<DocumentModel> provider, String documentLinkBuilder) {
         super(provider);
         this.documentLinkBuilder = documentLinkBuilder;
     }

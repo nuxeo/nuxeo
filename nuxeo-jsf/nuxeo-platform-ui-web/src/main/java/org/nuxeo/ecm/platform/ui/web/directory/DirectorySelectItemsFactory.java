@@ -53,18 +53,15 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
 
     protected abstract boolean isDisplayObsoleteEntries();
 
-    protected abstract DirectorySelectItem createSelectItem(String label,
-            Long ordering);
+    protected abstract DirectorySelectItem createSelectItem(String label, Long ordering);
 
     protected abstract String retrieveSelectEntryId();
 
     protected abstract Object retrieveItemLabel();
 
-    protected abstract String retrieveLabelFromEntry(
-            DocumentModel directoryEntry);
+    protected abstract String retrieveLabelFromEntry(DocumentModel directoryEntry);
 
-    protected abstract Long retrieveOrderingFromEntry(
-            DocumentModel directoryEntry);
+    protected abstract Long retrieveOrderingFromEntry(DocumentModel directoryEntry);
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public List<DirectorySelectItem> createDirectorySelectItems(Object value) {
@@ -74,9 +71,8 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
             List<DirectorySelectItem> items = new ArrayList<DirectorySelectItem>();
             String dirName = getDirectoryName();
             if (StringUtils.isBlank(dirName)) {
-                items.add(new DirectorySelectItem("",
-                        "ERROR: mising directoryName property "
-                                + "configuration on widget"));
+                items.add(new DirectorySelectItem("", "ERROR: mising directoryName property "
+                        + "configuration on widget"));
             } else {
                 Session directorySession = DirectorySelectItemFactory.getDirectorySession(dirName);
                 if (directorySession != null) {
@@ -84,8 +80,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
                         ListDataModel ldm = (ListDataModel) value;
                         List<Object> entries = (List) ldm.getWrappedData();
                         for (Object entry : entries) {
-                            DirectorySelectItem res = createSelectItemFrom(
-                                    directorySession, entry);
+                            DirectorySelectItem res = createSelectItemFrom(directorySession, entry);
                             if (res != null) {
                                 items.add(res);
                             }
@@ -93,8 +88,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
                     } else if (value instanceof Collection) {
                         Collection<Object> collection = (Collection<Object>) value;
                         for (Object entry : collection) {
-                            DirectorySelectItem res = createSelectItemFrom(
-                                    directorySession, entry);
+                            DirectorySelectItem res = createSelectItemFrom(directorySession, entry);
                             if (res != null) {
                                 items.add(res);
                             }
@@ -102,19 +96,15 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
                     } else if (value instanceof Object[]) {
                         Object[] entries = (Object[]) value;
                         for (Object entry : entries) {
-                            DirectorySelectItem res = createSelectItemFrom(
-                                    directorySession, entry);
+                            DirectorySelectItem res = createSelectItemFrom(directorySession, entry);
                             if (res != null) {
                                 items.add(res);
                             }
                         }
                     }
                 } else {
-                    items.add(new DirectorySelectItem(
-                            "",
-                            String.format(
-                                    "ERROR: mising directorySession for directory '%s'",
-                                    dirName)));
+                    items.add(new DirectorySelectItem("", String.format(
+                            "ERROR: mising directorySession for directory '%s'", dirName)));
                 }
                 DirectorySelectItemFactory.closeDirectorySession(directorySession);
             }
@@ -142,8 +132,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
                     DocumentModelList entries = directorySession.query(filter);
                     for (DocumentModel entry : entries) {
                         if (entry != null) {
-                            DirectorySelectItem res = createSelectItemForEntry(
-                                    entry, entry);
+                            DirectorySelectItem res = createSelectItemForEntry(entry, entry);
                             if (res != null) {
                                 items.add(res);
                             }
@@ -174,8 +163,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
         }
     }
 
-    protected DirectorySelectItem createSelectItemForEntry(Object itemValue,
-            DocumentModel entry) {
+    protected DirectorySelectItem createSelectItemForEntry(Object itemValue, DocumentModel entry) {
         String var = getVar();
         String varEntry = var + "Entry";
         Object varEntryExisting = VariableManager.saveRequestMapVarValue(varEntry);
@@ -205,14 +193,12 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
                 throw e;
             }
         } finally {
-            VariableManager.restoreRequestMapVarValue(varEntry,
-                    varEntryExisting);
+            VariableManager.restoreRequestMapVarValue(varEntry, varEntryExisting);
         }
 
     }
 
-    protected DirectorySelectItem createSelectItemFrom(Session session,
-            Object entry) {
+    protected DirectorySelectItem createSelectItemFrom(Session session, Object entry) {
         String entryId;
         if (entry instanceof String) {
             entryId = (String) entry;
@@ -229,13 +215,11 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
             if (docEntry == null) {
                 putIteratorToRequestParam(entry);
                 Object labelObject = retrieveItemLabel();
-                String label = labelObject == null ? null
-                        : String.valueOf(labelObject);
+                String label = labelObject == null ? null : String.valueOf(labelObject);
                 if (StringUtils.isBlank(label)) {
                     label = entryId;
                 }
-                DirectorySelectItem item = createSelectItem(label,
-                        Long.valueOf(0L));
+                DirectorySelectItem item = createSelectItem(label, Long.valueOf(0L));
                 removeIteratorFromRequestParam();
                 return item;
             }
@@ -247,8 +231,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
 
     @Override
     public SelectItem createSelectItem() {
-        throw new IllegalArgumentException(
-                "Use createSelectDirectoryItems instead");
+        throw new IllegalArgumentException("Use createSelectDirectoryItems instead");
     }
 
 }

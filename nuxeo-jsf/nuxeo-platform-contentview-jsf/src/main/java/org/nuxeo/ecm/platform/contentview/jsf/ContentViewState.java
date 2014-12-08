@@ -24,11 +24,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
- * Implementations of this interface represent a content view state that can be
- * used to restore a given content view.
+ * Implementations of this interface represent a content view state that can be used to restore a given content view.
  * <p>
- * State is restricted to given getters and setters. Some state information is
- * actually taken on the page provider.
+ * State is restricted to given getters and setters. Some state information is actually taken on the page provider.
  *
  * @since 5.4.2
  */

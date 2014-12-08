@@ -12,8 +12,7 @@
 package org.nuxeo.ecm.core.api;
 
 /**
- * Holds life cycle related constants that are generic enough to be available at
- * a core level.
+ * Holds life cycle related constants that are generic enough to be available at a core level.
  *
  * @author Anahide Tchertchian
  */
@@ -37,14 +36,12 @@ public interface LifeCycleConstants {
     static final String TRANSTION_EVENT_OPTION_TRANSITION = "transition";
 
     /**
-     * Event for a document undeleted by the user. Triggers an async listener
-     * that undeletes its children too.
+     * Event for a document undeleted by the user. Triggers an async listener that undeletes its children too.
      */
     static final String DOCUMENT_UNDELETED = "documentUndeleted";
 
     /**
-     * Key in context map to specify initial lifecycle state on document
-     * creation.
+     * Key in context map to specify initial lifecycle state on document creation.
      */
     static final String INITIAL_LIFECYCLE_STATE_OPTION_NAME = "initialLifecycleState";
 

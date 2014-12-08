@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.relations.api.Literal;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- *
  */
 public class TestRelationDate {
 
@@ -49,7 +48,8 @@ public class TestRelationDate {
         assertEquals(newLit, literal);
     }
 
-    /** Uses date variant to prove that the calendar one works.
+    /**
+     * Uses date variant to prove that the calendar one works.
      */
     @SuppressWarnings("deprecation")
     @Test

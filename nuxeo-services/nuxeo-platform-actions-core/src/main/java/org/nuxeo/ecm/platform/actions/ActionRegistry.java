@@ -142,8 +142,7 @@ public class ActionRegistry implements Serializable {
                 for (String compatCategory : compat.getCategories()) {
                     if (StringUtils.equals(compatCategory, category)) {
                         finalAction.setType(compat.getType());
-                        if (applyCustomCompatibility(compat.getType(),
-                                finalAction)) {
+                        if (applyCustomCompatibility(compat.getType(), finalAction)) {
                             return true;
                         }
                     }
@@ -160,8 +159,7 @@ public class ActionRegistry implements Serializable {
      */
     protected boolean applyCustomCompatibility(String compatType, Action action) {
         // 6.0 BBB: home/admin tab actions migrated to widgets
-        if ("admin_rest_document_link".equals(compatType)
-                || "home_rest_document_link".equals(compatType)) {
+        if ("admin_rest_document_link".equals(compatType) || "home_rest_document_link".equals(compatType)) {
             boolean applied = false;
             String link = action.getLink();
             if (link != null && !link.startsWith("/")) {
@@ -169,10 +167,8 @@ public class ActionRegistry implements Serializable {
                 applied = true;
             }
             if (applied) {
-                log.warn(String.format(
-                        "Applied compatibility to action '%s', its configuration "
-                                + "should be reviewed: make sure the link references an "
-                                + "absolute path", action.getId()));
+                log.warn(String.format("Applied compatibility to action '%s', its configuration "
+                        + "should be reviewed: make sure the link references an " + "absolute path", action.getId()));
                 return true;
             }
         }
@@ -206,8 +202,7 @@ public class ActionRegistry implements Serializable {
         return typeCategoryRelations;
     }
 
-    public void setTypeCategoryRelations(
-            List<TypeCompatibility> typeCategoryRelations) {
+    public void setTypeCategoryRelations(List<TypeCompatibility> typeCategoryRelations) {
         this.typeCategoryRelations = typeCategoryRelations;
     }
 

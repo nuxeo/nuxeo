@@ -38,7 +38,6 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("install")
 public class Installer {
@@ -48,10 +47,10 @@ public class Installer {
     @XNode("@module")
     public String module;
 
-    @XNodeList(value="copy", type=ArrayList.class, componentType=CopyOperation.class)
+    @XNodeList(value = "copy", type = ArrayList.class, componentType = CopyOperation.class)
     private List<CopyOperation> copyOperations;
 
-    @XNodeList(value="append", type=ArrayList.class, componentType=AppendOperation.class)
+    @XNodeList(value = "append", type = ArrayList.class, componentType = AppendOperation.class)
     private List<AppendOperation> appendOperations;
 
     protected RuntimeContext ctx;
@@ -97,9 +96,7 @@ public class Installer {
             Bundle bundle = ctx.getBundle();
             File file = getBundleFile(bundle);
             if (file == null) {
-                throw new IOException(
-                        "Couldn't transform the bundle location into a file "
-                                + bundle);
+                throw new IOException("Couldn't transform the bundle location into a file " + bundle);
             }
             if (file.isDirectory()) {
                 bundleDir = file;
@@ -119,7 +116,7 @@ public class Installer {
                 }
             }
         } catch (IOException e) {
-            throw new WebDeployException("Installation failed for bundle: "+ctx.getBundle().getSymbolicName(), e);
+            throw new WebDeployException("Installation failed for bundle: " + ctx.getBundle().getSymbolicName(), e);
         } finally {
             if (deleteDir && bundleDir != null) {
                 FileUtils.deleteTree(bundleDir);
@@ -128,7 +125,7 @@ public class Installer {
     }
 
     public void uninstall(RuntimeContext ctx, File installDir) {
-        //TODO
+        // TODO
     }
 
     public static void copyResources(Bundle bundle, String path, File root) throws IOException {
@@ -146,7 +143,7 @@ public class Installer {
     }
 
     protected File getTempBundleDir(Bundle bundle) {
-        return new File(Framework.getRuntime().getHome(), "tmp/bundles/"+bundle.getSymbolicName());
+        return new File(Framework.getRuntime().getHome(), "tmp/bundles/" + bundle.getSymbolicName());
     }
 
     protected File getBundleFile(Bundle bundle) {

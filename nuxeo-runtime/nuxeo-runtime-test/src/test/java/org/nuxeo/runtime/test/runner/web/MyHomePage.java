@@ -24,7 +24,6 @@ import org.openqa.selenium.support.How;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MyHomePage extends WebPage {
 

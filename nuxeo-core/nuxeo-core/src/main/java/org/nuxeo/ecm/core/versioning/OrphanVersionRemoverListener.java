@@ -27,14 +27,11 @@ import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Async listener that is in charge to delete the versions. Before running the
- * delete operation on the versions passed as argument of the event, it will
- * call the registred {@link OrphanVersionRemovalFilter} to allow them to mark
- * some of the orphan versions to be kept.
+ * Async listener that is in charge to delete the versions. Before running the delete operation on the versions passed
+ * as argument of the event, it will call the registred {@link OrphanVersionRemovalFilter} to allow them to mark some of
+ * the orphan versions to be kept.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class OrphanVersionRemoverListener implements PostCommitEventListener {
 
@@ -44,8 +41,7 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
     public void handleEvent(EventBundle events) throws ClientException {
         if (events.containsEventName(DefaultVersionRemovalPolicy.ORPHAN_VERSION_REMOVE)) {
             for (Event event : events) {
-                if (!event.getName().equals(
-                        DefaultVersionRemovalPolicy.ORPHAN_VERSION_REMOVE)) {
+                if (!event.getName().equals(DefaultVersionRemovalPolicy.ORPHAN_VERSION_REMOVE)) {
                     continue;
                 }
                 EventContext ctx = event.getContext();
@@ -64,14 +60,12 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
         return Framework.getLocalService(CoreService.class).getOrphanVersionRemovalFilters();
     }
 
-    protected void removeIfPossible(CoreSession session,
-            ShallowDocumentModel deletedLiveDoc, List<String> versionUUIDs)
+    protected void removeIfPossible(CoreSession session, ShallowDocumentModel deletedLiveDoc, List<String> versionUUIDs)
             throws ClientException {
         session.save(); // receive invalidations if no tx
 
         for (OrphanVersionRemovalFilter filter : getFilters()) {
-            versionUUIDs = filter.getRemovableVersionIds(session,
-                    deletedLiveDoc, versionUUIDs);
+            versionUUIDs = filter.getRemovableVersionIds(session, deletedLiveDoc, versionUUIDs);
             if (versionUUIDs.size() == 0) {
                 break;
             }

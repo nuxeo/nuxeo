@@ -35,8 +35,7 @@ public class DocUIDGeneratorListenerTest extends UIDGeneratorTestCase {
 
     protected DocumentModel createFileDocument() throws ClientException {
 
-        DocumentModel fileDoc = session.createDocumentModel("/",
-                "testFile", "Note");
+        DocumentModel fileDoc = session.createDocumentModel("/", "testFile", "Note");
 
         fileDoc.setProperty("dublincore", "title", "TestFile");
         fileDoc.setProperty("dublincore", "description", "RAS");

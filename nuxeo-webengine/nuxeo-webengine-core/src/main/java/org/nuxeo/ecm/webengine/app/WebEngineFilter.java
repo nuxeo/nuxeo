@@ -41,11 +41,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * This filter must be declared after the nuxeo authentication filter since it
- * needs an authentication info.
- *
- * The session synchronization is done only if NuxeoRequestControllerFilter was
- * not already done it and stateful flag for the request path is true.
+ * This filter must be declared after the nuxeo authentication filter since it needs an authentication info. The session
+ * synchronization is done only if NuxeoRequestControllerFilter was not already done it and stateful flag for the
+ * request path is true.
  */
 public class WebEngineFilter implements Filter {
 
@@ -75,14 +73,13 @@ public class WebEngineFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         initIfNeeded();
         if (request instanceof HttpServletRequest) {
             HttpServletRequest req = (HttpServletRequest) request;
             HttpServletResponse resp = (HttpServletResponse) response;
-            PathDescriptor pd = engine.getRequestConfiguration().getMatchingConfiguration(
-                    req);
+            PathDescriptor pd = engine.getRequestConfiguration().getMatchingConfiguration(req);
             Config config = new Config(req, pd);
             AbstractWebContext ctx = initRequest(config, req, resp);
             if (config.txStarted) {
@@ -111,8 +108,7 @@ public class WebEngineFilter implements Filter {
         }
     }
 
-    public void preRequest(HttpServletRequest request,
-            HttpServletResponse response) {
+    public void preRequest(HttpServletRequest request, HttpServletResponse response) {
         // need to set the encoding of characters manually
         if (request.getCharacterEncoding() == null) {
             try {
@@ -123,8 +119,7 @@ public class WebEngineFilter implements Filter {
         }
     }
 
-    public void postRequest(HttpServletRequest request,
-            HttpServletResponse response) {
+    public void postRequest(HttpServletRequest request, HttpServletResponse response) {
         // check if the target resource don't want automatic headers to be
         // inserted
         if (null != request.getAttribute("org.nuxeo.webengine.DisableAutoHeaders")) {
@@ -138,8 +133,7 @@ public class WebEngineFilter implements Filter {
         }
     }
 
-    public AbstractWebContext initRequest(Config config,
-            HttpServletRequest request, HttpServletResponse response) {
+    public AbstractWebContext initRequest(Config config, HttpServletRequest request, HttpServletResponse response) {
         initTx(config, request);
         // user session is registered even for static resources - because some
         // static resources are served by JAX-RS resources that needs a user
@@ -149,8 +143,7 @@ public class WebEngineFilter implements Filter {
         return ctx;
     }
 
-    public void cleanup(Config config, AbstractWebContext ctx,
-            HttpServletRequest request, HttpServletResponse response) {
+    public void cleanup(Config config, AbstractWebContext ctx, HttpServletRequest request, HttpServletResponse response) {
         try {
             closeTx(config, request);
         } finally {
@@ -159,8 +152,7 @@ public class WebEngineFilter implements Filter {
     }
 
     public void initTx(Config config, HttpServletRequest req) {
-        if (!config.isStatic && config.autoTx
-                && !TransactionHelper.isTransactionActive()) {
+        if (!config.isStatic && config.autoTx && !TransactionHelper.isTransactionActive()) {
             config.txStarted = ServletHelper.startTransaction(req);
         }
     }

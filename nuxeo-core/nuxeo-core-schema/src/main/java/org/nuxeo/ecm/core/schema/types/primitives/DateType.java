@@ -72,7 +72,7 @@ public class DateType extends PrimitiveType {
         } else if (object instanceof Calendar) {
             return DateParser.formatW3CDateTime(((Calendar) object).getTime());
         } else {
-           return null;
+            return null;
         }
     }
 

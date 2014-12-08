@@ -83,8 +83,7 @@ public class TestExportedDocument extends NXRuntimeTestCase {
 
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<document id=\"My id\"><system><type>My type</type>"
-                + "<path>my-path</path><access-control/></system></document>",
-                writer.toString());
+                + "<path>my-path</path><access-control/></system></document>", writer.toString());
 
         // Check ZIP output.
         ByteArrayOutputStream out = new ByteArrayOutputStream();

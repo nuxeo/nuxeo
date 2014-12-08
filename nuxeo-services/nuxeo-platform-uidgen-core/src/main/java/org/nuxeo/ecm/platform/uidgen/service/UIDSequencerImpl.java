@@ -29,10 +29,9 @@ import org.nuxeo.ecm.platform.uidgen.ejb.UIDSequenceBean;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This implementation uses a static persistence provider to be able to
- * instantiate this class without passing by Framework.getService -> this is to
- * avoid potential problems do to sequencer factories. Anyway sequencer
- * factories should be removed (I don't think they are really needed).
+ * This implementation uses a static persistence provider to be able to instantiate this class without passing by
+ * Framework.getService -> this is to avoid potential problems do to sequencer factories. Anyway sequencer factories
+ * should be removed (I don't think they are really needed).
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -84,12 +83,11 @@ public class UIDSequencerImpl implements UIDSequencer {
 
     public int getNext(final String key) {
         try {
-            return getOrCreatePersistenceProvider().run(true,
-                    new RunCallback<Integer>() {
-                        public Integer runWith(EntityManager em) {
-                            return getNext(em, key);
-                        }
-                    });
+            return getOrCreatePersistenceProvider().run(true, new RunCallback<Integer>() {
+                public Integer runWith(EntityManager em) {
+                    return getNext(em, key);
+                }
+            });
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -98,8 +96,7 @@ public class UIDSequencerImpl implements UIDSequencer {
     public int getNext(EntityManager em, String key) {
         UIDSequenceBean seq;
         try {
-            seq = (UIDSequenceBean) em.createNamedQuery("UIDSequence.findByKey").setParameter(
-                    "key", key).getSingleResult();
+            seq = (UIDSequenceBean) em.createNamedQuery("UIDSequence.findByKey").setParameter("key", key).getSingleResult();
             // createQuery("FROM UIDSequenceBean seq WHERE seq.key = :key")
         } catch (NoResultException e) {
             seq = new UIDSequenceBean(key);

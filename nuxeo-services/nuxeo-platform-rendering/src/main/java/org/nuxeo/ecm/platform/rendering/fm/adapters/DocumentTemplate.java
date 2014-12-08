@@ -36,10 +36,8 @@ import freemarker.template.TemplateModelException;
  * TODO document template should not be aware of rendering context ?
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class DocumentTemplate implements TemplateHashModelEx,
-        AdapterTemplateModel {
+public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateModel {
 
     protected final ObjectWrapper wrapper;
 
@@ -68,8 +66,7 @@ public class DocumentTemplate implements TemplateHashModelEx,
                 return wrapper.wrap(value);
             }
         } catch (PropertyException e) {
-            throw new TemplateModelException("Failed to get document field: "
-                    + key, e);
+            throw new TemplateModelException("Failed to get document field: " + key, e);
         }
         return null;
     }
@@ -92,8 +89,7 @@ public class DocumentTemplate implements TemplateHashModelEx,
 
     @Override
     public TemplateCollectionModel keys() throws TemplateModelException {
-        return new CollectionAndSequence(new SimpleSequence(getRawKeys(),
-                wrapper));
+        return new CollectionAndSequence(new SimpleSequence(getRawKeys(), wrapper));
     }
 
     public Collection<Object> getRawValues() throws TemplateModelException {
@@ -107,8 +103,7 @@ public class DocumentTemplate implements TemplateHashModelEx,
 
     @Override
     public TemplateCollectionModel values() throws TemplateModelException {
-        return new CollectionAndSequence(new SimpleSequence(getRawValues(),
-                wrapper));
+        return new CollectionAndSequence(new SimpleSequence(getRawValues(), wrapper));
     }
 
     @Override

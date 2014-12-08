@@ -28,19 +28,16 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.Published
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 
 /**
- *
  * Test simple marshaling
  *
  * @author tiry
- *
  */
 public class TestMarshaling {
 
     @Test
-    public void testPublishedDocMarshaling()
-            throws PublishingMarshalingException {
-        PublishedDocument pubDoc = new BasicPublishedDocument(new IdRef("1"),
-                "demo", "local", "1.0", "path", "parentPath", true);
+    public void testPublishedDocMarshaling() throws PublishingMarshalingException {
+        PublishedDocument pubDoc = new BasicPublishedDocument(new IdRef("1"), "demo", "local", "1.0", "path",
+                "parentPath", true);
 
         PublishedDocumentMarshaler marshaler = new DefaultPublishedDocumentMarshaler();
 
@@ -52,13 +49,10 @@ public class TestMarshaling {
         PublishedDocument pubDoc2 = marshaler.unMarshalPublishedDocument(data);
         assertNotNull(pubDoc2);
 
-        assertEquals(pubDoc.getSourceDocumentRef(),
-                pubDoc2.getSourceDocumentRef());
-        assertEquals(pubDoc.getSourceRepositoryName(),
-                pubDoc2.getSourceRepositoryName());
+        assertEquals(pubDoc.getSourceDocumentRef(), pubDoc2.getSourceDocumentRef());
+        assertEquals(pubDoc.getSourceRepositoryName(), pubDoc2.getSourceRepositoryName());
         assertEquals(pubDoc.getSourceServer(), pubDoc2.getSourceServer());
-        assertEquals(pubDoc.getSourceVersionLabel(),
-                pubDoc2.getSourceVersionLabel());
+        assertEquals(pubDoc.getSourceVersionLabel(), pubDoc2.getSourceVersionLabel());
         assertEquals(pubDoc.getPath(), pubDoc2.getPath());
         assertEquals(pubDoc.getParentPath(), pubDoc2.getParentPath());
         assertEquals(pubDoc.isPending(), pubDoc2.isPending());

@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("filter")
 public class FilterDescriptor {
@@ -43,7 +42,7 @@ public class FilterDescriptor {
     @XNode("@path")
     protected String path;
 
-    @XNodeMap(value="init-params/param", key="@name", type=HashMap.class, componentType=String.class, trim=true, nullByDefault=true)
+    @XNodeMap(value = "init-params/param", key = "@name", type = HashMap.class, componentType = String.class, trim = true, nullByDefault = true)
     protected Map<String, String> initParams;
 
     // the description if any

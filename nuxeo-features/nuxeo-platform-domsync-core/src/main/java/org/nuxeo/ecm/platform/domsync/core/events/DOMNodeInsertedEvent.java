@@ -21,13 +21,13 @@ package org.nuxeo.ecm.platform.domsync.core.events;
 
 /**
  * @author Max Stepanov
- *
  */
 public class DOMNodeInsertedEvent extends DOMMutationEvent {
 
     private static final long serialVersionUID = 2062844930910763189L;
 
     private final int position;
+
     private final String fragment;
 
     public DOMNodeInsertedEvent(String target, String fragment, int position) {
@@ -46,18 +46,16 @@ public class DOMNodeInsertedEvent extends DOMMutationEvent {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof DOMNodeInsertedEvent) {
+        if (obj instanceof DOMNodeInsertedEvent) {
             DOMNodeInsertedEvent other = (DOMNodeInsertedEvent) obj;
-            return super.equals(obj) && position == other.position
-                    && fragment.equals(other.fragment);
+            return super.equals(obj) && position == other.position && fragment.equals(other.fragment);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "DOMNodeInsertedEvent " + super.toString() + " position=" + position
-                + " fragment=" + fragment;
+        return "DOMNodeInsertedEvent " + super.toString() + " position=" + position + " fragment=" + fragment;
     }
 
 }

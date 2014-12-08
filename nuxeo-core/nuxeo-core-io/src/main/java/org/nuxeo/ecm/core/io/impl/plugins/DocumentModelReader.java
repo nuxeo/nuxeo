@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class DocumentModelReader extends AbstractDocumentReader {
 

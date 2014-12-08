@@ -32,8 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class ContentCreationListener implements EventListener {
 
-    private static final Log log = LogFactory
-            .getLog(ContentCreationListener.class);
+    private static final Log log = LogFactory.getLog(ContentCreationListener.class);
 
     private ContentTemplateService service;
 
@@ -59,8 +58,8 @@ public class ContentCreationListener implements EventListener {
             try {
                 getService().executeFactoryForType(createdDocument);
             } catch (ClientException e) {
-                log.error("Error while executing content factory for type "
-                        + createdDocument.getType() + " : " + e.getMessage());
+                log.error("Error while executing content factory for type " + createdDocument.getType() + " : "
+                        + e.getMessage());
             }
         }
     }

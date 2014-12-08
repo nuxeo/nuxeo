@@ -28,9 +28,8 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
  * List widget type, using a fixed template.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * @deprecated widget type can be declared as using
- *             {@link TemplateWidgetTypeHandler²} class, setting property value
- *             in XML configuration.
+ * @deprecated widget type can be declared as using {@link TemplateWidgetTypeHandler²} class, setting property value in
+ *             XML configuration.
  */
 @Deprecated
 public class ListWidgetTypeHandler extends TemplateWidgetTypeHandler {

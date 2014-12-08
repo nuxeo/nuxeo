@@ -20,8 +20,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
- * Factory creating the {@code LocalThemeConfigAdapter} adapter if the
- * document has the {@code ThemeLocalConfiguration} facet.
+ * Factory creating the {@code LocalThemeConfigAdapter} adapter if the document has the {@code ThemeLocalConfiguration}
+ * facet.
  *
  * @see LocalThemeConfigAdapter
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>

@@ -29,16 +29,16 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebLoader {
 
     private static final Log log = LogFactory.getLog(WebLoader.class);
 
     protected final WebEngine engine;
-    protected final ReloadingClassLoader classLoader;
-    protected final GroovyScripting gScripting; //TODO refactor groovy loading
 
+    protected final ReloadingClassLoader classLoader;
+
+    protected final GroovyScripting gScripting; // TODO refactor groovy loading
 
     public WebLoader(WebEngine engine) {
         this.engine = engine;
@@ -53,15 +53,14 @@ public class WebLoader {
     }
 
     /**
-     * Adds a class or resource container to the reloading class loader.
-     * The container is either a jar or a directory.
+     * Adds a class or resource container to the reloading class loader. The container is either a jar or a directory.
      */
     public void addClassPathElement(File container) {
         try {
             classLoader.addResourceStore(new FileResourceStore(container));
             gScripting.getGroovyClassLoader().addURL(container.toURI().toURL());
         } catch (IOException e) {
-            log.error("Failed to create file store: "+container, e);
+            log.error("Failed to create file store: " + container, e);
         }
     }
 

@@ -72,12 +72,9 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
-        deployContrib("org.nuxeo.ecm.platform.test",
-                "test-usermanagerimpl/directory-config.xml");
-        deployTestContrib("org.nuxeo.ecm.platform.query.api",
-                "OSGI-INF/pageprovider-framework.xml");
-        deployTestContrib("org.nuxeo.ecm.platform.task.core.test",
-                "OSGI-INF/pageproviders-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.test", "test-usermanagerimpl/directory-config.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.task.core.test", "OSGI-INF/pageproviders-contrib.xml");
 
         deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
         deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);
@@ -102,12 +99,10 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2006, 6, 6);
         // create one task
-        taskService.createTask(session, administrator, document,
-                "Test Task Name", actors, false, "test directive",
+        taskService.createTask(session, administrator, document, "Test Task Name", actors, false, "test directive",
                 "test comment", calendar.getTime(), null, null);
         // create another task to check pagination
-        taskService.createTask(session, administrator, document,
-                "Test Task Name 2", actors, false, "test directive",
+        taskService.createTask(session, administrator, document, "Test Task Name 2", actors, false, "test directive",
                 "test comment", calendar.getTime(), null, null);
     }
 
@@ -122,11 +117,9 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
     @Test
     public void testTaskPageProvider() throws Exception {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<DashBoardItem> taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider(
-                "current_user_tasks", null, null, null, properties,
-                (Object[]) null);
+                "current_user_tasks", null, null, null, properties, (Object[]) null);
         List<DashBoardItem> tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
@@ -166,29 +159,23 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
     @Test
     public void testTaskPageProviderSorting() throws ClientException {
         Map<String, Serializable> properties = new HashMap<>();
-        properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
-        PageProvider<DashBoardItem> taskProvider =
-                (PageProvider<DashBoardItem>) ppService.getPageProvider
-                        ("current_user_tasks_sort_asc", null, null, null,
-                                properties, (Object[]) null);
+        properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+        PageProvider<DashBoardItem> taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider(
+                "current_user_tasks_sort_asc", null, null, null, properties, (Object[]) null);
         List<DashBoardItem> tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
         assertEquals("Test Task Name", tasks.get(0).getName());
-        //Check task order
-        taskProvider = (PageProvider<DashBoardItem>) ppService
-                .getPageProvider("current_user_tasks_sort_desc", null, null,
-                        null, properties, (Object[]) null);
+        // Check task order
+        taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider("current_user_tasks_sort_desc", null,
+                null, null, properties, (Object[]) null);
         tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
-        //Check task order update
+        // Check task order update
         assertEquals("Test Task Name 2", tasks.get(0).getName());
     }
 
-
     protected DocumentModel getDocument() throws Exception {
-        DocumentModel model = session.createDocumentModel(
-                session.getRootDocument().getPathAsString(), "1", "File");
+        DocumentModel model = session.createDocumentModel(session.getRootDocument().getPathAsString(), "1", "File");
         DocumentModel doc = session.createDocument(model);
         assertNotNull(doc);
 

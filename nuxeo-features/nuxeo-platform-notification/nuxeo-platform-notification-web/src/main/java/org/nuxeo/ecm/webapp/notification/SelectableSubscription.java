@@ -22,11 +22,9 @@ package org.nuxeo.ecm.webapp.notification;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 
 /**
- * Used in the web interface to display the notifications with the information
- * regarding the user's choice.
+ * Used in the web interface to display the notifications with the information regarding the user's choice.
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 public class SelectableSubscription {
 

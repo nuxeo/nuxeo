@@ -26,8 +26,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.automation.jaxrs.io.documents
-        .PaginableDocumentModelListImpl;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -58,8 +57,7 @@ import java.util.Map;
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
  */
-@Operation(id = DocumentPageProviderOperation.ID, category = Constants
-        .CAT_FETCH, label = "PageProvider", description = "Perform "
+@Operation(id = DocumentPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "PageProvider", description = "Perform "
         + "a query or a named provider query on the repository. Result is "
         + "paginated. The query result will become the input for the next "
         + "operation. If no query or provider name is given, a query returning "
@@ -93,15 +91,13 @@ public class DocumentPageProviderOperation {
     protected String providerName;
 
     /**
-     * @deprecated since 6.0 use instead {@link org.nuxeo.ecm.automation
-     * .core.operations.services.query.DocumentQuery}.
+     * @deprecated since 6.0 use instead {@link org.nuxeo.ecm.automation .core.operations.services.query.DocumentQuery}.
      */
     @Deprecated
     @Param(name = "query", required = false)
     protected String query;
 
-    @Param(name = "language", required = false, widget = Constants.W_OPTION,
-            values = { NXQL.NXQL })
+    @Param(name = "language", required = false, widget = Constants.W_OPTION, values = { NXQL.NXQL })
     protected String lang = NXQL.NXQL;
 
     @Param(name = "page", required = false)
@@ -136,32 +132,28 @@ public class DocumentPageProviderOperation {
     /**
      * @since 6.0
      */
-    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false,
-            description = "Named parameters to pass to the page provider to " +
-                    "fill in query variables.")
+    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
+            + "fill in query variables.")
     protected Properties namedParameters;
 
     /**
      * @since 6.0
      */
-    @Param(name = "sortBy", required = false, description = "Sort by " +
-            "properties (separated by comma)")
+    @Param(name = "sortBy", required = false, description = "Sort by " + "properties (separated by comma)")
     protected String sortBy;
 
     /**
      * @since 6.0
      */
-    @Param(name = "sortOrder", required = false, description = "Sort order, " +
-            "ASC or DESC", widget = Constants.W_OPTION,
-            values = { ASC, DESC })
+    @Param(name = "sortOrder", required = false, description = "Sort order, " + "ASC or DESC", widget = Constants.W_OPTION, values = {
+            ASC, DESC })
     protected String sortOrder;
 
     @SuppressWarnings("unchecked")
     @OperationMethod
     public PaginableDocumentModelListImpl run() throws IOException {
 
-        PageProviderService pps = Framework.getLocalService
-                (PageProviderService.class);
+        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
 
         List<SortInfo> sortInfos = null;
         if (sortInfoAsStringList != null) {
@@ -169,10 +161,8 @@ public class DocumentPageProviderOperation {
             for (String sortInfoDesc : sortInfoAsStringList) {
                 SortInfo sortInfo;
                 if (sortInfoDesc.contains(SORT_PARAMETER_SEPARATOR)) {
-                    String[] parts = sortInfoDesc.split
-                            (SORT_PARAMETER_SEPARATOR);
-                    sortInfo = new SortInfo(parts[0],
-                            Boolean.parseBoolean(parts[1]));
+                    String[] parts = sortInfoDesc.split(SORT_PARAMETER_SEPARATOR);
+                    sortInfo = new SortInfo(parts[0], Boolean.parseBoolean(parts[1]));
                 } else {
                     sortInfo = new SortInfo(sortInfoDesc, true);
                 }
@@ -189,8 +179,7 @@ public class DocumentPageProviderOperation {
                 }
                 for (int i = 0; i < sorts.length; i++) {
                     String sort = sorts[i];
-                    boolean sortAscending = (orders != null && orders.length
-                            > i && "asc".equals(orders[i].toLowerCase()));
+                    boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
                     sortInfos.add(new SortInfo(sort, sortAscending));
                 }
             }
@@ -199,8 +188,7 @@ public class DocumentPageProviderOperation {
         Object[] parameters = null;
 
         if (strParameters != null && !strParameters.isEmpty()) {
-            parameters = strParameters.toArray(new String[strParameters.size
-                    ()]);
+            parameters = strParameters.toArray(new String[strParameters.size()]);
             // expand specific parameters
             for (int idx = 0; idx < parameters.length; idx++) {
                 String value = (String) parameters[idx];
@@ -213,11 +201,9 @@ public class DocumentPageProviderOperation {
         }
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        if (query == null
-                && (providerName == null || providerName.length() == 0)) {
+        if (query == null && (providerName == null || providerName.length() == 0)) {
             // provide a defaut query
             query = "SELECT * from Document";
         }
@@ -238,81 +224,62 @@ public class DocumentPageProviderOperation {
         if (namedParameters != null && !namedParameters.isEmpty()) {
             // Setup the search document model
             if (providerName != null) {
-                PageProviderDefinition pageProviderDefinition =
-                        pps.getPageProviderDefinition(providerName);
+                PageProviderDefinition pageProviderDefinition = pps.getPageProviderDefinition(providerName);
                 if (pageProviderDefinition != null) {
                     String searchDocType = pageProviderDefinition.getSearchDocumentType();
                     if (searchDocType != null) {
                         searchDocumentModel = session.createDocumentModel(searchDocType);
-                        DocumentHelper.setJSONProperties(null,
-                                searchDocumentModel, namedParameters);
+                        DocumentHelper.setJSONProperties(null, searchDocumentModel, namedParameters);
                     }
                 } else {
                     log.error("No page provider definition found for " + providerName);
                 }
             }
             // Setup the named parameters map
-            if (searchDocumentModel == null ) {
+            if (searchDocumentModel == null) {
                 searchDocumentModel = new SimpleDocumentModel();
             }
-            searchDocumentModel.putContextData(PageProviderServiceImpl
-                            .NAMED_PARAMETERS,
-                    namedParameters);
+            searchDocumentModel.putContextData(PageProviderServiceImpl.NAMED_PARAMETERS, namedParameters);
         }
 
         if (query != null) {
-            CoreQueryPageProviderDescriptor desc = new
-                    CoreQueryPageProviderDescriptor();
+            CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
             desc.setPattern(query);
-            if (maxResults != null && !maxResults.isEmpty()
-                    && !maxResults.equals("-1")) {
+            if (maxResults != null && !maxResults.isEmpty() && !maxResults.equals("-1")) {
                 // set the maxResults to avoid slowing down queries
                 desc.getProperties().put("maxResults", maxResults);
             }
-            return new PaginableDocumentModelListImpl(
-                    (PageProvider<DocumentModel>) pps.getPageProvider("", desc,
-                            searchDocumentModel, sortInfos, targetPageSize,
-                            targetPage, props, parameters),
-                    documentLinkBuilder);
+            return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pps.getPageProvider("", desc,
+                    searchDocumentModel, sortInfos, targetPageSize, targetPage, props, parameters), documentLinkBuilder);
         } else {
-            return new PaginableDocumentModelListImpl(
-                    (PageProvider<DocumentModel>) pps.getPageProvider(
-                            providerName, searchDocumentModel,
-                            sortInfos, targetPageSize, targetPage,
-                            props, context.containsKey("seamActionContext") ?
-                                    getParameters(providerName,
-                                            parameters) : parameters),
+            return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pps.getPageProvider(providerName,
+                    searchDocumentModel, sortInfos, targetPageSize, targetPage, props,
+                    context.containsKey("seamActionContext") ? getParameters(providerName, parameters) : parameters),
                     documentLinkBuilder);
         }
 
     }
 
     /**
-     * Resolves additional parameters that could have been defined in the
-     * contribution.
+     * Resolves additional parameters that could have been defined in the contribution.
      *
      * @param pageProviderName name of the Page Provider
-     * @param givenParameters  parameters from the operation
+     * @param givenParameters parameters from the operation
      * @since 5.8
      */
-    private Object[] getParameters(final String pageProviderName,
-            final Object[] givenParameters) {
+    private Object[] getParameters(final String pageProviderName, final Object[] givenParameters) {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         // resolve additional parameters
-        PageProviderDefinition ppDef = ppService.getPageProviderDefinition
-                (pageProviderName);
+        PageProviderDefinition ppDef = ppService.getPageProviderDefinition(pageProviderName);
         String[] params = ppDef.getQueryParameters();
         if (params == null) {
             params = new String[0];
         }
 
-        Object[] resolvedParams = new Object[params.length
-                + (givenParameters != null ? givenParameters.length : 0)];
+        Object[] resolvedParams = new Object[params.length + (givenParameters != null ? givenParameters.length : 0)];
 
-        ELContext elContext = EL.createELContext(SeamActionContext.EL_RESOLVER,
-                new FunctionMapperImpl());
+        ELContext elContext = EL.createELContext(SeamActionContext.EL_RESOLVER, new FunctionMapperImpl());
 
         int i = 0;
         if (givenParameters != null) {
@@ -320,9 +287,8 @@ public class DocumentPageProviderOperation {
             System.arraycopy(givenParameters, 0, resolvedParams, 0, i);
         }
         for (int j = 0; j < params.length; j++) {
-            ValueExpression ve = SeamActionContext.EXPRESSION_FACTORY
-                    .createValueExpression(
-                            elContext, params[j], Object.class);
+            ValueExpression ve = SeamActionContext.EXPRESSION_FACTORY.createValueExpression(elContext, params[j],
+                    Object.class);
             resolvedParams[i + j] = ve.getValue(elContext);
         }
         return resolvedParams;

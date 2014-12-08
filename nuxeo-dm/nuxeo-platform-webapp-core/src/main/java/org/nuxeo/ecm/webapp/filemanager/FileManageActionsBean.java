@@ -144,8 +144,7 @@ public class FileManageActionsBean implements FileManageActions {
                 fileManager = Framework.getService(FileManager.class);
             } catch (Exception e) {
                 log.error("Unable to get FileManager service ", e);
-                throw new ClientException("Unable to get FileManager service ",
-                        e);
+                throw new ClientException("Unable to get FileManager service ", e);
             }
         }
         return fileManager;
@@ -157,8 +156,8 @@ public class FileManageActionsBean implements FileManageActions {
     }
 
     /**
-     * Creates a document from the file held in the fileUploadHolder. Takes
-     * responsibility for the fileUploadHolder temporary file.
+     * Creates a document from the file held in the fileUploadHolder. Takes responsibility for the fileUploadHolder
+     * temporary file.
      */
     @Override
     public String addFile() throws ClientException {
@@ -166,11 +165,8 @@ public class FileManageActionsBean implements FileManageActions {
         File tempFile = uploadedFile.getFile();
         String fileName = uploadedFile.getName();
         if (tempFile == null || fileName == null) {
-            facesMessages.add(StatusMessage.Severity.ERROR,
-                    messages.get("fileImporter.error.nullUploadedFile"));
-            return navigationContext.getActionResult(
-                    navigationContext.getCurrentDocument(),
-                    UserAction.AFTER_CREATE);
+            facesMessages.add(StatusMessage.Severity.ERROR, messages.get("fileImporter.error.nullUploadedFile"));
+            return navigationContext.getActionResult(navigationContext.getCurrentDocument(), UserAction.AFTER_CREATE);
         }
         fileName = FileUtils.getCleanFileName(fileName);
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -178,20 +174,16 @@ public class FileManageActionsBean implements FileManageActions {
         Blob blob = FileUtils.createTemporaryFileBlob(tempFile, fileName, null);
         DocumentModel createdDoc = null;
         try {
-            createdDoc = getFileManagerService().createDocumentFromBlob(
-                    documentManager, blob, path, true, fileName);
+            createdDoc = getFileManagerService().createDocumentFromBlob(documentManager, blob, path, true, fileName);
         } catch (IOException e) {
             throw new ClientException("Can not write blob for" + fileName, e);
         }
         EventManager.raiseEventsOnDocumentSelected(createdDoc);
-        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                currentDocument);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
 
-        facesMessages.add(StatusMessage.Severity.INFO,
-                messages.get("document_saved"),
+        facesMessages.add(StatusMessage.Severity.INFO, messages.get("document_saved"),
                 messages.get(createdDoc.getType()));
-        return navigationContext.getActionResult(createdDoc,
-                UserAction.AFTER_CREATE);
+        return navigationContext.getActionResult(createdDoc, UserAction.AFTER_CREATE);
     }
 
     @Override
@@ -206,25 +198,20 @@ public class FileManageActionsBean implements FileManageActions {
     }
 
     protected String getErrorMessage(String errorType, String errorInfo) {
-        return getErrorMessage(errorType, errorInfo,
-                "message.operation.fails.generic");
+        return getErrorMessage(errorType, errorInfo, "message.operation.fails.generic");
     }
 
-    protected String getErrorMessage(String errorType, String errorInfo,
-            String errorLabel) {
-        return String.format("%s |(%s)| %s", errorType, errorInfo,
-                messages.get(errorLabel));
+    protected String getErrorMessage(String errorType, String errorInfo, String errorLabel) {
+        return String.format("%s |(%s)| %s", errorType, errorInfo, messages.get(errorLabel));
     }
 
     /**
-     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to
-     *             avoid loading the content in memory
+     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to avoid loading the content in memory
      */
     @Override
     @Deprecated
     @WebRemote
-    public String addFileFromPlugin(String content, String mimetype,
-            String fullName, String morePath, Boolean UseBase64)
+    public String addFileFromPlugin(String content, String mimetype, String fullName, String morePath, Boolean UseBase64)
             throws ClientException {
         try {
             byte[] bcontent;
@@ -233,25 +220,21 @@ public class FileManageActionsBean implements FileManageActions {
             } else {
                 bcontent = content.getBytes();
             }
-            return addBinaryFileFromPlugin(bcontent, mimetype, fullName,
-                    morePath);
+            return addBinaryFileFromPlugin(bcontent, mimetype, fullName, morePath);
         } catch (ClientException e) {
-            throw new RecoverableClientException(
-                    "Cannot validate, caught client exception",
+            throw new RecoverableClientException("Cannot validate, caught client exception",
                     "message.operation.fails.generic", null, e);
         } catch (RuntimeException e) {
             if (e.getCause() instanceof RecoverableClientException) {
                 throw e;
             }
-            throw new RecoverableClientException(
-                    "Cannot validate, caught runtime", "error.db.fs", null, e);
+            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
         }
     }
 
     @Override
     @WebRemote
-    public String addBinaryFileFromPlugin(Blob blob, String fullName,
-            String morePath) throws ClientException {
+    public String addBinaryFileFromPlugin(Blob blob, String fullName, String morePath) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String curPath = currentDocument.getPathAsString();
 
@@ -261,25 +244,21 @@ public class FileManageActionsBean implements FileManageActions {
 
     @Override
     @WebRemote
-    public String addBinaryFileFromPlugin(Blob blob, String fullName,
-            DocumentModel targetContainer) throws ClientException {
-        return createDocumentFromBlob(blob, fullName,
-                targetContainer.getPathAsString());
+    public String addBinaryFileFromPlugin(Blob blob, String fullName, DocumentModel targetContainer)
+            throws ClientException {
+        return createDocumentFromBlob(blob, fullName, targetContainer.getPathAsString());
     }
 
-    protected String createDocumentFromBlob(Blob blob, String fullName,
-            String path) throws ClientException {
+    protected String createDocumentFromBlob(Blob blob, String fullName, String path) throws ClientException {
         DocumentModel createdDoc;
         try {
-            createdDoc = getFileManagerService().createDocumentFromBlob(
-                    documentManager, blob, path, true, fullName);
+            createdDoc = getFileManagerService().createDocumentFromBlob(documentManager, blob, path, true, fullName);
         } catch (Throwable t) {
             Throwable unwrappedError = ExceptionHelper.unwrapException(t);
             if (ExceptionHelper.isSecurityError(unwrappedError)) {
                 // security check failed
                 log.debug("No permissions creating " + fullName);
-                return getErrorMessage(SECURITY_ERROR, fullName,
-                        "Error.Insuffisant.Rights");
+                return getErrorMessage(SECURITY_ERROR, fullName, "Error.Insuffisant.Rights");
             } else {
                 // log error stack trace for server side debugging while giving
                 // a generic and localized error message to the client
@@ -296,27 +275,25 @@ public class FileManageActionsBean implements FileManageActions {
         if (currentDocument.getRef().equals(createdDoc.getRef())) {
             navigationContext.updateDocumentContext(createdDoc);
         }
-        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                currentDocument);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
         EventManager.raiseEventsOnDocumentSelected(createdDoc);
         return createdDoc.getName();
     }
 
     /**
-     * @deprecated Use addBinaryFileFromPlugin(Blob, String, String) to avoid
-     *             loading the data in memory as a Bytes array
+     * @deprecated Use addBinaryFileFromPlugin(Blob, String, String) to avoid loading the data in memory as a Bytes
+     *             array
      */
     @Deprecated
-    public String addBinaryFileFromPlugin(byte[] content, String mimetype,
-            String fullName, String morePath) throws ClientException {
+    public String addBinaryFileFromPlugin(byte[] content, String mimetype, String fullName, String morePath)
+            throws ClientException {
         Blob blob = StreamingBlob.createFromByteArray(content, null);
         return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
 
     @Override
     @WebRemote
-    public String addFolderFromPlugin(String fullName, String morePath)
-            throws ClientException {
+    public String addFolderFromPlugin(String fullName, String morePath) throws ClientException {
         try {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
@@ -328,15 +305,13 @@ public class FileManageActionsBean implements FileManageActions {
 
             DocumentModel createdDoc;
             try {
-                createdDoc = getFileManagerService().createFolder(
-                        documentManager, fullName, path);
+                createdDoc = getFileManagerService().createFolder(documentManager, fullName, path);
             } catch (Throwable t) {
                 Throwable unwrappedError = ExceptionHelper.unwrapException(t);
                 if (ExceptionHelper.isSecurityError(unwrappedError)) {
                     // security check failed
                     log.debug("No permissions creating folder " + fullName);
-                    return getErrorMessage(SECURITY_ERROR, fullName,
-                            "Error.Insuffisant.Rights");
+                    return getErrorMessage(SECURITY_ERROR, fullName, "Error.Insuffisant.Rights");
                 } else {
                     log.error("Couldn't create the folder " + fullName);
                     return getErrorMessage(TRANSF_ERROR, fullName);
@@ -349,42 +324,34 @@ public class FileManageActionsBean implements FileManageActions {
             }
 
             EventManager.raiseEventsOnDocumentSelected(createdDoc);
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    currentDocument);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
             return createdDoc.getName();
         } catch (RuntimeException e) {
             if (e.getCause() instanceof RecoverableClientException) {
                 throw e;
             }
-            throw new RecoverableClientException(
-                    "Cannot validate, caught runtime", "error.db.fs", null, e);
+            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
         }
     }
 
     @WebRemote
-    protected String checkMoveAllowed(DocumentRef docRef,
-            DocumentRef containerRef) throws ClientException {
+    protected String checkMoveAllowed(DocumentRef docRef, DocumentRef containerRef) throws ClientException {
 
         DocumentModel doc = documentManager.getDocument(docRef);
         DocumentModel container = documentManager.getDocument(containerRef);
 
         // check that we are not trying to move a folder inside itself
 
-        if ((container.getPathAsString() + "/").startsWith(doc.getPathAsString()
-                + "/")) {
-            facesMessages.add(StatusMessage.Severity.WARN,
-                    messages.get("move_impossible"));
+        if ((container.getPathAsString() + "/").startsWith(doc.getPathAsString() + "/")) {
+            facesMessages.add(StatusMessage.Severity.WARN, messages.get("move_impossible"));
             return MOVE_IMPOSSIBLE;
         }
-        if (!doc.isProxy() && container.hasFacet(FacetNames.PUBLISH_SPACE)
-                && !doc.hasFacet(FacetNames.PUBLISH_SPACE)) {
+        if (!doc.isProxy() && container.hasFacet(FacetNames.PUBLISH_SPACE) && !doc.hasFacet(FacetNames.PUBLISH_SPACE)) {
             // we try to do a publication check browse in sections
-            if (!documentManager.hasPermission(containerRef,
-                    SecurityConstants.ADD_CHILDREN)) {
+            if (!documentManager.hasPermission(containerRef, SecurityConstants.ADD_CHILDREN)) {
                 // only publish via D&D if this can be done directly (no wf)
                 // => need to have write access
-                facesMessages.add(StatusMessage.Severity.WARN,
-                        messages.get("move_insuffisant_rights"));
+                facesMessages.add(StatusMessage.Severity.WARN, messages.get("move_insuffisant_rights"));
                 // TODO: this should be PUBLISH_IMPOSSIBLE
                 return MOVE_IMPOSSIBLE;
             }
@@ -392,8 +359,7 @@ public class FileManageActionsBean implements FileManageActions {
             if (doc.hasFacet(FacetNames.PUBLISHABLE)) {
                 return MOVE_PUBLISH;
             } else {
-                facesMessages.add(StatusMessage.Severity.WARN,
-                        messages.get("publish_impossible"));
+                facesMessages.add(StatusMessage.Severity.WARN, messages.get("publish_impossible"));
                 // TODO: this should be PUBLISH_IMPOSSIBLE
                 return MOVE_IMPOSSIBLE;
             }
@@ -401,20 +367,15 @@ public class FileManageActionsBean implements FileManageActions {
         // this is a real move operation (not a publication)
 
         // check the right to remove the document from the source container
-        if (!documentManager.hasPermission(doc.getParentRef(),
-                SecurityConstants.REMOVE_CHILDREN)
-                || !documentManager.hasPermission(doc.getRef(),
-                        SecurityConstants.REMOVE)) {
-            facesMessages.add(StatusMessage.Severity.WARN,
-                    messages.get("move_impossible"));
+        if (!documentManager.hasPermission(doc.getParentRef(), SecurityConstants.REMOVE_CHILDREN)
+                || !documentManager.hasPermission(doc.getRef(), SecurityConstants.REMOVE)) {
+            facesMessages.add(StatusMessage.Severity.WARN, messages.get("move_impossible"));
             return MOVE_IMPOSSIBLE;
         }
 
         // check that we have the right to create the copy in the target
-        if (!documentManager.hasPermission(containerRef,
-                SecurityConstants.ADD_CHILDREN)) {
-            facesMessages.add(StatusMessage.Severity.WARN,
-                    messages.get("move_insuffisant_rights"));
+        if (!documentManager.hasPermission(containerRef, SecurityConstants.ADD_CHILDREN)) {
+            facesMessages.add(StatusMessage.Severity.WARN, messages.get("move_insuffisant_rights"));
             return MOVE_IMPOSSIBLE;
         }
 
@@ -422,16 +383,13 @@ public class FileManageActionsBean implements FileManageActions {
             if (!container.hasFacet(FacetNames.PUBLISH_SPACE)) {
                 // do not allow to move a published document back in a
                 // workspace
-                facesMessages.add(StatusMessage.Severity.WARN,
-                        messages.get("move_impossible"));
+                facesMessages.add(StatusMessage.Severity.WARN, messages.get("move_impossible"));
                 return MOVE_IMPOSSIBLE;
             }
         } else {
             // check allowed content types constraints for non-proxy documents
-            if (!typeManager.isAllowedSubType(doc.getType(),
-                    container.getType(), container)) {
-                facesMessages.add(StatusMessage.Severity.WARN,
-                        messages.get("move_impossible"));
+            if (!typeManager.isAllowedSubType(doc.getType(), container.getType(), container)) {
+                facesMessages.add(StatusMessage.Severity.WARN, messages.get("move_impossible"));
                 return MOVE_IMPOSSIBLE;
             }
         }
@@ -441,8 +399,7 @@ public class FileManageActionsBean implements FileManageActions {
 
     @Override
     @WebRemote
-    public String moveWithId(String docId, String containerId)
-            throws ClientException {
+    public String moveWithId(String docId, String containerId) throws ClientException {
         try {
             String debug = "move " + docId + " into " + containerId;
             log.debug(debug);
@@ -485,28 +442,23 @@ public class FileManageActionsBean implements FileManageActions {
             EventManager.raiseEventsOnDocumentChildrenChange(currentDocument);
 
             // notify current container
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    currentDocument);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
             // notify the other container
             DocumentModel otherContainer = documentManager.getDocument(dstRef);
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    otherContainer);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, otherContainer);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get(action),
+            facesMessages.add(StatusMessage.Severity.INFO, messages.get(action),
                     messages.get(documentManager.getDocument(srcRef).getType()));
 
             return debug;
         } catch (ClientException e) {
-            throw new RecoverableClientException(
-                    "Cannot validate, caught client exception",
+            throw new RecoverableClientException("Cannot validate, caught client exception",
                     "message.operation.fails.generic", null, e);
         } catch (RuntimeException e) {
             if (e.getCause() instanceof RecoverableClientException) {
                 throw e;
             }
-            throw new RecoverableClientException(
-                    "Cannot validate, caught runtime", "error.db.fs", null, e);
+            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
         }
     }
 
@@ -529,15 +481,13 @@ public class FileManageActionsBean implements FileManageActions {
             clipboardActions.putSelectionInWorkList(docsToAdd, Boolean.TRUE);
             return debug;
         } catch (ClientException e) {
-            throw new RecoverableClientException(
-                    "Cannot validate, caught client exception",
+            throw new RecoverableClientException("Cannot validate, caught client exception",
                     "message.operation.fails.generic", null, e);
         } catch (RuntimeException e) {
             if (e.getCause() instanceof RecoverableClientException) {
                 throw e;
             }
-            throw new RecoverableClientException(
-                    "Cannot validate, caught runtime", "error.db.fs", null, e);
+            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
         }
 
     }
@@ -561,15 +511,13 @@ public class FileManageActionsBean implements FileManageActions {
             clipboardActions.pasteDocumentList(pasteDocs);
             return debug;
         } catch (ClientException e) {
-            throw new RecoverableClientException(
-                    "Cannot validate, caught client exception",
+            throw new RecoverableClientException("Cannot validate, caught client exception",
                     "message.operation.fails.generic", null, e);
         } catch (RuntimeException e) {
             if (e.getCause() instanceof RecoverableClientException) {
                 throw e;
             }
-            throw new RecoverableClientException(
-                    "Cannot validate, caught runtime", "error.db.fs", null, e);
+            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
         }
     }
 
@@ -586,7 +534,8 @@ public class FileManageActionsBean implements FileManageActions {
                 }
                 InputStream in = uploadEvent.getUploadedFile().getInputStream();
                 org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
-                temp.add(new NxUploadedFile(uploadEvent.getUploadedFile().getName(), uploadEvent.getUploadedFile().getContentType(), file));
+                temp.add(new NxUploadedFile(uploadEvent.getUploadedFile().getName(),
+                        uploadEvent.getUploadedFile().getContentType(), file));
                 fileUploadHolder.setUploadedFiles(temp);
             } else {
                 log.error("Unable to reach fileUploadHolder");
@@ -596,15 +545,14 @@ public class FileManageActionsBean implements FileManageActions {
         }
     }
 
-    public void validateMultiplesUpload() throws ClientException,
-            FileNotFoundException, IOException {
+    public void validateMultiplesUpload() throws ClientException, FileNotFoundException, IOException {
         DocumentModel current = navigationContext.getCurrentDocument();
         validateMultipleUploadForDocument(current);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void validateMultipleUploadForDocument(DocumentModel current)
-            throws ClientException, FileNotFoundException, IOException {
+    public void validateMultipleUploadForDocument(DocumentModel current) throws ClientException, FileNotFoundException,
+            IOException {
         if (!current.hasSchema(FILES_SCHEMA)) {
             return;
         }
@@ -614,11 +562,9 @@ public class FileManageActionsBean implements FileManageActions {
             if (nxuploadFiles != null) {
                 for (NxUploadedFile uploadItem : nxuploadFiles) {
                     String filename = FileUtils.getCleanFileName(uploadItem.getName());
-                    Blob blob = FileUtils.createTemporaryFileBlob(
-                            uploadItem.getFile(), filename,
+                    Blob blob = FileUtils.createTemporaryFileBlob(uploadItem.getFile(), filename,
                             uploadItem.getContentType());
-                    HashMap<String, Object> fileMap = new HashMap<String, Object>(
-                            2);
+                    HashMap<String, Object> fileMap = new HashMap<String, Object>(2);
                     fileMap.put("file", blob);
                     fileMap.put("filename", filename);
                     if (!files.contains(fileMap)) {
@@ -652,8 +598,7 @@ public class FileManageActionsBean implements FileManageActions {
                 return;
             }
             ArrayList files = (ArrayList) current.getPropertyValue(FILES_PROPERTY);
-            Object file = CollectionUtils.get(files,
-                    Integer.valueOf(index).intValue());
+            Object file = CollectionUtils.get(files, Integer.valueOf(index).intValue());
             files.remove(file);
             current.setPropertyValue(FILES_PROPERTY, files);
             documentActions.updateDocument(current, Boolean.TRUE);
@@ -667,22 +612,19 @@ public class FileManageActionsBean implements FileManageActions {
         NxUploadedFile uploadedFile;
         if (fileUploadHolder == null || fileUploadHolder.getUploadedFiles().isEmpty()
                 || (uploadedFile = fileUploadHolder.getUploadedFiles().iterator().next()) == null) {
-            facesMessages.add(StatusMessage.Severity.ERROR,
-                    messages.get("fileImporter.error.nullUploadedFile"));
+            facesMessages.add(StatusMessage.Severity.ERROR, messages.get("fileImporter.error.nullUploadedFile"));
             return null;
         }
         try {
             return addFile();
         } catch (ClientException e) {
-            throw new RecoverableClientException(
-                    "Cannot validate, caught client exception",
+            throw new RecoverableClientException("Cannot validate, caught client exception",
                     "message.operation.fails.generic", null, e);
         } catch (RuntimeException e) {
             if (e.getCause() instanceof RecoverableClientException) {
                 throw e;
             }
-            throw new RecoverableClientException(
-                    "Cannot validate, caught runtime", "error.db.fs", null, e);
+            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
         } finally {
             if (uploadedFile != null && uploadedFile.getFile().exists()) {
                 Framework.trackFile(uploadedFile.getFile(), uploadedFile.getFile());
@@ -754,8 +696,7 @@ public class FileManageActionsBean implements FileManageActions {
     }
 
     @Override
-    public String removeOneOrAllUploadedFiles(ActionEvent action)
-            throws ClientException {
+    public String removeOneOrAllUploadedFiles(ActionEvent action) throws ClientException {
         if (StringUtils.isBlank(fileToRemove)) {
             return removeAllUploadedFile();
         } else {
@@ -806,21 +747,18 @@ public class FileManageActionsBean implements FileManageActions {
     }
 
     /**
-     * A Blob based on a File but whose contract says that the file is allowed
-     * to be moved to another filesystem location if needed. (The move is done
-     * by getting the StreamSource from the Blob, casting to FileSource,
+     * A Blob based on a File but whose contract says that the file is allowed to be moved to another filesystem
+     * location if needed. (The move is done by getting the StreamSource from the Blob, casting to FileSource,
      *
      * @since 5.6.0-HF19
-     * @deprecated Since 5.7.2. See
-     *             {@link org.nuxeo.ecm.platform.ui.web.util.files.FileUtils.TemporaryFileBlob}
+     * @deprecated Since 5.7.2. See {@link org.nuxeo.ecm.platform.ui.web.util.files.FileUtils.TemporaryFileBlob}
      */
     @Deprecated
     public static class TemporaryFileBlob extends StreamingBlob {
 
         private static final long serialVersionUID = 1L;
 
-        public TemporaryFileBlob(File file, String mimeType, String encoding,
-                String filename, String digest) {
+        public TemporaryFileBlob(File file, String mimeType, String encoding, String filename, String digest) {
             super(new FileSource(file), mimeType, encoding, filename, digest);
         }
 
@@ -839,12 +777,10 @@ public class FileManageActionsBean implements FileManageActions {
      * Creates a TemporaryFileBlob.
      *
      * @since 5.6.0-HF19
-     * @deprecated Since 5.7.2. See
-     *             {@link org.nuxeo.ecm.platform.ui.web.util.files.FileUtils#createTemporaryFileBlob}
+     * @deprecated Since 5.7.2. See {@link org.nuxeo.ecm.platform.ui.web.util.files.FileUtils#createTemporaryFileBlob}
      */
     @Deprecated
-    protected static Blob createTemporaryFileBlob(File file, String filename,
-            String mimeType) {
+    protected static Blob createTemporaryFileBlob(File file, String filename, String mimeType) {
         return FileUtils.createTemporaryFileBlob(file, filename, mimeType);
     }
 

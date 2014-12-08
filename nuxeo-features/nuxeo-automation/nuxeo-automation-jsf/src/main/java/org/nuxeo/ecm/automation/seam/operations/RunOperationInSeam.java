@@ -33,11 +33,9 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
 
 /**
- * Execute an operation within the Seam context (doing automatically the needed
- * init and cleanup)
+ * Execute an operation within the Seam context (doing automatically the needed init and cleanup)
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 @Operation(id = RunOperationInSeam.ID, category = Constants.CAT_UI, label = "Run operation in Seam Context", description = "Initialize a Seam context (including Conversation if needed) and runs an Operation")
 public class RunOperationInSeam {
@@ -62,11 +60,9 @@ public class RunOperationInSeam {
     @OperationMethod
     public Object run() throws OperationException {
 
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
-                ctx.getVars()) : ctx.getVars();
+        Map<String, Object> vars = isolate ? new HashMap<String, Object>(ctx.getVars()) : ctx.getVars();
 
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
-                vars);
+        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
         subctx.setInput(ctx.getInput());
         if (!OperationHelper.isSeamContextAvailable()) {
             SeamOperationFilter.handleBeforeRun(ctx, conversationId);
@@ -80,8 +76,7 @@ public class RunOperationInSeam {
         }
     }
 
-    protected Object runChain(OperationContext subctx, Map<String, Object> vars)
-            throws OperationException {
+    protected Object runChain(OperationContext subctx, Map<String, Object> vars) throws OperationException {
         if (chainId.startsWith("Chain.")) {
             return service.run(subctx, chainId.substring(6));
         } else {

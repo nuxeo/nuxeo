@@ -33,29 +33,24 @@ import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
  */
 @Provider
 @Produces("application/json")
-public class JsonOperationWriter implements
-        MessageBodyWriter<OperationDocumentation> {
+public class JsonOperationWriter implements MessageBodyWriter<OperationDocumentation> {
 
     @Context
     protected HttpServletRequest request;
 
     @Override
-    public long getSize(OperationDocumentation arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(OperationDocumentation arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
         return OperationDocumentation.class.isAssignableFrom(arg0);
     }
 
     @Override
-    public void writeTo(OperationDocumentation op, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream out)
-            throws IOException, WebApplicationException {
+    public void writeTo(OperationDocumentation op, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
+            MultivaluedMap<String, Object> arg5, OutputStream out) throws IOException, WebApplicationException {
         boolean pretty = Boolean.parseBoolean(request.getParameter("pretty"));
         JsonWriter.writeOperation(out, op, pretty);
     }

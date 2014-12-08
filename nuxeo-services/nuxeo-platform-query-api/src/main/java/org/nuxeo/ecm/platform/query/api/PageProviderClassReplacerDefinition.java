@@ -21,8 +21,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Class replacer descriptor interface enable to supersede a class of an
- * existing Page provider.
+ * Class replacer descriptor interface enable to supersede a class of an existing Page provider.
  *
  * @since 6.0
  */

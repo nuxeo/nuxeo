@@ -177,8 +177,7 @@ public class PackageBuilder {
 
     public PackageBuilder validationState(NuxeoValidationState validationState) {
         try {
-            def.getClass().getMethod("setValidationState",
-                    NuxeoValidationState.class);
+            def.getClass().getMethod("setValidationState", NuxeoValidationState.class);
             def.setValidationState(validationState);
         } catch (NoSuchMethodException e) {
             // Ignore setValidationState with old Connect Client versions
@@ -188,8 +187,7 @@ public class PackageBuilder {
 
     public PackageBuilder productionState(ProductionState productionState) {
         try {
-            def.getClass().getMethod("setProductionState",
-                    ProductionState.class);
+            def.getClass().getMethod("setProductionState", ProductionState.class);
             def.setProductionState(productionState);
         } catch (NoSuchMethodException e) {
             // Ignore setProductionState with old Connect Client versions
@@ -217,11 +215,9 @@ public class PackageBuilder {
         return this;
     }
 
-    public PackageBuilder requireTermsAndConditionsAcceptance(
-            boolean requireTermsAndConditionsAcceptance) {
+    public PackageBuilder requireTermsAndConditionsAcceptance(boolean requireTermsAndConditionsAcceptance) {
         try {
-            def.getClass().getMethod("setRequireTermsAndConditionsAcceptance",
-                    boolean.class);
+            def.getClass().getMethod("setRequireTermsAndConditionsAcceptance", boolean.class);
             def.setRequireTermsAndConditionsAcceptance(requireTermsAndConditionsAcceptance);
         } catch (NoSuchMethodException e) {
             // Ignore setRequireTermsAndConditionsAcceptance with old Connect
@@ -295,8 +291,7 @@ public class PackageBuilder {
     }
 
     public PackageBuilder addTermsAndConditions(String content) {
-        return addTermsAndConditions(new ByteArrayInputStream(
-                content.getBytes()));
+        return addTermsAndConditions(new ByteArrayInputStream(content.getBytes()));
     }
 
     public PackageBuilder addTermsAndConditions(InputStream in) {
@@ -304,9 +299,8 @@ public class PackageBuilder {
     }
 
     /**
-     * The entry content will be copied into the zip at build time and the given
-     * input stream will be closed. (event if an exception occurs) - so you
-     * don't need to handle stream closing.
+     * The entry content will be copied into the zip at build time and the given input stream will be closed. (event if
+     * an exception occurs) - so you don't need to handle stream closing.
      */
     public PackageBuilder addEntry(String path, InputStream in) {
         entries.put(path, in);
@@ -334,8 +328,7 @@ public class PackageBuilder {
             String mf = buildManifest();
             File file = File.createTempFile(def.getId(), ".zip");
             Framework.trackFile(file, file);
-            ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(
-                    file));
+            ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(file));
             try {
                 ZipEntry entry = new ZipEntry(LocalPackage.MANIFEST);
                 zout.putNextEntry(entry);
@@ -354,8 +347,7 @@ public class PackageBuilder {
                     addForms(uninstallForms, LocalPackage.UNINSTALL_FORMS, zout);
                 }
                 if (!validationForms.isEmpty()) {
-                    addForms(validationForms, LocalPackage.VALIDATION_FORMS,
-                            zout);
+                    addForms(validationForms, LocalPackage.VALIDATION_FORMS, zout);
                 }
             } finally {
                 zout.close();
@@ -368,8 +360,7 @@ public class PackageBuilder {
         }
     }
 
-    protected void addForms(List<FormDefinition> formDefs, String path,
-            ZipOutputStream zout) throws IOException {
+    protected void addForms(List<FormDefinition> formDefs, String path, ZipOutputStream zout) throws IOException {
         int i = 0;
         FormsDefinition forms = new FormsDefinition();
         FormDefinition[] ar = new FormDefinition[formDefs.size()];

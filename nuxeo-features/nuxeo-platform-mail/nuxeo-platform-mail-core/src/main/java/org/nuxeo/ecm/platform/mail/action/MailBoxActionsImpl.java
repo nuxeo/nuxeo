@@ -37,8 +37,7 @@ public class MailBoxActionsImpl implements MailBoxActions {
 
     protected boolean expunge;
 
-    public MailBoxActionsImpl(Folder folder, boolean expungeOnExit)
-            throws MessagingException {
+    public MailBoxActionsImpl(Folder folder, boolean expungeOnExit) throws MessagingException {
         this.folder = folder;
         folder.open(Folder.READ_ONLY);
         expunge = expungeOnExit;
@@ -56,8 +55,7 @@ public class MailBoxActionsImpl implements MailBoxActions {
         execute(null);
     }
 
-    public void execute(ExecutionContext initialContext)
-            throws MessagingException {
+    public void execute(ExecutionContext initialContext) throws MessagingException {
         visitor.visit(folder, initialContext);
         folder.close(expunge);
     }

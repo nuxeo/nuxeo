@@ -51,8 +51,7 @@ public class TestPersistenceProvider extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.runtime.datasource");
         deployBundle("org.nuxeo.ecm.core.persistence");
-        deployContrib("org.nuxeo.ecm.core.persistence.test",
-                "OSGI-INF/test-persistence-config.xml");
+        deployContrib("org.nuxeo.ecm.core.persistence.test", "OSGI-INF/test-persistence-config.xml");
         fireFrameworkStarted();
         TransactionHelper.startTransaction();
         activatePersistenceProvider();
@@ -74,8 +73,7 @@ public class TestPersistenceProvider extends NXRuntimeTestCase {
         try {
             // needs context classloader for Hibernate to find the
             // META-INF/persistence.xml file
-            Thread.currentThread().setContextClassLoader(
-                    getClass().getClassLoader());
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
             persistenceProvider = persistenceProviderFactory.newProvider("nxtest");
             persistenceProvider.openPersistenceUnit();

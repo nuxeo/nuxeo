@@ -24,8 +24,7 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ExtensionDescriptorReader {
 
@@ -41,7 +40,7 @@ public class ExtensionDescriptorReader {
 
             @Override
             public String serialize(Context context, Object value) {
-                if ( value != null ) {
+                if (value != null) {
                     return value.toString();
                 }
                 return null;
@@ -56,7 +55,7 @@ public class ExtensionDescriptorReader {
 
             @Override
             public String serialize(Context context, Object value) {
-                if ( value != null ) {
+                if (value != null) {
                     return value.toString();
                 }
                 return null;
@@ -65,8 +64,7 @@ public class ExtensionDescriptorReader {
         xmap.register(ExtensionImpl.class);
     }
 
-    public ExtensionImpl read(RuntimeContext ctx, InputStream in)
-            throws IOException {
+    public ExtensionImpl read(RuntimeContext ctx, InputStream in) throws IOException {
         Object[] result = xmap.loadAll(new XMapContext(ctx), in);
         if (result.length > 0) {
             return (ExtensionImpl) result[0];

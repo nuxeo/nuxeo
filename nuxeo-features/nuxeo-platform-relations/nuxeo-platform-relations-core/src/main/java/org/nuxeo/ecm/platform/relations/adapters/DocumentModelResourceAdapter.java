@@ -43,16 +43,14 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class DocumentModelResourceAdapter extends AbstractResourceAdapter
-        implements Serializable {
+public class DocumentModelResourceAdapter extends AbstractResourceAdapter implements Serializable {
 
     private static final Log log = LogFactory.getLog(DocumentModelResourceAdapter.class);
 
     private static final long serialVersionUID = -5307418102496342779L;
 
     @Override
-    public Serializable getResourceRepresentation(Resource resource,
-            Map<String, Object> context) {
+    public Serializable getResourceRepresentation(Resource resource, Map<String, Object> context) {
         Serializable object = null;
         if (resource.isQNameResource()) {
             CoreSession session = null;
@@ -86,9 +84,8 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
                     session = CoreInstance.openCoreSession(repoName);
                     sessionOpened = true;
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Opened a new session '%s' with id %s",
-                                repoName, session.getSessionId()));
+                        log.debug(String.format("Opened a new session '%s' with id %s", repoName,
+                                session.getSessionId()));
                     }
                 }
                 if (!session.exists(ref)) {
@@ -114,12 +111,10 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
             return new QNameResourceImpl(namespace, localName);
         } else if (object instanceof DocumentLocation) {
             DocumentLocation docLoc = (DocumentLocation) object;
-            String localName = docLoc.getServerName() + '/'
-                    + docLoc.getIdRef().toString();
+            String localName = docLoc.getServerName() + '/' + docLoc.getIdRef().toString();
             return new QNameResourceImpl(namespace, localName);
         } else {
-            throw new IllegalArgumentException(String.format(
-                    "cannot build resource for '%s'", object));
+            throw new IllegalArgumentException(String.format("cannot build resource for '%s'", object));
         }
     }
 

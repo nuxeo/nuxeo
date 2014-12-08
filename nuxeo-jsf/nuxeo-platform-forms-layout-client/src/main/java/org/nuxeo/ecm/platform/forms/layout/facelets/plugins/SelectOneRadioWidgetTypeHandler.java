@@ -25,24 +25,20 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 
 /**
- * Displays a select one radio in edit mode, taking into account select options
- * declared on the widget.
+ * Displays a select one radio in edit mode, taking into account select options declared on the widget.
  * <p>
  * Only edit mode is implemented for now.
  *
  * @since 5.7.3
  */
-public class SelectOneRadioWidgetTypeHandler extends
-        AbstractSelectWidgetTypeHandler {
+public class SelectOneRadioWidgetTypeHandler extends AbstractSelectWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx,
-            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
-        return getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                HtmlSelectOneRadio.COMPONENT_TYPE);
+    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+            FaceletHandler[] subHandlers) throws WidgetException {
+        return getFaceletHandler(ctx, tagConfig, widget, subHandlers, HtmlSelectOneRadio.COMPONENT_TYPE);
     }
 
 }

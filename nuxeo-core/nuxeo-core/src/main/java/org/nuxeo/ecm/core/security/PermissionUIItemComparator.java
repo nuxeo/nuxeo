@@ -19,14 +19,12 @@ import java.util.Comparator;
 /**
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
-public class PermissionUIItemComparator implements
-        Comparator<PermissionUIItemDescriptor>, Serializable {
+public class PermissionUIItemComparator implements Comparator<PermissionUIItemDescriptor>, Serializable {
 
     private static final long serialVersionUID = 6468292882222351585L;
 
     @Override
-    public int compare(PermissionUIItemDescriptor pid1,
-            PermissionUIItemDescriptor pid2) {
+    public int compare(PermissionUIItemDescriptor pid1, PermissionUIItemDescriptor pid2) {
         int diff = pid2.getOrder() - pid1.getOrder();
         if (diff == 0) {
             return 0;

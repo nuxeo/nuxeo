@@ -32,9 +32,8 @@ import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 
 /**
- * Intercepts Seam Bean call during the INVOKE_APPLICATION phase to see if a
- * {@link RecoverableClientException} is raised. If this is the case, the INVOKE
- * call returns null and the associated FacesMessage is generated.
+ * Intercepts Seam Bean call during the INVOKE_APPLICATION phase to see if a {@link RecoverableClientException} is
+ * raised. If this is the case, the INVOKE call returns null and the associated FacesMessage is generated.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
@@ -74,8 +73,7 @@ public class NuxeoExceptionInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    public Object aroundInvoke(InvocationContext invocationContext)
-            throws Exception { // stupid Seam API
+    public Object aroundInvoke(InvocationContext invocationContext) throws Exception { // stupid Seam API
         try {
             return invocationContext.proceed();
         } catch (Exception t) { // deals with interrupt below
@@ -91,8 +89,7 @@ public class NuxeoExceptionInterceptor extends AbstractInterceptor {
             }
             if (ce != null) {
                 Severity severity = getSeverity(ce);
-                FacesMessages.instance().add(severity,
-                        getI18nMessage(ce.getLocalizedMessage()),
+                FacesMessages.instance().add(severity, getI18nMessage(ce.getLocalizedMessage()),
                         (Object[]) ce.geLocalizedMessageParams());
                 return null;
             }

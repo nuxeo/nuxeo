@@ -29,8 +29,7 @@ public final class ElementFactory {
     }
 
     public static Element create(final String typeName) {
-        final ElementType elementType = (ElementType) Manager.getTypeRegistry().lookup(
-                TypeFamily.ELEMENT, typeName);
+        final ElementType elementType = (ElementType) Manager.getTypeRegistry().lookup(TypeFamily.ELEMENT, typeName);
         final String className = elementType.getClassName();
         final UidManager uidManager = Manager.getUidManager();
 

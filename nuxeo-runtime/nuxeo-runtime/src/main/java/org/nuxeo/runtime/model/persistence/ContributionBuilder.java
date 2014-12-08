@@ -30,7 +30,6 @@ import org.w3c.dom.Element;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ContributionBuilder extends AbstractContribution {
 
@@ -71,9 +70,8 @@ public class ContributionBuilder extends AbstractContribution {
 
     public void addXmlExtension(String target, String point, String content) {
         StringBuilder buf = new StringBuilder(1024);
-        buf.append(
-                "<extension target=\"" + target + "\" point=\"" + point
-                        + "\">\n").append(content).append("\n</extension>");
+        buf.append("<extension target=\"" + target + "\" point=\"" + point + "\">\n").append(content).append(
+                "\n</extension>");
         extensions.add(buf.toString());
     }
 
@@ -112,16 +110,13 @@ public class ContributionBuilder extends AbstractContribution {
     @Override
     public String getContent() {
         StringBuilder buf = new StringBuilder(1024 * 32);
-        buf.append("<component name=\"").append(
-                ContributionPersistenceComponent.getComponentName(name)).append(
-                "\" ");
+        buf.append("<component name=\"").append(ContributionPersistenceComponent.getComponentName(name)).append("\" ");
         if (bundle != null) {
             buf.append("bundle=\"").append(bundle).append("\" ");
         }
         buf.append(">\n\n");
         if (description != null) {
-            buf.append("<documentation>\n").append(description).append(
-                    "\n</documentation>\n\n");
+            buf.append("<documentation>\n").append(description).append("\n</documentation>\n\n");
         }
         for (String xt : extensions) {
             buf.append(xt).append("\n\n");

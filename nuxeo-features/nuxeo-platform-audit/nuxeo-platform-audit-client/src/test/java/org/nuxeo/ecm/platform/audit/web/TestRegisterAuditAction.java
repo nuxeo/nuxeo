@@ -29,7 +29,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class TestRegisterAuditAction extends NXRuntimeTestCase {
 
@@ -38,10 +37,8 @@ public class TestRegisterAuditAction extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.audit.web.tests",
-                "actions-bundle.xml");
-        deployContrib("org.nuxeo.ecm.platform.audit.web.tests",
-                "nxauditclient-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.audit.web.tests", "actions-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.audit.web.tests", "nxauditclient-bundle.xml");
         as = (ActionService) runtime.getComponent(ActionService.ID);
     }
 

@@ -15,8 +15,7 @@ package org.nuxeo.runtime.model;
  * A reloadable component.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated since 5.6: services needing a reload should listen to runtime
- *             reload events instead
+ * @deprecated since 5.6: services needing a reload should listen to runtime reload events instead
  */
 @Deprecated
 public interface Reloadable {

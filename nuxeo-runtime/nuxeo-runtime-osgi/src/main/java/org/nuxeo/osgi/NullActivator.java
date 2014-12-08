@@ -25,8 +25,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class NullActivator implements BundleActivator {
 

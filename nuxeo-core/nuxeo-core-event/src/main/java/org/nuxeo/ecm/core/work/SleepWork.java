@@ -54,9 +54,8 @@ public class SleepWork extends AbstractWork {
     }
 
     /**
-     * If debug is true, then the various debug* methods must be called in the
-     * proper order for the work to start and stop: {@link #debugStart},
-     * {@link #debugFinish}.
+     * If debug is true, then the various debug* methods must be called in the proper order for the work to start and
+     * stop: {@link #debugStart}, {@link #debugFinish}.
      *
      * @param durationMillis the sleep duration
      * @param debug {@code true} for debug
@@ -145,9 +144,8 @@ public class SleepWork extends AbstractWork {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "("
-                + (getId().length() > 10 ? "" : (getId() + ", "))
-                + durationMillis + "ms, " + getProgress() + ")";
+        return getClass().getSimpleName() + "(" + (getId().length() > 10 ? "" : (getId() + ", ")) + durationMillis
+                + "ms, " + getProgress() + ")";
     }
 
     public void debugWaitReady() throws InterruptedException {

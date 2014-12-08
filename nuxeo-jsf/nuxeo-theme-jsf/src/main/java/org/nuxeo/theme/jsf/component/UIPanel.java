@@ -62,8 +62,7 @@ public class UIPanel extends UIOutput {
         params.put("stylesheet", (String) attributes.get("stylesheet"));
         params.put("javascript", (String) attributes.get("javascript"));
         params.put("subviews", (String) attributes.get("subviews"));
-        params.put("visibleInPerspectives",
-                (String) attributes.get("visibleInPerspectives"));
+        params.put("visibleInPerspectives", (String) attributes.get("visibleInPerspectives"));
         params.put("controlledBy", (String) attributes.get("controlledBy"));
         params.put("filter", (String) attributes.get("filter"));
         writer.write(Panel.render(params));

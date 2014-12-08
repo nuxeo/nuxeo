@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
 /**
  * @author dmetzler
- *
  */
 public class UserManagementTest extends BaseUserGroupMock {
     UserManagementActions actions = new UserManagementActions();
@@ -42,21 +41,17 @@ public class UserManagementTest extends BaseUserGroupMock {
 
         // For this test, user is at least a power user
         actions.webActions = mock(WebActions.class);
-        when(
-                actions.webActions.checkFilter(USERS_GROUPS_MANAGEMENT_ACCESS_FILTER)).thenReturn(
-                true);
+        when(actions.webActions.checkFilter(USERS_GROUPS_MANAGEMENT_ACCESS_FILTER)).thenReturn(true);
     }
 
     @Test
     public void aPowerUserShouldNotBeAbleToEditAdminUser() throws Exception {
         // Given a power user (not admin)
         actions.currentUser = getMockedUser("power", false, actions.userManager);
-        when(actions.userManager.getPrincipal("power")).thenReturn(
-                (NuxeoPrincipal) actions.currentUser);
+        when(actions.userManager.getPrincipal("power")).thenReturn((NuxeoPrincipal) actions.currentUser);
 
         // When selected user is administrators
-        NuxeoPrincipal user = (NuxeoPrincipal) getMockedUser("Administrator",
-                true);
+        NuxeoPrincipal user = (NuxeoPrincipal) getMockedUser("Administrator", true);
         when(actions.userManager.getPrincipal("Administrator")).thenReturn(user);
         actions.selectedUser = mockUserDM("Administrator");
 
@@ -73,13 +68,10 @@ public class UserManagementTest extends BaseUserGroupMock {
 
     }
 
-
-
     @Test
     public void anAdministratorShouldBeAbleToEditAdminUser() throws Exception {
         // Given a power user (not admin)
         actions.currentUser = getMockedUser("Administrator", true, actions.userManager);
-
 
         // When selected user is administrators
         actions.selectedUser = mockUserDM("Administrator");
@@ -88,14 +80,13 @@ public class UserManagementTest extends BaseUserGroupMock {
         assertTrue(actions.getAllowEditUser());
 
         // When selected user is not administrator
-        getMockedUser("jdoe", false,actions.userManager);
+        getMockedUser("jdoe", false, actions.userManager);
         actions.selectedUser = mockUserDM("jdoe");
 
         // Then it should not be able to edit it
         assertTrue(actions.getAllowEditUser());
 
     }
-
 
     @Test
     public void aPowerUserShouldNotBeAbleToAddAdminGroups() throws Exception {
@@ -105,6 +96,5 @@ public class UserManagementTest extends BaseUserGroupMock {
         assertFalse(actions.isAllowedToAdminGroups(singleGroup("administrators")));
         assertFalse(actions.isAllowedToAdminGroups(singleGroup("subadmin")));
     }
-
 
 }

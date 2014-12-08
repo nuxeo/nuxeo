@@ -33,8 +33,7 @@ public interface AuditReader {
      */
     List<LogEntry> getLogEntriesFor(String uuid);
 
-    List<LogEntry> getLogEntriesFor(String uuid,
-            Map<String, FilterMapEntry> filterMap, boolean doDefaultSort);
+    List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort);
 
     /**
      * Returns a given log entry given its id.
@@ -47,8 +46,7 @@ public interface AuditReader {
     /**
      * Returns the list of log entries.
      * <p>
-     * Note we will use NXQL in the future when the search engine will index
-     * history.
+     * Note we will use NXQL in the future when the search engine will index history.
      *
      * @see org.nuxeo.ecm.platform.audit.api.query.DateRangeQueryConstants
      * @param eventIds the event ids.
@@ -60,8 +58,7 @@ public interface AuditReader {
     /**
      * Returns the batched list of log entries.
      * <p>
-     * Note we will use NXQL in the future when the search engine will index
-     * history.
+     * Note we will use NXQL in the future when the search engine will index history.
      *
      * @see org.nuxeo.ecm.platform.audit.api.query.DateRangeQueryConstants
      * @param eventIds the event ids.
@@ -72,17 +69,16 @@ public interface AuditReader {
      * @param pageSize number of results per page
      * @return a list of log entries.
      */
-    List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
-            String category, String path, int pageNb, int pageSize);
+    List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String category, String path, int pageNb,
+            int pageSize);
 
-    List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
-            String[] category, String path, int pageNb, int pageSize);
+    List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String[] category, String path, int pageNb,
+            int pageSize);
 
     /**
      * Returns the batched list of log entries.
      * <p>
-     * Note we will use NXQL in the future when the search engine will index
-     * history.
+     * Note we will use NXQL in the future when the search engine will index history.
      *
      * @see org.nuxeo.ecm.platform.audit.api.query.DateRangeQueryConstants
      * @param eventIds the event ids.
@@ -93,21 +89,20 @@ public interface AuditReader {
      * @param pageSize number of results per page
      * @return a list of log entries.
      */
-    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
-            String category, String path, int pageNb, int pageSize);
+    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String category, String path, int pageNb, int pageSize);
 
-    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
-            String[] category, String path, int pageNb, int pageSize);
+    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] category, String path, int pageNb,
+            int pageSize);
 
     /**
-     * Returns a batched list of log entries. WhereClause is a native where
-     * clause for the backend: here EJBQL 3.0 can be used.
+     * Returns a batched list of log entries. WhereClause is a native where clause for the backend: here EJBQL 3.0 can
+     * be used.
      */
     List<LogEntry> nativeQueryLogs(String whereClause, int pageNb, int pageSize);
 
     /**
-     * Returns a batched list of entries. query string is a native query clause
-     * for the backend : here EJBQL 3.0 can be used
+     * Returns a batched list of entries. query string is a native query clause for the backend : here EJBQL 3.0 can be
+     * used
      */
     List<?> nativeQuery(String query, int pageNb, int pageSize);
 
@@ -119,7 +114,6 @@ public interface AuditReader {
      * @param pageNb the page number (starts at 1)
      * @param pageSize the number of results per page
      */
-    List<?> nativeQuery(String query, Map<String, Object> params, int pageNb,
-            int pageSize);
+    List<?> nativeQuery(String query, Map<String, Object> params, int pageNb, int pageSize);
 
 }

@@ -33,7 +33,6 @@ import org.nuxeo.connect.update.task.Task;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("package")
 public class PackageDefinitionImpl implements PackageDefinition {
@@ -85,8 +84,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
     protected String license;
 
     /**
-     * A license URL. If no specified the license.txt file in the package is the
-     * license content
+     * A license URL. If no specified the license.txt file in the package is the license content
      */
     @XNode("license-url")
     protected String licenseUrl;
@@ -98,46 +96,40 @@ public class PackageDefinitionImpl implements PackageDefinition {
     protected String[] platforms;
 
     /**
-     * The dependency value format is:
-     * <code>package_name[:package_min_version[:package_max_version]]</code> if
-     * no min and max version are specified the the last version should be used.
+     * The dependency value format is: <code>package_name[:package_min_version[:package_max_version]]</code> if no min
+     * and max version are specified the the last version should be used.
      */
     @XNodeList(value = "dependencies/package", type = PackageDependency[].class, componentType = PackageDependency.class)
     protected PackageDependency[] dependencies;
 
     /**
-     * The conflict value format is:
-     * <code>package_name[:package_min_version[:package_max_version]]</code> if
-     * no min and max version are specified the the last version should be used.
+     * The conflict value format is: <code>package_name[:package_min_version[:package_max_version]]</code> if no min and
+     * max version are specified the the last version should be used.
      */
     @XNodeList(value = "conflicts/package", type = PackageDependency[].class, componentType = PackageDependency.class)
     protected PackageDependency[] conflicts;
 
     /**
-     * The provides value format is:
-     * <code>package_name[:package_min_version[:package_max_version]]</code> if
-     * no min and max version are specified the the last version should be used.
+     * The provides value format is: <code>package_name[:package_min_version[:package_max_version]]</code> if no min and
+     * max version are specified the the last version should be used.
      */
     @XNodeList(value = "provides/package", type = PackageDependency[].class, componentType = PackageDependency.class)
     protected PackageDependency[] provides;
 
     /**
-     * A class implementing {@link Task}. if not specified the default
-     * implementation will be used
+     * A class implementing {@link Task}. if not specified the default implementation will be used
      */
     @XNode("installer")
     protected TaskDefinitionImpl installer;
 
     /**
-     * A class implementing {@link Task}. if not specified the default
-     * implementation will be used
+     * A class implementing {@link Task}. if not specified the default implementation will be used
      */
     @XNode("uninstaller")
     protected TaskDefinitionImpl uninstaller;
 
     /**
-     * A class implementing {@link Validator}. If not specified not post install
-     * validation will be done
+     * A class implementing {@link Validator}. If not specified not post install validation will be done
      */
     @XNode("validator")
     protected String validator;
@@ -341,8 +333,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
         if (installer instanceof TaskDefinitionImpl) {
             this.installer = (TaskDefinitionImpl) installer;
         } else {
-            this.installer = new TaskDefinitionImpl(installer.getType(),
-                    installer.getRequireRestart());
+            this.installer = new TaskDefinitionImpl(installer.getType(), installer.getRequireRestart());
         }
     }
 
@@ -356,8 +347,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
         if (uninstaller instanceof TaskDefinitionImpl) {
             this.uninstaller = (TaskDefinitionImpl) uninstaller;
         } else {
-            this.uninstaller = new TaskDefinitionImpl(uninstaller.getType(),
-                    uninstaller.getRequireRestart());
+            this.uninstaller = new TaskDefinitionImpl(uninstaller.getType(), uninstaller.getRequireRestart());
         }
     }
 
@@ -414,8 +404,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
         writer.element("home-page", homePage);
         writer.element("license", license);
         writer.element("license-url", licenseUrl);
-        writer.element("hotreload-support",
-                Boolean.valueOf(hotReloadSupport).toString());
+        writer.element("hotreload-support", Boolean.valueOf(hotReloadSupport).toString());
         writer.element("supported", Boolean.valueOf(supported).toString());
         writer.element("require-terms-and-conditions-acceptance",
                 Boolean.valueOf(requireTermsAndConditionsAcceptance).toString());
@@ -441,15 +430,13 @@ public class PackageDefinitionImpl implements PackageDefinition {
         if (installer != null) {
             writer.start("installer");
             writer.attr("class", installer.getType());
-            writer.attr("restart",
-                    String.valueOf(installer.getRequireRestart()));
+            writer.attr("restart", String.valueOf(installer.getRequireRestart()));
             writer.end();
         }
         if (uninstaller != null) {
             writer.start("uninstaller");
             writer.attr("class", uninstaller.getType());
-            writer.attr("restart",
-                    String.valueOf(uninstaller.getRequireRestart()));
+            writer.attr("restart", String.valueOf(uninstaller.getRequireRestart()));
             writer.end();
         }
         writer.element("validator", validator);
@@ -477,8 +464,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
     }
 
     @Override
-    public void setRequireTermsAndConditionsAcceptance(
-            boolean requireTermsAndConditionsAcceptance) {
+    public void setRequireTermsAndConditionsAcceptance(boolean requireTermsAndConditionsAcceptance) {
         this.requireTermsAndConditionsAcceptance = requireTermsAndConditionsAcceptance;
     }
 

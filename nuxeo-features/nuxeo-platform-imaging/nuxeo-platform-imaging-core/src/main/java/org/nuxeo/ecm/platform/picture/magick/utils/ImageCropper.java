@@ -30,9 +30,8 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
  */
 public class ImageCropper extends MagickExecutor {
 
-    public static void crop(String inputFilePath, String outputFilePath,
-            int tileWidth, int tileHeight, int offsetX, int offsetY)
-            throws CommandNotAvailable, CommandException {
+    public static void crop(String inputFilePath, String outputFilePath, int tileWidth, int tileHeight, int offsetX,
+            int offsetY) throws CommandNotAvailable, CommandException {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("tileWidth", String.valueOf(tileWidth));
         params.addNamedParameter("tileHeight", String.valueOf(tileHeight));

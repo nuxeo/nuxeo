@@ -41,8 +41,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
     protected LDAPServerDescriptor server2;
 
     public static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResource(
-                resource);
+        return Thread.currentThread().getContextClassLoader().getResource(resource);
     }
 
     @Test
@@ -69,8 +68,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
 
     @Test
     public void testGetCreationBaseDn() {
-        assertEquals("ou=people,dc=example,dc=com",
-                directory.getCreationBaseDn());
+        assertEquals("ou=people,dc=example,dc=com", directory.getCreationBaseDn());
     }
 
     @Test
@@ -100,8 +98,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
 
     @Test
     public void testGetSearchBaseDn() {
-        assertEquals("ou=people,dc=example,dc=com",
-                directory.getSearchBaseDn());
+        assertEquals("ou=people,dc=example,dc=com", directory.getSearchBaseDn());
     }
 
     @Test
@@ -121,8 +118,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
     public void testGetAggregatedSearchFilter() {
         // test aggregation based on data from the directory.xml
         // resource
-        assertEquals("(&(objectClass=person)(&(sn=Aa*)(cn=Aa*)))",
-                directory.getAggregatedSearchFilter());
+        assertEquals("(&(objectClass=person)(&(sn=Aa*)(cn=Aa*)))", directory.getAggregatedSearchFilter());
 
         // empty filter
         directory.setSearchClasses(null);
@@ -130,25 +126,22 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
         assertEquals("(objectClass=*)", directory.getAggregatedSearchFilter());
 
         // several search classes and no search filter
-        String[] twoClasses = {"person", "organizationalUnit"};
+        String[] twoClasses = { "person", "organizationalUnit" };
         directory.setSearchClasses(twoClasses);
         directory.searchFilter = null;
-        assertEquals("(|(objectClass=person)(objectClass=organizationalUnit))",
-                directory.getAggregatedSearchFilter());
+        assertEquals("(|(objectClass=person)(objectClass=organizationalUnit))", directory.getAggregatedSearchFilter());
 
         // several search classes and a search filter
         directory.setSearchClasses(twoClasses);
         directory.searchFilter = "(&(sn=Aa*)(cn=Aa*))";
-        assertEquals("(&(|(objectClass=person)(objectClass=organizationalUnit))"
-                + "(&(sn=Aa*)(cn=Aa*)))",
+        assertEquals("(&(|(objectClass=person)(objectClass=organizationalUnit))" + "(&(sn=Aa*)(cn=Aa*)))",
                 directory.getAggregatedSearchFilter());
     }
 
     @Test
     public void testGetSearchScope() throws DirectoryException {
         // testing the value provided in the directory.xml resource
-        assertEquals(SearchControls.ONELEVEL_SCOPE,
-                directory.getSearchScope());
+        assertEquals(SearchControls.ONELEVEL_SCOPE, directory.getSearchScope());
 
         // testing funky but valid values
         directory.setSearchScope("SUbTrEe");
@@ -192,8 +185,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
     @Test
     public void testGetLdapUrls() {
         assertEquals("ldap://localhost", server1.getLdapUrls());
-        assertEquals("ldap://localhost:389 ldap://server2 ldap://server3",
-                server2.getLdapUrls());
+        assertEquals("ldap://localhost:389 ldap://server2 ldap://server3", server2.getLdapUrls());
         // test required attribute
         try {
             server1.setLdapUrls(null);
@@ -205,8 +197,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
     @Test
     public void testGetBindDn() {
         assertNull(server1.getBindDn());
-        assertEquals("cn=nuxeo5,ou=applications,dc=example,dc=com",
-                server2.getBindDn());
+        assertEquals("cn=nuxeo5,ou=applications,dc=example,dc=com", server2.getBindDn());
     }
 
     @Test

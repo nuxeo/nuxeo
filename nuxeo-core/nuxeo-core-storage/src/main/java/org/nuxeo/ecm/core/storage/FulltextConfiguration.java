@@ -79,8 +79,7 @@ public class FulltextConfiguration {
         if (ROOT_TYPE.equals(typeName)) {
             return false;
         }
-        if (includedTypes.contains(typeName)
-                || (includedTypes.isEmpty() && !excludedTypes.contains(typeName))) {
+        if (includedTypes.contains(typeName) || (includedTypes.isEmpty() && !excludedTypes.contains(typeName))) {
             return true;
         }
         return false;

@@ -39,8 +39,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 /**
  * @since 6.0
  */
-public abstract class SelectAggregateWidgetTypeHandler extends
-        AbstractSelectWidgetTypeHandler {
+public abstract class SelectAggregateWidgetTypeHandler extends AbstractSelectWidgetTypeHandler {
 
     private static final String LABELS = "optionLabels";
 
@@ -51,24 +50,20 @@ public abstract class SelectAggregateWidgetTypeHandler extends
     }
 
     @Override
-    protected FaceletHandler getOptionsFaceletHandler(FaceletContext ctx,
-            FaceletHandlerHelper helper, Widget widget,
+    protected FaceletHandler getOptionsFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
             WidgetSelectOption[] selectOptions) {
         FaceletHandler leaf = new LeafFaceletHandler();
         List<FaceletHandler> selectItems = new ArrayList<FaceletHandler>();
         FaceletHandler firstItem = getFirstHandler(ctx, helper, widget, leaf);
-        final boolean hasOtherOptions = selectOptions != null
-                && selectOptions.length > 0;
+        final boolean hasOtherOptions = selectOptions != null && selectOptions.length > 0;
         if (firstItem != null) {
             selectItems.add(firstItem);
         }
-        FaceletHandler widgetPropsHandler = getWidgetPropsHandler(ctx, helper,
-                widget, leaf, hasOtherOptions);
+        FaceletHandler widgetPropsHandler = getWidgetPropsHandler(ctx, helper, widget, leaf, hasOtherOptions);
         if (widgetPropsHandler != null) {
             selectItems.add(widgetPropsHandler);
         }
-        return new CompositeFaceletHandler(
-                selectItems.toArray(new FaceletHandler[0]));
+        return new CompositeFaceletHandler(selectItems.toArray(new FaceletHandler[0]));
     }
 
     @Override
@@ -80,10 +75,9 @@ public abstract class SelectAggregateWidgetTypeHandler extends
         return res;
     }
 
-    protected Map<String, Serializable> getOptionProperties(FaceletContext ctx,
-            Widget widget, WidgetSelectOption selectOption) {
-        Map<String, Serializable> props = super.getOptionProperties(ctx,
-                widget, selectOption);
+    protected Map<String, Serializable> getOptionProperties(FaceletContext ctx, Widget widget,
+            WidgetSelectOption selectOption) {
+        Map<String, Serializable> props = super.getOptionProperties(ctx, widget, selectOption);
         props.put(SelectPropertyMappings.itemLabelSuffix.name(),
                 widget.getProperty(AggregatePropertyMappings.itemCount.name()));
         return props;
@@ -91,8 +85,7 @@ public abstract class SelectAggregateWidgetTypeHandler extends
 
     // redefined to merge selectOptions property and options put on widget
     // definition
-    protected FaceletHandler getWidgetPropsHandler(FaceletContext ctx,
-            FaceletHandlerHelper helper, Widget widget,
+    protected FaceletHandler getWidgetPropsHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
             FaceletHandler nextHandler, boolean hasOtherOptions) {
 
         if (!hasOtherOptions) {
@@ -110,15 +103,13 @@ public abstract class SelectAggregateWidgetTypeHandler extends
                     (String) widget.getProperty(SelectPropertyMappings.itemValue.name()),
                     widget.getProperty(SelectPropertyMappings.itemDisabled.name()),
                     widget.getProperty(SelectPropertyMappings.itemRendered.name()));
-            return getOptionFaceletHandler(ctx, helper, widget, selectOption,
-                    nextHandler);
+            return getOptionFaceletHandler(ctx, helper, widget, selectOption, nextHandler);
         }
         return null;
     }
 
     @Override
-    protected FaceletHandler getComponentFaceletHandler(FaceletContext ctx,
-            FaceletHandlerHelper helper, Widget widget,
+    protected FaceletHandler getComponentFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
             FaceletHandler componentHandler) {
         WidgetSelectOption[] selectOptions = widget.getSelectOptions();
         if (selectOptions != null && selectOptions.length != 0) {
@@ -133,30 +124,22 @@ public abstract class SelectAggregateWidgetTypeHandler extends
                 boolean done = false;
                 if (l10n_labels != null && !l10n_labels.isEmpty()) {
                     Locale locale = ctx.getFacesContext().getViewRoot().getLocale();
-                    if (l10n_labels.containsKey(locale.getLanguage())
-                            | l10n_labels.containsKey("en")) {
+                    if (l10n_labels.containsKey(locale.getLanguage()) | l10n_labels.containsKey("en")) {
                         if (l10n_labels.containsKey(locale.getLanguage())) {
-                            labels.put(selectOption.getItemValue(),
-                                    l10n_labels.get(locale.getLanguage()));
+                            labels.put(selectOption.getItemValue(), l10n_labels.get(locale.getLanguage()));
                         } else {
-                            labels.put(selectOption.getItemValue(),
-                                    l10n_labels.get("en"));
+                            labels.put(selectOption.getItemValue(), l10n_labels.get("en"));
                         }
                         done = true;
                     }
                 }
                 if (!done) {
-                    labels.put(selectOption.getItemValue(),
-                            selectOption.getItemLabel());
+                    labels.put(selectOption.getItemValue(), selectOption.getItemLabel());
                 }
             }
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
-            variables.put(
-                    LABELS,
-                    ctx.getExpressionFactory().createValueExpression(labels,
-                            HashMap.class));
-            return helper.getAliasTagHandler(widget.getTagConfigId(),
-                    variables, blockedPatterns, componentHandler);
+            variables.put(LABELS, ctx.getExpressionFactory().createValueExpression(labels, HashMap.class));
+            return helper.getAliasTagHandler(widget.getTagConfigId(), variables, blockedPatterns, componentHandler);
         } else {
             return componentHandler;
         }

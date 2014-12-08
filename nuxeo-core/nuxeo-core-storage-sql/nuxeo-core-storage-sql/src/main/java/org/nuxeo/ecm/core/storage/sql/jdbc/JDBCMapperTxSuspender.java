@@ -27,8 +27,7 @@ public class JDBCMapperTxSuspender implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args)
-            throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Transaction tx = TransactionHelper.suspendTransaction();
         try {
             return doInvoke(method, args);
@@ -40,9 +39,7 @@ public class JDBCMapperTxSuspender implements InvocationHandler {
     }
 
     public static Mapper newConnector(Mapper mapper) {
-        return (Mapper)Proxy.newProxyInstance(
-                Thread.currentThread().getContextClassLoader(), new Class<?>[] {
-                        Mapper.class },
-                new JDBCMapperTxSuspender(mapper));
+        return (Mapper) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+                new Class<?>[] { Mapper.class }, new JDBCMapperTxSuspender(mapper));
     }
 }

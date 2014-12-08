@@ -38,7 +38,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(AuditFeature.class)
 public class TestJobHistoryHelper {
 
-
     @Test
     public void testLogger() throws Exception {
 
@@ -68,7 +67,6 @@ public class TestJobHistoryHelper {
 
         JobHistoryHelper helper = new JobHistoryHelper("MyExport2");
 
-
         helper.logJobStarted();
 
         Date exportDate = helper.getLastSuccessfulRun();
@@ -90,7 +88,6 @@ public class TestJobHistoryHelper {
         exportDate = helper.getLastSuccessfulRun();
         long loggedT0 = exportDate.getTime();
         assertTrue(loggedT0 < t0);
-
 
         helper.logJobEnded();
         exportDate = helper.getLastSuccessfulRun();

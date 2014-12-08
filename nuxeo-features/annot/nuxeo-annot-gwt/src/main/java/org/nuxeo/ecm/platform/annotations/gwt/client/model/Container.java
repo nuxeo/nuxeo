@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.annotations.gwt.client.model;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 
 public class Container {

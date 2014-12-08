@@ -35,13 +35,12 @@ public interface LockManager {
     /**
      * Sets a lock on a document.
      * <p>
-     * If the document is already locked, returns its existing lock status
-     * (there is no re-locking, {@link #removeLock} must be called first).
+     * If the document is already locked, returns its existing lock status (there is no re-locking, {@link #removeLock}
+     * must be called first).
      *
      * @param id the document id
      * @param lock the lock to set
-     * @return {@code null} if locking succeeded, or the existing lock if
-     *         locking failed
+     * @return {@code null} if locking succeeded, or the existing lock if locking failed
      */
     Lock setLock(String id, Lock lock);
 
@@ -50,19 +49,15 @@ public interface LockManager {
      * <p>
      * The previous lock is returned.
      * <p>
-     * If {@code owner} is {@code null} then the lock is unconditionally
-     * removed.
+     * If {@code owner} is {@code null} then the lock is unconditionally removed.
      * <p>
-     * If {@code owner} is not {@code null}, it must match the existing lock
-     * owner for the lock to be removed. If it doesn't match, the returned lock
-     * will return {@code true} for {@link Lock#getFailed}.
+     * If {@code owner} is not {@code null}, it must match the existing lock owner for the lock to be removed. If it
+     * doesn't match, the returned lock will return {@code true} for {@link Lock#getFailed}.
      *
      * @param id the document id
      * @param the owner to check, or {@code null} for no check
-     * @param force {@code true} to just do the remove and not return the
-     *            previous lock
-     * @return the previous lock (may be {@code null}), with a failed flag if
-     *         locking failed
+     * @param force {@code true} to just do the remove and not return the previous lock
+     * @return the previous lock (may be {@code null}), with a failed flag if locking failed
      */
     Lock removeLock(String id, String owner);
 

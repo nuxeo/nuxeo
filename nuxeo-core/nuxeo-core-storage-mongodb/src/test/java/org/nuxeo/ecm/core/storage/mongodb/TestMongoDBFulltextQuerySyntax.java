@@ -18,8 +18,7 @@ import org.junit.Test;
 public class TestMongoDBFulltextQuerySyntax {
 
     protected void assertDialectFT(String expected, String query) {
-        assertEquals(expected,
-                MongoDBQueryBuilder.getMongoDBFulltextQuery(query));
+        assertEquals(expected, MongoDBQueryBuilder.getMongoDBFulltextQuery(query));
     }
 
     @Test
@@ -40,8 +39,7 @@ public class TestMongoDBFulltextQuerySyntax {
         assertDialectFT("\"foo bar\"", "\"foo bar\"");
         assertDialectFT("\"foo bar\" \"baz\"", "\"foo bar\" baz");
         assertDialectFT("\"foo bar\" baz", "\"foo bar\" OR baz");
-        assertDialectFT("\"foo bar\" \"baz\" \"gee man\"",
-                "\"foo bar\" baz OR \"gee man\"");
+        assertDialectFT("\"foo bar\" \"baz\" \"gee man\"", "\"foo bar\" baz OR \"gee man\"");
         assertDialectFT("\"foo bar\" -\"gee man\"", "\"foo bar\" -\"gee man\"");
         // no prefix syntax in MongoDB
         // assertDialectFT("\"foo*\"", "foo*");

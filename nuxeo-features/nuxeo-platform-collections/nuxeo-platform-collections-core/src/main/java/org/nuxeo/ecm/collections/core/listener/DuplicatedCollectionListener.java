@@ -29,15 +29,10 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Event handler to duplicate the collection members of a duplicated collection.
- *
- * The handler is synchronous because it is important to capture the collection
- * member ids of the duplicated collection at the exact moment of duplication.
- * We don't want to duplicate a collection member that was indeed added to the
- * duplicated collection after the duplication.
- *
- * The handler will then launch asynchronous tasks to duplicate the collection
- * members.
+ * Event handler to duplicate the collection members of a duplicated collection. The handler is synchronous because it
+ * is important to capture the collection member ids of the duplicated collection at the exact moment of duplication. We
+ * don't want to duplicate a collection member that was indeed added to the duplicated collection after the duplication.
+ * The handler will then launch asynchronous tasks to duplicate the collection members.
  *
  * @since 5.9.3
  */

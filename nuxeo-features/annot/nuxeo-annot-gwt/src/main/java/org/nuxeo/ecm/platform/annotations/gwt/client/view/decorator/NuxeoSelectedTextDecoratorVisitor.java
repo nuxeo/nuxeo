@@ -27,12 +27,10 @@ import com.google.gwt.dom.client.SpanElement;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class NuxeoSelectedTextDecoratorVisitor extends NuxeoDecoratorVisitor {
 
-    public NuxeoSelectedTextDecoratorVisitor(Annotation annotation,
-            AnnotationController controller) {
+    public NuxeoSelectedTextDecoratorVisitor(Annotation annotation, AnnotationController controller) {
         super(annotation, controller);
     }
 

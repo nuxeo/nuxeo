@@ -31,8 +31,7 @@ public final class JSUtils {
 
     static final Log log = LogFactory.getLog(JSUtils.class);
 
-    public static String compressSource(final String source)
-            throws ThemeException {
+    public static String compressSource(final String source) throws ThemeException {
         String compressedSource = source;
         InputStream in = null;
         OutputStream out = null;

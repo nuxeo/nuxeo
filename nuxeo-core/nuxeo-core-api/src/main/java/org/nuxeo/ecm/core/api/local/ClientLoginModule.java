@@ -28,17 +28,14 @@ import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
- * A login module that is propagating the login information into the core login
- * stack.
+ * A login module that is propagating the login information into the core login stack.
  * <p>
- * This login module doesn't make any authentication - it is called only after
- * the authentication is successfully done by a previous login module.
+ * This login module doesn't make any authentication - it is called only after the authentication is successfully done
+ * by a previous login module.
  * <p>
- * The static method of this class can also be used to manage the current login
- * stack.
+ * The static method of this class can also be used to manage the current login stack.
  *
  * @author eionica@nuxeo.com
- *
  */
 public class ClientLoginModule implements LoginModule {
 
@@ -108,8 +105,7 @@ public class ClientLoginModule implements LoginModule {
      * Initialize this LoginModule.
      */
     @Override
-    public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map sharedState, Map options) {
+    public void initialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options) {
         this.subject = subject;
         this.sharedState = sharedState;
         // Check if login must be propagated to entire JVM or only to the

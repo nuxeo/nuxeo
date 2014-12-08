@@ -23,7 +23,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("listener")
 public class ServletContextListenerDescriptor {
@@ -37,7 +36,7 @@ public class ServletContextListenerDescriptor {
     @XNode("@context")
     protected String context = "/";
 
-      public ServletContextListenerDescriptor() {
+    public ServletContextListenerDescriptor() {
     }
 
     public Class<?> getClazz() {
@@ -48,7 +47,7 @@ public class ServletContextListenerDescriptor {
         return context;
     }
 
-      public String getName() {
+    public String getName() {
         return name;
     }
 

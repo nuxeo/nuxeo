@@ -26,8 +26,8 @@ import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
  * @since 6.0
  */
 @XObject("dateRange")
-public class AggregateRangeDateDescriptor extends AggregateRangeDescriptor
-        implements AggregateRangeDateDefinition, Serializable {
+public class AggregateRangeDateDescriptor extends AggregateRangeDescriptor implements AggregateRangeDateDefinition,
+        Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,8 +48,7 @@ public class AggregateRangeDateDescriptor extends AggregateRangeDescriptor
 
     @Override
     public String toString() {
-        return String.format("AggregateRangeDateDescriptor(%s, %s, %s)", key,
-                fromDate, toDate);
+        return String.format("AggregateRangeDateDescriptor(%s, %s, %s)", key, fromDate, toDate);
     }
 
     @Override
@@ -76,8 +75,7 @@ public class AggregateRangeDateDescriptor extends AggregateRangeDescriptor
 
     @Override
     public AggregateRangeDateDefinition clone() {
-        AggregateRangeDateDescriptor clone = new AggregateRangeDateDescriptor(
-                key, fromDate, toDate);
+        AggregateRangeDateDescriptor clone = new AggregateRangeDateDescriptor(key, fromDate, toDate);
         return clone;
     }
 }

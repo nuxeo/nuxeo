@@ -30,14 +30,12 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper",
-        "org.nuxeo.connect.update", "org.nuxeo.runtime.reload" })
-public class TestVersions extends
-        org.nuxeo.connect.update.standalone.registry.TestVersions {
+@Deploy({ "org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper", "org.nuxeo.connect.update",
+        "org.nuxeo.runtime.reload" })
+public class TestVersions extends org.nuxeo.connect.update.standalone.registry.TestVersions {
 
     @Inject
     PackageUpdateService injectedService;

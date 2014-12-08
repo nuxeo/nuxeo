@@ -58,8 +58,8 @@ public class PDF2ImageConverter extends CommandLineBasedConverter {
     }
 
     @Override
-    protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException {
 
         Map<String, Blob> cmdBlobParams = new HashMap<String, Blob>();
         try {
@@ -71,8 +71,8 @@ public class PDF2ImageConverter extends CommandLineBasedConverter {
     }
 
     @Override
-    protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException {
 
         Map<String, String> cmdStringParams = new HashMap<String, String>();
 
@@ -86,8 +86,8 @@ public class PDF2ImageConverter extends CommandLineBasedConverter {
         }
 
         cmdStringParams.put("outDirPath", outDir.getAbsolutePath());
-        cmdStringParams.put("targetFilePath",
-                outDir.getAbsolutePath() + System.getProperty("file.separator") + parameters.get("targetFilePath").toString());
+        cmdStringParams.put("targetFilePath", outDir.getAbsolutePath() + System.getProperty("file.separator")
+                + parameters.get("targetFilePath").toString());
         return cmdStringParams;
     }
 

@@ -34,12 +34,12 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * <p>
  * Accepts the following methods:
  * <ul>
- * <li> GET - get the document index view
+ * <li>GET - get the document index view
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebAdapter(name="nxdoc", type="DocumentResolverService")
+@WebAdapter(name = "nxdoc", type = "DocumentResolverService")
 public class DocumentResolverService extends DefaultAdapter {
 
     @Path("{id}")

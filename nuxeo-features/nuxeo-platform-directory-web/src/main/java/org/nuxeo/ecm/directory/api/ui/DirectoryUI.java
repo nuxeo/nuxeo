@@ -63,7 +63,6 @@ public interface DirectoryUI extends Serializable {
      * @see DirectoryUIDeleteConstraint
      * @since 5.2.1
      */
-    List<DirectoryUIDeleteConstraint> getDeleteConstraints()
-            throws DirectoryException;
+    List<DirectoryUIDeleteConstraint> getDeleteConstraints() throws DirectoryException;
 
 }

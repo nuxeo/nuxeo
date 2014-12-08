@@ -29,10 +29,8 @@ import org.nuxeo.ecm.platform.annotations.descriptors.PermissionMapperDescriptor
 
 /**
  * @author Alexandre Russel
- *
  */
-public class AnnotationConfigurationServiceImpl implements
-        AnnotationConfigurationService {
+public class AnnotationConfigurationServiceImpl implements AnnotationConfigurationService {
 
     private final List<EventListener> listeners = new ArrayList<EventListener>();
 

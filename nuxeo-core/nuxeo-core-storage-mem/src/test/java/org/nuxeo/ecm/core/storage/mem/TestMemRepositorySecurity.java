@@ -65,8 +65,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
 
     @Override
     protected void initRepository() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.mem.tests",
-                "OSGI-INF/test-repo-perm.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.mem.tests", "OSGI-INF/test-repo-perm.xml");
         super.initRepository();
     }
 
@@ -92,8 +91,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
         session.save();
     }
 
-    protected void setPermissionToEveryone(String... perms)
-            throws ClientException {
+    protected void setPermissionToEveryone(String... perms) throws ClientException {
         DocumentModel doc = session.getRootDocument();
         ACP acp = doc.getACP();
         if (acp == null) {
@@ -134,8 +132,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
         try {
             DocumentModel root = anonSession.getRootDocument();
 
-            DocumentModel folder = new DocumentModelImpl(
-                    root.getPathAsString(), "folder#1", "Folder");
+            DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder#1", "Folder");
             folder = anonSession.createDocument(folder);
 
             ACP acp = folder.getACP();
@@ -187,8 +184,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
             anonSession.save(); // process invalidations
 
             try {
-                DocumentModel folder2 = new DocumentModelImpl(
-                        folder.getPathAsString(), "folder#2", "Folder");
+                DocumentModel folder2 = new DocumentModelImpl(folder.getPathAsString(), "folder#2", "Folder");
                 folder2 = anonSession.createDocument(folder2);
                 fail("privilege is granted but should not be");
             } catch (DocumentSecurityException e) {
@@ -201,8 +197,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
             root = anonSession.getRootDocument();
 
             // and try again - this time it should work
-            DocumentModel folder2 = new DocumentModelImpl(
-                    folder.getPathAsString(), "folder#2", "Folder");
+            DocumentModel folder2 = new DocumentModelImpl(folder.getPathAsString(), "folder#2", "Folder");
             folder2 = anonSession.createDocument(folder2);
 
             ACP acp2 = new ACPImpl();
@@ -225,12 +220,10 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
             removePermissionToAnonymous();
             anonSession.save(); // process invalidations
 
-            setPermissionToEveryone(WRITE, REMOVE, ADD_CHILDREN,
-                    REMOVE_CHILDREN, READ);
+            setPermissionToEveryone(WRITE, REMOVE, ADD_CHILDREN, REMOVE_CHILDREN, READ);
             root = anonSession.getRootDocument();
 
-            DocumentModel folder3 = new DocumentModelImpl(
-                    folder.getPathAsString(), "folder#3", "Folder");
+            DocumentModel folder3 = new DocumentModelImpl(folder.getPathAsString(), "folder#3", "Folder");
             folder3 = anonSession.createDocument(folder3);
 
             anonSession.removeDocument(folder3.getRef());
@@ -240,8 +233,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
             anonSession.save(); // process invalidations
 
             try {
-                folder3 = new DocumentModelImpl(folder.getPathAsString(),
-                        "folder#3", "Folder");
+                folder3 = new DocumentModelImpl(folder.getPathAsString(), "folder#3", "Folder");
                 folder3 = anonSession.createDocument(folder3);
                 fail();
             } catch (Exception e) {
@@ -260,8 +252,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
 
         DocumentModel root = session.getRootDocument();
 
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
-                "folder1", "Folder");
+        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder1", "Folder");
         folder = session.createDocument(folder);
 
         ACP acp = new ACPImpl();
@@ -293,21 +284,17 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         String name = "Workspaces#1";
-        DocumentModel workspaces = new DocumentModelImpl(
-                root.getPathAsString(), name, "Workspace");
+        DocumentModel workspaces = new DocumentModelImpl(root.getPathAsString(), name, "Workspace");
         session.createDocument(workspaces);
         String name2 = "repositoryWorkspace2#";
-        DocumentModel repositoryWorkspace = new DocumentModelImpl(
-                workspaces.getPathAsString(), name2, "Workspace");
+        DocumentModel repositoryWorkspace = new DocumentModelImpl(workspaces.getPathAsString(), name2, "Workspace");
         repositoryWorkspace = session.createDocument(repositoryWorkspace);
 
         String name3 = "ws#3";
-        DocumentModel ws1 = new DocumentModelImpl(
-                repositoryWorkspace.getPathAsString(), name3, "Workspace");
+        DocumentModel ws1 = new DocumentModelImpl(repositoryWorkspace.getPathAsString(), name3, "Workspace");
         ws1 = session.createDocument(ws1);
         String name4 = "ws#4";
-        DocumentModel ws2 = new DocumentModelImpl(ws1.getPathAsString(), name4,
-                "Workspace");
+        DocumentModel ws2 = new DocumentModelImpl(ws1.getPathAsString(), name4, "Workspace");
         session.createDocument(ws2);
 
         if (session.isNegativeAclAllowed()) { // always false for Mem
@@ -324,25 +311,21 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
         session.save();
 
         List<DocumentModel> ws2ParentsUnderAdministrator = session.getParentDocuments(ws2.getRef());
-        assertTrue("list parents for" + ws2.getName() + "under "
-                + session.getPrincipal().getName() + " is not empty:",
+        assertTrue("list parents for" + ws2.getName() + "under " + session.getPrincipal().getName() + " is not empty:",
                 !ws2ParentsUnderAdministrator.isEmpty());
 
         CoreSession testSession = openSessionAs("test");
         List<DocumentModel> ws2ParentsUnderTest = testSession.getParentDocuments(ws2.getRef());
-        assertTrue("list parents for" + ws2.getName() + "under "
-                + testSession.getPrincipal().getName() + " is empty:",
+        assertTrue("list parents for" + ws2.getName() + "under " + testSession.getPrincipal().getName() + " is empty:",
                 ws2ParentsUnderTest.isEmpty());
         closeSession(testSession);
     }
 
     @Test
     public void testACPInheritance() throws Exception {
-        DocumentModel root = new DocumentModelImpl("/", "testACPInheritance",
-                "Folder");
+        DocumentModel root = new DocumentModelImpl("/", "testACPInheritance", "Folder");
         root = session.createDocument(root);
-        DocumentModel doc = new DocumentModelImpl("/testACPInheritance",
-                "folder", "Folder");
+        DocumentModel doc = new DocumentModelImpl("/testACPInheritance", "folder", "Folder");
         doc = session.createDocument(doc);
 
         ACP rootAcp = root.getACP();
@@ -364,9 +347,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
         assertEquals("joe_reader", acl.getACEs()[0].getUsername());
 
         // block inheritance
-        acp.getOrCreateACL().add(
-                new ACE(SecurityConstants.EVERYONE,
-                        SecurityConstants.EVERYTHING, false));
+        acp.getOrCreateACL().add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
         doc.setACP(acp, true);
         session.save();
 
@@ -398,8 +379,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
             }
 
             try {
-                joeReaderSession.createDocument(new DocumentModelImpl(
-                        joeReaderDoc.getPathAsString(), "child", "File"));
+                joeReaderSession.createDocument(new DocumentModelImpl(joeReaderDoc.getPathAsString(), "child", "File"));
                 fail("should have raised a security exception");
             } catch (DocumentSecurityException e) {
             }
@@ -419,8 +399,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
             joeContributorSession.saveDocument(joeContributorDoc);
 
             DocumentRef childRef = joeContributorSession.createDocument(
-                    new DocumentModelImpl(joeContributorDoc.getPathAsString(),
-                            "child", "File")).getRef();
+                    new DocumentModelImpl(joeContributorDoc.getPathAsString(), "child", "File")).getRef();
             joeContributorSession.save();
 
             // joe contributor can copy the newly created doc
@@ -449,8 +428,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
             joeLocalManagerSession.saveDocument(joeLocalManagerDoc);
 
             childRef = joeLocalManagerSession.createDocument(
-                    new DocumentModelImpl(joeLocalManagerDoc.getPathAsString(),
-                            "child2", "File")).getRef();
+                    new DocumentModelImpl(joeLocalManagerDoc.getPathAsString(), "child2", "File")).getRef();
             joeLocalManagerSession.save();
 
             // joe local manager can copy the newly created doc
@@ -495,11 +473,9 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
         }
     }
 
-    protected DocumentRef createDocumentModelWithSamplePermissions(String name)
-            throws ClientException {
+    protected DocumentRef createDocumentModelWithSamplePermissions(String name) throws ClientException {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), name,
-                "Folder");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         doc = session.createDocument(doc);
 
         ACP acp = doc.getACP();
@@ -553,8 +529,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
             // Create a folder with only the browse permission
             String name = "joe-has-" + permission + "-permission";
             docNames.add(name);
-            DocumentModel folder = new DocumentModelImpl(
-                    root.getPathAsString(), name, "Folder");
+            DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
             folder = session.createDocument(folder);
             ACP acp = folder.getACP();
             assertNotNull(acp); // the acp inherited from root is returned
@@ -573,20 +548,17 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
             for (DocumentModel doc : list) {
                 names.add(doc.getName());
             }
-            assertEquals("Expecting " + docNames + " got " + names,
-                    browsePermissions.length, list.size());
+            assertEquals("Expecting " + docNames + " got " + names, browsePermissions.length, list.size());
 
             list = joeSession.query("SELECT * FROM Folder WHERE ecm:isProxy = 0");
             names.clear();
             for (DocumentModel doc : list) {
                 names.add(doc.getName());
             }
-            assertEquals("Expecting " + docNames + " got " + names,
-                    browsePermissions.length, list.size());
+            assertEquals("Expecting " + docNames + " got " + names, browsePermissions.length, list.size());
 
             // Add a new folder to update the read acls
-            DocumentModel folder = new DocumentModelImpl(
-                    root.getPathAsString(), "new-folder", "Folder");
+            DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "new-folder", "Folder");
             folder = session.createDocument(folder);
             ACP acp = folder.getACP();
             assertNotNull(acp); // the acp inherited from root is returned
@@ -613,8 +585,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
         // NXP-13109
         DocumentModel root = session.getRootDocument();
         // Create a doc and set a new ACLR on it
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                "foo", "Folder");
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "foo", "Folder");
         doc = session.createDocument(doc);
         ACP acp = doc.getACP();
         assertNotNull(acp);
@@ -700,8 +671,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
         session.save();
 
         // folder can be seen by a member
-        UserPrincipal joeMember = new UserPrincipal("joe", Arrays.asList(
-                "Everyone", "members"), false, false);
+        UserPrincipal joeMember = new UserPrincipal("joe", Arrays.asList("Everyone", "members"), false, false);
         try (CoreSession joeSession = openSessionAs(joeMember)) {
             DocumentModelList list = joeSession.query("SELECT * FROM Folder");
             assertEquals(1, list.size());

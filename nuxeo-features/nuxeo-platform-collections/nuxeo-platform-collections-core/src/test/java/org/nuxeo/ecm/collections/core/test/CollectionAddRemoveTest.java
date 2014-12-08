@@ -38,19 +38,16 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
     @Test
     public void testAddOneDocToNewCollectionAndRemove() throws Exception {
-        DocumentModel testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
-        DocumentModel testFile = session.createDocumentModel(
-                testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
+        DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
         testFile = session.createDocument(testFile);
-        collectionManager.addToNewCollection(COLLECTION_NAME,
-                COLLECTION_DESCRIPTION, testFile, session);
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, testFile, session);
 
         assertTrue(session.exists(new PathRef(COLLECTION_FOLDER_PATH)));
 
-        final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/"
-                + COLLECTION_NAME;
+        final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME;
 
         DocumentRef newCollectionRef = new PathRef(newlyCreatedCollectionPath);
         assertTrue(session.exists(newCollectionRef));
@@ -60,8 +57,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
         assertEquals(COLLECTION_NAME, newlyCreatedCollection.getTitle());
 
-        assertEquals(COLLECTION_DESCRIPTION,
-                newlyCreatedCollection.getProperty("dc:description").getValue());
+        assertEquals(COLLECTION_DESCRIPTION, newlyCreatedCollection.getProperty("dc:description").getValue());
 
         Collection collectionAdapter = newlyCreatedCollection.getAdapter(Collection.class);
 
@@ -71,33 +67,27 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
         CollectionMember collectionMemberAdapter = testFile.getAdapter(CollectionMember.class);
 
-        assertTrue(collectionMemberAdapter.getCollectionIds().contains(
-                newlyCreatedCollectionId));
+        assertTrue(collectionMemberAdapter.getCollectionIds().contains(newlyCreatedCollectionId));
 
-        collectionManager.removeFromCollection(newlyCreatedCollection,
-                testFile, session);
+        collectionManager.removeFromCollection(newlyCreatedCollection, testFile, session);
 
         assertFalse(collectionAdapter.getCollectedDocumentIds().contains(testFile.getId()));
-        assertFalse(collectionMemberAdapter.getCollectionIds().contains(
-                newlyCreatedCollectionId));
+        assertFalse(collectionMemberAdapter.getCollectionIds().contains(newlyCreatedCollectionId));
     }
 
     @Test
-    public void testAddManyDocsToNewCollectionAndRemove()
-            throws ClientException {
-        DocumentModel testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+    public void testAddManyDocsToNewCollectionAndRemove() throws ClientException {
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
 
         List<DocumentModel> files = createTestFiles(session, 3);
 
-        collectionManager.addToNewCollection(COLLECTION_NAME,
-                COLLECTION_DESCRIPTION, files, session);
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, files, session);
 
         assertTrue(session.exists(new PathRef(COLLECTION_FOLDER_PATH)));
 
-        final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/"
-                + COLLECTION_NAME;
+        final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME;
 
         DocumentRef newCollectionRef = new PathRef(newlyCreatedCollectionPath);
         assertTrue(session.exists(newCollectionRef));
@@ -107,8 +97,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
         assertEquals(COLLECTION_NAME, newlyCreatedCollection.getTitle());
 
-        assertEquals(COLLECTION_DESCRIPTION,
-                newlyCreatedCollection.getProperty("dc:description").getValue());
+        assertEquals(COLLECTION_DESCRIPTION, newlyCreatedCollection.getProperty("dc:description").getValue());
 
         for (DocumentModel file : files) {
             file = session.getDocument(file.getRef());
@@ -119,12 +108,10 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
             CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
 
-            assertTrue(collectionMemberAdapter.getCollectionIds().contains(
-                    newlyCreatedCollectionId));
+            assertTrue(collectionMemberAdapter.getCollectionIds().contains(newlyCreatedCollectionId));
         }
 
-        collectionManager.removeAllFromCollection(newlyCreatedCollection,
-                files, session);
+        collectionManager.removeAllFromCollection(newlyCreatedCollection, files, session);
 
         for (DocumentModel file : files) {
             Collection collectionAdapter = newlyCreatedCollection.getAdapter(Collection.class);
@@ -133,32 +120,29 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
             CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
 
-            assertFalse(collectionMemberAdapter.getCollectionIds().contains(
-                    newlyCreatedCollectionId));
+            assertFalse(collectionMemberAdapter.getCollectionIds().contains(newlyCreatedCollectionId));
         }
 
     }
 
     /**
-     * Tests that we cannot add a document of type Collection to a document of
-     * Collection.
+     * Tests that we cannot add a document of type Collection to a document of Collection.
      */
     @Test
     public void testCanAddToNotCollection() throws ClientException {
-        DocumentModel testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
-        DocumentModel testCollection1 = session.createDocumentModel(
-                testWorkspace.getPathAsString(), COLLECTION_NAME, "Collection");
+        DocumentModel testCollection1 = session.createDocumentModel(testWorkspace.getPathAsString(), COLLECTION_NAME,
+                "Collection");
         testCollection1 = session.createDocument(testCollection1);
 
-        DocumentModel testCollection2 = session.createDocumentModel(
-                testWorkspace.getPathAsString(), TEST_FILE_NAME + 2, "Collection");
+        DocumentModel testCollection2 = session.createDocumentModel(testWorkspace.getPathAsString(),
+                TEST_FILE_NAME + 2, "Collection");
         testCollection2 = session.createDocument(testCollection2);
 
         try {
-            collectionManager.addToCollection(testCollection1, testCollection2,
-                    session);
+            collectionManager.addToCollection(testCollection1, testCollection2, session);
         } catch (IllegalArgumentException e) {
             // Expeted behaviour
             return;
@@ -167,25 +151,21 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
     }
 
     /**
-     * Tests that we cannot add a document to a document which is not a document
-     * of type Collection.
+     * Tests that we cannot add a document to a document which is not a document of type Collection.
      */
     @Test
     public void testCanAddCollectionNotCollection() throws ClientException {
-        DocumentModel testWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
-        DocumentModel testFile = session.createDocumentModel(
-                testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
+        DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
         testFile = session.createDocument(testFile);
-        collectionManager.addToNewCollection(COLLECTION_NAME,
-                COLLECTION_DESCRIPTION, testFile, session);
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, testFile, session);
 
-        DocumentModel testFile2 = session.createDocumentModel(
-                testWorkspace.getPathAsString(), TEST_FILE_NAME + 2, "File");
+        DocumentModel testFile2 = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME + 2,
+                "File");
         testFile2 = session.createDocument(testFile2);
-        collectionManager.addToNewCollection(COLLECTION_NAME,
-                COLLECTION_DESCRIPTION, testFile2, session);
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, testFile2, session);
 
         try {
             collectionManager.addToCollection(testFile, testFile2, session);

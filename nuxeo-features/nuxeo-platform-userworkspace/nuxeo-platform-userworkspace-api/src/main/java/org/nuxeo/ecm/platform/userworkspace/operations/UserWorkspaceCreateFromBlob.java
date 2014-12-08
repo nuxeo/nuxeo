@@ -67,16 +67,14 @@ public class UserWorkspaceCreateFromBlob {
 
     @OperationMethod
     public DocumentModel run(Blob blob) throws OperationException, IOException {
-        DocumentModel userws = userWorkspace.getCurrentUserPersonalWorkspace(
-                session, getCurrentDocument());
-        DocumentModel doc = fileManager.createDocumentFromBlob(session, blob,
-                userws.getPathAsString(), false, blob.getFilename());
+        DocumentModel userws = userWorkspace.getCurrentUserPersonalWorkspace(session, getCurrentDocument());
+        DocumentModel doc = fileManager.createDocumentFromBlob(session, blob, userws.getPathAsString(), false,
+                blob.getFilename());
         return doc;
     }
 
     @OperationMethod
-    public DocumentModelList run(BlobList blobs) throws OperationException,
-            IOException {
+    public DocumentModelList run(BlobList blobs) throws OperationException, IOException {
         DocumentModelList result = new DocumentModelListImpl();
         for (Blob blob : blobs) {
             result.add(run(blob));

@@ -34,14 +34,12 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime component that implements the {@link RequestControllerManager}
- * interface. Contains both the Extension point logic and the service
- * implementation.
+ * Runtime component that implements the {@link RequestControllerManager} interface. Contains both the Extension point
+ * logic and the service implementation.
  *
  * @author tiry
  */
-public class RequestControllerService extends DefaultComponent implements
-        RequestControllerManager {
+public class RequestControllerService extends DefaultComponent implements RequestControllerManager {
 
     public static final String FILTER_CONFIG_EP = "filterConfig";
 
@@ -71,25 +69,23 @@ public class RequestControllerService extends DefaultComponent implements
     protected Map<String, String> headersCache;
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (FILTER_CONFIG_EP.equals(extensionPoint)) {
             FilterConfigDescriptor desc = (FilterConfigDescriptor) contribution;
             registerFilterConfig(desc);
         } else if (CORS_CONFIG_EP.equals(extensionPoint)) {
-            corsFilterRegistry.addContribution((NuxeoCorsFilterDescriptor)contribution);
-        }  else if (HEADERS_CONFIG_EP.equals(extensionPoint)) {
-            headersRegistry.addContribution((NuxeoHeaderDescriptor)contribution);
+            corsFilterRegistry.addContribution((NuxeoCorsFilterDescriptor) contribution);
+        } else if (HEADERS_CONFIG_EP.equals(extensionPoint)) {
+            headersRegistry.addContribution((NuxeoHeaderDescriptor) contribution);
         } else {
             log.error("Unknown ExtensionPoint " + extensionPoint);
         }
     }
 
-    public void registerFilterConfig(String name, String pattern,
-            boolean grant, boolean tx, boolean sync, boolean cached,
-            boolean isPrivate, String cacheTime) {
-        FilterConfigDescriptor desc = new FilterConfigDescriptor(name, pattern,
-                grant, tx, sync, cached, isPrivate, cacheTime);
+    public void registerFilterConfig(String name, String pattern, boolean grant, boolean tx, boolean sync,
+            boolean cached, boolean isPrivate, String cacheTime) {
+        FilterConfigDescriptor desc = new FilterConfigDescriptor(name, pattern, grant, tx, sync, cached, isPrivate,
+                cacheTime);
         registerFilterConfig(desc);
     }
 
@@ -104,8 +100,7 @@ public class RequestControllerService extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CORS_CONFIG_EP.equals(extensionPoint)) {
             corsFilterRegistry.removeContribution((NuxeoCorsFilterDescriptor) contribution);
         }
@@ -158,8 +153,7 @@ public class RequestControllerService extends DefaultComponent implements
             Pattern pat = desc.getCompiledPattern();
             Matcher m = pat.matcher(uri);
             if (m.matches()) {
-                return new RequestFilterConfigImpl(false, false, false, false,
-                        false, "");
+                return new RequestFilterConfigImpl(false, false, false, false, false, "");
             }
         }
 
@@ -168,15 +162,13 @@ public class RequestControllerService extends DefaultComponent implements
             Pattern pat = desc.getCompiledPattern();
             Matcher m = pat.matcher(uri);
             if (m.matches()) {
-                return new RequestFilterConfigImpl(desc.useSync(),
-                        desc.useTx(), desc.useTxBuffered(), desc.isCached(),
+                return new RequestFilterConfigImpl(desc.useSync(), desc.useTx(), desc.useTxBuffered(), desc.isCached(),
                         desc.isPrivate(), desc.getCacheTime());
             }
         }
 
         // return deny by default
-        return new RequestFilterConfigImpl(false, false, false, false, false,
-                "");
+        return new RequestFilterConfigImpl(false, false, false, false, false, "");
     }
 
     public Map<String, String> getResponseHeaders() {

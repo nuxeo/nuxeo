@@ -22,7 +22,6 @@ import org.nuxeo.ecm.platform.audit.api.Logs;
  * Audit Backend SPI
  *
  * @author tiry
- *
  */
 public interface AuditBackend extends Logs {
 

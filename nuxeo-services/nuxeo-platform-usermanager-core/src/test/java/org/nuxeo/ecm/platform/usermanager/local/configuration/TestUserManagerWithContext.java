@@ -42,8 +42,7 @@ import org.nuxeo.ecm.platform.usermanager.UserService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * These Test Cases test the usermanager when a Directory Local Configuration is
- * set.
+ * These Test Cases test the usermanager when a Directory Local Configuration is set.
  *
  * @author Benjamin JALON
  */
@@ -68,8 +67,7 @@ public class TestUserManagerWithContext extends UserManagerMultiTenantTestCase {
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl-multitenant/directory-for-context-config.xml");
 
-        userService = (UserService) Framework.getRuntime().getComponent(
-                UserService.NAME);
+        userService = (UserService) Framework.getRuntime().getComponent(UserService.NAME);
 
         userManager = (UserManagerImpl) userService.getUserManager();
         UserMultiTenantManagement umtm = new DefaultUserMultiTenantManagementMock();
@@ -101,8 +99,7 @@ public class TestUserManagerWithContext extends UserManagerMultiTenantTestCase {
         users = userManager.searchUsers("Administrator", fakeDoc);
 
         assertEquals(1, users.size());
-        assertEquals("Administrator@tenanta",
-                users.get(0).getPropertyValue("username"));
+        assertEquals("Administrator@tenanta", users.get(0).getPropertyValue("username"));
     }
 
     @Test
@@ -112,8 +109,7 @@ public class TestUserManagerWithContext extends UserManagerMultiTenantTestCase {
         HashSet<String> fulltext = new HashSet<String>();
         DocumentModel fakeDoc = new SimpleDocumentModel();
 
-        DocumentModelList groups = userManager.searchGroups(filter, fulltext,
-                null);
+        DocumentModelList groups = userManager.searchGroups(filter, fulltext, null);
         assertEquals(4, groups.size());
 
         groups = userManager.searchGroups(filter, fulltext, fakeDoc);
@@ -123,8 +119,7 @@ public class TestUserManagerWithContext extends UserManagerMultiTenantTestCase {
         fulltext.add("groupname");
         groups = userManager.searchGroups(filter, fulltext, fakeDoc);
         assertEquals(1, groups.size());
-        assertEquals("administrators-tenanta",
-                groups.get(0).getPropertyValue("groupname"));
+        assertEquals("administrators-tenanta", groups.get(0).getPropertyValue("groupname"));
     }
 
     @Test

@@ -49,45 +49,46 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
 
     protected DatabaseMetaData getDatabaseMetaData() throws SQLException {
         final DatabaseMetaData m = jmcontext.mock(DatabaseMetaData.class);
-        jmcontext.checking (new Expectations() {{
-            oneOf (m).storesUpperCaseIdentifiers(); will(returnValue(false));
-            oneOf (m).getDatabaseProductName(); will(returnValue("Dummy"));
-        }});
+        jmcontext.checking(new Expectations() {
+            {
+                oneOf(m).storesUpperCaseIdentifiers();
+                will(returnValue(false));
+                oneOf(m).getDatabaseProductName();
+                will(returnValue("Dummy"));
+            }
+        });
         return m;
     }
 
     protected Connection getConnection() throws SQLException {
         final Connection m = jmcontext.mock(Connection.class);
-        jmcontext.checking (new Expectations() {{
-            oneOf (m).getMetaData(); will(returnValue(metadata));
-        }});
+        jmcontext.checking(new Expectations() {
+            {
+                oneOf(m).getMetaData();
+                will(returnValue(metadata));
+            }
+        });
         return m;
     }
 
     protected static class DialectDummy extends DialectH2 {
-        public DialectDummy(DatabaseMetaData metadata,
-                BinaryManager binaryManager,
-                RepositoryDescriptor repositoryDescriptor)
-                throws StorageException {
+        public DialectDummy(DatabaseMetaData metadata, BinaryManager binaryManager,
+                RepositoryDescriptor repositoryDescriptor) throws StorageException {
             super(metadata, binaryManager, repositoryDescriptor);
         }
     }
 
     @Test
     public void testDialectSubclassing() throws Exception {
-        Framework.getProperties().put(Dialect.DIALECT_CLASS,
-                DialectDummy.class.getName());
-        Dialect dialect = Dialect.createDialect(connection, binaryManager,
-                repositoryDescriptor);
+        Framework.getProperties().put(Dialect.DIALECT_CLASS, DialectDummy.class.getName());
+        Dialect dialect = Dialect.createDialect(connection, binaryManager, repositoryDescriptor);
         assertEquals(DialectDummy.class, dialect.getClass());
     }
 
     @Test
     public void testDialectSubclassingSpecific() throws Exception {
-        Framework.getProperties().put(Dialect.DIALECT_CLASS + ".Dummy",
-                DialectDummy.class.getName());
-        Dialect dialect = Dialect.createDialect(connection, binaryManager,
-                repositoryDescriptor);
+        Framework.getProperties().put(Dialect.DIALECT_CLASS + ".Dummy", DialectDummy.class.getName());
+        Dialect dialect = Dialect.createDialect(connection, binaryManager, repositoryDescriptor);
         assertEquals(DialectDummy.class, dialect.getClass());
     }
 

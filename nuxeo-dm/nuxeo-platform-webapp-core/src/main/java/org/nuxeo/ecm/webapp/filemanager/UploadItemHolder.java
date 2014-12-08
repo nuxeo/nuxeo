@@ -33,8 +33,7 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
- * Holds FileUpload data at PAGE scope level, useful for
- * {@link FileManageActions}.
+ * Holds FileUpload data at PAGE scope level, useful for {@link FileManageActions}.
  */
 @Name("fileUploadHolder")
 @Scope(ScopeType.PAGE)
@@ -82,8 +81,7 @@ public class UploadItemHolder implements Serializable {
         this.fileUpload = fileUpload;
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void reset() {
         uploadedFiles = new ArrayList<NxUploadedFile>();

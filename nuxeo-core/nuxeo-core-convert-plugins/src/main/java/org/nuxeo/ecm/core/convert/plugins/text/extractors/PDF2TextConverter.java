@@ -65,8 +65,7 @@ public class PDF2TextConverter implements Converter {
                 f.setAccessible(true);
                 return f.get(this);
             } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(
-                        "Cannot get access to PDFStreamEngine fields", e);
+                throw new RuntimeException("Cannot get access to PDFStreamEngine fields", e);
             }
         }
 
@@ -83,8 +82,7 @@ public class PDF2TextConverter implements Converter {
         final static Set<StackTraceElement> loggedStacks = new HashSet<StackTraceElement>();
 
         @Override
-        protected void processOperator(PDFOperator operator,
-                List<COSBase> arguments) throws IOException {
+        protected void processOperator(PDFOperator operator, List<COSBase> arguments) throws IOException {
             try {
 
                 String operation = operator.getOperation();
@@ -106,9 +104,7 @@ public class PDF2TextConverter implements Converter {
                     }
                     loggedStacks.add(root);
                 }
-                log.warn(
-                        "Caught error in pdfbox during extraction (stack logged only once)",
-                        e);
+                log.warn("Caught error in pdfbox during extraction (stack logged only once)", e);
             }
         }
 
@@ -117,8 +113,7 @@ public class PDF2TextConverter implements Converter {
     private static final Log log = LogFactory.getLog(PDF2TextConverter.class);
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         PDDocument document = null;
         File f = null;
@@ -146,14 +141,12 @@ public class PDF2TextConverter implements Converter {
                 f = File.createTempFile("pdfboplugin", ".txt");
                 fas = new FileOutputStream(f);
                 fas.write(text.getBytes("UTF-8"));
-                return new SimpleCachableBlobHolder(new FileBlob(
-                        new FileInputStream(f), "text/plain", "UTF-8"));
+                return new SimpleCachableBlobHolder(new FileBlob(new FileInputStream(f), "text/plain", "UTF-8"));
             } else {
                 return new SimpleCachableBlobHolder(new StringBlob(""));
             }
         } catch (ClientException | IOException e) {
-            throw new ConversionException(
-                    "Error during text extraction with PDFBox", e);
+            throw new ConversionException("Error during text extraction with PDFBox", e);
         } finally {
             if (document != null) {
                 try {

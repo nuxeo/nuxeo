@@ -27,14 +27,13 @@ import java.util.Set;
 /**
  * Document Type Descriptor.
  * <p>
- * Can be used to delay document type registration when not all prerequisites
- * are met (e.g. supertype was not yet registered).
+ * Can be used to delay document type registration when not all prerequisites are met (e.g. supertype was not yet
+ * registered).
  * <p>
- * In this case the descriptor containing all the information needed to register
- * the document is put in a queue waiting for the prerequisites to be met.
+ * In this case the descriptor containing all the information needed to register the document is put in a queue waiting
+ * for the prerequisites to be met.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("doctype")
 public class DocumentTypeDescriptor {
@@ -60,8 +59,7 @@ public class DocumentTypeDescriptor {
     public DocumentTypeDescriptor() {
     }
 
-    public DocumentTypeDescriptor(String superTypeName, String name,
-            SchemaDescriptor[] schemas, String[] facets) {
+    public DocumentTypeDescriptor(String superTypeName, String name, SchemaDescriptor[] schemas, String[] facets) {
         this.name = name;
         this.superTypeName = superTypeName;
         this.schemas = schemas;
@@ -70,7 +68,7 @@ public class DocumentTypeDescriptor {
 
     @Override
     public String toString() {
-        return "DocType: "+name;
+        return "DocType: " + name;
     }
 
     public DocumentTypeDescriptor clone() {
@@ -90,8 +88,7 @@ public class DocumentTypeDescriptor {
             schemas = other.schemas;
         } else {
             if (other.schemas != null) {
-                List<SchemaDescriptor> mergedSchemas = new ArrayList<SchemaDescriptor>(
-                        Arrays.asList(schemas));
+                List<SchemaDescriptor> mergedSchemas = new ArrayList<SchemaDescriptor>(Arrays.asList(schemas));
                 mergedSchemas.addAll(Arrays.asList(other.schemas));
                 schemas = mergedSchemas.toArray(new SchemaDescriptor[mergedSchemas.size()]);
             }
@@ -100,8 +97,7 @@ public class DocumentTypeDescriptor {
             facets = other.facets;
         } else {
             if (other.facets != null) {
-                List<String> mergedFacets = new ArrayList<String>(
-                        Arrays.asList(facets));
+                List<String> mergedFacets = new ArrayList<String>(Arrays.asList(facets));
                 mergedFacets.addAll(Arrays.asList(other.facets));
                 facets = mergedFacets.toArray(new String[mergedFacets.size()]);
             }

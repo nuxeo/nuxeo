@@ -19,21 +19,19 @@
 
 package org.nuxeo.ecm.platform.ui.web.util;
 
-
 import org.jboss.seam.Component;
 
 /**
- * Simple wrapper around Seam static method.
- * Used to construct Action evaluation context.
+ * Simple wrapper around Seam static method. Used to construct Action evaluation context.
  *
  * @author tiry
  */
 public class SeamContextHelper {
 
     public Object get(String varName) {
-        //return Contexts.lookupInStatefulContexts(varName);
+        // return Contexts.lookupInStatefulContexts(varName);
         // use Component static method to be sure to create components if needed
-        return Component.getInstance(varName,true);
+        return Component.getInstance(varName, true);
     }
 
 }

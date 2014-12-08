@@ -18,9 +18,8 @@ import java.util.List;
 /**
  * An expression for an single operator with an arbitrary number of operands.
  * <p>
- * It extends {@link Predicate} but it's really not a real Predicate (some users
- * of Predicate expect it to have lvalue and rvalue fields, which are null in
- * this class).
+ * It extends {@link Predicate} but it's really not a real Predicate (some users of Predicate expect it to have lvalue
+ * and rvalue fields, which are null in this class).
  *
  * @author Florent Guillaume
  */

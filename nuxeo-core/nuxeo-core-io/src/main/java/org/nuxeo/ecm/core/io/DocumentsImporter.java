@@ -21,15 +21,13 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
 
 /**
- * Simple interface useful to wrap a sequence of calls for performing an import.
- * This could be handy to quickly define an importer and sent it as parameter so
- * the method will be callback.
+ * Simple interface useful to wrap a sequence of calls for performing an import. This could be handy to quickly define
+ * an importer and sent it as parameter so the method will be callback.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
- *
  */
 public interface DocumentsImporter {
 
-    DocumentTranslationMap importDocs(InputStream sourceInputStream)
-            throws ImportDocumentException, ClientException, IOException;
+    DocumentTranslationMap importDocs(InputStream sourceInputStream) throws ImportDocumentException, ClientException,
+            IOException;
 }

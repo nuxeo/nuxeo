@@ -43,8 +43,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 public class APIRoot extends ModuleRoot {
 
     @Path("/")
-    public Object doGetRepository(@PathParam("repo")
-    String repositoryParam) throws NoSuchDocumentException {
+    public Object doGetRepository(@PathParam("repo") String repositoryParam) throws NoSuchDocumentException {
         if (StringUtils.isNotBlank(repositoryParam)) {
             String repoName = repositoryParam.substring("repo/".length() + 1);
             try {

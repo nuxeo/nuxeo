@@ -19,8 +19,7 @@ import java.io.Serializable;
 /**
  * A filtering function for data models.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface Filter extends Serializable {
 

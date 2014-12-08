@@ -25,8 +25,7 @@ public final class FragmentTag extends StandaloneFilter {
         if (info.isRenderingPostponed(cache)) {
             String markup = String.format(
                     "<nxthemes:fragment xmlns:nxthemes=\"http://nuxeo.org/nxthemes\" uid=\"%s\" engine=\"%s\" mode=\"%s\" />",
-                    info.getElement().getUid().toString(),
-                    info.getEngine().getTypeName(), info.getViewMode());
+                    info.getElement().getUid().toString(), info.getEngine().getTypeName(), info.getViewMode());
             info.setMarkup(markup);
         }
         return info;

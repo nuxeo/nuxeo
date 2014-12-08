@@ -24,7 +24,6 @@ import com.google.gwt.dom.client.Node;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class StringRangeXPointer implements XPointer {
     private final XPathUtil pathUtil = new XPathUtil();
@@ -67,9 +66,7 @@ public class StringRangeXPointer implements XPointer {
     }
 
     public Node getFirstNode() {
-        return pathUtil.getNode(path,
-                Document.get()).get(
-                0);
+        return pathUtil.getNode(path, Document.get()).get(0);
     }
 
     public int getStartOffset() {

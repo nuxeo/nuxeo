@@ -68,8 +68,7 @@ public class PictureResize {
         }
 
         if (pictureBlob == null) {
-            Blob blob = new StringBlob(
-                    "Unable to find a picture in the Document");
+            Blob blob = new StringBlob("Unable to find a picture in the Document");
             blob.setMimeType("text/plain");
             blob.setFilename(doc.getName() + ".null");
             return blob;
@@ -91,8 +90,7 @@ public class PictureResize {
             return blob;
         }
 
-        BlobHolder result = service.convert(PICTURE_RESIZE_CONVERTER, bh,
-                parameters);
+        BlobHolder result = service.convert(PICTURE_RESIZE_CONVERTER, bh, parameters);
 
         if (result != null) {
             return result.getBlob();

@@ -1,4 +1,5 @@
 package org.nuxeo.runtime.tomcat.dev;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -24,10 +25,8 @@ import java.util.Enumeration;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class LocalURLClassLoader extends URLClassLoader implements
-        LocalClassLoader {
+public class LocalURLClassLoader extends URLClassLoader implements LocalClassLoader {
 
     public LocalURLClassLoader(ClassLoader parent) {
         super(new URL[0], parent);
@@ -43,10 +42,9 @@ public class LocalURLClassLoader extends URLClassLoader implements
     }
 
     @Override
-    public Class<?> loadLocalClass(String name, boolean resolve)
-            throws ClassNotFoundException {
+    public Class<?> loadLocalClass(String name, boolean resolve) throws ClassNotFoundException {
         // do not look into parent
-        synchronized(getParent()) {
+        synchronized (getParent()) {
             Class<?> clazz = findLoadedClass(name);
 
             if (clazz == null) {
@@ -73,11 +71,11 @@ public class LocalURLClassLoader extends URLClassLoader implements
 
     @Override
     public InputStream getLocalResourceAsStream(String name) throws IOException {
-         URL location = getLocalResource(name);
-         if (location == null) {
-             return null;
-         }
-         return location.openStream();
+        URL location = getLocalResource(name);
+        if (location == null) {
+            return null;
+        }
+        return location.openStream();
     }
 
 }

@@ -23,14 +23,11 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.PathFilter;
 
 /**
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class AbstractFilter implements PathFilter {
 
     protected final Path pattern;
-
 
     protected AbstractFilter(Path pattern) {
         this.pattern = pattern;

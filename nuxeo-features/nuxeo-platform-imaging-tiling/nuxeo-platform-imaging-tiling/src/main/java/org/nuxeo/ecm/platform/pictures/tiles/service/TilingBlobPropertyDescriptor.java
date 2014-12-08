@@ -30,7 +30,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Descriptor for Blob property using by tiling for a specific document type.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 
 @XObject(value = "blobProperties")

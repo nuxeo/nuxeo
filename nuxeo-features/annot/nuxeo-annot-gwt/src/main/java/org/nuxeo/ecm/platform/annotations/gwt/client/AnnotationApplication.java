@@ -32,7 +32,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class AnnotationApplication {
 
@@ -50,8 +49,7 @@ public class AnnotationApplication {
     private static void buildApplication() {
         AnnotationConfiguration annotationConfiguration = AnnotationConfiguration.getInstance();
         Document document = Document.get();
-        BaseElement baseElement = document.getElementsByTagName("base").getItem(
-                0).cast();
+        BaseElement baseElement = document.getElementsByTagName("base").getItem(0).cast();
         registerBaseHref(baseElement.getHref());
         registerAnnoteaServerUrl(annotationConfiguration.getAnnoteaServerUrl());
         registerDocUrl(annotationConfiguration.getDocumentUrl());
@@ -73,14 +71,11 @@ public class AnnotationApplication {
         applicationPanel.add(PREVIEW_FRAME, DockPanel.CENTER);
         applicationPanel.setCellWidth(PREVIEW_FRAME, "100%");
 
-        AnnotationController controller = new AnnotationController(
-                WEB_CONFIGURATION, false);
-        AnnotationManagerPanel annotationManagerPanel = new AnnotationManagerPanel(
-                controller, WEB_CONFIGURATION);
+        AnnotationController controller = new AnnotationController(WEB_CONFIGURATION, false);
+        AnnotationManagerPanel annotationManagerPanel = new AnnotationManagerPanel(controller, WEB_CONFIGURATION);
         controller.addModelChangeListener(annotationManagerPanel);
 
-        HideManagerButton hideManagerButton = new HideManagerButton(controller,
-                annotationManagerPanel, PREVIEW_FRAME);
+        HideManagerButton hideManagerButton = new HideManagerButton(controller, annotationManagerPanel, PREVIEW_FRAME);
 
         annotationManagerPanel.setWidth("250px");
         applicationPanel.add(annotationManagerPanel, DockPanel.WEST);
@@ -94,23 +89,23 @@ public class AnnotationApplication {
     }
 
     private static native void registerBaseHref(String baseHref) /*-{
-        top['baseHref'] = baseHref;
-    }-*/;
+                                                                 top['baseHref'] = baseHref;
+                                                                 }-*/;
 
     private static native void registerAnnoteaServerUrl(String url) /*-{
-        top['annoteaServerUrl'] = url;
-    }-*/;
+                                                                    top['annoteaServerUrl'] = url;
+                                                                    }-*/;
 
     private static native void notifyAnnoteaServerUrlRegistered() /*-{
-        top['annoteaServerUrlRegistered'] = true;
-    }-*/;
+                                                                  top['annoteaServerUrlRegistered'] = true;
+                                                                  }-*/;
 
     private static native void registerDocUrl(String docUrl) /*-{
-        top['docUrl'] = docUrl;
-    }-*/;
+                                                             top['docUrl'] = docUrl;
+                                                             }-*/;
 
     private static native void registerDateFormatPattern(String dateFormatPattern) /*-{
-      top['dateFormatPattern'] = dateFormatPattern;
-    }-*/;
+                                                                                   top['dateFormatPattern'] = dateFormatPattern;
+                                                                                   }-*/;
 
 }

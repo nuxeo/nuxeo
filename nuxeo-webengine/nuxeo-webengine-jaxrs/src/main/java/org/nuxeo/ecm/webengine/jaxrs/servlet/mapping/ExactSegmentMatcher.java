@@ -11,15 +11,12 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs.servlet.mapping;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ExactSegmentMatcher extends SegmentMatcher {
 
     protected final String pattern;
-
 
     public ExactSegmentMatcher(String pattern) {
         this.pattern = pattern;

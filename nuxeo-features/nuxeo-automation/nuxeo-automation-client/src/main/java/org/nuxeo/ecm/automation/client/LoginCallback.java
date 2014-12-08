@@ -18,12 +18,12 @@ package org.nuxeo.ecm.automation.client;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface LoginCallback {
 
     /**
      * Return an array of length 2. On first position the username, on the second one the password.
+     *
      * @return
      */
     String[] getLogin();

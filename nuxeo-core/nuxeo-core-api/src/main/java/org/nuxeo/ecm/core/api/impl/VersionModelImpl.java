@@ -14,13 +14,12 @@
 
 package org.nuxeo.ecm.core.api.impl;
 
-
 import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.VersionModel;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class VersionModelImpl implements VersionModel {
 

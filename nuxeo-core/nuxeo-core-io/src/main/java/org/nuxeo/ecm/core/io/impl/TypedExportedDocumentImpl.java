@@ -67,13 +67,11 @@ public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
      * Instantiates a new typed exported document impl.
      *
      * @param doc the doc
-     * @param path the path to use for this document this is used to remove full
-     *            paths
+     * @param path the path to use for this document this is used to remove full paths
      * @param inlineBlobs the inline blobs
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public TypedExportedDocumentImpl(DocumentModel doc, Path path,
-            boolean inlineBlobs) throws IOException {
+    public TypedExportedDocumentImpl(DocumentModel doc, Path path, boolean inlineBlobs) throws IOException {
         super(doc, path, inlineBlobs);
     }
 
@@ -94,22 +92,19 @@ public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
      * @param inlineBlobs the inline blobs
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public TypedExportedDocumentImpl(DocumentModel doc, boolean inlineBlobs)
-            throws IOException {
+    public TypedExportedDocumentImpl(DocumentModel doc, boolean inlineBlobs) throws IOException {
         super(doc, doc.getPath(), inlineBlobs);
     }
 
     /**
-     * Here we do what super does but add the "type" attribute to the XML
-     * elements.
+     * Here we do what super does but add the "type" attribute to the XML elements.
      */
     @Override
     @SuppressWarnings("rawtypes")
-    protected void readProperty(Element parent, Namespace targetNs,
-            Field field, Object value, boolean inlineBlobs) throws IOException {
+    protected void readProperty(Element parent, Namespace targetNs, Field field, Object value, boolean inlineBlobs)
+            throws IOException {
         Type type = field.getType();
-        QName name = QName.get(field.getName().getLocalName(), targetNs.prefix,
-                targetNs.uri);
+        QName name = QName.get(field.getName().getLocalName(), targetNs.prefix, targetNs.uri);
         Element element = parent.addElement(name);
 
         // extract the element content
@@ -149,15 +144,11 @@ public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
             element.addAttribute(TYPE_ATTRIBUTE, typeId);
             if (value != null) {
                 if (value instanceof List) {
-                    readList(element, (ListType) type, (List) value,
-                            inlineBlobs);
+                    readList(element, (ListType) type, (List) value, inlineBlobs);
                 } else if (value.getClass().getComponentType() != null) {
-                    readList(element, (ListType) type,
-                            PrimitiveArrays.toList(value), inlineBlobs);
+                    readList(element, (ListType) type, PrimitiveArrays.toList(value), inlineBlobs);
                 } else {
-                    throw new IllegalArgumentException(
-                            "A value of list type is neither list neither array: "
-                                    + value);
+                    throw new IllegalArgumentException("A value of list type is neither list neither array: " + value);
                 }
             }
         }

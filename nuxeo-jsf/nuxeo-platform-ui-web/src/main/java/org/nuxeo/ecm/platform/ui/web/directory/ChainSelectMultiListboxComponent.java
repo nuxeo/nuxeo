@@ -33,8 +33,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 
 /**
- * @deprecated : component is useless (not declared correctly in
- *             deployment-fragment.xml and bugg) should be refactored instead
+ * @deprecated : component is useless (not declared correctly in deployment-fragment.xml and bugg) should be refactored
+ *             instead
  */
 @Deprecated
 public class ChainSelectMultiListboxComponent extends UIInput {
@@ -93,8 +93,7 @@ public class ChainSelectMultiListboxComponent extends UIInput {
             // button
             return false;
         }
-        return index == chain.getSize() - 1
-                && chain.getBooleanProperty("multiSelect", false);
+        return index == chain.getSize() - 1 && chain.getBooleanProperty("multiSelect", false);
     }
 
     public String getDisplayIdAndLabelSeparator() {
@@ -173,11 +172,10 @@ public class ChainSelectMultiListboxComponent extends UIInput {
     }
 
     /*
-     * public List<VocabularyEntryList> getDirectoriesValues() { List<VocabularyEntryList>
-     * list = new ArrayList<VocabularyEntryList>(); ValueBinding vb =
-     * getValueBinding("directoryValues"); if (vb != null) { list.add(
-     * (VocabularyEntryList) vb.getValue(FacesContext.getCurrentInstance()) ); }
-     * else { //return null; } return list; }
+     * public List<VocabularyEntryList> getDirectoriesValues() { List<VocabularyEntryList> list = new
+     * ArrayList<VocabularyEntryList>(); ValueBinding vb = getValueBinding("directoryValues"); if (vb != null) {
+     * list.add( (VocabularyEntryList) vb.getValue(FacesContext.getCurrentInstance()) ); } else { //return null; }
+     * return list; }
      */
     public void setDirectoriesValues(List<VocabularyEntryList> directoriesValues) {
         this.directoriesValues = directoriesValues;
@@ -324,12 +322,7 @@ public class ChainSelectMultiListboxComponent extends UIInput {
             String id2 = getId();
             // XXX AT: yeah, right, that seems to be a very good idea.
             // "A4J.AJAX.Submit('_viewRoot','j_id202',event,{'parameters':{'j_id202:j_id286':'j_id202:j_id286'},'actionUrl':'/nuxeo/documents/tabs/document_externe_edit.faces'})";
-            onchange = "A4J.AJAX.Submit('_viewRoot','"
-                    + id1
-                    + "',event,{'parameters':{'"
-                    + id2
-                    + "':'"
-                    + id2
+            onchange = "A4J.AJAX.Submit('_viewRoot','" + id1 + "',event,{'parameters':{'" + id2 + "':'" + id2
                     + "'},'actionUrl':'" + BaseURL.getContextPath() + "/documents/tabs/document_externe_edit.faces'})";
 
             comp.setOnchange(onchange);

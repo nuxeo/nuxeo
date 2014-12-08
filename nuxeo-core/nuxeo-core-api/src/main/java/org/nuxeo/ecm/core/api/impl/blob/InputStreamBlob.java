@@ -21,8 +21,7 @@ import java.io.InputStream;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class InputStreamBlob extends DefaultStreamBlob {
 
@@ -54,7 +53,6 @@ public class InputStreamBlob extends DefaultStreamBlob {
         this.filename = filename;
         this.digest = digest;
     }
-
 
     @Override
     public InputStream getStream() {

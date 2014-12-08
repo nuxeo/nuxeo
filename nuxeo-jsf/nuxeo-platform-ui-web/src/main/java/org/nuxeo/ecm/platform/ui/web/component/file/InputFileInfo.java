@@ -55,8 +55,7 @@ public class InputFileInfo {
         super();
     }
 
-    public InputFileInfo(Object choice, Object blob, Object filename,
-            Object mimeType) {
+    public InputFileInfo(Object choice, Object blob, Object filename, Object mimeType) {
         this.choice = choice;
         this.blob = blob;
         this.filename = filename;
@@ -98,8 +97,7 @@ public class InputFileInfo {
                 if (upFile.available() == 0) {
                     throw new ConverterException(INVALID_FILE_MESSAGE);
                 }
-                convertedBlob = FileUtils.createSerializableBlob(upFile,
-                        getConvertedFilename(), getConvertedMimeType());
+                convertedBlob = FileUtils.createSerializableBlob(upFile, getConvertedFilename(), getConvertedMimeType());
             } catch (ConverterException e) {
                 throw e;
             } catch (IOException e) {

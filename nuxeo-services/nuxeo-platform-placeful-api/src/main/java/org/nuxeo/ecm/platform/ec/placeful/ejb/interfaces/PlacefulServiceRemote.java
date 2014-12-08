@@ -21,9 +21,7 @@ package org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces;
 import javax.ejb.Remote;
 
 /**
- *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 @Remote
 public interface PlacefulServiceRemote extends EJBPlacefulService {

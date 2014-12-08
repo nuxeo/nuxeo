@@ -37,8 +37,7 @@ public class OpenXmlContentHandler extends DefaultHandler {
     }
 
     @Override
-    public void startElement(String namespaceURI, String localName,
-            String qName, Attributes atts) throws SAXException {
+    public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         path.push(qName);
         // Text element of a docx or pptx document
         if (qName.equals("w:t") || qName.equals("a:t")) {
@@ -46,8 +45,7 @@ public class OpenXmlContentHandler extends DefaultHandler {
         }
         // If the paragraph's style is "styleX" with X > 1 (this is a heading,
         // but not the document title), add a new line.
-        if (qName.equals("w:pStyle")
-                && !"style0".equals(atts.getValue("w:val"))
+        if (qName.equals("w:pStyle") && !"style0".equals(atts.getValue("w:val"))
                 && !"style1".equals(atts.getValue("w:val"))) {
             sb.append("\n");
 
@@ -59,8 +57,7 @@ public class OpenXmlContentHandler extends DefaultHandler {
     }
 
     @Override
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
+    public void characters(char[] ch, int start, int length) throws SAXException {
         if (dumpText) {
             String content = String.valueOf(ch, start, length);
             sb.append(content);
@@ -68,8 +65,7 @@ public class OpenXmlContentHandler extends DefaultHandler {
     }
 
     @Override
-    public void endElement(String namespaceURI, String localName, String qName)
-            throws SAXException {
+    public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         path.pop();
         if (path.isEmpty() || !path.lastElement().equals("w:t")) {
             dumpText = false;

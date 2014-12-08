@@ -23,9 +23,9 @@ import java.util.Map;
  */
 public abstract class DocumentModelReaders {
 
-        public static JsonDocumentModelReader fromJson(String json) {
-            return new JsonDocumentModelReader(json);
-        }
+    public static JsonDocumentModelReader fromJson(String json) {
+        return new JsonDocumentModelReader(json);
+    }
 
     public static JsonDocumentModelReader fromSource(Map<String, Object> source) {
         return new JsonDocumentModelReader(source);

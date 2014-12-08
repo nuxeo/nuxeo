@@ -18,14 +18,12 @@ package org.nuxeo.runtime.management;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
 public class ManagementException extends Exception {
 
     private static final long serialVersionUID = -8772340021060960325L;
 
-    public static ManagementException wrap(String message,
-            Exception cause) {
+    public static ManagementException wrap(String message, Exception cause) {
         return new ManagementException(message, cause);
     }
 

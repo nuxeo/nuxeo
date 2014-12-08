@@ -20,8 +20,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 public final class RequestAttribute implements Scheme {
 
     public String getOutcome(final Object context) {
-        return (String) ((WebContext) context).getRequest().getAttribute(
-                "org.nuxeo.theme.collection");
+        return (String) ((WebContext) context).getRequest().getAttribute("org.nuxeo.theme.collection");
     }
 
 }

@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.relations.api.QueryResult;
  * Query results.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class QueryResultImpl implements QueryResult {
 
@@ -44,15 +43,11 @@ public class QueryResultImpl implements QueryResult {
     /**
      * Constructor for query result.
      *
-     * @param count
-     *            integer number of results
-     * @param variableNames
-     *            list of variable names as requested in query
-     * @param results
-     *            list of variable names/nodes found mapping
+     * @param count integer number of results
+     * @param variableNames list of variable names as requested in query
+     * @param results list of variable names/nodes found mapping
      */
-    public QueryResultImpl(Integer count, List<String> variableNames,
-            List<Map<String, Node>> results) {
+    public QueryResultImpl(Integer count, List<String> variableNames, List<Map<String, Node>> results) {
         this.count = count;
         this.variableNames = variableNames;
         this.results = results;

@@ -25,8 +25,7 @@ import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 
 /**
- * Automation tracer recording lightweight automation execution traces when mode
- * deactivated.
+ * Automation tracer recording lightweight automation execution traces when mode deactivated.
  *
  * @since 5.7.3
  */
@@ -37,8 +36,8 @@ public class TracerLite extends Tracer {
     }
 
     @Override
-    public void onOperation(OperationContext context, OperationType type,
-            InvokableMethod method, Map<String, Object> parms) {
+    public void onOperation(OperationContext context, OperationType type, InvokableMethod method,
+            Map<String, Object> parms) {
         if (type instanceof ChainTypeImpl) {
             pushContext(type);
             return;

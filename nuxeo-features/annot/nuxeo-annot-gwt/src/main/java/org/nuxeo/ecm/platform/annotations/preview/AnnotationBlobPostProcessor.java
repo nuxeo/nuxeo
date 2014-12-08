@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class AnnotationBlobPostProcessor implements BlobPostProcessor {
 
@@ -42,19 +41,19 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
 
     protected static final String GWT_LOCALE = "<meta name=\"gwt:property\" content=\"locale=%s\" />";
 
-    protected static final String ANNOTATION_MODULE_JS = "<script type=\"text/javascript\" src='" + VirtualHostHelper.getContextPathProperty() + "/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule.nocache.js'></script>";
+    protected static final String ANNOTATION_MODULE_JS = "<script type=\"text/javascript\" src='"
+            + VirtualHostHelper.getContextPathProperty()
+            + "/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule.nocache.js'></script>";
 
-    protected static final String INTERNET_EXPLORER_RANGE_JS = "<script type=\"text/javascript\" src='" + VirtualHostHelper.getContextPathProperty() + "/scripts/InternetExplorerRange.js'></script>";
+    protected static final String INTERNET_EXPLORER_RANGE_JS = "<script type=\"text/javascript\" src='"
+            + VirtualHostHelper.getContextPathProperty() + "/scripts/InternetExplorerRange.js'></script>";
 
-    protected Pattern headPattern = Pattern.compile("(.*)(<head>)(.*)",
-            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    protected Pattern headPattern = Pattern.compile("(.*)(<head>)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    protected Pattern htmlPattern = Pattern.compile("(.*)(<html>)(.*)",
-            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    protected Pattern htmlPattern = Pattern.compile("(.*)(<html>)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    protected Pattern charsetPattern = Pattern.compile(
-            "(.*) charset=(.*?)\"(.*)", Pattern.CASE_INSENSITIVE
-                    | Pattern.DOTALL);
+    protected Pattern charsetPattern = Pattern.compile("(.*) charset=(.*?)\"(.*)", Pattern.CASE_INSENSITIVE
+            | Pattern.DOTALL);
 
     public Blob process(Blob blob) {
         String mimetype = blob.getMimeType();
@@ -77,8 +76,7 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
             String blobAsString = getBlobAsString(blob, encoding);
             String processedBlob = addAnnotationModule(blobAsString);
 
-            byte[] bytes = encoding == null ? processedBlob.getBytes()
-                    : processedBlob.getBytes(encoding);
+            byte[] bytes = encoding == null ? processedBlob.getBytes() : processedBlob.getBytes(encoding);
             blob = new ByteArrayBlob(bytes, blob.getMimeType(), encoding);
         } catch (IOException e) {
             log.debug("Unable to process Blob", e);
@@ -86,8 +84,7 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
         return blob;
     }
 
-    protected String getBlobAsString(Blob blob, String encoding)
-            throws IOException {
+    protected String getBlobAsString(Blob blob, String encoding) throws IOException {
         if (encoding == null) {
             return blob.getString();
         }
@@ -103,8 +100,7 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
             sb.append(m.group(1));
             sb.append(m.group(2));
             if (localeSelector != null) {
-                sb.append(String.format(GWT_LOCALE,
-                        localeSelector.getLocaleString()));
+                sb.append(String.format(GWT_LOCALE, localeSelector.getLocaleString()));
             }
             sb.append(INTERNET_EXPLORER_RANGE_JS);
             sb.append(ANNOTATION_MODULE_JS);
@@ -116,8 +112,7 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
                 sb.append(m.group(2));
                 sb.append("<head>");
                 if (localeSelector != null) {
-                    sb.append(String.format(GWT_LOCALE,
-                            localeSelector.getLocaleString()));
+                    sb.append(String.format(GWT_LOCALE, localeSelector.getLocaleString()));
                 }
                 sb.append(INTERNET_EXPLORER_RANGE_JS);
                 sb.append(ANNOTATION_MODULE_JS);

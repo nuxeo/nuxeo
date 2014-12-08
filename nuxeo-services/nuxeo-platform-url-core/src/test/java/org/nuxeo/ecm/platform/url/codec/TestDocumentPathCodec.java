@@ -38,8 +38,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 public class TestDocumentPathCodec {
 
     private DocumentView getDocumentView(String id, String path, String view) {
-        DocumentLocation docLoc = new DocumentLocationImpl("demo",
-                new IdRef(id), new PathRef(path));
+        DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef(id), new PathRef(path));
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("tabId", "TAB_CONTENT");
@@ -52,8 +51,7 @@ public class TestDocumentPathCodec {
         DocumentPathCodec codec = new DocumentPathCodec();
         String docid = "dbefd5a0-35ee-4ed2-a023-6817714f32cf";
 
-        DocumentView docView = getDocumentView(docid, "/path/to/my/doc",
-                "view_documents");
+        DocumentView docView = getDocumentView(docid, "/path/to/my/doc", "view_documents");
         String url = "nxpath/demo/path/to/my/doc@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
@@ -77,8 +75,7 @@ public class TestDocumentPathCodec {
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
         // again with dot in repo name
-        docView = getDocumentView(docid, "path/to/my/doc.withdot",
-                "view_documents");
+        docView = getDocumentView(docid, "path/to/my/doc.withdot", "view_documents");
         url = "nxpath/demo/path/to/my/doc.withdot@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
@@ -89,14 +86,12 @@ public class TestDocumentPathCodec {
             veryLongUrl.append("/doc");
         }
 
-        DocumentView docViewMaxLength = getDocumentView(docid,
-                veryLongUrl.toString(), "view_documents");
+        DocumentView docViewMaxLength = getDocumentView(docid, veryLongUrl.toString(), "view_documents");
         url = "nxdoc/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docViewMaxLength));
 
         // with space in doc path, or non-ASCII chars
-        docView = getDocumentView(docid, "/path/ca f\u00e9/doc",
-                "view_documents");
+        docView = getDocumentView(docid, "/path/ca f\u00e9/doc", "view_documents");
         url = "nxpath/demo/path/ca%20f%C3%A9/doc@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
@@ -211,8 +206,7 @@ public class TestDocumentPathCodec {
         DocumentLocation docLoc = new DocumentLocationImpl("demo", null);
         Map<String, String> params = new HashMap<String, String>();
         params.put("tabId", "TAB_CONTENT");
-        DocumentView docView = new DocumentViewImpl(docLoc, "view_documents",
-                params);
+        DocumentView docView = new DocumentViewImpl(docLoc, "view_documents", params);
 
         String url = "nxpath/demo@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));

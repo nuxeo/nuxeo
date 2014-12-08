@@ -25,7 +25,6 @@ import com.google.gwt.dom.client.NodeList;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class Visitor {
     private final NodeProcessor processor;

@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebObject(type = "debug", administrator=Access.GRANT)
+@WebObject(type = "debug", administrator = Access.GRANT)
 public class DebugResource extends AbstractResource<ResourceTypeImpl> {
 
     private static final Log log = LogFactory.getLog(DebugResource.class);
@@ -94,15 +94,13 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
     }
 
     @POST
-    public Response doPost(@FormParam("input") String input,
-            @FormParam("chain") String chainXml) {
+    public Response doPost(@FormParam("input") String input, @FormParam("chain") String chainXml) {
         CoreSession session = SessionFactory.getSession();
         if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
             return Response.status(403).build();
         }
         try {
-            ByteArrayInputStream in = new ByteArrayInputStream(
-                    chainXml.getBytes());
+            ByteArrayInputStream in = new ByteArrayInputStream(chainXml.getBytes());
             OperationChainContribution contrib = (OperationChainContribution) xmap.load(in);
             OperationChain chain = contrib.toOperationChain(Framework.getRuntime().getContext().getBundle());
             OperationContext ctx = new OperationContext(session);
@@ -117,11 +115,9 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
 
     @POST
     @Path("{chainId}")
-    public Response doChainIdPost(@FormParam("input") String input,
-            @FormParam("chainId") String chainId) {
+    public Response doChainIdPost(@FormParam("input") String input, @FormParam("chainId") String chainId) {
         try {
-            OperationContext ctx = new OperationContext(
-                    SessionFactory.getSession());
+            OperationContext ctx = new OperationContext(SessionFactory.getSession());
             ctx.setInput(getDocumentRef(input));
             getOperationService().run(ctx, chainId);
             return Response.ok("Operation Done.").build();

@@ -19,12 +19,10 @@ import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 
 /**
- * A custom operation context to be used in REST calls on server side. This
- * implementation is delegating the post execution cleanup to the webengine
- * filter through {@link RequestContext} and {@link RequestCleanupHandler}.
+ * A custom operation context to be used in REST calls on server side. This implementation is delegating the post
+ * execution cleanup to the webengine filter through {@link RequestContext} and {@link RequestCleanupHandler}.
  * <p>
- * This way temporary resources like files used by operations are removed after
- * the response is sent to the client.
+ * This way temporary resources like files used by operations are removed after the response is sent to the client.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -42,17 +40,16 @@ public class RestOperationContext extends OperationContext {
      * Must be called before context execution.
      */
     public void addRequestCleanupHandler(HttpServletRequest request) {
-        RequestContext.getActiveContext(request).addRequestCleanupHandler(
-                new RequestCleanupHandler() {
-                    @Override
-                    public void cleanup(HttpServletRequest req) {
-                        try {
-                            deferredDispose();
-                        } catch (OperationException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
+        RequestContext.getActiveContext(request).addRequestCleanupHandler(new RequestCleanupHandler() {
+            @Override
+            public void cleanup(HttpServletRequest req) {
+                try {
+                    deferredDispose();
+                } catch (OperationException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     /**

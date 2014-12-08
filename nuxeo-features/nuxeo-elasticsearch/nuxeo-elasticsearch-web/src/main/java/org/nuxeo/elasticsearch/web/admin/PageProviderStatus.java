@@ -17,31 +17,32 @@
 package org.nuxeo.elasticsearch.web.admin;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 
 public class PageProviderStatus implements Comparable<PageProviderStatus> {
 
     protected static final String CORE_QUERY_TYPE = "CoreQueryDocumentPageProvider";
+
     protected static final String ELASTIC_TYPE = "elasticsearch";
 
     String cvName;
+
     String ppName;
+
     String type;
 
     public PageProviderStatus(String ppName, String klass) {
         this.ppName = ppName;
         switch (klass) {
-            case "org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider":
-                this.type = CORE_QUERY_TYPE;
-                break;
-            case "org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider":
-                this.type = ELASTIC_TYPE;
-                break;
-            default:
-                this.type = klass;
+        case "org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider":
+            this.type = CORE_QUERY_TYPE;
+            break;
+        case "org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider":
+            this.type = ELASTIC_TYPE;
+            break;
+        default:
+            this.type = klass;
         }
     }
 

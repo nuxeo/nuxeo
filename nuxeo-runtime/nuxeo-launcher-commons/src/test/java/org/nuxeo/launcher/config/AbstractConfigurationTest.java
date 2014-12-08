@@ -55,13 +55,10 @@ public abstract class AbstractConfigurationTest {
         nuxeoHome.mkdirs();
         File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
         FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(
-                nuxeoHome, nuxeoConf.getName()).getPath());
+        System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
         System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
-        System.setProperty(org.nuxeo.common.Environment.NUXEO_DATA_DIR,
-                new File(nuxeoHome, "data").getPath());
-        System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR,
-                new File(nuxeoHome, "log").getPath());
+        System.setProperty(org.nuxeo.common.Environment.NUXEO_DATA_DIR, new File(nuxeoHome, "data").getPath());
+        System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR, new File(nuxeoHome, "log").getPath());
     }
 
     @After

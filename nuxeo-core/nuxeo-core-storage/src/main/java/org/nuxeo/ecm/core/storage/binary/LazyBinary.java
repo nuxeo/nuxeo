@@ -40,8 +40,7 @@ public class LazyBinary extends Binary {
     protected CachingBinaryManager getCachingBinaryManager() {
         if (cbm == null) {
             if (repoName == null) {
-                throw new UnsupportedOperationException(
-                        "Cannot find binary manager, no repository name");
+                throw new UnsupportedOperationException("Cannot find binary manager, no repository name");
             }
             BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
             cbm = (CachingBinaryManager) bms.getBinaryManager(repoName);

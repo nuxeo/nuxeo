@@ -58,16 +58,13 @@ public abstract class AbstractIOResourceAdapter implements IOResourceAdapter {
         this.properties = properties;
     }
 
-    public abstract IOResources extractResources(String repo,
-            Collection<DocumentRef> sources);
+    public abstract IOResources extractResources(String repo, Collection<DocumentRef> sources);
 
-    public abstract IOResources translateResources(String repo,
-            IOResources resources, DocumentTranslationMap map);
+    public abstract IOResources translateResources(String repo, IOResources resources, DocumentTranslationMap map);
 
     public abstract void storeResources(IOResources newResources);
 
-    public abstract void getResourcesAsXML(OutputStream out,
-            IOResources newResources);
+    public abstract void getResourcesAsXML(OutputStream out, IOResources newResources);
 
     public abstract IOResources loadResourcesFromXML(InputStream stream);
 
@@ -88,9 +85,8 @@ public abstract class AbstractIOResourceAdapter implements IOResourceAdapter {
         if (propValue instanceof String) {
             properties.put(propName, Boolean.valueOf((String) propValue));
         } else {
-            log.error(String.format(
-                    "Property %s needs a string representing a boolean:"
-                            + " invalid value %s", propName, propValue));
+            log.error(String.format("Property %s needs a string representing a boolean:" + " invalid value %s",
+                    propName, propValue));
         }
     }
 
@@ -103,8 +99,7 @@ public abstract class AbstractIOResourceAdapter implements IOResourceAdapter {
             return;
         }
         if (!(propValue instanceof String)) {
-            log.error(String.format("Property %s needs a string value:"
-                    + " invalid value %s", propName, propValue));
+            log.error(String.format("Property %s needs a string value:" + " invalid value %s", propName, propValue));
         }
         properties.put(propName, propValue);
     }
@@ -113,15 +108,12 @@ public abstract class AbstractIOResourceAdapter implements IOResourceAdapter {
         return (String[]) properties.get(propName);
     }
 
-    protected void setStringArrayProperty(String propName,
-            Serializable propValue) {
+    protected void setStringArrayProperty(String propName, Serializable propValue) {
         if (propValue == null) {
             return;
         }
         if (!(propValue instanceof String[])) {
-            log.error(String.format(
-                    "Property %s needs a string array, invalid value %s",
-                    propName, propValue));
+            log.error(String.format("Property %s needs a string array, invalid value %s", propName, propValue));
         }
         properties.put(propName, propValue);
     }

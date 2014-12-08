@@ -26,10 +26,8 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
  */
 public interface PublishedDocumentMarshaler {
 
-    String marshalPublishedDocument(PublishedDocument pubDoc)
-            throws PublishingMarshalingException;;
+    String marshalPublishedDocument(PublishedDocument pubDoc) throws PublishingMarshalingException;;
 
-    PublishedDocument unMarshalPublishedDocument(String data)
-            throws PublishingMarshalingException;;
+    PublishedDocument unMarshalPublishedDocument(String data) throws PublishingMarshalingException;;
 
 }

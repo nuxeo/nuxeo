@@ -37,8 +37,7 @@ import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
-public class ContentViewConfigurationAdapter extends
-        AbstractLocalConfiguration<ContentViewConfiguration> implements
+public class ContentViewConfigurationAdapter extends AbstractLocalConfiguration<ContentViewConfiguration> implements
         ContentViewConfiguration {
 
     private static final Log log = LogFactory.getLog(ContentViewConfigurationAdapter.class);

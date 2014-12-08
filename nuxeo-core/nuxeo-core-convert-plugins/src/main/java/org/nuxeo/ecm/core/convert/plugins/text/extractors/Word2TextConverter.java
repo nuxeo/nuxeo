@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
-
 /**
  * @deprecated subsumed by MSOffice2TextConverter
  */
@@ -47,8 +46,7 @@ public class Word2TextConverter implements Converter {
     private static final Log log = LogFactory.getLog(Word2TextConverter.class);
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         File f = null;
         OutputStream fas = null;

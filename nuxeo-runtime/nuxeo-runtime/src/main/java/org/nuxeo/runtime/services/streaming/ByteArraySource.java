@@ -20,12 +20,10 @@ import java.io.InputStream;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ByteArraySource extends AbstractStreamSource {
 
     protected final byte[] bytes;
-
 
     public ByteArraySource(byte[] bytes) {
         this.bytes = bytes;

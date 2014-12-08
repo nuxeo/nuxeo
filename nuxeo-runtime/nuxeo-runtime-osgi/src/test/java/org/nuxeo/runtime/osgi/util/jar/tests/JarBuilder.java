@@ -32,7 +32,6 @@ import java.util.zip.ZipEntry;
 
 /**
  * @author matic
- *
  */
 public class JarBuilder {
 
@@ -64,7 +63,7 @@ public class JarBuilder {
             if (!bindir.isDirectory()) {
                 continue;
             }
-            if(new File(bindir, pkgdir.getPath()).exists()) {
+            if (new File(bindir, pkgdir.getPath()).exists()) {
                 return bindir;
             }
         }
@@ -74,7 +73,7 @@ public class JarBuilder {
 
     protected static File getResourceFile(File dir, String... path) {
         File file = dir;
-        for (String name:path) {
+        for (String name : path) {
             file = new File(file, name);
         }
         return file;
@@ -95,6 +94,7 @@ public class JarBuilder {
         tempdir.mkdir();
         return tempdir;
     }
+
     public File getRootFile() {
         return rootFile;
     }
@@ -104,8 +104,7 @@ public class JarBuilder {
         builtFiles.add(file);
         JarOutputStream output = new JarOutputStream(new FileOutputStream(file));
         try {
-            writeEntry(output,
-                    new File(pkgdir, "JarBuilder$First.class"));
+            writeEntry(output, new File(pkgdir, "JarBuilder$First.class"));
             writeEntry(output, new File("first.marker"));
         } finally {
             output.close();
@@ -125,8 +124,7 @@ public class JarBuilder {
         return file.toURI().toURL();
     }
 
-    protected void writeEntry(JarOutputStream output, File file)
-            throws IOException {
+    protected void writeEntry(JarOutputStream output, File file) throws IOException {
         output.putNextEntry(new ZipEntry(file.getPath()));
         InputStream input = new FileInputStream(new File(bindir, file.getPath()));
         try {

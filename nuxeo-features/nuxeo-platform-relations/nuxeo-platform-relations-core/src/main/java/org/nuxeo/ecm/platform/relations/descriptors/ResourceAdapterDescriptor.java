@@ -25,9 +25,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 
 /**
- * Adapter to transform a {@link DocumentModel} into a {@link QNameResource} and
- * reverse. This is done using criteria like resource namespace and document
- * type.
+ * Adapter to transform a {@link DocumentModel} into a {@link QNameResource} and reverse. This is done using criteria
+ * like resource namespace and document type.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

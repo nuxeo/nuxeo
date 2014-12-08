@@ -13,8 +13,7 @@
 package org.nuxeo.ecm.core.api;
 
 /**
- * Marker interface to define Adapters that won't keep a reference to a
- * {@code DocumentModel} instance.
+ * Marker interface to define Adapters that won't keep a reference to a {@code DocumentModel} instance.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.2

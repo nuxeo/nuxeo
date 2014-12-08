@@ -34,8 +34,7 @@ public class TestRelation {
         Predicate predicate = new DefaultPredicate("_ is white");
         Relate r1 = new DefaultRelate("snow");
         Relation relation = new MonadicRelation(predicate, r1);
-        assertEquals(RelationTypeFamily.MONADIC,
-                relation.getRelationTypeFamily());
+        assertEquals(RelationTypeFamily.MONADIC, relation.getRelationTypeFamily());
 
         assertTrue(relation.hasPredicate(predicate));
         assertEquals("snow is white", relation.hash());
@@ -50,8 +49,7 @@ public class TestRelation {
         Relate r2 = new DefaultRelate("Juliet");
         Relation relation = new DyadicRelation(predicate, r1, r2);
 
-        assertEquals(RelationTypeFamily.DYADIC,
-                relation.getRelationTypeFamily());
+        assertEquals(RelationTypeFamily.DYADIC, relation.getRelationTypeFamily());
         assertTrue(relation.hasPredicate(predicate));
         assertEquals("Romeo loves Juliet", relation.hash());
         assertTrue(relation.getRelates().contains(r1));
@@ -68,8 +66,7 @@ public class TestRelation {
         Relate r3 = new DefaultRelate("C");
         Relation relation = new TriadicRelation(predicate, r1, r2, r3);
 
-        assertEquals(RelationTypeFamily.TRIADIC,
-                relation.getRelationTypeFamily());
+        assertEquals(RelationTypeFamily.TRIADIC, relation.getRelationTypeFamily());
         assertTrue(relation.hasPredicate(predicate));
         assertEquals("A connects B to C", relation.hash());
         assertTrue(relation.getRelates().contains(r1));

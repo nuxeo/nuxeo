@@ -15,8 +15,7 @@ import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * MongoDB implementation of a {@link RepositoryFactory}, creating a
- * {@link MongoDBRepository}.
+ * MongoDB implementation of a {@link RepositoryFactory}, creating a {@link MongoDBRepository}.
  *
  * @since 5.9.4
  */
@@ -34,8 +33,7 @@ public class MongoDBRepositoryFactory implements RepositoryFactory {
         MongoDBRepositoryService repositoryService = Framework.getLocalService(MongoDBRepositoryService.class);
         MongoDBRepositoryDescriptor descriptor = repositoryService.getRepositoryDescriptor(repositoryName);
         if (descriptor == null) {
-            throw new IllegalStateException("No descriptor registered for: "
-                    + repositoryName);
+            throw new IllegalStateException("No descriptor registered for: " + repositoryName);
         }
         return new MongoDBRepository(descriptor);
     }

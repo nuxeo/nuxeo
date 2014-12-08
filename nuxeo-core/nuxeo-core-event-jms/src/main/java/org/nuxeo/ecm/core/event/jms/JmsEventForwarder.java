@@ -52,8 +52,7 @@ public class JmsEventForwarder implements PostCommitEventListener {
         try {
             ctx = new InitialContext();
             nuxeoTopic = (Topic) ctx.lookup(NUXEO_JMS_TOPIC);
-        }
-        catch (NamingException e) {
+        } catch (NamingException e) {
             jmsBusIsActive = false;
             throw new JMSBusNotActiveException(e);
         }
@@ -64,8 +63,7 @@ public class JmsEventForwarder implements PostCommitEventListener {
         try {
             TopicConnectionFactory factory = (TopicConnectionFactory) ctx.lookup("TopicConnectionFactory");
             nuxeoTopicConnection = factory.createTopicConnection();
-            nuxeoTopicSession = nuxeoTopicConnection.createTopicSession(false,
-                    TopicSession.AUTO_ACKNOWLEDGE);
+            nuxeoTopicSession = nuxeoTopicConnection.createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
 
             ObjectMessage jmsMessage = nuxeoTopicSession.createObjectMessage(message);
 
@@ -101,8 +99,7 @@ public class JmsEventForwarder implements PostCommitEventListener {
         }
         try {
             produceJMSMessage(new SerializableEventBundle(events));
-        }
-        catch (JMSBusNotActiveException e) {
+        } catch (JMSBusNotActiveException e) {
             log.debug("JMS Bus is not active, cannot forward message");
         }
     }

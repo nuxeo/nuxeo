@@ -27,7 +27,6 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class GroovyScripting {
 
@@ -87,10 +86,8 @@ public class GroovyScripting {
 
     // TODO add debug mode : return new GroovyShell(new
     // Binding(args)).evaluate(script.getFile()); ?
-    public Object eval(File file, Map<String, Object> context)
-            throws IOException {
-        return eval(file, context == null ? new Binding()
-                : new Binding(context));
+    public Object eval(File file, Map<String, Object> context) throws IOException {
+        return eval(file, context == null ? new Binding() : new Binding(context));
     }
 
     public Object eval(File file, Binding context) throws IOException {

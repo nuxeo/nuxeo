@@ -33,23 +33,15 @@ import com.google.gwt.junit.tools.GWTTestSuite;
 
 /**
  * @author Alexandre Russel
- *
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-    GwtTestRDFParser.class,
-    GwtTestStatement.class,
-    GwtTestOneAnnotation.class,
-    GwtTestCSSClassManager.class,
-    GwtTestImageRangeXPointer.class,
-    GwtTestStringRangeXPointer.class,
-    GwtTestXPathUtil.class
-})
+@Suite.SuiteClasses({ GwtTestRDFParser.class, GwtTestStatement.class, GwtTestOneAnnotation.class,
+        GwtTestCSSClassManager.class, GwtTestImageRangeXPointer.class, GwtTestStringRangeXPointer.class,
+        GwtTestXPathUtil.class })
 public class GwtTestSuiteAnnotation extends GWTTestSuite {
 }
 
-    /*GwtTestDecoratorVisitor.class,
-    GwtTestPortAmsterdamParsing.class,
-    GwtTestSimpleParsing.class,
-    GwtTestSimpleParsingWithEntities.class,
-    GwtTestTextGrabberVisitor.class*/
+/*
+ * GwtTestDecoratorVisitor.class, GwtTestPortAmsterdamParsing.class, GwtTestSimpleParsing.class,
+ * GwtTestSimpleParsingWithEntities.class, GwtTestTextGrabberVisitor.class
+ */

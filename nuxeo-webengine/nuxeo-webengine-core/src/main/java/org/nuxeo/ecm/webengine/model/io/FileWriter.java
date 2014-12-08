@@ -39,22 +39,19 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
- * text/plain is needed otherwise resteasy will use its default text plain
- * (@see DefaultTextPlain) writer to write text/plain objects and the file is
- * not written correctly.
+ * text/plain is needed otherwise resteasy will use its default text plain (@see DefaultTextPlain) writer to write
+ * text/plain objects and the file is not written correctly.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
-@Produces( { "*/*", "text/plain" })
+@Produces({ "*/*", "text/plain" })
 public class FileWriter implements MessageBodyWriter<File> {
 
     private static final Log log = LogFactory.getLog(FileWriter.class);
 
-    public void writeTo(File t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         FileInputStream in = null;
         try {
             in = new FileInputStream(t);
@@ -78,14 +75,12 @@ public class FileWriter implements MessageBodyWriter<File> {
         }
     }
 
-    public long getSize(File arg0, Class<?> arg1, Type arg2, Annotation[] arg3,
-            MediaType arg4) {
+    public long getSize(File arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         long n = arg0.length();
         return n <= 0 ? -1 : n;
     }
 
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return File.class.isAssignableFrom(arg0);
     }
 

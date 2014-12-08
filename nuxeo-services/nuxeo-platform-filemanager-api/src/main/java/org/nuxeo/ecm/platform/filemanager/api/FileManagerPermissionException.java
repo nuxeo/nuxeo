@@ -16,19 +16,16 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 /**
- * Marker exception to be raised by a FileManagerService importer plugin to tell
- * the service that it could not create the requested document because of an
- * missing authorization.
+ * Marker exception to be raised by a FileManagerService importer plugin to tell the service that it could not create
+ * the requested document because of an missing authorization.
  * <p>
- * The FileManagerService service is responsible to catch this exception and
- * build an informative message for the UI layer.
+ * The FileManagerService service is responsible to catch this exception and build an informative message for the UI
+ * layer.
  * <p>
- * We derive from ClientException not to break existing API (BBB) though this is
- * not strictly required.
+ * We derive from ClientException not to break existing API (BBB) though this is not strictly required.
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
- * @deprecated use the standard security exception {@link SecurityException} or
- *             {@link DocumentSecurityException}
+ * @deprecated use the standard security exception {@link SecurityException} or {@link DocumentSecurityException}
  */
 @Deprecated
 public class FileManagerPermissionException extends ClientException {

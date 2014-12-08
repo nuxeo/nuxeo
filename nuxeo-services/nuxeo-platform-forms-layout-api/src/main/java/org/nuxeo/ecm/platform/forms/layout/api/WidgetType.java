@@ -33,14 +33,12 @@ import java.util.Map;
 public interface WidgetType extends Serializable {
 
     /**
-     * Returns the name of this widget type, used to identify it in the
-     * service.
+     * Returns the name of this widget type, used to identify it in the service.
      */
     String getName();
 
     /**
-     * Return alias names for this widget type (useful for compatibility
-     * on old widget types).
+     * Return alias names for this widget type (useful for compatibility on old widget types).
      *
      * @since 6.0
      */

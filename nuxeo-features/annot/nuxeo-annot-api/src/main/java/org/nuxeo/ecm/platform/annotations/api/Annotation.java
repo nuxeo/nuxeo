@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface Annotation {
 

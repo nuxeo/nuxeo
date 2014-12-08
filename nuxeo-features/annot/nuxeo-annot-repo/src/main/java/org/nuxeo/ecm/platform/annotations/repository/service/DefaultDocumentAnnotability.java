@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class DefaultDocumentAnnotability implements DocumentAnnotability {
 

@@ -23,7 +23,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 
 /**
  * @author matic
- *
  */
 public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
 
@@ -37,8 +36,7 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
         return RemoteException.class;
     }
 
-    public static RemoteException readException(String content)
-            throws IOException {
+    public static RemoteException readException(String content) throws IOException {
         JsonParser jp = JsonMarshalling.getFactory().createJsonParser(content);
         jp.nextToken(); // skip {
         return _read(jp);
@@ -63,8 +61,7 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
                 } else {
                     status = Integer.parseInt(jp.getText());
                 }
-            } else if (Constants.KEY_ENTITY_TYPE.equals(key) || "type".equals
-                    (key)) {
+            } else if (Constants.KEY_ENTITY_TYPE.equals(key) || "type".equals(key)) {
                 type = jp.getText();
             } else if ("message".equals(key)) {
                 message = jp.getText();
@@ -74,8 +71,7 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
         return new RemoteException(status, type, message, cause);
     }

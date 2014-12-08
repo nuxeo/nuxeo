@@ -22,12 +22,10 @@ package org.nuxeo.ecm.platform.rendering.impl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Abstract RenderingContext subclass that adds capabilities of storing a
- * DocumentModel and retrieve RenderingConfig associated with the current set
- * DocumentModel.
+ * Abstract RenderingContext subclass that adds capabilities of storing a DocumentModel and retrieve RenderingConfig
+ * associated with the current set DocumentModel.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
- *
  */
 public class DocumentRenderingContext extends DefaultRenderingContext {
 

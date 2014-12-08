@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.usermanager;
 /**
  * @author Laurent Doguin
  */
-public class FakeTestUserManagerImpl extends  FakeUserManagerImpl {
+public class FakeTestUserManagerImpl extends FakeUserManagerImpl {
 
     private static final long serialVersionUID = 1L;
 

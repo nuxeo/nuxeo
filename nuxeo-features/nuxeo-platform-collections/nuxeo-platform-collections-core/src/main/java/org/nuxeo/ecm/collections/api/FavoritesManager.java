@@ -25,19 +25,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface FavoritesManager {
 
-    void addToFavorites(final DocumentModel document, final CoreSession session)
-            throws ClientException;
+    void addToFavorites(final DocumentModel document, final CoreSession session) throws ClientException;
 
-    boolean canAddToFavorites(final DocumentModel document)
-            throws ClientException;
+    boolean canAddToFavorites(final DocumentModel document) throws ClientException;
 
-    DocumentModel getFavorites(final DocumentModel context,
-            final CoreSession session) throws ClientException;
+    DocumentModel getFavorites(final DocumentModel context, final CoreSession session) throws ClientException;
 
-    boolean isFavorite(final DocumentModel document, final CoreSession session)
-            throws ClientException;
+    boolean isFavorite(final DocumentModel document, final CoreSession session) throws ClientException;
 
-    void removeFromFavorites(final DocumentModel document,
-            final CoreSession session) throws ClientException;
+    void removeFromFavorites(final DocumentModel document, final CoreSession session) throws ClientException;
 
 }

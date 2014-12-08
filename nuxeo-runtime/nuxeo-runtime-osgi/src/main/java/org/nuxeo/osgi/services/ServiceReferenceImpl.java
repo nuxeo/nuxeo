@@ -31,19 +31,21 @@ import org.osgi.framework.ServiceReference;
  * Dummy service reference. servicefactory not supported.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ServiceReferenceImpl implements ServiceReference {
 
     protected Bundle bundle;
+
     protected Object service;
+
     protected ServiceFactory factory;
-    protected Map<String,Object> props;
+
+    protected Map<String, Object> props;
 
     public ServiceReferenceImpl(Bundle bundle, Object service) {
         this.bundle = bundle;
         if (service instanceof ServiceFactory) {
-            factory = (ServiceFactory)service;
+            factory = (ServiceFactory) service;
         } else {
             this.service = service;
         }
@@ -91,7 +93,7 @@ public class ServiceReferenceImpl implements ServiceReference {
         return service == null ? factory.getService(bundle, null) : service;
     }
 
-    public synchronized void setProperties(Dictionary<String,?> dict) {
+    public synchronized void setProperties(Dictionary<String, ?> dict) {
         if (props == null) {
             props = new HashMap<String, Object>();
         }

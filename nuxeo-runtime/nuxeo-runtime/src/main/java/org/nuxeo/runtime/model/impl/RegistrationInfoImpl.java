@@ -43,7 +43,6 @@ import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("component")
 public class RegistrationInfoImpl implements RegistrationInfo {
@@ -91,17 +90,14 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     ExtensionImpl[] extensions = new ExtensionImpl[0];
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = Property.class)
-    Map<String, Property> properties  = new HashMap<>();
+    Map<String, Property> properties = new HashMap<>();
 
     @XNode("@version")
     Version version = Version.ZERO;
 
     /**
-     * To be set when deploying configuration components that are not in a
-     * bundle (e.g. from config. dir).
-     *
-     * Represent the bundle that will be assumed to be the owner of the
-     * component.
+     * To be set when deploying configuration components that are not in a bundle (e.g. from config. dir). Represent the
+     * bundle that will be assumed to be the owner of the component.
      */
     @XNode("@bundle")
     String bundle;
@@ -112,8 +108,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     URL xmlFileUrl;
 
     /**
-     * This is used by the component persistence service to identify
-     * registration that was dynamically created and persisted by users.
+     * This is used by the component persistence service to identify registration that was dynamically created and
+     * persisted by users.
      */
     boolean isPersistent;
 
@@ -135,15 +131,13 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     /**
-     * Attach to a manager - this method must be called after all registration
-     * fields are initialized.
+     * Attach to a manager - this method must be called after all registration fields are initialized.
      *
      * @param manager
      */
     public void attach(ComponentManagerImpl manager) {
         if (this.manager != null) {
-            throw new IllegalStateException("Registration '" + name
-                    + "' was already attached to a manager");
+            throw new IllegalStateException("Registration '" + name + "' was already attached to a manager");
         }
         this.manager = manager;
     }
@@ -233,8 +227,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     @Override
     public Set<ComponentName> getAliases() {
-        return aliases == null ? Collections.<ComponentName> emptySet()
-                : aliases;
+        return aliases == null ? Collections.<ComponentName> emptySet() : aliases;
     }
 
     @Override
@@ -277,8 +270,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             return;
         }
         state = REGISTERED;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.COMPONENT_REGISTERED, this));
+        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_REGISTERED, this));
     }
 
     synchronized void unregister() {
@@ -289,8 +281,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             unresolve();
         }
         state = UNREGISTERED;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.COMPONENT_UNREGISTERED, this));
+        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_UNREGISTERED, this));
         destroy();
     }
 
@@ -334,9 +325,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                     ((Component) ci).applicationStarted(component);
                 } catch (Exception e) { // deals with interrupt below
                     ExceptionUtils.checkInterrupt(e);
-                    log.error(
-                            "Component notification of application started failed.",
-                            e);
+                    log.error("Component notification of application started failed.", e);
                     state = RESOLVED;
                 }
             }
@@ -351,16 +340,14 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         component = createComponentInstance();
 
         state = ACTIVATING;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.ACTIVATING_COMPONENT, this));
+        manager.sendEvent(new ComponentEvent(ComponentEvent.ACTIVATING_COMPONENT, this));
 
         // activate component
         component.activate();
         log.info("Component activated: " + name);
 
         state = ACTIVATED;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.COMPONENT_ACTIVATED, this));
+        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_ACTIVATED, this));
 
         // register contributed extensions if any
         if (extensions != null) {
@@ -371,10 +358,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                     manager.registerExtension(xt);
                 } catch (Exception e) { // deals with interrupt below
                     ExceptionUtils.checkInterrupt(e);
-                    String msg = "Failed to register extension to: "
-                            + xt.getTargetComponent() + ", xpoint: "
-                            + xt.getExtensionPoint() + " in component: "
-                            + xt.getComponent().getName();
+                    String msg = "Failed to register extension to: " + xt.getTargetComponent() + ", xpoint: "
+                            + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
                     Framework.getRuntime().getWarnings().add(msg);
@@ -393,10 +378,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                     component.registerExtension(xt);
                 } catch (Exception e) { // deals with interrupt below
                     ExceptionUtils.checkInterrupt(e);
-                    String msg = "Failed to register extension to: "
-                            + xt.getTargetComponent() + ", xpoint: "
-                            + xt.getExtensionPoint() + " in component: "
-                            + xt.getComponent().getName();
+                    String msg = "Failed to register extension to: " + xt.getTargetComponent() + ", xpoint: "
+                            + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
                     Framework.getRuntime().getWarnings().add(msg);
@@ -412,8 +395,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
 
         state = DEACTIVATING;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.DEACTIVATING_COMPONENT, this));
+        manager.sendEvent(new ComponentEvent(ComponentEvent.DEACTIVATING_COMPONENT, this));
 
         // unregister contributed extensions if any
         if (extensions != null) {
@@ -423,10 +405,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 } catch (Exception e) { // deals with interrupt below
                     ExceptionUtils.checkInterrupt(e);
                     log.error(
-                            "Failed to unregister extension. Contributor: "
-                                    + xt.getComponent() + " to "
-                                    + xt.getTargetComponent() + "; xpoint: "
-                                    + xt.getExtensionPoint(), e);
+                            "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
+                                    + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint(), e);
                     Framework.handleDevError(e);
                 }
             }
@@ -437,8 +417,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         component = null;
 
         state = RESOLVED;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.COMPONENT_DEACTIVATED, this));
+        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_DEACTIVATED, this));
     }
 
     public synchronized void resolve() {
@@ -450,8 +429,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         manager.registerServices(this);
 
         state = RESOLVED;
-        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_RESOLVED,
-                this));
+        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_RESOLVED, this));
         // TODO lazy activation
         activate();
     }
@@ -468,8 +446,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             deactivate();
         }
         state = REGISTERED;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.COMPONENT_UNRESOLVED, this));
+        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_UNRESOLVED, this));
     }
 
     @Override
@@ -508,8 +485,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         for (ExtensionImpl xt : extensions) {
             if (xt.target == null) {
                 Framework.getRuntime().getWarnings().add(
-                        "Bad extension declaration (no target attribute specified). Component: "
-                                + getName());
+                        "Bad extension declaration (no target attribute specified). Component: " + getName());
                 continue;
             }
             // TODO do nothing for now -> fix the faulty components and then

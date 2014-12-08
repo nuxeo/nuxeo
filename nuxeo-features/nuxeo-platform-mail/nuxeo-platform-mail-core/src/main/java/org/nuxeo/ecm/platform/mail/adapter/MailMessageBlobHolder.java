@@ -28,20 +28,17 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
 
 /**
- * BlobHolder for MailMessage documents. The blob returned is a StringBlob with
- * the mail body message as content.
+ * BlobHolder for MailMessage documents. The blob returned is a StringBlob with the mail body message as content.
  * 
  * @author ldoguin
  * @since 5.7.3
  */
 public class MailMessageBlobHolder extends DocumentBlobHolder {
 
-    protected Pattern isHtmlPattern = Pattern.compile(
-            "(.*)<(html|head|body)>(.*)", Pattern.CASE_INSENSITIVE
-                    | Pattern.DOTALL);
+    protected Pattern isHtmlPattern = Pattern.compile("(.*)<(html|head|body)>(.*)", Pattern.CASE_INSENSITIVE
+            | Pattern.DOTALL);
 
-    public MailMessageBlobHolder(DocumentModel doc, String xPath,
-            String xPathFilename) {
+    public MailMessageBlobHolder(DocumentModel doc, String xPath, String xPathFilename) {
         super(doc, xPath, xPathFilename);
     }
 
@@ -49,8 +46,7 @@ public class MailMessageBlobHolder extends DocumentBlobHolder {
     public Blob getBlob() throws ClientException {
         String htmlTextProperty = (String) doc.getPropertyValue(xPath);
         Blob blob = null;
-        if (htmlTextProperty != null && xPathFilename != null
-                && htmlTextProperty.length() != 0) {
+        if (htmlTextProperty != null && xPathFilename != null && htmlTextProperty.length() != 0) {
             blob = new StringBlob(htmlTextProperty);
             Matcher m = isHtmlPattern.matcher(htmlTextProperty);
             if (m.matches()) {

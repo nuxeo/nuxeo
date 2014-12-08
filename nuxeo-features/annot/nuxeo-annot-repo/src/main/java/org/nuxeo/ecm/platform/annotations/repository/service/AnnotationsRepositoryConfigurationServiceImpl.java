@@ -26,10 +26,8 @@ import java.util.Map;
 
 /**
  * @author Alexandre Russel
- *
  */
-public class AnnotationsRepositoryConfigurationServiceImpl implements
-        AnnotationsRepositoryConfigurationService {
+public class AnnotationsRepositoryConfigurationServiceImpl implements AnnotationsRepositoryConfigurationService {
 
     private final Map<String, AnnotatedDocumentEventListener> listeners = new HashMap<String, AnnotatedDocumentEventListener>();
 
@@ -39,8 +37,7 @@ public class AnnotationsRepositoryConfigurationServiceImpl implements
         return graphManagerEventListener;
     }
 
-    public void setGraphManagerEventListener(
-            GraphManagerEventListener graphManagerEventListener) {
+    public void setGraphManagerEventListener(GraphManagerEventListener graphManagerEventListener) {
         this.graphManagerEventListener = graphManagerEventListener;
     }
 

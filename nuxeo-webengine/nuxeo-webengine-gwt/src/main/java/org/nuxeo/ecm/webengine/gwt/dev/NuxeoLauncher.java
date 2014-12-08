@@ -68,9 +68,8 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
     }
 
     /**
-     * Gets a custom configuration for the Nuxeo to build. By default no custom
-     * configuration is used - but built-in configuration selected through
-     * profiles.
+     * Gets a custom configuration for the Nuxeo to build. By default no custom configuration is used - but built-in
+     * configuration selected through profiles.
      *
      * @return null if no custom configuration is wanted.
      */
@@ -93,25 +92,23 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         System.setProperty(GwtBundleActivator.GWT_DEV_MODE_PROP, "true");
         app = createApplication(config);
 
-        Runtime.getRuntime().addShutdownHook(
-                new Thread("Nuxeo Server Shutdown") {
-                    @Override
-                    public void run() {
-                        try {
-                            if (app != null) {
-                                app.shutdown();
-                            }
-                        } catch (Exception e) { // stupid API
-                            log.error(e, e);
-                        }
+        Runtime.getRuntime().addShutdownHook(new Thread("Nuxeo Server Shutdown") {
+            @Override
+            public void run() {
+                try {
+                    if (app != null) {
+                        app.shutdown();
                     }
-                });
+                } catch (Exception e) { // stupid API
+                    log.error(e, e);
+                }
+            }
+        });
 
         super.init(config);
     }
 
-    protected NuxeoApp createApplication(FilterConfig config)
-            throws ServletException {
+    protected NuxeoApp createApplication(FilterConfig config) throws ServletException {
         URL cfg = getConfiguration();
         String homeParam = config.getInitParameter("home");
         String hostParam = config.getInitParameter("host");
@@ -129,15 +126,13 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         File home = null;
         String host = hostParam == null ? "localhost" : null;
         int port = portParam == null ? 8081 : Integer.parseInt(portParam);
-        String profile = profileParam == null ? NuxeoApp.CORE_SERVER_541_SNAPSHOT
-                : profileParam;
+        String profile = profileParam == null ? NuxeoApp.CORE_SERVER_541_SNAPSHOT : profileParam;
         if (homeParam == null) {
             String userDir = System.getProperty("user.home");
             String sep = userDir.endsWith("/") ? "" : "/";
             home = new File(userDir + sep + ".nxserver-gwt");
         } else {
-            homeParam = StringUtils.expandVars(homeParam,
-                    System.getProperties());
+            homeParam = StringUtils.expandVars(homeParam, System.getProperties());
             home = new File(homeParam);
         }
 
@@ -149,19 +144,16 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         if (redirectTrace != null && Boolean.parseBoolean(redirectTrace)) {
             redirect.setTrace(true);
         }
-        if (redirectTraceContent != null
-                && Boolean.parseBoolean(redirectTraceContent)) {
+        if (redirectTraceContent != null && Boolean.parseBoolean(redirectTraceContent)) {
             redirect.setTrace(true);
             redirect.setTraceContent(true);
         }
 
         System.out.println("+---------------------------------------------------------");
-        System.out.println("| Nuxeo Server Profile: "
-                + (profile == null ? "custom" : profile));
+        System.out.println("| Nuxeo Server Profile: " + (profile == null ? "custom" : profile));
         System.out.println("| Home Directory: " + home);
         System.out.println("| HTTP server at: " + host + ":" + port);
-        System.out.println("| Use cache: " + useCache()
-                + "; Snapshot update policy: " + updatePolicy + "; offline: "
+        System.out.println("| Use cache: " + useCache() + "; Snapshot update policy: " + updatePolicy + "; offline: "
                 + offline);
         System.out.println("+---------------------------------------------------------\n");
 
@@ -180,10 +172,8 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
             } else {
                 app.build(cfg, useCache());
             }
-            System.setProperty("java.naming.factory.initial",
-                    "org.nuxeo.runtime.jtajca.NamingContextFactory");
-            System.setProperty("java.naming.factory.url.pkgs",
-                    "org.nuxeo.runtime.jtajca");
+            System.setProperty("java.naming.factory.initial", "org.nuxeo.runtime.jtajca.NamingContextFactory");
+            System.setProperty("java.naming.factory.url.pkgs", "org.nuxeo.runtime.jtajca");
             app.start();
             return app;
         } catch (Exception e) { // stupid APIs
@@ -202,8 +192,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
             super(home, cl, false);
         }
 
-        public MyNuxeoApp(File home, ClassLoader cl, boolean isIsolated)
-                throws Exception { // stupid API
+        public MyNuxeoApp(File home, ClassLoader cl, boolean isIsolated) throws Exception { // stupid API
             super(home, cl, isIsolated);
         }
 
@@ -236,8 +225,8 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
      * Checks for calls to nuxeo server to redirect them to avoid SOP errors.
      */
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         if (httpRequest.getRequestURI().startsWith(redirect.getRedirectPrefix())) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;

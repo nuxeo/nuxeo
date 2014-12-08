@@ -48,8 +48,7 @@ import org.nuxeo.ecm.webapp.security.PrincipalListManager;
  */
 @Name("emailSenderAction")
 @Scope(STATELESS)
-public class EmailSenderActionsBean extends InputController implements
-        EmailSenderActions {
+public class EmailSenderActionsBean extends InputController implements EmailSenderActions {
 
     private static final Log log = LogFactory.getLog(EmailSenderActionsBean.class);
 
@@ -87,14 +86,12 @@ public class EmailSenderActionsBean extends InputController implements
     public void send() {
         if (mailSubject == null || mailSubject.trim().length() == 0) {
             facesMessages.add(StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.email.subject.empty"));
+                    resourcesAccessor.getMessages().get("label.email.subject.empty"));
             return;
         }
         if (principalListManager.getSelectedUserListEmpty()) {
             facesMessages.add(StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.email.nousers.selected"));
+                    resourcesAccessor.getMessages().get("label.email.nousers.selected"));
         } else {
             NuxeoPrincipal currentUser = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
             // XXX hack, principals have only one model
@@ -115,20 +112,17 @@ public class EmailSenderActionsBean extends InputController implements
             }
             toEmail = listEmails;
             currentDocumentFullUrl = DocumentModelFunctions.documentUrl(navigationContext.getCurrentDocument());
-            log.debug("URL : "
-                    + DocumentModelFunctions.documentUrl(navigationContext.getCurrentDocument()));
+            log.debug("URL : " + DocumentModelFunctions.documentUrl(navigationContext.getCurrentDocument()));
 
             try {
                 log.debug("Subject : " + mailSubject);
                 log.debug("Content : " + mailContent);
                 renderer.render("/mail_template.xhtml");
                 facesMessages.add(StatusMessage.Severity.INFO,
-                        resourcesAccessor.getMessages().get(
-                                "label.email.send.ok"));
+                        resourcesAccessor.getMessages().get("label.email.send.ok"));
             } catch (Exception e) {
                 facesMessages.add(StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "label.email.send.failed"));
+                        resourcesAccessor.getMessages().get("label.email.send.failed"));
                 log.error("Email sending failed:" + e.getMessage());
             }
         }
@@ -154,8 +148,7 @@ public class EmailSenderActionsBean extends InputController implements
         return principalListManager;
     }
 
-    public void setPrincipalListManager(
-            PrincipalListManager principalListManager) {
+    public void setPrincipalListManager(PrincipalListManager principalListManager) {
         this.principalListManager = principalListManager;
     }
 

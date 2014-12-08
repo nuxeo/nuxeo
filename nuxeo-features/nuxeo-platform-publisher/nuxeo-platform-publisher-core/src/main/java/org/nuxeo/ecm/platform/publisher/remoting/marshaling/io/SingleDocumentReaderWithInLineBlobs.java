@@ -36,8 +36,7 @@ public class SingleDocumentReaderWithInLineBlobs extends DocumentModelReader {
 
     private boolean readDone = false;
 
-    public SingleDocumentReaderWithInLineBlobs(CoreSession session,
-            DocumentModel doc) {
+    public SingleDocumentReaderWithInLineBlobs(CoreSession session, DocumentModel doc) {
         super(session);
         this.doc = doc;
     }

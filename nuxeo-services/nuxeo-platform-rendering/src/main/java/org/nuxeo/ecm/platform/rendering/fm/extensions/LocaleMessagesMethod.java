@@ -28,12 +28,10 @@ import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 
 /**
- * Message method that differs from the standard one as its second argument is
- * the locale.
+ * Message method that differs from the standard one as its second argument is the locale.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
- *
  */
 public class LocaleMessagesMethod implements TemplateMethodModelEx {
 
@@ -57,8 +55,7 @@ public class LocaleMessagesMethod implements TemplateMethodModelEx {
     public Object exec(List arguments) throws TemplateModelException {
         int size = arguments.size();
         if (size < 2) {
-            throw new TemplateModelException(
-                    "Invalid number of arguments for messages(key, local [, args ..]) method");
+            throw new TemplateModelException("Invalid number of arguments for messages(key, local [, args ..]) method");
         }
         String key;
         SimpleScalar scalar = (SimpleScalar) arguments.get(0);

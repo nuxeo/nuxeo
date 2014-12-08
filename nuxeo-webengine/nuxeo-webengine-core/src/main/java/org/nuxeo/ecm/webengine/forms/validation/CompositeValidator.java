@@ -18,17 +18,15 @@ package org.nuxeo.ecm.webengine.forms.validation;
 
 import java.util.ArrayList;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CompositeValidator extends ArrayList<FieldValidator> implements FieldValidator {
 
     private static final long serialVersionUID = -1851648770815748104L;
 
     public void validate(String value, Object decoded) throws ValidationException {
-        for (int i=0,len=size(); i<len; i++) {
+        for (int i = 0, len = size(); i < len; i++) {
             get(i).validate(value, decoded);
         }
     }

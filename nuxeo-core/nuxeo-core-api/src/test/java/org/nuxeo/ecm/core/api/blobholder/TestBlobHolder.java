@@ -43,8 +43,7 @@ public class TestBlobHolder extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
-        deployTestContrib("org.nuxeo.ecm.core.api",
-                "OSGI-INF/test-blobholder-contrib.xml");
+        deployTestContrib("org.nuxeo.ecm.core.api", "OSGI-INF/test-blobholder-contrib.xml");
     }
 
     @Test
@@ -64,8 +63,7 @@ public class TestBlobHolder extends NXRuntimeTestCase {
         assertTrue(bh instanceof FacetBlobHolder);
     }
 
-    public static class DocumentTypeBlobHolderFactory implements
-            BlobHolderFactory {
+    public static class DocumentTypeBlobHolderFactory implements BlobHolderFactory {
 
         @Override
         public BlobHolder getBlobHolder(DocumentModel doc) {

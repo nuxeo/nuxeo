@@ -23,36 +23,28 @@ import org.nuxeo.ecm.automation.OutputCollector;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 
 /**
- * A method proxy which accept as input only iterable inputs. At invocation time
- * it iterates over the input elements and invoke the real method using the
- * current input element as the input.
+ * A method proxy which accept as input only iterable inputs. At invocation time it iterates over the input elements and
+ * invoke the real method using the current input element as the input.
  * <p>
- * The result is collected into a {@link OutputCollector} as specified by the
- * {@link OperationMethod} annotation.
+ * The result is collected into a {@link OutputCollector} as specified by the {@link OperationMethod} annotation.
  * <p>
- * This proxy is used (instead of the default {@link InvokableMethod}) when an
- * operation is defining an output collector in the {@link OperationMethod}
- * annotation so that iterable inputs are automatically handled by the chain
- * executor.
+ * This proxy is used (instead of the default {@link InvokableMethod}) when an operation is defining an output collector
+ * in the {@link OperationMethod} annotation so that iterable inputs are automatically handled by the chain executor.
  * <p>
- * This specialized implementation is declaring the same consume type as its
- * non-iterable counterpart. But at runtime it consumes any Iterable of the
- * cosume type.
+ * This specialized implementation is declaring the same consume type as its non-iterable counterpart. But at runtime it
+ * consumes any Iterable of the cosume type.
  * <p>
- * To correctly generate the operation documentation the
- * {@link OperationTypeImpl} is checking if the method is iterable or not
- * through {@link #isIterable()} to declare the correct consume type.
+ * To correctly generate the operation documentation the {@link OperationTypeImpl} is checking if the method is iterable
+ * or not through {@link #isIterable()} to declare the correct consume type.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class InvokableIteratorMethod extends InvokableMethod {
 
     @SuppressWarnings("rawtypes")
     protected Class<? extends OutputCollector> collector;
 
-    public InvokableIteratorMethod(OperationType op, Method method,
-            OperationMethod anno) {
+    public InvokableIteratorMethod(OperationType op, Method method, OperationMethod anno) {
         super(op, method, anno);
         collector = anno.collector();
         if (collector == OutputCollector.class) {
@@ -61,20 +53,18 @@ public class InvokableIteratorMethod extends InvokableMethod {
         // check the collector match the method signature - to early detect invalid
         // operation definitions.
         if (consume == Void.TYPE) {
-            throw new IllegalArgumentException(
-                    "An iterable method must have an argument");
+            throw new IllegalArgumentException("An iterable method must have an argument");
         }
         Type[] ctypes = IterableInputHelper.findCollectorTypes(collector);
-        if (!((Class<?>)ctypes[0]).isAssignableFrom(produce)) {
-            throw new IllegalArgumentException(
-            "The collector used on "+method+" doesn't match the method return type");
+        if (!((Class<?>) ctypes[0]).isAssignableFrom(produce)) {
+            throw new IllegalArgumentException("The collector used on " + method
+                    + " doesn't match the method return type");
         }
         // must modify the produced type to fit the real produced type.
         try {
-            produce = (Class<?>)ctypes[1];
+            produce = (Class<?>) ctypes[1];
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new IllegalStateException("Invalid output collector: "
-                    + collector + ". No getOutput method found.");
+            throw new IllegalStateException("Invalid output collector: " + collector + ". No getOutput method found.");
         }
         // the consumed type is not used in chain compilation so we let it as is
         // for now.
@@ -96,12 +86,10 @@ public class InvokableIteratorMethod extends InvokableMethod {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    protected Object doInvoke(OperationContext ctx, Map<String, Object> args,
-            Object input) throws OperationException,
+    protected Object doInvoke(OperationContext ctx, Map<String, Object> args, Object input) throws OperationException,
             ReflectiveOperationException {
         if (!(input instanceof Iterable)) {
-            throw new IllegalStateException(
-                    "An iterable method was called in a non iterable context");
+            throw new IllegalStateException("An iterable method was called in a non iterable context");
         }
         OutputCollector list = collector.newInstance();
         Iterable<?> iterable = (Iterable<?>) input;

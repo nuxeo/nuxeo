@@ -34,20 +34,12 @@ import org.junit.runners.model.FrameworkMethod;
 import com.google.inject.Inject;
 
 /**
- * Test feature to capture from a log4j appender to check that some log4j calls
- * have been correctly called.</br>
- *
- * On a test class or a test method using this feature, a custom
- * {@link LogCaptureFeature.Filter} class is to be provided with the annotation
- * {@link LogCaptureFeature.FilterWith} to select the log events to
- * capture.</br>
- *
- * A {@link LogCaptureFeature.Result} instance is to be injected with
- * {@link Inject} as an attribute of the test.</br>
- *
- * The method {@link LogCaptureFeature.Result#assertHasEvent()} can then be
- * called from test methods to check that matching log calls (events) have been
- * captured.
+ * Test feature to capture from a log4j appender to check that some log4j calls have been correctly called.</br> On a
+ * test class or a test method using this feature, a custom {@link LogCaptureFeature.Filter} class is to be provided
+ * with the annotation {@link LogCaptureFeature.FilterWith} to select the log events to capture.</br> A
+ * {@link LogCaptureFeature.Result} instance is to be injected with {@link Inject} as an attribute of the test.</br> The
+ * method {@link LogCaptureFeature.Result#assertHasEvent()} can then be called from test methods to check that matching
+ * log calls (events) have been captured.
  *
  * @since 5.7
  */
@@ -95,8 +87,7 @@ public class LogCaptureFeature extends SimpleFeature {
 
     public interface Filter {
         /**
-         * {@link LogCaptureFeature} will capture the event if it does match the
-         * implementation condition.
+         * {@link LogCaptureFeature} will capture the event if it does match the implementation condition.
          */
         boolean accept(LoggingEvent event);
     }
@@ -153,8 +144,7 @@ public class LogCaptureFeature extends SimpleFeature {
     }
 
     @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         FilterWith filterProvider = runner.getConfig(method, FilterWith.class);
         if (filterProvider.value() == null) {
             return;
@@ -164,16 +154,14 @@ public class LogCaptureFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         disable();
     }
 
     /**
      * @since 6.0
      */
-    protected void enable(Class<? extends Filter> filterClass)
-            throws InstantiationException, IllegalAccessException {
+    protected void enable(Class<? extends Filter> filterClass) throws InstantiationException, IllegalAccessException {
         if (logCaptureFilter != null) {
             setupCaptureFiler = logCaptureFilter;
         } else {

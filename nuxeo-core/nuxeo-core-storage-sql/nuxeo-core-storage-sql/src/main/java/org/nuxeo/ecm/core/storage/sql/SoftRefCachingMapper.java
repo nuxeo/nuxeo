@@ -29,8 +29,8 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 
 /**
- * A {@link Mapper} that uses a {@link SoftRefCachingRowMapper} for row-related
- * operation, and delegates to the {@link Mapper} for others.
+ * A {@link Mapper} that uses a {@link SoftRefCachingRowMapper} for row-related operation, and delegates to the
+ * {@link Mapper} for others.
  */
 public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements CachingMapper {
 
@@ -40,11 +40,9 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     public Mapper mapper;
 
     @Override
-    public void initialize(String repositoryName, Model model, Mapper mapper,
-            InvalidationsPropagator cachePropagator,
+    public void initialize(String repositoryName, Model model, Mapper mapper, InvalidationsPropagator cachePropagator,
             Map<String, String> properties) {
-        super.initialize(repositoryName, model, mapper, cachePropagator,
-                properties);
+        super.initialize(repositoryName, model, mapper, cachePropagator, properties);
         this.mapper = mapper;
     }
 
@@ -70,40 +68,35 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public Serializable getRootId(String repositoryId)
-            throws StorageException {
+    public Serializable getRootId(String repositoryId) throws StorageException {
         return mapper.getRootId(repositoryId);
     }
 
     @Override
-    public void setRootId(Serializable repositoryId, Serializable id)
-            throws StorageException {
+    public void setRootId(Serializable repositoryId, Serializable id) throws StorageException {
         mapper.setRootId(repositoryId, id);
     }
 
     @Override
-    public PartialList<Serializable> query(String query, String queryType,
-            QueryFilter queryFilter, boolean countTotal)
+    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
         return mapper.query(query, queryType, queryFilter, countTotal);
     }
 
     @Override
-    public PartialList<Serializable> query(String query, String queryType,
-            QueryFilter queryFilter, long countUpTo)
+    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
             throws StorageException {
         return mapper.query(query, queryType, queryFilter, countUpTo);
     }
 
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, Object... params) throws StorageException {
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params)
+            throws StorageException {
         return mapper.queryAndFetch(query, queryType, queryFilter, params);
     }
 
     @Override
-    public Set<Serializable> getAncestorsIds(Collection<Serializable> ids)
-            throws StorageException {
+    public Set<Serializable> getAncestorsIds(Collection<Serializable> ids) throws StorageException {
         return mapper.getAncestorsIds(ids);
     }
 
@@ -128,14 +121,12 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public void insertClusterInvalidations(Invalidations invalidations,
-            String nodeId) throws StorageException {
+    public void insertClusterInvalidations(Invalidations invalidations, String nodeId) throws StorageException {
         mapper.insertClusterInvalidations(invalidations, nodeId);
     }
 
     @Override
-    public Invalidations getClusterInvalidations(String nodeId)
-            throws StorageException {
+    public Invalidations getClusterInvalidations(String nodeId) throws StorageException {
         return mapper.getClusterInvalidations(nodeId);
     }
 
@@ -150,8 +141,7 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public Lock removeLock(Serializable id, String owner, boolean force)
-            throws StorageException {
+    public Lock removeLock(Serializable id, String owner, boolean force) throws StorageException {
         return mapper.removeLock(id, owner, force);
     }
 
@@ -161,8 +151,7 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public int cleanupDeletedRows(int max, Calendar beforeTime)
-            throws StorageException {
+    public int cleanupDeletedRows(int max, Calendar beforeTime) throws StorageException {
         return mapper.cleanupDeletedRows(max, beforeTime);
     }
 

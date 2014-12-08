@@ -25,7 +25,6 @@ import org.nuxeo.runtime.model.Extension;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ManagedComponent extends DefaultComponent {
 
@@ -51,16 +50,14 @@ public class ManagedComponent extends DefaultComponent {
         }
         for (Object contrib : contribs) {
             if (contrib instanceof Contribution) {
-                Contribution c = (Contribution)contrib;
+                Contribution c = (Contribution) contrib;
                 c.setExtension(extension);
                 ContributionManager mgr = contributionManagers.get(c.getExtensionPoint());
                 if (mgr != null) {
                     mgr.registerContribution(c);
                 } else {
-                    log.warn("Unable to register contribution: "
-                            + c.getContributionId() + " for extension point "
-                            + c.getExtensionPoint()
-                            + ". No manager registered.");
+                    log.warn("Unable to register contribution: " + c.getContributionId() + " for extension point "
+                            + c.getExtensionPoint() + ". No manager registered.");
                 }
             } else {
                 registerContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
@@ -76,16 +73,14 @@ public class ManagedComponent extends DefaultComponent {
         }
         for (Object contrib : contribs) {
             if (contrib instanceof Contribution) {
-                Contribution c = (Contribution)contrib;
+                Contribution c = (Contribution) contrib;
                 c.setExtension(extension);
                 ContributionManager mgr = contributionManagers.get(c.getExtensionPoint());
                 if (mgr != null) {
                     mgr.unregisterContribution(c);
                 } else {
-                    log.warn("Unable to unregister contribution: "
-                            + c.getContributionId() + " for extension point "
-                            + c.getExtensionPoint()
-                            + ". No manager registered.");
+                    log.warn("Unable to unregister contribution: " + c.getContributionId() + " for extension point "
+                            + c.getExtensionPoint() + ". No manager registered.");
                 }
             } else {
                 unregisterContribution(contrib, extension.getExtensionPoint(), extension.getComponent());

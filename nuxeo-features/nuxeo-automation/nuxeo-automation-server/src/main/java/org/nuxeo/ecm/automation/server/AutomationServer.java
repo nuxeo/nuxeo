@@ -18,8 +18,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
- * A registry of REST bindings. Provides methods for checking if a given
- * operation is allowed to be invoked in a REST call.
+ * A registry of REST bindings. Provides methods for checking if a given operation is allowed to be invoked in a REST
+ * call.
  * <p>
  * The binding registry is synchronized.
  *
@@ -68,16 +68,14 @@ public interface AutomationServer {
 
     /**
      * Returns all the registered writers
-     * @return
      *
+     * @return
      * @since 5.8
      */
     List<Class<? extends MessageBodyWriter<?>>> getWriters();
 
     /**
-     *
      * @return all the registered readers
-     *
      * @since 5.8
      */
     List<Class<? extends MessageBodyReader<?>>> getReaders();

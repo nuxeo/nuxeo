@@ -23,14 +23,15 @@ import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Range {
 
     double min() default Double.MIN_VALUE;
+
     double max() default Double.MAX_VALUE;
+
     boolean negate() default false;
 
 }

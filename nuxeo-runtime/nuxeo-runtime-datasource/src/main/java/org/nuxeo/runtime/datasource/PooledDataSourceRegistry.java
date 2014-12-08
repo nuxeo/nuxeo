@@ -48,10 +48,9 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
         return type.cast(pools.get(name));
     }
 
-    public DataSource getOrCreatePool(Object obj, Name objectName,
-            Context nameCtx, Hashtable<?, ?> env) {
-        final Reference ref = (Reference)obj;
-        String dsName = (String)ref.get("name").getContent();
+    public DataSource getOrCreatePool(Object obj, Name objectName, Context nameCtx, Hashtable<?, ?> env) {
+        final Reference ref = (Reference) obj;
+        String dsName = (String) ref.get("name").getContent();
         DataSource ds = pools.get(dsName);
         if (ds != null) {
             return ds;
@@ -59,8 +58,7 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
         return createPool(dsName, ref, objectName, nameCtx, env);
     }
 
-    protected DataSource createPool(String dsName, Reference ref, Name objectName,
-            Context nameCtx, Hashtable<?, ?> env) {
+    protected DataSource createPool(String dsName, Reference ref, Name objectName, Context nameCtx, Hashtable<?, ?> env) {
         PooledDataSource ds;
         try {
             readLock().lock();
@@ -68,8 +66,7 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
             if (ds != null) {
                 return ds;
             }
-            ds = (PooledDataSource) poolFactory.getObjectInstance(ref, objectName,
-                   nameCtx, env);
+            ds = (PooledDataSource) poolFactory.getObjectInstance(ref, objectName, nameCtx, env);
             pools.put(dsName, ds);
         } finally {
             readLock().unlock();
@@ -88,4 +85,4 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
         pools.put(name, pool);
     }
 
- }
+}

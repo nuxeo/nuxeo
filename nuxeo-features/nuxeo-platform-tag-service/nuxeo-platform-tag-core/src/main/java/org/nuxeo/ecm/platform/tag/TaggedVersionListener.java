@@ -39,9 +39,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Listener that copy tags applied on the live document to a version or proxy of
- * this document or replace the existing tags on a live document by the ones on
- * the version being restored.
+ * Listener that copy tags applied on the live document to a version or proxy of this document or replace the existing
+ * tags on a live document by the ones on the version being restored.
  *
  * @since 5.7.3
  */

@@ -43,7 +43,6 @@ import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("script")
 public class ScriptGuard implements Guard {
@@ -52,12 +51,15 @@ public class ScriptGuard implements Guard {
 
     @XContent
     protected String script;
+
     @XNode("@type")
     protected String type;
+
     @XNode("@src")
     protected String src;
 
     protected ScriptEngine engine;
+
     protected CompiledScript comp;
 
     protected ScriptGuard() {
@@ -112,8 +114,7 @@ public class ScriptGuard implements Guard {
 
     private CompiledScript compile(String type, String content) throws ScriptException {
         if (engine == null) {
-            engine = Framework.getLocalService(WebEngine.class)
-                    .getScripting().getEngineManager().getEngineByName(type);
+            engine = Framework.getLocalService(WebEngine.class).getScripting().getEngineManager().getEngineByName(type);
         }
         if (engine != null) {
             if (engine instanceof Compilable) {
@@ -122,8 +123,7 @@ public class ScriptGuard implements Guard {
                 return null; // script is not compilable
             }
         } else {
-            throw new ScriptException(
-                    "No suitable script engine found for the file " + type);
+            throw new ScriptException("No suitable script engine found for the file " + type);
         }
     }
 

@@ -46,8 +46,7 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
 
     protected final StatsTask hostTask;
 
-    public StatsTaskRunner(String repositoryName, boolean includeBlob,
-            DocumentRef rootref, StatsTask hostTask) {
+    public StatsTaskRunner(String repositoryName, boolean includeBlob, DocumentRef rootref, StatsTask hostTask) {
         super(repositoryName);
         this.includeBlob = includeBlob;
         this.rootref = rootref;
@@ -75,8 +74,7 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
         }
     }
 
-    private void fetchInfoFromDoc(CoreSession session, DocumentModel doc)
-            throws ClientException {
+    private void fetchInfoFromDoc(CoreSession session, DocumentModel doc) throws ClientException {
 
         if (includeBlob) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
@@ -85,9 +83,8 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
                     List<Blob> blobs = bh.getBlobs();
                     if (blobs != null) {
                         for (Blob blob : blobs) {
-                            if (blob!=null) {
-                                hostTask.getInfo().addBlob(blob.getLength(),
-                                    doc.getPath());
+                            if (blob != null) {
+                                hostTask.getInfo().addBlob(blob.getLength(), doc.getPath());
                             }
                         }
                     }
