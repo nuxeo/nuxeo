@@ -57,8 +57,8 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * The BLOBs are cached locally on first access for efficiency.
  * <p>
- * Because the BLOB length can be accessed independently of the binary stream,
- * it is also cached in a simple text file if accessed before the stream.
+ * Because the BLOB length can be accessed independently of the binary stream, it is also cached in a simple text file
+ * if accessed before the stream.
  */
 public class JCloudsBinaryManager extends CachingBinaryManager {
 
@@ -89,20 +89,17 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
     protected BlobMap storeMap;
 
     @Override
-    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
-            throws IOException {
+    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
         super.initialize(binaryManagerDescriptor);
 
         // Get settings from the configuration
         storeProvider = Framework.getProperty(BLOBSTORE_PROVIDER_KEY);
         if (isBlank(storeProvider)) {
-            throw new RuntimeException("Missing conf: "
-                    + BLOBSTORE_PROVIDER_KEY);
+            throw new RuntimeException("Missing conf: " + BLOBSTORE_PROVIDER_KEY);
         }
         storeName = Framework.getProperty(BLOBSTORE_MAP_NAME_KEY);
         if (isBlank(storeName)) {
-            throw new RuntimeException("Missing conf: "
-                    + BLOBSTORE_MAP_NAME_KEY);
+            throw new RuntimeException("Missing conf: " + BLOBSTORE_MAP_NAME_KEY);
         }
 
         String storeLocation = Framework.getProperty(BLOBSTORE_LOCATION_KEY);
@@ -112,8 +109,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
 
         String storeIdentity = Framework.getProperty(BLOBSTORE_IDENTITY_KEY);
         if (isBlank(storeIdentity)) {
-            throw new RuntimeException("Missing conf: "
-                    + BLOBSTORE_IDENTITY_KEY);
+            throw new RuntimeException("Missing conf: " + BLOBSTORE_IDENTITY_KEY);
         }
 
         String storeSecret = Framework.getProperty(BLOBSTORE_SECRET_KEY);
@@ -144,14 +140,13 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             Authenticator.setDefault(new Authenticator() {
                 @Override
                 public PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(proxyLogin,
-                            proxyPassword.toCharArray());
+                    return new PasswordAuthentication(proxyLogin, proxyPassword.toCharArray());
                 }
             });
         }
 
-        BlobStoreContext context = ContextBuilder.newBuilder(storeProvider).credentials(
-                storeIdentity, storeSecret).buildView(BlobStoreContext.class);
+        BlobStoreContext context = ContextBuilder.newBuilder(storeProvider).credentials(storeIdentity, storeSecret).buildView(
+                BlobStoreContext.class);
 
         // Try to create container if it doesn't exist
         BlobStore store = context.getBlobStore();
@@ -159,8 +154,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         if (storeLocation == null) {
             created = store.createContainerInLocation(null, storeName);
         } else {
-            Location location = new LocationBuilder().scope(
-                    LocationScope.REGION).id(storeLocation).description(
+            Location location = new LocationBuilder().scope(LocationScope.REGION).id(storeLocation).description(
                     storeLocation).build();
             created = store.createContainerInLocation(location, storeName);
         }
@@ -199,8 +193,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             }
             if (currentObject == null) {
                 // no data, store the blob
-                Blob remoteBlob = storeMap.blobBuilder().name(digest).payload(
-                        file).calculateMD5().build();
+                Blob remoteBlob = storeMap.blobBuilder().name(digest).payload(file).calculateMD5().build();
                 try {
                     storeMap.put(digest, remoteBlob);
                 } catch (Exception e) {
@@ -215,8 +208,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
                         // Remote blob can't be validated - remove it
                         storeMap.remove(digest);
                     } catch (Exception e2) {
-                        log.error("Possible data corruption : binary "
-                                + digest
+                        log.error("Possible data corruption : binary " + digest
                                 + " validation failed but it could not be removed.");
                     }
                     throw new IOException("Unable to validate stored binary", e);
@@ -228,8 +220,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
                         try {
                             storeMap.remove(digest);
                         } catch (Exception e2) {
-                            log.error("Possible data corruption : binary "
-                                    + digest
+                            log.error("Possible data corruption : binary " + digest
                                     + " validation failed but it could not be removed.");
                         }
                     }
@@ -244,8 +235,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             try {
                 remoteBlob = storeMap.get(digest);
             } catch (Exception e) {
-                log.error("Could not cache binary from remote storage: "
-                        + digest, e);
+                log.error("Could not cache binary from remote storage: " + digest, e);
                 return false;
             }
             if (remoteBlob == null) {
@@ -258,8 +248,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
                     localStream = new FileOutputStream(tmp);
                     IOUtils.copy(remoteStream, localStream);
                 } catch (IOException e) {
-                    log.error("Unable to cache binary from remote storage: "
-                            + digest, e);
+                    log.error("Unable to cache binary from remote storage: " + digest, e);
                     return false;
                 } finally {
                     IOUtils.closeQuietly(remoteStream);
@@ -288,12 +277,9 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
     }
 
     /**
-     * Garbage collector for the blobstore binaries that stores the marked (in
-     * use)
-     * binaries in memory.
+     * Garbage collector for the blobstore binaries that stores the marked (in use) binaries in memory.
      */
-    public static class JCloudsBinaryGarbageCollector implements
-            BinaryGarbageCollector {
+    public static class JCloudsBinaryGarbageCollector implements BinaryGarbageCollector {
 
         protected final JCloudsBinaryManager binaryManager;
 
@@ -309,8 +295,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
 
         @Override
         public String getId() {
-            return "jclouds/" + binaryManager.storeProvider + ":"
-                    + binaryManager.storeName;
+            return "jclouds/" + binaryManager.storeProvider + ":" + binaryManager.storeName;
         }
 
         @Override
