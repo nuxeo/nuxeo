@@ -30,8 +30,7 @@ public class JSFErrorFunctions {
     }
 
     public static String triggerUncheckedError() {
-        throw new NullPointerException(
-                "JSF function triggering an unchecked error");
+        throw new NullPointerException("JSF function triggering an unchecked error");
     }
 
 }

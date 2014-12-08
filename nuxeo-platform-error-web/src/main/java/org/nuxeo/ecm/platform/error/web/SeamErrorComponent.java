@@ -93,8 +93,7 @@ public class SeamErrorComponent implements Serializable {
         } catch (ClientException e) {
             log.error("********** Unexpected exception while testing error handling ***********");
         }
-        throw new NullPointerException(
-                "Unchecked exception after document creation");
+        throw new NullPointerException("Unchecked exception after document creation");
     }
 
     public String getCheckedError() throws ClientException {
@@ -116,15 +115,12 @@ public class SeamErrorComponent implements Serializable {
 
     @Factory(value = "uncheckedErrorFactoryEvent", scope = EVENT)
     public String getUncheckedErrorFactoryEvent() {
-        throw new NullPointerException(
-                "Unchecked error on factory, scope event");
+        throw new NullPointerException("Unchecked error on factory, scope event");
     }
 
     @Factory(value = "securityErrorFactoryEvent", scope = EVENT)
-    public String getSecurityErrorFactoryEvent()
-            throws DocumentSecurityException {
-        throw new DocumentSecurityException(
-                "Security error on factory, scope event");
+    public String getSecurityErrorFactoryEvent() throws DocumentSecurityException {
+        throw new DocumentSecurityException("Security error on factory, scope event");
     }
 
     public String performCheckedError() throws ClientException {
@@ -142,10 +138,8 @@ public class SeamErrorComponent implements Serializable {
     /**
      * @since 5.8
      */
-    public String performRecoverableClientException()
-            throws RecoverableClientException {
-        throw new RecoverableClientException(
-                "Application validation failed, rollingback",
+    public String performRecoverableClientException() throws RecoverableClientException {
+        throw new RecoverableClientException("Application validation failed, rollingback",
                 "Application validation failed, rollingback", null);
     }
 
@@ -178,8 +172,7 @@ public class SeamErrorComponent implements Serializable {
 
     protected DocumentModel createDummyUser() throws ClientException {
         DirectoryService directories = Framework.getLocalService(DirectoryService.class);
-        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory(
-                "userDirectory").getSession();
+        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory("userDirectory").getSession();
         try {
             Map<String, Object> user = new HashMap<String, Object>();
             user.put("username", "dummy");
@@ -194,8 +187,7 @@ public class SeamErrorComponent implements Serializable {
 
     protected void clearDummyUser() throws DirectoryException {
         DirectoryService directories = Framework.getLocalService(DirectoryService.class);
-        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory(
-                "userDirectory").getSession();
+        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory("userDirectory").getSession();
         try {
             userDir.deleteEntry("dummy");
         } catch (Exception e) {
@@ -211,8 +203,7 @@ public class SeamErrorComponent implements Serializable {
     @Factory(scope = ScopeType.EVENT)
     public boolean isDummyUserExists() throws DirectoryException {
         DirectoryService directories = Framework.getLocalService(DirectoryService.class);
-        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory(
-                "userDirectory").getSession();
+        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory("userDirectory").getSession();
         try {
             DocumentModel user = userDir.getEntry("dummy");
             return user != null;
@@ -255,8 +246,7 @@ public class SeamErrorComponent implements Serializable {
     }
 
     protected DocumentModel createDummyDoc() throws ClientException {
-        DocumentModel doc = documentManager.createDocumentModel("/", "dummy",
-                "Document");
+        DocumentModel doc = documentManager.createDocumentModel("/", "dummy", "Document");
         doc = documentManager.createDocument(doc);
         documentManager.save();
         return doc;

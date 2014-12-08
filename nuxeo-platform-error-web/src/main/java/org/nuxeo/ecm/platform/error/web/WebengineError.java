@@ -77,8 +77,7 @@ public class WebengineError extends ModuleRoot {
         pw.println("</body>");
         pw.println("</html>");
         pw.close();
-        return Response.status(500).entity(
-                sw.toString()).build();
+        return Response.status(500).entity(sw.toString()).build();
     }
 
 }
