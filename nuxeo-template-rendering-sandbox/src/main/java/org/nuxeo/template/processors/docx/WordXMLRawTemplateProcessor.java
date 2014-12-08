@@ -46,24 +46,19 @@ import org.nuxeo.template.processors.AbstractTemplateProcessor;
 import org.nuxeo.template.processors.BidirectionalTemplateProcessor;
 
 /**
- * WordXML implementation of the {@link BidirectionalTemplateProcessor}. Uses
- * Raw XML parsing : legacy code for now.
+ * WordXML implementation of the {@link BidirectionalTemplateProcessor}. Uses Raw XML parsing : legacy code for now.
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
-public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
-        implements BidirectionalTemplateProcessor {
+public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor implements BidirectionalTemplateProcessor {
 
-    public static SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat(
-            "yyyy-MM-dd'T'hh:mm:ss'Z'");
+    public static SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
 
     public static final String TEMPLATE_TYPE = "wordXMLTemplate";
 
     @Override
     @SuppressWarnings("rawtypes")
-    public Blob renderTemplate(TemplateBasedDocument templateDocument,
-            String templateName) throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateDocument, String templateName) throws Exception {
 
         File workingDir = getWorkingDir();
 
@@ -75,8 +70,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
 
         ZipUtils.unzip(sourceZipFile, workingDir);
 
-        File xmlCustomFile = new File(workingDir.getAbsolutePath()
-                + "/docProps/custom.xml");
+        File xmlCustomFile = new File(workingDir.getAbsolutePath() + "/docProps/custom.xml");
 
         String xmlContent = FileUtils.readFile(xmlCustomFile);
 
@@ -89,15 +83,12 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
             if ("property".equals(elem.getName())) {
                 String name = elem.attributeValue("name");
                 TemplateInput param = getParamByName(name, params);
-                DefaultElement valueElem = (DefaultElement) elem.elements().get(
-                        0);
+                DefaultElement valueElem = (DefaultElement) elem.elements().get(0);
                 String strValue = "";
                 if (param.isSourceValue()) {
-                    Property property = templateDocument.getAdaptedDoc().getProperty(
-                            param.getSource());
+                    Property property = templateDocument.getAdaptedDoc().getProperty(param.getSource());
                     if (property != null) {
-                        Serializable value = templateDocument.getAdaptedDoc().getPropertyValue(
-                                param.getSource());
+                        Serializable value = templateDocument.getAdaptedDoc().getPropertyValue(param.getSource());
                         if (value != null) {
                             if (value instanceof Date) {
                                 strValue = wordXMLDateFormat.format((Date) value);
@@ -142,8 +133,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
 
     @Override
     @SuppressWarnings("rawtypes")
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob)
-            throws Exception {
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
         List<TemplateInput> params = new ArrayList<>();
 
         String xmlContent = readPropertyFile(blob.getStream());
@@ -156,8 +146,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
             DefaultElement elem = (DefaultElement) node;
             if ("property".equals(elem.getName())) {
                 String name = elem.attributeValue("name");
-                DefaultElement valueElem = (DefaultElement) elem.elements().get(
-                        0);
+                DefaultElement valueElem = (DefaultElement) elem.elements().get(0);
                 String wordType = valueElem.getName();
                 InputType nxType = InputType.StringValue;
                 if (wordType.contains("lpwstr")) {
@@ -176,8 +165,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
         return params;
     }
 
-    protected TemplateInput getParamByName(String name,
-            List<TemplateInput> params) {
+    protected TemplateInput getParamByName(String name, List<TemplateInput> params) {
         for (TemplateInput param : params) {
             if (param.getName().equals(name)) {
                 return param;
@@ -209,8 +197,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
 
     @Override
     @SuppressWarnings("rawtypes")
-    public DocumentModel updateDocumentFromBlob(
-            TemplateBasedDocument templateDocument, String templateName)
+    public DocumentModel updateDocumentFromBlob(TemplateBasedDocument templateDocument, String templateName)
             throws Exception {
 
         Blob blob = templateDocument.getTemplateBlob(templateName);
@@ -233,8 +220,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
             if ("property".equals(elem.getName())) {
                 String name = elem.attributeValue("name");
                 TemplateInput param = getParamByName(name, params);
-                DefaultElement valueElem = (DefaultElement) elem.elements().get(
-                        0);
+                DefaultElement valueElem = (DefaultElement) elem.elements().get(0);
                 String xmlValue = valueElem.getTextTrim();
                 if (param.isSourceValue()) {
                     // XXX this needs to be rewritten
@@ -242,12 +228,9 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
                     if (String.class.getSimpleName().equals(param.getType())) {
                         adaptedDoc.setPropertyValue(param.getSource(), xmlValue);
                     } else if (InputType.BooleanValue.equals(param.getType())) {
-                        adaptedDoc.setPropertyValue(param.getSource(),
-                                new Boolean(xmlValue));
-                    } else if (Date.class.getSimpleName().equals(
-                            param.getType())) {
-                        adaptedDoc.setPropertyValue(param.getSource(),
-                                wordXMLDateFormat.parse(xmlValue));
+                        adaptedDoc.setPropertyValue(param.getSource(), new Boolean(xmlValue));
+                    } else if (Date.class.getSimpleName().equals(param.getType())) {
+                        adaptedDoc.setPropertyValue(param.getSource(), wordXMLDateFormat.parse(xmlValue));
                     }
                 } else {
                     if (InputType.StringValue.equals(param.getType())) {

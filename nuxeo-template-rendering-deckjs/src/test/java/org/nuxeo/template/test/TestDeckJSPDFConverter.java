@@ -42,12 +42,9 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.content.template",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.event",
-        "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.core.convert.plugins",
-        "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.template.manager.api", "org.nuxeo.template.manager",
+@Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.event",
+        "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
+        "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.template.manager.api", "org.nuxeo.template.manager",
         "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.deckjs" })
 public class TestDeckJSPDFConverter {
 

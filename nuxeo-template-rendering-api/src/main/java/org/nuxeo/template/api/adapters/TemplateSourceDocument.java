@@ -28,12 +28,9 @@ import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
 
 /**
- * 
- * It is mainly the source used by {@link TemplateBasedDocument} to handle the
- * rendering.
+ * It is mainly the source used by {@link TemplateBasedDocument} to handle the rendering.
  * 
  * @author Tiry (tdelprat@nuxeo.com)
- * 
  */
 public interface TemplateSourceDocument {
 
@@ -58,8 +55,7 @@ public interface TemplateSourceDocument {
     public List<TemplateInput> addInput(TemplateInput input) throws Exception;
 
     /**
-     * Return the template Type (i.e. the associated {@link TemplateProcessor}
-     * name.
+     * Return the template Type (i.e. the associated {@link TemplateProcessor} name.
      * 
      * @return {@link TemplateProcessor} name if any, null otherwise
      */
@@ -100,8 +96,7 @@ public interface TemplateSourceDocument {
      * @throws PropertyException
      * @throws ClientException
      */
-    public List<TemplateInput> getParams() throws PropertyException,
-            ClientException;
+    public List<TemplateInput> getParams() throws PropertyException, ClientException;
 
     /**
      * Save parameters changes
@@ -111,8 +106,7 @@ public interface TemplateSourceDocument {
      * @return the updated DocumentModel
      * @throws Exception
      */
-    public DocumentModel saveParams(List<TemplateInput> params, boolean save)
-            throws Exception;
+    public DocumentModel saveParams(List<TemplateInput> params, boolean save) throws Exception;
 
     /**
      * Return the underlying adapted {@link DocumentModel}s
@@ -130,8 +124,7 @@ public interface TemplateSourceDocument {
     public DocumentModel save() throws ClientException;
 
     /**
-     * Return flag to indicate if Documents associated to this template can
-     * override parametes value
+     * Return flag to indicate if Documents associated to this template can override parametes value
      * 
      * @return
      */
@@ -152,22 +145,19 @@ public interface TemplateSourceDocument {
     public List<String> getApplicableTypes();
 
     /**
-     * Get List of Document Types that must be automatically bound to this
-     * template at creation time
+     * Get List of Document Types that must be automatically bound to this template at creation time
      * 
      * @return List of Document Types or an empty List
      */
     public List<String> getForcedTypes();
 
     /**
-     * Get the list of {@link TemplateBasedDocument}s associated to this
-     * template
+     * Get the list of {@link TemplateBasedDocument}s associated to this template
      * 
      * @return
      * @throws ClientException
      */
-    public List<TemplateBasedDocument> getTemplateBasedDocuments()
-            throws ClientException;
+    public List<TemplateBasedDocument> getTemplateBasedDocuments() throws ClientException;
 
     /**
      * Remove Type mapping for this template
@@ -176,8 +166,7 @@ public interface TemplateSourceDocument {
      * @param save
      * @throws ClientException
      */
-    public void removeForcedType(String type, boolean save)
-            throws ClientException;
+    public void removeForcedType(String type, boolean save) throws ClientException;
 
     /**
      * Update the Type mapping for this template
@@ -186,12 +175,11 @@ public interface TemplateSourceDocument {
      * @param save
      * @throws ClientException
      */
-    public void setForcedTypes(String[] forcedTypes, boolean save)
-            throws ClientException;
+    public void setForcedTypes(String[] forcedTypes, boolean save) throws ClientException;
 
     /**
-     * Sets the expected output mime-type. If the expected mime-type is
-     * different from the output of the rendering, converters will be applied.
+     * Sets the expected output mime-type. If the expected mime-type is different from the output of the rendering,
+     * converters will be applied.
      * 
      * @param mimetype
      * @param save
@@ -206,9 +194,8 @@ public interface TemplateSourceDocument {
     public String getOutputFormat();
 
     /**
-     * Indicate if the template can be used as main blob in the
-     * {@link TemplateBasedDocument} (i.e. if the template is editable by the
-     * end user)
+     * Indicate if the template can be used as main blob in the {@link TemplateBasedDocument} (i.e. if the template is
+     * editable by the end user)
      * 
      * @return
      */
@@ -266,8 +253,7 @@ public interface TemplateSourceDocument {
      * @param save
      * @throws ClientException
      */
-    public void setTargetRenditioName(String renditionName, boolean save)
-            throws ClientException;
+    public void setTargetRenditioName(String renditionName, boolean save) throws ClientException;
 
     /**
      * Get the associated Rendition if any

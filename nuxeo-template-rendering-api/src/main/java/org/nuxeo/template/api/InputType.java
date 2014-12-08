@@ -28,12 +28,8 @@ import java.util.Date;
  */
 public enum InputType {
 
-    StringValue (String.class.getSimpleName()),
-    BooleanValue (Boolean.class.getSimpleName()),
-    DateValue (Date.class.getSimpleName()),
-    DocumentProperty("source"),
-    PictureProperty("picture"),
-    Content("content");
+    StringValue(String.class.getSimpleName()), BooleanValue(Boolean.class.getSimpleName()), DateValue(
+            Date.class.getSimpleName()), DocumentProperty("source"), PictureProperty("picture"), Content("content");
 
     private final String value;
 
@@ -50,7 +46,7 @@ public enum InputType {
         return value;
     }
 
-    public static InputType getByValue(String value){
+    public static InputType getByValue(String value) {
         InputType returnValue = null;
         for (final InputType element : EnumSet.allOf(InputType.class)) {
             if (element.toString().equals(value)) {

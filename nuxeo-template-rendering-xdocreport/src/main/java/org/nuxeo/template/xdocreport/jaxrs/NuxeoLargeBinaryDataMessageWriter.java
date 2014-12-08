@@ -16,18 +16,14 @@ import fr.opensagres.xdocreport.remoting.resources.domain.LargeBinaryData;
 import fr.opensagres.xdocreport.remoting.resources.services.jaxrs.LargeBinaryDataMessageBodyWriter;
 
 @Provider
-public class NuxeoLargeBinaryDataMessageWriter extends
-        LargeBinaryDataMessageBodyWriter {
+public class NuxeoLargeBinaryDataMessageWriter extends LargeBinaryDataMessageBodyWriter {
 
     @Override
-    public void writeTo(LargeBinaryData t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
-            WebApplicationException {
+    public void writeTo(LargeBinaryData t, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException {
         BufferingServletOutputStream.stopBufferingThread();
         httpHeaders.add("X-Nuxeo", "WebEngine-JAXRS");
-        super.writeTo(t, type, genericType, annotations, mediaType,
-                httpHeaders, entityStream);
+        super.writeTo(t, type, genericType, annotations, mediaType, httpHeaders, entityStream);
     }
 }

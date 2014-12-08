@@ -90,8 +90,8 @@ public class TemplatesActionBean extends BaseTemplateAction {
         return documentActions.saveDocument(changeableDocument);
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.NEW_DOCUMENT_CREATED, EventNames.DOCUMENT_CHANGED }, create = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.NEW_DOCUMENT_CREATED,
+            EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void reset() {
         templateInputs = null;
@@ -111,8 +111,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
         return templateEditableInputs;
     }
 
-    public void setTemplateEditableInputs(
-            List<TemplateInput> templateEditableInputs) {
+    public void setTemplateEditableInputs(List<TemplateInput> templateEditableInputs) {
         this.templateEditableInputs = templateEditableInputs;
     }
 

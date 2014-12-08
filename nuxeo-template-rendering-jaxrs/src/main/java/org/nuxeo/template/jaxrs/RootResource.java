@@ -10,9 +10,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 @WebObject(type = "templateRoot")
 @Path("/templates")
@@ -47,14 +45,12 @@ public class RootResource extends ModuleRoot {
     }
 
     @Path("template/{id}")
-    public Object getTemplates(@PathParam(value = "id")
-    String id) {
+    public Object getTemplates(@PathParam(value = "id") String id) {
         return getContext().newObject("templateResource", id);
     }
 
     @Path("doc/{id}")
-    public Object getDocs(@PathParam(value = "id")
-    String id) {
+    public Object getDocs(@PathParam(value = "id") String id) {
         return getContext().newObject("templateBasedResource", id);
     }
 

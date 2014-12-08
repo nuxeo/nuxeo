@@ -7,9 +7,7 @@ import org.nuxeo.ecm.webengine.app.WebEngineModule;
 import org.nuxeo.ecm.webengine.model.io.BlobWriter;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class JAXRSTemplatesApplication extends WebEngineModule {
 

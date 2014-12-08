@@ -24,12 +24,10 @@ import java.util.Date;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Represents input parameters of a Template. Inputs parameters have an
- * {@link InputType}, a name an a value. Value can be a xpath pointing to a
- * {@link DocumentModel} property.
+ * Represents input parameters of a Template. Inputs parameters have an {@link InputType}, a name an a value. Value can
+ * be a xpath pointing to a {@link DocumentModel} property.
  * 
  * @author Tiry (tdelprat@nuxeo.com)
- * 
  */
 public class TemplateInput implements Serializable {
 
@@ -190,8 +188,7 @@ public class TemplateInput implements Serializable {
     }
 
     public boolean isSourceValue() {
-        return (InputType.PictureProperty == type
-                || InputType.DocumentProperty == type || InputType.Content == type);
+        return (InputType.PictureProperty == type || InputType.DocumentProperty == type || InputType.Content == type);
     }
 
     public boolean isReadOnly() {

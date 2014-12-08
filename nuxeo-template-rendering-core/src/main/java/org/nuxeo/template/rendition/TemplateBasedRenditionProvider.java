@@ -33,8 +33,7 @@ public class TemplateBasedRenditionProvider implements RenditionProvider {
     }
 
     @Override
-    public List<Blob> render(DocumentModel doc, RenditionDefinition definition)
-            throws RenditionException {
+    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) throws RenditionException {
 
         TemplateBasedDocument tbd = doc.getAdapter(TemplateBasedDocument.class);
         try {
@@ -44,8 +43,7 @@ public class TemplateBasedRenditionProvider implements RenditionProvider {
             blobs.add(rendered);
             return blobs;
         } catch (Exception e) {
-            throw new RenditionException(
-                    "Unable to render template based Document", e);
+            throw new RenditionException("Unable to render template based Document", e);
         }
     }
 

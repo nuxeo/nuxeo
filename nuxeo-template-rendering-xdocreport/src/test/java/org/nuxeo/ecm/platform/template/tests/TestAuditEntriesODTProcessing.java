@@ -52,8 +52,7 @@ public class TestAuditEntriesODTProcessing extends SimpleTemplateDocTestCase {
         Blob rendered = adapter.renderWithTemplate(TEMPLATE_NAME);
         assertNotNull(rendered);
 
-        String xmlContent = ZipXmlHelper.readXMLContent(rendered,
-                ZipXmlHelper.OOO_MAIN_FILE);
+        String xmlContent = ZipXmlHelper.readXMLContent(rendered, ZipXmlHelper.OOO_MAIN_FILE);
 
         assertTrue(xmlContent.contains("TestEvent0"));
         assertTrue(xmlContent.contains("TestEvent1"));

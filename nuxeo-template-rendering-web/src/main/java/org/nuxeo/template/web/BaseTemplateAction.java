@@ -34,19 +34,16 @@ public class BaseTemplateAction implements Serializable {
 
     public boolean canAddTemplateInputs() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (!documentManager.hasPermission(currentDocument.getRef(),
-                SecurityConstants.WRITE)) {
+        if (!documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
         }
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
         return template != null ? true : false;
     }
 
-    public boolean canUpdateTemplateInputs(String templateName)
-            throws ClientException {
+    public boolean canUpdateTemplateInputs(String templateName) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (!documentManager.hasPermission(currentDocument.getRef(),
-                SecurityConstants.WRITE)) {
+        if (!documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
         }
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
@@ -62,8 +59,7 @@ public class BaseTemplateAction implements Serializable {
 
     public boolean canResetParameters() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (!documentManager.hasPermission(currentDocument.getRef(),
-                SecurityConstants.WRITE)) {
+        if (!documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
         }
         TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
@@ -74,8 +70,7 @@ public class BaseTemplateAction implements Serializable {
     }
 
     public TemplateSourceDocument getCurrentDocumentAsTemplateSourceDocument() {
-        return navigationContext.getCurrentDocument().getAdapter(
-                TemplateSourceDocument.class);
+        return navigationContext.getCurrentDocument().getAdapter(TemplateSourceDocument.class);
     }
 
     public DocumentModel resolveTemplateById(String uuid) {
@@ -91,8 +86,7 @@ public class BaseTemplateAction implements Serializable {
         return rs.getDeclaredRenditionDefinitionsForProviderType(TemplateBasedRenditionProvider.class.getSimpleName());
     }
 
-    public List<TemplateSourceDocument> getAvailableOfficeTemplates(
-            String targetType) throws ClientException {
+    public List<TemplateSourceDocument> getAvailableOfficeTemplates(String targetType) throws ClientException {
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         return tps.getAvailableOfficeTemplates(documentManager, targetType);
     }

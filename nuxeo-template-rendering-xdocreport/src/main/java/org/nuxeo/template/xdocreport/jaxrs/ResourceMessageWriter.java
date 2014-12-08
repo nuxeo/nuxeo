@@ -13,29 +13,23 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class ResourceMessageWriter implements MessageBodyWriter<Resource> {
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return Resource.class.isAssignableFrom(type);
     }
 
     @Override
-    public long getSize(Resource t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public long getSize(Resource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
     @Override
-    public void writeTo(Resource res, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders, OutputStream out)
-            throws IOException, WebApplicationException {
+    public void writeTo(Resource res, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream out) throws IOException, WebApplicationException {
 
         try {
             JSONHelper.writeResource(res, out);

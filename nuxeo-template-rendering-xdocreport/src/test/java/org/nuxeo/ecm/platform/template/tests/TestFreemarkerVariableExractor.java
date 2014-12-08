@@ -28,11 +28,9 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
         XDocReportProcessor processor = new XDocReportProcessor();
         File file = FileUtils.getResourceFileFromContext("data/testDoc.docx");
 
-        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(
-                file));
+        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(file));
 
-        String[] expectedVars = new String[] { "StringVar", "DateVar",
-                "Description", "BooleanVar" };
+        String[] expectedVars = new String[] { "StringVar", "DateVar", "Description", "BooleanVar" };
 
         assertEquals(expectedVars.length, inputs.size());
         for (String expected : expectedVars) {
@@ -72,11 +70,9 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
         XDocReportProcessor processor = new XDocReportProcessor();
         File file = FileUtils.getResourceFileFromContext("data/testDoc.odt");
 
-        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(
-                file));
+        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(file));
 
-        String[] expectedVars = new String[] { "StringVar", "DateVar",
-                "Description", "BooleanVar" };
+        String[] expectedVars = new String[] { "StringVar", "DateVar", "Description", "BooleanVar" };
 
         assertEquals(expectedVars.length, inputs.size());
         for (String expected : expectedVars) {
@@ -111,19 +107,15 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
         }
     }
 
-
-
     @Test
     public void testDocXBrokenParamExtraction() throws Exception {
 
-        deployContrib("org.nuxeo.template.manager.xdocreport.test",
-                "context-extension-contrib.xml");
+        deployContrib("org.nuxeo.template.manager.xdocreport.test", "context-extension-contrib.xml");
 
         XDocReportProcessor processor = new XDocReportProcessor();
         File file = FileUtils.getResourceFileFromContext("data/brokenVariables.docx");
 
-        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(
-                file));
+        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(file));
 
         // only one variable because of broken MERGEFIELD
         String[] expectedVars = new String[] { "func", };
@@ -141,6 +133,3 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
         }
     }
 }
-
-
-

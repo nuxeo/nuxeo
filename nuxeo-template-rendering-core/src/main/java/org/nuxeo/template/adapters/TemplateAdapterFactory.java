@@ -29,20 +29,17 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 /**
- * Pluggable {@link DocumentAdapterFactory} used to return the right
- * {@link TemplateBasedDocument} or {@link TemplateSourceDocument}
- * implementation according to given {@link DocumentModel}.
+ * Pluggable {@link DocumentAdapterFactory} used to return the right {@link TemplateBasedDocument} or
+ * {@link TemplateSourceDocument} implementation according to given {@link DocumentModel}.
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class TemplateAdapterFactory implements DocumentAdapterFactory {
 
     protected static final Log log = LogFactory.getLog(TemplateAdapterFactory.class);
 
     /**
-     * Checks if the document can be adapted. Also works on a
-     * ShallowDocumentModel.
+     * Checks if the document can be adapted. Also works on a ShallowDocumentModel.
      */
     public static boolean isAdaptable(DocumentModel doc, Class<?> adapterClass) {
         if (adapterClass.equals(TemplateBasedDocument.class)) {
@@ -58,15 +55,12 @@ public class TemplateAdapterFactory implements DocumentAdapterFactory {
     @SuppressWarnings("rawtypes")
     public Object getAdapter(DocumentModel doc, Class adapterClass) {
 
-        if (adapterClass.getSimpleName().equals(
-                TemplateBasedDocument.class.getSimpleName())) {
+        if (adapterClass.getSimpleName().equals(TemplateBasedDocument.class.getSimpleName())) {
             if (doc.hasFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET)) {
                 try {
                     return new TemplateBasedDocumentAdapterImpl(doc);
                 } catch (ClientException e) {
-                    log.error(
-                            "Unable to create TemplateBasedDocumentAdapterImpl",
-                            e);
+                    log.error("Unable to create TemplateBasedDocumentAdapterImpl", e);
                     return null;
                 }
             } else {
@@ -74,8 +68,7 @@ public class TemplateAdapterFactory implements DocumentAdapterFactory {
             }
         }
 
-        if (adapterClass.getSimpleName().equals(
-                TemplateSourceDocument.class.getSimpleName())) {
+        if (adapterClass.getSimpleName().equals(TemplateSourceDocument.class.getSimpleName())) {
             if (doc.hasFacet(TemplateSourceDocumentAdapterImpl.TEMPLATE_FACET)) {
                 return new TemplateSourceDocumentAdapterImpl(doc);
             } else {

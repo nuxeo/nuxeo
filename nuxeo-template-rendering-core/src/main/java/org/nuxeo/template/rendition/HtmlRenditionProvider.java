@@ -22,8 +22,7 @@ public class HtmlRenditionProvider implements RenditionProvider {
     }
 
     @Override
-    public List<Blob> render(DocumentModel doc, RenditionDefinition definition)
-            throws RenditionException {
+    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) throws RenditionException {
         try {
             HtmlPreviewAdapter preview = doc.getAdapter(HtmlPreviewAdapter.class);
             return preview.getFilePreviewBlobs();

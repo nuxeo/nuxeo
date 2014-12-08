@@ -68,8 +68,7 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         // create the template
-        templateDoc = session.createDocumentModel(root.getPathAsString(),
-                "templatedDoc", "TemplateSource");
+        templateDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc", "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         File file = FileUtils.getResourceFileFromContext("data/Container.odt");
         Blob fileBlob = new FileBlob(file);
@@ -79,8 +78,7 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
         templateDoc = session.createDocument(templateDoc);
 
         // create the note
-        testDoc = session.createDocumentModel(root.getPathAsString(),
-                "testDoc", "Note");
+        testDoc = session.createDocumentModel(root.getPathAsString(), "testDoc", "Note");
         testDoc.setProperty("dublincore", "title", "MyTestNote2");
         testDoc.setProperty("dublincore", "description", "Simple note sample");
 
@@ -152,8 +150,7 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
 
         assertEquals("MyTestNote2.odt", blob.getFilename());
 
-        String xmlContent = ZipXmlHelper.readXMLContent(blob,
-                ZipXmlHelper.OOO_MAIN_FILE);
+        String xmlContent = ZipXmlHelper.readXMLContent(blob, ZipXmlHelper.OOO_MAIN_FILE);
 
         // System.out.println(xmlContent);
 

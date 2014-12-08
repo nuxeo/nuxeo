@@ -15,9 +15,7 @@ import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class ResourceService extends AbstractResourceService {
 
@@ -38,8 +36,7 @@ public class ResourceService extends AbstractResourceService {
     public String getRoot() throws Exception {
         CoreSession session = getCoreSession();
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-        List<TemplateSourceDocument> templates = tps.getAvailableTemplates(
-                session, null);
+        List<TemplateSourceDocument> templates = tps.getAvailableTemplates(session, null);
         StringBuffer sb = new StringBuffer();
 
         sb.append("[");

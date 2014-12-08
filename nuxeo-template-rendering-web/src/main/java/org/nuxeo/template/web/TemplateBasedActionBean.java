@@ -73,10 +73,8 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
                 }
             } catch (Exception e) {
                 log.error("Error during parameter automatic initialization", e);
-                facesMessages.add(
-                        StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "label.template.err.parameterInit"));
+                facesMessages.add(StatusMessage.Severity.ERROR,
+                        resourcesAccessor.getMessages().get("label.template.err.parameterInit"));
             }
         }
         return documentActions.saveDocument(changeableDocument);
@@ -104,8 +102,8 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         return documentActions.saveDocument(changeableDocument);
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.NEW_DOCUMENT_CREATED, EventNames.DOCUMENT_CHANGED }, create = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.NEW_DOCUMENT_CREATED,
+            EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void reset() {
         templateInputs = null;
@@ -127,8 +125,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         return templateEditableInputs;
     }
 
-    public void setTemplateEditableInputs(
-            List<TemplateInput> templateEditableInputs) {
+    public void setTemplateEditableInputs(List<TemplateInput> templateEditableInputs) {
         this.templateEditableInputs = templateEditableInputs;
     }
 
@@ -138,8 +135,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
         TemplateBasedDocument template = currentDocument.getAdapter(TemplateBasedDocument.class);
         if (template != null) {
-            currentDocument = template.saveParams(editableTemplateName,
-                    templateEditableInputs, true);
+            currentDocument = template.saveParams(editableTemplateName, templateEditableInputs, true);
         }
         reset();
         return navigationContext.navigateToDocument(currentDocument);
@@ -188,10 +184,8 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
             return ComponentUtils.download(context, rendition, filename);
         } catch (Exception e) {
             log.error("Unable to render template ", e);
-            facesMessages.add(
-                    StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.template.err.renderingFailed"));
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("label.template.err.renderingFailed"));
             return null;
         }
     }
@@ -210,8 +204,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     public boolean canResetParameters() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (!documentManager.hasPermission(currentDocument.getRef(),
-                SecurityConstants.WRITE)) {
+        if (!documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
         }
         TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
@@ -230,11 +223,9 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         }
     }
 
-    public boolean canDetachTemplate(String templateName)
-            throws ClientException {
+    public boolean canDetachTemplate(String templateName) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (!documentManager.hasPermission(currentDocument.getRef(),
-                SecurityConstants.WRITE)) {
+        if (!documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
         }
         TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
@@ -247,8 +238,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
     public String detachTemplate(String templateName) throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-        DocumentModel detachedDocument = tps.detachTemplateBasedDocument(
-                currentDocument, templateName, true);
+        DocumentModel detachedDocument = tps.detachTemplateBasedDocument(currentDocument, templateName, true);
         webActions.resetTabList();
         // because of cacheKey issue
         navigationContext.setCurrentDocument(null);
@@ -269,18 +259,14 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
             return;
         }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        DocumentModel sourceTemplate = documentManager.getDocument(new IdRef(
-                templateIdToAssociate));
+        DocumentModel sourceTemplate = documentManager.getDocument(new IdRef(templateIdToAssociate));
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         try {
-            currentDocument = tps.makeTemplateBasedDocument(currentDocument,
-                    sourceTemplate, true);
+            currentDocument = tps.makeTemplateBasedDocument(currentDocument, sourceTemplate, true);
         } catch (ClientException e) {
             log.error("Unable to do template association", e);
-            facesMessages.add(
-                    StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.template.err.associationFailed"),
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("label.template.err.associationFailed"),
                     sourceTemplate.getName());
         }
         navigationContext.invalidateCurrentDocument();
@@ -308,20 +294,17 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
     }
 
     public void setEditableTemplateName(String editableTemplateName) {
-        if (editableTemplateName == null
-                || !editableTemplateName.equals(this.editableTemplateName)) {
+        if (editableTemplateName == null || !editableTemplateName.equals(this.editableTemplateName)) {
             this.editableTemplateName = editableTemplateName;
             templateEditableInputs = null;
         }
     }
 
-    public List<TemplateSourceDocument> getBindableTemplatesForDocument()
-            throws ClientException {
+    public List<TemplateSourceDocument> getBindableTemplatesForDocument() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String targetType = currentDocument.getType();
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-        List<DocumentModel> templates = tps.getAvailableTemplateDocs(
-                documentManager, targetType);
+        List<DocumentModel> templates = tps.getAvailableTemplateDocs(documentManager, targetType);
 
         List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
         TemplateBasedDocument currentTBD = currentDocument.getAdapter(TemplateBasedDocument.class);
@@ -339,8 +322,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     }
 
-    public List<SelectItem> getBindableTemplatesForDocumentAsSelectItems()
-            throws ClientException {
+    public List<SelectItem> getBindableTemplatesForDocumentAsSelectItems() throws ClientException {
 
         List<SelectItem> items = new ArrayList<SelectItem>();
         List<TemplateSourceDocument> sources = getBindableTemplatesForDocument();
@@ -358,8 +340,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     public boolean canBindNewTemplate() throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (!currentDocument.getCoreSession().hasPermission(
-                currentDocument.getRef(), SecurityConstants.WRITE)) {
+        if (!currentDocument.getCoreSession().hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
         }
         if (getBindableTemplatesForDocument().size() == 0) {
@@ -370,20 +351,17 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     @Factory(value = "currentTemplateBasedDocument", scope = ScopeType.EVENT)
     public TemplateBasedDocument getCurrentDocumentAsTemplateBasedDocument() {
-        return navigationContext.getCurrentDocument().getAdapter(
-                TemplateBasedDocument.class);
+        return navigationContext.getCurrentDocument().getAdapter(TemplateBasedDocument.class);
     }
 
     @Factory(value = "associatedRenderableTemplates", scope = ScopeType.EVENT)
-    public List<TemplateSourceDocument> getRenderableTemplates()
-            throws Exception {
+    public List<TemplateSourceDocument> getRenderableTemplates() throws Exception {
         List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
         TemplateBasedDocument template = getCurrentDocumentAsTemplateBasedDocument();
         if (template != null) {
             List<TemplateSourceDocument> sources = template.getSourceTemplates();
             for (TemplateSourceDocument source : sources) {
-                if (source.getTargetRenditionName() == null
-                        || source.getTargetRenditionName().isEmpty()) {
+                if (source.getTargetRenditionName() == null || source.getTargetRenditionName().isEmpty()) {
                     result.add(source);
                 }
             }

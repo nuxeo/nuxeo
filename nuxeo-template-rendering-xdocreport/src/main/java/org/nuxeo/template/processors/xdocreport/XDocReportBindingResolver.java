@@ -14,9 +14,7 @@ import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
 import freemarker.template.TemplateModelException;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class XDocReportBindingResolver extends AbstractBindingResolver {
 
@@ -43,8 +41,7 @@ public class XDocReportBindingResolver extends AbstractBindingResolver {
     protected Object handlePictureField(String paramName, Blob blobValue) {
         if (blobValue == null) {
             // manage a default picture : blank one :)
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream(
-                    "blank.png");
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("blank.png");
             byte[] bin;
             try {
                 bin = FileUtils.readBytes(is);

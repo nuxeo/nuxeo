@@ -40,7 +40,6 @@ import org.nuxeo.runtime.services.streaming.FileSource;
  * This format is used here to make changes in the models easier
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class XMLModelReader extends AbstractDocumentReader {
 
@@ -75,8 +74,7 @@ public class XMLModelReader extends AbstractDocumentReader {
                     xdoc.setDocument(doc);
                     xdoc.setPath(new Path(modelName));
                 } else { // presume a blob
-                    xdoc.putBlob(file.getName(), new StreamingBlob(
-                            new FileSource(file)));
+                    xdoc.putBlob(file.getName(), new StreamingBlob(new FileSource(file)));
                 }
             }
         }
@@ -90,8 +88,7 @@ public class XMLModelReader extends AbstractDocumentReader {
             in = new BufferedInputStream(new FileInputStream(file));
             return new SAXReader().read(in);
         } catch (DocumentException e) {
-            IOException ioe = new IOException("Failed to read file document "
-                    + file + ": " + e.getMessage());
+            IOException ioe = new IOException("Failed to read file document " + file + ": " + e.getMessage());
             ioe.setStackTrace(e.getStackTrace());
             throw ioe;
         } finally {

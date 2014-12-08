@@ -49,8 +49,7 @@ public class TestJXLSProcessingWithLoops extends SimpleTemplateDocTestCase {
         // System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 
         XL2TextConverter xlConverter = new XL2TextConverter();
-        BlobHolder textBlob = xlConverter.convert(
-                new SimpleBlobHolder(newBlob), null);
+        BlobHolder textBlob = xlConverter.convert(new SimpleBlobHolder(newBlob), null);
 
         String xlContent = textBlob.getBlob().getString();
 

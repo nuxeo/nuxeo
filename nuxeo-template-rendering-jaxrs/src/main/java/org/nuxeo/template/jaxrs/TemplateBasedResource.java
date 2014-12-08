@@ -51,8 +51,7 @@ public class TemplateBasedResource extends DefaultObject {
             return "";
         } else {
             StringBuffer sb = new StringBuffer();
-            sb.append(tmpl.getAdaptedDoc().getId() + " - "
-                    + tmpl.getAdaptedDoc().getTitle());
+            sb.append(tmpl.getAdaptedDoc().getId() + " - " + tmpl.getAdaptedDoc().getTitle());
             return sb.toString();
         }
     }
@@ -71,8 +70,7 @@ public class TemplateBasedResource extends DefaultObject {
     }
 
     @Path("template/{name}")
-    public Object getAssociatedTemplate(@PathParam(value = "name")
-    String name) throws Exception {
+    public Object getAssociatedTemplate(@PathParam(value = "name") String name) throws Exception {
 
         IdRef idRef = new IdRef(uuid);
         DocumentModel doc = getContext().getCoreSession().getDocument(idRef);
@@ -83,8 +81,7 @@ public class TemplateBasedResource extends DefaultObject {
 
         DocumentRef sourceRef = tmpl.getSourceTemplateDocRef(name);
         if (sourceRef != null) {
-            return getContext().newObject("templateResource",
-                    sourceRef.toString());
+            return getContext().newObject("templateResource", sourceRef.toString());
         }
         return null;
     }
@@ -92,9 +89,8 @@ public class TemplateBasedResource extends DefaultObject {
     @GET
     @Path("resource/{templateName}/{resourceName}")
     @Produces("*/*")
-    public Blob getResource(@PathParam(value = "templateName")
-    String templateName, @PathParam(value = "resourceName")
-    String resourceName) throws Exception {
+    public Blob getResource(@PathParam(value = "templateName") String templateName,
+            @PathParam(value = "resourceName") String resourceName) throws Exception {
 
         TemplateBasedDocument tmpl = resolve();
 

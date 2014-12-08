@@ -7,9 +7,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import fr.opensagres.xdocreport.remoting.resources.domain.LargeBinaryData;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class BinaryDataWrapper {
 
@@ -25,16 +23,14 @@ public class BinaryDataWrapper {
         return data;
     }
 
-    public static LargeBinaryData wrap(TemplateSourceDocument template)
-            throws Exception {
+    public static LargeBinaryData wrap(TemplateSourceDocument template) throws Exception {
         Blob blob = template.getTemplateBlob();
         LargeBinaryData data = wrap(blob);
         data.setResourceId(template.getAdaptedDoc().getId());
         return data;
     }
 
-    public static LargeBinaryData wrapXml(String xml, String fileName)
-            throws Exception {
+    public static LargeBinaryData wrapXml(String xml, String fileName) throws Exception {
         StringBlob blob = new StringBlob(xml, "text/xml");
         blob.setFilename(fileName);
         return wrap(blob);

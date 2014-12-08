@@ -28,12 +28,9 @@ public class TestAdapters extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.template.manager.api");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/life-cycle-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/adapter-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/core-types-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/life-cycle-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/adapter-contrib.xml");
         openSession();
     }
 
@@ -50,8 +47,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
 
         // create a template doc
         DocumentModel root = session.getRootDocument();
-        DocumentModel template = session.createDocumentModel(
-                root.getPathAsString(), "template", "TemplateSource");
+        DocumentModel template = session.createDocumentModel(root.getPathAsString(), "template", "TemplateSource");
         template.setProperty("dublincore", "title", "MyTemplate");
         File file = FileUtils.getResourceFileFromContext("data/hello.docx");
         assertNotNull(file);
@@ -73,8 +69,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
         input1.setDesciption("Some description");
 
         templateSource.addInput(input1);
-        assertNotNull(templateSource.getAdaptedDoc().getPropertyValue(
-                "tmpl:templateData"));
+        assertNotNull(templateSource.getAdaptedDoc().getPropertyValue("tmpl:templateData"));
         assertEquals(1, templateSource.getParams().size());
         assertNotNull(templateSource.getParamsAsString());
 
@@ -84,8 +79,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
 
         // Test template based doc
 
-        DocumentModel testDoc = session.createDocumentModel(
-                root.getPathAsString(), "templatedDoc", "TemplateBasedFile");
+        DocumentModel testDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc", "TemplateBasedFile");
         testDoc.setProperty("dublincore", "title", "MyTestDoc");
         testDoc = session.createDocument(testDoc);
 
@@ -115,8 +109,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
         assertEquals("newValue", copiedParams.get(0).getStringValue());
 
         // create a second template doc
-        DocumentModel template2 = session.createDocumentModel(
-                root.getPathAsString(), "template2", "TemplateSource");
+        DocumentModel template2 = session.createDocumentModel(root.getPathAsString(), "template2", "TemplateSource");
         template2.setProperty("dublincore", "title", "MyTemplate2");
         file = FileUtils.getResourceFileFromContext("data/testDoc.odt");
         assertNotNull(file);

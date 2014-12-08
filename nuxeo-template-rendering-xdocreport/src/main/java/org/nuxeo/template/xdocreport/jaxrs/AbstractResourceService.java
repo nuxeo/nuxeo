@@ -12,9 +12,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public abstract class AbstractResourceService extends DefaultObject {
 
@@ -51,17 +49,10 @@ public abstract class AbstractResourceService extends DefaultObject {
         }
 
         /*
-         * StringBuffer sb = new StringBuffer();
-         * 
-         * sb.append("["); for (TemplateSourceDocument t : templates) {
-         * sb.append("{"); sb.append("\"label\":" + "\"" + t.getLabel() +
-         * "\","); sb.append("\"name\":" + "\"" + t.getName() + "\",");
-         * sb.append("\"id\":" + "\"" + t.getId() + "\""); sb.append("},"); }
-         * 
-         * String result = sb.toString(); result = result.substring(0,
-         * result.length()-2) + "]";
-         * 
-         * return result;
+         * StringBuffer sb = new StringBuffer(); sb.append("["); for (TemplateSourceDocument t : templates) {
+         * sb.append("{"); sb.append("\"label\":" + "\"" + t.getLabel() + "\","); sb.append("\"name\":" + "\"" +
+         * t.getName() + "\","); sb.append("\"id\":" + "\"" + t.getId() + "\""); sb.append("},"); } String result =
+         * sb.toString(); result = result.substring(0, result.length()-2) + "]"; return result;
          */
     }
 

@@ -6,8 +6,7 @@ import java.util.Map;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
 
-public class ContextFactoryRegistry extends
-        ContributionFragmentRegistry<ContextExtensionFactoryDescriptor> {
+public class ContextFactoryRegistry extends ContributionFragmentRegistry<ContextExtensionFactoryDescriptor> {
 
     protected Map<String, ContextExtensionFactoryDescriptor> factories = new HashMap<String, ContextExtensionFactoryDescriptor>();
 
@@ -22,8 +21,7 @@ public class ContextFactoryRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            ContextExtensionFactoryDescriptor mergedDesc,
+    public void contributionUpdated(String id, ContextExtensionFactoryDescriptor mergedDesc,
             ContextExtensionFactoryDescriptor orgDesc) {
 
         if (mergedDesc == null || !mergedDesc.isEnabled()) {
@@ -39,8 +37,7 @@ public class ContextFactoryRegistry extends
     }
 
     @Override
-    public void merge(ContextExtensionFactoryDescriptor src,
-            ContextExtensionFactoryDescriptor dest) {
+    public void merge(ContextExtensionFactoryDescriptor src, ContextExtensionFactoryDescriptor dest) {
         dest.merge(src);
     }
 

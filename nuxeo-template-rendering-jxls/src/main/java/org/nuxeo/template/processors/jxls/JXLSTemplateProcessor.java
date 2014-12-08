@@ -22,7 +22,6 @@ import org.nuxeo.template.processors.AbstractTemplateProcessor;
  * JXLS {@link TemplateProcessor}
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
 
@@ -31,11 +30,9 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
     protected SimpleContextBuilder contextBuilder = new SimpleContextBuilder();
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument,
-            String templateName) throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws Exception {
 
-        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument,
-                templateName);
+        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument, templateName);
         List<TemplateInput> params = templateBasedDocument.getParams(templateName);
 
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
@@ -46,20 +43,17 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
         resolver.resolve(params, ctx, templateBasedDocument);
 
         File workingDir = getWorkingDir();
-        File generated = new File(workingDir, "JXLSresult-"
-                + System.currentTimeMillis());
+        File generated = new File(workingDir, "JXLSresult-" + System.currentTimeMillis());
         generated.createNewFile();
 
-        File input = new File(workingDir, "JXLSInput-"
-                + System.currentTimeMillis());
+        File input = new File(workingDir, "JXLSInput-" + System.currentTimeMillis());
         input.createNewFile();
 
         sourceTemplateBlob.transferTo(input);
 
         XLSTransformer transformer = new XLSTransformer();
         configureTransformer(transformer);
-        transformer.transformXLS(input.getAbsolutePath(), ctx,
-                generated.getAbsolutePath());
+        transformer.transformXLS(input.getAbsolutePath(), ctx, generated.getAbsolutePath());
 
         input.delete();
 
@@ -85,8 +79,7 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
     }
 
     @Override
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob)
-            throws Exception {
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
         return new ArrayList<TemplateInput>();
     }
 

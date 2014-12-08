@@ -36,7 +36,6 @@ import org.osgi.framework.BundleContext;
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
- * 
  */
 public class TemplateBundleActivator implements BundleActivator {
 
@@ -85,8 +84,7 @@ public class TemplateBundleActivator implements BundleActivator {
     }
 
     public void expandResources() throws Exception {
-        log.info("Deploying templates for bundle "
-                + context.getBundle().getSymbolicName());
+        log.info("Deploying templates for bundle " + context.getBundle().getSymbolicName());
 
         URL sampleRootURL = getResource(getTemplateResourcesRootPath());
         if (sampleRootURL == null) {
@@ -105,8 +103,7 @@ public class TemplateBundleActivator implements BundleActivator {
             URL resourceURL = (URL) urls.nextElement();
             InputStream is = resourceURL.openStream();
             String filePath = resourceURL.getFile();
-            filePath = filePath.split("/" + getTemplateResourcesRootPath()
-                    + "/")[1];
+            filePath = filePath.split("/" + getTemplateResourcesRootPath() + "/")[1];
             filePath = "/" + filePath;
             File f = new File(dataDir, filePath);
             File parent = f.getParentFile();

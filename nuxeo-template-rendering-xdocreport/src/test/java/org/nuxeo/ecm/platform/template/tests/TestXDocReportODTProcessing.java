@@ -35,8 +35,7 @@ public class TestXDocReportODTProcessing extends SimpleTemplateDocTestCase {
 
         // System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 
-        String xmlContent = ZipXmlHelper.readXMLContent(newBlob,
-                ZipXmlHelper.OOO_MAIN_FILE);
+        String xmlContent = ZipXmlHelper.readXMLContent(newBlob, ZipXmlHelper.OOO_MAIN_FILE);
 
         assertTrue(xmlContent.contains("John Smith"));
         assertTrue(xmlContent.contains("some description"));
@@ -72,8 +71,7 @@ public class TestXDocReportODTProcessing extends SimpleTemplateDocTestCase {
 
         // System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 
-        String xmlContent = ZipXmlHelper.readXMLContent(newBlob,
-                ZipXmlHelper.OOO_MAIN_FILE);
+        String xmlContent = ZipXmlHelper.readXMLContent(newBlob, ZipXmlHelper.OOO_MAIN_FILE);
 
         assertTrue(xmlContent.contains("John Smith"));
         assertTrue(xmlContent.contains("some description"));

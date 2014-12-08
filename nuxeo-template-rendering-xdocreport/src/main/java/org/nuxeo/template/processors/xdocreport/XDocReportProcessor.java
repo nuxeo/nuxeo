@@ -32,10 +32,8 @@ import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
  * XDocReport based {@link TemplateProcessor}
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
-public class XDocReportProcessor extends AbstractTemplateProcessor implements
-        TemplateProcessor {
+public class XDocReportProcessor extends AbstractTemplateProcessor implements TemplateProcessor {
 
     protected static final Log log = LogFactory.getLog(XDocReportProcessor.class);
 
@@ -66,18 +64,15 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
     }
 
     @Override
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob)
-            throws Exception {
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
 
         List<TemplateInput> params = new ArrayList<TemplateInput>();
         String xmlContent = null;
 
         if (OOO_TEMPLATE_TYPE.equals(getTemplateFormat(blob))) {
-            xmlContent = ZipXmlHelper.readXMLContent(blob,
-                    ZipXmlHelper.OOO_MAIN_FILE);
+            xmlContent = ZipXmlHelper.readXMLContent(blob, ZipXmlHelper.OOO_MAIN_FILE);
         } else if (DocX_TEMPLATE_TYPE.equals(getTemplateFormat(blob))) {
-            xmlContent = ZipXmlHelper.readXMLContent(blob,
-                    ZipXmlHelper.DOCX_MAIN_FILE);
+            xmlContent = ZipXmlHelper.readXMLContent(blob, ZipXmlHelper.DOCX_MAIN_FILE);
         }
 
         if (xmlContent != null) {
@@ -92,16 +87,13 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
     }
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument,
-            String templateName) throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws Exception {
 
-        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument,
-                templateName);
+        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument, templateName);
 
         // load the template
-        IXDocReport report = XDocReportRegistry.getRegistry().loadReport(
-                sourceTemplateBlob.getStream(), TemplateEngineKind.Freemarker,
-                false);
+        IXDocReport report = XDocReportRegistry.getRegistry().loadReport(sourceTemplateBlob.getStream(),
+                TemplateEngineKind.Freemarker, false);
 
         // manage parameters
         List<TemplateInput> params = templateBasedDocument.getParams(templateName);
@@ -117,8 +109,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
         Map<String, Object> ctx = fmContextBuilder.build(doc, templateName);
 
-        XDocReportBindingResolver resolver = new XDocReportBindingResolver(
-                metadata);
+        XDocReportBindingResolver resolver = new XDocReportBindingResolver(metadata);
         resolver.resolve(params, ctx, templateBasedDocument);
 
         // add default context vars
@@ -139,8 +130,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
         metadata.addFieldAsList("auditEntries.repositoryId");
 
         File workingDir = getWorkingDir();
-        File generated = new File(workingDir, "XDOCReportresult-"
-                + System.currentTimeMillis());
+        File generated = new File(workingDir, "XDOCReportresult-" + System.currentTimeMillis());
         generated.createNewFile();
 
         OutputStream out = new FileOutputStream(generated);

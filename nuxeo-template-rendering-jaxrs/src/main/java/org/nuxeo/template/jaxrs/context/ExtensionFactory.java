@@ -9,10 +9,8 @@ import org.nuxeo.template.api.context.DocumentWrapper;
 public class ExtensionFactory implements ContextExtensionFactory {
 
     @Override
-    public Object getExtension(DocumentModel doc, DocumentWrapper wrapper,
-            Map<String, Object> ctx) {
-        return new JAXRSExtensions(doc, wrapper,
-                (String) ctx.get("templateName"));
+    public Object getExtension(DocumentModel doc, DocumentWrapper wrapper, Map<String, Object> ctx) {
+        return new JAXRSExtensions(doc, wrapper, (String) ctx.get("templateName"));
     }
 
 }

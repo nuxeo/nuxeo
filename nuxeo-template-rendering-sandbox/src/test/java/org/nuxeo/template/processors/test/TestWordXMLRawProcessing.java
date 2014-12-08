@@ -49,14 +49,12 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
     protected List<TemplateInput> getTestParams() {
 
         List<TemplateInput> params = new ArrayList<TemplateInput>();
-        TemplateInput input1 = new TemplateInput("sName_of_Licensee",
-                "John Smith");
+        TemplateInput input1 = new TemplateInput("sName_of_Licensee", "John Smith");
         TemplateInput input2 = new TemplateInput("s_effective_date", new Date());
         TemplateInput input3 = new TemplateInput("name_of_the_call");
         input3.setType(InputType.DocumentProperty);
         input3.setSource("dc:description");
-        TemplateInput input4 = new TemplateInput("boolean_property",
-                new Boolean(false));
+        TemplateInput input4 = new TemplateInput("boolean_property", new Boolean(false));
 
         params.add(input1);
         params.add(input2);
@@ -70,8 +68,8 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
 
         DocumentModel root = session.getRootDocument();
 
-        DocumentModel templateDoc = session.createDocumentModel(
-                root.getPathAsString(), "templatedDoc", "TemplateSource");
+        DocumentModel templateDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc",
+                "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
         File file = FileUtils.getResourceFileFromContext("data/sample templatet.docx");
@@ -79,8 +77,7 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc = session.createDocument(templateDoc);
 
-        DocumentModel testDoc = session.createDocumentModel(
-                root.getPathAsString(), "templatedDoc", "TemplateBasedFile");
+        DocumentModel testDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc", "TemplateBasedFile");
         testDoc.setProperty("dublincore", "title", "MyTestDoc");
         fileBlob.setFilename("sample templatet.docx");
         // testDoc.setProperty("file", "content", fileBlob);
@@ -121,27 +118,11 @@ public class TestWordXMLRawProcessing extends SQLRepositoryTestCase {
     }
 
     /**
-     * Broken for now public void testDocumentUpdateFromFile() throws Exception
-     * {
-     * 
-     * TemplateBasedDocument adapter = setupTestDocs(); DocumentModel testDoc =
-     * adapter.getAdaptedDoc();
-     * 
-     * List<TemplateInput> params = getTestParams();
-     * 
-     * testDoc = adapter.saveParams(params, true); session.save();
-     * 
-     * BidirectionalTemplateProcessor processor = new
-     * WordXMLTemplateProcessor();
-     * 
-     * testDoc = processor.updateDocumentFromBlob(adapter);
-     * 
-     * String updatedContent = testDoc.getPropertyValue("dc:description")
-     * .toString();
-     * 
-     * assertEquals("name of the call", updatedContent);
-     * 
-     * }
+     * Broken for now public void testDocumentUpdateFromFile() throws Exception { TemplateBasedDocument adapter =
+     * setupTestDocs(); DocumentModel testDoc = adapter.getAdaptedDoc(); List<TemplateInput> params = getTestParams();
+     * testDoc = adapter.saveParams(params, true); session.save(); BidirectionalTemplateProcessor processor = new
+     * WordXMLTemplateProcessor(); testDoc = processor.updateDocumentFromBlob(adapter); String updatedContent =
+     * testDoc.getPropertyValue("dc:description") .toString(); assertEquals("name of the call", updatedContent); }
      **/
 
     @Test

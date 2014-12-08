@@ -33,12 +33,9 @@ import fr.opensagres.xdocreport.remoting.resources.services.ResourcesException;
 import fr.opensagres.xdocreport.remoting.resources.services.jaxrs.JAXRSResourcesService;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
-public class XDocReportResourceService extends AbstractResourceService
-        implements JAXRSResourcesService {
+public class XDocReportResourceService extends AbstractResourceService implements JAXRSResourcesService {
 
     protected static final Log log = LogFactory.getLog(XDocReportResourceService.class);
 
@@ -91,8 +88,7 @@ public class XDocReportResourceService extends AbstractResourceService
 
     @GET
     @Path("model/{type}")
-    public String getFieldDefinition(@PathParam("type")
-    String type) {
+    public String getFieldDefinition(@PathParam("type") String type) {
         try {
             return FieldDefinitionGenerator.generate(type);
         } catch (Exception e) {
@@ -125,8 +121,7 @@ public class XDocReportResourceService extends AbstractResourceService
     }
 
     @Override
-    public List<BinaryData> downloadMultiple(List<String> arg0)
-            throws ResourcesException {
+    public List<BinaryData> downloadMultiple(List<String> arg0) throws ResourcesException {
         return null;
     }
 
@@ -136,8 +131,7 @@ public class XDocReportResourceService extends AbstractResourceService
     }
 
     @Override
-    public LargeBinaryData downloadLarge(String resourcePath)
-            throws ResourcesException {
+    public LargeBinaryData downloadLarge(String resourcePath) throws ResourcesException {
 
         CoreSession session = getCoreSession();
         try {

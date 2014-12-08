@@ -30,31 +30,26 @@ import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
 
 /**
- * Helper class used to extract variable names from a FreeMarker template. This
- * is used to initialize the {@link TemplateInput} parameters.
- *
- * Extraction is for now simple and system may not detect all the cases, but
- * user is able to add parameters from the UI.
+ * Helper class used to extract variable names from a FreeMarker template. This is used to initialize the
+ * {@link TemplateInput} parameters. Extraction is for now simple and system may not detect all the cases, but user is
+ * able to add parameters from the UI.
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class FreeMarkerVariableExtractor {
 
     protected final static Pattern simpleVariableMatcher = Pattern.compile("\\$\\{([^\\}]*)\\}");
 
-    protected final static String[] spliters = new String[] { ".", "?", "=",
-            ">", "<", "!", " ", "[" };
+    protected final static String[] spliters = new String[] { ".", "?", "=", ">", "<", "!", " ", "[" };
 
-    protected final static Pattern[] directiveMatchers = new Pattern[] {
-            Pattern.compile("\\[\\#if\\s([^\\]]*)\\]"),
+    protected final static Pattern[] directiveMatchers = new Pattern[] { Pattern.compile("\\[\\#if\\s([^\\]]*)\\]"),
             Pattern.compile("\\[\\#list\\s[\\d\\.\\.]*(.+)\\sas\\s([^\\]]*)\\]") };
 
     protected final static Pattern[] assignMatchers = new Pattern[] { Pattern.compile("\\[\\#assign\\s(.+)=.*\\]") };
 
     protected static final List<String> reservedContextKeywords = new ArrayList<String>();
 
-    protected static final String[] freeMarkerVariableSuffix = {"_index","_has_next"};
+    protected static final String[] freeMarkerVariableSuffix = { "_index", "_has_next" };
 
     protected static String extractVariableName(String match) {
 
@@ -171,12 +166,10 @@ public class FreeMarkerVariableExtractor {
             String var = varIter.next();
             if (var.contains("<") || var.contains(">")) {
                 varIter.remove();
-            }
-            else if (var.contains("\n")) {
+            } else if (var.contains("\n")) {
                 varIter.set(var.replaceAll("\n", "").trim());
             }
         }
-
 
         return variables;
     }

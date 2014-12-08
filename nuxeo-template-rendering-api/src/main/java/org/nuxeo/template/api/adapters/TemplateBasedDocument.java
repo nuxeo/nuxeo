@@ -27,13 +27,11 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.template.api.TemplateInput;
 
 /**
- * Adapter interface for the {@link DocumentModel} that support rendering via a
- * Template. This Document can be associated with a
- * {@link TemplateSourceDocument} that provides the rendering template as well
- * as the default inputs used for rendering.
+ * Adapter interface for the {@link DocumentModel} that support rendering via a Template. This Document can be
+ * associated with a {@link TemplateSourceDocument} that provides the rendering template as well as the default inputs
+ * used for rendering.
  * 
  * @author Tiry (tdelprat@nuxeo.com)
- * 
  */
 public interface TemplateBasedDocument {
 
@@ -43,12 +41,10 @@ public interface TemplateBasedDocument {
      * @param template DocumentModel holding the template
      * @param save flag to indicate if target DocumentModel must be saved or not
      * @return the updated DocumentModel
-     * 
      * @throws PropertyException
      * @throws ClientException
      */
-    public DocumentModel setTemplate(DocumentModel template, boolean save)
-            throws PropertyException, ClientException;
+    public DocumentModel setTemplate(DocumentModel template, boolean save) throws PropertyException, ClientException;
 
     /**
      * Retrieve the {@link TemplateSourceDocument} for a given template name
@@ -57,8 +53,7 @@ public interface TemplateBasedDocument {
      * @return the {@link TemplateSourceDocument}
      * @throws Exception
      */
-    public TemplateSourceDocument getSourceTemplate(String templateName)
-            throws Exception;
+    public TemplateSourceDocument getSourceTemplate(String templateName) throws Exception;
 
     /**
      * Retrieve the Template {@link DocumentRef} for a given template name
@@ -67,8 +62,7 @@ public interface TemplateBasedDocument {
      * @return the associated template {@link DocumentRef}
      * @throws Exception
      */
-    public DocumentRef getSourceTemplateDocRef(String templateName)
-            throws Exception;
+    public DocumentRef getSourceTemplateDocRef(String templateName) throws Exception;
 
     /**
      * Retrieve the Template {@link DocumentModel} for a given template name
@@ -77,12 +71,10 @@ public interface TemplateBasedDocument {
      * @return the associated template {@link DocumentModel}
      * @throws Exception
      */
-    public DocumentModel getSourceTemplateDoc(String templateName)
-            throws Exception;
+    public DocumentModel getSourceTemplateDoc(String templateName) throws Exception;
 
     /**
-     * List all {@link TemplateSourceDocument}s that are bound to the underlying
-     * {@link DocumentModel}
+     * List all {@link TemplateSourceDocument}s that are bound to the underlying {@link DocumentModel}
      * 
      * @return
      */
@@ -90,7 +82,6 @@ public interface TemplateBasedDocument {
 
     /**
      * Return the template type for a given template name
-     * 
      * 
      * @param templateName
      * @return
@@ -105,20 +96,17 @@ public interface TemplateBasedDocument {
      * @return the updated DocumentModel
      * @throws Exception
      */
-    public DocumentModel initializeFromTemplate(String templateName,
-            boolean save) throws Exception;
+    public DocumentModel initializeFromTemplate(String templateName, boolean save) throws Exception;
 
     /**
-     * Render the named template against the underlying DocumentModel and store
-     * the result in the main Blob
+     * Render the named template against the underlying DocumentModel and store the result in the main Blob
      * 
      * @param templateName
      * @param save flag to indicate if target DocumentModel must be saved or not
      * @return the resulting {@link Blob}
      * @throws Exception
      */
-    public Blob renderAndStoreAsAttachment(String templateName, boolean save)
-            throws Exception;
+    public Blob renderAndStoreAsAttachment(String templateName, boolean save) throws Exception;
 
     /**
      * Render the named template against the underlying DocumentModel
@@ -145,8 +133,7 @@ public interface TemplateBasedDocument {
      * @return
      * @throws ClientException
      */
-    public List<TemplateInput> getParams(String templateName)
-            throws ClientException;
+    public List<TemplateInput> getParams(String templateName) throws ClientException;
 
     /**
      * Save parameters changes.
@@ -157,8 +144,7 @@ public interface TemplateBasedDocument {
      * @return
      * @throws Exception
      */
-    public DocumentModel saveParams(String templateName,
-            List<TemplateInput> params, boolean save) throws Exception;
+    public DocumentModel saveParams(String templateName, List<TemplateInput> params, boolean save) throws Exception;
 
     /**
      * Return the underlying adapted {@link DocumentModel}
@@ -183,8 +169,7 @@ public interface TemplateBasedDocument {
      * @return
      * @throws ClientException
      */
-    public boolean hasEditableParams(String templateName)
-            throws ClientException;
+    public boolean hasEditableParams(String templateName) throws ClientException;
 
     /**
      * Find the template associated to a given RenditionName
@@ -209,6 +194,5 @@ public interface TemplateBasedDocument {
      * @return
      * @throws ClientException
      */
-    public DocumentModel removeTemplateBinding(String templateName, boolean save)
-            throws ClientException;
+    public DocumentModel removeTemplateBinding(String templateName, boolean save) throws ClientException;
 }

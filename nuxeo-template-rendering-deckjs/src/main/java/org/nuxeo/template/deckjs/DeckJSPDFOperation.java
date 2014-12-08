@@ -52,14 +52,13 @@ public class DeckJSPDFOperation {
         DocumentModel templateBasedDocument = (DocumentModel) ctx.get("templateBasedDocument");
         String templateName = (String) ctx.get("templateName");
 
-        String workingDirPath = System.getProperty("java.io.tmpdir")
-                + "/nuxeo-deckJS-cache/" + templateBasedDocument.getId();
+        String workingDirPath = System.getProperty("java.io.tmpdir") + "/nuxeo-deckJS-cache/"
+                + templateBasedDocument.getId();
         File workingDir = new File(workingDirPath);
         if (!workingDir.exists()) {
             workingDir.mkdirs();
         }
-        JAXRSExtensions jaxRsExtensions = new JAXRSExtensions(
-                templateBasedDocument, null, templateName);
+        JAXRSExtensions jaxRsExtensions = new JAXRSExtensions(templateBasedDocument, null, templateName);
         BlobHolder sourceBh = templateSourceDocument.getAdapter(BlobHolder.class);
         for (Blob b : sourceBh.getBlobs()) {
             writeToTempDirectory(workingDir, b);
@@ -80,8 +79,7 @@ public class DeckJSPDFOperation {
 
         FileBlob indexBlob = new FileBlob(index);
         indexBlob.setFilename(blob.getFilename());
-        BlobHolder bh = conversionService.convert("deckJSToPDF",
-                new SimpleCachableBlobHolder(indexBlob), null);
+        BlobHolder bh = conversionService.convert("deckJSToPDF", new SimpleCachableBlobHolder(indexBlob), null);
         FileUtils.deleteDirectory(workingDir);
         return bh.getBlob();
     }

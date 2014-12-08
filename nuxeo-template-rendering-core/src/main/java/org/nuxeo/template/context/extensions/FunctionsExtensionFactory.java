@@ -9,8 +9,7 @@ import org.nuxeo.template.api.context.DocumentWrapper;
 public class FunctionsExtensionFactory implements ContextExtensionFactory {
 
     @Override
-    public Object getExtension(DocumentModel currentDocument,
-            DocumentWrapper wrapper, Map<String, Object> ctx) {
+    public Object getExtension(DocumentModel currentDocument, DocumentWrapper wrapper, Map<String, Object> ctx) {
         return new ContextFunctions(currentDocument, wrapper);
     }
 

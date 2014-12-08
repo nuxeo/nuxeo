@@ -112,12 +112,10 @@ public class TemplateProcessorDescriptor implements Serializable {
         if (srcTpd.label != null) {
             label = srcTpd.label;
         }
-        if (srcTpd.supportedExtensions != null
-                && srcTpd.supportedExtensions.size() > 0) {
+        if (srcTpd.supportedExtensions != null && srcTpd.supportedExtensions.size() > 0) {
             supportedExtensions = srcTpd.supportedExtensions;
         }
-        if (srcTpd.supportedMimeTypes != null
-                && srcTpd.supportedMimeTypes.size() > 0) {
+        if (srcTpd.supportedMimeTypes != null && srcTpd.supportedMimeTypes.size() > 0) {
             supportedMimeTypes = srcTpd.supportedMimeTypes;
         }
     }

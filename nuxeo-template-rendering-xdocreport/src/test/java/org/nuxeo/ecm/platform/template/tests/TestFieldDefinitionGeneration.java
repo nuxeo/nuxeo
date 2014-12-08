@@ -15,8 +15,7 @@ public class TestFieldDefinitionGeneration extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.event");
-        deployContrib("org.nuxeo.template.manager.xdocreport.test",
-                "core-types-contrib.xml");
+        deployContrib("org.nuxeo.template.manager.xdocreport.test", "core-types-contrib.xml");
         openSession();
     }
 

@@ -12,8 +12,7 @@ public class JAXRSExtensions {
 
     protected final String templateName;
 
-    public JAXRSExtensions(DocumentModel doc, DocumentWrapper nuxeoWrapper,
-            String templateName) {
+    public JAXRSExtensions(DocumentModel doc, DocumentWrapper nuxeoWrapper, String templateName) {
         this.doc = doc;
         this.nuxeoWrapper = nuxeoWrapper;
         this.templateName = templateName;

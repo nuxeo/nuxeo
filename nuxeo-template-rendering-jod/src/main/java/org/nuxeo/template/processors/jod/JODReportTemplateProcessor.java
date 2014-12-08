@@ -53,24 +53,19 @@ import org.nuxeo.template.odt.OOoArchiveModifier;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
 
 /**
- * {@link TemplateProcessor} for ODT based templates.
- * 
- * Using JODReports but also custom ODT hacks. May be migrated to pure ODT +
- * Custom Freemarker soon.
+ * {@link TemplateProcessor} for ODT based templates. Using JODReports but also custom ODT hacks. May be migrated to
+ * pure ODT + Custom Freemarker soon.
  * 
  * @author Tiry (tdelprat@nuxeo.com)
- * 
  */
-public class JODReportTemplateProcessor extends AbstractTemplateProcessor
-        implements TemplateProcessor {
+public class JODReportTemplateProcessor extends AbstractTemplateProcessor implements TemplateProcessor {
 
     public static final String TEMPLATE_TYPE = "JODTemplate";
 
     protected FMContextBuilder fmContextBuilder = new FMContextBuilder();
 
     @Override
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob)
-            throws Exception {
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
 
         List<TemplateInput> params = new ArrayList<TemplateInput>();
         String xmlContent = readXMLContent(blob);
@@ -89,15 +84,14 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor
     }
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument,
-            String templateName) throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws Exception {
 
         OOoArchiveModifier modifier = new OOoArchiveModifier();
 
         Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob(templateName);
         if (templateBasedDocument.getSourceTemplateDoc(templateName) != null) {
-            sourceTemplateBlob = templateBasedDocument.getSourceTemplateDoc(
-                    templateName).getAdapter(TemplateSourceDocument.class).getTemplateBlob();
+            sourceTemplateBlob = templateBasedDocument.getSourceTemplateDoc(templateName).getAdapter(
+                    TemplateSourceDocument.class).getTemplateBlob();
         }
         List<TemplateInput> params = templateBasedDocument.getParams(templateName);
 
@@ -117,8 +111,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor
             if (param.isSourceValue()) {
                 Property property = null;
                 try {
-                    property = templateBasedDocument.getAdaptedDoc().getProperty(
-                            param.getSource());
+                    property = templateBasedDocument.getAdaptedDoc().getProperty(param.getSource());
                 } catch (Throwable e) {
                     log.warn("Unable to ready property " + param.getSource(), e);
                 }
@@ -128,16 +121,14 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor
                         if (Blob.class.isAssignableFrom(value.getClass())) {
                             Blob blob = (Blob) value;
                             if (param.getType() == InputType.PictureProperty) {
-                                if (blob.getMimeType() == null
-                                        || "".equals(blob.getMimeType().trim())) {
+                                if (blob.getMimeType() == null || "".equals(blob.getMimeType().trim())) {
                                     blob.setMimeType("image/jpeg");
                                 }
                                 context.put(param.getName(), blob);
                                 blobsToInsert.add((Blob) value);
                             }
                         } else {
-                            context.put(param.getName(),
-                                    nuxeoWrapper.wrap(property));
+                            context.put(param.getName(), nuxeoWrapper.wrap(property));
                         }
                     } else {
                         // no available value, try to find a default one ...
@@ -181,8 +172,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor
         Blob newBlob = new FileBlob(generated);
         newBlob.setMimeType("application/vnd.oasis.opendocument.text");
         if (templateBasedDocument.getTemplateBlob(templateName) != null) {
-            newBlob.setFilename(templateBasedDocument.getTemplateBlob(
-                    templateName).getFilename());
+            newBlob.setFilename(templateBasedDocument.getTemplateBlob(templateName).getFilename());
         } else {
             newBlob.setFilename(sourceTemplateBlob.getFilename());
         }

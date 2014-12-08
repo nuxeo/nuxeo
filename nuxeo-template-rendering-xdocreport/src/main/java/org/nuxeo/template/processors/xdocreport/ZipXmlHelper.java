@@ -6,9 +6,7 @@ import java.util.zip.ZipInputStream;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class ZipXmlHelper {
 
@@ -18,8 +16,7 @@ public class ZipXmlHelper {
 
     public static final String DOCX_MAIN_FILE = "word/document.xml";
 
-    public static String readXMLContent(Blob blob, String filename)
-            throws Exception {
+    public static String readXMLContent(Blob blob, String filename) throws Exception {
         ZipInputStream zIn = new ZipInputStream(blob.getStream());
         ZipEntry zipEntry = zIn.getNextEntry();
         String xmlContent = null;

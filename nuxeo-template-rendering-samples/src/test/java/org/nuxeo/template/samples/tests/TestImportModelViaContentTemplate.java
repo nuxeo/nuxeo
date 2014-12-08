@@ -73,14 +73,12 @@ public class TestImportModelViaContentTemplate extends SQLRepositoryTestCase {
         StringBuffer sb = new StringBuffer();
         DocumentModelList docs = session.query("select * from Document where ecm:mixinType in ('Template','TemplateBased') order by ecm:path");
         for (DocumentModel doc : docs) {
-            sb.append("path: " + doc.getPathAsString() + " type: "
-                    + doc.getType() + " title:" + doc.getTitle() + " name:"
-                    + doc.getName() + " uuid:" + doc.getId());
+            sb.append("path: " + doc.getPathAsString() + " type: " + doc.getType() + " title:" + doc.getTitle()
+                    + " name:" + doc.getName() + " uuid:" + doc.getId());
             TemplateBasedDocument templateDoc = doc.getAdapter(TemplateBasedDocument.class);
             if (templateDoc != null) {
                 for (String tName : templateDoc.getTemplateNames()) {
-                    sb.append(" target: " + tName + "-"
-                            + templateDoc.getSourceTemplateDocRef(tName));
+                    sb.append(" target: " + tName + "-" + templateDoc.getSourceTemplateDocRef(tName));
                     assertTrue(session.exists(templateDoc.getSourceTemplateDocRef(tName)));
                 }
             } else {
@@ -118,8 +116,8 @@ public class TestImportModelViaContentTemplate extends SQLRepositoryTestCase {
         String html = blob.getString();
         assertNotNull(html);
 
-        String targetUrl = "templates/doc/" + note.getAdaptedDoc().getId()
-                + "/resource/" + source.getName() + "/style.css";
+        String targetUrl = "templates/doc/" + note.getAdaptedDoc().getId() + "/resource/" + source.getName()
+                + "/style.css";
         assertTrue(html.contains(targetUrl));
 
     }

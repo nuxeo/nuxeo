@@ -49,8 +49,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
 public class DeckJSPDFConverter implements Converter {
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         File jsFile = null;
         try {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
@@ -89,8 +88,7 @@ public class DeckJSPDFConverter implements Converter {
             fw.close();
             is.close();
             CmdParameters params = new CmdParameters();
-            File outputFile = File.createTempFile("nuxeodeckjsPDFrendition",
-                    ".pdf");
+            File outputFile = File.createTempFile("nuxeodeckjsPDFrendition", ".pdf");
 
             params.addNamedParameter("inFilePath", inputFile);
             params.addNamedParameter("outFilePath", outputFile);
@@ -106,8 +104,7 @@ public class DeckJSPDFConverter implements Converter {
             pdfOutput.setFilename(filename);
             Framework.trackFile(outputFile, pdfOutput);
             return new SimpleCachableBlobHolder(pdfOutput);
-        } catch (CommandNotAvailable | IOException | ClientException
-                | CommandException e) {
+        } catch (CommandNotAvailable | IOException | ClientException | CommandException e) {
             throw new ConversionException("PDF conversion failed", e);
         } finally {
             org.apache.commons.io.FileUtils.deleteQuietly(jsFile);

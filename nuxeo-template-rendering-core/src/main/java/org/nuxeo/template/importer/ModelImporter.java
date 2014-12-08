@@ -63,11 +63,9 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Imports models and samples from resources or filesystem via CoreIO.
  * <p>
- * The association between template and document is translated during the IO
- * import (because UUIDs change).
+ * The association between template and document is translated during the IO import (because UUIDs change).
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class ModelImporter {
 
@@ -97,8 +95,7 @@ public class ModelImporter {
         return getTargetDomain(true);
     }
 
-    protected DocumentModel getTargetDomain(boolean canRetry)
-            throws ClientException {
+    protected DocumentModel getTargetDomain(boolean canRetry) throws ClientException {
         DocumentModelList domains = session.query(DOMAIN_QUERY);
         if (domains.size() > 0) {
             return domains.get(0);
@@ -112,13 +109,11 @@ public class ModelImporter {
         return null;
     }
 
-    protected DocumentModel getOrCreateTemplateContainer()
-            throws ClientException {
+    protected DocumentModel getOrCreateTemplateContainer() throws ClientException {
         DocumentModel rootDomain = getTargetDomain();
 
         if (rootDomain != null) {
-            DocumentModelList roots = session.getChildren(rootDomain.getRef(),
-                    "TemplateRoot");
+            DocumentModelList roots = session.getChildren(rootDomain.getRef(), "TemplateRoot");
             if (roots.size() > 0) {
                 return roots.get(0);
             }
@@ -131,18 +126,14 @@ public class ModelImporter {
         DocumentModel container = null;
 
         if (rootDomain != null) {
-            DocumentModelList roots = session.getChildren(rootDomain.getRef(),
-                    "WorkspaceRoot");
+            DocumentModelList roots = session.getChildren(rootDomain.getRef(), "WorkspaceRoot");
             if (roots.size() > 0) {
                 DocumentModel WSRoot = roots.get(0);
-                PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/"
-                        + getTemplateResourcesRootPath());
+                PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/" + getTemplateResourcesRootPath());
                 if (!session.exists(targetPath)) {
-                    container = session.createDocumentModel(
-                            WSRoot.getPathAsString(),
-                            getTemplateResourcesRootPath(), "Workspace");
-                    container.setPropertyValue("dc:title",
-                            "Template usage samples");
+                    container = session.createDocumentModel(WSRoot.getPathAsString(), getTemplateResourcesRootPath(),
+                            "Workspace");
+                    container.setPropertyValue("dc:title", "Template usage samples");
                     container.setPropertyValue("dc:description",
                             "This workspace contains some sample usage of the template rendition system");
                     container = session.createDocument(container);
@@ -164,8 +155,7 @@ public class ModelImporter {
         params.put("eventId", TEMPLATE_SAMPLE_INIT_EVENT);
         @SuppressWarnings("unchecked")
         List<Long> res = (List<Long>) reader.nativeQuery(
-                "select count(log.id) from LogEntry log where log.eventId=:eventId",
-                params, 1, 20);
+                "select count(log.id) from LogEntry log where log.eventId=:eventId", params, 1, 20);
         long resultsCount = res.get(0).longValue();
         if (resultsCount == 0) {
             return false;
@@ -213,8 +203,7 @@ public class ModelImporter {
 
             if (modelRoots != null && modelRoots.length > 0) {
                 for (File modelRoot : modelRoots) {
-                    log.info("Importing template from "
-                            + modelRoot.getAbsolutePath());
+                    log.info("Importing template from " + modelRoot.getAbsolutePath());
                     nbImportedDocs += importModelAndExamples(modelRoot);
                 }
                 markImportDone();
@@ -251,14 +240,12 @@ public class ModelImporter {
                 DocumentModel templatesContainer = getOrCreateTemplateContainer();
                 DocumentModel samplesContainer = getOrCreateSampleContainer();
                 if (templatesContainer != null) {
-                    DocumentRef modelRef = importModel(root.getName(),
-                            roots.get(TEMPLATE_ROOT), templatesContainer);
+                    DocumentRef modelRef = importModel(root.getName(), roots.get(TEMPLATE_ROOT), templatesContainer);
                     nbImportedDocs++;
                     if (samplesContainer != null) {
                         if (roots.get(EXAMPLES_ROOT) != null) {
                             nbImportedDocs = nbImportedDocs
-                                    + importSamples(roots.get(EXAMPLES_ROOT),
-                                            modelRef, samplesContainer);
+                                    + importSamples(roots.get(EXAMPLES_ROOT), modelRef, samplesContainer);
                         }
                     }
                 }
@@ -269,13 +256,11 @@ public class ModelImporter {
 
     }
 
-    protected DocumentRef importModel(String modelName, File source,
-            DocumentModel root) throws Exception {
+    protected DocumentRef importModel(String modelName, File source, DocumentModel root) throws Exception {
 
         // import
         DocumentReader reader = new XMLModelReader(source, modelName);
-        DocumentWriter writer = new DocumentModelWriter(session,
-                root.getPathAsString());
+        DocumentWriter writer = new DocumentModelWriter(session, root.getPathAsString());
 
         DocumentPipe pipe = new DocumentPipeImpl(10);
         pipe.setReader(reader);
@@ -288,8 +273,7 @@ public class ModelImporter {
         return ref;
     }
 
-    protected int importSamples(File root, DocumentRef modelRef,
-            DocumentModel rootDoc) throws Exception {
+    protected int importSamples(File root, DocumentRef modelRef, DocumentModel rootDoc) throws Exception {
 
         int nbImportedDocs = 0;
         for (File exampleDir : root.listFiles()) {
@@ -298,10 +282,8 @@ public class ModelImporter {
             }
 
             // import
-            DocumentReader reader = new XMLModelReader(exampleDir,
-                    exampleDir.getName());
-            DocumentWriter writer = new DocumentModelWriter(session,
-                    rootDoc.getPathAsString());
+            DocumentReader reader = new XMLModelReader(exampleDir, exampleDir.getName());
+            DocumentWriter writer = new DocumentModelWriter(session, rootDoc.getPathAsString());
 
             DocumentPipe pipe = new DocumentPipeImpl(10);
 
@@ -310,8 +292,7 @@ public class ModelImporter {
             pipe.addTransformer(new DocumentTransformer() {
 
                 @Override
-                public boolean transform(ExportedDocument xdoc)
-                        throws IOException {
+                public boolean transform(ExportedDocument xdoc) throws IOException {
                     xdoc.getDocument().accept(new Visitor() {
 
                         @Override

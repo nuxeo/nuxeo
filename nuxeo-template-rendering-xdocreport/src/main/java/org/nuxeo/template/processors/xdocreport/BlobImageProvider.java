@@ -12,7 +12,6 @@ import fr.opensagres.xdocreport.document.images.AbstractInputStreamImageProvider
  * XDocReport wrapper for a Picture stored in a Nuxeo Blob
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class BlobImageProvider extends AbstractInputStreamImageProvider {
 

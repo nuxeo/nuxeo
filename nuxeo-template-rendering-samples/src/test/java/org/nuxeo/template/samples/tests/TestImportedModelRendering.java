@@ -49,17 +49,13 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.CLASS)
-@Deploy({ "org.nuxeo.ecm.platform.content.template",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.event",
-        "org.nuxeo.ecm.core.convert.api",
-        "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
-        "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore",
-        "org.nuxeo.template.manager.api", "org.nuxeo.template.manager",
-        "org.nuxeo.template.manager.jaxrs",
-        "org.nuxeo.template.manager.xdocreport",
-        "org.nuxeo.template.manager.jxls", "org.nuxeo.template.manager.samples" })
+@Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.event",
+        "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.platform.mimetype.api",
+        "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
+        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore",
+        "org.nuxeo.template.manager.api", "org.nuxeo.template.manager", "org.nuxeo.template.manager.jaxrs",
+        "org.nuxeo.template.manager.xdocreport", "org.nuxeo.template.manager.jxls",
+        "org.nuxeo.template.manager.samples" })
 public class TestImportedModelRendering {
 
     DocumentModel rootDocument;
@@ -94,8 +90,7 @@ public class TestImportedModelRendering {
         assertTrue(htmlContent.contains("<link class=\"component\" href=\"/nuxeo/site/templates/doc/"
                 + note4Web.getId() + "/"));
         assertTrue(htmlContent.contains("<title> Note4Web </title>"));
-        assertTrue(htmlContent.contains("<img src=\"/nuxeo/nxbigfile/test/"
-                + note4Web.getId() + "/blobholder:1/"));
+        assertTrue(htmlContent.contains("<img src=\"/nuxeo/nxbigfile/test/" + note4Web.getId() + "/blobholder:1/"));
     }
 
     @Test
@@ -121,27 +116,23 @@ public class TestImportedModelRendering {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        BlobHolder textBH = cs.convertToMimeType("text/plain",
-                new SimpleBlobHolder(blob), new HashMap<String, Serializable>());
+        BlobHolder textBH = cs.convertToMimeType("text/plain", new SimpleBlobHolder(blob),
+                new HashMap<String, Serializable>());
         assertNotNull(textBH);
         String text = textBH.getBlob().getString();
 
         // check TOC (well, content: spaces vary within the TOC)
         String checkedText = "1 Overview";
-        assertTrue(String.format("Expecting text '%s' inside '%s'",
-                checkedText, text), text.contains(checkedText));
+        assertTrue(String.format("Expecting text '%s' inside '%s'", checkedText, text), text.contains(checkedText));
         checkedText = "1.1 Introduction";
-        assertTrue(String.format("Expecting text '%s' inside '%s'",
-                checkedText, text), text.contains(checkedText));
+        assertTrue(String.format("Expecting text '%s' inside '%s'", checkedText, text), text.contains(checkedText));
 
         // remove "unbreakable spaces"
         text = text.replaceAll("\\u00A0", " ");
 
         // check include
-        checkedText = "This set of plugins provides a way to "
-                + "associate a Nuxeo Document with a Template.";
-        assertTrue(String.format("Expecting text '%s' inside '%s'",
-                checkedText, text), text.contains(checkedText));
+        checkedText = "This set of plugins provides a way to " + "associate a Nuxeo Document with a Template.";
+        assertTrue(String.format("Expecting text '%s' inside '%s'", checkedText, text), text.contains(checkedText));
     }
 
     @Test
@@ -167,8 +158,7 @@ public class TestImportedModelRendering {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        BlobHolder textBH = cs.convert("xl2text", new SimpleBlobHolder(blob),
-                new HashMap<String, Serializable>());
+        BlobHolder textBH = cs.convert("xl2text", new SimpleBlobHolder(blob), new HashMap<String, Serializable>());
         assertNotNull(textBH);
         String text = textBH.getBlob().getString();
 
@@ -184,8 +174,7 @@ public class TestImportedModelRendering {
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
 
-        ref = new PathRef(
-                "default-domain/workspaces/templatesamples/intervention");
+        ref = new PathRef("default-domain/workspaces/templatesamples/intervention");
         DocumentModel intervention = session.getDocument(ref);
 
         TemplateBasedDocument interventionTemplate = intervention.getAdapter(TemplateBasedDocument.class);
@@ -201,8 +190,8 @@ public class TestImportedModelRendering {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        BlobHolder textBH = cs.convertToMimeType("text/plain",
-                new SimpleBlobHolder(blob), new HashMap<String, Serializable>());
+        BlobHolder textBH = cs.convertToMimeType("text/plain", new SimpleBlobHolder(blob),
+                new HashMap<String, Serializable>());
         assertNotNull(textBH);
         String text = textBH.getBlob().getString();
 

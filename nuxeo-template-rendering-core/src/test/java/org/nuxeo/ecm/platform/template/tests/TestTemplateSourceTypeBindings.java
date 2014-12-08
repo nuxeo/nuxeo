@@ -34,29 +34,21 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.dublincore");
         deployBundle("org.nuxeo.template.manager.api");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/life-cycle-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/adapter-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-service.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/listener-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/core-types-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/life-cycle-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/adapter-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/templateprocessor-service.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/templateprocessor-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/listener-contrib.xml");
         openSession();
     }
 
-    protected TemplateSourceDocument createTemplateDoc(String name)
-            throws Exception {
+    protected TemplateSourceDocument createTemplateDoc(String name) throws Exception {
 
         DocumentModel root = session.getRootDocument();
 
         // create template
-        DocumentModel templateDoc = session.createDocumentModel(
-                root.getPathAsString(), name, "TemplateSource");
+        DocumentModel templateDoc = session.createDocumentModel(root.getPathAsString(), name, "TemplateSource");
         templateDoc.setProperty("dublincore", "title", name);
         File file = FileUtils.getResourceFileFromContext("data/testDoc.odt");
         Blob fileBlob = new FileBlob(file);
@@ -70,14 +62,12 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         return result;
     }
 
-    protected TemplateSourceDocument createWebTemplateDoc(String name)
-            throws Exception {
+    protected TemplateSourceDocument createWebTemplateDoc(String name) throws Exception {
 
         DocumentModel root = session.getRootDocument();
 
         // create template
-        DocumentModel templateDoc = session.createDocumentModel(
-                root.getPathAsString(), name, "WebTemplateSource");
+        DocumentModel templateDoc = session.createDocumentModel(root.getPathAsString(), name, "WebTemplateSource");
         templateDoc.setProperty("dublincore", "title", name);
         templateDoc.setProperty("note", "note", "Template ${doc.title}");
         templateDoc = session.createDocument(templateDoc);
@@ -135,8 +125,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
         // check update on initial template
         // re-fetch staled DocumentModel
-        t1 = session.getDocument(new IdRef(t1.getAdaptedDoc().getId())).getAdapter(
-                TemplateSourceDocument.class);
+        t1 = session.getDocument(new IdRef(t1.getAdaptedDoc().getId())).getAdapter(TemplateSourceDocument.class);
         assertTrue(t1.getForcedTypes().contains("File"));
         assertTrue(t1.getForcedTypes().contains("Note"));
     }
@@ -155,8 +144,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
         // now create a simple file
         DocumentModel root = session.getRootDocument();
-        DocumentModel simpleFile = session.createDocumentModel(
-                root.getPathAsString(), "myTestFile", "File");
+        DocumentModel simpleFile = session.createDocumentModel(root.getPathAsString(), "myTestFile", "File");
         simpleFile = session.createDocument(simpleFile);
 
         session.save();
@@ -171,8 +159,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
         // now create a simple file
-        DocumentModel simpleFile2 = session.createDocumentModel(
-                root.getPathAsString(), "myTestFile2", "File");
+        DocumentModel simpleFile2 = session.createDocumentModel(root.getPathAsString(), "myTestFile2", "File");
         simpleFile2 = session.createDocument(simpleFile2);
 
         // verify that template has NOT been associated
@@ -189,8 +176,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
         // now create a simple Note
         DocumentModel root = session.getRootDocument();
-        DocumentModel simpleNote = session.createDocumentModel(
-                root.getPathAsString(), "myTestFile", "Note");
+        DocumentModel simpleNote = session.createDocumentModel(root.getPathAsString(), "myTestFile", "Note");
         simpleNote = session.createDocument(simpleNote);
 
         session.save();
@@ -199,8 +185,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         assertNull(simpleNote.getAdapter(TemplateBasedDocument.class));
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-        simpleNote = tps.makeTemplateBasedDocument(simpleNote,
-                t1.getAdaptedDoc(), true);
+        simpleNote = tps.makeTemplateBasedDocument(simpleNote, t1.getAdaptedDoc(), true);
 
         // verify that template has been associated
         assertNotNull(simpleNote.getAdapter(TemplateBasedDocument.class));
@@ -227,8 +212,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
         // now create a simple file
         DocumentModel root = session.getRootDocument();
-        DocumentModel simpleFile = session.createDocumentModel(
-                root.getPathAsString(), "myTestFile", "File");
+        DocumentModel simpleFile = session.createDocumentModel(root.getPathAsString(), "myTestFile", "File");
         simpleFile = session.createDocument(simpleFile);
 
         session.save();

@@ -67,8 +67,7 @@ public class TestMultiTemplating extends SQLRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         // create ODT template
-        odtTemplateDoc = session.createDocumentModel(root.getPathAsString(),
-                "odtTemplatedDoc", "TemplateSource");
+        odtTemplateDoc = session.createDocumentModel(root.getPathAsString(), "odtTemplatedDoc", "TemplateSource");
         odtTemplateDoc.setProperty("dublincore", "title", "ODT Template");
         odtTemplateDoc.setPropertyValue("tmpl:templateName", "odt");
         Blob fileBlob = getODTTemplateBlob();
@@ -78,8 +77,7 @@ public class TestMultiTemplating extends SQLRepositoryTestCase {
         session.save();
 
         // create FTL template
-        ftlTemplateDoc = session.createDocumentModel(root.getPathAsString(),
-                "ftlTemplatedDoc", "TemplateSource");
+        ftlTemplateDoc = session.createDocumentModel(root.getPathAsString(), "ftlTemplatedDoc", "TemplateSource");
         ftlTemplateDoc.setProperty("dublincore", "title", "FTL Template");
         ftlTemplateDoc.setPropertyValue("tmpl:templateName", "ftl");
         fileBlob = getFTLTemplateBlob();
@@ -89,8 +87,7 @@ public class TestMultiTemplating extends SQLRepositoryTestCase {
         session.save();
 
         // now create simple doc
-        testDoc = session.createDocumentModel(root.getPathAsString(),
-                "testDoc", "File");
+        testDoc = session.createDocumentModel(root.getPathAsString(), "testDoc", "File");
         testDoc.setProperty("dublincore", "title", "MyTestDoc");
         testDoc.setProperty("dublincore", "description", "some description");
 
@@ -123,8 +120,7 @@ public class TestMultiTemplating extends SQLRepositoryTestCase {
         Blob rendered = tbd.renderWithTemplate("odt");
         assertNotNull(rendered);
 
-        String xmlContent = ZipXmlHelper.readXMLContent(rendered,
-                ZipXmlHelper.OOO_MAIN_FILE);
+        String xmlContent = ZipXmlHelper.readXMLContent(rendered, ZipXmlHelper.OOO_MAIN_FILE);
 
         assertTrue(xmlContent.contains("Subject 1"));
         assertTrue(xmlContent.contains("Subject 2"));

@@ -11,8 +11,7 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
 import static org.junit.Assert.*;
 
-public class TestODTProcessingWithSimpleAttributes extends
-        SimpleTemplateDocTestCase {
+public class TestODTProcessingWithSimpleAttributes extends SimpleTemplateDocTestCase {
 
     @Test
     public void testDocumentsAttributes() throws Exception {
@@ -24,8 +23,7 @@ public class TestODTProcessingWithSimpleAttributes extends
 
         // System.out.println(((FileBlob) newBlob).getFile().getAbsolutePath());
 
-        String xmlContent = ZipXmlHelper.readXMLContent(newBlob,
-                ZipXmlHelper.OOO_MAIN_FILE);
+        String xmlContent = ZipXmlHelper.readXMLContent(newBlob, ZipXmlHelper.OOO_MAIN_FILE);
 
         assertTrue(xmlContent.contains("Subject 1"));
         assertTrue(xmlContent.contains("Subject 2"));

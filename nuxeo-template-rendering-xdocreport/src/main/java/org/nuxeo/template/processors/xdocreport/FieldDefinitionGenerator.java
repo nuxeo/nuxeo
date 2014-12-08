@@ -14,9 +14,7 @@ import fr.opensagres.xdocreport.template.TemplateEngineKind;
 import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class FieldDefinitionGenerator {
 
@@ -33,8 +31,7 @@ public class FieldDefinitionGenerator {
 
     protected static String generate(String[] schemaNames) throws Exception {
 
-        FieldsMetadata fieldsMetadata = new FieldsMetadata(
-                TemplateEngineKind.Freemarker.name());
+        FieldsMetadata fieldsMetadata = new FieldsMetadata(TemplateEngineKind.Freemarker.name());
 
         for (String schemaName : schemaNames) {
             SchemaManager sm = Framework.getLocalService(SchemaManager.class);
@@ -54,13 +51,11 @@ public class FieldDefinitionGenerator {
 
                         ComplexType ct = (ComplexType) field.getType();
                         if ("content".equals(ct.getName())) {
-                            fieldsMetadata.addField(fieldName + ".filename",
-                                    false, null, null, null);
+                            fieldsMetadata.addField(fieldName + ".filename", false, null, null, null);
                         } else {
                             for (Field subField : ct.getFields()) {
-                                fieldsMetadata.addField(fieldName + "."
-                                        + subField.getName().getLocalName(),
-                                        false, null, null, null);
+                                fieldsMetadata.addField(fieldName + "." + subField.getName().getLocalName(), false,
+                                        null, null, null);
                             }
                         }
                     }
@@ -94,20 +89,16 @@ public class FieldDefinitionGenerator {
 
         fieldsMetadata.addField("auditEntries", false, null, null, null);
         fieldsMetadata.addField("auditEntries.id", true, null, null, null);
-        fieldsMetadata.addField("auditEntries.principalName", true, null, null,
-                null);
+        fieldsMetadata.addField("auditEntries.principalName", true, null, null, null);
         fieldsMetadata.addField("auditEntries.eventId", true, null, null, null);
-        fieldsMetadata.addField("auditEntries.eventDate", true, null, null,
-                null);
+        fieldsMetadata.addField("auditEntries.eventDate", true, null, null, null);
         fieldsMetadata.addField("auditEntries.docUUID", true, null, null, null);
         fieldsMetadata.addField("auditEntries.docPath", true, null, null, null);
         fieldsMetadata.addField("auditEntries.docType", true, null, null, null);
         fieldsMetadata.addField("auditEntries.category", true, null, null, null);
         fieldsMetadata.addField("auditEntries.comment", true, null, null, null);
-        fieldsMetadata.addField("auditEntries.docLifeCycle", true, null, null,
-                null);
-        fieldsMetadata.addField("auditEntries.repositoryId", true, null, null,
-                null);
+        fieldsMetadata.addField("auditEntries.docLifeCycle", true, null, null, null);
+        fieldsMetadata.addField("auditEntries.repositoryId", true, null, null, null);
 
         StringWriter writer = new StringWriter();
 

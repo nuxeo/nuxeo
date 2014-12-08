@@ -30,8 +30,7 @@ public class RenditionPublicationRepositoryInit extends DefaultRepositoryInit {
     public void populate(CoreSession session) throws ClientException {
         super.populate(session);
 
-        DocumentModel doc = session.createDocumentModel("/default-domain/sections", "section",
-                "Section");
+        DocumentModel doc = session.createDocumentModel("/default-domain/sections", "section", "Section");
         doc.setProperty("dublincore", "title", "Section1");
         doc = session.createDocument(doc);
         session.saveDocument(doc);

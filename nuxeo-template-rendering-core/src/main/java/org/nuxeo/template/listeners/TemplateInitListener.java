@@ -47,15 +47,12 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 /**
  * Listener to manage initialization :
- *
  * <ul>
  * <li>of the TemplateSourceDocument : init the parameters</li>
- * <li>of the other DocumentModels if they need to be automatically associated
- * to a template</li>
+ * <li>of the other DocumentModels if they need to be automatically associated to a template</li>
  * </ul>
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class TemplateInitListener implements EventListener {
 
@@ -65,8 +62,7 @@ public class TemplateInitListener implements EventListener {
 
         EventContext ctx = event.getContext();
 
-        if (ABOUT_TO_CREATE.equals(event.getName())
-                || BEFORE_DOC_UPDATE.equals(event.getName())) {
+        if (ABOUT_TO_CREATE.equals(event.getName()) || BEFORE_DOC_UPDATE.equals(event.getName())) {
             if (ctx instanceof DocumentEventContext) {
                 DocumentEventContext docCtx = (DocumentEventContext) ctx;
 
@@ -82,21 +78,16 @@ public class TemplateInitListener implements EventListener {
                     try {
                         templateDoc.initTypesBindings();
                     } catch (Exception e) {
-                        log.error(
-                                "Error during type binding automatic initialization",
-                                e);
+                        log.error("Error during type binding automatic initialization", e);
                     }
 
                     // init template source
                     List<TemplateInput> params = templateDoc.getParams();
-                    if (params == null || params.size() == 0
-                            || isBlobDirty(targetDoc)) {
+                    if (params == null || params.size() == 0 || isBlobDirty(targetDoc)) {
                         try {
                             templateDoc.initTemplate(false);
                         } catch (Exception e) {
-                            log.error(
-                                    "Error during parameter automatic initialization",
-                                    e);
+                            log.error("Error during parameter automatic initialization", e);
                         }
                     }
                 } else {
@@ -118,8 +109,7 @@ public class TemplateInitListener implements EventListener {
                             templatesUids.add(targetTemplateUid);
                         }
 
-                        List<String> tuids = tps.getTypeMapping().get(
-                                targetDoc.getType());
+                        List<String> tuids = tps.getTypeMapping().get(targetDoc.getType());
                         if (tuids != null) {
                             for (String tuid : tuids) {
                                 // let's be paranoid
@@ -135,10 +125,8 @@ public class TemplateInitListener implements EventListener {
                                 DocumentRef templateRef = new IdRef(tuid);
                                 // check if source template is visible
                                 if (docCtx.getCoreSession().exists(templateRef)) {
-                                    DocumentModel sourceTemplateDoc = docCtx.getCoreSession().getDocument(
-                                            templateRef);
-                                    tps.makeTemplateBasedDocument(targetDoc,
-                                            sourceTemplateDoc, false);
+                                    DocumentModel sourceTemplateDoc = docCtx.getCoreSession().getDocument(templateRef);
+                                    tps.makeTemplateBasedDocument(targetDoc, sourceTemplateDoc, false);
                                 }
                             }
                         }
@@ -148,8 +136,7 @@ public class TemplateInitListener implements EventListener {
         }
     }
 
-    protected boolean isBlobDirty(DocumentModel targetDoc)
-            throws ClientException {
+    protected boolean isBlobDirty(DocumentModel targetDoc) throws ClientException {
         BlobHolder bh = targetDoc.getAdapter(BlobHolder.class);
         Blob mainBlob = bh.getBlob();
         if (mainBlob.getDigest() == null) {

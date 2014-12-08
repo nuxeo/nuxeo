@@ -35,8 +35,7 @@ public class TestXDocReportODSProcessing extends SimpleTemplateDocTestCase {
 
         Blob newBlob = processor.renderTemplate(adapter, TEMPLATE_NAME);
 
-        String xmlContent = ZipXmlHelper.readXMLContent(newBlob,
-                ZipXmlHelper.OOO_MAIN_FILE);
+        String xmlContent = ZipXmlHelper.readXMLContent(newBlob, ZipXmlHelper.OOO_MAIN_FILE);
 
         assertTrue(xmlContent.contains(testDoc.getTitle()));
         assertTrue(xmlContent.contains("YoVar1"));

@@ -29,21 +29,17 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.dublincore");
         deployBundle("org.nuxeo.template.manager.api");
         deployBundle("org.nuxeo.template.manager");
-        deployContrib("org.nuxeo.template.manager.jaxrs",
-                "OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.nuxeo.template.manager.jaxrs",
-                "OSGI-INF/life-cycle-contrib.xml");
+        deployContrib("org.nuxeo.template.manager.jaxrs", "OSGI-INF/core-types-contrib.xml");
+        deployContrib("org.nuxeo.template.manager.jaxrs", "OSGI-INF/life-cycle-contrib.xml");
         openSession();
     }
 
-    protected TemplateSourceDocument createTemplateDoc(String name)
-            throws Exception {
+    protected TemplateSourceDocument createTemplateDoc(String name) throws Exception {
 
         DocumentModel root = session.getRootDocument();
 
         // create template
-        DocumentModel templateDoc = session.createDocumentModel(
-                root.getPathAsString(), name, "TemplateSource");
+        DocumentModel templateDoc = session.createDocumentModel(root.getPathAsString(), name, "TemplateSource");
         templateDoc.setProperty("dublincore", "title", name);
         File file = FileUtils.getResourceFileFromContext("data/testDoc.odt");
         Blob fileBlob = new FileBlob(file);
@@ -57,14 +53,12 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         return result;
     }
 
-    protected TemplateSourceDocument createWebTemplateDoc(String name)
-            throws Exception {
+    protected TemplateSourceDocument createWebTemplateDoc(String name) throws Exception {
 
         DocumentModel root = session.getRootDocument();
 
         // create template
-        DocumentModel templateDoc = session.createDocumentModel(
-                root.getPathAsString(), name, "WebTemplateSource");
+        DocumentModel templateDoc = session.createDocumentModel(root.getPathAsString(), name, "WebTemplateSource");
         templateDoc.setProperty("dublincore", "title", name);
         templateDoc.setProperty("note", "note", "Template ${doc.title}");
         templateDoc = session.createDocument(templateDoc);

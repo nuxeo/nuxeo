@@ -27,8 +27,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
 
     protected abstract Object handleLoop(String paramName, Object value);
 
-    protected abstract Object handlePictureField(String paramName,
-            Blob blobValue);
+    protected abstract Object handlePictureField(String paramName, Blob blobValue);
 
     protected abstract void handleBlobField(String paramName, Blob blobValue);
 
@@ -36,8 +35,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
         return HtmlBodyExtractor.extractHtmlBody(htmlValue);
     }
 
-    protected DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(
-            null);
+    protected DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(null);
 
     public AbstractBindingResolver() {
         super();
@@ -48,8 +46,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
     }
 
     @Override
-    public void resolve(List<TemplateInput> inputParams,
-            Map<String, Object> context,
+    public void resolve(List<TemplateInput> inputParams, Map<String, Object> context,
             TemplateBasedDocument templateBasedDocument) {
 
         for (TemplateInput param : inputParams) {
@@ -57,66 +54,52 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                 if (param.isSourceValue()) {
                     if (param.getType() == InputType.Content) {
 
-                        if (ContentInputType.HtmlPreview.getValue().equals(
-                                param.getSource())) {
+                        if (ContentInputType.HtmlPreview.getValue().equals(param.getSource())) {
                             HtmlPreviewAdapter preview = templateBasedDocument.getAdaptedDoc().getAdapter(
                                     HtmlPreviewAdapter.class);
                             String htmlValue = "";
                             if (preview != null) {
                                 List<Blob> blobs = preview.getFilePreviewBlobs();
                                 if (blobs.size() > 0) {
-                                    Blob htmlBlob = preview.getFilePreviewBlobs().get(
-                                            0);
+                                    Blob htmlBlob = preview.getFilePreviewBlobs().get(0);
                                     if (htmlBlob != null) {
                                         htmlValue = htmlBlob.getString();
                                     }
                                 }
                             } else {
-                                BlobHolder bh = templateBasedDocument.getAdaptedDoc().getAdapter(
-                                        BlobHolder.class);
+                                BlobHolder bh = templateBasedDocument.getAdaptedDoc().getAdapter(BlobHolder.class);
                                 if (bh != null) {
                                     Blob htmlBlob = bh.getBlob();
-                                    if (htmlBlob != null
-                                            && htmlBlob.getMimeType() != null
-                                            && htmlBlob.getMimeType().startsWith(
-                                                    "text/")) {
+                                    if (htmlBlob != null && htmlBlob.getMimeType() != null
+                                            && htmlBlob.getMimeType().startsWith("text/")) {
                                         htmlValue = htmlBlob.getString();
                                     }
                                 }
                             }
-                            htmlValue = handleHtmlField(param.getName(),
-                                    htmlValue);
+                            htmlValue = handleHtmlField(param.getName(), htmlValue);
                             context.put(param.getName(), htmlValue);
                             continue;
-                        } else if (ContentInputType.BlobContent.getValue().equals(
-                                param.getSource())) {
-                            Object propValue = templateBasedDocument.getAdaptedDoc().getPropertyValue(
-                                    param.getSource());
+                        } else if (ContentInputType.BlobContent.getValue().equals(param.getSource())) {
+                            Object propValue = templateBasedDocument.getAdaptedDoc().getPropertyValue(param.getSource());
                             if (propValue != null && propValue instanceof Blob) {
                                 Blob blobValue = (Blob) propValue;
-                                context.put(param.getName(),
-                                        blobValue.getString());
+                                context.put(param.getName(), blobValue.getString());
                                 handleBlobField(param.getName(), blobValue);
                             }
                         } else {
-                            Object propValue = templateBasedDocument.getAdaptedDoc().getPropertyValue(
-                                    param.getSource());
+                            Object propValue = templateBasedDocument.getAdaptedDoc().getPropertyValue(param.getSource());
                             if (propValue instanceof String) {
                                 String stringContent = (String) propValue;
-                                String htmlValue = handleHtmlField(
-                                        param.getName(), stringContent);
+                                String htmlValue = handleHtmlField(param.getName(), stringContent);
                                 context.put(param.getName(), htmlValue);
                             }
                         }
                     }
                     Property property = null;
                     try {
-                        property = templateBasedDocument.getAdaptedDoc().getProperty(
-                                param.getSource());
+                        property = templateBasedDocument.getAdaptedDoc().getProperty(param.getSource());
                     } catch (Throwable e) {
-                        log.warn(
-                                "Unable to ready property " + param.getSource(),
-                                e);
+                        log.warn("Unable to ready property " + param.getSource(), e);
                     }
 
                     Serializable value = null;
@@ -131,25 +114,19 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                             if (Blob.class.isAssignableFrom(value.getClass())) {
                                 Blob blob = (Blob) value;
                                 if (param.getType() == InputType.PictureProperty) {
-                                    if (blob.getMimeType() == null
-                                            || "".equals(blob.getMimeType().trim())) {
+                                    if (blob.getMimeType() == null || "".equals(blob.getMimeType().trim())) {
                                         blob.setMimeType("image/jpeg");
                                     }
-                                    context.put(
-                                            param.getName(),
-                                            handlePictureField(param.getName(),
-                                                    blob));
+                                    context.put(param.getName(), handlePictureField(param.getName(), blob));
                                 }
                             } else {
                                 if (param.isAutoLoop()) {
                                     // should do the same on all children
                                     // properties ?
-                                    Object loopVal = handleLoop(
-                                            param.getName(), property);
+                                    Object loopVal = handleLoop(param.getName(), property);
                                     context.put(param.getName(), loopVal);
                                 } else {
-                                    context.put(param.getName(),
-                                            nuxeoWrapper.wrap(property));
+                                    context.put(param.getName(), nuxeoWrapper.wrap(property));
                                 }
                             }
                         }
@@ -170,18 +147,11 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                             }
                             // handle special case for pictures
                             if (param.getType() == InputType.PictureProperty) {
-                                context.put(
-                                        param.getName(),
-                                        handlePictureField(param.getName(),
-                                                null));
+                                context.put(param.getName(), handlePictureField(param.getName(), null));
                             }
                         } else {
-                            if (param.getType().equals(
-                                    InputType.PictureProperty)) {
-                                context.put(
-                                        param.getName(),
-                                        handlePictureField(param.getName(),
-                                                null));
+                            if (param.getType().equals(InputType.PictureProperty)) {
+                                context.put(param.getName(), handlePictureField(param.getName(), null));
                             }
                         }
                     }
@@ -196,9 +166,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                     }
                 }
             } catch (Exception e) {
-                log.warn(
-                        "Unable to handle binding for param " + param.getName(),
-                        e);
+                log.warn("Unable to handle binding for param " + param.getName(), e);
             }
         }
     }

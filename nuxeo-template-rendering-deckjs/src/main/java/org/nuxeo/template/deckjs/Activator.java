@@ -33,8 +33,7 @@ public class Activator extends TemplateBundleActivator {
         super.start(context);
     }
 
-    public static InputStream getResourceAsStream(String path)
-            throws IOException {
+    public static InputStream getResourceAsStream(String path) throws IOException {
         URL url = instance.getResource(path);
         return url != null ? url.openStream() : null;
     }

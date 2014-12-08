@@ -61,13 +61,11 @@ public class TemplateResource extends DefaultObject {
     protected String getList() throws Exception {
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-        List<TemplateSourceDocument> sources = tps.getAvailableTemplates(
-                getContext().getCoreSession(), null);
+        List<TemplateSourceDocument> sources = tps.getAvailableTemplates(getContext().getCoreSession(), null);
 
         StringBuffer sb = new StringBuffer();
         for (TemplateSourceDocument source : sources) {
-            sb.append(source.getId() + " - " + source.getName() + "-"
-                    + source.getLabel());
+            sb.append(source.getId() + " - " + source.getName() + "-" + source.getLabel());
             sb.append("\n");
         }
         return sb.toString();
@@ -76,14 +74,12 @@ public class TemplateResource extends DefaultObject {
     @GET
     @Path("resource/{resourceName}")
     @Produces("*/*")
-    public Blob getResource(@PathParam(value = "resourceName")
-    String resourceName) throws Exception {
+    public Blob getResource(@PathParam(value = "resourceName") String resourceName) throws Exception {
         TemplateSourceDocument tmpl = resolve();
         return getResource(tmpl, resourceName);
     }
 
-    static Blob getResource(TemplateSourceDocument tmpl, String resourceName)
-            throws Exception {
+    static Blob getResource(TemplateSourceDocument tmpl, String resourceName) throws Exception {
 
         BlobHolder bh = tmpl.getAdaptedDoc().getAdapter(BlobHolder.class);
         if (bh != null) {

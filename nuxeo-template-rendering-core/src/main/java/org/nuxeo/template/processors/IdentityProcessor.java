@@ -12,14 +12,12 @@ public class IdentityProcessor extends AbstractTemplateProcessor {
     public static final String NAME = "Identity";
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument,
-            String templateName) throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws Exception {
         return getSourceTemplateBlob(templateBasedDocument, templateName);
     }
 
     @Override
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob)
-            throws Exception {
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
         return new ArrayList<TemplateInput>();
     }
 
