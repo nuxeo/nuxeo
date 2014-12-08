@@ -21,7 +21,6 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 
-
 public class BasicAWSCredentialsProvider implements AWSCredentialsProvider {
 
     protected BasicAWSCredentials basicAWSCredentials;
@@ -39,4 +38,3 @@ public class BasicAWSCredentialsProvider implements AWSCredentialsProvider {
     }
 
 }
-
