@@ -1433,6 +1433,7 @@ public class PersistenceContext {
         }
         checkFreeName(parentId, name, complexProp(hierFragment));
         // do the copy
+        Long pos = getNextPos(parentId, false);
         CopyResult copyResult = mapper.copy(new IdWithTypes(source), parentId,
                 name, null);
         Serializable newId = copyResult.copyId;
@@ -1456,6 +1457,8 @@ public class PersistenceContext {
         if (source.isVersion()) {
             copy.put(Model.MAIN_IS_VERSION_KEY, null);
         }
+        // pos fixup
+        copy.put(Model.HIER_CHILD_POS_KEY, pos);
         return newId;
     }
 
