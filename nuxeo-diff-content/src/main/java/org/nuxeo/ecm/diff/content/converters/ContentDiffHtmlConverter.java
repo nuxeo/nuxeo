@@ -32,8 +32,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * HTML converter for content diff.
  * <p>
- * Uses the converter registered with sourceMimeType = mime type of the
- * {@code blobHolder} and destinationMimeType = {@code text/html}.
+ * Uses the converter registered with sourceMimeType = mime type of the {@code blobHolder} and destinationMimeType =
+ * {@code text/html}.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.6
@@ -48,8 +48,7 @@ public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
 
     private static final String OFFICE_2_HTML_CONVERTER_NAME = "office2html";
 
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         String converterName = null;
 
@@ -58,8 +57,7 @@ public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
         try {
             blob = blobHolder.getBlob();
         } catch (ClientException ce) {
-            throw new ConversionException(
-                    "Cannot fetch blob from blob holder.", ce);
+            throw new ConversionException("Cannot fetch blob from blob holder.", ce);
         }
         if (blob == null) {
             LOGGER.warn("Trying to convert a blob holder that has a null blob. Nothing to do, returning the blob holder.");
@@ -76,15 +74,13 @@ public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
         // In this case we want to use the "office2html" converter which
         // gives a better result when applying the HTMLContentDiffer on the
         // converted HTML.
-        if (ANY_2_HTML_CONVERTER_NAME.equals(converterName)
-                && !"application/pdf".equals(mimeType)) {
+        if (ANY_2_HTML_CONVERTER_NAME.equals(converterName) && !"application/pdf".equals(mimeType)) {
             converterName = OFFICE_2_HTML_CONVERTER_NAME;
         }
 
         // No converter found, throw appropriate exception
         if (converterName == null) {
-            throw new ConverterNotRegistered(String.format(
-                    "for sourceMimeType = %s, destinationMimeType = %s",
+            throw new ConverterNotRegistered(String.format("for sourceMimeType = %s, destinationMimeType = %s",
                     mimeType, HTML_MIME_TYPE));
         }
 

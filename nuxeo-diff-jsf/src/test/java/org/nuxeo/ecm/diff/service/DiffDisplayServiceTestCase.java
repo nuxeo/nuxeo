@@ -40,8 +40,7 @@ public class DiffDisplayServiceTestCase {
      * @param label the label
      * @param schemaCount the schema count
      */
-    protected boolean checkDiffDisplayBlock(DiffDisplayBlock diffDisplayBlock,
-            String label, int schemaCount) {
+    protected boolean checkDiffDisplayBlock(DiffDisplayBlock diffDisplayBlock, String label, int schemaCount) {
 
         // Check label
         assertEquals(label, diffDisplayBlock.getLabel());
@@ -69,13 +68,11 @@ public class DiffDisplayServiceTestCase {
      * @param fieldCount the field count
      * @param fieldNames the field names
      */
-    protected void checkDiffDisplayBlockSchema(
-            DiffDisplayBlock diffDisplayBlock, String schemaName,
-            int fieldCount, List<String> fieldNames) {
+    protected void checkDiffDisplayBlockSchema(DiffDisplayBlock diffDisplayBlock, String schemaName, int fieldCount,
+            List<String> fieldNames) {
 
         // Check fields on left value
-        Map<String, PropertyDiffDisplay> fields = diffDisplayBlock.getLeftValue().get(
-                schemaName);
+        Map<String, PropertyDiffDisplay> fields = diffDisplayBlock.getLeftValue().get(schemaName);
         assertNotNull(fields);
         assertEquals(fieldCount, fields.size());
         for (String fieldName : fieldNames) {

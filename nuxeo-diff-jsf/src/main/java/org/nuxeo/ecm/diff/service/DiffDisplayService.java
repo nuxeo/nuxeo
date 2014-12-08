@@ -41,8 +41,7 @@ public interface DiffDisplayService extends Serializable {
 
     List<DiffComplexFieldDefinition> getDiffComplexFields();
 
-    DiffComplexFieldDefinition getDiffComplexField(String schemaName,
-            String fieldName);
+    DiffComplexFieldDefinition getDiffComplexField(String schemaName, String fieldName);
 
     Map<String, List<String>> getDiffDisplays();
 
@@ -52,7 +51,6 @@ public interface DiffDisplayService extends Serializable {
 
     DiffBlockDefinition getDiffBlockDefinition(String name);
 
-    List<DiffDisplayBlock> getDiffDisplayBlocks(DocumentDiff docDiff,
-            DocumentModel leftDoc, DocumentModel rightDoc)
+    List<DiffDisplayBlock> getDiffDisplayBlocks(DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc)
             throws ClientException;
 }

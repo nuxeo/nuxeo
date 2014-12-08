@@ -18,8 +18,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
 
 /**
- * Interface that should be implemented by contributed code to manage custom
- * content diff adapters.
+ * Interface that should be implemented by contributed code to manage custom content diff adapters.
  *
  * @author Antoine Taillefer
  * @since 5.6

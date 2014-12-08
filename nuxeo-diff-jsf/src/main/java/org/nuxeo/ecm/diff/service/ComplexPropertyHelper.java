@@ -31,52 +31,44 @@ import org.nuxeo.ecm.diff.model.PropertyType;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * TODO: refactor as a service + use xpath for fetching doc property values.
- * Helper to get complex property names and values, and list property values.
+ * TODO: refactor as a service + use xpath for fetching doc property values. Helper to get complex property names and
+ * values, and list property values.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public final class ComplexPropertyHelper {
 
-    public static Field getField(String schemaName, String fieldName)
-            throws ClientException {
+    public static Field getField(String schemaName, String fieldName) throws ClientException {
 
         Schema schema = getSchemaManager().getSchema(schemaName);
         if (schema == null) {
-            throw new ClientException(String.format(
-                    "Schema [%s] does not exist.", schemaName));
+            throw new ClientException(String.format("Schema [%s] does not exist.", schemaName));
         }
 
         Field field = schema.getField(fieldName);
         if (field == null) {
-            throw new ClientException(String.format(
-                    "Field [%s] does not exist in schema [%s].", fieldName,
-                    schemaName));
+            throw new ClientException(String.format("Field [%s] does not exist in schema [%s].", fieldName, schemaName));
         }
         return field;
     }
 
-    public static Field getComplexFieldItem(Field field, String complexItemName)
-            throws ClientException {
+    public static Field getComplexFieldItem(Field field, String complexItemName) throws ClientException {
 
         Type fieldType = field.getType();
         if (!fieldType.isComplexType()) {
-            throw new ClientException(String.format(
-                    "Field '%s' is not a complex type.", field));
+            throw new ClientException(String.format("Field '%s' is not a complex type.", field));
         }
 
         return ((ComplexType) fieldType).getField(complexItemName);
 
     }
 
-    public static List<Field> getComplexFieldItems(Field field)
-            throws ClientException {
+    public static List<Field> getComplexFieldItems(Field field) throws ClientException {
 
         Type fieldType = field.getType();
         if (!fieldType.isComplexType()) {
-            throw new ClientException(String.format(
-                    "Field [%s] is not a complex type.",
-                    field.getName().getLocalName()));
+            throw new ClientException(
+                    String.format("Field [%s] is not a complex type.", field.getName().getLocalName()));
         }
 
         return new ArrayList<Field>(((ComplexType) fieldType).getFields());
@@ -86,17 +78,14 @@ public final class ComplexPropertyHelper {
 
         Type fieldType = field.getType();
         if (!fieldType.isListType()) {
-            throw new ClientException(String.format(
-                    "Field [%s] is not a list type.",
-                    field.getName().getLocalName()));
+            throw new ClientException(String.format("Field [%s] is not a list type.", field.getName().getLocalName()));
         }
 
         Field listFieldItem = ((ListType) fieldType).getField();
         if (listFieldItem == null) {
-            throw new ClientException(
-                    String.format(
-                            "Field [%s] is a list type but has no field defining the elements stored by this list.",
-                            field.getName().getLocalName()));
+            throw new ClientException(String.format(
+                    "Field [%s] is a list type but has no field defining the elements stored by this list.",
+                    field.getName().getLocalName()));
         }
 
         return listFieldItem;
@@ -139,8 +128,7 @@ public final class ComplexPropertyHelper {
         return fieldTypeName;
     }
 
-    private static final SchemaManager getSchemaManager()
-            throws ClientException {
+    private static final SchemaManager getSchemaManager() throws ClientException {
 
         SchemaManager schemaManager;
         try {

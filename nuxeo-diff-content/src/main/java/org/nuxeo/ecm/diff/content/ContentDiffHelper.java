@@ -71,14 +71,11 @@ public final class ContentDiffHelper {
      * @return the content diff fancy box URL
      * @throws ClientException if URL cannot be retrieved from current doc view
      */
-    public static String getContentDiffFancyBoxURL(DocumentModel currentDoc,
-            String propertyLabel, String propertyXPath, String conversionType)
-            throws ClientException {
+    public static String getContentDiffFancyBoxURL(DocumentModel currentDoc, String propertyLabel,
+            String propertyXPath, String conversionType) throws ClientException {
 
-        DocumentLocation docLocation = new DocumentLocationImpl(
-                currentDoc.getRepositoryName(), currentDoc.getRef());
-        DocumentView docView = new DocumentViewImpl(docLocation,
-                CONTENT_DIFF_FANCYBOX_VIEW);
+        DocumentLocation docLocation = new DocumentLocationImpl(currentDoc.getRepositoryName(), currentDoc.getRef());
+        DocumentView docView = new DocumentViewImpl(docLocation, CONTENT_DIFF_FANCYBOX_VIEW);
         docView.setPatternName("id");
         URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
         String docUrl = urlPolicyService.getUrlFromDocumentView(docView, null);
@@ -114,12 +111,11 @@ public final class ContentDiffHelper {
      * @param locale the locale
      * @return the content diff URL
      */
-    public static String getContentDiffURL(DocumentModel leftDoc,
-            DocumentModel rightDoc, String conversionType, String locale) {
+    public static String getContentDiffURL(DocumentModel leftDoc, DocumentModel rightDoc, String conversionType,
+            String locale) {
 
-        return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc,
-                rightDoc, CONTENT_DIFF_URL_DEFAULT_XPATH, conversionType,
-                locale);
+        return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc, rightDoc, CONTENT_DIFF_URL_DEFAULT_XPATH,
+                conversionType, locale);
     }
 
     /**
@@ -132,12 +128,10 @@ public final class ContentDiffHelper {
      * @param locale the locale
      * @return the content diff URL
      */
-    public static String getContentDiffURL(DocumentModel leftDoc,
-            DocumentModel rightDoc, String propertyXPath,
+    public static String getContentDiffURL(DocumentModel leftDoc, DocumentModel rightDoc, String propertyXPath,
             String conversionType, String locale) {
 
-        return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc,
-                rightDoc, propertyXPath, conversionType, locale);
+        return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc, rightDoc, propertyXPath, conversionType, locale);
     }
 
     /**
@@ -151,8 +145,7 @@ public final class ContentDiffHelper {
      * @param locale the locale
      * @return the content diff URL
      */
-    public static String getContentDiffURL(String repositoryName,
-            DocumentModel leftDoc, DocumentModel rightDoc,
+    public static String getContentDiffURL(String repositoryName, DocumentModel leftDoc, DocumentModel rightDoc,
             String propertyXPath, String conversionType, String locale) {
 
         if (propertyXPath == null) {
@@ -190,8 +183,7 @@ public final class ContentDiffHelper {
     }
 
     /**
-     * Checks if the HTML conversion content diff is relevant for the specified
-     * property.
+     * Checks if the HTML conversion content diff is relevant for the specified property.
      */
     public static boolean isDisplayHtmlConversion(Serializable property) {
 
@@ -207,8 +199,7 @@ public final class ContentDiffHelper {
     }
 
     /**
-     * Checks if the text conversion content diff is relevant for the specified
-     * property.
+     * Checks if the text conversion content diff is relevant for the specified property.
      */
     public static boolean isDisplayTextConversion(Serializable property) {
 
@@ -231,8 +222,7 @@ public final class ContentDiffHelper {
     }
 
     /**
-     * Checks if the specified property is a content property, ie.
-     * {@code instanceof Blob}.
+     * Checks if the specified property is a content property, ie. {@code instanceof Blob}.
      */
     public static boolean isContentProperty(Serializable property) {
         return property instanceof Blob;

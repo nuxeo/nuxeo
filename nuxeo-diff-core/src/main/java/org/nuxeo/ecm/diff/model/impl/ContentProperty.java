@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.io.ExportConstants;
 
 /**
- * Implementation of a content property (blob), defined by the {@code content}
- * low level complex type.
+ * Implementation of a content property (blob), defined by the {@code content} low level complex type.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
@@ -43,8 +42,7 @@ public class ContentProperty implements Serializable {
     public ContentProperty() {
     }
 
-    public ContentProperty(String encoding, String mimeType, String filename,
-            String digest) {
+    public ContentProperty(String encoding, String mimeType, String filename, String digest) {
         this.encoding = encoding;
         this.mimeType = mimeType;
         this.filename = filename;
@@ -83,8 +81,7 @@ public class ContentProperty implements Serializable {
         this.digest = digest;
     }
 
-    public void setSubProperty(String subPropertyName, String subPropertyValue)
-            throws ClientException {
+    public void setSubProperty(String subPropertyName, String subPropertyValue) throws ClientException {
         if (ExportConstants.BLOB_ENCODING.equals(subPropertyName)) {
             setEncoding(subPropertyValue);
         } else if (ExportConstants.BLOB_MIME_TYPE.equals(subPropertyName)) {
@@ -119,17 +116,13 @@ public class ContentProperty implements Serializable {
         String otherFilename = ((ContentProperty) other).getFilename();
         String otherDigest = ((ContentProperty) other).getDigest();
 
-        if (encoding == null && otherEncoding == null && mimeType == null
-                && otherMimeType == null && filename == null
-                && otherFilename == null && digest == null
-                && otherDigest == null) {
+        if (encoding == null && otherEncoding == null && mimeType == null && otherMimeType == null && filename == null
+                && otherFilename == null && digest == null && otherDigest == null) {
             return true;
         }
 
-        if (notEquals(encoding, otherEncoding)
-                || notEquals(mimeType, otherMimeType)
-                || notEquals(filename, otherFilename)
-                || notEquals(digest, otherDigest)) {
+        if (notEquals(encoding, otherEncoding) || notEquals(mimeType, otherMimeType)
+                || notEquals(filename, otherFilename) || notEquals(digest, otherDigest)) {
             return false;
         }
 
@@ -151,7 +144,6 @@ public class ContentProperty implements Serializable {
     }
 
     protected boolean notEquals(String s1, String s2) {
-        return s1 == null && s2 != null || s1 != null && s2 == null
-                || s1 != null && !s1.equals(s2);
+        return s1 == null && s2 != null || s1 != null && s2 == null || s1 != null && !s1.equals(s2);
     }
 }

@@ -27,8 +27,7 @@ import org.nuxeo.ecm.diff.model.DifferenceType;
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
-public class ContentDiffDisplayImpl extends PropertyDiffDisplayImpl implements
-        ContentDiffDisplay {
+public class ContentDiffDisplayImpl extends PropertyDiffDisplayImpl implements ContentDiffDisplay {
 
     private static final long serialVersionUID = -3187677365094933738L;
 
@@ -40,20 +39,17 @@ public class ContentDiffDisplayImpl extends PropertyDiffDisplayImpl implements
         this(value, false, false);
     }
 
-    public ContentDiffDisplayImpl(Serializable value,
-            boolean displayHtmlConversion, boolean displayTextConversion) {
+    public ContentDiffDisplayImpl(Serializable value, boolean displayHtmlConversion, boolean displayTextConversion) {
         super(value);
         this.displayHtmlConversion = displayHtmlConversion;
         this.displayTextConversion = displayTextConversion;
     }
 
-    public ContentDiffDisplayImpl(Serializable value,
-            DifferenceType differenceType) {
+    public ContentDiffDisplayImpl(Serializable value, DifferenceType differenceType) {
         this(value, differenceType, false, false);
     }
 
-    public ContentDiffDisplayImpl(Serializable value,
-            DifferenceType differenceType, boolean displayHtmlConversion,
+    public ContentDiffDisplayImpl(Serializable value, DifferenceType differenceType, boolean displayHtmlConversion,
             boolean displayTextConversion) {
         super(value, differenceType);
         this.displayHtmlConversion = displayHtmlConversion;

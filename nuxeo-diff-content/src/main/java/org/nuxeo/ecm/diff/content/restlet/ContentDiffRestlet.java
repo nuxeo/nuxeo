@@ -57,8 +57,7 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Restlet to retrieve the content diff of a given property between two
- * documents.
+ * Restlet to retrieve the content diff of a given property between two documents.
  *
  * @author Antoine Taillefer
  * @since 5.6
@@ -100,14 +99,12 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         String subPath = sb.substring(0, sb.length() - 1);
 
         // Check conversion type param, default is html.
-        String conversionTypeParam = getQueryParamValue(req,
-                ContentDiffHelper.CONVERSION_TYPE_URL_PARAM_NAME,
+        String conversionTypeParam = getQueryParamValue(req, ContentDiffHelper.CONVERSION_TYPE_URL_PARAM_NAME,
                 ContentDiffConversionType.html.name());
         ContentDiffConversionType conversionType = ContentDiffConversionType.valueOf(conversionTypeParam);
 
         // Check locale
-        String localeParam = getQueryParamValue(req,
-                ContentDiffHelper.LOCALE_URL_PARAM_NAME,
+        String localeParam = getQueryParamValue(req, ContentDiffHelper.LOCALE_URL_PARAM_NAME,
                 localeSelector.getLocaleString());
         localeSelector.setLocaleString(localeParam);
 
@@ -131,8 +128,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             return;
         }
         try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(
-                    repo));
+            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
             leftDoc = documentManager.getDocument(new IdRef(leftDocId));
             rightDoc = documentManager.getDocument(new IdRef(rightDocId));
@@ -141,8 +137,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             return;
         }
 
-        List<Blob> contentDiffBlobs = initCachedContentDiffBlobs(res, xpath,
-                conversionType);
+        List<Blob> contentDiffBlobs = initCachedContentDiffBlobs(res, xpath, conversionType);
         if (CollectionUtils.isEmpty(contentDiffBlobs)) {
             // Response was already handled by initCachedContentDiffBlobs
             return;
@@ -170,8 +165,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         }
     }
 
-    private List<Blob> initCachedContentDiffBlobs(Response res, String xpath,
-            ContentDiffConversionType conversionType) {
+    private List<Blob> initCachedContentDiffBlobs(Response res, String xpath, ContentDiffConversionType conversionType) {
 
         ContentDiffAdapter contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
 
@@ -183,11 +177,10 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         List<Blob> contentDiffBlobs = null;
         try {
             if (xpath.equals(ContentDiffHelper.CONTENT_DIFF_URL_DEFAULT_XPATH)) {
-                contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(
-                        rightDoc, conversionType, localeSelector.getLocale());
+                contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(rightDoc, conversionType,
+                        localeSelector.getLocale());
             } else {
-                contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(
-                        rightDoc, xpath, conversionType,
+                contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(rightDoc, xpath, conversionType,
                         localeSelector.getLocale());
             }
         } catch (ClientException ce) {
@@ -202,8 +195,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         return contentDiffBlobs;
     }
 
-    protected void handleNoContentDiff(Response res, String xpath,
-            ClientException e) {
+    protected void handleNoContentDiff(Response res, String xpath, ClientException e) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("<html><body><center><h1>");
@@ -224,8 +216,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         }
 
         sb.append("</center></body></html>");
-        log.error("Could not build content diff for missing blob at " + xpath,
-                e);
+        log.error("Could not build content diff for missing blob at " + xpath, e);
 
         res.setEntity(sb.toString(), MediaType.TEXT_HTML);
         HttpServletResponse response = getHttpResponse(res);
@@ -233,10 +224,8 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         response.setHeader("Content-Disposition", "inline");
     }
 
-    protected void handleContentDiff(Response res, Blob contentDiffBlob,
-            String mimeType) throws IOException {
-        final File tempfile = File.createTempFile(
-                "nuxeo-contentDiffRestlet-tmp", "");
+    protected void handleContentDiff(Response res, Blob contentDiffBlob, String mimeType) throws IOException {
+        final File tempfile = File.createTempFile("nuxeo-contentDiffRestlet-tmp", "");
         Framework.trackFile(tempfile, res);
         contentDiffBlob.transferTo(tempfile);
         res.setEntity(new OutputRepresentation(null) {

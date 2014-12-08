@@ -51,8 +51,7 @@ public class TestXMLUnit extends XMLTestCase {
     public void testForEquality() throws Exception {
         String myControlXML = "<msg><uuid>0x00435A8C</uuid></msg>";
         String myTestXML = "<msg><localId>2376</localId></msg>";
-        assertXMLNotEqual("Comparing test xml to control xml", myControlXML,
-                myTestXML);
+        assertXMLNotEqual("Comparing test xml to control xml", myControlXML, myTestXML);
     }
 
     /**
@@ -75,14 +74,11 @@ public class TestXMLUnit extends XMLTestCase {
      */
     @SuppressWarnings("unchecked")
     public void testAllDifferences() throws Exception {
-        String myControlXML = "<news><item id=\"1\">War</item>"
-                + "<item id=\"2\">Plague</item>"
+        String myControlXML = "<news><item id=\"1\">War</item>" + "<item id=\"2\">Plague</item>"
                 + "<item id=\"3\">Famine</item></news>";
-        String myTestXML = "<news><item id=\"1\">Peace</item>"
-                + "<item id=\"2\">Health</item>"
+        String myTestXML = "<news><item id=\"1\">Peace</item>" + "<item id=\"2\">Health</item>"
                 + "<item id=\"3\">Plenty</item></news>";
-        DetailedDiff myDiff = new DetailedDiff(
-                new Diff(myControlXML, myTestXML));
+        DetailedDiff myDiff = new DetailedDiff(new Diff(myControlXML, myTestXML));
         List<Difference> allDifferences = myDiff.getAllDifferences();
         assertEquals(myDiff.toString(), 3, allDifferences.size());
 
@@ -113,15 +109,12 @@ public class TestXMLUnit extends XMLTestCase {
      * @throws Exception the exception
      */
     public void testRepeatedChildElements() throws Exception {
-        String myControlXML = "<suite>"
-                + "<test status=\"pass\">FirstTestCase</test>"
+        String myControlXML = "<suite>" + "<test status=\"pass\">FirstTestCase</test>"
                 + "<test status=\"pass\">SecondTestCase</test></suite>";
-        String myTestXML = "<suite>"
-                + "<test status=\"pass\">SecondTestCase</test>"
+        String myTestXML = "<suite>" + "<test status=\"pass\">SecondTestCase</test>"
                 + "<test status=\"pass\">FirstTestCase</test></suite>";
-        assertXMLNotEqual(
-                "Repeated child elements in different sequence order are not equal by default",
-                myControlXML, myTestXML);
+        assertXMLNotEqual("Repeated child elements in different sequence order are not equal by default", myControlXML,
+                myTestXML);
         Diff myDiff = new Diff(myControlXML, myTestXML);
         myDiff.overrideElementQualifier(new ElementNameAndTextQualifier());
         assertXMLEqual(
@@ -135,15 +128,12 @@ public class TestXMLUnit extends XMLTestCase {
      * @throws Exception the exception
      */
     public void testXPaths() throws Exception {
-        String mySolarSystemXML = "<solar-system>"
-                + "<planet name='Earth' position='3' supportsLife='yes'/>"
+        String mySolarSystemXML = "<solar-system>" + "<planet name='Earth' position='3' supportsLife='yes'/>"
                 + "<planet name='Venus' position='4'/></solar-system>";
         assertXpathExists("//planet[@name='Earth']", mySolarSystemXML);
         assertXpathNotExists("//star[@name='alpha centauri']", mySolarSystemXML);
-        assertXpathsEqual("//planet[@name='Earth']", "//planet[@position='3']",
-                mySolarSystemXML);
-        assertXpathsNotEqual("//planet[@name='Venus']",
-                "//planet[@supportsLife='yes']", mySolarSystemXML);
+        assertXpathsEqual("//planet[@name='Earth']", "//planet[@position='3']", mySolarSystemXML);
+        assertXpathsNotEqual("//planet[@name='Venus']", "//planet[@supportsLife='yes']", mySolarSystemXML);
     }
 
     // we
@@ -153,17 +143,12 @@ public class TestXMLUnit extends XMLTestCase {
      * @throws Exception the exception
      */
     public void testXPathValues() throws Exception {
-        String myJavaFlavours = "<java-flavours>"
-                + "<jvm current='some platforms'>1.1.x</jvm>"
-                + "<jvm current='no'>1.2.x</jvm>"
-                + "<jvm current='yes'>1.3.x</jvm>"
+        String myJavaFlavours = "<java-flavours>" + "<jvm current='some platforms'>1.1.x</jvm>"
+                + "<jvm current='no'>1.2.x</jvm>" + "<jvm current='yes'>1.3.x</jvm>"
                 + "<jvm current='yes' latest='yes'>1.4.x</jvm></java-flavours>";
-        assertXpathEvaluatesTo("2", "count(//jvm[@current='yes'])",
-                myJavaFlavours);
-        assertXpathValuesEqual("//jvm[4]/@latest", "//jvm[4]/@current",
-                myJavaFlavours);
-        assertXpathValuesNotEqual("//jvm[2]/@current", "//jvm[3]/@current",
-                myJavaFlavours);
+        assertXpathEvaluatesTo("2", "count(//jvm[@current='yes'])", myJavaFlavours);
+        assertXpathValuesEqual("//jvm[4]/@latest", "//jvm[4]/@current", myJavaFlavours);
+        assertXpathValuesNotEqual("//jvm[2]/@current", "//jvm[3]/@current", myJavaFlavours);
     }
 
     /**
@@ -172,8 +157,7 @@ public class TestXMLUnit extends XMLTestCase {
      * @throws Exception the exception
      */
     public void testCountingNodeTester() throws Exception {
-        String testXML = "<fibonacci><val>1</val><val>2</val><val>3</val>"
-                + "<val>5</val><val>9</val></fibonacci>";
+        String testXML = "<fibonacci><val>1</val><val>2</val><val>3</val>" + "<val>5</val><val>9</val></fibonacci>";
         CountingNodeTester countingNodeTester = new CountingNodeTester(5);
         assertNodeTestPasses(testXML, countingNodeTester, Node.TEXT_NODE);
     }
@@ -184,11 +168,10 @@ public class TestXMLUnit extends XMLTestCase {
      * @throws Exception the exception
      */
     public void testCustomNodeTester() throws Exception {
-        String testXML = "<fibonacci><val>1</val><val>2</val><val>3</val>"
-                + "<val>5</val><val>8</val></fibonacci>";
+        String testXML = "<fibonacci><val>1</val><val>2</val><val>3</val>" + "<val>5</val><val>8</val></fibonacci>";
         NodeTest nodeTest = new NodeTest(testXML);
-        assertNodeTestPasses(nodeTest, new FibonacciNodeTester(), new short[] {
-                Node.TEXT_NODE, Node.ELEMENT_NODE }, true);
+        assertNodeTestPasses(nodeTest, new FibonacciNodeTester(), new short[] { Node.TEXT_NODE, Node.ELEMENT_NODE },
+                true);
     }
 
     /**
@@ -229,11 +212,9 @@ public class TestXMLUnit extends XMLTestCase {
      */
     @SuppressWarnings("unchecked")
     public void testCompareUnmatchedNodes() throws Exception {
-        String myControlXML = "<document><item>First item</item>"
-                + "<item>Second item</item></document>";
+        String myControlXML = "<document><item>First item</item>" + "<item>Second item</item></document>";
         String myTestXML = "<document><item>First item</item></document>";
-        assertXMLNotEqual("Test XML has a missing child node", myControlXML,
-                myTestXML);
+        assertXMLNotEqual("Test XML has a missing child node", myControlXML, myTestXML);
 
         // ---------------------------
         // Compare unmatched nodes
@@ -242,24 +223,20 @@ public class TestXMLUnit extends XMLTestCase {
         // unmatched nodes by doing XMLUnit.setCompareUnmatched(true).
         // Indeed, it may have been set to false by a previous test.
         XMLUnit.setCompareUnmatched(true);
-        DetailedDiff myDiff = new DetailedDiff(
-                new Diff(myControlXML, myTestXML));
+        DetailedDiff myDiff = new DetailedDiff(new Diff(myControlXML, myTestXML));
         List<Difference> allDifferences = myDiff.getAllDifferences();
         assertEquals("Wrong number of differences", 3, allDifferences.size());
 
         Difference diff1 = allDifferences.get(0);
-        assertEquals("Wrong difference type",
-                DifferenceConstants.CHILD_NODELIST_LENGTH_ID, diff1.getId());
+        assertEquals("Wrong difference type", DifferenceConstants.CHILD_NODELIST_LENGTH_ID, diff1.getId());
 
         // "CHILD_NODE_NOT_FOUND on the test side" strange behavior
         // => considered as a TEXT_VALUE difference
         Difference diff2 = allDifferences.get(1);
-        assertEquals("Wrong difference type",
-                DifferenceConstants.TEXT_VALUE_ID, diff2.getId());
+        assertEquals("Wrong difference type", DifferenceConstants.TEXT_VALUE_ID, diff2.getId());
 
         Difference diff3 = allDifferences.get(2);
-        assertEquals("Wrong difference type",
-                DifferenceConstants.CHILD_NODELIST_SEQUENCE_ID, diff3.getId());
+        assertEquals("Wrong difference type", DifferenceConstants.CHILD_NODELIST_SEQUENCE_ID, diff3.getId());
 
         // ---------------------------
         // Don't compare unmatched nodes
@@ -270,12 +247,10 @@ public class TestXMLUnit extends XMLTestCase {
         assertEquals("Wrong number of differences", 2, allDifferences.size());
 
         diff1 = allDifferences.get(0);
-        assertEquals("Wrong difference type",
-                DifferenceConstants.CHILD_NODELIST_LENGTH_ID, diff1.getId());
+        assertEquals("Wrong difference type", DifferenceConstants.CHILD_NODELIST_LENGTH_ID, diff1.getId());
 
         diff2 = allDifferences.get(1);
-        assertEquals("Wrong difference type",
-                DifferenceConstants.CHILD_NODE_NOT_FOUND_ID, diff2.getId());
+        assertEquals("Wrong difference type", DifferenceConstants.CHILD_NODE_NOT_FOUND_ID, diff2.getId());
 
     }
 

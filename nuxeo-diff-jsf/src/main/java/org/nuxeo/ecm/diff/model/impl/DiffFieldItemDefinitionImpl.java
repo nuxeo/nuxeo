@@ -36,8 +36,7 @@ public class DiffFieldItemDefinitionImpl implements DiffFieldItemDefinition {
         this(name, false);
     }
 
-    public DiffFieldItemDefinitionImpl(String name,
-            boolean displayContentDiffLinks) {
+    public DiffFieldItemDefinitionImpl(String name, boolean displayContentDiffLinks) {
         this.name = name;
         this.displayContentDiffLinks = displayContentDiffLinks;
     }
@@ -74,7 +73,6 @@ public class DiffFieldItemDefinitionImpl implements DiffFieldItemDefinition {
 
     @Override
     public String toString() {
-        return name + " (displayContentDiffLinks: " + displayContentDiffLinks
-                + ")";
+        return name + " (displayContentDiffLinks: " + displayContentDiffLinks + ")";
     }
 }

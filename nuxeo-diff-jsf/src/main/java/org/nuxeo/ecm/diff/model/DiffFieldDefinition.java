@@ -28,8 +28,8 @@ import java.util.List;
 public interface DiffFieldDefinition extends Serializable {
 
     /**
-     * Optional category on the field: if this category is filled, the widget
-     * instance will be looked up with this category in the store
+     * Optional category on the field: if this category is filled, the widget instance will be looked up with this
+     * category in the store
      */
     String getCategory();
 

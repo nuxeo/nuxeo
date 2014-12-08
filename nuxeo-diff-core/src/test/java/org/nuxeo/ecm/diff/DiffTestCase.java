@@ -52,8 +52,7 @@ public class DiffTestCase {
     protected final void checkNullSchemaDiff(DocumentDiff docDiff, String schema) {
 
         SchemaDiff schemaDiff = docDiff.getSchemaDiff(schema);
-        assertNull(String.format("Schema diff should be null for schema %s",
-                schema), schemaDiff);
+        assertNull(String.format("Schema diff should be null for schema %s", schema), schemaDiff);
     }
 
     /**
@@ -64,13 +63,11 @@ public class DiffTestCase {
      * @param expectedFieldCount the expected field count
      * @return the schema diff
      */
-    protected final SchemaDiff checkSchemaDiff(DocumentDiff docDiff,
-            String schema, int expectedFieldCount) {
+    protected final SchemaDiff checkSchemaDiff(DocumentDiff docDiff, String schema, int expectedFieldCount) {
 
         SchemaDiff schemaDiff = docDiff.getSchemaDiff(schema);
         assertNotNull("Schema diff should not be null", schemaDiff);
-        assertEquals("Wrong field count", expectedFieldCount,
-                schemaDiff.getFieldCount());
+        assertEquals("Wrong field count", expectedFieldCount, schemaDiff.getFieldCount());
 
         return schemaDiff;
     }
@@ -94,12 +91,11 @@ public class DiffTestCase {
      * @param expectedRightValue the expected right value
      * @return the simple property diff
      */
-    protected final SimplePropertyDiff checkSimpleFieldDiff(
-            PropertyDiff fieldDiff, String expectedPropertyType,
+    protected final SimplePropertyDiff checkSimpleFieldDiff(PropertyDiff fieldDiff, String expectedPropertyType,
             String expectedLeftValue, String expectedRightValue) {
 
-        return checkSimpleFieldDiff(fieldDiff, expectedPropertyType,
-                DifferenceType.different, expectedLeftValue, expectedRightValue);
+        return checkSimpleFieldDiff(fieldDiff, expectedPropertyType, DifferenceType.different, expectedLeftValue,
+                expectedRightValue);
     }
 
     /**
@@ -112,24 +108,17 @@ public class DiffTestCase {
      * @param expectedRightValue the expected right value
      * @return the property diff
      */
-    protected final SimplePropertyDiff checkSimpleFieldDiff(
-            PropertyDiff fieldDiff, String expectedPropertyType,
-            DifferenceType expectedDifferenceType, String expectedLeftValue,
-            String expectedRightValue) {
+    protected final SimplePropertyDiff checkSimpleFieldDiff(PropertyDiff fieldDiff, String expectedPropertyType,
+            DifferenceType expectedDifferenceType, String expectedLeftValue, String expectedRightValue) {
 
         assertNotNull("Field diff should not be null", fieldDiff);
-        assertTrue("Wrong PropertyDiff implementation",
-                fieldDiff instanceof SimplePropertyDiff);
+        assertTrue("Wrong PropertyDiff implementation", fieldDiff instanceof SimplePropertyDiff);
 
-        assertEquals("Wrong property type", expectedPropertyType,
-                fieldDiff.getPropertyType());
+        assertEquals("Wrong property type", expectedPropertyType, fieldDiff.getPropertyType());
         SimplePropertyDiff simpleFieldDiff = (SimplePropertyDiff) fieldDiff;
-        assertEquals("Wrong difference type", expectedDifferenceType,
-                simpleFieldDiff.getDifferenceType());
-        assertEquals("Wrong left value", expectedLeftValue,
-                simpleFieldDiff.getLeftValue());
-        assertEquals("Wrong right value", expectedRightValue,
-                simpleFieldDiff.getRightValue());
+        assertEquals("Wrong difference type", expectedDifferenceType, simpleFieldDiff.getDifferenceType());
+        assertEquals("Wrong left value", expectedLeftValue, simpleFieldDiff.getLeftValue());
+        assertEquals("Wrong right value", expectedRightValue, simpleFieldDiff.getRightValue());
 
         return simpleFieldDiff;
     }
@@ -141,16 +130,14 @@ public class DiffTestCase {
      * @param expectedContentFieldDiff the expected content field diff
      * @return the property diff
      */
-    protected final ContentPropertyDiff checkContentFieldDiff(
-            PropertyDiff fieldDiff, ContentPropertyDiff expectedContentFieldDiff) {
+    protected final ContentPropertyDiff checkContentFieldDiff(PropertyDiff fieldDiff,
+            ContentPropertyDiff expectedContentFieldDiff) {
 
         assertNotNull("Field diff should not be null", fieldDiff);
-        assertTrue("Wrong PropertyDiff implementation",
-                fieldDiff instanceof ContentPropertyDiff);
+        assertTrue("Wrong PropertyDiff implementation", fieldDiff instanceof ContentPropertyDiff);
 
         ContentPropertyDiff contentFieldDiff = (ContentPropertyDiff) fieldDiff;
-        assertEquals("Wrong list diff", expectedContentFieldDiff,
-                contentFieldDiff);
+        assertEquals("Wrong list diff", expectedContentFieldDiff, contentFieldDiff);
 
         return contentFieldDiff;
     }
@@ -162,12 +149,10 @@ public class DiffTestCase {
      * @param expectedListFieldDiff the expected list field diff
      * @return the property diff
      */
-    protected final PropertyDiff checkListFieldDiff(PropertyDiff fieldDiff,
-            ListPropertyDiff expectedListFieldDiff) {
+    protected final PropertyDiff checkListFieldDiff(PropertyDiff fieldDiff, ListPropertyDiff expectedListFieldDiff) {
 
         assertNotNull("Field diff should not be null", fieldDiff);
-        assertTrue("Wrong PropertyDiff implementation",
-                fieldDiff instanceof ListPropertyDiff);
+        assertTrue("Wrong PropertyDiff implementation", fieldDiff instanceof ListPropertyDiff);
 
         ListPropertyDiff listFieldDiff = (ListPropertyDiff) fieldDiff;
         assertEquals("Wrong list diff", expectedListFieldDiff, listFieldDiff);
@@ -186,12 +171,10 @@ public class DiffTestCase {
             ComplexPropertyDiff expectedComplexFieldDiff) {
 
         assertNotNull("Field diff should not be null", fieldDiff);
-        assertTrue("Wrong PropertyDiff implementation",
-                fieldDiff instanceof ComplexPropertyDiff);
+        assertTrue("Wrong PropertyDiff implementation", fieldDiff instanceof ComplexPropertyDiff);
 
         ComplexPropertyDiff complexFieldDiff = (ComplexPropertyDiff) fieldDiff;
-        assertEquals("Wrong complex diff", expectedComplexFieldDiff,
-                complexFieldDiff);
+        assertEquals("Wrong complex diff", expectedComplexFieldDiff, complexFieldDiff);
 
         return complexFieldDiff;
     }

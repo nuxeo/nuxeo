@@ -47,16 +47,11 @@ public class IgnoreStructuralDifferenceListener implements DifferenceListener {
     /**
      * Difference types to be ignored.
      */
-    private static final int[] IGNORE = new int[] {
-            DifferenceConstants.HAS_DOCTYPE_DECLARATION_ID,
-            DifferenceConstants.DOCTYPE_NAME_ID,
-            DifferenceConstants.DOCTYPE_PUBLIC_ID_ID,
-            DifferenceConstants.DOCTYPE_SYSTEM_ID_ID,
-            DifferenceConstants.NAMESPACE_URI_ID,
-            DifferenceConstants.ATTR_VALUE_ID,
-            DifferenceConstants.ATTR_NAME_NOT_FOUND_ID,
-            DifferenceConstants.ELEMENT_TAG_NAME_ID,
-            DifferenceConstants.CHILD_NODELIST_SEQUENCE_ID,
+    private static final int[] IGNORE = new int[] { DifferenceConstants.HAS_DOCTYPE_DECLARATION_ID,
+            DifferenceConstants.DOCTYPE_NAME_ID, DifferenceConstants.DOCTYPE_PUBLIC_ID_ID,
+            DifferenceConstants.DOCTYPE_SYSTEM_ID_ID, DifferenceConstants.NAMESPACE_URI_ID,
+            DifferenceConstants.ATTR_VALUE_ID, DifferenceConstants.ATTR_NAME_NOT_FOUND_ID,
+            DifferenceConstants.ELEMENT_TAG_NAME_ID, DifferenceConstants.CHILD_NODELIST_SEQUENCE_ID,
             DifferenceConstants.CHILD_NODELIST_LENGTH_ID };
 
     static {
@@ -67,8 +62,8 @@ public class IgnoreStructuralDifferenceListener implements DifferenceListener {
      * Here want to:
      * <ul>
      * <li>Take into account all difference types to be ignored.</li>
-     * <li>Not consider an unbalanced schema, ie. a schema that exists for a
-     * document but not for the other one, as a difference.</li>
+     * <li>Not consider an unbalanced schema, ie. a schema that exists for a document but not for the other one, as a
+     * difference.</li>
      * </ul>
      */
     public int differenceFound(Difference difference) {
@@ -83,14 +78,11 @@ public class IgnoreStructuralDifferenceListener implements DifferenceListener {
             Node controlNode = controlNodeDetail.getNode();
             Node testNode = testNodeDetail.getNode();
 
-            if (controlNode != null
-                    && SCHEMA_ELEMENT.equals(controlNode.getNodeName())
-                    && testNode == null) {
+            if (controlNode != null && SCHEMA_ELEMENT.equals(controlNode.getNodeName()) && testNode == null) {
                 unBalancedSchema = true;
             }
 
-            if (!unBalancedSchema && testNode != null
-                    && SCHEMA_ELEMENT.equals(testNode.getNodeName())
+            if (!unBalancedSchema && testNode != null && SCHEMA_ELEMENT.equals(testNode.getNodeName())
                     && controlNode == null) {
                 unBalancedSchema = true;
             }

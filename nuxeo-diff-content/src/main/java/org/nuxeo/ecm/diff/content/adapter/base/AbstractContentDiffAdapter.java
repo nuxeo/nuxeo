@@ -38,37 +38,30 @@ public abstract class AbstractContentDiffAdapter implements ContentDiffAdapter {
 
     protected DocumentModel adaptedDoc;
 
-    public String getFileContentDiffURL(DocumentModel otherDoc,
-            ContentDiffConversionType conversionType, String locale) {
-        return ContentDiffHelper.getContentDiffURL(adaptedDoc, otherDoc,
-                conversionType.name(), locale);
+    public String getFileContentDiffURL(DocumentModel otherDoc, ContentDiffConversionType conversionType, String locale) {
+        return ContentDiffHelper.getContentDiffURL(adaptedDoc, otherDoc, conversionType.name(), locale);
     }
 
-    public String getFileContentDiffURL(DocumentModel otherDoc, String xpath,
-            ContentDiffConversionType conversionType, String locale) {
-        return ContentDiffHelper.getContentDiffURL(adaptedDoc, otherDoc, xpath,
-                conversionType.name(), locale);
+    public String getFileContentDiffURL(DocumentModel otherDoc, String xpath, ContentDiffConversionType conversionType,
+            String locale) {
+        return ContentDiffHelper.getContentDiffURL(adaptedDoc, otherDoc, xpath, conversionType.name(), locale);
     }
 
-    public List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc,
-            ContentDiffConversionType conversionType, Locale locale)
-            throws ContentDiffException, ConversionException {
+    public List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc, ContentDiffConversionType conversionType,
+            Locale locale) throws ContentDiffException, ConversionException {
         return getContentDiffBlobs(otherDoc, conversionType, locale);
     }
 
-    public List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc,
-            String xpath, ContentDiffConversionType conversionType,
-            Locale locale) throws ContentDiffException, ConversionException {
+    public List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc, String xpath,
+            ContentDiffConversionType conversionType, Locale locale) throws ContentDiffException, ConversionException {
         return getContentDiffBlobs(otherDoc, xpath, conversionType, locale);
     }
 
-    protected abstract List<Blob> getContentDiffBlobs(DocumentModel otherDoc,
-            ContentDiffConversionType conversionType, Locale locale)
-            throws ContentDiffException, ConversionException;
-
-    protected abstract List<Blob> getContentDiffBlobs(DocumentModel otherDoc,
-            String xpath, ContentDiffConversionType conversionType,
+    protected abstract List<Blob> getContentDiffBlobs(DocumentModel otherDoc, ContentDiffConversionType conversionType,
             Locale locale) throws ContentDiffException, ConversionException;
+
+    protected abstract List<Blob> getContentDiffBlobs(DocumentModel otherDoc, String xpath,
+            ContentDiffConversionType conversionType, Locale locale) throws ContentDiffException, ConversionException;
 
     public void setAdaptedDocument(DocumentModel doc) {
         this.adaptedDoc = doc;
@@ -80,8 +73,7 @@ public abstract class AbstractContentDiffAdapter implements ContentDiffAdapter {
      * @return the content diff adapter manager
      * @throws ContentDiffException the content diff exception
      */
-    protected final ContentDiffAdapterManager getContentDiffAdapterManager()
-            throws ContentDiffException {
+    protected final ContentDiffAdapterManager getContentDiffAdapterManager() throws ContentDiffException {
 
         ContentDiffAdapterManager contentDiffAdapterManager;
         try {
@@ -90,8 +82,7 @@ public abstract class AbstractContentDiffAdapter implements ContentDiffAdapter {
             throw new ContentDiffException(e);
         }
         if (contentDiffAdapterManager == null) {
-            throw new ContentDiffException(
-                    "ContentDiffAdapterManager service is null.");
+            throw new ContentDiffException("ContentDiffAdapterManager service is null.");
         }
         return contentDiffAdapterManager;
     }

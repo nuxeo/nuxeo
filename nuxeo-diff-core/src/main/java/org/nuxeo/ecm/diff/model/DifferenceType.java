@@ -17,8 +17,7 @@
 package org.nuxeo.ecm.diff.model;
 
 /**
- * Enumerates difference types: different. TODO: implement difference types
- * (added / removed, ...)
+ * Enumerates difference types: different. TODO: implement difference types (added / removed, ...)
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6

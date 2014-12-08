@@ -19,8 +19,7 @@ import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
 
 /**
- * Interface of the service that is responsible for managing
- * ContentDiffAdapters.
+ * Interface of the service that is responsible for managing ContentDiffAdapters.
  *
  * @author Antoine Taillefer
  * @since 5.6

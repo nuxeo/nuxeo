@@ -21,15 +21,13 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Factory for the DocumentModelAdapter service.
  * <p>
- * Delegates the calls to a service dedicated to content diff Adapter that finds
- * the right adapter implementation according to document type and to registered
- * custom adapters.
+ * Delegates the calls to a service dedicated to content diff Adapter that finds the right adapter implementation
+ * according to document type and to registered custom adapters.
  *
  * @author Antoine Taillefer
  * @since 5.6
  */
-public class ContentDiffDocumentModelAdapterFactory implements
-        DocumentAdapterFactory {
+public class ContentDiffDocumentModelAdapterFactory implements DocumentAdapterFactory {
 
     protected static ContentDiffAdapterManager contentDiffAdapterManager;
 

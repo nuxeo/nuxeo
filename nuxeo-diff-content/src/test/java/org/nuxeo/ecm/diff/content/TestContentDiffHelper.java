@@ -46,8 +46,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/urlservice-framework.xml",
-        "org.nuxeo.ecm.platform.ui:OSGI-INF/urlservice-contrib.xml",
-        "org.nuxeo.ecm.platform.url.core",
+        "org.nuxeo.ecm.platform.ui:OSGI-INF/urlservice-contrib.xml", "org.nuxeo.ecm.platform.url.core",
         "org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-framework.xml",
         "org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-contrib.xml" })
 public class TestContentDiffHelper {
@@ -56,15 +55,12 @@ public class TestContentDiffHelper {
     protected CoreSession session;
 
     /**
-     * Tests
-     * {@link ContentDiffHelper#getContentDiffFancyBoxURL(DocumentModel, String, String, String)}
-     * .
+     * Tests {@link ContentDiffHelper#getContentDiffFancyBoxURL(DocumentModel, String, String, String)} .
      */
     @Test
     public void testGetContentDiffFancyBoxURL() throws ClientException {
         DocumentModel doc = createDoc(session, "testDoc", "File", "Test doc");
-        String fancyBoxURL = ContentDiffHelper.getContentDiffFancyBoxURL(doc,
-                "my.property.label", "file:content",
+        String fancyBoxURL = ContentDiffHelper.getContentDiffFancyBoxURL(doc, "my.property.label", "file:content",
                 ContentDiffConversionType.html.name());
         StringBuilder sb = new StringBuilder("/nuxeo/nxdoc/test/");
         sb.append(doc.getId());
@@ -78,12 +74,9 @@ public class TestContentDiffHelper {
      */
     @Test
     public void testGetContentDiffURL() throws ClientException {
-        DocumentModel leftDoc = createDoc(session, "leftDoc", "File",
-                "Left doc");
-        DocumentModel rightDoc = createDoc(session, "rightDoc", "File",
-                "Right doc");
-        String contentDiffURL = ContentDiffHelper.getContentDiffURL(leftDoc,
-                rightDoc, "file:content",
+        DocumentModel leftDoc = createDoc(session, "leftDoc", "File", "Left doc");
+        DocumentModel rightDoc = createDoc(session, "rightDoc", "File", "Right doc");
+        String contentDiffURL = ContentDiffHelper.getContentDiffURL(leftDoc, rightDoc, "file:content",
                 ContentDiffConversionType.html.name(), "en_GB");
         StringBuilder sb = new StringBuilder("restAPI/contentDiff/test/");
         sb.append(leftDoc.getId());
@@ -162,8 +155,7 @@ public class TestContentDiffHelper {
      * @return the document model
      * @throws ClientException if an arror occurs while document creation
      */
-    protected DocumentModel createDoc(CoreSession session, String id,
-            String type, String title) throws ClientException {
+    protected DocumentModel createDoc(CoreSession session, String id, String type, String title) throws ClientException {
 
         DocumentModel doc = session.createDocumentModel("/", id, type);
         doc.setPropertyValue("dc:title", title);

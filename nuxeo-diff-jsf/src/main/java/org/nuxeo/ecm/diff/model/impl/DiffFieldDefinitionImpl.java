@@ -47,19 +47,16 @@ public class DiffFieldDefinitionImpl implements DiffFieldDefinition {
         this(category, schema, name, false);
     }
 
-    public DiffFieldDefinitionImpl(String category, String schema, String name,
-            boolean displayContentDiffLinks) {
-        this(category, schema, name, displayContentDiffLinks,
-                new ArrayList<DiffFieldItemDefinition>());
+    public DiffFieldDefinitionImpl(String category, String schema, String name, boolean displayContentDiffLinks) {
+        this(category, schema, name, displayContentDiffLinks, new ArrayList<DiffFieldItemDefinition>());
     }
 
-    public DiffFieldDefinitionImpl(String category, String schema, String name,
-            List<DiffFieldItemDefinition> items) {
+    public DiffFieldDefinitionImpl(String category, String schema, String name, List<DiffFieldItemDefinition> items) {
         this(category, schema, name, false, items);
     }
 
-    public DiffFieldDefinitionImpl(String category, String schema, String name,
-            boolean displayContentDiffLinks, List<DiffFieldItemDefinition> items) {
+    public DiffFieldDefinitionImpl(String category, String schema, String name, boolean displayContentDiffLinks,
+            List<DiffFieldItemDefinition> items) {
         this.category = category;
         this.schema = schema;
         this.name = name;
@@ -101,31 +98,24 @@ public class DiffFieldDefinitionImpl implements DiffFieldDefinition {
         String otherSchema = ((DiffFieldDefinition) other).getSchema();
         String otherName = ((DiffFieldDefinition) other).getName();
         boolean otherDisplayContentDiffLinks = ((DiffFieldDefinition) other).isDisplayContentDiffLinks();
-        if (category == null && otherCategory == null && schema == null
-                && otherSchema == null && name == null && otherName == null) {
+        if (category == null && otherCategory == null && schema == null && otherSchema == null && name == null
+                && otherName == null) {
             return true;
         }
-        if (schema == null || otherSchema == null || name == null
-                || otherName == null
-                || (category == null && otherCategory != null)
-                || (category != null && otherCategory == null)
+        if (schema == null || otherSchema == null || name == null || otherName == null
+                || (category == null && otherCategory != null) || (category != null && otherCategory == null)
                 || (category != null && !category.equals(otherCategory))
-                || (schema != null && !schema.equals(otherSchema))
-                || (name != null && !name.equals(otherName))
+                || (schema != null && !schema.equals(otherSchema)) || (name != null && !name.equals(otherName))
                 || displayContentDiffLinks != otherDisplayContentDiffLinks) {
             return false;
         }
 
         List<DiffFieldItemDefinition> otherItems = ((DiffFieldDefinition) other).getItems();
-        if (CollectionUtils.isEmpty(items)
-                && CollectionUtils.isEmpty(otherItems)) {
+        if (CollectionUtils.isEmpty(items) && CollectionUtils.isEmpty(otherItems)) {
             return true;
         }
-        if (CollectionUtils.isEmpty(items)
-                && !CollectionUtils.isEmpty(otherItems)
-                || !CollectionUtils.isEmpty(items)
-                && CollectionUtils.isEmpty(otherItems)
-                || !items.equals(otherItems)) {
+        if (CollectionUtils.isEmpty(items) && !CollectionUtils.isEmpty(otherItems) || !CollectionUtils.isEmpty(items)
+                && CollectionUtils.isEmpty(otherItems) || !items.equals(otherItems)) {
             return false;
         }
 

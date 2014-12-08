@@ -84,8 +84,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.6
  */
-public class DiffDisplayServiceImpl extends DefaultComponent implements
-        DiffDisplayService {
+public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisplayService {
 
     private static final long serialVersionUID = 6608445970773402827L;
 
@@ -149,8 +148,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     protected Map<String, DiffBlockDefinition> diffBlockContribs = new HashMap<String, DiffBlockDefinition>();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (DIFF_DEFAULT_DISPLAY_EXTENSION_POINT.equals(extensionPoint)) {
             if (contribution instanceof DiffExcludedFieldsDescriptor) {
@@ -192,8 +190,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public DiffComplexFieldDefinition getDiffComplexField(String schemaName,
-            String fieldName) {
+    public DiffComplexFieldDefinition getDiffComplexField(String schemaName, String fieldName) {
         Map<String, DiffComplexFieldDefinition> diffComplexFieldsBySchema = diffComplexFieldsContribs.get(schemaName);
         if (diffComplexFieldsBySchema != null) {
             return diffComplexFieldsBySchema.get(fieldName);
@@ -223,9 +220,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<DiffDisplayBlock> getDiffDisplayBlocks(DocumentDiff docDiff,
-            DocumentModel leftDoc, DocumentModel rightDoc)
-            throws ClientException {
+    public List<DiffDisplayBlock> getDiffDisplayBlocks(DocumentDiff docDiff, DocumentModel leftDoc,
+            DocumentModel rightDoc) throws ClientException {
 
         String leftDocType = leftDoc.getType();
         String rightDocType = rightDoc.getType();
@@ -238,9 +234,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 LOGGER.info(String.format(
                         "Found a diffDisplay contribution defined for the type '%s' or one of its super type => using it to display the diff.",
                         leftDocType));
-                return getDiffDisplayBlocks(
-                        getDiffBlockDefinitions(diffBlockRefs), docDiff,
-                        leftDoc, rightDoc);
+                return getDiffDisplayBlocks(getDiffBlockDefinitions(diffBlockRefs), docDiff, leftDoc, rightDoc);
             } else {
                 LOGGER.info(String.format(
                         "No diffDisplay contribution was defined for the type '%s' or one of its super type => using default diff display.",
@@ -250,15 +244,12 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             LOGGER.info(String.format(
                     "The 2 documents don't have the same type: '%s'/'%s' => looking for a diffDisplay contribution defined for the nearest common super type.",
                     leftDocType, rightDocType));
-            List<String> diffBlockRefs = getNearestSuperTypeDiffDisplay(
-                    leftDocType, rightDocType);
+            List<String> diffBlockRefs = getNearestSuperTypeDiffDisplay(leftDocType, rightDocType);
             if (diffBlockRefs != null) {
                 LOGGER.info(String.format(
                         "Found a diffDisplay contribution defined for a common super type of the types '%s'/'%s' => using it to display the diff.",
                         leftDocType, rightDocType));
-                return getDiffDisplayBlocks(
-                        getDiffBlockDefinitions(diffBlockRefs), docDiff,
-                        leftDoc, rightDoc);
+                return getDiffDisplayBlocks(getDiffBlockDefinitions(diffBlockRefs), docDiff, leftDoc, rightDoc);
             } else {
                 LOGGER.info(String.format(
                         "No diffDisplay contribution was defined for any of the common super types of the types '%s'/'%s' => using default diff display.",
@@ -268,16 +259,13 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return getDefaultDiffDisplayBlocks(docDiff, leftDoc, rightDoc);
     }
 
-    public List<DiffDisplayBlock> getDefaultDiffDisplayBlocks(
-            DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc)
-            throws ClientException {
+    public List<DiffDisplayBlock> getDefaultDiffDisplayBlocks(DocumentDiff docDiff, DocumentModel leftDoc,
+            DocumentModel rightDoc) throws ClientException {
 
-        return getDiffDisplayBlocks(getDefaultDiffBlockDefinitions(docDiff),
-                docDiff, leftDoc, rightDoc);
+        return getDiffDisplayBlocks(getDefaultDiffBlockDefinitions(docDiff), docDiff, leftDoc, rightDoc);
     }
 
-    protected List<String> getNearestSuperTypeDiffDisplay(String docTypeName)
-            throws ClientException {
+    protected List<String> getNearestSuperTypeDiffDisplay(String docTypeName) throws ClientException {
 
         List<String> diffDisplay = getDiffDisplay(docTypeName);
         Type docType = getSchemaManager().getDocumentType(docTypeName);
@@ -291,8 +279,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return diffDisplay;
     }
 
-    protected List<String> getNearestSuperTypeDiffDisplay(
-            String leftDocTypeName, String rightDocTypeName)
+    protected List<String> getNearestSuperTypeDiffDisplay(String leftDocTypeName, String rightDocTypeName)
             throws ClientException {
 
         List<String> diffDisplay = null;
@@ -327,8 +314,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     /**
      * Registers a diff excluded fields contrib.
      */
-    protected final void registerDiffExcludedFields(
-            DiffExcludedFieldsDescriptor descriptor) {
+    protected final void registerDiffExcludedFields(DiffExcludedFieldsDescriptor descriptor) {
 
         String schemaName = descriptor.getSchema();
         if (!StringUtils.isEmpty(schemaName)) {
@@ -343,15 +329,13 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 // Else override contrib (no merge)
                 // TODO: implement merge
                 else {
-                    diffExcludedFieldsContribs.put(schemaName,
-                            getDiffExcludedFieldRefs(descriptor.getFields()));
+                    diffExcludedFieldsContribs.put(schemaName, getDiffExcludedFieldRefs(descriptor.getFields()));
                 }
             }
             // No existing diffExcludedFields contrib for this
             // schema and enabled => add contrib
             else if (enabled) {
-                diffExcludedFieldsContribs.put(schemaName,
-                        getDiffExcludedFieldRefs(descriptor.getFields()));
+                diffExcludedFieldsContribs.put(schemaName, getDiffExcludedFieldRefs(descriptor.getFields()));
             }
         }
     }
@@ -359,20 +343,17 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     /**
      * Registers a diff complex field contrib.
      */
-    protected final void registerDiffComplexField(
-            DiffComplexFieldDescriptor descriptor) {
+    protected final void registerDiffComplexField(DiffComplexFieldDescriptor descriptor) {
 
         String schemaName = descriptor.getSchema();
         String fieldName = descriptor.getName();
         if (!StringUtils.isEmpty(schemaName) && !StringUtils.isEmpty(fieldName)) {
             // Check existing diffComplexField contrib for this schema/field
-            DiffComplexFieldDefinition diffComplexField = getDiffComplexField(
-                    schemaName, fieldName);
+            DiffComplexFieldDefinition diffComplexField = getDiffComplexField(schemaName, fieldName);
             if (diffComplexField != null) {
                 // Override contrib (no merge)
                 // TODO: implement merge
-                diffComplexFieldsContribs.get(schemaName).put(fieldName,
-                        descriptor.getDiffComplexFieldDefinition());
+                diffComplexFieldsContribs.get(schemaName).put(fieldName, descriptor.getDiffComplexFieldDefinition());
             }
             // No existing diffComplexField contrib for this
             // schema/field => add contrib
@@ -380,11 +361,9 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 Map<String, DiffComplexFieldDefinition> diffComplexFieldsBySchema = diffComplexFieldsContribs.get(schemaName);
                 if (diffComplexFieldsBySchema == null) {
                     diffComplexFieldsBySchema = new HashMap<String, DiffComplexFieldDefinition>();
-                    diffComplexFieldsContribs.put(schemaName,
-                            diffComplexFieldsBySchema);
+                    diffComplexFieldsContribs.put(schemaName, diffComplexFieldsBySchema);
                 }
-                diffComplexFieldsBySchema.put(fieldName,
-                        descriptor.getDiffComplexFieldDefinition());
+                diffComplexFieldsBySchema.put(fieldName, descriptor.getDiffComplexFieldDefinition());
             }
         }
     }
@@ -409,21 +388,18 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 // Else override contrib (no merge)
                 // TODO: implement merge
                 else {
-                    diffDisplayContribs.put(docType,
-                            getDiffBlockRefs(descriptor.getDiffBlocks()));
+                    diffDisplayContribs.put(docType, getDiffBlockRefs(descriptor.getDiffBlocks()));
                 }
             }
             // No existing diffDisplay contrib for this
             // type and enabled => add contrib
             else if (enabled) {
-                diffDisplayContribs.put(docType,
-                        getDiffBlockRefs(descriptor.getDiffBlocks()));
+                diffDisplayContribs.put(docType, getDiffBlockRefs(descriptor.getDiffBlocks()));
             }
         }
     }
 
-    protected final List<String> getDiffBlockRefs(
-            List<DiffBlockReferenceDescriptor> diffBlocks) {
+    protected final List<String> getDiffBlockRefs(List<DiffBlockReferenceDescriptor> diffBlocks) {
 
         List<String> diffBlockRefs = new ArrayList<String>();
         for (DiffBlockReferenceDescriptor diffBlockRef : diffBlocks) {
@@ -432,8 +408,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return diffBlockRefs;
     }
 
-    protected final List<String> getDiffExcludedFieldRefs(
-            List<DiffFieldDescriptor> diffExcludedFields) {
+    protected final List<String> getDiffExcludedFieldRefs(List<DiffFieldDescriptor> diffExcludedFields) {
 
         List<String> diffExcludedFieldRefs = new ArrayList<String>();
         for (DiffFieldDescriptor diffExcludedFieldRef : diffExcludedFields) {
@@ -462,30 +437,26 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     String name = fieldDescriptor.getName();
                     boolean displayContentDiffLinks = fieldDescriptor.isDisplayContentDiffLinks();
                     List<DiffFieldItemDescriptor> fieldItemDescriptors = fieldDescriptor.getItems();
-                    if (!StringUtils.isEmpty(schema)
-                            && !StringUtils.isEmpty(name)) {
+                    if (!StringUtils.isEmpty(schema) && !StringUtils.isEmpty(name)) {
                         List<DiffFieldItemDefinition> items = new ArrayList<DiffFieldItemDefinition>();
                         for (DiffFieldItemDescriptor fieldItemDescriptor : fieldItemDescriptors) {
-                            items.add(new DiffFieldItemDefinitionImpl(
-                                    fieldItemDescriptor.getName(),
+                            items.add(new DiffFieldItemDefinitionImpl(fieldItemDescriptor.getName(),
                                     fieldItemDescriptor.isDisplayContentDiffLinks()));
                         }
-                        fields.add(new DiffFieldDefinitionImpl(category,
-                                schema, name, displayContentDiffLinks, items));
+                        fields.add(new DiffFieldDefinitionImpl(category, schema, name, displayContentDiffLinks, items));
                     }
                 }
                 // TODO: implement merge
                 diffBlockContribs.put(
                         diffBlockName,
-                        new DiffBlockDefinitionImpl(diffBlockName,
-                                descriptor.getTemplates(), fields,
+                        new DiffBlockDefinitionImpl(diffBlockName, descriptor.getTemplates(), fields,
                                 descriptor.getProperties()));
             }
         }
     }
 
-    protected final List<DiffBlockDefinition> getDefaultDiffBlockDefinitions(
-            DocumentDiff docDiff) throws ClientException {
+    protected final List<DiffBlockDefinition> getDefaultDiffBlockDefinitions(DocumentDiff docDiff)
+            throws ClientException {
 
         List<DiffBlockDefinition> diffBlockDefs = new ArrayList<DiffBlockDefinition>();
 
@@ -497,11 +468,9 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 List<DiffFieldDefinition> fieldDefs = new ArrayList<DiffFieldDefinition>();
                 for (String fieldName : schemaDiff.getFieldNames()) {
                     // Only add the field if it is not excluded
-                    if (diffExcludedFields == null
-                            || !diffExcludedFields.contains(fieldName)) {
+                    if (diffExcludedFields == null || !diffExcludedFields.contains(fieldName)) {
                         List<DiffFieldItemDefinition> fieldItems = new ArrayList<DiffFieldItemDefinition>();
-                        DiffComplexFieldDefinition complexFieldDef = getDiffComplexField(
-                                schemaName, fieldName);
+                        DiffComplexFieldDefinition complexFieldDef = getDiffComplexField(schemaName, fieldName);
                         if (complexFieldDef != null) {
                             List<DiffFieldItemDefinition> includedItems = complexFieldDef.getIncludedItems();
                             List<DiffFieldItemDefinition> excludedItems = complexFieldDef.getExcludedItems();
@@ -511,8 +480,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                             }
                             // Check excluded field items
                             else if (!CollectionUtils.isEmpty(excludedItems)) {
-                                Field complexField = ComplexPropertyHelper.getField(
-                                        schemaName, fieldName);
+                                Field complexField = ComplexPropertyHelper.getField(schemaName, fieldName);
                                 if (complexField.getType().isListType()) {
                                     complexField = ComplexPropertyHelper.getListFieldItem(complexField);
                                 }
@@ -527,37 +495,31 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                                     String complexFieldItemName = complexFieldItem.getName().getLocalName();
                                     boolean isFieldItem = true;
                                     for (DiffFieldItemDefinition fieldItemDef : excludedItems) {
-                                        if (fieldItemDef.getName().equals(
-                                                complexFieldItemName)) {
+                                        if (fieldItemDef.getName().equals(complexFieldItemName)) {
                                             isFieldItem = false;
                                             break;
                                         }
                                     }
                                     if (isFieldItem) {
-                                        fieldItems.add(new DiffFieldItemDefinitionImpl(
-                                                complexFieldItemName));
+                                        fieldItems.add(new DiffFieldItemDefinitionImpl(complexFieldItemName));
                                     }
                                 }
                             }
                         }
-                        fieldDefs.add(new DiffFieldDefinitionImpl(
-                                DIFF_WIDGET_CATEGORY, schemaName, fieldName,
+                        fieldDefs.add(new DiffFieldDefinitionImpl(DIFF_WIDGET_CATEGORY, schemaName, fieldName,
                                 fieldItems));
                     }
                 }
 
                 Map<String, String> defaultDiffBlockTemplates = new HashMap<String, String>();
-                defaultDiffBlockTemplates.put(BuiltinModes.ANY,
-                        DIFF_BLOCK_DEFAULT_TEMPLATE_PATH);
+                defaultDiffBlockTemplates.put(BuiltinModes.ANY, DIFF_BLOCK_DEFAULT_TEMPLATE_PATH);
 
                 Map<String, Map<String, Serializable>> defaultDiffBlockProperties = new HashMap<String, Map<String, Serializable>>();
                 Map<String, Serializable> labelProperty = new HashMap<String, Serializable>();
-                labelProperty.put(DIFF_BLOCK_LABEL_PROPERTY_NAME,
-                        DIFF_BLOCK_DEFAULT_LABEL_PREFIX + schemaName);
+                labelProperty.put(DIFF_BLOCK_LABEL_PROPERTY_NAME, DIFF_BLOCK_DEFAULT_LABEL_PREFIX + schemaName);
                 defaultDiffBlockProperties.put(BuiltinModes.ANY, labelProperty);
 
-                diffBlockDefs.add(new DiffBlockDefinitionImpl(schemaName,
-                        defaultDiffBlockTemplates, fieldDefs,
+                diffBlockDefs.add(new DiffBlockDefinitionImpl(schemaName, defaultDiffBlockTemplates, fieldDefs,
                         defaultDiffBlockProperties));
             }
         }
@@ -565,8 +527,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return diffBlockDefs;
     }
 
-    protected final List<DiffBlockDefinition> getDiffBlockDefinitions(
-            List<String> diffBlockRefs) {
+    protected final List<DiffBlockDefinition> getDiffBlockDefinitions(List<String> diffBlockRefs) {
 
         List<DiffBlockDefinition> diffBlockDefinitions = new ArrayList<DiffBlockDefinition>();
         for (String diffBlockRef : diffBlockRefs) {
@@ -575,17 +536,14 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return diffBlockDefinitions;
     }
 
-    protected final List<DiffDisplayBlock> getDiffDisplayBlocks(
-            List<DiffBlockDefinition> diffBlockDefinitions,
-            DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc)
-            throws ClientException {
+    protected final List<DiffDisplayBlock> getDiffDisplayBlocks(List<DiffBlockDefinition> diffBlockDefinitions,
+            DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc) throws ClientException {
 
         List<DiffDisplayBlock> diffDisplayBlocks = new ArrayList<DiffDisplayBlock>();
 
         for (DiffBlockDefinition diffBlockDef : diffBlockDefinitions) {
             if (diffBlockDef != null) {
-                DiffDisplayBlock diffDisplayBlock = getDiffDisplayBlock(
-                        diffBlockDef, docDiff, leftDoc, rightDoc);
+                DiffDisplayBlock diffDisplayBlock = getDiffDisplayBlock(diffBlockDef, docDiff, leftDoc, rightDoc);
                 if (!diffDisplayBlock.isEmpty()) {
                     diffDisplayBlocks.add(diffDisplayBlock);
                 }
@@ -595,10 +553,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return diffDisplayBlocks;
     }
 
-    protected final DiffDisplayBlock getDiffDisplayBlock(
-            DiffBlockDefinition diffBlockDefinition, DocumentDiff docDiff,
-            DocumentModel leftDoc, DocumentModel rightDoc)
-            throws ClientException {
+    protected final DiffDisplayBlock getDiffDisplayBlock(DiffBlockDefinition diffBlockDefinition, DocumentDiff docDiff,
+            DocumentModel leftDoc, DocumentModel rightDoc) throws ClientException {
 
         Map<String, Map<String, PropertyDiffDisplay>> leftValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
         Map<String, Map<String, PropertyDiffDisplay>> rightValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
@@ -624,27 +580,21 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 PropertyDiff fieldDiff = schemaDiff.getFieldDiff(fieldName);
                 if (fieldDiff != null) {
 
-                    Serializable leftProperty = (Serializable) leftDoc.getProperty(
-                            schemaName, fieldName);
-                    Serializable rightProperty = (Serializable) rightDoc.getProperty(
-                            schemaName, fieldName);
+                    Serializable leftProperty = (Serializable) leftDoc.getProperty(schemaName, fieldName);
+                    Serializable rightProperty = (Serializable) rightDoc.getProperty(schemaName, fieldName);
 
                     // Only include field diff if it is significant
                     if (isFieldDiffSignificant(leftProperty, rightProperty)) {
 
-                        String propertyName = getPropertyName(schemaName,
-                                fieldName);
+                        String propertyName = getPropertyName(schemaName, fieldName);
                         List<WidgetReference> widgetReferences = new ArrayList<WidgetReference>();
 
                         // Set property widget definition
-                        WidgetDefinition propertyWidgetDefinition = getWidgetDefinition(
-                                category, propertyName,
-                                fieldDiff.getPropertyType(), null,
-                                fieldItemDefs, false);
+                        WidgetDefinition propertyWidgetDefinition = getWidgetDefinition(category, propertyName,
+                                fieldDiff.getPropertyType(), null, fieldItemDefs, false);
                         widgetDefinitions.add(propertyWidgetDefinition);
                         // Set property widget ref
-                        WidgetReferenceImpl propertyWidgetRef = new WidgetReferenceImpl(
-                                category, propertyName);
+                        WidgetReferenceImpl propertyWidgetRef = new WidgetReferenceImpl(category, propertyName);
                         widgetReferences.add(propertyWidgetRef);
 
                         // Check if must display the content diff links widget
@@ -659,22 +609,17 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                         // Set content diff links widget definition and ref if
                         // needed
                         if (displayContentDiffLinks) {
-                            WidgetDefinition contentDiffLinksWidgetDefinition = getWidgetDefinition(
-                                    category, propertyName,
-                                    fieldDiff.getPropertyType(), null,
-                                    fieldItemDefs, true);
+                            WidgetDefinition contentDiffLinksWidgetDefinition = getWidgetDefinition(category,
+                                    propertyName, fieldDiff.getPropertyType(), null, fieldItemDefs, true);
                             widgetDefinitions.add(contentDiffLinksWidgetDefinition);
-                            WidgetReferenceImpl contentDiffLinksWidgetRef = new WidgetReferenceImpl(
-                                    category,
-                                    propertyName
-                                            + CONTENT_DIFF_LINKS_WIDGET_NAME_SUFFIX);
+                            WidgetReferenceImpl contentDiffLinksWidgetRef = new WidgetReferenceImpl(category,
+                                    propertyName + CONTENT_DIFF_LINKS_WIDGET_NAME_SUFFIX);
                             widgetReferences.add(contentDiffLinksWidgetRef);
                         }
 
                         // Set layout row definition
-                        LayoutRowDefinition layoutRowDefinition = new LayoutRowDefinitionImpl(
-                                propertyName, null, widgetReferences, false,
-                                true);
+                        LayoutRowDefinition layoutRowDefinition = new LayoutRowDefinitionImpl(propertyName, null,
+                                widgetReferences, false, true);
                         layoutRowDefinitions.add(layoutRowDefinition);
 
                         // Set diff display field value
@@ -682,37 +627,25 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                         boolean isDisplayItemIndexes = isDisplayItemIndexes(propertyWidgetDefinition);
 
                         // Left diff display
-                        setFieldDiffDisplay(leftProperty, fieldDiff,
-                                isDisplayAllItems, isDisplayItemIndexes,
+                        setFieldDiffDisplay(leftProperty, fieldDiff, isDisplayAllItems, isDisplayItemIndexes,
                                 leftValue, schemaName, fieldName, leftDoc,
                                 PropertyDiffDisplay.RED_BACKGROUND_STYLE_CLASS);
 
                         // Right diff display
-                        setFieldDiffDisplay(
-                                rightProperty,
-                                fieldDiff,
-                                isDisplayAllItems,
-                                isDisplayItemIndexes,
-                                rightValue,
-                                schemaName,
-                                fieldName,
-                                rightDoc,
+                        setFieldDiffDisplay(rightProperty, fieldDiff, isDisplayAllItems, isDisplayItemIndexes,
+                                rightValue, schemaName, fieldName, rightDoc,
                                 PropertyDiffDisplay.GREEN_BACKGROUND_STYLE_CLASS);
 
                         // Content diff display
                         if (displayContentDiffLinks) {
-                            PropertyDiffDisplay contentDiffDisplay = getFieldXPaths(
-                                    propertyName, fieldDiff, leftProperty,
-                                    rightProperty, isDisplayAllItems,
-                                    isDisplayItemIndexes, fieldItemDefs);
+                            PropertyDiffDisplay contentDiffDisplay = getFieldXPaths(propertyName, fieldDiff,
+                                    leftProperty, rightProperty, isDisplayAllItems, isDisplayItemIndexes, fieldItemDefs);
                             Map<String, PropertyDiffDisplay> contentDiffSchemaMap = contentDiffValue.get(schemaName);
                             if (contentDiffSchemaMap == null) {
                                 contentDiffSchemaMap = new HashMap<String, PropertyDiffDisplay>();
-                                contentDiffValue.put(schemaName,
-                                        contentDiffSchemaMap);
+                                contentDiffValue.put(schemaName, contentDiffSchemaMap);
                             }
-                            contentDiffSchemaMap.put(fieldName,
-                                    contentDiffDisplay);
+                            contentDiffSchemaMap.put(fieldName, contentDiffDisplay);
                         }
                     }
                 }
@@ -720,38 +653,31 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         }
 
         // Build layout definition
-        LayoutDefinition layoutDefinition = new LayoutDefinitionImpl(
-                diffBlockDefinition.getName(),
-                diffBlockDefinition.getProperties(),
-                diffBlockDefinition.getTemplates(), layoutRowDefinitions,
+        LayoutDefinition layoutDefinition = new LayoutDefinitionImpl(diffBlockDefinition.getName(),
+                diffBlockDefinition.getProperties(), diffBlockDefinition.getTemplates(), layoutRowDefinitions,
                 widgetDefinitions);
 
         // Build diff display block
         Map<String, Serializable> diffBlockProperties = diffBlockDefinition.getProperties(BuiltinModes.ANY);
         DiffDisplayBlock diffDisplayBlock = new DiffDisplayBlockImpl(
-                (String) diffBlockProperties.get(DIFF_BLOCK_LABEL_PROPERTY_NAME),
-                leftValue, rightValue, contentDiffValue, layoutDefinition);
+                (String) diffBlockProperties.get(DIFF_BLOCK_LABEL_PROPERTY_NAME), leftValue, rightValue,
+                contentDiffValue, layoutDefinition);
 
         return diffDisplayBlock;
     }
 
     /**
-     * Checks if the difference between the two specified properties is
-     * significant.
+     * Checks if the difference between the two specified properties is significant.
      * <p>
-     * For example in the case of a date property, checks if the difference is
-     * greater than 1 minute since we don't display seconds in the default date
-     * widget.
+     * For example in the case of a date property, checks if the difference is greater than 1 minute since we don't
+     * display seconds in the default date widget.
      */
-    protected boolean isFieldDiffSignificant(Serializable leftProperty,
-            Serializable rightProperty) {
+    protected boolean isFieldDiffSignificant(Serializable leftProperty, Serializable rightProperty) {
 
-        if (leftProperty instanceof Calendar
-                && rightProperty instanceof Calendar) {
+        if (leftProperty instanceof Calendar && rightProperty instanceof Calendar) {
             Calendar leftDate = (Calendar) leftProperty;
             Calendar rightDate = (Calendar) rightProperty;
-            if (Math.abs(leftDate.getTimeInMillis()
-                    - rightDate.getTimeInMillis()) <= 60000) {
+            if (Math.abs(leftDate.getTimeInMillis() - rightDate.getTimeInMillis()) <= 60000) {
                 return false;
             }
         }
@@ -761,19 +687,16 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     protected final boolean isDisplayAllItems(WidgetDefinition wDef) {
 
         // Check 'displayAllItems' widget property
-        return getBooleanProperty(wDef, BuiltinModes.ANY,
-                DIFF_WIDGET_PROPERTY_DISPLAY_ALL_ITEMS);
+        return getBooleanProperty(wDef, BuiltinModes.ANY, DIFF_WIDGET_PROPERTY_DISPLAY_ALL_ITEMS);
     }
 
     protected final boolean isDisplayItemIndexes(WidgetDefinition wDef) {
 
         // Check 'displayItemIndexes' widget property
-        return getBooleanProperty(wDef, BuiltinModes.ANY,
-                DIFF_WIDGET_PROPERTY_DISPLAY_ITEM_INDEXES);
+        return getBooleanProperty(wDef, BuiltinModes.ANY, DIFF_WIDGET_PROPERTY_DISPLAY_ITEM_INDEXES);
     }
 
-    protected final boolean getBooleanProperty(WidgetDefinition wDef,
-            String mode, String property) {
+    protected final boolean getBooleanProperty(WidgetDefinition wDef, String mode, String property) {
 
         Map<String, Map<String, Serializable>> props = wDef.getProperties();
         if (props != null) {
@@ -802,16 +725,12 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
      * @param styleClass the style class
      * @throws ClientException the client exception
      */
-    protected void setFieldDiffDisplay(Serializable property,
-            PropertyDiff fieldDiff, boolean isDisplayAllItems,
-            boolean isDisplayItemIndexes,
-            Map<String, Map<String, PropertyDiffDisplay>> value,
-            String schemaName, String fieldName, DocumentModel doc,
-            String styleClass) throws ClientException {
+    protected void setFieldDiffDisplay(Serializable property, PropertyDiff fieldDiff, boolean isDisplayAllItems,
+            boolean isDisplayItemIndexes, Map<String, Map<String, PropertyDiffDisplay>> value, String schemaName,
+            String fieldName, DocumentModel doc, String styleClass) throws ClientException {
 
-        PropertyDiffDisplay fieldDiffDisplay = getFieldDiffDisplay(property,
-                fieldDiff, isDisplayAllItems, isDisplayItemIndexes, false,
-                styleClass);
+        PropertyDiffDisplay fieldDiffDisplay = getFieldDiffDisplay(property, fieldDiff, isDisplayAllItems,
+                isDisplayItemIndexes, false, styleClass);
         Map<String, PropertyDiffDisplay> schemaMap = value.get(schemaName);
         if (schemaMap == null) {
             schemaMap = new HashMap<String, PropertyDiffDisplay>();
@@ -822,21 +741,16 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         putMimeTypeDiffDisplay(schemaName, fieldName, schemaMap, doc);
     }
 
-    protected final void putMimeTypeDiffDisplay(String schemaName,
-            String fieldName, Map<String, PropertyDiffDisplay> schemaMap,
-            DocumentModel doc) throws ClientException {
+    protected final void putMimeTypeDiffDisplay(String schemaName, String fieldName,
+            Map<String, PropertyDiffDisplay> schemaMap, DocumentModel doc) throws ClientException {
 
-        if ("note".equals(schemaName) && "note".equals(fieldName)
-                && !schemaMap.containsKey("mime_type")) {
-            schemaMap.put("mime_type", new PropertyDiffDisplayImpl(
-                    (Serializable) doc.getProperty("note", "mime_type")));
+        if ("note".equals(schemaName) && "note".equals(fieldName) && !schemaMap.containsKey("mime_type")) {
+            schemaMap.put("mime_type", new PropertyDiffDisplayImpl((Serializable) doc.getProperty("note", "mime_type")));
         }
     }
 
-    protected final PropertyDiffDisplay getFieldDiffDisplay(
-            Serializable property, PropertyDiff propertyDiff,
-            boolean isDisplayAllItems, boolean isDisplayItemIndexes,
-            boolean mustApplyStyleClass, String styleClass)
+    protected final PropertyDiffDisplay getFieldDiffDisplay(Serializable property, PropertyDiff propertyDiff,
+            boolean isDisplayAllItems, boolean isDisplayItemIndexes, boolean mustApplyStyleClass, String styleClass)
             throws ClientException {
 
         if (property == null) {
@@ -851,21 +765,17 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         // List type
         if (isListType(property)) {
             List<Serializable> listProperty = getListProperty(property);
-            return getListFieldDiffDisplay(listProperty,
-                    (ListPropertyDiff) propertyDiff, isDisplayAllItems,
+            return getListFieldDiffDisplay(listProperty, (ListPropertyDiff) propertyDiff, isDisplayAllItems,
                     isDisplayItemIndexes, styleClass);
         }
         // Other types (scalar, complex, content)
         else {
-            return getFinalFieldDiffDisplay(property, propertyDiff,
-                    mustApplyStyleClass, styleClass);
+            return getFinalFieldDiffDisplay(property, propertyDiff, mustApplyStyleClass, styleClass);
         }
     }
 
-    protected final PropertyDiffDisplay getFinalFieldDiffDisplay(
-            Serializable fieldDiffDisplay, PropertyDiff propertyDiff,
-            boolean mustApplyStyleClass, String styleClass)
-            throws ClientException {
+    protected final PropertyDiffDisplay getFinalFieldDiffDisplay(Serializable fieldDiffDisplay,
+            PropertyDiff propertyDiff, boolean mustApplyStyleClass, String styleClass) throws ClientException {
 
         String finalFieldDiffDisplayStyleClass = PropertyDiffDisplay.DEFAULT_STYLE_CLASS;
         if (mustApplyStyleClass && propertyDiff != null) {
@@ -890,21 +800,17 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 complexFieldDiffDisplay.put(complexItemName,
                 // TODO: shouldn't we call getFieldDiffDisplay in case
                 // of an embedded list?
-                        getFinalFieldDiffDisplay(
-                                complexFieldDiffDisplay.get(complexItemName),
-                                complexItemPropertyDiff, true, styleClass));
+                        getFinalFieldDiffDisplay(complexFieldDiffDisplay.get(complexItemName), complexItemPropertyDiff,
+                                true, styleClass));
             }
-            finalFieldDiffDisplay = new PropertyDiffDisplayImpl(
-                    (Serializable) complexFieldDiffDisplay);
+            finalFieldDiffDisplay = new PropertyDiffDisplayImpl((Serializable) complexFieldDiffDisplay);
         } else if (fieldDiffDisplay instanceof Calendar) {
             // TODO: add propertyDiff.getDifferenceType()?
-            finalFieldDiffDisplay = new PropertyDiffDisplayImpl(
-                    ((Calendar) fieldDiffDisplay).getTime(),
+            finalFieldDiffDisplay = new PropertyDiffDisplayImpl(((Calendar) fieldDiffDisplay).getTime(),
                     finalFieldDiffDisplayStyleClass);
         } else {
             // TODO: add propertyDiff.getDifferenceType()?
-            finalFieldDiffDisplay = new PropertyDiffDisplayImpl(
-                    fieldDiffDisplay, finalFieldDiffDisplayStyleClass);
+            finalFieldDiffDisplay = new PropertyDiffDisplayImpl(fieldDiffDisplay, finalFieldDiffDisplayStyleClass);
         }
         return finalFieldDiffDisplay;
     }
@@ -920,9 +826,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
      * @return the list field diff display
      * @throws ClientException the client exception
      */
-    protected final PropertyDiffDisplay getListFieldDiffDisplay(
-            List<Serializable> listProperty, ListPropertyDiff listPropertyDiff,
-            boolean isDisplayAllItems, boolean isDisplayItemIndexes,
+    protected final PropertyDiffDisplay getListFieldDiffDisplay(List<Serializable> listProperty,
+            ListPropertyDiff listPropertyDiff, boolean isDisplayAllItems, boolean isDisplayItemIndexes,
             String styleClass) throws ClientException {
 
         // Get list property indexes
@@ -940,16 +845,13 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             }
         }
 
-        return getComplexListFieldDiffDisplay(listProperty,
-                listPropertyIndexes, listPropertyDiff, isDisplayAllItems,
+        return getComplexListFieldDiffDisplay(listProperty, listPropertyIndexes, listPropertyDiff, isDisplayAllItems,
                 isDisplayItemIndexes, styleClass);
     }
 
-    protected final PropertyDiffDisplay getComplexListFieldDiffDisplay(
-            List<Serializable> listProperty, List<Integer> listPropertyIndexes,
-            ListPropertyDiff listPropertyDiff, boolean isDisplayAllItems,
-            boolean isDisplayItemIndexes, String styleClass)
-            throws ClientException {
+    protected final PropertyDiffDisplay getComplexListFieldDiffDisplay(List<Serializable> listProperty,
+            List<Integer> listPropertyIndexes, ListPropertyDiff listPropertyDiff, boolean isDisplayAllItems,
+            boolean isDisplayItemIndexes, String styleClass) throws ClientException {
 
         if (listPropertyIndexes.isEmpty()) {
             // TODO: add differenceType?
@@ -966,8 +868,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 Map<String, Serializable> listItemDiffDisplay = new HashMap<String, Serializable>();
                 // Put item index if wanted
                 if (isDisplayItemIndexes) {
-                    listItemDiffDisplay.put(
-                            DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD, index + 1);
+                    listItemDiffDisplay.put(DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD, index + 1);
                 }
                 // Only put value if index is in list range
                 if (index < listProperty.size()) {
@@ -979,8 +880,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     if (isComplexType(listPropertyItem)) { // Complex
                                                            // list
                         ComplexPropertyDiff complexPropertyDiff = null;
-                        if (listItemPropertyDiff != null
-                                && listItemPropertyDiff.isComplexType()) {
+                        if (listItemPropertyDiff != null && listItemPropertyDiff.isComplexType()) {
                             complexPropertyDiff = (ComplexPropertyDiff) listItemPropertyDiff;
                         }
                         Map<String, Serializable> complexProperty = getComplexProperty(listPropertyItem);
@@ -997,41 +897,31 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                             }
                             listItemDiffDisplay.put(
                                     complexPropertyItemName,
-                                    getFieldDiffDisplay(complexPropertyItem,
-                                            complexItemPropertyDiff,
-                                            isDisplayAllItems,
-                                            isDisplayItemIndexes, true,
-                                            styleClass));
+                                    getFieldDiffDisplay(complexPropertyItem, complexItemPropertyDiff,
+                                            isDisplayAllItems, isDisplayItemIndexes, true, styleClass));
                         }
                     } else { // Scalar or content list
                         listItemDiffDisplay.put(
                                 DIFF_LIST_WIDGET_VALUE_SUBWIDGET_FIELD,
-                                getFinalFieldDiffDisplay(listPropertyItem,
-                                        listItemPropertyDiff,
-                                        isDisplayAllItems, styleClass));
+                                getFinalFieldDiffDisplay(listPropertyItem, listItemPropertyDiff, isDisplayAllItems,
+                                        styleClass));
                     }
                 } else {// Index not in list range => put null value
                     if (complexPropertyItemNames != null) {
                         for (String complexPropertyItemName : complexPropertyItemNames) {
                             // TODO: add DifferenceType.removed?
-                            listItemDiffDisplay.put(complexPropertyItemName,
-                                    new PropertyDiffDisplayImpl(null,
-                                            styleClass));
+                            listItemDiffDisplay.put(complexPropertyItemName, new PropertyDiffDisplayImpl(null,
+                                    styleClass));
                         }
                     } else {
                         // TODO: add DifferenceType.removed?
-                        listItemDiffDisplay.put(
-                                DIFF_LIST_WIDGET_VALUE_SUBWIDGET_FIELD,
-                                new PropertyDiffDisplayImpl(
-                                        null,
-                                        isDisplayAllItems ? styleClass
-                                                : PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+                        listItemDiffDisplay.put(DIFF_LIST_WIDGET_VALUE_SUBWIDGET_FIELD, new PropertyDiffDisplayImpl(
+                                null, isDisplayAllItems ? styleClass : PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
                     }
                 }
                 listFieldDiffDisplay.add(listItemDiffDisplay);
             }
-            return new PropertyDiffDisplayImpl(
-                    (Serializable) listFieldDiffDisplay);
+            return new PropertyDiffDisplayImpl((Serializable) listFieldDiffDisplay);
         } else {
             List<Serializable> listFieldDiffDisplay = new ArrayList<Serializable>();
             for (int index : listPropertyIndexes) {
@@ -1041,32 +931,25 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     if (listPropertyDiff != null) {
                         listItemPropertyDiff = listPropertyDiff.getDiff(index);
                     }
-                    listFieldDiffDisplay.add(getFinalFieldDiffDisplay(
-                            listProperty.get(index), listItemPropertyDiff,
+                    listFieldDiffDisplay.add(getFinalFieldDiffDisplay(listProperty.get(index), listItemPropertyDiff,
                             isDisplayAllItems, styleClass));
                 } else {// Index not in list range => put null value
                     // TODO: add DifferenceType.removed?
-                    listFieldDiffDisplay.add(new PropertyDiffDisplayImpl(null,
-                            isDisplayAllItems ? styleClass
-                                    : PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+                    listFieldDiffDisplay.add(new PropertyDiffDisplayImpl(null, isDisplayAllItems ? styleClass
+                            : PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
                 }
             }
-            return new PropertyDiffDisplayImpl(
-                    (Serializable) listFieldDiffDisplay);
+            return new PropertyDiffDisplayImpl((Serializable) listFieldDiffDisplay);
         }
     }
 
-    protected final PropertyDiffDisplay getFieldXPaths(String propertyName,
-            PropertyDiff propertyDiff, Serializable leftProperty,
-            Serializable rightProperty, boolean isDisplayAllItems,
-            boolean isDisplayItemIndexes,
-            List<DiffFieldItemDefinition> complexFieldItemDefs)
-            throws ClientException {
+    protected final PropertyDiffDisplay getFieldXPaths(String propertyName, PropertyDiff propertyDiff,
+            Serializable leftProperty, Serializable rightProperty, boolean isDisplayAllItems,
+            boolean isDisplayItemIndexes, List<DiffFieldItemDefinition> complexFieldItemDefs) throws ClientException {
 
         PropertyDiffDisplay fieldXPaths = null;
         if (propertyDiff == null) {
-            throw new ClientException(
-                    "The 'propertyDiff' parameter cannot be null.");
+            throw new ClientException("The 'propertyDiff' parameter cannot be null.");
         }
 
         boolean isDisplayHtmlConversion = ContentDiffHelper.isDisplayHtmlConversion(leftProperty)
@@ -1081,8 +964,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             // empty
             if (!StringUtils.isEmpty(simplePropertyDiff.getLeftValue())
                     && !StringUtils.isEmpty(simplePropertyDiff.getRightValue())) {
-                fieldXPaths = new ContentDiffDisplayImpl(propertyName,
-                        simplePropertyDiff.getDifferenceType(),
+                fieldXPaths = new ContentDiffDisplayImpl(propertyName, simplePropertyDiff.getDifferenceType(),
                         isDisplayHtmlConversion, isDisplayTextConversion);
             }
         }
@@ -1097,8 +979,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     && rightContent != null
                     && (!StringUtils.isEmpty(leftContent.getFilename()) && !StringUtils.isEmpty(rightContent.getFilename()))
                     || (!StringUtils.isEmpty(leftContent.getDigest()) && !StringUtils.isEmpty(rightContent.getDigest()))) {
-                fieldXPaths = new ContentDiffDisplayImpl(propertyName,
-                        contentPropertyDiff.getDifferenceType(),
+                fieldXPaths = new ContentDiffDisplayImpl(propertyName, contentPropertyDiff.getDifferenceType(),
                         isDisplayHtmlConversion, isDisplayTextConversion);
             }
         }
@@ -1118,34 +999,23 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 Iterator<String> complexFieldItemNamesIt = complexPropertyDiffMap.keySet().iterator();
                 while (complexFieldItemNamesIt.hasNext()) {
                     String complexFieldItemName = complexFieldItemNamesIt.next();
-                    setComplexPropertyXPaths(
-                            complexPropertyXPaths,
-                            complexFieldItemName,
-                            getSubPropertyFullName(propertyName,
-                                    complexFieldItemName),
-                            complexPropertyDiffMap, leftComplexProperty,
-                            rightComplexProperty, isDisplayAllItems,
-                            isDisplayItemIndexes);
+                    setComplexPropertyXPaths(complexPropertyXPaths, complexFieldItemName,
+                            getSubPropertyFullName(propertyName, complexFieldItemName), complexPropertyDiffMap,
+                            leftComplexProperty, rightComplexProperty, isDisplayAllItems, isDisplayItemIndexes);
                 }
             } else {
                 for (DiffFieldItemDefinition complexFieldItemDef : complexFieldItemDefs) {
                     if (complexFieldItemDef.isDisplayContentDiffLinks()) {
                         String complexFieldItemName = complexFieldItemDef.getName();
                         if (complexPropertyDiffMap.containsKey(complexFieldItemName)) {
-                            setComplexPropertyXPaths(
-                                    complexPropertyXPaths,
-                                    complexFieldItemName,
-                                    getSubPropertyFullName(propertyName,
-                                            complexFieldItemName),
-                                    complexPropertyDiffMap,
-                                    leftComplexProperty, rightComplexProperty,
-                                    isDisplayAllItems, isDisplayItemIndexes);
+                            setComplexPropertyXPaths(complexPropertyXPaths, complexFieldItemName,
+                                    getSubPropertyFullName(propertyName, complexFieldItemName), complexPropertyDiffMap,
+                                    leftComplexProperty, rightComplexProperty, isDisplayAllItems, isDisplayItemIndexes);
                         }
                     }
                 }
             }
-            fieldXPaths = new ContentDiffDisplayImpl(
-                    (Serializable) complexPropertyXPaths);
+            fieldXPaths = new ContentDiffDisplayImpl((Serializable) complexPropertyXPaths);
         }
         // List type
         else {
@@ -1160,8 +1030,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             List<Integer> listPropertyIndexes = new ArrayList<Integer>();
             if (isDisplayAllItems) {
                 // All items
-                int listPropertySize = Math.min(leftListProperty.size(),
-                        rightListProperty.size());
+                int listPropertySize = Math.min(leftListProperty.size(), rightListProperty.size());
 
                 for (int index = 0; index < listPropertySize; index++) {
                     listPropertyIndexes.add(index);
@@ -1169,19 +1038,16 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             } else {
                 listPropertyIndexes = listPropertyDiff.getDiffIndexes();
             }
-            fieldXPaths = getComplexListXPaths(propertyName,
-                    listPropertyIndexes, listPropertyDiff, leftListProperty,
+            fieldXPaths = getComplexListXPaths(propertyName, listPropertyIndexes, listPropertyDiff, leftListProperty,
                     rightListProperty, isDisplayAllItems, isDisplayItemIndexes);
         }
         return fieldXPaths;
     }
 
-    protected final PropertyDiffDisplay getComplexListXPaths(
-            String propertyName, List<Integer> listPropertyIndexes,
-            ListPropertyDiff listPropertyDiff,
-            List<Serializable> leftListProperty,
-            List<Serializable> rightListProperty, boolean isDisplayAllItems,
-            boolean isDisplayItemIndexes) throws ClientException {
+    protected final PropertyDiffDisplay getComplexListXPaths(String propertyName, List<Integer> listPropertyIndexes,
+            ListPropertyDiff listPropertyDiff, List<Serializable> leftListProperty,
+            List<Serializable> rightListProperty, boolean isDisplayAllItems, boolean isDisplayItemIndexes)
+            throws ClientException {
 
         if (listPropertyIndexes.isEmpty()) {
             // TODO: add differenceType?
@@ -1197,8 +1063,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 Map<String, Serializable> listItemXPaths = new HashMap<String, Serializable>();
                 // Put item index if wanted
                 if (isDisplayItemIndexes) {
-                    listItemXPaths.put(DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD,
-                            index + 1);
+                    listItemXPaths.put(DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD, index + 1);
                 }
                 PropertyDiff listItemPropertyDiff = listPropertyDiff.getDiff(index);
                 if (listItemPropertyDiff != null) {
@@ -1233,13 +1098,9 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                             setComplexPropertyXPaths(
                                     listItemXPaths,
                                     complexPropertyItemName,
-                                    getSubPropertyFullName(
-                                            propertyName,
-                                            getSubPropertyFullName(
-                                                    String.valueOf(index),
-                                                    complexPropertyItemName)),
-                                    complexPropertyDiffMap,
-                                    leftComplexProperty, rightComplexProperty,
+                                    getSubPropertyFullName(propertyName,
+                                            getSubPropertyFullName(String.valueOf(index), complexPropertyItemName)),
+                                    complexPropertyDiffMap, leftComplexProperty, rightComplexProperty,
                                     isDisplayAllItems, isDisplayItemIndexes);
                         }
                     }
@@ -1248,22 +1109,16 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                         String listItemXPath = null;
                         // Keep listItemXPath null if one of the left or right
                         // properties is empty
-                        if (leftListPropertyItem != null
-                                && rightListPropertyItem != null) {
-                            listItemXPath = getSubPropertyFullName(
-                                    propertyName, String.valueOf(index));
+                        if (leftListPropertyItem != null && rightListPropertyItem != null) {
+                            listItemXPath = getSubPropertyFullName(propertyName, String.valueOf(index));
                         }
                         boolean isDisplayHtmlConversion = ContentDiffHelper.isDisplayHtmlConversion(leftListPropertyItem)
                                 && ContentDiffHelper.isDisplayHtmlConversion(rightListPropertyItem);
                         boolean isDisplayTextConversion = ContentDiffHelper.isDisplayTextConversion(leftListPropertyItem)
                                 && ContentDiffHelper.isDisplayTextConversion(rightListPropertyItem);
-                        listItemXPaths.put(
-                                DIFF_LIST_WIDGET_VALUE_SUBWIDGET_FIELD,
-                                new ContentDiffDisplayImpl(
-                                        listItemXPath,
-                                        listItemPropertyDiff.getDifferenceType(),
-                                        isDisplayHtmlConversion,
-                                        isDisplayTextConversion));
+                        listItemXPaths.put(DIFF_LIST_WIDGET_VALUE_SUBWIDGET_FIELD, new ContentDiffDisplayImpl(
+                                listItemXPath, listItemPropertyDiff.getDifferenceType(), isDisplayHtmlConversion,
+                                isDisplayTextConversion));
                     }
                 }
                 listFieldXPaths.add(listItemXPaths);
@@ -1275,8 +1130,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 PropertyDiffDisplay listItemXPath = null;
                 // Keep listItemXPath null if one of the left or right
                 // properties is empty
-                if (index < leftListProperty.size()
-                        && index < rightListProperty.size()) {
+                if (index < leftListProperty.size() && index < rightListProperty.size()) {
                     PropertyDiff listItemPropertyDiff = null;
                     if (listPropertyDiff != null) {
                         listItemPropertyDiff = listPropertyDiff.getDiff(index);
@@ -1291,10 +1145,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                             && ContentDiffHelper.isDisplayHtmlConversion(rightListPropertyItem);
                     boolean isDisplayTextConversion = ContentDiffHelper.isDisplayTextConversion(leftListPropertyItem)
                             && ContentDiffHelper.isDisplayTextConversion(rightListPropertyItem);
-                    listItemXPath = new ContentDiffDisplayImpl(
-                            getSubPropertyFullName(propertyName,
-                                    String.valueOf(index)), differenceType,
-                            isDisplayHtmlConversion, isDisplayTextConversion);
+                    listItemXPath = new ContentDiffDisplayImpl(getSubPropertyFullName(propertyName,
+                            String.valueOf(index)), differenceType, isDisplayHtmlConversion, isDisplayTextConversion);
                 }
                 listFieldXPaths.add(listItemXPath);
             }
@@ -1315,14 +1167,10 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
      * @param isDisplayItemIndexes the is display item indexes
      * @throws ClientException the client exception
      */
-    protected void setComplexPropertyXPaths(
-            Map<String, Serializable> complexPropertyXPaths,
-            String complexFieldItemName, String subPropertyFullName,
-            Map<String, PropertyDiff> complexPropertyDiffMap,
-            Map<String, Serializable> leftComplexProperty,
-            Map<String, Serializable> rightComplexProperty,
-            boolean isDisplayAllItems, boolean isDisplayItemIndexes)
-            throws ClientException {
+    protected void setComplexPropertyXPaths(Map<String, Serializable> complexPropertyXPaths,
+            String complexFieldItemName, String subPropertyFullName, Map<String, PropertyDiff> complexPropertyDiffMap,
+            Map<String, Serializable> leftComplexProperty, Map<String, Serializable> rightComplexProperty,
+            boolean isDisplayAllItems, boolean isDisplayItemIndexes) throws ClientException {
 
         Serializable leftComplexPropertyItemValue = null;
         Serializable rightComplexPropertyItemValue = null;
@@ -1334,17 +1182,14 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         }
         complexPropertyXPaths.put(
                 complexFieldItemName,
-                getFieldXPaths(subPropertyFullName,
-                        complexPropertyDiffMap.get(complexFieldItemName),
-                        leftComplexPropertyItemValue,
-                        rightComplexPropertyItemValue, isDisplayAllItems,
+                getFieldXPaths(subPropertyFullName, complexPropertyDiffMap.get(complexFieldItemName),
+                        leftComplexPropertyItemValue, rightComplexPropertyItemValue, isDisplayAllItems,
                         isDisplayItemIndexes, null));
     }
 
     protected boolean isListType(Serializable property) {
 
-        return property instanceof List<?>
-                || property instanceof Serializable[];
+        return property instanceof List<?> || property instanceof Serializable[];
     }
 
     protected boolean isComplexType(Serializable property) {
@@ -1353,13 +1198,11 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     }
 
     /**
-     * Casts or convert a {@link Serializable} property to {@link List
-     * <Serializable>}.
+     * Casts or convert a {@link Serializable} property to {@link List <Serializable>}.
      *
      * @param property the property
      * @return the list property
-     * @throws ClassCastException if the {@code property} is not a {@link List
-     *             <Serializable>} nor an array.
+     * @throws ClassCastException if the {@code property} is not a {@link List <Serializable>} nor an array.
      */
     @SuppressWarnings("unchecked")
     protected List<Serializable> getListProperty(Serializable property) {
@@ -1376,12 +1219,10 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
      * Gets the list property if the {@code property} is not null.
      *
      * @param property the property
-     * @return the list property if the {@code property} is not null, null
-     *         otherwise
+     * @return the list property if the {@code property} is not null, null otherwise
      * @throws ClientException if the {@code property} is not a list.
      */
-    protected List<Serializable> getListPropertyIfNotNull(Serializable property)
-            throws ClientException {
+    protected List<Serializable> getListPropertyIfNotNull(Serializable property) throws ClientException {
 
         if (property != null) {
             if (!isListType(property)) {
@@ -1394,13 +1235,11 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     }
 
     /**
-     * Casts a {@link Serializable} property to {@link Map<String,
-     * Serializable>}.
+     * Casts a {@link Serializable} property to {@link Map<String, Serializable>}.
      *
      * @param property the property
      * @return the complex property
-     * @throws ClassCastException if the {@code property} is not a {@link Map
-     *             <String, Serializable>}.
+     * @throws ClassCastException if the {@code property} is not a {@link Map <String, Serializable>}.
      */
     @SuppressWarnings("unchecked")
     protected Map<String, Serializable> getComplexProperty(Serializable property) {
@@ -1411,12 +1250,10 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
      * Gets the complex property if the {@code property} is not null.
      *
      * @param property the property
-     * @return the complex property if the {@code property} is not null, null
-     *         otherwise
+     * @return the complex property if the {@code property} is not null, null otherwise
      * @throws ClientException if the {@code property} is not a list.
      */
-    protected Map<String, Serializable> getComplexPropertyIfNotNull(
-            Serializable property) throws ClientException {
+    protected Map<String, Serializable> getComplexPropertyIfNotNull(Serializable property) throws ClientException {
 
         if (property != null) {
             if (!isComplexType(property)) {
@@ -1430,10 +1267,9 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     // TODO: better separate regular and contentDiffLinksWidget cases (call
     // submethods)
-    protected final WidgetDefinition getWidgetDefinition(String category,
-            String propertyName, String propertyType, Field field,
-            List<DiffFieldItemDefinition> complexFieldItemDefs,
-            boolean isContentDiffLinksWidget) throws ClientException {
+    protected final WidgetDefinition getWidgetDefinition(String category, String propertyName, String propertyType,
+            Field field, List<DiffFieldItemDefinition> complexFieldItemDefs, boolean isContentDiffLinksWidget)
+            throws ClientException {
 
         boolean isGeneric = false;
         boolean isCloned = false;
@@ -1447,8 +1283,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 isGeneric = true;
                 // Fallback on a generic widget in the "diff" category named
                 // with the property type
-                wDef = getLayoutStore().getWidgetDefinition(category,
-                        propertyType);
+                wDef = getLayoutStore().getWidgetDefinition(category, propertyType);
                 if (wDef == null) {
                     throw new ClientException(
                             String.format(
@@ -1458,10 +1293,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             }
         } else {
             isGeneric = true;
-            if (PropertyType.isSimpleType(propertyType)
-                    || PropertyType.isContentType(propertyType)) {
-                wDef = getLayoutStore().getWidgetDefinition(category,
-                        CONTENT_DIFF_LINKS_WIDGET_NAME);
+            if (PropertyType.isSimpleType(propertyType) || PropertyType.isContentType(propertyType)) {
+                wDef = getLayoutStore().getWidgetDefinition(category, CONTENT_DIFF_LINKS_WIDGET_NAME);
                 if (wDef == null) {
                     throw new ClientException(
                             String.format(
@@ -1471,8 +1304,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             } else {
                 // Get the generic widget in the "diff" category named with
                 // the property type
-                wDef = getLayoutStore().getWidgetDefinition(category,
-                        propertyType);
+                wDef = getLayoutStore().getWidgetDefinition(category, propertyType);
                 if (wDef == null) {
                     throw new ClientException(
                             String.format(
@@ -1495,8 +1327,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
             // Set labels
             Map<String, String> labels = new HashMap<String, String>();
-            labels.put(BuiltinModes.ANY, DIFF_WIDGET_LABEL_PREFIX
-                    + getPropertyLabel(propertyName));
+            labels.put(BuiltinModes.ANY, DIFF_WIDGET_LABEL_PREFIX + getPropertyLabel(propertyName));
             wDef.setLabels(labels);
 
             // Set translated
@@ -1515,46 +1346,33 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             FieldDefinition[] fieldDefinitions;
             if (isContentDiffLinksWidget) {
                 fieldDefinitions = new FieldDefinition[4];
-                fieldDefinitions[0] = new FieldDefinitionImpl(null,
-                        getFieldDefinition(fieldName,
-                                DIFF_WIDGET_FIELD_DEFINITION_VALUE));
-                fieldDefinitions[1] = new FieldDefinitionImpl(null,
-                        getFieldDefinition(fieldName,
-                                DIFF_WIDGET_FIELD_DEFINITION_DIFFERENCE_TYPE));
-                fieldDefinitions[2] = new FieldDefinitionImpl(
-                        null,
-                        getFieldDefinition(fieldName,
-                                DIFF_WIDGET_FIELD_DEFINITION_DISPLAY_HTML_CONVERSION));
-                fieldDefinitions[3] = new FieldDefinitionImpl(
-                        null,
-                        getFieldDefinition(fieldName,
-                                DIFF_WIDGET_FIELD_DEFINITION_DISPLAY_TEXT_CONVERSION));
+                fieldDefinitions[0] = new FieldDefinitionImpl(null, getFieldDefinition(fieldName,
+                        DIFF_WIDGET_FIELD_DEFINITION_VALUE));
+                fieldDefinitions[1] = new FieldDefinitionImpl(null, getFieldDefinition(fieldName,
+                        DIFF_WIDGET_FIELD_DEFINITION_DIFFERENCE_TYPE));
+                fieldDefinitions[2] = new FieldDefinitionImpl(null, getFieldDefinition(fieldName,
+                        DIFF_WIDGET_FIELD_DEFINITION_DISPLAY_HTML_CONVERSION));
+                fieldDefinitions[3] = new FieldDefinitionImpl(null, getFieldDefinition(fieldName,
+                        DIFF_WIDGET_FIELD_DEFINITION_DISPLAY_TEXT_CONVERSION));
             } else {
                 int fieldCount = 2;
-                if (PropertyType.isContentType(propertyType)
-                        || ("note:note".equals(propertyName))) {
+                if (PropertyType.isContentType(propertyType) || ("note:note".equals(propertyName))) {
                     fieldCount = 3;
                 }
                 fieldDefinitions = new FieldDefinition[fieldCount];
-                fieldDefinitions[0] = new FieldDefinitionImpl(null,
-                        getFieldDefinition(fieldName,
-                                DIFF_WIDGET_FIELD_DEFINITION_VALUE));
+                fieldDefinitions[0] = new FieldDefinitionImpl(null, getFieldDefinition(fieldName,
+                        DIFF_WIDGET_FIELD_DEFINITION_VALUE));
 
-                FieldDefinition styleClassFieldDef = new FieldDefinitionImpl(
-                        null, getFieldDefinition(fieldName,
-                                DIFF_WIDGET_FIELD_DEFINITION_STYLE_CLASS));
+                FieldDefinition styleClassFieldDef = new FieldDefinitionImpl(null, getFieldDefinition(fieldName,
+                        DIFF_WIDGET_FIELD_DEFINITION_STYLE_CLASS));
                 if (PropertyType.isContentType(propertyType)) {
-                    fieldDefinitions[1] = new FieldDefinitionImpl(
-                            null,
-                            getFieldDefinition(
-                                    getFieldDefinition(fieldName,
-                                            DIFF_WIDGET_FIELD_DEFINITION_VALUE),
-                                    DIFF_WIDGET_FIELD_DEFINITION_FILENAME));
+                    fieldDefinitions[1] = new FieldDefinitionImpl(null, getFieldDefinition(
+                            getFieldDefinition(fieldName, DIFF_WIDGET_FIELD_DEFINITION_VALUE),
+                            DIFF_WIDGET_FIELD_DEFINITION_FILENAME));
                     fieldDefinitions[2] = styleClassFieldDef;
                 } else if ("note:note".equals(propertyName)) {
-                    fieldDefinitions[1] = new FieldDefinitionImpl(null,
-                            getFieldDefinition("note:mime_type",
-                                    DIFF_WIDGET_FIELD_DEFINITION_VALUE));
+                    fieldDefinitions[1] = new FieldDefinitionImpl(null, getFieldDefinition("note:mime_type",
+                            DIFF_WIDGET_FIELD_DEFINITION_VALUE));
                     fieldDefinitions[2] = styleClassFieldDef;
                 } else {
                     fieldDefinitions[1] = styleClassFieldDef;
@@ -1571,13 +1389,11 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
         // Set subwidgets if not already set
         if (!isSubWidgets(wDef)) {
-            if (PropertyType.isListType(propertyType)
-                    || PropertyType.isComplexType(propertyType)) {
+            if (PropertyType.isListType(propertyType) || PropertyType.isComplexType(propertyType)) {
 
                 Field declaringField = field;
                 if (declaringField == null) {
-                    declaringField = ComplexPropertyHelper.getField(
-                            getPropertySchema(propertyName),
+                    declaringField = ComplexPropertyHelper.getField(getPropertySchema(propertyName),
                             getPropertyField(propertyName));
                 }
                 // Clone if needed
@@ -1585,10 +1401,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     wDef = wDef.clone();
                     isCloned = true;
                 }
-                wDef.setSubWidgetDefinitions(getSubWidgetDefinitions(category,
-                        propertyName, propertyType, declaringField,
-                        complexFieldItemDefs, isDisplayItemIndexes(wDef),
-                        isContentDiffLinksWidget));
+                wDef.setSubWidgetDefinitions(getSubWidgetDefinitions(category, propertyName, propertyType,
+                        declaringField, complexFieldItemDefs, isDisplayItemIndexes(wDef), isContentDiffLinksWidget));
             }
         }
 
@@ -1607,71 +1421,56 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return fieldDefs != null && fieldDefs.length > 0;
     }
 
-    protected final String getFieldDefinition(String fieldName,
-            String subPropertyName) {
+    protected final String getFieldDefinition(String fieldName, String subPropertyName) {
 
         return fieldName + "/" + subPropertyName;
     }
 
-    protected final WidgetDefinition[] getSubWidgetDefinitions(String category,
-            String propertyName, String propertyType, Field field,
-            List<DiffFieldItemDefinition> complexFieldItemDefs,
-            boolean isDisplayItemIndexes, boolean isContentDiffLinks)
-            throws ClientException {
+    protected final WidgetDefinition[] getSubWidgetDefinitions(String category, String propertyName,
+            String propertyType, Field field, List<DiffFieldItemDefinition> complexFieldItemDefs,
+            boolean isDisplayItemIndexes, boolean isContentDiffLinks) throws ClientException {
 
         WidgetDefinition[] subWidgetDefs = null;
         // Complex
         if (PropertyType.isComplexType(propertyType)) {
-            subWidgetDefs = getComplexSubWidgetDefinitions(category,
-                    propertyName, field, complexFieldItemDefs, false,
+            subWidgetDefs = getComplexSubWidgetDefinitions(category, propertyName, field, complexFieldItemDefs, false,
                     isContentDiffLinks);
         }
         // Scalar or content list
-        else if (PropertyType.isScalarListType(propertyType)
-                || PropertyType.isContentListType(propertyType)) {
+        else if (PropertyType.isScalarListType(propertyType) || PropertyType.isContentListType(propertyType)) {
             Field listFieldItem = ComplexPropertyHelper.getListFieldItem(field);
             subWidgetDefs = initSubWidgetDefinitions(isDisplayItemIndexes, 1);
-            subWidgetDefs[subWidgetDefs.length - 1] = getWidgetDefinition(
-                    category,
-                    getSubPropertyFullName(propertyName,
-                            listFieldItem.getName().getLocalName()),
-                    ComplexPropertyHelper.getFieldType(listFieldItem),
-                    new FieldImpl(new QName(
-                            DIFF_LIST_WIDGET_VALUE_SUBWIDGET_FIELD),
-                            field.getType(), listFieldItem.getType()), null,
+            subWidgetDefs[subWidgetDefs.length - 1] = getWidgetDefinition(category,
+                    getSubPropertyFullName(propertyName, listFieldItem.getName().getLocalName()),
+                    ComplexPropertyHelper.getFieldType(listFieldItem), new FieldImpl(new QName(
+                            DIFF_LIST_WIDGET_VALUE_SUBWIDGET_FIELD), field.getType(), listFieldItem.getType()), null,
                     isContentDiffLinks);
         }
         // Complex list
         else if (PropertyType.isComplexListType(propertyType)) {
             Field listFieldItem = ComplexPropertyHelper.getListFieldItem(field);
-            subWidgetDefs = getComplexSubWidgetDefinitions(category,
-                    propertyName, listFieldItem, complexFieldItemDefs,
+            subWidgetDefs = getComplexSubWidgetDefinitions(category, propertyName, listFieldItem, complexFieldItemDefs,
                     isDisplayItemIndexes, isContentDiffLinks);
         }
         return subWidgetDefs;
     }
 
-    protected final WidgetDefinition[] getComplexSubWidgetDefinitions(
-            String category, String propertyName, Field field,
-            List<DiffFieldItemDefinition> complexFieldItemDefs,
-            boolean isDisplayItemIndexes, boolean isContentDiffLinks)
-            throws ClientException {
+    protected final WidgetDefinition[] getComplexSubWidgetDefinitions(String category, String propertyName,
+            Field field, List<DiffFieldItemDefinition> complexFieldItemDefs, boolean isDisplayItemIndexes,
+            boolean isContentDiffLinks) throws ClientException {
 
         WidgetDefinition[] subWidgetDefs;
         int subWidgetIndex = isDisplayItemIndexes ? 1 : 0;
 
         if (CollectionUtils.isEmpty(complexFieldItemDefs)) {
             List<Field> complexFieldItems = ComplexPropertyHelper.getComplexFieldItems(field);
-            subWidgetDefs = initSubWidgetDefinitions(isDisplayItemIndexes,
-                    complexFieldItems.size());
+            subWidgetDefs = initSubWidgetDefinitions(isDisplayItemIndexes, complexFieldItems.size());
 
             for (Field complexFieldItem : complexFieldItems) {
-                subWidgetDefs[subWidgetIndex] = getWidgetDefinition(
-                        category,
-                        getSubPropertyFullName(propertyName,
-                                complexFieldItem.getName().getLocalName()),
-                        ComplexPropertyHelper.getFieldType(complexFieldItem),
-                        complexFieldItem, null, isContentDiffLinks);
+                subWidgetDefs[subWidgetIndex] = getWidgetDefinition(category,
+                        getSubPropertyFullName(propertyName, complexFieldItem.getName().getLocalName()),
+                        ComplexPropertyHelper.getFieldType(complexFieldItem), complexFieldItem, null,
+                        isContentDiffLinks);
                 subWidgetIndex++;
             }
         } else {
@@ -1686,22 +1485,17 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     }
                 }
             }
-            subWidgetDefs = initSubWidgetDefinitions(isDisplayItemIndexes,
-                    subWidgetCount);
+            subWidgetDefs = initSubWidgetDefinitions(isDisplayItemIndexes, subWidgetCount);
 
             for (DiffFieldItemDefinition complexFieldItemDef : complexFieldItemDefs) {
-                if (!isContentDiffLinks
-                        || complexFieldItemDef.isDisplayContentDiffLinks()) {
+                if (!isContentDiffLinks || complexFieldItemDef.isDisplayContentDiffLinks()) {
                     String complexFieldItemName = complexFieldItemDef.getName();
-                    Field complexFieldItem = ComplexPropertyHelper.getComplexFieldItem(
-                            field, complexFieldItemName);
+                    Field complexFieldItem = ComplexPropertyHelper.getComplexFieldItem(field, complexFieldItemName);
                     if (complexFieldItem != null) {
-                        subWidgetDefs[subWidgetIndex] = getWidgetDefinition(
-                                category,
-                                getSubPropertyFullName(propertyName,
-                                        complexFieldItemName),
-                                ComplexPropertyHelper.getFieldType(complexFieldItem),
-                                complexFieldItem, null, isContentDiffLinks);
+                        subWidgetDefs[subWidgetIndex] = getWidgetDefinition(category,
+                                getSubPropertyFullName(propertyName, complexFieldItemName),
+                                ComplexPropertyHelper.getFieldType(complexFieldItem), complexFieldItem, null,
+                                isContentDiffLinks);
                         subWidgetIndex++;
                     }
                 }
@@ -1710,8 +1504,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return subWidgetDefs;
     }
 
-    protected final WidgetDefinition[] initSubWidgetDefinitions(
-            boolean isDisplayItemIndexes, int subWidgetCount) {
+    protected final WidgetDefinition[] initSubWidgetDefinitions(boolean isDisplayItemIndexes, int subWidgetCount) {
 
         WidgetDefinition[] subWidgetDefs;
         if (isDisplayItemIndexes) {
@@ -1726,13 +1519,10 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     protected final WidgetDefinition getIndexSubwidgetDefinition() {
 
-        FieldDefinition[] fieldDefinitions = { new FieldDefinitionImpl(null,
-                DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD) };
+        FieldDefinition[] fieldDefinitions = { new FieldDefinitionImpl(null, DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD) };
 
-        return new WidgetDefinitionImpl(DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD,
-                DIFF_LIST_WIDGET_INDEX_SUBWIDGET_TYPE,
-                DIFF_LIST_WIDGET_INDEX_SUBWIDGET_LABEL, null, true, null,
-                Arrays.asList(fieldDefinitions), null, null);
+        return new WidgetDefinitionImpl(DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD, DIFF_LIST_WIDGET_INDEX_SUBWIDGET_TYPE,
+                DIFF_LIST_WIDGET_INDEX_SUBWIDGET_LABEL, null, true, null, Arrays.asList(fieldDefinitions), null, null);
     }
 
     /**
@@ -1753,8 +1543,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return sb.toString();
     }
 
-    protected final String getSubPropertyFullName(String basePropertyName,
-            String subPropertyName) {
+    protected final String getSubPropertyFullName(String basePropertyName, String subPropertyName) {
 
         if (StringUtils.isEmpty(subPropertyName)) {
             return basePropertyName;

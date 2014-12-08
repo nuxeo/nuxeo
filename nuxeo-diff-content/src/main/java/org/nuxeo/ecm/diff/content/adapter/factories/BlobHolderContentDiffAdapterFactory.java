@@ -20,14 +20,12 @@ import org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterFactory;
 import org.nuxeo.ecm.diff.content.adapter.base.ConverterBasedContentDiffAdapter;
 
 /**
- * Content diff adapter factory for all documents that have a blob holder
- * adapter.
+ * Content diff adapter factory for all documents that have a blob holder adapter.
  *
  * @author Antoine Taillefer
  * @since 5.6
  */
-public class BlobHolderContentDiffAdapterFactory implements
-        ContentDiffAdapterFactory {
+public class BlobHolderContentDiffAdapterFactory implements ContentDiffAdapterFactory {
 
     public ContentDiffAdapter getAdapter(DocumentModel doc) {
         ConverterBasedContentDiffAdapter adapter = new ConverterBasedContentDiffAdapter();

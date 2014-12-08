@@ -46,8 +46,7 @@ public class DiffBlockDefinitionImpl implements DiffBlockDefinition {
 
     protected Map<String, Map<String, Serializable>> properties;
 
-    public DiffBlockDefinitionImpl(String name, Map<String, String> templates,
-            List<DiffFieldDefinition> fields,
+    public DiffBlockDefinitionImpl(String name, Map<String, String> templates, List<DiffFieldDefinition> fields,
             Map<String, Map<String, Serializable>> properties) {
         this.name = name;
         this.templates = templates;
@@ -104,35 +103,25 @@ public class DiffBlockDefinitionImpl implements DiffBlockDefinition {
         if (name == null && otherName == null) {
             return true;
         }
-        if (name == null && otherName != null || name != null
-                && otherName == null || !name.equals(otherName)) {
+        if (name == null && otherName != null || name != null && otherName == null || !name.equals(otherName)) {
             return false;
         }
 
         Map<String, String> otherTemplates = ((DiffBlockDefinition) other).getTemplates();
         List<DiffFieldDefinition> otherFields = ((DiffBlockDefinition) other).getFields();
         Map<String, Map<String, Serializable>> otherProperties = ((DiffBlockDefinition) other).getProperties();
-        if (MapUtils.isEmpty(templates) && MapUtils.isEmpty(otherTemplates)
-                && CollectionUtils.isEmpty(fields)
-                && CollectionUtils.isEmpty(otherFields)
-                && MapUtils.isEmpty(properties)
+        if (MapUtils.isEmpty(templates) && MapUtils.isEmpty(otherTemplates) && CollectionUtils.isEmpty(fields)
+                && CollectionUtils.isEmpty(otherFields) && MapUtils.isEmpty(properties)
                 && MapUtils.isEmpty(otherProperties)) {
             return true;
         }
-        if (MapUtils.isEmpty(templates) && !MapUtils.isEmpty(otherTemplates)
-                || !MapUtils.isEmpty(templates)
-                && MapUtils.isEmpty(otherTemplates)
-                || (templates != null && !templates.equals(otherTemplates))
-                || CollectionUtils.isEmpty(fields)
-                && !CollectionUtils.isEmpty(otherFields)
-                || !CollectionUtils.isEmpty(fields)
-                && CollectionUtils.isEmpty(otherFields)
-                || (fields != null && !fields.equals(otherFields))
-                || MapUtils.isEmpty(properties)
-                && !MapUtils.isEmpty(otherProperties)
-                || !MapUtils.isEmpty(properties)
-                && MapUtils.isEmpty(otherProperties)
-                || (properties != null && !properties.equals(otherProperties))) {
+        if (MapUtils.isEmpty(templates) && !MapUtils.isEmpty(otherTemplates) || !MapUtils.isEmpty(templates)
+                && MapUtils.isEmpty(otherTemplates) || (templates != null && !templates.equals(otherTemplates))
+                || CollectionUtils.isEmpty(fields) && !CollectionUtils.isEmpty(otherFields)
+                || !CollectionUtils.isEmpty(fields) && CollectionUtils.isEmpty(otherFields)
+                || (fields != null && !fields.equals(otherFields)) || MapUtils.isEmpty(properties)
+                && !MapUtils.isEmpty(otherProperties) || !MapUtils.isEmpty(properties)
+                && MapUtils.isEmpty(otherProperties) || (properties != null && !properties.equals(otherProperties))) {
             return false;
         }
 

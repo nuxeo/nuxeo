@@ -23,13 +23,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
- * Inits the repository for a document diff test case with 2 documents that are
- * not of the same type.
+ * Inits the repository for a document diff test case with 2 documents that are not of the same type.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
-public class DocumentDiffNotSameTypeRepositoryInit extends
-        DocumentDiffRepositoryInit {
+public class DocumentDiffNotSameTypeRepositoryInit extends DocumentDiffRepositoryInit {
 
     /**
      * Creates the left doc.
@@ -38,11 +36,9 @@ public class DocumentDiffNotSameTypeRepositoryInit extends
      * @return the document model
      * @throws ClientException the client exception
      */
-    protected DocumentModel createLeftDoc(CoreSession session)
-            throws ClientException {
+    protected DocumentModel createLeftDoc(CoreSession session) throws ClientException {
 
-        DocumentModel doc = session.createDocumentModel("/", "leftDoc",
-                "SampleType");
+        DocumentModel doc = session.createDocumentModel("/", "leftDoc", "SampleType");
 
         // -----------------------
         // dublincore
@@ -72,17 +68,14 @@ public class DocumentDiffNotSameTypeRepositoryInit extends
      * @return the document model
      * @throws ClientException the client exception
      */
-    protected DocumentModel createRightDoc(CoreSession session)
-            throws ClientException {
+    protected DocumentModel createRightDoc(CoreSession session) throws ClientException {
 
-        DocumentModel doc = session.createDocumentModel("/", "rightDoc",
-                "OtherSampleType");
+        DocumentModel doc = session.createDocumentModel("/", "rightDoc", "OtherSampleType");
 
         // -----------------------
         // dublincore
         // -----------------------
-        doc.setPropertyValue("dc:title",
-                "My second sample, of type OtherSampleType.");
+        doc.setPropertyValue("dc:title", "My second sample, of type OtherSampleType.");
         doc.setPropertyValue("dc:description", "Description is different.");
 
         // -----------------------

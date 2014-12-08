@@ -29,13 +29,11 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime component that handles the extension points and the service interface
- * for content diff Adapter management.
+ * Runtime component that handles the extension points and the service interface for content diff Adapter management.
  *
  * @author Antoine Taillefer
  */
-public class ContentDiffAdapterManagerComponent extends DefaultComponent
-        implements ContentDiffAdapterManager {
+public class ContentDiffAdapterManagerComponent extends DefaultComponent implements ContentDiffAdapterManager {
 
     public static final String ADAPTER_FACTORY_EP = "adapterFactory";
 
@@ -50,8 +48,7 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent
     // Component and EP management
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (ADAPTER_FACTORY_EP.equals(extensionPoint)) {
             ContentDiffAdapterFactoryDescriptor desc = (ContentDiffAdapterFactoryDescriptor) contribution;
@@ -66,8 +63,7 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent
         } else if (MIME_TYPE_CONTENT_DIFFER_EP.equals(extensionPoint)) {
             MimeTypeContentDifferDescriptor desc = (MimeTypeContentDifferDescriptor) contribution;
             try {
-                contentDifferFactory.put(desc.getPattern(),
-                        desc.getKlass().newInstance());
+                contentDifferFactory.put(desc.getPattern(), desc.getKlass().newInstance());
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
@@ -75,8 +71,7 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
     // Service interface impl
@@ -140,8 +135,7 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent
 
     public HtmlContentDiffer getHtmlContentDiffer() throws ContentDiffException {
         MimeTypeContentDiffer htmlContentDiffer = contentDifferFactory.get("text/html");
-        if (htmlContentDiffer == null
-                || !(htmlContentDiffer instanceof HtmlContentDiffer)) {
+        if (htmlContentDiffer == null || !(htmlContentDiffer instanceof HtmlContentDiffer)) {
             throw new ContentDiffException(
                     "No content differ of type HtmlContentDiffer found for the 'text/html' mime-type. Please check the 'mimeTypeContentDiffer' contributions.");
         }

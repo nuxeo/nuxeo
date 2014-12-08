@@ -43,31 +43,27 @@ public class SimplePropertyDiff extends PropertyDiff {
     }
 
     /**
-     * Instantiates a new simple property diff with a property type, the
-     * {@link DifferenceType#different} difference type, a left value and right
-     * value.
+     * Instantiates a new simple property diff with a property type, the {@link DifferenceType#different} difference
+     * type, a left value and right value.
      *
      * @param propertyType the property type
      * @param leftValue the left value
      * @param rightValue the right value
      */
-    public SimplePropertyDiff(String propertyType, String leftValue,
-            String rightValue) {
+    public SimplePropertyDiff(String propertyType, String leftValue, String rightValue) {
 
         this(propertyType, DifferenceType.different, leftValue, rightValue);
     }
 
     /**
-     * Instantiates a new simple property diff with a property type, difference
-     * type, left value and right value.
+     * Instantiates a new simple property diff with a property type, difference type, left value and right value.
      *
      * @param propertyType the property type
      * @param differenceType the difference type
      * @param leftValue the left value
      * @param rightValue the right value
      */
-    public SimplePropertyDiff(String propertyType,
-            DifferenceType differenceType, String leftValue, String rightValue) {
+    public SimplePropertyDiff(String propertyType, DifferenceType differenceType, String leftValue, String rightValue) {
 
         this.propertyType = propertyType;
         this.differenceType = differenceType;
@@ -91,14 +87,10 @@ public class SimplePropertyDiff extends PropertyDiff {
         String otherLeftValue = ((SimplePropertyDiff) other).getLeftValue();
         String otherRightValue = ((SimplePropertyDiff) other).getRightValue();
 
-        return (leftValue == null && otherLeftValue == null
-                && rightValue == null && otherRightValue == null)
-                || (leftValue == null && otherLeftValue == null
-                        && rightValue != null && rightValue.equals(otherRightValue))
-                || (rightValue == null && otherRightValue == null
-                        && leftValue != null && leftValue.equals(otherLeftValue))
-                || (leftValue != null && rightValue != null
-                        && leftValue.equals(otherLeftValue) && rightValue.equals(otherRightValue));
+        return (leftValue == null && otherLeftValue == null && rightValue == null && otherRightValue == null)
+                || (leftValue == null && otherLeftValue == null && rightValue != null && rightValue.equals(otherRightValue))
+                || (rightValue == null && otherRightValue == null && leftValue != null && leftValue.equals(otherLeftValue))
+                || (leftValue != null && rightValue != null && leftValue.equals(otherLeftValue) && rightValue.equals(otherRightValue));
     }
 
     @Override

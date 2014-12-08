@@ -180,8 +180,7 @@ public class TestFieldDiffHelper extends DiffTestCase {
     }
 
     /**
-     * Tests
-     * {@link FieldDiffHelper#applyPropertyHierarchyToDiff(PropertyDiff, List)}.
+     * Tests {@link FieldDiffHelper#applyPropertyHierarchyToDiff(PropertyDiff, List)}.
      *
      * @throws ClientException the client exception
      */
@@ -189,85 +188,60 @@ public class TestFieldDiffHelper extends DiffTestCase {
     public void testApplyPropertyHierarchyToDiff() throws ClientException {
 
         // Complex list
-        PropertyDiff propertyDiff = new ListPropertyDiff(
-                PropertyType.COMPLEX_LIST);
+        PropertyDiff propertyDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
         List<PropertyHierarchyNode> propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
-        propertyHierarchy.add(new PropertyHierarchyNode(
-                PropertyType.COMPLEX_LIST, "0"));
-        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX,
-                "stringItem"));
-        FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff,
-                propertyHierarchy);
+        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX_LIST, "0"));
+        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX, "stringItem"));
+        FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff, propertyHierarchy);
 
-        PropertyDiff expectedPropertyDiff = new ListPropertyDiff(
-                PropertyType.COMPLEX_LIST);
+        PropertyDiff expectedPropertyDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
         ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff();
-        ((ListPropertyDiff) expectedPropertyDiff).putDiff(0,
-                expectedComplexPropDiff);
-        checkListFieldDiff(propertyDiff,
-                (ListPropertyDiff) expectedPropertyDiff);
+        ((ListPropertyDiff) expectedPropertyDiff).putDiff(0, expectedComplexPropDiff);
+        checkListFieldDiff(propertyDiff, (ListPropertyDiff) expectedPropertyDiff);
 
         // Complex with nested list
         propertyDiff = new ComplexPropertyDiff();
         propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
-        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX,
-                "listItem"));
-        propertyHierarchy.add(new PropertyHierarchyNode(
-                PropertyType.SCALAR_LIST, "1"));
-        FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff,
-                propertyHierarchy);
+        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX, "listItem"));
+        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.SCALAR_LIST, "1"));
+        FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff, propertyHierarchy);
 
         expectedPropertyDiff = new ComplexPropertyDiff();
-        ((ComplexPropertyDiff) expectedPropertyDiff).putDiff("listItem",
-                new ListPropertyDiff(PropertyType.SCALAR_LIST));
-        checkComplexFieldDiff(propertyDiff,
-                (ComplexPropertyDiff) expectedPropertyDiff);
+        ((ComplexPropertyDiff) expectedPropertyDiff).putDiff("listItem", new ListPropertyDiff(PropertyType.SCALAR_LIST));
+        checkComplexFieldDiff(propertyDiff, (ComplexPropertyDiff) expectedPropertyDiff);
 
         // Complex with nested complex
         propertyDiff = new ComplexPropertyDiff();
         propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
-        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX,
-                "complexItem"));
-        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX,
-                "subComplexItem"));
-        FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff,
-                propertyHierarchy);
+        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX, "complexItem"));
+        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX, "subComplexItem"));
+        FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff, propertyHierarchy);
 
         expectedPropertyDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff = new ComplexPropertyDiff();
-        ((ComplexPropertyDiff) expectedPropertyDiff).putDiff("complexItem",
-                expectedComplexPropDiff);
-        checkComplexFieldDiff(propertyDiff,
-                (ComplexPropertyDiff) expectedPropertyDiff);
+        ((ComplexPropertyDiff) expectedPropertyDiff).putDiff("complexItem", expectedComplexPropDiff);
+        checkComplexFieldDiff(propertyDiff, (ComplexPropertyDiff) expectedPropertyDiff);
 
         // Complex with nested content
         propertyDiff = new ComplexPropertyDiff();
         propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
-        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX,
-                "complexItem"));
-        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.CONTENT,
-                "subContentItem"));
-        FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff,
-                propertyHierarchy);
+        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX, "complexItem"));
+        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.CONTENT, "subContentItem"));
+        FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff, propertyHierarchy);
 
         expectedPropertyDiff = new ComplexPropertyDiff();
         ContentPropertyDiff expectedContentPropDiff = new ContentPropertyDiff();
-        ((ComplexPropertyDiff) expectedPropertyDiff).putDiff("complexItem",
-                expectedContentPropDiff);
-        checkComplexFieldDiff(propertyDiff,
-                (ComplexPropertyDiff) expectedPropertyDiff);
+        ((ComplexPropertyDiff) expectedPropertyDiff).putDiff("complexItem", expectedContentPropDiff);
+        checkComplexFieldDiff(propertyDiff, (ComplexPropertyDiff) expectedPropertyDiff);
 
         // Content
         propertyDiff = new ContentPropertyDiff();
         propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
-        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.CONTENT,
-                "encoding"));
-        FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff,
-                propertyHierarchy);
+        propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.CONTENT, "encoding"));
+        FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff, propertyHierarchy);
 
         expectedPropertyDiff = new ContentPropertyDiff();
-        checkContentFieldDiff(propertyDiff,
-                (ContentPropertyDiff) expectedPropertyDiff);
+        checkContentFieldDiff(propertyDiff, (ContentPropertyDiff) expectedPropertyDiff);
     }
 
     /**
@@ -277,8 +251,7 @@ public class TestFieldDiffHelper extends DiffTestCase {
      * @param xPath the x path
      * @throws ClientException the client exception
      */
-    protected final Node getNode(String xml, String xPath)
-            throws ClientException {
+    protected final Node getNode(String xml, String xPath) throws ClientException {
 
         NodeList matchingNodes;
         try {
@@ -289,9 +262,7 @@ public class TestFieldDiffHelper extends DiffTestCase {
         }
 
         if (!(matchingNodes.getLength() > 0)) {
-            throw new ClientException(String.format(
-                    "No node matches the xPath expression [%s] in the XML doc",
-                    xPath));
+            throw new ClientException(String.format("No node matches the xPath expression [%s] in the XML doc", xPath));
         }
         return matchingNodes.item(0);
     }

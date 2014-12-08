@@ -38,12 +38,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- * Tests the {@link DocumentDiffService} on documents that are not of the same
- * type. The diff should only hold differences between properties of schemas in
- * common.
+ * Tests the {@link DocumentDiffService} on documents that are not of the same type. The diff should only hold
+ * differences between properties of schemas in common.
  * <p>
- * The {@link DocumentDiffNotSameTypeRepositoryInit} class initializes the
- * repository with 2 documents for this purpose.
+ * The {@link DocumentDiffNotSameTypeRepositoryInit} class initializes the repository with 2 documents for this purpose.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
@@ -51,8 +49,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DocumentDiffNotSameTypeRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml",
-        "org.nuxeo.diff.core", "org.nuxeo.diff.test" })
+@Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml", "org.nuxeo.diff.core",
+        "org.nuxeo.diff.test" })
 public class TestDocumentDiffNotSameType extends DiffTestCase {
 
     @Inject
@@ -70,8 +68,7 @@ public class TestDocumentDiffNotSameType extends DiffTestCase {
     public void testDocDiffNotSameType() throws ClientException {
 
         // Get left and right docs
-        DocumentModel leftDoc = session.getDocument(new PathRef(
-                DocumentDiffNotSameTypeRepositoryInit.getLeftDocPath()));
+        DocumentModel leftDoc = session.getDocument(new PathRef(DocumentDiffNotSameTypeRepositoryInit.getLeftDocPath()));
         DocumentModel rightDoc = session.getDocument(new PathRef(
                 DocumentDiffNotSameTypeRepositoryInit.getRightDocPath()));
 
@@ -85,12 +82,11 @@ public class TestDocumentDiffNotSameType extends DiffTestCase {
         SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "dublincore", 2);
 
         // title => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("title"),
-                PropertyType.STRING, "My first sample, of type SampleType.",
-                "My second sample, of type OtherSampleType.");
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("title"), PropertyType.STRING,
+                "My first sample, of type SampleType.", "My second sample, of type OtherSampleType.");
         // description => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"),
-                PropertyType.STRING, "description", "Description is different.");
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"), PropertyType.STRING, "description",
+                "Description is different.");
 
         // ---------------------------
         // Check simpletypes schema
@@ -98,12 +94,10 @@ public class TestDocumentDiffNotSameType extends DiffTestCase {
         schemaDiff = checkSchemaDiff(docDiff, "simpletypes", 2);
 
         // string => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("string"),
-                PropertyType.STRING, "a string property",
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("string"), PropertyType.STRING, "a string property",
                 "a different string property");
         // boolean => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("boolean"),
-                PropertyType.BOOLEAN, String.valueOf(Boolean.TRUE),
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("boolean"), PropertyType.BOOLEAN, String.valueOf(Boolean.TRUE),
                 String.valueOf(Boolean.FALSE));
     }
 }

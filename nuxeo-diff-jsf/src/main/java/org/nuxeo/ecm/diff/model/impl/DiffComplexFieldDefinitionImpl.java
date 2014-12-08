@@ -29,8 +29,7 @@ import org.nuxeo.ecm.diff.model.DiffFieldItemDefinition;
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.6
  */
-public class DiffComplexFieldDefinitionImpl implements
-        DiffComplexFieldDefinition {
+public class DiffComplexFieldDefinitionImpl implements DiffComplexFieldDefinition {
 
     private static final long serialVersionUID = 5289865501066754428L;
 
@@ -43,12 +42,10 @@ public class DiffComplexFieldDefinitionImpl implements
     protected List<DiffFieldItemDefinition> excludedItems;
 
     public DiffComplexFieldDefinitionImpl(String schema, String name) {
-        this(schema, name, new ArrayList<DiffFieldItemDefinition>(),
-                new ArrayList<DiffFieldItemDefinition>());
+        this(schema, name, new ArrayList<DiffFieldItemDefinition>(), new ArrayList<DiffFieldItemDefinition>());
     }
 
-    public DiffComplexFieldDefinitionImpl(String schema, String name,
-            List<DiffFieldItemDefinition> includedItems,
+    public DiffComplexFieldDefinitionImpl(String schema, String name, List<DiffFieldItemDefinition> includedItems,
             List<DiffFieldItemDefinition> excludedItems) {
         this.schema = schema;
         this.name = name;
@@ -84,36 +81,27 @@ public class DiffComplexFieldDefinitionImpl implements
 
         String otherSchema = ((DiffComplexFieldDefinition) other).getSchema();
         String otherName = ((DiffComplexFieldDefinition) other).getName();
-        if (schema == null && otherSchema == null && name == null
-                && otherName == null) {
+        if (schema == null && otherSchema == null && name == null && otherName == null) {
             return true;
         }
-        if (schema == null || otherSchema == null || name == null
-                || otherName == null
-                || (schema != null && !schema.equals(otherSchema))
-                || (name != null && !name.equals(otherName))) {
+        if (schema == null || otherSchema == null || name == null || otherName == null
+                || (schema != null && !schema.equals(otherSchema)) || (name != null && !name.equals(otherName))) {
             return false;
         }
 
         List<DiffFieldItemDefinition> otherIncludedItems = ((DiffComplexFieldDefinition) other).getIncludedItems();
         List<DiffFieldItemDefinition> otherExcludedItems = ((DiffComplexFieldDefinition) other).getExcludedItems();
-        if (CollectionUtils.isEmpty(includedItems)
-                && CollectionUtils.isEmpty(otherIncludedItems)
-                && CollectionUtils.isEmpty(excludedItems)
-                && CollectionUtils.isEmpty(otherExcludedItems)) {
+        if (CollectionUtils.isEmpty(includedItems) && CollectionUtils.isEmpty(otherIncludedItems)
+                && CollectionUtils.isEmpty(excludedItems) && CollectionUtils.isEmpty(otherExcludedItems)) {
             return true;
         }
-        if (CollectionUtils.isEmpty(includedItems)
-                && !CollectionUtils.isEmpty(otherIncludedItems)
-                || !CollectionUtils.isEmpty(includedItems)
-                && CollectionUtils.isEmpty(otherIncludedItems)
+        if (CollectionUtils.isEmpty(includedItems) && !CollectionUtils.isEmpty(otherIncludedItems)
+                || !CollectionUtils.isEmpty(includedItems) && CollectionUtils.isEmpty(otherIncludedItems)
                 || !includedItems.equals(otherIncludedItems)) {
             return false;
         }
-        if (CollectionUtils.isEmpty(excludedItems)
-                && !CollectionUtils.isEmpty(otherExcludedItems)
-                || !CollectionUtils.isEmpty(excludedItems)
-                && CollectionUtils.isEmpty(otherExcludedItems)
+        if (CollectionUtils.isEmpty(excludedItems) && !CollectionUtils.isEmpty(otherExcludedItems)
+                || !CollectionUtils.isEmpty(excludedItems) && CollectionUtils.isEmpty(otherExcludedItems)
                 || !excludedItems.equals(otherExcludedItems)) {
             return false;
         }
@@ -127,10 +115,8 @@ public class DiffComplexFieldDefinitionImpl implements
         sb.append(schema);
         sb.append(":");
         sb.append(name);
-        sb.append(!CollectionUtils.isEmpty(includedItems) ? " / "
-                + includedItems : "");
-        sb.append(!CollectionUtils.isEmpty(excludedItems) ? " / "
-                + excludedItems : "");
+        sb.append(!CollectionUtils.isEmpty(includedItems) ? " / " + includedItems : "");
+        sb.append(!CollectionUtils.isEmpty(excludedItems) ? " / " + excludedItems : "");
         return sb.toString();
     }
 }

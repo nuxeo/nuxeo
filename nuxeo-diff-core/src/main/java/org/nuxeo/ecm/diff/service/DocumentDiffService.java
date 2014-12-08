@@ -33,8 +33,8 @@ import org.nuxeo.ecm.diff.model.DocumentDiff;
 public interface DocumentDiffService extends Serializable {
 
     /**
-     * Makes a diff between leftDoc and rightDoc. Returns a DocumentDiff object
-     * that wraps the differences, schema by schema and field by field.
+     * Makes a diff between leftDoc and rightDoc. Returns a DocumentDiff object that wraps the differences, schema by
+     * schema and field by field.
      *
      * @param session the session
      * @param leftDoc the left doc
@@ -42,12 +42,11 @@ public interface DocumentDiffService extends Serializable {
      * @return the document diff
      * @throws ClientException the client exception
      */
-    DocumentDiff diff(CoreSession session, DocumentModel leftDoc,
-            DocumentModel rightDoc) throws ClientException;
+    DocumentDiff diff(CoreSession session, DocumentModel leftDoc, DocumentModel rightDoc) throws ClientException;
 
     /**
-     * Makes a diff between leftXML and rightXML. Returns a DocumentDiff object
-     * that wraps the differences, schema by schema and field by field.
+     * Makes a diff between leftXML and rightXML. Returns a DocumentDiff object that wraps the differences, schema by
+     * schema and field by field.
      *
      * @param leftXML the left XML
      * @param rightXML the right XML

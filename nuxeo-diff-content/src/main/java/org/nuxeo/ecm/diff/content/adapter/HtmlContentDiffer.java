@@ -55,8 +55,7 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
 
     protected static final String NUXEO_DEFAULT_CONTEXT_PATH = "/nuxeo";
 
-    public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob,
-            Locale locale) throws ContentDiffException {
+    public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale) throws ContentDiffException {
 
         try {
             List<Blob> blobResults = new ArrayList<Blob>();
@@ -75,15 +74,12 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
             String htmlHeaderXslPath = sb.toString();
             ContentHandler postProcess;
             try {
-                postProcess = htmlHeaderXslFilter.xsl(transformHandler,
-                        htmlHeaderXslPath);
+                postProcess = htmlHeaderXslFilter.xsl(transformHandler, htmlHeaderXslPath);
             } catch (IllegalStateException ise) {
-                LOGGER.error(
-                        String.format(
-                                "Could not find the HTML diff header xsl file '%s', falling back on the default one.",
-                                htmlHeaderXslPath), ise);
-                postProcess = htmlHeaderXslFilter.xsl(transformHandler,
-                        "xslfilter/htmldiffheader.xsl");
+                LOGGER.error(String.format(
+                        "Could not find the HTML diff header xsl file '%s', falling back on the default one.",
+                        htmlHeaderXslPath), ise);
+                postProcess = htmlHeaderXslFilter.xsl(transformHandler, "xslfilter/htmldiffheader.xsl");
             }
 
             String prefix = "diff";
@@ -95,20 +91,16 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
 
             DomTreeBuilder leftHandler = new DomTreeBuilder();
             cleaner.cleanAndParse(leftIS, leftHandler);
-            TextNodeComparator leftComparator = new TextNodeComparator(
-                    leftHandler, locale);
+            TextNodeComparator leftComparator = new TextNodeComparator(leftHandler, locale);
 
             DomTreeBuilder rightHandler = new DomTreeBuilder();
             cleaner.cleanAndParse(rightIS, rightHandler);
-            TextNodeComparator rightComparator = new TextNodeComparator(
-                    rightHandler, locale);
+            TextNodeComparator rightComparator = new TextNodeComparator(rightHandler, locale);
 
             postProcess.startDocument();
-            postProcess.startElement("", "diffreport", "diffreport",
-                    new AttributesImpl());
+            postProcess.startElement("", "diffreport", "diffreport", new AttributesImpl());
             postProcess.startElement("", "diff", "diff", new AttributesImpl());
-            HtmlSaxDiffOutput output = new HtmlSaxDiffOutput(postProcess,
-                    prefix);
+            HtmlSaxDiffOutput output = new HtmlSaxDiffOutput(postProcess, prefix);
 
             HTMLDiffer differ = new HTMLDiffer(output);
             differ.diff(leftComparator, rightComparator);
@@ -117,8 +109,7 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
             postProcess.endElement("", "diffreport", "diffreport");
             postProcess.endDocument();
 
-            String stringBlob = sw.toString().replaceAll(
-                    NUXEO_DEFAULT_CONTEXT_PATH,
+            String stringBlob = sw.toString().replaceAll(NUXEO_DEFAULT_CONTEXT_PATH,
                     VirtualHostHelper.getContextPathProperty());
             Blob mainBlob = new StringBlob(stringBlob);
             sw.close();

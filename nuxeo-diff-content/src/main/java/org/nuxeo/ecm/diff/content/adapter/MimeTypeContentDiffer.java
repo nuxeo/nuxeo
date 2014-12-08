@@ -31,7 +31,6 @@ import org.nuxeo.ecm.diff.content.ContentDiffException;
  */
 public interface MimeTypeContentDiffer {
 
-    List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale)
-            throws ContentDiffException;
+    List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale) throws ContentDiffException;
 
 }

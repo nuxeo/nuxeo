@@ -41,8 +41,7 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
         this(value, DifferenceType.different);
     }
 
-    public PropertyDiffDisplayImpl(Serializable value,
-            DifferenceType differenceType) {
+    public PropertyDiffDisplayImpl(Serializable value, DifferenceType differenceType) {
         this(value, differenceType, null);
     }
 
@@ -50,8 +49,7 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
         this(value, DifferenceType.different, styleClass);
     }
 
-    public PropertyDiffDisplayImpl(Serializable value,
-            DifferenceType differenceType, String styleClass) {
+    public PropertyDiffDisplayImpl(Serializable value, DifferenceType differenceType, String styleClass) {
         this.value = value;
         this.differenceType = differenceType;
         this.styleClass = styleClass;
@@ -93,19 +91,14 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
         Serializable otherValue = ((PropertyDiffDisplay) other).getValue();
         Serializable otherStyleClass = ((PropertyDiffDisplay) other).getStyleClass();
         DifferenceType otherDifferenceType = ((PropertyDiffDisplay) other).getDifferenceType();
-        if (value == null && otherValue == null && styleClass == null
-                && otherStyleClass == null
+        if (value == null && otherValue == null && styleClass == null && otherStyleClass == null
                 && differenceType.equals(otherDifferenceType)) {
             return true;
         }
         return differenceType.equals(otherDifferenceType)
-                && (value == null && otherValue == null && styleClass != null
-                        && styleClass.equals(otherStyleClass)
-                        || styleClass == null && otherStyleClass == null
-                        && value != null && value.equals(otherValue) || value != null
-                        && value.equals(otherValue)
-                        && styleClass != null
-                        && styleClass.equals(otherStyleClass));
+                && (value == null && otherValue == null && styleClass != null && styleClass.equals(otherStyleClass)
+                        || styleClass == null && otherStyleClass == null && value != null && value.equals(otherValue) || value != null
+                        && value.equals(otherValue) && styleClass != null && styleClass.equals(otherStyleClass));
     }
 
     @Override

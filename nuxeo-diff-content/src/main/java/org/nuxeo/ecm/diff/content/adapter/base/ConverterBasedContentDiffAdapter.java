@@ -45,8 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Antoine Taillefer
  * @since 5.6
  */
-public class ConverterBasedContentDiffAdapter extends
-        AbstractContentDiffAdapter {
+public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter {
 
     private static final Log log = LogFactory.getLog(ConverterBasedContentDiffAdapter.class);
 
@@ -57,17 +56,14 @@ public class ConverterBasedContentDiffAdapter extends
     protected MimetypeRegistry mimeTypeService;
 
     @Override
-    public List<Blob> getContentDiffBlobs(DocumentModel otherDoc,
-            ContentDiffConversionType conversionType, Locale locale)
-            throws ContentDiffException, ConversionException {
-        return getContentDiffBlobs(otherDoc, getDefaultContentDiffFieldXPath(),
-                conversionType, locale);
+    public List<Blob> getContentDiffBlobs(DocumentModel otherDoc, ContentDiffConversionType conversionType,
+            Locale locale) throws ContentDiffException, ConversionException {
+        return getContentDiffBlobs(otherDoc, getDefaultContentDiffFieldXPath(), conversionType, locale);
     }
 
     @Override
     public List<Blob> getContentDiffBlobs(DocumentModel otherDoc, String xpath,
-            ContentDiffConversionType conversionType, Locale locale)
-            throws ContentDiffException, ConversionException {
+            ContentDiffConversionType conversionType, Locale locale) throws ContentDiffException, ConversionException {
 
         Blob adaptedDocBlob = null;
         Blob otherDocBlob = null;
@@ -83,15 +79,13 @@ public class ConverterBasedContentDiffAdapter extends
                 otherDocBlobHolder = getBlobHolder(otherDoc, xpath);
             }
             if (adaptedDocBlobHolder == null || otherDocBlobHolder == null) {
-                throw new ContentDiffException(
-                        "Can not make a content diff of documents without a blob");
+                throw new ContentDiffException("Can not make a content diff of documents without a blob");
             }
 
             adaptedDocBlob = adaptedDocBlobHolder.getBlob();
             otherDocBlob = otherDocBlobHolder.getBlob();
             if (adaptedDocBlob == null || otherDocBlob == null) {
-                throw new ContentDiffException(
-                        "Can not make a content diff of documents without a blob");
+                throw new ContentDiffException("Can not make a content diff of documents without a blob");
             }
         } catch (ClientException ce) {
             throw new ContentDiffException("Error while getting blobs", ce);
@@ -101,29 +95,23 @@ public class ConverterBasedContentDiffAdapter extends
 
         String adaptedDocMimeType = getMimeType(adaptedDocBlob);
         String otherDocMimeType = getMimeType(otherDocBlob);
-        log.debug("Mime type of adapted doc for HTML content diff = "
-                + adaptedDocMimeType);
-        log.debug("Mime type of other doc for HTML content diff = "
-                + otherDocMimeType);
+        log.debug("Mime type of adapted doc for HTML content diff = " + adaptedDocMimeType);
+        log.debug("Mime type of other doc for HTML content diff = " + otherDocMimeType);
 
         // Check doc mime types, if a common mime type is found, look for the
         // associated content differ.
-        if (adaptedDocMimeType != null && otherDocMimeType != null
-                && adaptedDocMimeType.equals(otherDocMimeType)) {
-            MimeTypeContentDiffer mtContentDiffer = getContentDiffAdapterManager().getContentDiffer(
-                    adaptedDocMimeType);
+        if (adaptedDocMimeType != null && otherDocMimeType != null && adaptedDocMimeType.equals(otherDocMimeType)) {
+            MimeTypeContentDiffer mtContentDiffer = getContentDiffAdapterManager().getContentDiffer(adaptedDocMimeType);
             if (mtContentDiffer != null) {
                 // If using the HtmlContentDiffer for non HTML blobs
                 // (text/plain, text/xml), we need to transform the blob strings
                 // to encode XML entities and replace all occurrences of "\n"
                 // with "<br />", since they will then be displayed in HTML.
-                if (mtContentDiffer instanceof HtmlContentDiffer
-                        && !"text/html".equals(adaptedDocMimeType)) {
+                if (mtContentDiffer instanceof HtmlContentDiffer && !"text/html".equals(adaptedDocMimeType)) {
                     adaptedDocBlob = getHtmlStringBlob(adaptedDocBlob);
                     otherDocBlob = getHtmlStringBlob(otherDocBlob);
                 }
-                blobResults = mtContentDiffer.getContentDiff(adaptedDocBlob,
-                        otherDocBlob, locale);
+                blobResults = mtContentDiffer.getContentDiff(adaptedDocBlob, otherDocBlob, locale);
                 return blobResults;
             }
         }
@@ -137,10 +125,8 @@ public class ConverterBasedContentDiffAdapter extends
                 conversionType = ContentDiffConversionType.html;
             }
             String converterName = conversionType.getValue();
-            BlobHolder adaptedDocConvertedBlobHolder = getConvertedBlobHolder(
-                    adaptedDocBlobHolder, converterName);
-            BlobHolder otherDocConvertedBlobHolder = getConvertedBlobHolder(
-                    otherDocBlobHolder, converterName);
+            BlobHolder adaptedDocConvertedBlobHolder = getConvertedBlobHolder(adaptedDocBlobHolder, converterName);
+            BlobHolder otherDocConvertedBlobHolder = getConvertedBlobHolder(otherDocBlobHolder, converterName);
             Blob adaptedDocConvertedBlob = adaptedDocConvertedBlobHolder.getBlob();
             Blob otherDocConvertedBlob = otherDocConvertedBlobHolder.getBlob();
 
@@ -155,20 +141,15 @@ public class ConverterBasedContentDiffAdapter extends
 
             // Add html content diff blob
             MimeTypeContentDiffer contentDiffer = getContentDiffAdapterManager().getHtmlContentDiffer();
-            blobResults.addAll(contentDiffer.getContentDiff(
-                    adaptedDocConvertedBlob, otherDocConvertedBlob, locale));
+            blobResults.addAll(contentDiffer.getContentDiff(adaptedDocConvertedBlob, otherDocConvertedBlob, locale));
 
             // Add secondary blobs (mostly images)
-            addSecondaryBlobs(blobResults, adaptedDocConvertedBlobHolder,
-                    adaptedDocConvertedBlob.getFilename());
-            addSecondaryBlobs(blobResults, otherDocConvertedBlobHolder,
-                    otherDocConvertedBlob.getFilename());
+            addSecondaryBlobs(blobResults, adaptedDocConvertedBlobHolder, adaptedDocConvertedBlob.getFilename());
+            addSecondaryBlobs(blobResults, otherDocConvertedBlobHolder, otherDocConvertedBlob.getFilename());
         } catch (ConversionException ce) {
             throw ce;
         } catch (ClientException ce) {
-            throw new ContentDiffException(
-                    "Error while getting HTML content diff on converted blobs",
-                    ce);
+            throw new ContentDiffException("Error while getting HTML content diff on converted blobs", ce);
         }
         return blobResults;
     }
@@ -185,8 +166,7 @@ public class ConverterBasedContentDiffAdapter extends
         defaultFieldXPath = xPath;
     }
 
-    protected BlobHolder getBlobHolder(DocumentModel doc, String xPath)
-            throws ClientException {
+    protected BlobHolder getBlobHolder(DocumentModel doc, String xPath) throws ClientException {
         // TODO: manage other property types than Blob / String?
         Serializable prop = doc.getPropertyValue(xPath);
         if (prop instanceof Blob) {
@@ -206,9 +186,8 @@ public class ConverterBasedContentDiffAdapter extends
             }
             return new DocumentStringBlobHolder(doc, xPath, mimeType);
         }
-        throw new ClientException(String.format(
-                "Cannot get BlobHolder for doc '%s' and xpath '%s'.",
-                doc.getTitle(), xPath));
+        throw new ClientException(String.format("Cannot get BlobHolder for doc '%s' and xpath '%s'.", doc.getTitle(),
+                xPath));
     }
 
     protected String getMimeType(Blob blob) {
@@ -221,8 +200,8 @@ public class ConverterBasedContentDiffAdapter extends
             // call MT Service
             try {
                 MimetypeRegistry mtr = Framework.getService(MimetypeRegistry.class);
-                srcMT = mtr.getMimetypeFromFilenameAndBlobWithDefault(
-                        blob.getFilename(), blob, "application/octet-stream");
+                srcMT = mtr.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob,
+                        "application/octet-stream");
                 log.debug("mime type service returned " + srcMT);
             } catch (Exception e) {
                 log.warn("error while calling Mimetype service", e);
@@ -233,8 +212,7 @@ public class ConverterBasedContentDiffAdapter extends
 
     protected void setMimeType(BlobHolder result) throws ClientException {
         for (Blob blob : result.getBlobs()) {
-            if (blob.getMimeType() == null
-                    && blob.getFilename().endsWith("html")) {
+            if (blob.getMimeType() == null && blob.getFilename().endsWith("html")) {
                 String mimeTpye = getMimeType(blob);
                 blob.setMimeType(mimeTpye);
             }
@@ -251,45 +229,34 @@ public class ConverterBasedContentDiffAdapter extends
      * @param blobHolder the blob holder
      * @param converterName the converter name
      * @return the converted blob holder
-     * @throws ClientException if an error occurs while getting the conversion
-     *             service
-     * @throws ConversionException if an error occurs while converting the blob
-     *             holder
+     * @throws ClientException if an error occurs while getting the conversion service
+     * @throws ConversionException if an error occurs while converting the blob holder
      */
-    protected BlobHolder getConvertedBlobHolder(BlobHolder blobHolder,
-            String converterName) throws ConversionException, ClientException {
+    protected BlobHolder getConvertedBlobHolder(BlobHolder blobHolder, String converterName)
+            throws ConversionException, ClientException {
 
         if (converterName == null) {
-            log.debug(String.format(
-                    "No converter parameter, using generic one: '%s'.",
-                    DEFAULT_CONVERTER_NAME));
+            log.debug(String.format("No converter parameter, using generic one: '%s'.", DEFAULT_CONVERTER_NAME));
             converterName = DEFAULT_CONVERTER_NAME;
         }
 
-        BlobHolder convertedBlobHolder = getConversionService().convert(
-                converterName, blobHolder, null);
+        BlobHolder convertedBlobHolder = getConversionService().convert(converterName, blobHolder, null);
         setMimeType(convertedBlobHolder);
         return convertedBlobHolder;
     }
 
-    protected StringBlob getHtmlStringBlob(Blob blob)
-            throws ContentDiffException {
+    protected StringBlob getHtmlStringBlob(Blob blob) throws ContentDiffException {
         try {
-            StringBlob htmlStringBlob = new StringBlob(
-                    StringEscapeUtils.escapeHtml(
-                            new String(blob.getByteArray(), "UTF-8")).replace(
-                            "\r\n", "\n").replace("\n", "<br />"));
+            StringBlob htmlStringBlob = new StringBlob(StringEscapeUtils.escapeHtml(
+                    new String(blob.getByteArray(), "UTF-8")).replace("\r\n", "\n").replace("\n", "<br />"));
             htmlStringBlob.setFilename(blob.getFilename());
             return htmlStringBlob;
         } catch (IOException ioe) {
-            throw new ContentDiffException(String.format(
-                    "Could not get string from blob %s", blob.getFilename()),
-                    ioe);
+            throw new ContentDiffException(String.format("Could not get string from blob %s", blob.getFilename()), ioe);
         }
     }
 
-    protected void addSecondaryBlobs(List<Blob> blobResults,
-            BlobHolder blobHolder, String mainBlobFilename)
+    protected void addSecondaryBlobs(List<Blob> blobResults, BlobHolder blobHolder, String mainBlobFilename)
             throws ClientException {
 
         for (Blob blob : blobHolder.getBlobs()) {
@@ -306,8 +273,7 @@ public class ConverterBasedContentDiffAdapter extends
      * @return the conversion service
      * @throws ClientException the client exception
      */
-    protected final ConversionService getConversionService()
-            throws ClientException {
+    protected final ConversionService getConversionService() throws ClientException {
 
         ConversionService conversionService;
         try {

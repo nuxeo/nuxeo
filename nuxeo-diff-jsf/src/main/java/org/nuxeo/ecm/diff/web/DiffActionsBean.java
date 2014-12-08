@@ -88,8 +88,8 @@ public class DiffActionsBean implements Serializable {
     protected String diffSelectionType = DiffSelectionType.content.name();
 
     /**
-     * Checks if the diff action is available for the
-     * {@link DocumentsListsManager#CURRENT_DOCUMENT_SELECTION} working list.
+     * Checks if the diff action is available for the {@link DocumentsListsManager#CURRENT_DOCUMENT_SELECTION} working
+     * list.
      * 
      * @return true if can diff the current document selection
      */
@@ -99,9 +99,8 @@ public class DiffActionsBean implements Serializable {
     }
 
     /**
-     * Checks if the diff action is available for the
-     * {@link DocumentsListsManager#CURRENT_DOCUMENT_TRASH_SELECTION} working
-     * list.
+     * Checks if the diff action is available for the {@link DocumentsListsManager#CURRENT_DOCUMENT_TRASH_SELECTION}
+     * working list.
      * 
      * @return true if can diff the current document trash selection
      */
@@ -111,9 +110,8 @@ public class DiffActionsBean implements Serializable {
     }
 
     /**
-     * Checks if the diff action is available for the
-     * {@link DocumentsListsManager#CURRENT_DOCUMENT_SECTION_SELECTION} working
-     * list.
+     * Checks if the diff action is available for the {@link DocumentsListsManager#CURRENT_DOCUMENT_SECTION_SELECTION}
+     * working list.
      * 
      * @return true if can diff the current section selection
      */
@@ -123,9 +121,8 @@ public class DiffActionsBean implements Serializable {
     }
 
     /**
-     * Checks if the diff action is available for the
-     * {@link VersionDocumentsListsConstants#CURRENT_VERSION_SELECTION} working
-     * list.
+     * Checks if the diff action is available for the {@link VersionDocumentsListsConstants#CURRENT_VERSION_SELECTION}
+     * working list.
      * 
      * @return true if can diff the current version selection
      */
@@ -135,8 +132,7 @@ public class DiffActionsBean implements Serializable {
     }
 
     /**
-     * Checks if the diff action is available for the
-     * {@link DocumentsListsManager#DEFAULT_WORKING_LIST} working list.
+     * Checks if the diff action is available for the {@link DocumentsListsManager#DEFAULT_WORKING_LIST} working list.
      * 
      * @return true if can diff the current default working list selection
      */
@@ -146,8 +142,7 @@ public class DiffActionsBean implements Serializable {
     }
 
     /**
-     * Checks if the diff action is available for the {@code listName} working
-     * list.
+     * Checks if the diff action is available for the {@code listName} working list.
      * <p>
      * Condition: the working list has exactly 2 documents.
      * 
@@ -157,8 +152,7 @@ public class DiffActionsBean implements Serializable {
     public boolean getCanDiffWorkingList(String listName) {
 
         List<DocumentModel> currentSelectionWorkingList = documentsListsManager.getWorkingList(listName);
-        return currentSelectionWorkingList != null
-                && currentSelectionWorkingList.size() == 2;
+        return currentSelectionWorkingList != null && currentSelectionWorkingList.size() == 2;
     }
 
     /**
@@ -227,8 +221,7 @@ public class DiffActionsBean implements Serializable {
      * @return the view id
      * @throws ClientException the client exception
      */
-    public String prepareWorkingListDiff(String listName)
-            throws ClientException {
+    public String prepareWorkingListDiff(String listName) throws ClientException {
 
         List<DocumentModel> workingList = getWorkingList(listName);
 
@@ -241,14 +234,11 @@ public class DiffActionsBean implements Serializable {
     /**
      * Prepare a diff of the current document with a specific version
      * 
-     * @param versionLabel version label to look for, if you want the last
-     *            version use org.nuxeo.ecm.diff.web
+     * @param versionLabel version label to look for, if you want the last version use org.nuxeo.ecm.diff.web
      *            .DiffActionsBean#LAST_VERSION_PROPERTY
-     * @throws ClientException if current document is null or if the expected
-     *             version is missing.
+     * @throws ClientException if current document is null or if the expected version is missing.
      */
-    public String prepareCurrentVersionDiff(String versionLabel)
-            throws ClientException {
+    public String prepareCurrentVersionDiff(String versionLabel) throws ClientException {
         if (StringUtils.isBlank(versionLabel)) {
             versionLabel = LAST_VERSION_PROPERTY;
         }
@@ -270,8 +260,7 @@ public class DiffActionsBean implements Serializable {
         } else {
             VersionModel versionModel = new VersionModelImpl();
             versionModel.setLabel(versionLabel);
-            documentVersion = documentManager.getDocumentWithVersion(
-                    currentDocument.getRef(), versionModel);
+            documentVersion = documentManager.getDocumentWithVersion(currentDocument.getRef(), versionModel);
 
             if (documentVersion == null) {
                 log.info("Unable to found " + versionLabel + " on current document to diff.");
@@ -305,8 +294,7 @@ public class DiffActionsBean implements Serializable {
 
             VersionModel selectedVersion = new VersionModelImpl();
             selectedVersion.setId(selectedVersionId);
-            DocumentModel docVersion = documentManager.getDocumentWithVersion(
-                    currentDocument.getRef(), selectedVersion);
+            DocumentModel docVersion = documentManager.getDocumentWithVersion(currentDocument.getRef(), selectedVersion);
             if (docVersion == null) {
                 throw new ClientException(
                         "Cannot make a diff between selected version and current document since selected version document is null.");
@@ -351,60 +339,51 @@ public class DiffActionsBean implements Serializable {
     /**
      * Gets the document diff.
      * 
-     * @return the document diff between leftDoc and rightDoc if leftDoc and
-     *         rightDoc aren't null, else null
+     * @return the document diff between leftDoc and rightDoc if leftDoc and rightDoc aren't null, else null
      * @throws ClientException the client exception
      */
     @Factory(value = "defaultDiffDisplayBlocks", scope = PAGE)
-    public List<DiffDisplayBlock> getDefaultDiffDisplayBlocks()
-            throws ClientException {
+    public List<DiffDisplayBlock> getDefaultDiffDisplayBlocks() throws ClientException {
 
         if (leftDoc == null || rightDoc == null) {
             return new ArrayList<DiffDisplayBlock>();
         }
 
-        DocumentDiff docDiff = getDocumentDiffService().diff(documentManager,
-                leftDoc, rightDoc);
-        return getDiffDisplayService().getDiffDisplayBlocks(docDiff, leftDoc,
-                rightDoc);
+        DocumentDiff docDiff = getDocumentDiffService().diff(documentManager, leftDoc, rightDoc);
+        return getDiffDisplayService().getDiffDisplayBlocks(docDiff, leftDoc, rightDoc);
     }
 
     /**
-     * Gets the content diff fancybox URL for the property with xpath
-     * {@code propertyXPath}.
+     * Gets the content diff fancybox URL for the property with xpath {@code propertyXPath}.
      * 
      * @param propertyLabel the property label
      * @param propertyXPath the property xpath
      * @return the content diff fancybox URL
-     * @throws ClientException if the content diff fancybox URL cannot be
-     *             retrieved
+     * @throws ClientException if the content diff fancybox URL cannot be retrieved
      */
-    public String getContentDiffFancyBoxURL(String propertyLabel,
-            String propertyXPath) throws ClientException {
+    public String getContentDiffFancyBoxURL(String propertyLabel, String propertyXPath) throws ClientException {
 
         return getContentDiffFancyBoxURL(propertyLabel, propertyXPath, null);
     }
 
     /**
-     * Gets the content diff fancybox URL for the property with xpath
-     * {@code propertyXPath} using {@code conversionType}.
+     * Gets the content diff fancybox URL for the property with xpath {@code propertyXPath} using {@code conversionType}
+     * .
      * 
      * @param propertyLabel the property label
      * @param propertyXPath the property xpath
      * @param conversionType the conversion type
      * @return the content diff fancybox URL
-     * @throws ClientException if the content diff fancybox URL cannot be
-     *             retrieved
+     * @throws ClientException if the content diff fancybox URL cannot be retrieved
      */
-    public String getContentDiffFancyBoxURL(String propertyLabel,
-            String propertyXPath, String conversionType) throws ClientException {
+    public String getContentDiffFancyBoxURL(String propertyLabel, String propertyXPath, String conversionType)
+            throws ClientException {
 
         if (StringUtils.isEmpty(propertyXPath)) {
             log.error("Cannot get content diff fancybox URL with a null propertyXPath.");
             return null;
         }
-        return ContentDiffHelper.getContentDiffFancyBoxURL(
-                navigationContext.getCurrentDocument(), propertyLabel,
+        return ContentDiffHelper.getContentDiffFancyBoxURL(navigationContext.getCurrentDocument(), propertyLabel,
                 propertyXPath, conversionType);
     }
 
@@ -419,7 +398,7 @@ public class DiffActionsBean implements Serializable {
      * @throws ClientException
      */
     public String getContentDiffURL(String docLeftId, String docRightId, String propertyXPath,
-                                    String conversionTypeParam) throws ClientException {
+            String conversionTypeParam) throws ClientException {
         DocumentModel leftDoc = null;
         DocumentModel rightDoc = null;
         if (!StringUtils.isBlank(docLeftId)) {
@@ -445,10 +424,8 @@ public class DiffActionsBean implements Serializable {
             conversionType = conversionTypeParam;
         }
 
-        return ContentDiffHelper.getContentDiffURL(
-                navigationContext.getCurrentDocument().getRepositoryName(),
-                leftDoc, rightDoc, propertyXPath, conversionType,
-                localeSelector.getLocaleString());
+        return ContentDiffHelper.getContentDiffURL(navigationContext.getCurrentDocument().getRepositoryName(), leftDoc,
+                rightDoc, propertyXPath, conversionType, localeSelector.getLocaleString());
     }
 
     /**
@@ -458,8 +435,7 @@ public class DiffActionsBean implements Serializable {
      * @param conversionTypeParam the conversion type param
      * @return the content diff URL
      */
-    public String getContentDiffURL(String propertyXPath,
-            String conversionTypeParam) {
+    public String getContentDiffURL(String propertyXPath, String conversionTypeParam) {
 
         if (leftDoc == null || rightDoc == null) {
             log.error("Cannot get content diff URL with a null leftDoc or a null rightDoc.");
@@ -473,10 +449,8 @@ public class DiffActionsBean implements Serializable {
         if (!StringUtils.isEmpty(conversionTypeParam)) {
             conversionType = conversionTypeParam;
         }
-        return ContentDiffHelper.getContentDiffURL(
-                navigationContext.getCurrentDocument().getRepositoryName(),
-                leftDoc, rightDoc, propertyXPath, conversionType,
-                localeSelector.getLocaleString());
+        return ContentDiffHelper.getContentDiffURL(navigationContext.getCurrentDocument().getRepositoryName(), leftDoc,
+                rightDoc, propertyXPath, conversionType, localeSelector.getLocaleString());
     }
 
     /**
@@ -486,10 +460,8 @@ public class DiffActionsBean implements Serializable {
      * @param conversionTypeParam the conversion type param
      * @return the content diff with blob post processing URL
      */
-    public String getContentDiffWithBlobPostProcessingURL(String propertyXPath,
-            String conversionTypeParam) {
-        return getContentDiffURL(propertyXPath, conversionTypeParam)
-                + "?blobPostProcessing=true";
+    public String getContentDiffWithBlobPostProcessingURL(String propertyXPath, String conversionTypeParam) {
+        return getContentDiffURL(propertyXPath, conversionTypeParam) + "?blobPostProcessing=true";
     }
 
     /**
@@ -502,10 +474,8 @@ public class DiffActionsBean implements Serializable {
     /**
      * Gets the content diff difference type message key.
      */
-    public String getContentDiffDifferenceTypeMsgKey(
-            DifferenceType differenceType) {
-        return CONTENT_DIFF_DIFFERENCE_TYPE_MSG_KEY_PREFIX
-                + differenceType.name();
+    public String getContentDiffDifferenceTypeMsgKey(DifferenceType differenceType) {
+        return CONTENT_DIFF_DIFFERENCE_TYPE_MSG_KEY_PREFIX + differenceType.name();
     }
 
     /**
@@ -514,17 +484,14 @@ public class DiffActionsBean implements Serializable {
      * @return the {@code listName} working list
      * @throws ClientException the client exception
      */
-    protected final List<DocumentModel> getWorkingList(String listName)
-            throws ClientException {
+    protected final List<DocumentModel> getWorkingList(String listName) throws ClientException {
 
         List<DocumentModel> currentSelectionWorkingList = documentsListsManager.getWorkingList(listName);
 
-        if (currentSelectionWorkingList == null
-                || currentSelectionWorkingList.size() != 2) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot make a diff of the %s working list: need to have exactly 2 documents in the working list.",
-                            listName));
+        if (currentSelectionWorkingList == null || currentSelectionWorkingList.size() != 2) {
+            throw new ClientException(String.format(
+                    "Cannot make a diff of the %s working list: need to have exactly 2 documents in the working list.",
+                    listName));
         }
         return currentSelectionWorkingList;
     }
@@ -535,8 +502,7 @@ public class DiffActionsBean implements Serializable {
      * @return the document diff service
      * @throws ClientException if cannot get the document diff service
      */
-    protected final DocumentDiffService getDocumentDiffService()
-            throws ClientException {
+    protected final DocumentDiffService getDocumentDiffService() throws ClientException {
 
         DocumentDiffService documentDiffService;
 
@@ -557,8 +523,7 @@ public class DiffActionsBean implements Serializable {
      * @return the diff display service
      * @throws ClientException the client exception
      */
-    protected final DiffDisplayService getDiffDisplayService()
-            throws ClientException {
+    protected final DiffDisplayService getDiffDisplayService() throws ClientException {
 
         DiffDisplayService diffDisplayService;
 

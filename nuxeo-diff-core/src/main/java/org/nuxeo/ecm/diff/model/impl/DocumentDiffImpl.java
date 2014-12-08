@@ -36,8 +36,7 @@ public class DocumentDiffImpl implements DocumentDiff {
     /**
      * Map holding the doc diff.
      * <p>
-     * Keys are schema names. Values represent the differences between the
-     * fields of the schema.
+     * Keys are schema names. Values represent the differences between the fields of the schema.
      */
     private Map<String, SchemaDiff> docDiff;
 

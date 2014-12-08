@@ -90,7 +90,6 @@ public class DiffFieldDescriptor {
     }
 
     public DiffFieldDefinition getDiffFieldDefinition() {
-        return new DiffFieldDefinitionImpl(getCategory(), getSchema(),
-                getName());
+        return new DiffFieldDefinitionImpl(getCategory(), getSchema(), getName());
     }
 }

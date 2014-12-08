@@ -35,8 +35,7 @@ public class ComplexPropertyDiff extends PropertyDiff {
     protected Map<String, PropertyDiff> diffMap;
 
     /**
-     * Instantiates a new complex property diff with the
-     * {@link PropertyType#COMPLEX} property type.
+     * Instantiates a new complex property diff with the {@link PropertyType#COMPLEX} property type.
      */
     public ComplexPropertyDiff() {
 

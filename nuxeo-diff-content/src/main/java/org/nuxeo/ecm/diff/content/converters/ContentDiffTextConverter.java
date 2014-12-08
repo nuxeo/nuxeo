@@ -38,11 +38,9 @@ public class ContentDiffTextConverter extends AbstractContentDiffConverter {
 
     private static final String ANY_2_TEXT_CONVERTER_NAME = "any2text";
 
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
-        BlobHolder convertedBlobHolder = convert(ANY_2_TEXT_CONVERTER_NAME,
-                blobHolder, parameters);
+        BlobHolder convertedBlobHolder = convert(ANY_2_TEXT_CONVERTER_NAME, blobHolder, parameters);
 
         String convertedBlobString = null;
         try {
@@ -51,8 +49,7 @@ public class ContentDiffTextConverter extends AbstractContentDiffConverter {
                 convertedBlobString = convertedBlob.getString();
             }
         } catch (Exception e) {
-            throw new ConversionException(
-                    "Error while getting converted blob string.");
+            throw new ConversionException("Error while getting converted blob string.");
         }
         if (StringUtils.isEmpty(convertedBlobString)) {
             // Converted blob is an empty string, this means no text
@@ -65,13 +62,10 @@ public class ContentDiffTextConverter extends AbstractContentDiffConverter {
                     srcMimeType = blob.getMimeType();
                 }
             } catch (ClientException ce) {
-                throw new ConversionException(
-                        "Error while getting blob from blob holder.", ce);
+                throw new ConversionException("Error while getting blob from blob holder.", ce);
             }
-            throw new ConverterNotRegistered(
-                    String.format(
-                            "for sourceMimeType = %s, destinationMimeType = text/plain",
-                            srcMimeType));
+            throw new ConverterNotRegistered(String.format("for sourceMimeType = %s, destinationMimeType = text/plain",
+                    srcMimeType));
         }
         return convertedBlobHolder;
     }

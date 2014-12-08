@@ -26,8 +26,7 @@ import org.nuxeo.ecm.diff.content.adapter.base.ConverterBasedContentDiffAdapter;
  * @author Antoine taillefer
  * @since 5.6
  */
-public class FileBasedContentDiffAdapterFactory implements
-        ContentDiffAdapterFactory {
+public class FileBasedContentDiffAdapterFactory implements ContentDiffAdapterFactory {
 
     public ContentDiffAdapter getAdapter(DocumentModel doc) {
         ConverterBasedContentDiffAdapter adapter = new ConverterBasedContentDiffAdapter();

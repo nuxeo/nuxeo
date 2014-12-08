@@ -155,11 +155,9 @@ public class TestDiffDisplayContrib {
         assertNotNull(diffBlockDefinition);
 
         List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
-                "description"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "description"));
         fields.add(new DiffFieldDefinitionImpl(null, "dam_common", "author"));
-        fields.add(new DiffFieldDefinitionImpl(null, "dam_common",
-                "authoringDate"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dam_common", "authoringDate"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "nature"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "subjects"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "rights"));
@@ -171,10 +169,8 @@ public class TestDiffDisplayContrib {
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "language"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "expired"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "creator"));
-        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
-                "contributors"));
-        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
-                "lastContributor"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "contributors"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "lastContributor"));
 
         Map<String, String> templates = new HashMap<String, String>();
         templates.put(BuiltinModes.ANY, "/layouts/layout_diff_template.xhtml");
@@ -184,13 +180,12 @@ public class TestDiffDisplayContrib {
         labelProperty.put("label", "label.diffBlock.dublincore");
         properties.put(BuiltinModes.ANY, labelProperty);
 
-        DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "dublincore", templates, fields, properties);
+        DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("dublincore", templates, fields,
+                properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check that order is taken into account
-        DiffFieldDefinition diffFieldDefinition = expectedDiffBlockDefinition.getFields().get(
-                0);
+        DiffFieldDefinition diffFieldDefinition = expectedDiffBlockDefinition.getFields().get(0);
         expectedDiffBlockDefinition.getFields().remove(0);
         expectedDiffBlockDefinition.getFields().add(diffFieldDefinition);
         assertFalse(expectedDiffBlockDefinition.equals(diffBlockDefinition));
@@ -206,8 +201,7 @@ public class TestDiffDisplayContrib {
         fields.add(new DiffFieldDefinitionImpl(null, "files", "files", items));
 
         labelProperty.put("label", "label.diffBlock.files");
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("files",
-                templates, fields, properties);
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("files", templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check note diffDisplay contrib
@@ -218,8 +212,7 @@ public class TestDiffDisplayContrib {
         fields.add(new DiffFieldDefinitionImpl(null, "note", "note", true));
 
         labelProperty.put("label", "label.diffBlock.note");
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note",
-                templates, fields, properties);
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note", templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
     }
 }

@@ -17,8 +17,7 @@
 package org.nuxeo.ecm.diff.model;
 
 /**
- * Property type constants: string, boolean, integer, scalarList, complex,
- * complexList, ...
+ * Property type constants: string, boolean, integer, scalarList, complex, complexList, ...
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
@@ -62,8 +61,7 @@ public final class PropertyType {
      */
     public static boolean isSimpleType(String propertyType) {
 
-        return !isListType(propertyType) && !isComplexType(propertyType)
-                && !isContentType(propertyType);
+        return !isListType(propertyType) && !isComplexType(propertyType) && !isContentType(propertyType);
     }
 
     /**
@@ -74,8 +72,7 @@ public final class PropertyType {
      */
     public static boolean isListType(String propertyType) {
 
-        return SCALAR_LIST.equals(propertyType)
-                || COMPLEX_LIST.equals(propertyType)
+        return SCALAR_LIST.equals(propertyType) || COMPLEX_LIST.equals(propertyType)
                 || CONTENT_LIST.equals(propertyType);
     }
 

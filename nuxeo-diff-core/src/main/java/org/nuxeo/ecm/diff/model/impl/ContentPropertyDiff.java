@@ -35,8 +35,7 @@ public class ContentPropertyDiff extends PropertyDiff {
     protected ContentProperty rightContent;
 
     /**
-     * Instantiates a new content property diff with the
-     * {@link PropertyType#CONTENT} property type.
+     * Instantiates a new content property diff with the {@link PropertyType#CONTENT} property type.
      *
      * @param propertyType the property type
      */
@@ -55,46 +54,39 @@ public class ContentPropertyDiff extends PropertyDiff {
     }
 
     /**
-     * Instantiates a new content property diff with the
-     * {@link PropertyType#CONTENT} property type, the
-     * {@link DifferenceType#different} difference type, a left content and
-     * right content.
+     * Instantiates a new content property diff with the {@link PropertyType#CONTENT} property type, the
+     * {@link DifferenceType#different} difference type, a left content and right content.
      *
      * @param leftContent the left content
      * @param rightContent the right content
      */
-    public ContentPropertyDiff(ContentProperty leftContent,
-            ContentProperty rightContent) {
+    public ContentPropertyDiff(ContentProperty leftContent, ContentProperty rightContent) {
 
         this(DifferenceType.different, leftContent, rightContent);
     }
 
     /**
-     * Instantiates a new content property diff with the
-     * {@link PropertyType#CONTENT} property type, a difference type, a left
-     * content and right content.
+     * Instantiates a new content property diff with the {@link PropertyType#CONTENT} property type, a difference type,
+     * a left content and right content.
      *
      * @param differenceType the difference type
      * @param leftContent the left content
      * @param rightContent the right content
      */
-    public ContentPropertyDiff(DifferenceType differenceType,
-            ContentProperty leftContent, ContentProperty rightContent) {
+    public ContentPropertyDiff(DifferenceType differenceType, ContentProperty leftContent, ContentProperty rightContent) {
 
         this(PropertyType.CONTENT, differenceType, leftContent, rightContent);
     }
 
     /**
-     * Instantiates a new content property diff with a property type, difference
-     * type, left content and right content.
+     * Instantiates a new content property diff with a property type, difference type, left content and right content.
      *
      * @param propertyType the property type
      * @param differenceType the difference type
      * @param leftContent the left content
      * @param rightContent the right content
      */
-    public ContentPropertyDiff(String propertyType,
-            DifferenceType differenceType, ContentProperty leftContent,
+    public ContentPropertyDiff(String propertyType, DifferenceType differenceType, ContentProperty leftContent,
             ContentProperty rightContent) {
 
         this.propertyType = propertyType;
@@ -119,14 +111,10 @@ public class ContentPropertyDiff extends PropertyDiff {
         ContentProperty otherLeftContent = ((ContentPropertyDiff) other).getLeftContent();
         ContentProperty otherRightContent = ((ContentPropertyDiff) other).getRightContent();
 
-        return (leftContent == null && otherLeftContent == null
-                && rightContent == null && otherRightContent == null)
-                || (leftContent == null && otherLeftContent == null
-                        && rightContent != null && rightContent.equals(otherRightContent))
-                || (rightContent == null && otherRightContent == null
-                        && leftContent != null && leftContent.equals(otherLeftContent))
-                || (leftContent != null && rightContent != null
-                        && leftContent.equals(otherLeftContent) && rightContent.equals(otherRightContent));
+        return (leftContent == null && otherLeftContent == null && rightContent == null && otherRightContent == null)
+                || (leftContent == null && otherLeftContent == null && rightContent != null && rightContent.equals(otherRightContent))
+                || (rightContent == null && otherRightContent == null && leftContent != null && leftContent.equals(otherLeftContent))
+                || (leftContent != null && rightContent != null && leftContent.equals(otherLeftContent) && rightContent.equals(otherRightContent));
     }
 
     @Override

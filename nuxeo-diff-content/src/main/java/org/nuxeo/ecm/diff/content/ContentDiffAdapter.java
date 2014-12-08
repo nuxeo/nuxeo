@@ -34,19 +34,16 @@ public interface ContentDiffAdapter {
 
     boolean cachable();
 
-    String getFileContentDiffURL(DocumentModel otherDoc,
-            ContentDiffConversionType conversionType, String locale);
+    String getFileContentDiffURL(DocumentModel otherDoc, ContentDiffConversionType conversionType, String locale);
 
-    String getFileContentDiffURL(DocumentModel otherDoc, String xpath,
-            ContentDiffConversionType conversionType, String locale);
+    String getFileContentDiffURL(DocumentModel otherDoc, String xpath, ContentDiffConversionType conversionType,
+            String locale);
 
-    List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc,
-            ContentDiffConversionType conversionType, Locale locale)
+    List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc, ContentDiffConversionType conversionType, Locale locale)
             throws ContentDiffException, ConversionException;
 
-    List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc, String xpath,
-            ContentDiffConversionType conversionType, Locale locale)
-            throws ContentDiffException, ConversionException;
+    List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc, String xpath, ContentDiffConversionType conversionType,
+            Locale locale) throws ContentDiffException, ConversionException;
 
     void setAdaptedDocument(DocumentModel doc);
 

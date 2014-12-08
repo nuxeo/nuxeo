@@ -53,7 +53,6 @@ public class DiffFieldItemDescriptor {
     }
 
     public DiffFieldItemDefinition getDiffFieldItemDefinition() {
-        return new DiffFieldItemDefinitionImpl(getName(),
-                isDisplayContentDiffLinks());
+        return new DiffFieldItemDefinitionImpl(getName(), isDisplayContentDiffLinks());
     }
 }

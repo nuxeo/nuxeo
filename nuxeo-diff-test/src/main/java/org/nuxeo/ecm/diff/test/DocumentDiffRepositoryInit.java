@@ -34,8 +34,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 
 /**
- * Inits the repository for a document diff test case with 2 documents of the
- * same type.
+ * Inits the repository for a document diff test case with 2 documents of the same type.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
@@ -63,27 +62,21 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
      * @return the document model
      * @throws ClientException the client exception
      */
-    protected DocumentModel createLeftDoc(CoreSession session)
-            throws ClientException {
+    protected DocumentModel createLeftDoc(CoreSession session) throws ClientException {
 
-        DocumentModel doc = session.createDocumentModel("/", "leftDoc",
-                "SampleType");
+        DocumentModel doc = session.createDocumentModel("/", "leftDoc", "SampleType");
 
         // -----------------------
         // dublincore
         // -----------------------
         doc.setPropertyValue("dc:title", "My first sample");
         doc.setPropertyValue("dc:description", "description");
-        doc.setPropertyValue("dc:created",
-                getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 25));
+        doc.setPropertyValue("dc:created", getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 25));
         doc.setPropertyValue("dc:creator", "Administrator");
-        doc.setPropertyValue("dc:modified",
-                getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 25));
+        doc.setPropertyValue("dc:modified", getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 25));
         doc.setPropertyValue("dc:lastContributor", "Administrator");
-        doc.setPropertyValue("dc:contributors", new String[] { "Administrator",
-                "joe", null });
-        doc.setPropertyValue("dc:subjects", new String[] { "Art",
-                "Architecture" });
+        doc.setPropertyValue("dc:contributors", new String[] { "Administrator", "joe", null });
+        doc.setPropertyValue("dc:subjects", new String[] { "Art", "Architecture" });
 
         // -----------------------
         // file
@@ -135,13 +128,11 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         doc.setPropertyValue("st:textarea", "a textarea property");
         doc.setPropertyValue("st:boolean", true);
         doc.setPropertyValue("st:integer", 10);
-        doc.setPropertyValue("st:date",
-                getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 28, 23, 00, 00));
+        doc.setPropertyValue("st:date", getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 28, 23, 00, 00));
         doc.setPropertyValue(
                 "st:htmlText",
                 "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;");
-        doc.setPropertyValue("st:multivalued", new String[] { "monday",
-                "tuesday", "wednesday", "thursday" });
+        doc.setPropertyValue("st:multivalued", new String[] { "monday", "tuesday", "wednesday", "thursday" });
 
         // -----------------------
         // complextypes
@@ -153,16 +144,14 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         doc.setPropertyValue("ct:complex", (Serializable) complexPropValue);
 
         Map<String, Serializable> item1ComplexPropValue = new HashMap<String, Serializable>();
-        item1ComplexPropValue.put("stringItem",
-                "first element of a complex list");
+        item1ComplexPropValue.put("stringItem", "first element of a complex list");
         item1ComplexPropValue.put("booleanItem", true);
         item1ComplexPropValue.put("integerItem", 12);
 
         List<Map<String, Serializable>> complexListPropValue = new ArrayList<Map<String, Serializable>>();
         complexListPropValue.add(item1ComplexPropValue);
 
-        doc.setPropertyValue("ct:complexList",
-                (Serializable) complexListPropValue);
+        doc.setPropertyValue("ct:complexList", (Serializable) complexListPropValue);
 
         // -----------------------
         // listoflists
@@ -185,8 +174,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         complexItem2.put("stringListItem", (Serializable) item2SubList);
         listOfListPropValue.add(complexItem2);
 
-        doc.setPropertyValue("lol:listOfLists",
-                (Serializable) listOfListPropValue);
+        doc.setPropertyValue("lol:listOfLists", (Serializable) listOfListPropValue);
 
         return session.createDocument(doc);
     }
@@ -198,24 +186,19 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
      * @return the document model
      * @throws ClientException the client exception
      */
-    protected DocumentModel createRightDoc(CoreSession session)
-            throws ClientException {
+    protected DocumentModel createRightDoc(CoreSession session) throws ClientException {
 
-        DocumentModel doc = session.createDocumentModel("/", "rightDoc",
-                "SampleType");
+        DocumentModel doc = session.createDocumentModel("/", "rightDoc", "SampleType");
 
         // -----------------------
         // dublincore
         // -----------------------
         doc.setPropertyValue("dc:title", "My second sample");
-        doc.setPropertyValue("dc:created",
-                getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 50));
+        doc.setPropertyValue("dc:created", getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 50));
         doc.setPropertyValue("dc:creator", "Administrator");
-        doc.setPropertyValue("dc:modified",
-                getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 30, 12, 05, 02));
+        doc.setPropertyValue("dc:modified", getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 30, 12, 05, 02));
         doc.setPropertyValue("dc:lastContributor", " Administrator ");
-        doc.setPropertyValue("dc:contributors", new String[] {
-                "anotherAdministrator", "joe", "jack" });
+        doc.setPropertyValue("dc:contributors", new String[] { "anotherAdministrator", "joe", "jack" });
         doc.setPropertyValue("dc:subjects", new String[] { "Art" });
 
         // -----------------------
@@ -260,8 +243,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         doc.setPropertyValue("st:string", "a different string property");
         doc.setPropertyValue("st:textarea", "a textarea property");
         doc.setPropertyValue("st:integer", 10);
-        doc.setPropertyValue("st:date",
-                getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 28, 23, 00, 00));
+        doc.setPropertyValue("st:date", getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 28, 23, 00, 00));
         doc.setPropertyValue(
                 "st:htmlText",
                 "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
@@ -272,20 +254,16 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         Map<String, Serializable> complexPropValue = new HashMap<String, Serializable>();
         complexPropValue.put("stringItem", "string of a complex type");
         complexPropValue.put("booleanItem", false);
-        complexPropValue.put("dateItem",
-                getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 29, 23, 00, 00));
+        complexPropValue.put("dateItem", getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 29, 23, 00, 00));
         doc.setPropertyValue("ct:complex", (Serializable) complexPropValue);
 
         Map<String, Serializable> item1ComplexPropValue = new HashMap<String, Serializable>();
-        item1ComplexPropValue.put("stringItem",
-                "first element of a complex list");
+        item1ComplexPropValue.put("stringItem", "first element of a complex list");
         item1ComplexPropValue.put("booleanItem", false);
-        item1ComplexPropValue.put("dateItem",
-                getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 30, 23, 00, 00));
+        item1ComplexPropValue.put("dateItem", getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 30, 23, 00, 00));
 
         Map<String, Serializable> item2ComplexPropValue = new HashMap<String, Serializable>();
-        item2ComplexPropValue.put("stringItem",
-                "second element of a complex list");
+        item2ComplexPropValue.put("stringItem", "second element of a complex list");
         item2ComplexPropValue.put("booleanItem", false);
         item2ComplexPropValue.put("integerItem", 20);
 
@@ -293,8 +271,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         complexListPropValue.add(item1ComplexPropValue);
         complexListPropValue.add(item2ComplexPropValue);
 
-        doc.setPropertyValue("ct:complexList",
-                (Serializable) complexListPropValue);
+        doc.setPropertyValue("ct:complexList", (Serializable) complexListPropValue);
 
         // -----------------------
         // listoflists
@@ -326,8 +303,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         complexItem3.put("stringListItem", (Serializable) item3SubList);
         listOfListPropValue.add(complexItem3);
 
-        doc.setPropertyValue("lol:listOfLists",
-                (Serializable) listOfListPropValue);
+        doc.setPropertyValue("lol:listOfLists", (Serializable) listOfListPropValue);
 
         return session.createDocument(doc);
     }
@@ -343,8 +319,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
      * @param second the second
      * @return the calendar
      */
-    public static Calendar getCalendarUTCNoMillis(int year, int month, int day,
-            int hourOfDay, int minute, int second) {
+    public static Calendar getCalendarUTCNoMillis(int year, int month, int day, int hourOfDay, int minute, int second) {
 
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.set(year, month, day, hourOfDay, minute, second);

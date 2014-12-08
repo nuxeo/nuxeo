@@ -36,8 +36,7 @@ public class SchemaDiffImpl implements SchemaDiff {
     /**
      * Map holding the schema diff.
      * <p>
-     * Keys are field names. Values represent the difference between the left
-     * doc and the right doc for the given field.
+     * Keys are field names. Values represent the difference between the left doc and the right doc for the given field.
      */
     private Map<String, PropertyDiff> schemaDiff;
 
