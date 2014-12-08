@@ -38,8 +38,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Anonymous authenticator that redirect logout to CAS server authentication to
- * connect to nuxeo.
+ * Anonymous authenticator that redirect logout to CAS server authentication to connect to nuxeo.
  *
  * @author Benjamin JALON
  */
@@ -50,8 +49,7 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
     protected Cas2Authenticator casAuthenticator;
 
     @Override
-    public Boolean handleLogout(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) {
+    public Boolean handleLogout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
         boolean isRedirectionToCas = false;
 
@@ -64,15 +62,13 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
         }
 
         if (isRedirectionToCas) {
-            String authURL = getCas2Authenticator().getServiceURL(httpRequest,
-                    Cas2Authenticator.LOGIN_ACTION);
+            String authURL = getCas2Authenticator().getServiceURL(httpRequest, Cas2Authenticator.LOGIN_ACTION);
             String appURL = getCas2Authenticator().getAppURL(httpRequest);
 
             try {
                 Map<String, String> urlParameters = new HashMap<String, String>();
                 urlParameters.put("service", appURL);
-                String location = URIUtils.addParametersToURIQuery(
-                        authURL, urlParameters);
+                String location = URIUtils.addParametersToURIQuery(authURL, urlParameters);
                 httpResponse.sendRedirect(location);
                 return true;
             } catch (IOException e) {

@@ -36,9 +36,8 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * The user is retrieved with the {@link TokenAuthenticationService}.
  * <p>
- * This Authentication Plugin is configured to be used with the Trusting_LM
- * {@link LoginModule} plugin => no password check will be done, a principal
- * will be created from the userName if the user exists in the user directory.
+ * This Authentication Plugin is configured to be used with the Trusting_LM {@link LoginModule} plugin => no password
+ * check will be done, a principal will be created from the userName if the user exists in the user directory.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
@@ -54,27 +53,24 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
     protected static final String TOKEN_HEADER = "X-Authentication-Token";
 
     @Override
-    public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         return false;
     }
 
     @Override
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
 
         String token = getTokenFromRequest(httpRequest);
 
         if (token == null) {
-            log.debug(String.format("Found no '%s' header in the request.",
-                    TOKEN_HEADER));
+            log.debug(String.format("Found no '%s' header in the request.", TOKEN_HEADER));
             return null;
         }
 
         String userName = getUserByToken(token);
         if (userName == null) {
-            log.debug(String.format(
-                    "No user bound to the token '%s' (maybe it has been revoked), returning null.",
+            log.debug(String.format("No user bound to the token '%s' (maybe it has been revoked), returning null.",
                     token));
             return null;
         } else {
@@ -87,7 +83,6 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
      *
      * @param httpRequest
      * @return
-     *
      * @since 5.9.2
      */
     private String getTokenFromRequest(HttpServletRequest httpRequest) {
@@ -108,15 +103,13 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
      *
      * @param httpRequest
      * @return
-     *
      * @since 5.9.2
      */
     private Cookie getTokenCookie(HttpServletRequest httpRequest) {
         Cookie[] cookies = httpRequest.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(TOKEN_HEADER)
-                        && isAllowedToUseCookieToken(httpRequest)) {
+                if (cookie.getName().equals(TOKEN_HEADER) && isAllowedToUseCookieToken(httpRequest)) {
                     return cookie;
                 }
             }
@@ -129,7 +122,6 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
      *
      * @param httpRequest
      * @return
-     *
      * @since 5.9.2
      */
     private boolean isAllowedToUseCookieToken(HttpServletRequest req) {

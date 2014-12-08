@@ -24,18 +24,15 @@ import java.util.Map;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */
-public class OpenIDProviderFragmentRegistry extends
-        ContributionFragmentRegistry<OpenIDConnectProviderDescriptor> {
+public class OpenIDProviderFragmentRegistry extends ContributionFragmentRegistry<OpenIDConnectProviderDescriptor> {
 
     protected final Map<String, OpenIDConnectProviderDescriptor> providers = new HashMap<String, OpenIDConnectProviderDescriptor>();
 
     @Override
-    public OpenIDConnectProviderDescriptor clone(
-            OpenIDConnectProviderDescriptor source) {
+    public OpenIDConnectProviderDescriptor clone(OpenIDConnectProviderDescriptor source) {
 
         OpenIDConnectProviderDescriptor copy = new OpenIDConnectProviderDescriptor();
 
@@ -58,14 +55,12 @@ public class OpenIDProviderFragmentRegistry extends
     }
 
     @Override
-    public void contributionRemoved(String name,
-            OpenIDConnectProviderDescriptor origContrib) {
+    public void contributionRemoved(String name, OpenIDConnectProviderDescriptor origContrib) {
         providers.remove(name);
     }
 
     @Override
-    public void contributionUpdated(String name,
-            OpenIDConnectProviderDescriptor contrib,
+    public void contributionUpdated(String name, OpenIDConnectProviderDescriptor contrib,
             OpenIDConnectProviderDescriptor newOrigContrib) {
         if (contrib.isEnabled()) {
             providers.put(name, contrib);
@@ -80,11 +75,9 @@ public class OpenIDProviderFragmentRegistry extends
     }
 
     @Override
-    public void merge(OpenIDConnectProviderDescriptor src,
-            OpenIDConnectProviderDescriptor dst) {
+    public void merge(OpenIDConnectProviderDescriptor src, OpenIDConnectProviderDescriptor dst) {
 
-        if (dst.authorizationServerURL == null
-                || dst.authorizationServerURL.isEmpty()) {
+        if (dst.authorizationServerURL == null || dst.authorizationServerURL.isEmpty()) {
             dst.authorizationServerURL = src.authorizationServerURL;
         }
         if (dst.clientId == null || dst.clientId.isEmpty()) {

@@ -46,10 +46,8 @@ public class TestProxyAuthenticator extends NXRuntimeTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.login.mod_sso.test");
-        deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test",
-                "OSGI-INF/mock-usermanager-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test",
-                "OSGI-INF/mod_sso-descriptor-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test", "OSGI-INF/mock-usermanager-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test", "OSGI-INF/mod_sso-descriptor-bundle.xml");
     }
 
     @Test
@@ -67,15 +65,13 @@ public class TestProxyAuthenticator extends NXRuntimeTestCase {
 
         MockServletContext context = new MockServletContext();
         MockHttpSession session = new MockHttpSession(context);
-        MockHttpServletRequest httpRequest = new MockHttpServletRequest(
-                session, null, null, null, "GET");
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest(session, null, null, null, "GET");
 
         httpRequest.getHeaders().put("remote_user", new String[] { username });
 
         HttpServletResponse httpResponse = new MockHttpServletResponse();
 
-        UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(
-                httpRequest, httpResponse);
+        UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(httpRequest, httpResponse);
 
         assertNotNull(identity);
         assertEquals(username, identity.getUserName());
@@ -99,16 +95,13 @@ public class TestProxyAuthenticator extends NXRuntimeTestCase {
 
         MockServletContext context = new MockServletContext();
         MockHttpSession session = new MockHttpSession(context);
-        MockHttpServletRequest httpRequest = new MockHttpServletRequest(
-                session, null, null, null, "GET");
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest(session, null, null, null, "GET");
 
-        httpRequest.getHeaders().put("remote_user",
-                new String[] { usernameAndUnwantedPart });
+        httpRequest.getHeaders().put("remote_user", new String[] { usernameAndUnwantedPart });
 
         HttpServletResponse httpResponse = new MockHttpServletResponse();
 
-        UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(
-                httpRequest, httpResponse);
+        UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(httpRequest, httpResponse);
 
         assertNotNull(identity);
         assertEquals(username, identity.getUserName());

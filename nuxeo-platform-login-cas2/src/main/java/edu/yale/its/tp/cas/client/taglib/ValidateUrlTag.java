@@ -36,26 +36,28 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 /**
- * <p>Tag for indicating CAS's "validate URL" for the cas:auth tag.</p>
-
+ * <p>
+ * Tag for indicating CAS's "validate URL" for the cas:auth tag.
+ * </p>
+ * 
  * @author Shawn Bayern
  */
 public class ValidateUrlTag extends BodyTagSupport {
 
-  //*********************************************************************
-  // Tag logic
+    // *********************************************************************
+    // Tag logic
 
-  public int doEndTag() throws JspTagException {
-    String validateUrl = null;
-    if (bodyContent != null)
-      validateUrl = bodyContent.getString();
-    if (validateUrl != null)
-      validateUrl = validateUrl.trim();
-    if (!(getParent() instanceof AuthTag))
-      throw new JspTagException("illegal cas:validateUrl outside cas:auth");
-    else
-      ((AuthTag) getParent()).setCasValidate(validateUrl);
-    return EVAL_PAGE;
-  }
-    
+    public int doEndTag() throws JspTagException {
+        String validateUrl = null;
+        if (bodyContent != null)
+            validateUrl = bodyContent.getString();
+        if (validateUrl != null)
+            validateUrl = validateUrl.trim();
+        if (!(getParent() instanceof AuthTag))
+            throw new JspTagException("illegal cas:validateUrl outside cas:auth");
+        else
+            ((AuthTag) getParent()).setCasValidate(validateUrl);
+        return EVAL_PAGE;
+    }
+
 }

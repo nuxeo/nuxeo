@@ -36,26 +36,28 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 /**
- * <p>Tag for indicating the current service for the cas:auth tag.</p>
-
+ * <p>
+ * Tag for indicating the current service for the cas:auth tag.
+ * </p>
+ * 
  * @author Shawn Bayern
  */
 public class ServiceTag extends BodyTagSupport {
 
-  //*********************************************************************
-  // Tag logic
+    // *********************************************************************
+    // Tag logic
 
-  public int doEndTag() throws JspTagException {
-    String service = null;
-    if (bodyContent != null)
-      service = bodyContent.getString();
-    if (service != null)
-      service = service.trim();
-    if (!(getParent() instanceof AuthTag))
-      throw new JspTagException("illegal cas:service outside cas:auth");
-    else
-      ((AuthTag) getParent()).setService(java.net.URLEncoder.encode(service));
-    return EVAL_PAGE;
-  }
-    
+    public int doEndTag() throws JspTagException {
+        String service = null;
+        if (bodyContent != null)
+            service = bodyContent.getString();
+        if (service != null)
+            service = service.trim();
+        if (!(getParent() instanceof AuthTag))
+            throw new JspTagException("illegal cas:service outside cas:auth");
+        else
+            ((AuthTag) getParent()).setService(java.net.URLEncoder.encode(service));
+        return EVAL_PAGE;
+    }
+
 }

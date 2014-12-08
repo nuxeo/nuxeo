@@ -56,11 +56,9 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
     protected static final String QUOTE = "\"";
 
     /*
-     * match the first portion up until an equals sign
-     * followed by optional white space of quote chars
-     * and ending with an optional quote char
-     * Pattern is a thread-safe class and so can be defined statically
-     * Example pair pattern: username="kirsty"
+     * match the first portion up until an equals sign followed by optional white space of quote chars and ending with
+     * an optional quote char Pattern is a thread-safe class and so can be defined statically Example pair pattern:
+     * username="kirsty"
      */
     protected static final Pattern PAIR_ITEM_PATTERN = Pattern.compile("^(.*?)=([\\s\"]*)?(.*)(\")?$");
 
@@ -75,17 +73,14 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
     protected String accessKey = "key";
 
     @Override
-    public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
 
-        long expiryTime = System.currentTimeMillis()
-                + (nonceValiditySeconds * 1000);
+        long expiryTime = System.currentTimeMillis() + (nonceValiditySeconds * 1000);
         String signature = DigestUtils.md5Hex(expiryTime + ":" + accessKey);
         String nonce = expiryTime + ":" + signature;
         String nonceB64 = new String(Base64.encodeBase64(nonce.getBytes()));
 
-        String authenticateHeader = String.format(
-                "Digest realm=\"%s\", qop=\"auth\", nonce=\"%s\"", realmName,
+        String authenticateHeader = String.format("Digest realm=\"%s\", qop=\"auth\", nonce=\"%s\"", realmName,
                 nonceB64);
 
         try {
@@ -98,13 +93,12 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
     }
 
     @Override
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
 
         String header = httpRequest.getHeader("Authorization");
         String DIGEST_PREFIX = "digest ";
-        if (StringUtils.isEmpty(header)
-                || !header.toLowerCase().startsWith(DIGEST_PREFIX)) {
+        if (StringUtils.isEmpty(header) || !header.toLowerCase().startsWith(DIGEST_PREFIX)) {
             return null;
         }
         Map<String, String> headerMap = splitParameters(header.substring(DIGEST_PREFIX.length()));
@@ -120,13 +114,11 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
 
         String username = headerMap.get("username");
         String responseDigest = headerMap.get("response");
-        UserIdentificationInfo userIdent = new UserIdentificationInfo(username,
-                responseDigest);
+        UserIdentificationInfo userIdent = new UserIdentificationInfo(username, responseDigest);
 
         /*
-         * I have used this property to transfer response parameters to
-         * DigestLoginPlugin But loginParameters rewritten in
-         * NuxeoAuthenticationFilter common implementation
+         * I have used this property to transfer response parameters to DigestLoginPlugin But loginParameters rewritten
+         * in NuxeoAuthenticationFilter common implementation
          * @TODO: Fix this or find new way to transfer properties to LoginPlugin
          */
         userIdent.setLoginParameters(headerMap);
@@ -156,8 +148,7 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
 
     public static Map<String, String> splitParameters(String auth) {
         Map<String, String> map = new HashMap<>();
-        try (CSVParser reader = new CSVParser(new StringReader(auth),
-                CSVFormat.DEFAULT)) {
+        try (CSVParser reader = new CSVParser(new StringReader(auth), CSVFormat.DEFAULT)) {
             Iterator<CSVRecord> iterator = reader.iterator();
             if (iterator.hasNext()) {
                 CSVRecord record = iterator.next();

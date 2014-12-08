@@ -43,113 +43,83 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- * <p>Protects web-accessible resources with CAS.</p>
- *
- * <p>The following filter initialization parameters are declared in 
- * <code>web.xml</code>:</p>
- *
- * <ul> 
- *   <li><code>edu.yale.its.tp.cas.client.filter.loginUrl</code>: URL to 
- *   login page on CAS server.  (Required)</li>
- *   <li><code>edu.yale.its.tp.cas.client.filter.validateUrl</code>: URL
- *   to validation URL on CAS server.  (Required)</li>
- *   <li><code>edu.yale.its.tp.cas.client.filter.serviceUrl</code>: URL
- *   of this service.  (Required if <code>serverName</code> is not 
- *   specified)</li>
- *   <li><code>edu.yale.its.tp.cas.client.filter.serverName</code>: full
- *   hostname with port number (e.g. <code>www.foo.com:8080</code>).  
- *   Port number isn't required if it is standard (80 for HTTP, 443 for 
- *   HTTPS).  (Required if <code>serviceUrl</code> is not specified)</li>
- *   <li><code>edu.yale.its.tp.cas.client.filter.authorizedProxy</code>:
- *   whitespace-delimited list of valid proxies through which authentication
- *   may have proceeded.  One one proxy must match.  (Optional.  If nothing
- *   is specified, the filter will only accept service tickets &#150; not
- *   proxy tickets.)</li>
- *   <li><code>edu.yale.its.tp.cas.client.filter.renew</code>: value of
- *   CAS "renew" parameter.  Bypasses single sign-on and requires user
- *   to provide CAS with his/her credentials again.  (Optional.  If nothing
- *   is specified, this defaults to false.)</li>
- *   <li><code>edu.yale.its.tp.cas.client.filter.wrapRequest</code>:
- *   wrap the <code>HttpServletRequest</code> object, overriding the
- *   <code>getRemoteUser()</code> method.  When set to "true",
- *   <code>request.getRemoteUser()</code> will return the username of the 
- *   currently logged-in CAS user.  (Optional.  If nothing is specified, 
- *   this defaults to false.)</li>
+ * <p>
+ * Protects web-accessible resources with CAS.
+ * </p>
+ * <p>
+ * The following filter initialization parameters are declared in <code>web.xml</code>:
+ * </p>
+ * <ul>
+ * <li><code>edu.yale.its.tp.cas.client.filter.loginUrl</code>: URL to login page on CAS server. (Required)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.validateUrl</code>: URL to validation URL on CAS server. (Required)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.serviceUrl</code>: URL of this service. (Required if
+ * <code>serverName</code> is not specified)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.serverName</code>: full hostname with port number (e.g.
+ * <code>www.foo.com:8080</code>). Port number isn't required if it is standard (80 for HTTP, 443 for HTTPS). (Required
+ * if <code>serviceUrl</code> is not specified)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.authorizedProxy</code>: whitespace-delimited list of valid proxies
+ * through which authentication may have proceeded. One one proxy must match. (Optional. If nothing is specified, the
+ * filter will only accept service tickets &#150; not proxy tickets.)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.renew</code>: value of CAS "renew" parameter. Bypasses single sign-on and
+ * requires user to provide CAS with his/her credentials again. (Optional. If nothing is specified, this defaults to
+ * false.)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.wrapRequest</code>: wrap the <code>HttpServletRequest</code> object,
+ * overriding the <code>getRemoteUser()</code> method. When set to "true", <code>request.getRemoteUser()</code> will
+ * return the username of the currently logged-in CAS user. (Optional. If nothing is specified, this defaults to false.)
+ * </li>
  * </ul>
- *
- * <p>The logged-in username is set in the session attribute defined by
- * the value of <code>CAS_FILTER_USER</code> and may be accessed from within
- * your application either by setting <code>wrapRequest</code> and calling
- * <code>request.getRemoteUser()</code>, or by calling
- * <code>session.getAttribute(CASFilter.CAS_FILTER_USER)</code>.</p>
+ * <p>
+ * The logged-in username is set in the session attribute defined by the value of <code>CAS_FILTER_USER</code> and may
+ * be accessed from within your application either by setting <code>wrapRequest</code> and calling
+ * <code>request.getRemoteUser()</code>, or by calling <code>session.getAttribute(CASFilter.CAS_FILTER_USER)</code>.
+ * </p>
  *
  * @author Shawn Bayern
  */
 public class CASFilter implements Filter {
 
-    //*********************************************************************
+    // *********************************************************************
     // Constants
 
     /** Session attribute in which the username is stored */
-    public final static String CAS_FILTER_USER =
-        "edu.yale.its.tp.cas.client.filter.user";
+    public final static String CAS_FILTER_USER = "edu.yale.its.tp.cas.client.filter.user";
 
-    //*********************************************************************
+    // *********************************************************************
     // Configuration state
 
-    private String casLogin,
-        casValidate,
-        casAuthorizedProxy,
-        casServiceUrl,
-        casRenew,
-        casServerName;
+    private String casLogin, casValidate, casAuthorizedProxy, casServiceUrl, casRenew, casServerName;
+
     private boolean wrapRequest;
 
-    //*********************************************************************
-    // Initialization 
+    // *********************************************************************
+    // Initialization
 
     public void init(FilterConfig config) throws ServletException {
-        casLogin =
-            config.getInitParameter(
-                "edu.yale.its.tp.cas.client.filter.loginUrl");
-        casValidate =
-            config.getInitParameter(
-                "edu.yale.its.tp.cas.client.filter.validateUrl");
-        casServiceUrl =
-            config.getInitParameter(
-                "edu.yale.its.tp.cas.client.filter.serviceUrl");
-        casAuthorizedProxy =
-            config.getInitParameter(
-                "edu.yale.its.tp.cas.client.filter.authorizedProxy");
-        casRenew =
-            config.getInitParameter("edu.yale.its.tp.cas.client.filter.renew");
-        casServerName =
-            config.getInitParameter(
-                "edu.yale.its.tp.cas.client.filter.serverName");
-	wrapRequest = Boolean.valueOf(config.getInitParameter(
-		"edu.yale.its.tp.cas.client.filter.wrapRequest")).booleanValue();
+        casLogin = config.getInitParameter("edu.yale.its.tp.cas.client.filter.loginUrl");
+        casValidate = config.getInitParameter("edu.yale.its.tp.cas.client.filter.validateUrl");
+        casServiceUrl = config.getInitParameter("edu.yale.its.tp.cas.client.filter.serviceUrl");
+        casAuthorizedProxy = config.getInitParameter("edu.yale.its.tp.cas.client.filter.authorizedProxy");
+        casRenew = config.getInitParameter("edu.yale.its.tp.cas.client.filter.renew");
+        casServerName = config.getInitParameter("edu.yale.its.tp.cas.client.filter.serverName");
+        wrapRequest = Boolean.valueOf(config.getInitParameter("edu.yale.its.tp.cas.client.filter.wrapRequest")).booleanValue();
     }
 
-    //*********************************************************************
+    // *********************************************************************
     // Filter processing
 
-    public void doFilter(
-        ServletRequest request,
-        ServletResponse response,
-        FilterChain fc)
-        throws ServletException, IOException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException,
+            IOException {
 
         // make sure we've got an HTTP request
-        if (!(request instanceof HttpServletRequest)
-            || !(response instanceof HttpServletResponse))
+        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse))
             throw new ServletException("CASFilter protects only HTTP resources");
 
-	// Wrap the request if desired
-	if(wrapRequest) {
-	    request = new CASFilterRequestWrapper((HttpServletRequest)request);
-	}
+        // Wrap the request if desired
+        if (wrapRequest) {
+            request = new CASFilterRequestWrapper((HttpServletRequest) request);
+        }
 
-        HttpSession session = ((HttpServletRequest)request).getSession();
+        HttpSession session = ((HttpServletRequest) request).getSession();
 
         // if our attribute's already present, don't do anything
         if (session != null && session.getAttribute(CAS_FILTER_USER) != null) {
@@ -160,28 +130,22 @@ public class CASFilter implements Filter {
         // otherwise, we need to authenticate via CAS
         String ticket = request.getParameter("ticket");
 
-        // no ticket?  abort request processing and redirect
+        // no ticket? abort request processing and redirect
         if (ticket == null || ticket.equals("")) {
             if (casLogin == null) {
-                throw new ServletException(
-                    "When CASFilter protects pages that do not receive a 'ticket' "
-                        + "parameter, it needs a edu.yale.its.tp.cas.client.filter.loginUrl "
-                        + "filter parameter");
+                throw new ServletException("When CASFilter protects pages that do not receive a 'ticket' "
+                        + "parameter, it needs a edu.yale.its.tp.cas.client.filter.loginUrl " + "filter parameter");
             }
-            ((HttpServletResponse)response).sendRedirect(
-                casLogin
-                    + "?service="
-                    + getService((HttpServletRequest)request)
-                    + ((casRenew != null && !casRenew.equals(""))
-                        ? "&renew=" + casRenew
-                        : ""));
+            ((HttpServletResponse) response).sendRedirect(casLogin + "?service="
+                    + getService((HttpServletRequest) request)
+                    + ((casRenew != null && !casRenew.equals("")) ? "&renew=" + casRenew : ""));
 
             // abort chain
             return;
         }
 
-        // Yay, ticket!  Validate it.
-        String user = getAuthenticatedUser((HttpServletRequest)request);
+        // Yay, ticket! Validate it.
+        String user = getAuthenticatedUser((HttpServletRequest) request);
         if (user == null)
             throw new ServletException("Unexpected CAS authentication error");
 
@@ -193,42 +157,39 @@ public class CASFilter implements Filter {
         fc.doFilter(request, response);
     }
 
-    //*********************************************************************
+    // *********************************************************************
     // Destruction
 
     public void destroy() {
     }
 
-    //*********************************************************************
+    // *********************************************************************
     // Utility methods
 
     /**
-     * Converts a ticket parameter to a username, taking into account an
-     * optionally configured trusted proxy in the tier immediately in front
-     * of us.
+     * Converts a ticket parameter to a username, taking into account an optionally configured trusted proxy in the tier
+     * immediately in front of us.
      */
-    private String getAuthenticatedUser(HttpServletRequest request)
-        throws ServletException {
+    private String getAuthenticatedUser(HttpServletRequest request) throws ServletException {
         ProxyTicketValidator pv = null;
         try {
             pv = new ProxyTicketValidator();
             pv.setCasValidateUrl(casValidate);
             pv.setServiceTicket(request.getParameter("ticket"));
             pv.setService(getService(request));
-	    pv.setRenew(Boolean.valueOf(casRenew).booleanValue());
+            pv.setRenew(Boolean.valueOf(casRenew).booleanValue());
             pv.validate();
             if (!pv.isAuthenticationSuccesful())
-                throw new ServletException(
-                    "CAS authentication error: " + pv.getErrorCode() + ": " + pv.getErrorMessage());
+                throw new ServletException("CAS authentication error: " + pv.getErrorCode() + ": "
+                        + pv.getErrorMessage());
             if (pv.getProxyList().size() != 0) {
                 // ticket was proxied
                 if (casAuthorizedProxy == null) {
                     throw new ServletException("this page does not accept proxied tickets");
                 } else {
                     boolean authorized = false;
-                    String proxy = (String)pv.getProxyList().get(0);
-                    StringTokenizer casProxies =
-                        new StringTokenizer(casAuthorizedProxy);
+                    String proxy = (String) pv.getProxyList().get(0);
+                    StringTokenizer casProxies = new StringTokenizer(casAuthorizedProxy);
                     while (casProxies.hasMoreTokens()) {
                         if (proxy.equals(casProxies.nextToken())) {
                             authorized = true;
@@ -236,10 +197,7 @@ public class CASFilter implements Filter {
                         }
                     }
                     if (!authorized) {
-                        throw new ServletException(
-                            "unauthorized top-level proxy: '"
-                                + pv.getProxyList().get(0)
-                                + "'");
+                        throw new ServletException("unauthorized top-level proxy: '" + pv.getProxyList().get(0) + "'");
                     }
                 }
             }
@@ -257,15 +215,13 @@ public class CASFilter implements Filter {
     }
 
     /**
-     * Returns either the configured service or figures it out for the current
-     * request.  The returned service is URL-encoded.
+     * Returns either the configured service or figures it out for the current request. The returned service is
+     * URL-encoded.
      */
-    private String getService(HttpServletRequest request)
-        throws ServletException {
+    private String getService(HttpServletRequest request) throws ServletException {
         // ensure we have a server name or service name
         if (casServerName == null && casServiceUrl == null)
-            throw new ServletException(
-                "need one of the following configuration "
+            throw new ServletException("need one of the following configuration "
                     + "parameters: edu.yale.its.tp.cas.client.filter.serviceUrl or "
                     + "edu.yale.its.tp.cas.client.filter.serverName");
 

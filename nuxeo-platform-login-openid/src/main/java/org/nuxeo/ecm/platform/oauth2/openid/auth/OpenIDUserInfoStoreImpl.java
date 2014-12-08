@@ -115,13 +115,11 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
             session = ds.open(DIRECTORY_NAME);
-            DocumentModel entry = session.getEntry(getID(providerName,
-                    userInfo.getSubject()));
+            DocumentModel entry = session.getEntry(getID(providerName, userInfo.getSubject()));
             if (entry == null) {
                 return null;
             }
-            return (String) entry.getPropertyValue(SCHEMA_NAME + ":"
-                    + NUXEO_LOGIN_KEY);
+            return (String) entry.getPropertyValue(SCHEMA_NAME + ":" + NUXEO_LOGIN_KEY);
         } catch (Exception e) {
             log.error("Error retrieving OpenID user info", e);
             return null;

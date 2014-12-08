@@ -42,9 +42,8 @@ public class HTTPPostBinding extends SAMLBinding {
     public boolean supports(InTransport transport) {
         if (transport instanceof HTTPInTransport) {
             HTTPTransport t = (HTTPTransport) transport;
-            return "POST".equalsIgnoreCase(t.getHTTPMethod()) &&
-                    (t.getParameterValue(SAML_REQUEST) != null ||
-                            t.getParameterValue(SAML_RESPONSE) != null);
+            return "POST".equalsIgnoreCase(t.getHTTPMethod())
+                    && (t.getParameterValue(SAML_REQUEST) != null || t.getParameterValue(SAML_RESPONSE) != null);
         } else {
             return false;
         }

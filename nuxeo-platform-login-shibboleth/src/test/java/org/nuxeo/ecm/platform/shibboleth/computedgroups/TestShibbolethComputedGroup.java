@@ -52,14 +52,10 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.content.template",
-        "org.nuxeo.ecm.platform.dublincore",
-        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.el",
-        "org.nuxeo.ecm.platform.usermanager.api",
-        "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory.types.contrib",
-        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.platform.login.shibboleth",
-        "org.nuxeo.ecm.platform.web.common" })
+@Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.platform.dublincore",
+        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.el", "org.nuxeo.ecm.platform.usermanager.api",
+        "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.login.shibboleth", "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
 public class TestShibbolethComputedGroup {
 
@@ -98,15 +94,12 @@ public class TestShibbolethComputedGroup {
 
     @Test
     public void testOnlyEL() {
-        ExpressionEvaluator ee = new ExpressionEvaluator(
-                new ExpressionFactoryImpl());
+        ExpressionEvaluator ee = new ExpressionEvaluator(new ExpressionFactoryImpl());
         ExpressionContext ec = new ExpressionContext();
 
         ee.bindValue(ec, "hello", sampleArray);
-        assertSame("world",
-                ee.evaluateExpression(ec, "${hello[1]}", String.class));
-        assertNotSame("world",
-                ee.evaluateExpression(ec, "${hello[0]}", String.class));
+        assertSame("world", ee.evaluateExpression(ec, "${hello[1]}", String.class));
+        assertNotSame("world", ee.evaluateExpression(ec, "${hello[0]}", String.class));
     }
 
     @Test
@@ -115,10 +108,8 @@ public class TestShibbolethComputedGroup {
         user.setProperty("user", "company", "test");
         user.setProperty("user", "email", "mail");
 
-        assertTrue(ELGroupComputerHelper.isUserInGroup(user,
-                "currentUser.user.company == \"test\""));
-        assertFalse(ELGroupComputerHelper.isUserInGroup(user,
-                "currentUser.user.email == \"mail2\""));
+        assertTrue(ELGroupComputerHelper.isUserInGroup(user, "currentUser.user.company == \"test\""));
+        assertFalse(ELGroupComputerHelper.isUserInGroup(user, "currentUser.user.email == \"mail2\""));
     }
 
     @Test
@@ -174,8 +165,7 @@ public class TestShibbolethComputedGroup {
         return doc;
     }
 
-    protected DocumentModel createShibbGroup(String name, String el)
-            throws Exception {
+    protected DocumentModel createShibbGroup(String name, String el) throws Exception {
         Map<String, Object> group = new HashMap<String, Object>();
         group.put("groupName", name);
         group.put("expressionLanguage", el);

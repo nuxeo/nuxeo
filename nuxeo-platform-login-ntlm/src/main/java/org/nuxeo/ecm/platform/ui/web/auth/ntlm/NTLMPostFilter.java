@@ -29,24 +29,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Manage NTLM "Protected POST"
- *
- * see : http://jcifs.samba.org/src/docs/ntlmhttpauth.html
- *       http://curl.haxx.se/rfc/ntlm.html
+ * Manage NTLM "Protected POST" see : http://jcifs.samba.org/src/docs/ntlmhttpauth.html
+ * http://curl.haxx.se/rfc/ntlm.html
  *
  * @author Thierry Delprat
  */
 public class NTLMPostFilter implements Filter {
 
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
 
             if ("POST".equals(httpRequest.getMethod())) {
                 String ntlmHeader = httpRequest.getHeader("Authorization");
-                if (ntlmHeader!=null && ntlmHeader.startsWith("NTLM") && httpRequest.getContentLength()==0) {
+                if (ntlmHeader != null && ntlmHeader.startsWith("NTLM") && httpRequest.getContentLength() == 0) {
                     handleNtlmPost(httpRequest, (HttpServletResponse) response, ntlmHeader);
                     return;
                 }
@@ -55,7 +53,8 @@ public class NTLMPostFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-    protected void handleNtlmPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String ntlmHeader) throws IOException, ServletException {
+    protected void handleNtlmPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String ntlmHeader)
+            throws IOException, ServletException {
         NTLMAuthenticator.negotiate(httpRequest, httpResponse, true);
     }
 

@@ -27,11 +27,9 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Callback for token authentication.
  * <p>
- * The remote token retrieval is done using directly the
- * {@link TokenAuthenticationService} with the following parameters: userName,
- * applicationName, deviceId, deviceDescription and permission. The parameters
- * are passed to the default constructor. The token local storage is done in
- * memory.
+ * The remote token retrieval is done using directly the {@link TokenAuthenticationService} with the following
+ * parameters: userName, applicationName, deviceId, deviceDescription and permission. The parameters are passed to the
+ * default constructor. The token local storage is done in memory.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
@@ -60,8 +58,8 @@ public class TokenAuthenticationCallback implements TokenCallback {
 
     protected String permission;
 
-    public TokenAuthenticationCallback(String userName, String applicationName,
-            String deviceId, String deviceDescription, String permission) {
+    public TokenAuthenticationCallback(String userName, String applicationName, String deviceId,
+            String deviceDescription, String permission) {
         this.userName = userName;
         this.applicationName = applicationName;
         this.deviceId = deviceId;
@@ -85,11 +83,10 @@ public class TokenAuthenticationCallback implements TokenCallback {
 
         try {
             TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(TokenAuthenticationService.class);
-            return tokenAuthenticationService.acquireToken(userName,
-                    applicationName, deviceId, deviceDescription, permission);
+            return tokenAuthenticationService.acquireToken(userName, applicationName, deviceId, deviceDescription,
+                    permission);
         } catch (TokenAuthenticationException e) {
-            throw new ClientRuntimeException(
-                    "Error while trying to get remote token.", e);
+            throw new ClientRuntimeException("Error while trying to get remote token.", e);
         }
     }
 

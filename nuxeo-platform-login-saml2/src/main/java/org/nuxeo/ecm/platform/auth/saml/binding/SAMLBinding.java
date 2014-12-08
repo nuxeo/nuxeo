@@ -47,8 +47,7 @@ public abstract class SAMLBinding {
      * @throws org.opensaml.xml.security.SecurityException
      * @throws MessageDecodingException
      */
-    public void decode(MessageContext context)
-            throws org.opensaml.xml.security.SecurityException,
+    public void decode(MessageContext context) throws org.opensaml.xml.security.SecurityException,
             MessageDecodingException {
         decoder.decode(context);
     }

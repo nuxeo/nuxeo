@@ -48,18 +48,17 @@ public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
         return true;
     }
 
-    public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map<String, ?> sharedState, Map<String, ?> options) {
+    public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
+            Map<String, ?> options) {
 
         super.initialize(subject, callbackHandler, sharedState, options);
     }
 
     public boolean login() throws LoginException {
-        NameCallback nc = new NameCallback("Username: ",
-                SecurityConstants.ANONYMOUS);
+        NameCallback nc = new NameCallback("Username: ", SecurityConstants.ANONYMOUS);
 
         try {
-            callbackHandler.handle(new Callback[] {nc, });
+            callbackHandler.handle(new Callback[] { nc, });
 
             identity = createIdentity(nc.getName());
         } catch (Exception e) {

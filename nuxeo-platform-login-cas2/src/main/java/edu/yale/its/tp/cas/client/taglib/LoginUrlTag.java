@@ -36,26 +36,28 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 /**
- * <p>Tag for indicating CAS's "login URL" for the cas:auth tag.</p>
-
+ * <p>
+ * Tag for indicating CAS's "login URL" for the cas:auth tag.
+ * </p>
+ * 
  * @author Shawn Bayern
  */
 public class LoginUrlTag extends BodyTagSupport {
 
-  //*********************************************************************
-  // Tag logic
+    // *********************************************************************
+    // Tag logic
 
-  public int doEndTag() throws JspTagException {
-    String loginUrl = null;
-    if (bodyContent != null)
-      loginUrl = bodyContent.getString();
-    if (loginUrl != null)
-      loginUrl = loginUrl.trim();
-    if (!(getParent() instanceof AuthTag))
-      throw new JspTagException("illegal cas:loginUrl outside cas:auth");
-    else
-      ((AuthTag) getParent()).setCasLogin(loginUrl);
-    return EVAL_PAGE;
-  }
-    
+    public int doEndTag() throws JspTagException {
+        String loginUrl = null;
+        if (bodyContent != null)
+            loginUrl = bodyContent.getString();
+        if (loginUrl != null)
+            loginUrl = loginUrl.trim();
+        if (!(getParent() instanceof AuthTag))
+            throw new JspTagException("illegal cas:loginUrl outside cas:auth");
+        else
+            ((AuthTag) getParent()).setCasLogin(loginUrl);
+        return EVAL_PAGE;
+    }
+
 }

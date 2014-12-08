@@ -91,8 +91,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
  *
  * @since 6.0
  */
-public class SAMLAuthenticationProvider
-        implements NuxeoAuthenticationPlugin, LoginProviderLinkComputer,
+public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, LoginProviderLinkComputer,
         NuxeoAuthenticationPluginLogoutExtension {
 
     private static final Log log = LogFactory.getLog(SAMLAuthenticationProvider.class);
@@ -155,8 +154,7 @@ public class SAMLAuthenticationProvider
             initializeMetadataProvider(parameters);
 
             // Setup Signature Trust Engine
-            MetadataCredentialResolver metadataCredentialResolver =
-                    new MetadataCredentialResolver(metadataProvider);
+            MetadataCredentialResolver metadataCredentialResolver = new MetadataCredentialResolver(metadataProvider);
             trustEngine = new ExplicitKeySignatureTrustEngine(
                     metadataCredentialResolver,
                     org.opensaml.xml.Configuration.getGlobalSecurityConfiguration().getDefaultKeyInfoCredentialResolver());
@@ -164,8 +162,7 @@ public class SAMLAuthenticationProvider
             // Setup decrypter
             Credential encryptionCredential = getKeyManager().getEncryptionCredential();
             if (encryptionCredential != null) {
-                KeyInfoCredentialResolver resolver = new StaticKeyInfoCredentialResolver(
-                        encryptionCredential);
+                KeyInfoCredentialResolver resolver = new StaticKeyInfoCredentialResolver(encryptionCredential);
                 decrypter = new Decrypter(null, resolver, encryptedKeyResolver);
                 decrypter.setRootInNewDocument(true);
             }
@@ -174,9 +171,8 @@ public class SAMLAuthenticationProvider
             for (RoleDescriptor roleDescriptor : getIdPDescriptor().getRoleDescriptors()) {
 
                 // Web SSO role
-                if (roleDescriptor.getElementQName().equals(IDPSSODescriptor.DEFAULT_ELEMENT_NAME) &&
-                        roleDescriptor.isSupportedProtocol(
-                                org.opensaml.common.xml.SAMLConstants.SAML20P_NS)) {
+                if (roleDescriptor.getElementQName().equals(IDPSSODescriptor.DEFAULT_ELEMENT_NAME)
+                        && roleDescriptor.isSupportedProtocol(org.opensaml.common.xml.SAMLConstants.SAML20P_NS)) {
 
                     IDPSSODescriptor idpSSO = (IDPSSODescriptor) roleDescriptor;
 
@@ -207,13 +203,8 @@ public class SAMLAuthenticationProvider
 
         // contribute icon and link to the Login Screen
         if (parameters.containsKey("name")) {
-            LoginScreenHelper.registerLoginProvider(
-                    parameters.get("name"),
-                    parameters.get("icon"),
-                    null,
-                    parameters.get("label"),
-                    parameters.get("description"),
-                    this);
+            LoginScreenHelper.registerLoginProvider(parameters.get("name"), parameters.get("icon"), null,
+                    parameters.get("label"), parameters.get("description"), this);
         }
     }
 
@@ -223,23 +214,19 @@ public class SAMLAuthenticationProvider
         profiles.put(profile.getProfileIdentifier(), profile);
     }
 
-    private void initializeMetadataProvider(Map<String, String> parameters)
-            throws MetadataProviderException {
+    private void initializeMetadataProvider(Map<String, String> parameters) throws MetadataProviderException {
         AbstractMetadataProvider metadataProvider;
 
         String metadataUrl = parameters.get("metadata");
         if (metadataUrl == null) {
-            throw new MetadataProviderException(
-                "No metadata URI set for provider " +
-                    ((parameters.containsKey("name")) ? parameters.get("name") : ""));
+            throw new MetadataProviderException("No metadata URI set for provider "
+                    + ((parameters.containsKey("name")) ? parameters.get("name") : ""));
         }
 
-        int requestTimeout = parameters.containsKey("timeout") ?
-                Integer.parseInt(parameters.get("timeout")) : 5;
+        int requestTimeout = parameters.containsKey("timeout") ? Integer.parseInt(parameters.get("timeout")) : 5;
 
         if (metadataUrl.startsWith("http:") || metadataUrl.startsWith("https:")) {
-            metadataProvider = new HTTPMetadataProvider(metadataUrl,
-                    requestTimeout * 1000);
+            metadataProvider = new HTTPMetadataProvider(metadataUrl, requestTimeout * 1000);
         } else { // file
             metadataProvider = new FilesystemMetadataProvider(new File(metadataUrl));
         }
@@ -250,8 +237,7 @@ public class SAMLAuthenticationProvider
         this.metadataProvider = metadataProvider;
     }
 
-    private EntityDescriptor getIdPDescriptor()
-            throws MetadataProviderException {
+    private EntityDescriptor getIdPDescriptor() throws MetadataProviderException {
         return (EntityDescriptor) metadataProvider.getMetadata();
     }
 
@@ -279,22 +265,20 @@ public class SAMLAuthenticationProvider
         try {
             AuthnRequest authnRequest = sso.buildAuthRequest(request);
             // TODO(nfgs) - This should be enough!
-            //context.setOutboundSAMLMessage(authnRequest);
-            //context.setPeerEntityEndpoint(sso.getEndpoint());
+            // context.setOutboundSAMLMessage(authnRequest);
+            // context.setPeerEntityEndpoint(sso.getEndpoint());
             // TODO(nfgs) : Allow using some other binding
-            //new HTTPRedirectDeflateEncoder().encode(context);
+            // new HTTPRedirectDeflateEncoder().encode(context);
 
-            Marshaller marshaller = Configuration.getMarshallerFactory()
-                    .getMarshaller(authnRequest);
+            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(authnRequest);
             if (marshaller == null) {
-                log.error("Unable to marshall message, no marshaller registered " +
-                        "for message object: " + authnRequest.getElementQName());
+                log.error("Unable to marshall message, no marshaller registered " + "for message object: "
+                        + authnRequest.getElementQName());
             }
             Element dom = marshaller.marshall(authnRequest);
             StringWriter buffer = new StringWriter();
             XMLHelper.writeNode(dom, buffer);
-            encodedSaml = Base64.encodeBase64String(
-                    buffer.toString().getBytes());
+            encodedSaml = Base64.encodeBase64String(buffer.toString().getBytes());
         } catch (SAMLException e) {
             log.error("Failed to get SAML Auth request", e);
         } catch (MarshallingException e) {
@@ -304,8 +288,7 @@ public class SAMLAuthenticationProvider
         String loginURL = sso.getEndpoint().getLocation();
         try {
             URLBuilder urlBuilder = new URLBuilder(loginURL);
-            urlBuilder.getQueryParams().add(
-                    new Pair<>(HTTPRedirectBinding.SAML_REQUEST, encodedSaml));
+            urlBuilder.getQueryParams().add(new Pair<>(HTTPRedirectBinding.SAML_REQUEST, encodedSaml));
             loginURL = urlBuilder.buildURL();
         } catch (IllegalArgumentException e) {
             log.error("Error while encoding URL", e);
@@ -315,13 +298,11 @@ public class SAMLAuthenticationProvider
     }
 
     private String getRequestedUrl(HttpServletRequest request) {
-        String requestedUrl = (String) request.getAttribute(
-                NXAuthConstants.REQUESTED_URL);
+        String requestedUrl = (String) request.getAttribute(NXAuthConstants.REQUESTED_URL);
         if (requestedUrl == null) {
             HttpSession session = request.getSession(false);
             if (session != null) {
-                requestedUrl = (String) session.getAttribute(
-                        NXAuthConstants.START_PAGE_SAVE_KEY);
+                requestedUrl = (String) session.getAttribute(NXAuthConstants.START_PAGE_SAVE_KEY);
             }
         }
         return requestedUrl;
@@ -333,8 +314,7 @@ public class SAMLAuthenticationProvider
     }
 
     @Override
-    public Boolean handleLoginPrompt(HttpServletRequest request,
-            HttpServletResponse response, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest request, HttpServletResponse response, String baseURL) {
 
         String loginURL = getSSOUrl(request, response);
 
@@ -344,8 +324,7 @@ public class SAMLAuthenticationProvider
         try {
             response.sendRedirect(loginURL);
         } catch (IOException e) {
-            String errorMessage = String.format(
-                    "Unable to send redirect on %s", loginURL);
+            String errorMessage = String.format("Unable to send redirect on %s", loginURL);
             log.error(errorMessage, e);
             return false;
         }
@@ -354,11 +333,9 @@ public class SAMLAuthenticationProvider
 
     // Retrieves user identification information from the request.
     @Override
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest request, HttpServletResponse response) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest request, HttpServletResponse response) {
 
-        HttpServletRequestAdapter inTransport = new HttpServletRequestAdapter(
-                request);
+        HttpServletRequestAdapter inTransport = new HttpServletRequestAdapter(request);
         SAMLBinding binding = getBinding(inTransport);
 
         // Check if we support this binding
@@ -366,8 +343,7 @@ public class SAMLAuthenticationProvider
             return null;
         }
 
-        HttpServletResponseAdapter outTransport = new HttpServletResponseAdapter(
-                response, request.isSecure());
+        HttpServletResponseAdapter outTransport = new HttpServletResponseAdapter(response, request.isSecure());
 
         // Create and populate the context
         SAMLMessageContext context = new BasicSAMLMessageContext();
@@ -392,33 +368,26 @@ public class SAMLAuthenticationProvider
                 context.setPeerEntityMetadata(getIdPDescriptor());
             }
             if (context.getPeerEntityRole() == null) {
-                context.setPeerEntityRole(
-                        IDPSSODescriptor.DEFAULT_ELEMENT_NAME);
+                context.setPeerEntityRole(IDPSSODescriptor.DEFAULT_ELEMENT_NAME);
             }
         } catch (MetadataProviderException e) {
             //
         }
 
-        /* Tries to load peer SSL certificate from the inbound message transport using attribute
-        X509Certificate[] chain = (X509Certificate[]) context.getInboundMessageTransport()
-            .getAttribute(ServletRequestX509CredentialAdapter.X509_CERT_REQUEST_ATTRIBUTE);
-
-        if (chain != null && chain.length > 0) {
-
-            log.debug("Found certificate chain from request {}", chain[0]);
-            BasicX509Credential credential = new BasicX509Credential();
-            credential.setEntityCertificate(chain[0]);
-            credential.setEntityCertificateChain(Arrays.asList(chain));
-            context.setPeerSSLCredential(credential);
-
-        }*/
+        /*
+         * Tries to load peer SSL certificate from the inbound message transport using attribute X509Certificate[] chain
+         * = (X509Certificate[]) context.getInboundMessageTransport()
+         * .getAttribute(ServletRequestX509CredentialAdapter.X509_CERT_REQUEST_ATTRIBUTE); if (chain != null &&
+         * chain.length > 0) { log.debug("Found certificate chain from request {}", chain[0]); BasicX509Credential
+         * credential = new BasicX509Credential(); credential.setEntityCertificate(chain[0]);
+         * credential.setEntityCertificateChain(Arrays.asList(chain)); context.setPeerSSLCredential(credential); }
+         */
 
         // Check for a response processor for this profile
         AbstractSAMLProfile processor = getProcessor(context);
 
         if (processor == null) {
-            log.warn("Unsupported profile encountered in the context " +
-                    context.getCommunicationProfileId());
+            log.warn("Unsupported profile encountered in the context " + context.getCommunicationProfileId());
             return null;
         }
 
@@ -451,8 +420,7 @@ public class SAMLAuthenticationProvider
         SAMLCredential credential = null;
 
         try {
-            credential = ((WebSSOProfile) processor)
-                    .processAuthenticationResponse(context);
+            credential = ((WebSSOProfile) processor).processAuthenticationResponse(context);
         } catch (Exception e) {
             log.debug("Error processing SAML message", e);
             return null;
@@ -461,19 +429,16 @@ public class SAMLAuthenticationProvider
         String userId = userResolver.findNuxeoUser(credential);
 
         if (userId == null) {
-            sendError(request, "No user found with email: \"" +
-                    credential.getNameID().getValue() + "\".");
+            sendError(request, "No user found with email: \"" + credential.getNameID().getValue() + "\".");
             return null;
         }
 
         // Store session id in a cookie
-        if (credential.getSessionIndexes() != null &&
-                !credential.getSessionIndexes().isEmpty()) {
+        if (credential.getSessionIndexes() != null && !credential.getSessionIndexes().isEmpty()) {
             String nameValue = credential.getNameID().getValue();
             String nameFormat = credential.getNameID().getFormat();
             String sessionId = credential.getSessionIndexes().get(0);
-            addCookie(response, SAML_SESSION_KEY,
-                    sessionId + "|" + nameValue + "|" + nameFormat);
+            addCookie(response, SAML_SESSION_KEY, sessionId + "|" + nameValue + "|" + nameFormat);
         }
 
         return new UserIdentificationInfo(userId, userId);
@@ -482,8 +447,7 @@ public class SAMLAuthenticationProvider
     protected AbstractSAMLProfile getProcessor(SAMLMessageContext context) {
         String profileId;
         SAMLObject message = context.getInboundSAMLMessage();
-        if (message instanceof LogoutResponse ||
-                message instanceof LogoutRequest) {
+        if (message instanceof LogoutResponse || message instanceof LogoutRequest) {
             profileId = SLOProfile.PROFILE_URI;
         } else {
             profileId = WebSSOProfile.PROFILE_URI;
@@ -506,12 +470,12 @@ public class SAMLAuthenticationProvider
 
     private void populateLocalContext(SAMLMessageContext context) {
         // Set local info
-        //context.setLocalEntityId(metadataProvider.getHostedSPName());
+        // context.setLocalEntityId(metadataProvider.getHostedSPName());
         context.setLocalEntityRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
 
         // TODO - Generate SPSSO descriptor
-        //context.setLocalEntityMetadata(entityDescriptor);
-        //context.setLocalEntityRoleMetadata(roleDescriptor);
+        // context.setLocalEntityMetadata(entityDescriptor);
+        // context.setLocalEntityRoleMetadata(roleDescriptor);
 
         context.setMetadataProvider(metadataProvider);
     }
@@ -545,22 +509,19 @@ public class SAMLAuthenticationProvider
 
         try {
             LogoutRequest logoutRequest = slo.buildLogoutRequest(context, credential);
-            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(
-                    logoutRequest);
+            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(logoutRequest);
             if (marshaller == null) {
-                log.error("Unable to marshall message, no marshaller registered " +
-                        "for message object: " + logoutRequest.getElementQName());
+                log.error("Unable to marshall message, no marshaller registered " + "for message object: "
+                        + logoutRequest.getElementQName());
             }
             Element dom = marshaller.marshall(logoutRequest);
             StringWriter buffer = new StringWriter();
             XMLHelper.writeNode(dom, buffer);
-            String encodedSaml = Base64.encodeBase64String(
-                    buffer.toString().getBytes());
+            String encodedSaml = Base64.encodeBase64String(buffer.toString().getBytes());
 
             // Add the SAML as parameter
             URLBuilder urlBuilder = new URLBuilder(logoutURL);
-            urlBuilder.getQueryParams().add(
-                    new Pair<>(HTTPRedirectBinding.SAML_REQUEST, encodedSaml));
+            urlBuilder.getQueryParams().add(new Pair<>(HTTPRedirectBinding.SAML_REQUEST, encodedSaml));
             logoutURL = urlBuilder.buildURL();
         } catch (SAMLException e) {
             log.error("Failed to get SAML Logout request", e);
@@ -582,9 +543,8 @@ public class SAMLAuthenticationProvider
             String nameValue = parts[1];
             String nameFormat = parts[2];
 
-            NameID nameID = (NameID) Configuration.getBuilderFactory()
-                    .getBuilder(NameID.DEFAULT_ELEMENT_NAME)
-                    .buildObject(NameID.DEFAULT_ELEMENT_NAME);
+            NameID nameID = (NameID) Configuration.getBuilderFactory().getBuilder(NameID.DEFAULT_ELEMENT_NAME).buildObject(
+                    NameID.DEFAULT_ELEMENT_NAME);
             nameID.setValue(nameValue);
             nameID.setFormat(nameFormat);
 
@@ -598,8 +558,7 @@ public class SAMLAuthenticationProvider
     }
 
     @Override
-    public Boolean handleLogout(HttpServletRequest request,
-            HttpServletResponse response) {
+    public Boolean handleLogout(HttpServletRequest request, HttpServletResponse response) {
         String logoutURL = getSLOUrl(request, response);
 
         if (logoutURL == null) {
@@ -613,8 +572,7 @@ public class SAMLAuthenticationProvider
         try {
             response.sendRedirect(logoutURL);
         } catch (IOException e) {
-            String errorMessage = String.format("Unable to send redirect on %s",
-                    logoutURL);
+            String errorMessage = String.format("Unable to send redirect on %s", logoutURL);
             log.error(errorMessage, e);
             return false;
         }
@@ -638,14 +596,12 @@ public class SAMLAuthenticationProvider
         return keyManager;
     }
 
-    private void addCookie(HttpServletResponse httpResponse, String name,
-            String value) {
+    private void addCookie(HttpServletResponse httpResponse, String name, String value) {
         Cookie cookie = new Cookie(name, value);
         httpResponse.addCookie(cookie);
     }
 
-    private Cookie getCookie(HttpServletRequest httpRequest,
-            String cookieName) {
+    private Cookie getCookie(HttpServletRequest httpRequest, String cookieName) {
         Cookie cookies[] = httpRequest.getCookies();
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {

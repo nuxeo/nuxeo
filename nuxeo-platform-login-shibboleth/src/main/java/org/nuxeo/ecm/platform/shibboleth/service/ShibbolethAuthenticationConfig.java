@@ -59,7 +59,7 @@ public class ShibbolethAuthenticationConfig {
         return defaultUidHeader;
     }
 
-   public String getLoginURL() {
+    public String getLoginURL() {
         return loginURL;
     }
 

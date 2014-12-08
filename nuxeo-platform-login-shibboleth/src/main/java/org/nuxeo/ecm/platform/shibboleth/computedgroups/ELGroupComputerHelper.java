@@ -30,8 +30,7 @@ import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethConstants;
 
 /**
- * Helper to provide an easy way to execute the expression language defined in
- * a Shibb Group doc
+ * Helper to provide an easy way to execute the expression language defined in a Shibb Group doc
  *
  * @author Arnaud Kervern
  */
@@ -41,8 +40,7 @@ public class ELGroupComputerHelper {
 
     protected static final ExpressionContext ec = new ExpressionContext();
 
-    protected static final ExpressionEvaluator ee = new ExpressionEvaluator(
-            new ExpressionFactoryImpl());
+    protected static final ExpressionEvaluator ee = new ExpressionEvaluator(new ExpressionFactoryImpl());
 
     public static boolean isUserInGroup(DocumentModel user, String el) {
         if (el == null || el.equals("")) {
@@ -59,8 +57,7 @@ public class ELGroupComputerHelper {
         }
 
         try {
-            ee.bindValue(ec, ShibbolethConstants.EL_CURRENT_USER_NAME,
-                    new DocumentModelImpl("user"));
+            ee.bindValue(ec, ShibbolethConstants.EL_CURRENT_USER_NAME, new DocumentModelImpl("user"));
             ee.evaluateExpression(ec, "${" + el + "}", Boolean.class);
         } catch (PropertyNotFoundException e) {
             return false;

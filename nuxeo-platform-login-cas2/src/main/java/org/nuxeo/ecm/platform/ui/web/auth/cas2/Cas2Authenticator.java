@@ -54,8 +54,8 @@ import edu.yale.its.tp.cas.client.ServiceTicketValidator;
  * @author Benjamin Jalon
  * @author Thierry Martins
  */
-public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
-        NuxeoAuthenticationPluginLogoutExtension, LoginResponseHandler {
+public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension,
+        LoginResponseHandler {
 
     protected static final String CAS_SERVER_HEADER_KEY = "CasServer";
 
@@ -88,9 +88,8 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     protected String serviceValidateURL = "http://127.0.0.1:8080/cas/serviceValidate";
 
     /**
-     * We tell the CAS server whether we want a plain text (CAS 1.0) or XML (CAS
-     * 2.0) response by making the request either to the '.../validate' or
-     * '.../serviceValidate' URL. The older protocol supports only the CAS 1.0
+     * We tell the CAS server whether we want a plain text (CAS 1.0) or XML (CAS 2.0) response by making the request
+     * either to the '.../validate' or '.../serviceValidate' URL. The older protocol supports only the CAS 1.0
      * functionality, which is left around as the legacy '.../validate' URL.
      */
     protected String proxyValidateURL = "http://127.0.0.1:8080/cas/proxyValidate";
@@ -142,18 +141,14 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         return url;
     }
 
-    public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
 
         // Check for an alternative authentication plugin in request cookies
-        NuxeoAuthenticationPlugin alternativeAuthPlugin = getAlternativeAuthPlugin(
-                httpRequest, httpResponse);
+        NuxeoAuthenticationPlugin alternativeAuthPlugin = getAlternativeAuthPlugin(httpRequest, httpResponse);
         if (alternativeAuthPlugin != null) {
-            log.debug(String.format(
-                    "Found alternative authentication plugin %s, using it to handle login prompt.",
+            log.debug(String.format("Found alternative authentication plugin %s, using it to handle login prompt.",
                     alternativeAuthPlugin));
-            return alternativeAuthPlugin.handleLoginPrompt(httpRequest,
-                    httpResponse, baseURL);
+            return alternativeAuthPlugin.handleLoginPrompt(httpRequest, httpResponse, baseURL);
         }
 
         // Redirect to CAS Login screen
@@ -162,12 +157,10 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         try {
             Map<String, String> urlParameters = new HashMap<String, String>();
             urlParameters.put("service", getAppURL(httpRequest));
-            location = URIUtils.addParametersToURIQuery(
-                    getServiceURL(httpRequest, LOGIN_ACTION), urlParameters);
+            location = URIUtils.addParametersToURIQuery(getServiceURL(httpRequest, LOGIN_ACTION), urlParameters);
             httpResponse.sendRedirect(location);
         } catch (IOException e) {
-            log.error("Unable to redirect to CAS login screen to " + location,
-                    e);
+            log.error("Unable to redirect to CAS login screen to " + location, e);
             return false;
         }
         return true;
@@ -175,8 +168,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
 
     protected String getAppURL(HttpServletRequest httpRequest) {
         if (isValidStartupPage(httpRequest)) {
-            StringBuffer sb = new StringBuffer(
-                    VirtualHostHelper.getServerURL(httpRequest));
+            StringBuffer sb = new StringBuffer(VirtualHostHelper.getServerURL(httpRequest));
             if (VirtualHostHelper.getServerURL(httpRequest).endsWith("/")) {
                 sb.deleteCharAt(sb.length() - 1);
             }
@@ -215,8 +207,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         if (service == null) {
             return false;
         }
-        String startPage = httpRequest.getRequestURI().replace(
-                VirtualHostHelper.getContextPath(httpRequest) + "/", "");
+        String startPage = httpRequest.getRequestURI().replace(VirtualHostHelper.getContextPath(httpRequest) + "/", "");
         for (String prefix : service.getStartURLPatterns()) {
             if (startPage.startsWith(prefix)) {
                 return true;
@@ -225,8 +216,8 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         return false;
     }
 
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
         String casTicket = httpRequest.getParameter(ticketKey);
 
         // Retrieve the proxy parameter for knowing if the caller is à proxy
@@ -251,8 +242,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             return null;
         }
 
-        UserIdentificationInfo uui = new UserIdentificationInfo(userName,
-                casTicket);
+        UserIdentificationInfo uui = new UserIdentificationInfo(userName, casTicket);
         uui.setToken(casTicket);
 
         return uui;
@@ -318,19 +308,16 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         return promptLogin;
     }
 
-    public Boolean handleLogout(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) {
+    public Boolean handleLogout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
         // Check for an alternative authentication plugin in request cookies
-        NuxeoAuthenticationPlugin alternativeAuthPlugin = getAlternativeAuthPlugin(
-                httpRequest, httpResponse);
+        NuxeoAuthenticationPlugin alternativeAuthPlugin = getAlternativeAuthPlugin(httpRequest, httpResponse);
         if (alternativeAuthPlugin != null) {
             if (alternativeAuthPlugin instanceof NuxeoAuthenticationPluginLogoutExtension) {
-                log.debug(String.format(
-                        "Found alternative authentication plugin %s, using it to handle logout.",
+                log.debug(String.format("Found alternative authentication plugin %s, using it to handle logout.",
                         alternativeAuthPlugin));
-                return ((NuxeoAuthenticationPluginLogoutExtension) alternativeAuthPlugin).handleLogout(
-                        httpRequest, httpResponse);
+                return ((NuxeoAuthenticationPluginLogoutExtension) alternativeAuthPlugin).handleLogout(httpRequest,
+                        httpResponse);
             } else {
                 log.debug(String.format(
                         "Found alternative authentication plugin %s which cannot handle logout, letting authentication filter handle it.",
@@ -352,8 +339,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         return true;
     }
 
-    protected String checkProxyCasTicket(String ticket,
-            HttpServletRequest httpRequest) {
+    protected String checkProxyCasTicket(String ticket, HttpServletRequest httpRequest) {
         // Get the service passed by the portlet
         String service = httpRequest.getParameter(serviceKey);
         if (service == null) {
@@ -382,8 +368,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             return null;
         }
 
-        proxyValidator.setCasValidateUrl(getServiceURL(httpRequest,
-                PROXY_VALIDATE_ACTION));
+        proxyValidator.setCasValidateUrl(getServiceURL(httpRequest, PROXY_VALIDATE_ACTION));
         proxyValidator.setService(service);
         proxyValidator.setServiceTicket(ticket);
         try {
@@ -395,45 +380,34 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             log.error("checkProxyCasTicket failed with SAXException:", e);
             return null;
         } catch (ParserConfigurationException e) {
-            log.error(
-                    "checkProxyCasTicket failed with ParserConfigurationException:",
-                    e);
+            log.error("checkProxyCasTicket failed with ParserConfigurationException:", e);
             return null;
         }
         log.debug("checkProxyCasTicket: validation executed without error");
         String username = proxyValidator.getUser();
-        log.debug("checkProxyCasTicket: validation returned username = "
-                + username);
+        log.debug("checkProxyCasTicket: validation returned username = " + username);
 
         return username;
     }
 
     // Cas2 Ticket management
-    protected String checkCasTicket(String ticket,
-            HttpServletRequest httpRequest) {
+    protected String checkCasTicket(String ticket, HttpServletRequest httpRequest) {
         ServiceTicketValidator ticketValidator;
         try {
             ticketValidator = (ServiceTicketValidator) Framework.getRuntime().getContext().loadClass(
                     ticketValidatorClassName).newInstance();
         } catch (InstantiationException e) {
-            log.error(
-                    "checkCasTicket during the ServiceTicketValidator initialization with InstantiationException:",
-                    e);
+            log.error("checkCasTicket during the ServiceTicketValidator initialization with InstantiationException:", e);
             return null;
         } catch (IllegalAccessException e) {
-            log.error(
-                    "checkCasTicket during the ServiceTicketValidator initialization with IllegalAccessException:",
-                    e);
+            log.error("checkCasTicket during the ServiceTicketValidator initialization with IllegalAccessException:", e);
             return null;
         } catch (ClassNotFoundException e) {
-            log.error(
-                    "checkCasTicket during the ServiceTicketValidator initialization with ClassNotFoundException:",
-                    e);
+            log.error("checkCasTicket during the ServiceTicketValidator initialization with ClassNotFoundException:", e);
             return null;
         }
 
-        ticketValidator.setCasValidateUrl(getServiceURL(httpRequest,
-                VALIDATE_ACTION));
+        ticketValidator.setCasValidateUrl(getServiceURL(httpRequest, VALIDATE_ACTION));
         ticketValidator.setService(getAppURL(httpRequest));
         ticketValidator.setServiceTicket(ticket);
         try {
@@ -445,9 +419,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             log.error("checkCasTicket failed with SAXException:", e);
             return null;
         } catch (ParserConfigurationException e) {
-            log.error(
-                    "checkCasTicket failed with ParserConfigurationException:",
-                    e);
+            log.error("checkCasTicket failed with ParserConfigurationException:", e);
             return null;
         }
         log.debug("checkCasTicket : validation executed without error");
@@ -457,8 +429,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     }
 
     @Override
-    public boolean onError(HttpServletRequest request,
-            HttpServletResponse response) {
+    public boolean onError(HttpServletRequest request, HttpServletResponse response) {
         try {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             if (errorPage != null) {
@@ -477,23 +448,19 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         return false;
     }
 
-    protected NuxeoAuthenticationPlugin getAlternativeAuthPlugin(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    protected NuxeoAuthenticationPlugin getAlternativeAuthPlugin(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
 
-        Cookie alternativeAuthPluginCookie = getCookie(httpRequest,
-                ALTERNATIVE_AUTH_PLUGIN_COOKIE_NAME);
+        Cookie alternativeAuthPluginCookie = getCookie(httpRequest, ALTERNATIVE_AUTH_PLUGIN_COOKIE_NAME);
         if (alternativeAuthPluginCookie != null) {
             String alternativeAuthPluginName = alternativeAuthPluginCookie.getValue();
             PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                     PluggableAuthenticationService.NAME);
             NuxeoAuthenticationPlugin alternativeAuthPlugin = authService.getPlugin(alternativeAuthPluginName);
             if (alternativeAuthPlugin == null) {
-                log.error(String.format(
-                        "No alternative authentication plugin named %s, will remove cookie %s.",
-                        alternativeAuthPluginName,
-                        ALTERNATIVE_AUTH_PLUGIN_COOKIE_NAME));
-                removeCookie(httpRequest, httpResponse,
-                        alternativeAuthPluginCookie);
+                log.error(String.format("No alternative authentication plugin named %s, will remove cookie %s.",
+                        alternativeAuthPluginName, ALTERNATIVE_AUTH_PLUGIN_COOKIE_NAME));
+                removeCookie(httpRequest, httpResponse, alternativeAuthPluginCookie);
             } else {
                 return alternativeAuthPlugin;
             }
@@ -513,8 +480,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         return null;
     }
 
-    protected void removeCookie(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, Cookie cookie) {
+    protected void removeCookie(HttpServletRequest httpRequest, HttpServletResponse httpResponse, Cookie cookie) {
         log.debug(String.format("Removing cookie %s.", cookie.getName()));
         cookie.setMaxAge(0);
         cookie.setValue("");

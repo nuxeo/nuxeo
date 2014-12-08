@@ -34,13 +34,11 @@ public interface SLOProfile {
      */
     public static final String PROFILE_URI = "urn:oasis:names:tc:SAML:2.0:profiles:SSO:logout";
 
-    LogoutRequest buildLogoutRequest(SAMLMessageContext context, SAMLCredential credential)
-            throws SAMLException;
+    LogoutRequest buildLogoutRequest(SAMLMessageContext context, SAMLCredential credential) throws SAMLException;
 
     void processLogoutResponse(SAMLMessageContext context) throws SAMLException;
 
-    boolean processLogoutRequest(SAMLMessageContext context, SAMLCredential credential)
-            throws SAMLException;
+    boolean processLogoutRequest(SAMLMessageContext context, SAMLCredential credential) throws SAMLException;
 
     Endpoint getEndpoint();
 }

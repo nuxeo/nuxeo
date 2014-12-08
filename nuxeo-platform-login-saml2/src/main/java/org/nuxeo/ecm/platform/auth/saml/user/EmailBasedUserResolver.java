@@ -31,18 +31,15 @@ import java.util.Map;
 
 public class EmailBasedUserResolver extends UserResolver {
 
-    private static final Log log = LogFactory.getLog(
-            EmailBasedUserResolver.class);
+    private static final Log log = LogFactory.getLog(EmailBasedUserResolver.class);
 
     @Override
     public String findNuxeoUser(SAMLCredential credential) {
 
         try {
-            UserManager userManager = Framework.getLocalService(
-                    UserManager.class);
+            UserManager userManager = Framework.getLocalService(UserManager.class);
             Map<String, Serializable> query = new HashMap<>();
-            query.put(userManager.getUserEmailField(),
-                    credential.getNameID().getValue());
+            query.put(userManager.getUserEmailField(), credential.getNameID().getValue());
 
             DocumentModelList users = userManager.searchUsers(query, null);
 
@@ -54,23 +51,18 @@ public class EmailBasedUserResolver extends UserResolver {
             return (String) user.getPropertyValue(userManager.getUserIdField());
 
         } catch (ClientException e) {
-            log.error("Error while search user in UserManager using email "
-                    + credential.getNameID().getValue(), e);
+            log.error("Error while search user in UserManager using email " + credential.getNameID().getValue(), e);
             return null;
         }
     }
 
     @Override
-    public DocumentModel updateUserInfo(DocumentModel user,
-            SAMLCredential credential) {
+    public DocumentModel updateUserInfo(DocumentModel user, SAMLCredential credential) {
         try {
-            UserManager userManager = Framework.getLocalService(
-                    UserManager.class);
-            user.setPropertyValue(userManager.getUserEmailField(),
-                    credential.getNameID().getValue());
+            UserManager userManager = Framework.getLocalService(UserManager.class);
+            user.setPropertyValue(userManager.getUserEmailField(), credential.getNameID().getValue());
         } catch (ClientException e) {
-            log.error("Error while search user in UserManager using email "
-                    + credential.getNameID().getValue(), e);
+            log.error("Error while search user in UserManager using email " + credential.getNameID().getValue(), e);
             return null;
         }
         return user;

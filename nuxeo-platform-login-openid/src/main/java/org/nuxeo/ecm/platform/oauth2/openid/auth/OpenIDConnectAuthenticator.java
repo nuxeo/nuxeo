@@ -39,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
  * Authenticator using OpenID to retrieve user identity.
  *
  * @author Nelson Silva <nelson.silva@inevo.pt>
- *
  */
 public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 
@@ -65,8 +64,7 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
         req.setAttribute(LOGIN_ERROR, msg);
     }
 
-    public UserIdentificationInfo retrieveIdentityFromOAuth(
-            HttpServletRequest req, HttpServletResponse resp) {
+    public UserIdentificationInfo retrieveIdentityFromOAuth(HttpServletRequest req, HttpServletResponse resp) {
 
         // Getting the "error" URL parameter
         String error = req.getParameter(ERROR_URL_PARAM_NAME);
@@ -100,15 +98,13 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
             OpenIDConnectProvider provider = registry.getProvider(serviceProviderName);
 
             if (provider == null) {
-                sendError(req, "No service provider called: \""
-                        + serviceProviderName + "\".");
+                sendError(req, "No service provider called: \"" + serviceProviderName + "\".");
                 return null;
             }
 
             // Check the state token
 
-            if (!Framework.isBooleanPropertyTrue(PROPERTY_SKIP_OAUTH_TOKEN)
-                    && !provider.verifyStateToken(req)) {
+            if (!Framework.isBooleanPropertyTrue(PROPERTY_SKIP_OAUTH_TOKEN) && !provider.verifyStateToken(req)) {
                 sendError(req, "Invalid state parameter.");
             }
 
@@ -136,8 +132,7 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 
             if (userId == null) {
 
-                sendError(req, "No user found with email: \"" + info.getEmail()
-                        + "\".");
+                sendError(req, "No user found with email: \"" + info.getEmail() + "\".");
                 return null;
             }
 
@@ -156,8 +151,8 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
     }
 
     @Override
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
         String error = httpRequest.getParameter(ERROR_URL_PARAM_NAME);
         String code = httpRequest.getParameter(CODE_URL_PARAM_NAME);
         String serviceProviderName = httpRequest.getParameter(PROVIDER_URL_PARAM_NAME);
@@ -167,8 +162,7 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
         if (code == null && error == null) {
             return null;
         }
-        UserIdentificationInfo userIdent = retrieveIdentityFromOAuth(
-                httpRequest, httpResponse);
+        UserIdentificationInfo userIdent = retrieveIdentityFromOAuth(httpRequest, httpResponse);
         if (userIdent != null) {
             userIdent.setAuthPluginName("TRUSTED_LM");
         }
@@ -176,8 +170,7 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
     }
 
     @Override
-    public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         return false;
     }
 

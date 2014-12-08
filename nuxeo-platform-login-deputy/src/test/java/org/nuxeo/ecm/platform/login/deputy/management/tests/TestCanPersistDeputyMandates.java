@@ -43,24 +43,21 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy( {
-    "org.nuxeo.runtime.datasource",
-	"org.nuxeo.ecm.directory",
-	"org.nuxeo.ecm.directory.sql",
-	"org.nuxeo.ecm.directory.types.contrib",
-	"org.nuxeo.ecm.platform.login.deputy.management"
-})
+@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.platform.login.deputy.management" })
 @LocalDeploy("org.nuxeo.ecm.platform.login.deputy.management:datasource-contrib.xml")
 public class TestCanPersistDeputyMandates {
 
-    @Inject DeputyManager dm;
+    @Inject
+    DeputyManager dm;
 
-
-    @Before public void initStorage() throws Exception {
+    @Before
+    public void initStorage() throws Exception {
         ((DeputyManagementStorageService) dm).resetDeputies();
     }
 
-    @Test public void testAddDeputies() throws Exception {
+    @Test
+    public void testAddDeputies() throws Exception {
         // titi has 2 deputies
         dm.addMandate(dm.newMandate("titi", "toto"));
         dm.addMandate(dm.newMandate("titi", "tata"));
@@ -80,7 +77,8 @@ public class TestCanPersistDeputyMandates {
         assertThat(alternate, hasItems("adm", "adm2", "adm3"));
     }
 
-    @Test public void testValidity() throws Exception {
+    @Test
+    public void testValidity() throws Exception {
         initStorage();
 
         Calendar notStarted = new GregorianCalendar();
@@ -99,12 +97,13 @@ public class TestCanPersistDeputyMandates {
         dm.addMandate(dm.newMandate("adm3", "titi", notStarted, notEnded));
 
         List<String> alternate = dm.getPossiblesAlternateLogins("titi");
-         assertThat(alternate, notNullValue());
+        assertThat(alternate, notNullValue());
         assertThat(alternate, hasItems("adm"));
 
     }
 
-    @Test public void testDuplicate() throws Exception {
+    @Test
+    public void testDuplicate() throws Exception {
         initStorage();
 
         dm.addMandate(dm.newMandate("adm", "titi"));
@@ -115,7 +114,8 @@ public class TestCanPersistDeputyMandates {
         assertThat(alternate, hasItems("adm"));
     }
 
-    @Test public void testRollback() throws Exception {
+    @Test
+    public void testRollback() throws Exception {
         initStorage();
 
         dm.addMandate(dm.newMandate("adm", "titi"));

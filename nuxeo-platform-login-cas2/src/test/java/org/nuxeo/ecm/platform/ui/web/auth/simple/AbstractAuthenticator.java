@@ -90,23 +90,18 @@ public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
         cookieList = Collections.emptyList();
     }
 
-    protected void setLoginPasswordInHeader(String login, String password,
-            MockHttpRequest request) {
+    protected void setLoginPasswordInHeader(String login, String password, MockHttpRequest request) {
         String b64userpassword = Base64.encodeBytes((login + ":" + password).getBytes());
-        request.setHeaderParam("authorization",
-                new String[] { "basic " + b64userpassword, });
+        request.setHeaderParam("authorization", new String[] { "basic " + b64userpassword, });
     }
 
     protected void initStandardPlugins() throws Exception {
         // Mock the usermanager service (we don't want to pull all nuxeo framework)
         // Needed by Anonymous
-        deployContrib("org.nuxeo.ecm.platform.login.cas2.test",
-                "OSGI-INF/mock-usermanager-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.login.cas2.test", "OSGI-INF/mock-usermanager-framework.xml");
         // Mock the event producer (we don't want to pull all nuxeo framework)
         // NuxeoAuthenticationFilter sends events
-        deployContrib("org.nuxeo.ecm.platform.login.cas2.test",
-        "OSGI-INF/mock-event-framework.xml");
-
+        deployContrib("org.nuxeo.ecm.platform.login.cas2.test", "OSGI-INF/mock-event-framework.xml");
 
         deployBundle("org.nuxeo.ecm.platform.login");
         deployBundle("org.nuxeo.ecm.platform.web.common");

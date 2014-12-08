@@ -34,16 +34,15 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class ShibbolethSecurityExceptionHandler extends
-        NuxeoSecurityExceptionHandler {
+public class ShibbolethSecurityExceptionHandler extends NuxeoSecurityExceptionHandler {
 
     private static final Log log = LogFactory.getLog(ShibbolethSecurityExceptionHandler.class);
 
     protected ShibbolethAuthenticationService service;
 
     @Override
-    protected boolean handleAnonymousException(HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException {
+    protected boolean handleAnonymousException(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
         if (getService() == null) {
             return false;
         }
@@ -54,8 +53,7 @@ public class ShibbolethSecurityExceptionHandler extends
         }
         try {
             if (!response.isCommitted()) {
-                request.setAttribute(
-                        NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+                request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
                 Session.instance().invalidate();
                 response.sendRedirect(loginURL);
                 FacesContext fContext = FacesContext.getCurrentInstance();
@@ -68,8 +66,7 @@ public class ShibbolethSecurityExceptionHandler extends
                 log.error("Cannot redirect to login page: response is already commited");
             }
         } catch (IOException e) {
-            String errorMessage = String.format(
-                    "Unable to handle Shibboleth login on %s", loginURL);
+            String errorMessage = String.format("Unable to handle Shibboleth login on %s", loginURL);
             log.error(errorMessage, e);
         }
         return true;

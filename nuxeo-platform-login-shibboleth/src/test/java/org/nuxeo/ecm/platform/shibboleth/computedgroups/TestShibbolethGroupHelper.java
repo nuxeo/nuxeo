@@ -49,11 +49,9 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.content.template",
-        "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.directory.api",
-        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.usermanager",
-        "org.nuxeo.ecm.platform.login.shibboleth" })
+@Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.platform.dublincore",
+        "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.login.shibboleth" })
 @LocalDeploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
 public class TestShibbolethGroupHelper {
 
@@ -110,8 +108,7 @@ public class TestShibbolethGroupHelper {
         assertEquals("refShib", shibbGroup.getId());
         ref.add(shibbGroup.getId());
 
-        group.setProperty(userManager.getGroupSchemaName(),
-                userManager.getGroupSubGroupsField(), ref);
+        group.setProperty(userManager.getGroupSchemaName(), userManager.getGroupSubGroupsField(), ref);
         userManager.updateGroup(group);
         session.save();
 
@@ -121,8 +118,7 @@ public class TestShibbolethGroupHelper {
         SQLSession ses = (SQLSession) directoryService.open(userManager.getGroupDirectoryName());
         DocumentModel tmp = ses.getEntry("testRef");
         @SuppressWarnings("unchecked")
-        List<String> subs = (List<String>) tmp.getProperty(
-                userManager.getGroupSchemaName(),
+        List<String> subs = (List<String>) tmp.getProperty(userManager.getGroupSchemaName(),
                 userManager.getGroupSubGroupsField());
         assertNotNull(subs);
         assertEquals(1, subs.size());
@@ -173,10 +169,8 @@ public class TestShibbolethGroupHelper {
         subGroup.add(shibGroup.getId());
         subGroup2.add(shibGroup.getId());
 
-        group.setProperty(userManager.getGroupSchemaName(),
-                userManager.getGroupSubGroupsField(), subGroup);
-        group2.setProperty(userManager.getGroupSchemaName(),
-                userManager.getGroupSubGroupsField(), subGroup2);
+        group.setProperty(userManager.getGroupSchemaName(), userManager.getGroupSubGroupsField(), subGroup);
+        group2.setProperty(userManager.getGroupSchemaName(), userManager.getGroupSubGroupsField(), subGroup2);
 
         userManager.updateGroup(group);
         userManager.updateGroup(group2);

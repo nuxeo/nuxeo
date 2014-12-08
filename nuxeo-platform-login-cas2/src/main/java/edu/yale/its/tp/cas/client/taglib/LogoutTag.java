@@ -41,95 +41,95 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
 /**
- * <p>Logout tag for use with the Yale Central Authentication
- * Service.  Clears the indicated attribute and, if 'scope' is 'session',
- * also invalidates the session.  Finally, redirects to CAS's
- * logout URL.</p>
+ * <p>
+ * Logout tag for use with the Yale Central Authentication Service. Clears the indicated attribute and, if 'scope' is
+ * 'session', also invalidates the session. Finally, redirects to CAS's logout URL.
+ * </p>
  *
  * @author Shawn Bayern
  */
 public class LogoutTag extends TagSupport {
 
-  //*********************************************************************
-  // Internal state
+    // *********************************************************************
+    // Internal state
 
-  private String var;					// tag attribute
-  private String logoutUrl;				// tag attribute
-  private int scope;					// tag attribute
+    private String var; // tag attribute
 
-  //*********************************************************************
-  // Tag logic
+    private String logoutUrl; // tag attribute
 
-  public int doStartTag() throws JspException {
-    try {
+    private int scope; // tag attribute
 
-      // retrieve the response object
-      HttpServletResponse response =
-        (HttpServletResponse) pageContext.getResponse();
+    // *********************************************************************
+    // Tag logic
 
-      // kill the authentication information
-      pageContext.removeAttribute(var, scope);
+    public int doStartTag() throws JspException {
+        try {
 
-      // if scope is SESSION_SCOPE, invalidate the session
-      if (scope == PageContext.SESSION_SCOPE)
-        pageContext.getSession().invalidate();
+            // retrieve the response object
+            HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
 
-      // send the redirect
-      response.sendRedirect(logoutUrl);
+            // kill the authentication information
+            pageContext.removeAttribute(var, scope);
 
-      return SKIP_BODY;
-	
-    } catch (IOException ex) {
-      throw new JspTagException(ex.getMessage());
+            // if scope is SESSION_SCOPE, invalidate the session
+            if (scope == PageContext.SESSION_SCOPE)
+                pageContext.getSession().invalidate();
+
+            // send the redirect
+            response.sendRedirect(logoutUrl);
+
+            return SKIP_BODY;
+
+        } catch (IOException ex) {
+            throw new JspTagException(ex.getMessage());
+        }
     }
-  }
 
-  public int doEndTag() {
-    return SKIP_PAGE;
-  }
+    public int doEndTag() {
+        return SKIP_PAGE;
+    }
 
-  //*********************************************************************
-  // Accessors
+    // *********************************************************************
+    // Accessors
 
-  public void setVar(String var) {
-    this.var = var;
-  }
+    public void setVar(String var) {
+        this.var = var;
+    }
 
-  public void setScope(String scope) {
-    if (scope.equals("page"))
-      this.scope = PageContext.PAGE_SCOPE;
-    else if (scope.equals("request"))
-      this.scope = PageContext.REQUEST_SCOPE;
-    else if (scope.equals("session"))
-      this.scope = PageContext.SESSION_SCOPE;
-    else if (scope.equals("application"))
-      this.scope = PageContext.APPLICATION_SCOPE;
-    else
-      throw new IllegalArgumentException("invalid scope");
-  }
+    public void setScope(String scope) {
+        if (scope.equals("page"))
+            this.scope = PageContext.PAGE_SCOPE;
+        else if (scope.equals("request"))
+            this.scope = PageContext.REQUEST_SCOPE;
+        else if (scope.equals("session"))
+            this.scope = PageContext.SESSION_SCOPE;
+        else if (scope.equals("application"))
+            this.scope = PageContext.APPLICATION_SCOPE;
+        else
+            throw new IllegalArgumentException("invalid scope");
+    }
 
-  public void setLogoutUrl(String logoutUrl) {
-    this.logoutUrl = logoutUrl;
-  }
+    public void setLogoutUrl(String logoutUrl) {
+        this.logoutUrl = logoutUrl;
+    }
 
+    // *********************************************************************
+    // Constructor and lifecycle management
 
-  //*********************************************************************
-  // Constructor and lifecycle management
+    public LogoutTag() {
+        super();
+        init();
+    }
 
-  public LogoutTag() {
-    super();
-    init();
-  }
+    // Releases any resources we may have (or inherit)
+    public void release() {
+        super.release();
+        init();
+    }
 
-  // Releases any resources we may have (or inherit)
-  public void release() {
-    super.release();
-    init();
-  }  
-
-  // clears any internal state we might have
-  private void init() {
-    var = logoutUrl = null;
-    scope = PageContext.PAGE_SCOPE;
-  }
+    // clears any internal state we might have
+    private void init() {
+        var = logoutUrl = null;
+        scope = PageContext.PAGE_SCOPE;
+    }
 }

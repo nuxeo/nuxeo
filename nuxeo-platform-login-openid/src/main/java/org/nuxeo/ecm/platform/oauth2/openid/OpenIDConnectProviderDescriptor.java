@@ -140,7 +140,7 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
     public String getDescription() {
         return description;
     }
-    
+
     public Class<? extends UserResolver> getUserResolverClass() {
         return userResolverClass;
     }

@@ -56,8 +56,8 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
     public List<String> getGroupsForUser(NuxeoPrincipalImpl nxPrincipal) {
         List<String> groupsId = new ArrayList<String>();
         for (DocumentModel group : getAllGroups()) {
-            String el = (String) group.getPropertyValue(ShibbolethConstants.SHIBBOLETH_SCHEMA
-                    + ":" + ShibbolethConstants.GROUP_EL_PROPERTY);
+            String el = (String) group.getPropertyValue(ShibbolethConstants.SHIBBOLETH_SCHEMA + ":"
+                    + ShibbolethConstants.GROUP_EL_PROPERTY);
             if (ELGroupComputerHelper.isUserInGroup(nxPrincipal.getModel(), el)) {
                 groupsId.add(group.getId());
             }

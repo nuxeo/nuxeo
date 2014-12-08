@@ -36,25 +36,27 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 /**
- * <p>Tag for indicating authorized proxies for the cas:auth tag.</p>
-
+ * <p>
+ * Tag for indicating authorized proxies for the cas:auth tag.
+ * </p>
+ * 
  * @author Shawn Bayern
  */
 public class AuthorizedProxyTag extends BodyTagSupport {
 
-	//*********************************************************************
-	// Tag logic
+    // *********************************************************************
+    // Tag logic
 
-	public int doEndTag() throws JspTagException {
-		String authorizedProxy = null;
-		if (bodyContent != null)
-			authorizedProxy = bodyContent.getString();
-		if (authorizedProxy != null)
-			authorizedProxy = authorizedProxy.trim();
-		if (!(getParent() instanceof AuthTag))
-			throw new JspTagException("illegal cas:authorizedProxy outside cas:auth");
-		else
-			 ((AuthTag) getParent()).addAuthorizedProxy(authorizedProxy);
-		return EVAL_PAGE;
-	}
+    public int doEndTag() throws JspTagException {
+        String authorizedProxy = null;
+        if (bodyContent != null)
+            authorizedProxy = bodyContent.getString();
+        if (authorizedProxy != null)
+            authorizedProxy = authorizedProxy.trim();
+        if (!(getParent() instanceof AuthTag))
+            throw new JspTagException("illegal cas:authorizedProxy outside cas:auth");
+        else
+            ((AuthTag) getParent()).addAuthorizedProxy(authorizedProxy);
+        return EVAL_PAGE;
+    }
 }

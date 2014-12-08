@@ -40,7 +40,7 @@ import org.nuxeo.ecm.webapp.security.AbstractUserGroupManagement;
 @Name("shibbGroupManagerActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManagement{
+public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManagement {
 
     protected static final String EVENT_SHIBB_GROUP_LISTING = "shibbGroupsListingChanged";
 
@@ -69,10 +69,8 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
         try {
             selectedGroup = ShibbolethGroupHelper.createGroup(newGroup);
             newGroup = null;
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "info.groupManager.groupCreated"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get("info.groupManager.groupCreated"));
             if (createAnotherGroup) {
                 showCreateForm = true;
             } else {
@@ -81,15 +79,11 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
             }
             fireSeamEvent(EVENT_SHIBB_GROUP_LISTING);
         } catch (GroupAlreadyExistsException e) {
-            String message = resourcesAccessor.getMessages().get(
-                    "error.groupManager.groupAlreadyExists");
-            facesMessages.addToControl("groupName",
-                    StatusMessage.Severity.ERROR, message);
+            String message = resourcesAccessor.getMessages().get("error.groupManager.groupAlreadyExists");
+            facesMessages.addToControl("groupName", StatusMessage.Severity.ERROR, message);
         } catch (InvalidPropertyValueException e) {
-            String message = resourcesAccessor.getMessages().get(
-                    "error.shibboleth.groupManager.wrongEl");
-            facesMessages.addToControl("expressionLanguage",
-                    StatusMessage.Severity.ERROR, message);
+            String message = resourcesAccessor.getMessages().get("error.shibboleth.groupManager.wrongEl");
+            facesMessages.addToControl("expressionLanguage", StatusMessage.Severity.ERROR, message);
         }
     }
 
@@ -129,10 +123,8 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
             detailsMode = DETAILS_VIEW_MODE;
             fireSeamEvent(EVENT_SHIBB_GROUP_LISTING);
         } catch (InvalidPropertyValueException e) {
-            String message = resourcesAccessor.getMessages().get(
-                    "error.shibboleth.groupManager.wrongEl");
-            facesMessages.addToControl("expressionLanguage",
-                    StatusMessage.Severity.ERROR, message);
+            String message = resourcesAccessor.getMessages().get("error.shibboleth.groupManager.wrongEl");
+            facesMessages.addToControl("expressionLanguage", StatusMessage.Severity.ERROR, message);
         }
     }
 
@@ -151,13 +143,11 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
     }
 
     // refresh to get references
-    protected DocumentModel refreshGroup(String groupName)
-            throws ClientException {
+    protected DocumentModel refreshGroup(String groupName) throws ClientException {
         return ShibbolethGroupHelper.getGroup(groupName);
     }
 
-    protected String viewGroup(DocumentModel group, boolean refresh)
-            throws ClientException {
+    protected String viewGroup(DocumentModel group, boolean refresh) throws ClientException {
         if (group != null) {
             selectedGroup = group;
             if (refresh) {
@@ -178,8 +168,7 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
     protected boolean getCanEditGroups() throws ClientException {
         if (canEditGroups == null) {
             canEditGroups = false;
-            if (!userManager.areGroupsReadOnly()
-                    && currentUser instanceof NuxeoPrincipal) {
+            if (!userManager.areGroupsReadOnly() && currentUser instanceof NuxeoPrincipal) {
                 NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
                 if (pal.isAdministrator()) {
                     canEditGroups = true;
@@ -194,13 +183,11 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
     }
 
     public boolean getAllowDeleteGroup() throws ClientException {
-        return getCanEditGroups()
-                && !BaseSession.isReadOnlyEntry(selectedGroup);
+        return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
     public boolean getAllowEditGroup() throws ClientException {
-        return getCanEditGroups()
-                && !BaseSession.isReadOnlyEntry(selectedGroup);
+        return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
     @Override

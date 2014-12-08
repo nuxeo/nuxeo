@@ -82,48 +82,38 @@ public abstract class AbstractSAMLProfile {
 
     // VALIDATION
 
-    protected void validateSignature(Signature signature, String IDPEntityID)
-            throws ValidationException,
+    protected void validateSignature(Signature signature, String IDPEntityID) throws ValidationException,
             org.opensaml.xml.security.SecurityException {
 
         if (trustEngine == null) {
-            throw new SecurityException(
-                    "Trust engine is not set, signature can't be verified");
+            throw new SecurityException("Trust engine is not set, signature can't be verified");
         }
 
         SAMLSignatureProfileValidator validator = new SAMLSignatureProfileValidator();
         validator.validate(signature);
         CriteriaSet criteriaSet = new CriteriaSet();
         criteriaSet.add(new EntityIDCriteria(IDPEntityID));
-        criteriaSet.add(
-                new MetadataCriteria(IDPSSODescriptor.DEFAULT_ELEMENT_NAME,
-                        SAMLConstants.SAML20P_NS));
+        criteriaSet.add(new MetadataCriteria(IDPSSODescriptor.DEFAULT_ELEMENT_NAME, SAMLConstants.SAML20P_NS));
         criteriaSet.add(new UsageCriteria(UsageType.SIGNING));
         log.debug("Verifying signature: " + signature);
 
         if (!getTrustEngine().validate(signature, criteriaSet)) {
-            throw new ValidationException(
-                    "Signature is not trusted or invalid");
+            throw new ValidationException("Signature is not trusted or invalid");
         }
     }
 
-    protected void validateIssuer(Issuer issuer, SAMLMessageContext context)
-            throws SAMLException {
+    protected void validateIssuer(Issuer issuer, SAMLMessageContext context) throws SAMLException {
         // Validate format of issuer
-        if (issuer.getFormat() != null &&
-                !issuer.getFormat().equals(NameIDType.ENTITY)) {
+        if (issuer.getFormat() != null && !issuer.getFormat().equals(NameIDType.ENTITY)) {
             throw new SAMLException("Assertion invalidated by issuer type");
         }
         // Validate that issuer is expected peer entity
-        if (!context.getPeerEntityMetadata().getEntityID().equals(
-                issuer.getValue())) {
-            throw new SAMLException(
-                    "Assertion invalidated by unexpected issuer value");
+        if (!context.getPeerEntityMetadata().getEntityID().equals(issuer.getValue())) {
+            throw new SAMLException("Assertion invalidated by unexpected issuer value");
         }
     }
 
-    protected void validateEndpoint(Response response, Endpoint endpoint)
-            throws SAMLException {
+    protected void validateEndpoint(Response response, Endpoint endpoint) throws SAMLException {
         // Verify that destination in the response matches one of the available endpoints
         String destination = response.getDestination();
 
@@ -131,10 +121,9 @@ public abstract class AbstractSAMLProfile {
             if (destination.equals(endpoint.getLocation())) {
             } else if (destination.equals(endpoint.getResponseLocation())) {
             } else {
-                log.debug("Intended destination " + destination +
-                        " doesn't match any of the endpoint URLs");
-                throw new SAMLException("Intended destination " + destination +
-                        " doesn't match any of the endpoint URLs");
+                log.debug("Intended destination " + destination + " doesn't match any of the endpoint URLs");
+                throw new SAMLException("Intended destination " + destination
+                        + " doesn't match any of the endpoint URLs");
             }
         }
 
@@ -145,42 +134,35 @@ public abstract class AbstractSAMLProfile {
         if (request != null) {
             AssertionConsumerService assertionConsumerService = (AssertionConsumerService) endpoint;
             if (request.getAssertionConsumerServiceIndex() != null) {
-                if (!request.getAssertionConsumerServiceIndex().equals(
-                        assertionConsumerService.getIndex())) {
-                    log.info("SAML response was received at a different endpoint " +
-                            "index than was requested");
+                if (!request.getAssertionConsumerServiceIndex().equals(assertionConsumerService.getIndex())) {
+                    log.info("SAML response was received at a different endpoint " + "index than was requested");
                 }
             } else {
                 String requestedResponseURL = request.getAssertionConsumerServiceURL();
                 String requestedBinding = request.getProtocolBinding();
                 if (requestedResponseURL != null) {
                     String responseLocation;
-                    if (assertionConsumerService.getResponseLocation() !=
-                            null) {
+                    if (assertionConsumerService.getResponseLocation() != null) {
                         responseLocation = assertionConsumerService.getResponseLocation();
                     } else {
                         responseLocation = assertionConsumerService.getLocation();
                     }
                     if (!requestedResponseURL.equals(responseLocation)) {
-                        log.info("SAML response was received at a different endpoint URL " +
-                                        responseLocation +  " than was requested " +
-                                        requestedResponseURL);
+                        log.info("SAML response was received at a different endpoint URL " + responseLocation
+                                + " than was requested " + requestedResponseURL);
                     }
                 }
                 /*
-                if (requestedBinding != null) {
-                    if (!requestedBinding.equals(context.getInboundSAMLBinding())) {
-                        log.info("SAML response was received using a different binding {} than was requested {}", context.getInboundSAMLBinding(), requestedBinding);
-                    }
-                }*/
+                 * if (requestedBinding != null) { if (!requestedBinding.equals(context.getInboundSAMLBinding())) {
+                 * log.info("SAML response was received using a different binding {} than was requested {}",
+                 * context.getInboundSAMLBinding(), requestedBinding); } }
+                 */
             }
         }
     }
 
-    protected void validateAssertion(Assertion assertion,
-            SAMLMessageContext context)
-            throws SAMLException, org.opensaml.xml.security.SecurityException,
-            ValidationException, DecryptionException {
+    protected void validateAssertion(Assertion assertion, SAMLMessageContext context) throws SAMLException,
+            org.opensaml.xml.security.SecurityException, ValidationException, DecryptionException {
 
         validateIssuer(assertion.getIssuer(), context);
 
@@ -197,13 +179,11 @@ public abstract class AbstractSAMLProfile {
             condition_NotOnOrAfter = conditions.getNotOnOrAfter().toDate();
         }
         if (condition_notBefore != null && now.before(condition_notBefore)) {
-            log.debug("Current time: [" + now + "] NotBefore: [" +
-                    condition_notBefore + "]");
+            log.debug("Current time: [" + now + "] NotBefore: [" + condition_notBefore + "]");
             throw new SAMLException("Conditions are not yet active");
-        } else if (condition_NotOnOrAfter != null && (
-                now.after(condition_NotOnOrAfter) || now.equals(condition_NotOnOrAfter))) {
-            log.debug("Current time: [" + now + "] NotOnOrAfter: [" +
-                    condition_NotOnOrAfter + "]");
+        } else if (condition_NotOnOrAfter != null
+                && (now.after(condition_NotOnOrAfter) || now.equals(condition_NotOnOrAfter))) {
+            log.debug("Current time: [" + now + "] NotOnOrAfter: [" + condition_NotOnOrAfter + "]");
             throw new SAMLException("Conditions have expired");
         }
 
@@ -216,25 +196,18 @@ public abstract class AbstractSAMLProfile {
         // TODO(nfgs) : Check subject
     }
 
-    protected AuthnRequest retrieveRequest(Response response)
-            throws SAMLException {
+    protected AuthnRequest retrieveRequest(Response response) throws SAMLException {
         return null;
-        /* TODO(nfgs) - Store SAML messages
-        SAMLMessageStorage messageStorage = context.getMessageStorage();
-
-        if (messageStorage != null && response.getInResponseTo() != null) {
-            XMLObject xmlObject = messageStorage.retrieveMessage(response.getInResponseTo());
-            if (xmlObject == null) {
-                log.debug("InResponseToField doesn't correspond to sent message", response.getInResponseTo());
-                throw new SAMLException("InResponseToField doesn't correspond to sent message");
-            } else if (xmlObject instanceof AuthnRequest) {
-                request = (AuthnRequest) xmlObject;
-            } else {
-                log.debug("Sent request was of different type than received response", response.getInResponseTo());
-                throw new SAMLException("Sent request was of different type than received response");
-            }
-        }
-        */
+        /*
+         * TODO(nfgs) - Store SAML messages SAMLMessageStorage messageStorage = context.getMessageStorage(); if
+         * (messageStorage != null && response.getInResponseTo() != null) { XMLObject xmlObject =
+         * messageStorage.retrieveMessage(response.getInResponseTo()); if (xmlObject == null) {
+         * log.debug("InResponseToField doesn't correspond to sent message", response.getInResponseTo()); throw new
+         * SAMLException("InResponseToField doesn't correspond to sent message"); } else if (xmlObject instanceof
+         * AuthnRequest) { request = (AuthnRequest) xmlObject; } else {
+         * log.debug("Sent request was of different type than received response", response.getInResponseTo()); throw new
+         * SAMLException("Sent request was of different type than received response"); } }
+         */
     }
 
     public Endpoint getEndpoint() {
@@ -266,7 +239,6 @@ public abstract class AbstractSAMLProfile {
     }
 
     protected String getStartPageURL(ServletRequest request) {
-        return getBaseURL(request) +
-                NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
+        return getBaseURL(request) + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
     }
 }

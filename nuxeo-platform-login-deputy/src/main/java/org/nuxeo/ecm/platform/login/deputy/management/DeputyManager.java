@@ -34,12 +34,12 @@ public interface DeputyManager {
     List<DocumentModel> getAvalaibleMandates(String userName) throws ClientException;
 
     DocumentModel newMandate(String username, String deputy) throws ClientException;
-    
-    DocumentModel newMandate(String username, String deputy, Calendar start, Calendar end) throws ClientException;
-    
-    void addMandate(DocumentModel entry) throws  ClientException;
 
-    void removeMandate(String username, String deputy) throws  ClientException;
+    DocumentModel newMandate(String username, String deputy, Calendar start, Calendar end) throws ClientException;
+
+    void addMandate(DocumentModel entry) throws ClientException;
+
+    void removeMandate(String username, String deputy) throws ClientException;
 
     String getDeputySchemaName();
 }

@@ -58,9 +58,8 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
     }
 
     @Override
-    public void handleException(HttpServletRequest request,
-            HttpServletResponse response, Throwable t) throws IOException,
-            ServletException {
+    public void handleException(HttpServletRequest request, HttpServletResponse response, Throwable t)
+            throws IOException, ServletException {
 
         if (response.containsHeader("Cache-Control")) {
             response.setHeader("Cache-Control", "no-cache");
@@ -83,15 +82,13 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
                 response.resetBuffer();
 
                 String urlToReach = getURLToReach(request);
-                Cookie cookieUrlToReach = new Cookie(
-                        NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY, urlToReach);
+                Cookie cookieUrlToReach = new Cookie(NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY, urlToReach);
                 cookieUrlToReach.setPath("/");
                 cookieUrlToReach.setMaxAge(60);
                 response.addCookie(cookieUrlToReach);
 
                 if (!response.isCommitted()) {
-                    request.getRequestDispatcher(CAS_REDIRECTION_URL).forward(request,
-                            response);
+                    request.getRequestDispatcher(CAS_REDIRECTION_URL).forward(request, response);
                 }
                 FacesContext.getCurrentInstance().responseComplete();
                 return;
@@ -109,8 +106,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                 PluggableAuthenticationService.NAME);
         if (service == null) {
-            throw new ClientException(
-                    "Can't initialize Nuxeo Pluggable Authentication Service");
+            throw new ClientException("Can't initialize Nuxeo Pluggable Authentication Service");
         }
 
         cas2Authenticator = (Cas2Authenticator) service.getPlugin("CAS2_AUTH");
@@ -131,8 +127,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
                 return urlToReach;
             }
         }
-        return request.getRequestURL().toString() + "?"
-                + request.getQueryString();
+        return request.getRequestURL().toString() + "?" + request.getQueryString();
     }
 
     protected URLPolicyService getURLPolicyService() {

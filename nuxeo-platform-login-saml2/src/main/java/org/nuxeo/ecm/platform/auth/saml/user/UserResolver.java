@@ -45,16 +45,14 @@ public abstract class UserResolver {
             userManager.createUser(userDoc);
 
         } catch (ClientException e) {
-            log.error("Error while creating user " + nuxeoLogin +
-                    "in UserManager", e);
+            log.error("Error while creating user " + nuxeoLogin + "in UserManager", e);
             return null;
         }
 
         return userDoc;
     }
 
-    public abstract DocumentModel updateUserInfo(DocumentModel user,
-            SAMLCredential userInfo);
+    public abstract DocumentModel updateUserInfo(DocumentModel user, SAMLCredential userInfo);
 
     public String findOrCreateNuxeoUser(SAMLCredential userInfo) {
         String user = findNuxeoUser(userInfo);
@@ -69,8 +67,7 @@ public abstract class UserResolver {
     protected String generateRandomUserId() {
         String userId = null;
         try {
-            UserManager userManager = Framework.getLocalService(
-                    UserManager.class);
+            UserManager userManager = Framework.getLocalService(UserManager.class);
             List<String> userIds = userManager.getUserIds();
 
             while (userId == null || userIds.contains(userId)) {

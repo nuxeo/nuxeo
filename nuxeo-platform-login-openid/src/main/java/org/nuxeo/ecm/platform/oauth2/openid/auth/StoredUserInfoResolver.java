@@ -54,8 +54,7 @@ public class StoredUserInfoResolver extends UserResolver {
             }
 
         } catch (ClientException e) {
-            log.error("Error while search user in UserManager using email "
-                    + userInfo.getEmail(), e);
+            log.error("Error while search user in UserManager using email " + userInfo.getEmail(), e);
             return null;
         }
         return nuxeoLogin;
@@ -68,8 +67,7 @@ public class StoredUserInfoResolver extends UserResolver {
             String userId = (String) user.getPropertyValue(userManager.getUserIdField());
             getUserInfoStore().storeUserInfo(userId, userInfo);
         } catch (ClientException e) {
-            log.error("Error while updating user info for user "
-                    + userInfo.getEmail(), e);
+            log.error("Error while updating user info for user " + userInfo.getEmail(), e);
             return null;
         }
         return user;
@@ -77,4 +75,3 @@ public class StoredUserInfoResolver extends UserResolver {
     }
 
 }
-

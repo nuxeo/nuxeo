@@ -14,8 +14,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.api",
+@Deploy({ "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.api",
         "org.nuxeo.ecm.platform.login.openid.test" })
 public class TestOpenIDProviders {
 

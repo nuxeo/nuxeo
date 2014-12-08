@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 
 /**
- * Initializes the repository for token authentication test cases. Only create
- * one document for now.
+ * Initializes the repository for token authentication test cases. Only create one document for now.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
@@ -42,8 +41,7 @@ public class TokenAuthenticationRepositoryInit extends DefaultRepositoryInit {
     /**
      * Creates the test doc.
      */
-    protected DocumentModel createTestDoc(CoreSession session)
-            throws ClientException {
+    protected DocumentModel createTestDoc(CoreSession session) throws ClientException {
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
 

@@ -46,18 +46,27 @@ import static jcifs.smb.NtStatus.NT_STATUS_ACCESS_VIOLATION;
 public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
 
     private static final String JCIFS_PREFIX = "jcifs.";
+
     public static final String JCIFS_NETBIOS_CACHE_POLICY = "jcifs.netbios.cachePolicy";
+
     public static final String JCIFS_SMB_CLIENT_SO_TIMEOUT = "jcifs.smb.client.soTimeout";
+
     public static final String JCIFS_HTTP_LOAD_BALANCE = "jcifs.http.loadBalance";
+
     public static final String JCIFS_HTTP_DOMAIN_CONTROLLER = "jcifs.http.domainController";
+
     public static final String JCIFS_SMB_CLIENT_DOMAIN = "jcifs.smb.client.domain";
 
     public static final boolean FORCE_SESSION_CREATION = true;
+
     public static final String NTLM_HTTP_AUTH_SESSION_KEY = "NtlmHttpAuth";
+
     public static final String NTLM_HTTP_CHAL_SESSION_KEY = "NtlmHttpChal";
 
     protected static String defaultDomain;
+
     protected static String domainController;
+
     protected static boolean loadBalance;
 
     private static final Log log = LogFactory.getLog(NTLMAuthenticator.class);
@@ -94,7 +103,8 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
         }
     }
 
-    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
 
         log.debug("NTML handleRetrieveIdentity");
         NtlmPasswordAuthentication ntlm;
@@ -164,7 +174,8 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
         return true;
     }
 
-    public static NtlmPasswordAuthentication negotiate(HttpServletRequest req, HttpServletResponse resp, boolean skipAuthentication) throws IOException, ServletException {
+    public static NtlmPasswordAuthentication negotiate(HttpServletRequest req, HttpServletResponse resp,
+            boolean skipAuthentication) throws IOException, ServletException {
         log.debug("NTLM negotiation starts");
 
         String msg = req.getHeader("Authorization");
@@ -224,12 +235,12 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
 
                 } catch (SmbAuthException sae) {
 
-                    log.error(ntlm.getName() + ": 0x" + jcifs.util.Hexdump.toHexString(sae.getNtStatus(), 8) + ": " + sae);
+                    log.error(ntlm.getName() + ": 0x" + jcifs.util.Hexdump.toHexString(sae.getNtStatus(), 8) + ": "
+                            + sae);
 
                     if (sae.getNtStatus() == NT_STATUS_ACCESS_VIOLATION) {
                         /*
-                         * Server challenge no longer valid for externally supplied
-                         * password hashes.
+                         * Server challenge no longer valid for externally supplied password hashes.
                          */
                         ssn = req.getSession(false);
                         if (ssn != null) {

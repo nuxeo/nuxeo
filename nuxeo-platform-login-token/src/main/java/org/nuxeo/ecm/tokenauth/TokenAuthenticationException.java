@@ -20,8 +20,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 
 /**
- * Exception thrown when an error occurs in the
- * {@link TokenAuthenticationService}.
+ * Exception thrown when an error occurs in the {@link TokenAuthenticationService}.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7

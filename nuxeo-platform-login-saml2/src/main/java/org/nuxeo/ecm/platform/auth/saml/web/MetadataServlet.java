@@ -56,12 +56,8 @@ import java.util.LinkedList;
  */
 public class MetadataServlet extends HttpServlet {
 
-    public static final Collection<String> nameID = Arrays.asList(
-            NameIDType.EMAIL,
-            NameIDType.TRANSIENT,
-            NameIDType.PERSISTENT,
-            NameIDType.UNSPECIFIED,
-            NameIDType.X509_SUBJECT);
+    public static final Collection<String> nameID = Arrays.asList(NameIDType.EMAIL, NameIDType.TRANSIENT,
+            NameIDType.PERSISTENT, NameIDType.UNSPECIFIED, NameIDType.X509_SUBJECT);
 
     protected static final Log log = LogFactory.getLog(MetadataServlet.class);
 
@@ -92,26 +88,20 @@ public class MetadataServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        entityBaseURL = VirtualHostHelper.getBaseURL(request) + '/' +
-                NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
+        entityBaseURL = VirtualHostHelper.getBaseURL(request) + '/' + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
         /*
-        id = entityId.replaceAll("[^a-zA-Z0-9-_.]", "_");
-        if (id.startsWith("-")) {
-            id = "_" + id.substring(1);
-        }*/
+         * id = entityId.replaceAll("[^a-zA-Z0-9-_.]", "_"); if (id.startsWith("-")) { id = "_" + id.substring(1); }
+         */
 
         EntityDescriptor descriptor = buildEntityDescriptor();
 
         try {
-            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(
-                    descriptor);
+            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(descriptor);
             if (marshaller == null) {
-                log.error(
-                        "Unable to marshall message, no marshaller registered for message object: "
-                                + descriptor.getElementQName());
+                log.error("Unable to marshall message, no marshaller registered for message object: "
+                        + descriptor.getElementQName());
             }
             Element dom = marshaller.marshall(descriptor);
             XMLHelper.writeNode(dom, response.getWriter());
@@ -123,14 +113,12 @@ public class MetadataServlet extends HttpServlet {
     protected EntityDescriptor buildEntityDescriptor() {
 
         // Entity Descriptor
-        EntityDescriptor descriptor = build(
-                EntityDescriptor.DEFAULT_ELEMENT_NAME);
-        //descriptor.setID(id);
+        EntityDescriptor descriptor = build(EntityDescriptor.DEFAULT_ELEMENT_NAME);
+        // descriptor.setID(id);
         descriptor.setEntityID(entityId);
 
         // SPSSO Descriptor
-        SPSSODescriptor spDescriptor = build(
-                SPSSODescriptor.DEFAULT_ELEMENT_NAME);
+        SPSSODescriptor spDescriptor = build(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
         spDescriptor.setAuthnRequestsSigned(requestSigned);
         spDescriptor.setWantAssertionsSigned(wantAssertionSigned);
         spDescriptor.addSupportedProtocol(SAMLConstants.SAML20P_NS);
@@ -142,25 +130,21 @@ public class MetadataServlet extends HttpServlet {
         if (getKeyManager().getSigningCredential() != null) {
             spDescriptor.getKeyDescriptors().add(
                     buildKeyDescriptor(UsageType.SIGNING,
-                            generateKeyInfoForCredential(
-                                    getKeyManager().getSigningCredential())));
+                            generateKeyInfoForCredential(getKeyManager().getSigningCredential())));
         }
         if (getKeyManager().getEncryptionCredential() != null) {
             spDescriptor.getKeyDescriptors().add(
                     buildKeyDescriptor(UsageType.ENCRYPTION,
-                            generateKeyInfoForCredential(
-                                    getKeyManager().getEncryptionCredential())));
+                            generateKeyInfoForCredential(getKeyManager().getEncryptionCredential())));
         }
         if (getKeyManager().getTlsCredential() != null) {
             spDescriptor.getKeyDescriptors().add(
                     buildKeyDescriptor(UsageType.UNSPECIFIED,
-                            generateKeyInfoForCredential(
-                                    getKeyManager().getTlsCredential())));
+                            generateKeyInfoForCredential(getKeyManager().getTlsCredential())));
         }
 
-        // LOGIN -  SAML2_POST_BINDING_URI
-        AssertionConsumerService consumer = build(
-                AssertionConsumerService.DEFAULT_ELEMENT_NAME);
+        // LOGIN - SAML2_POST_BINDING_URI
+        AssertionConsumerService consumer = build(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         consumer.setLocation(entityBaseURL);
         consumer.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
         consumer.setIsDefault(true);
@@ -168,8 +152,7 @@ public class MetadataServlet extends HttpServlet {
         spDescriptor.getAssertionConsumerServices().add(consumer);
 
         // LOGOUT - SAML2_POST_BINDING_URI
-        SingleLogoutService logoutService = build(
-                SingleLogoutService.DEFAULT_ELEMENT_NAME);
+        SingleLogoutService logoutService = build(SingleLogoutService.DEFAULT_ELEMENT_NAME);
         logoutService.setLocation(entityBaseURL);
         logoutService.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
         spDescriptor.getSingleLogoutServices().add(logoutService);
@@ -186,8 +169,7 @@ public class MetadataServlet extends HttpServlet {
         return descriptor;
     }
 
-    protected Collection<NameIDFormat> buildNameIDFormats(
-            Collection<String> nameIDs) {
+    protected Collection<NameIDFormat> buildNameIDFormats(Collection<String> nameIDs) {
 
         Collection<NameIDFormat> formats = new LinkedList<>();
 
@@ -203,10 +185,7 @@ public class MetadataServlet extends HttpServlet {
 
     protected KeyInfo generateKeyInfoForCredential(Credential credential) {
         try {
-            KeyInfoGenerator keyInfoGenerator = SecurityHelper.getKeyInfoGenerator(
-                    credential,
-                    null,
-                    null);
+            KeyInfoGenerator keyInfoGenerator = SecurityHelper.getKeyInfoGenerator(credential, null, null);
             return keyInfoGenerator.generate(credential);
         } catch (org.opensaml.xml.security.SecurityException e) {
             log.error("Failed to  generate key info.");

@@ -29,8 +29,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 5.7
  */
 @Features(PlatformFeature.class)
-@Deploy({
-        "org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-directory-types.xml",
+@Deploy({ "org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-directory-types.xml",
         "org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-framework.xml",
         "org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-directory-contrib.xml" })
 public class TokenAuthenticationServiceFeature extends SimpleFeature {

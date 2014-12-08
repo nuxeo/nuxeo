@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 
 @Name("deputyManager")
 @Scope(SESSION)
-public class DeputyManagerDelegate implements Serializable{
+public class DeputyManagerDelegate implements Serializable {
 
     private static final long serialVersionUID = -4778456059717447736L;
 
@@ -43,10 +43,8 @@ public class DeputyManagerDelegate implements Serializable{
     private transient DeputyManager deputyManager;
 
     @Unwrap
-    public DeputyManager factoryForDeputyManager() throws ClientException
-    {
-        if (deputyManager==null)
-        {
+    public DeputyManager factoryForDeputyManager() throws ClientException {
+        if (deputyManager == null) {
             try {
                 deputyManager = Framework.getService(DeputyManager.class);
             } catch (Exception e) {
@@ -57,6 +55,5 @@ public class DeputyManagerDelegate implements Serializable{
 
         return deputyManager;
     }
-
 
 }

@@ -73,8 +73,6 @@ public class DeputyActionsBean implements Serializable {
 
     protected String adminLogin;
 
-
-    
     // Back-end Model
 
     protected DocumentModel editableDeputy;
@@ -104,8 +102,7 @@ public class DeputyActionsBean implements Serializable {
 
         editableDeputy = null;
 
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                messages.get("message.deputy.created"),
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, messages.get("message.deputy.created"),
                 messages.get("message.deputy.created"));
         FacesContext.getCurrentInstance().addMessage(null, message);
 
@@ -139,8 +136,7 @@ public class DeputyActionsBean implements Serializable {
 
     public String deleteDeputy(String deputyId) throws ClientException {
         deputyManager.removeMandate(currentUser.getName(), deputyId);
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                messages.get("message.deputy.deleted"),
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, messages.get("message.deputy.deleted"),
                 messages.get("message.deputy.deleted"));
         FacesContext.getCurrentInstance().addMessage(null, message);
 
@@ -167,21 +163,17 @@ public class DeputyActionsBean implements Serializable {
         return result;
     }
 
-    public String loginAsDeputy(String login) throws ClientException,
-            IOException, ServletException {
+    public String loginAsDeputy(String login) throws ClientException, IOException, ServletException {
         NuxeoPrincipal nxUser = (NuxeoPrincipal) currentUser;
 
         if ((!nxUser.isAdministrator())
-                && (!deputyManager.getPossiblesAlternateLogins(
-                        currentUser.getName()).contains(login))) {
+                && (!deputyManager.getPossiblesAlternateLogins(currentUser.getName()).contains(login))) {
             return null;
         }
 
         if (userManager.getPrincipal(login) == null) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    messages.get("message.deputy.nonExistingUser"),
-                    messages.get("message.deputy.nonExistingUser"));
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    messages.get("message.deputy.nonExistingUser"), messages.get("message.deputy.nonExistingUser"));
             FacesContext.getCurrentInstance().addMessage(null, message);
             return null;
         }
@@ -191,8 +183,7 @@ public class DeputyActionsBean implements Serializable {
         return null;
     }
 
-    protected void reconnectAs(String login) throws ServletException,
-            IOException {
+    protected void reconnectAs(String login) throws ServletException, IOException {
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext eContext = context.getExternalContext();
         Object req = eContext.getRequest();
@@ -206,12 +197,10 @@ public class DeputyActionsBean implements Serializable {
             response = (HttpServletResponse) resp;
         }
 
-        if ((response != null) && (request != null)
-                && !context.getResponseComplete()) {
+        if ((response != null) && (request != null) && !context.getResponseComplete()) {
             String targetURL = "/" + NXAuthConstants.SWITCH_USER_PAGE;
 
-            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
-                    true);
+            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
             if (login != null) {
                 request.setAttribute(NXAuthConstants.SWITCH_USER_KEY, login);
             }
@@ -251,8 +240,7 @@ public class DeputyActionsBean implements Serializable {
         String originalUser = nxUser.getOriginatingUser();
 
         if (originalUser != null) {
-            return nxUser.getName() + " " + messages.get("label.deputed.by")
-                    + " " + originalUser;
+            return nxUser.getName() + " " + messages.get("label.deputed.by") + " " + originalUser;
         } else {
             return nxUser.getName();
         }
@@ -265,9 +253,8 @@ public class DeputyActionsBean implements Serializable {
     public String getAdminLogin() {
         return adminLogin;
     }
-    
-    public String adminLoginAsDeputy() throws ClientException, IOException,
-            ServletException {
+
+    public String adminLoginAsDeputy() throws ClientException, IOException, ServletException {
 
         if (adminLogin == null) {
             return null;
@@ -280,8 +267,7 @@ public class DeputyActionsBean implements Serializable {
 
         if (userManager.getPrincipal(adminLogin) == null) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN,
-                    messages.get("message.deputy.nonExistingUser"),
-                    messages.get("message.deputy.nonExistingUser"));
+                    messages.get("message.deputy.nonExistingUser"), messages.get("message.deputy.nonExistingUser"));
             FacesContext.getCurrentInstance().addMessage(null, message);
 
             return null;

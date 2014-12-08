@@ -32,8 +32,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper class to manage mapping between identification info comming from the
- * OpenID provider and Nuxeo UserManager.
+ * Helper class to manage mapping between identification info comming from the OpenID provider and Nuxeo UserManager.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
@@ -64,8 +63,7 @@ public class EmailBasedUserResolver extends UserResolver {
             return (String) user.getPropertyValue(userManager.getUserIdField());
 
         } catch (ClientException e) {
-            log.error("Error while search user in UserManager using email "
-                    + userInfo.getEmail(), e);
+            log.error("Error while search user in UserManager using email " + userInfo.getEmail(), e);
             return null;
         }
     }
@@ -76,8 +74,7 @@ public class EmailBasedUserResolver extends UserResolver {
             UserManager userManager = Framework.getLocalService(UserManager.class);
             user.setPropertyValue(userManager.getUserEmailField(), userInfo.getEmail());
         } catch (ClientException e) {
-            log.error("Error while search user in UserManager using email "
-                    + userInfo.getEmail(), e);
+            log.error("Error while search user in UserManager using email " + userInfo.getEmail(), e);
             return null;
         }
         return user;

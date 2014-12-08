@@ -58,8 +58,7 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
     private Set<String> availableCredentials;
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         config = (KeyDescriptor) contribution;
         setup();
     }
@@ -67,13 +66,11 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
     private void setup() {
         if (config != null) {
             try {
-                keyStore = getKeyStore(config.getKeystoreFilePath(),
-                        config.getKeystorePassword());
+                keyStore = getKeyStore(config.getKeystoreFilePath(), config.getKeystorePassword());
             } catch (SecurityException e) {
                 throw new RuntimeException(e);
             }
-            credentialResolver = new KeyStoreCredentialResolver(keyStore,
-                    config.getPasswords());
+            credentialResolver = new KeyStoreCredentialResolver(keyStore, config.getPasswords());
         } else {
             keyStore = null;
             credentialResolver = null;
@@ -81,15 +78,13 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
         }
     }
 
-    private KeyStore getKeyStore(String path, String password)
-            throws SecurityException {
+    private KeyStore getKeyStore(String path, String password) throws SecurityException {
         KeyStore ks;
         try {
             File rootKeystoreFile = new File(path);
             if (!rootKeystoreFile.exists()) {
-                throw new SecurityException("Unable to find keyStore at " +
-                        new File(".").getAbsolutePath() + File.separator +
-                        path);
+                throw new SecurityException("Unable to find keyStore at " + new File(".").getAbsolutePath()
+                        + File.separator + path);
             }
             InputStream keystoreIS = new FileInputStream(rootKeystoreFile);
             ks = java.security.KeyStore.getInstance(KEYSTORE_TYPE);
@@ -105,8 +100,7 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         config = null;
         setup();
     }
@@ -136,8 +130,7 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
             }
             return availableCredentials;
         } catch (KeyStoreException e) {
-            throw new RuntimeException("Unable to load aliases from keyStore",
-                    e);
+            throw new RuntimeException("Unable to load aliases from keyStore", e);
         }
     }
 
@@ -178,14 +171,12 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
     }
 
     @Override
-    public Iterable<Credential> resolve(CriteriaSet criteria)
-            throws org.opensaml.xml.security.SecurityException {
+    public Iterable<Credential> resolve(CriteriaSet criteria) throws org.opensaml.xml.security.SecurityException {
         return credentialResolver.resolve(criteria);
     }
 
     @Override
-    public Credential resolveSingle(CriteriaSet criteria)
-            throws SecurityException {
+    public Credential resolveSingle(CriteriaSet criteria) throws SecurityException {
         return credentialResolver.resolveSingle(criteria);
     }
 

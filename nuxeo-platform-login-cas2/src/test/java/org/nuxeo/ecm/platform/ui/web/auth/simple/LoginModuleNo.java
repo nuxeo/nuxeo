@@ -40,8 +40,8 @@ public class LoginModuleNo extends NuxeoAbstractServerLoginModule {
         return false;
     }
 
-    public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map<String, ?> sharedState, Map<String, ?> options) {
+    public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
+            Map<String, ?> options) {
     }
 
     public boolean login() throws LoginException {

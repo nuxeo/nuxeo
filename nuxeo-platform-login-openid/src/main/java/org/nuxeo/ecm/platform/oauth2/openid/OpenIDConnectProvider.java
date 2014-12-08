@@ -51,12 +51,10 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson.JacksonFactory;
 
 /**
- * Class that holds info about an OpenID provider, this includes an OAuth
- * Provider as well as urls and icons
+ * Class that holds info about an OpenID provider, this includes an OAuth Provider as well as urls and icons
  *
  * @author Nelson Silva <nelson.silva@inevo.pt>
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
@@ -84,11 +82,9 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
     private Class<? extends OpenIDUserInfo> openIdUserInfoClass;
 
-    public OpenIDConnectProvider(NuxeoOAuth2ServiceProvider oauth2Provider,
-            String accessTokenKey, String userInfoURL, Class<? extends OpenIDUserInfo> openIdUserInfoClass,
-            String icon, boolean enabled,
-            RedirectUriResolver redirectUriResolver,
-            Class<? extends UserResolver> userResolverClass) {
+    public OpenIDConnectProvider(NuxeoOAuth2ServiceProvider oauth2Provider, String accessTokenKey, String userInfoURL,
+            Class<? extends OpenIDUserInfo> openIdUserInfoClass, String icon, boolean enabled,
+            RedirectUriResolver redirectUriResolver, Class<? extends UserResolver> userResolverClass) {
         this.oauth2Provider = oauth2Provider;
         this.userInfoURL = userInfoURL;
         this.openIdUserInfoClass = openIdUserInfoClass;
@@ -98,8 +94,8 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
         this.redirectUriResolver = redirectUriResolver;
 
         try {
-            Constructor<? extends UserResolver> c = userResolverClass.getConstructor(new Class[]{OpenIDConnectProvider.class});
-            userResolver = c.newInstance(new Object[]{this});
+            Constructor<? extends UserResolver> c = userResolverClass.getConstructor(new Class[] { OpenIDConnectProvider.class });
+            userResolver = c.newInstance(new Object[] { this });
         } catch (Exception e) {
             log.error("Failed to instantiate UserResolver", e);
         }
@@ -111,8 +107,8 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     }
 
     /**
-     * Create a state token to prevent request forgery.
-     * Store it in the session for later validation.
+     * Create a state token to prevent request forgery. Store it in the session for later validation.
+     * 
      * @param HttpServletRequest request
      * @return
      */
@@ -123,8 +119,9 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     }
 
     /**
-     * Ensure that this is no request forgery going on, and that the user
-     * sending us this connect request is the user that was supposed to.
+     * Ensure that this is no request forgery going on, and that the user sending us this connect request is the user
+     * that was supposed to.
+     * 
      * @param HttpServletRequest request
      * @return
      */
@@ -133,11 +130,9 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
                 request.getSession().getAttribute(OpenIDConnectAuthenticator.STATE_SESSION_ATTRIBUTE + "_" + getName()));
     }
 
-    public String getAuthenticationUrl(HttpServletRequest req,
-            String requestedUrl) {
+    public String getAuthenticationUrl(HttpServletRequest req, String requestedUrl) {
         // redirect to the authorization flow
-        AuthorizationCodeFlow flow = oauth2Provider.getAuthorizationCodeFlow(
-                HTTP_TRANSPORT, JSON_FACTORY);
+        AuthorizationCodeFlow flow = oauth2Provider.getAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY);
         AuthorizationCodeRequestUrl authorizationUrl = flow.newAuthorizationUrl(); // .setResponseTypes("token");
         authorizationUrl.setRedirectUri(getRedirectUri(req));
 
@@ -163,8 +158,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
         HttpResponse response = null;
 
         try {
-            AuthorizationCodeFlow flow = oauth2Provider.getAuthorizationCodeFlow(
-                    HTTP_TRANSPORT, JSON_FACTORY);
+            AuthorizationCodeFlow flow = oauth2Provider.getAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY);
 
             String redirectUri = getRedirectUri(req);
             response = flow.newTokenRequest(code).setRedirectUri(redirectUri).executeUnparsed();
@@ -173,7 +167,6 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
         }
 
         String type = response.getContentType();
-
 
         try {
             // Try to parse as json
@@ -241,7 +234,6 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     public boolean isEnabled() {
         return enabled;
     }
-
 
     public UserResolver getUserResolver() {
         return userResolver;

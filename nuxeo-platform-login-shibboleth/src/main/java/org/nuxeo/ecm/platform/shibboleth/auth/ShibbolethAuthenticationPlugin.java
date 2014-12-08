@@ -36,8 +36,8 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLo
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
-public class ShibbolethAuthenticationPlugin implements
-        NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension {
+public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin,
+        NuxeoAuthenticationPluginLogoutExtension {
 
     private static final Log log = LogFactory.getLog(ShibbolethAuthenticationPlugin.class);
 
@@ -60,8 +60,7 @@ public class ShibbolethAuthenticationPlugin implements
     }
 
     @Override
-    public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         if (getService() == null) {
             return false;
         }
@@ -73,8 +72,7 @@ public class ShibbolethAuthenticationPlugin implements
         try {
             httpResponse.sendRedirect(loginURL);
         } catch (IOException e) {
-            String errorMessage = String.format(
-                    "Unable to handle Shibboleth login on %s", loginURL);
+            String errorMessage = String.format("Unable to handle Shibboleth login on %s", loginURL);
             log.error(errorMessage, e);
             return false;
         }
@@ -82,8 +80,7 @@ public class ShibbolethAuthenticationPlugin implements
     }
 
     @Override
-    public Boolean handleLogout(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) {
+    public Boolean handleLogout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         if (getService() == null) {
             return false;
         }
@@ -101,8 +98,8 @@ public class ShibbolethAuthenticationPlugin implements
     }
 
     @Override
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
         if (getService() == null) {
             return null;
         }
@@ -114,16 +111,13 @@ public class ShibbolethAuthenticationPlugin implements
         Session userDir = null;
         try {
             UserManager userManager = Framework.getService(UserManager.class);
-            userDir = Framework.getService(DirectoryService.class).open(
-                    userManager.getUserDirectoryName());
-            Map<String, Object> fieldMap = getService().getUserMetadata(
-                    userManager.getUserIdField(), httpRequest);
+            userDir = Framework.getService(DirectoryService.class).open(userManager.getUserDirectoryName());
+            Map<String, Object> fieldMap = getService().getUserMetadata(userManager.getUserIdField(), httpRequest);
             DocumentModel entry = userDir.getEntry(userId);
             if (entry == null) {
                 userDir.createEntry(fieldMap);
             } else {
-                entry.getDataModel(userManager.getUserSchemaName()).setMap(
-                        fieldMap);
+                entry.getDataModel(userManager.getUserSchemaName()).setMap(fieldMap);
                 userDir.updateEntry(entry);
             }
         } catch (Exception e) {

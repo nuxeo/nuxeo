@@ -46,10 +46,8 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.login.cas2");
-        deployContrib("org.nuxeo.ecm.platform.login.cas2.test",
-                "OSGI-INF/login-yes-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.login.cas2.test",
-                "OSGI-INF/login-cas-and-anonymous-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.login.cas2.test", "OSGI-INF/login-yes-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.login.cas2.test", "OSGI-INF/login-cas-and-anonymous-contrib.xml");
     }
 
     @Test
@@ -64,9 +62,7 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
         LoginContext loginContext = (LoginContext) request.getAttribute("org.nuxeo.ecm.login.context");
         assertNull(loginError);
         assertNotNull(loginContext);
-        assertEquals(
-                CAS_USER,
-                ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
+        assertEquals(CAS_USER, ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
     }
 
     @Test
@@ -79,19 +75,15 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
         LoginContext loginContext = (LoginContext) request.getAttribute("org.nuxeo.ecm.login.context");
         assertNull(loginError);
         assertNotNull(loginContext);
-        assertEquals(
-                "Anonymous",
-                ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
+        assertEquals("Anonymous", ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
     }
 
     /**
-     * TODO : create a random number for the ticket, add to the
-     * MockServiceValidators and associate it to the username
+     * TODO : create a random number for the ticket, add to the MockServiceValidators and associate it to the username
      *
      * @throws ServletException
      */
-    protected void doAuthenticationToCasServer(String username)
-            throws ServletException {
+    protected void doAuthenticationToCasServer(String username) throws ServletException {
         String casTicket = username;
 
         request.setParameter(TICKET_KEY, new String[] { casTicket, });

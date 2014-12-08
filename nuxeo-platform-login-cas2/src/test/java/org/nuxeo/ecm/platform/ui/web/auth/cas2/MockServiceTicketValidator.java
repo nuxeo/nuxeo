@@ -28,8 +28,7 @@ import edu.yale.its.tp.cas.client.ServiceTicketValidator;
 public class MockServiceTicketValidator extends ServiceTicketValidator {
 
     @Override
-    public void validate() throws IOException, SAXException,
-            ParserConfigurationException {
+    public void validate() throws IOException, SAXException, ParserConfigurationException {
 
         if (callBackValidator != null && !MockProxyTicketValidator.callBackValidator.checkTicketValidatorState(this)) {
             errorMessage = "Error during ticket validation";
@@ -44,8 +43,7 @@ public class MockServiceTicketValidator extends ServiceTicketValidator {
 
     public static CallBackCheckTicketValidatorState callBackValidator;
 
-    public static void setCallBackValidator(
-            CallBackCheckTicketValidatorState callBackValidator) {
+    public static void setCallBackValidator(CallBackCheckTicketValidatorState callBackValidator) {
         MockProxyTicketValidator.callBackValidator = callBackValidator;
     }
 

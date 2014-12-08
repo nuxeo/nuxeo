@@ -317,8 +317,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public void setCharacterEncoding(String env)
-            throws UnsupportedEncodingException {
+    public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
         // nothing to do
     }
 
@@ -353,14 +352,12 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public AsyncContext startAsync(ServletRequest arg0, ServletResponse arg1)
-            throws IllegalStateException {
+    public AsyncContext startAsync(ServletRequest arg0, ServletResponse arg1) throws IllegalStateException {
         return null;
     }
 
     @Override
-    public boolean authenticate(HttpServletResponse arg0) throws IOException,
-            ServletException {
+    public boolean authenticate(HttpServletResponse arg0) throws IOException, ServletException {
         return false;
     }
 

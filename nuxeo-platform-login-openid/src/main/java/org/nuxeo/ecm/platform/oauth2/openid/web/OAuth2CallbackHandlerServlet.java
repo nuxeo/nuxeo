@@ -55,7 +55,6 @@ import com.google.api.client.json.jackson.JacksonFactory;
  * Servlet that handles OAuth2 Callbacks
  *
  * @author Nelson Silva <nelson.silva@inevo.pt>
- *
  */
 public class OAuth2CallbackHandlerServlet extends HttpServlet {
 
@@ -81,24 +80,20 @@ public class OAuth2CallbackHandlerServlet extends HttpServlet {
     public static final String URL_MAPPING = "/openid";
 
     /**
-     * The URL to redirect the user to after handling the callback. Consider
-     * saving this in a cookie before redirecting users to the Google
-     * authorization URL if you have multiple possible URL to redirect people
-     * to.
+     * The URL to redirect the user to after handling the callback. Consider saving this in a cookie before redirecting
+     * users to the Google authorization URL if you have multiple possible URL to redirect people to.
      */
     public static final String REDIRECT_URL = "/";
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         // Getting the "error" URL parameter
         String error = req.getParameter(ERROR_URL_PARAM_NAME);
 
         // / Checking if there was an error such as the user denied access
         if (error != null && error.length() > 0) {
-            resp.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,
-                    "There was an error: \"" + error + "\".");
+            resp.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, "There was an error: \"" + error + "\".");
             return;
         }
 
@@ -107,8 +102,7 @@ public class OAuth2CallbackHandlerServlet extends HttpServlet {
 
         // Checking conditions on the "code" URL parameter
         if (code == null || code.isEmpty()) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                    "There was an error: \"" + error + "\".");
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "There was an error: \"" + error + "\".");
             return;
         }
 
@@ -121,19 +115,16 @@ public class OAuth2CallbackHandlerServlet extends HttpServlet {
             provider = getServiceProvider(serviceProviderName);
 
             if (provider == null) {
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND,
-                        "No service provider called: \"" + serviceProviderName
-                                + "\".");
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No service provider called: \"" + serviceProviderName
+                        + "\".");
                 return;
             }
 
-            AuthorizationCodeFlow flow = provider.getAuthorizationCodeFlow(
-                    HTTP_TRANSPORT, JSON_FACTORY);
+            AuthorizationCodeFlow flow = provider.getAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY);
 
             String redirectUri = req.getRequestURL().toString();
 
-            HttpResponse response = flow.newTokenRequest(code).setRedirectUri(
-                    redirectUri).executeUnparsed();
+            HttpResponse response = flow.newTokenRequest(code).setRedirectUri(redirectUri).executeUnparsed();
             TokenResponse tokenResponse = response.parseAs(TokenResponse.class);
 
             // Validate the token
@@ -146,8 +137,7 @@ public class OAuth2CallbackHandlerServlet extends HttpServlet {
                 }
             });
 
-            GenericUrl url = new GenericUrl(
-                    "https://www.googleapis.com/oauth2/v1/tokeninfo");
+            GenericUrl url = new GenericUrl("https://www.googleapis.com/oauth2/v1/tokeninfo");
             url.set("access_token", accessToken);
 
             HttpRequest request = requestFactory.buildGetRequest(url);
@@ -164,8 +154,7 @@ public class OAuth2CallbackHandlerServlet extends HttpServlet {
             DocumentModelList users = manager.searchUsers(query, null);
 
             if (users.isEmpty()) {
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND,
-                        "No user found with email: \"" + email + "\".");
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No user found with email: \"" + email + "\".");
             }
 
             DocumentModel user = users.get(0);
@@ -182,8 +171,7 @@ public class OAuth2CallbackHandlerServlet extends HttpServlet {
 
     }
 
-    protected static NuxeoOAuth2ServiceProvider getServiceProvider(
-            String serviceName) throws Exception {
+    protected static NuxeoOAuth2ServiceProvider getServiceProvider(String serviceName) throws Exception {
         OAuth2ServiceProviderRegistry registry;
         registry = Framework.getLocalService(OAuth2ServiceProviderRegistry.class);
         NuxeoOAuth2ServiceProvider nuxeoServiceProvider = registry.getProvider(serviceName);

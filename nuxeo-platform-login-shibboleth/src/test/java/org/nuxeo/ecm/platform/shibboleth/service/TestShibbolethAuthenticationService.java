@@ -42,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy( { "org.nuxeo.ecm.platform.login.shibboleth" })
+@Deploy({ "org.nuxeo.ecm.platform.login.shibboleth" })
 @LocalDeploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-shibboleth-authentication-contrib.xml")
 public class TestShibbolethAuthenticationService {
 
@@ -99,15 +99,12 @@ public class TestShibbolethAuthenticationService {
         String idField = "username";
 
         request.setHeader("shib-identity-provider", "url1");
-        assertEquals("value1", service.getUserMetadata(idField,
-                request).get(idField));
+        assertEquals("value1", service.getUserMetadata(idField, request).get(idField));
 
         request.setHeader("shib-identity-provider", "url2");
-        assertEquals("value2", service.getUserMetadata(idField,
-                request).get(idField));
+        assertEquals("value2", service.getUserMetadata(idField, request).get(idField));
 
         request.setHeader("shib-identity-provider", "anotherUrl");
-        assertEquals("test", service.getUserMetadata(idField,
-                request).get(idField));
+        assertEquals("test", service.getUserMetadata(idField, request).get(idField));
     }
 }

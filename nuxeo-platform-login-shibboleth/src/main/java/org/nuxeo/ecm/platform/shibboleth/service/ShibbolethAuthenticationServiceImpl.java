@@ -28,16 +28,14 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class ShibbolethAuthenticationServiceImpl extends DefaultComponent
-        implements ShibbolethAuthenticationService {
+public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implements ShibbolethAuthenticationService {
 
     public static final String CONFIG_EP = "config";
 
     protected ShibbolethAuthenticationConfig config;
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIG_EP.equals(extensionPoint)) {
             config = (ShibbolethAuthenticationConfig) contribution;
         }
@@ -104,12 +102,10 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent
     }
 
     @Override
-    public Map<String, Object> getUserMetadata(String userIdField,
-            HttpServletRequest httpRequest) {
+    public Map<String, Object> getUserMetadata(String userIdField, HttpServletRequest httpRequest) {
         Map<String, Object> fieldMap = new HashMap<String, Object>();
         for (String key : config.getFieldMapping().keySet()) {
-            fieldMap.put(config.getFieldMapping().get(key),
-                    httpRequest.getHeader(key));
+            fieldMap.put(config.getFieldMapping().get(key), httpRequest.getHeader(key));
         }
         // Force userIdField to shibb userId value in case of the IdP do
         // not use the same mapping as the default's one.

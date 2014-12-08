@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.simple.AbstractAuthenticator;
 public class TestCASAuthenticator extends AbstractAuthenticator {
 
     protected static final String CAS_USER = "CasUser";
+
     protected static final String TICKET_KEY = "ticket";
 
     @Before
@@ -45,10 +46,8 @@ public class TestCASAuthenticator extends AbstractAuthenticator {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.login.cas2");
-        deployContrib("org.nuxeo.ecm.platform.login.cas2.test",
-                "OSGI-INF/login-yes-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.login.cas2.test",
-                "OSGI-INF/login-cas-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.login.cas2.test", "OSGI-INF/login-yes-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.login.cas2.test", "OSGI-INF/login-cas-contrib.xml");
     }
 
     @Test
@@ -62,17 +61,14 @@ public class TestCASAuthenticator extends AbstractAuthenticator {
         LoginContext loginContext = (LoginContext) request.getAttribute("org.nuxeo.ecm.login.context");
         assertNull(loginError);
         assertNotNull(loginContext);
-        assertEquals(
-                CAS_USER,
-                ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
+        assertEquals(CAS_USER, ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
     }
 
     /**
-     * TODO : create a random number for the ticket, add it to the
-     * MockServiceValidators and associate this ticket to the username
+     * TODO : create a random number for the ticket, add it to the MockServiceValidators and associate this ticket to
+     * the username
      */
-    protected void doAuthenticationToCasServer(String username)
-            throws ServletException {
+    protected void doAuthenticationToCasServer(String username) throws ServletException {
         String casTicket = username;
         request.setParameter(TICKET_KEY, new String[] { casTicket, });
     }

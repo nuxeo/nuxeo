@@ -39,106 +39,99 @@ import javax.servlet.http.*;
 import edu.yale.its.tp.cas.util.SecureURL;
 
 /**
- * Receives and keeps track fo PGTs and serial PGT identifiers (IOUs) sent
- * by CAS in response to a ServiceValidate request.
+ * Receives and keeps track fo PGTs and serial PGT identifiers (IOUs) sent by CAS in response to a ServiceValidate
+ * request.
  */
 public class ProxyTicketReceptor extends HttpServlet {
 
-	//*********************************************************************
-	// Constants
+    // *********************************************************************
+    // Constants
 
-	private static final String PGT_IOU_PARAM = "pgtIou";
-	private static final String PGT_ID_PARAM = "pgtId";
+    private static final String PGT_IOU_PARAM = "pgtIou";
 
-	//*********************************************************************
-	// Private state
+    private static final String PGT_ID_PARAM = "pgtId";
 
-	private static Map pgt;
-	private static String casProxyUrl;
+    // *********************************************************************
+    // Private state
 
-	//*********************************************************************
-	// Initialization 
+    private static Map pgt;
 
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
-		synchronized (ProxyTicketReceptor.class) {
-			if (pgt == null)
-				pgt = new HashMap();
+    private static String casProxyUrl;
 
-			// retrieve the URL for CAS
-			if (casProxyUrl == null) {
-				ServletContext app = config.getServletContext();
-				casProxyUrl =
-					(String) app.getInitParameter("edu.yale.its.tp.cas.proxyUrl");
-				if (casProxyUrl == null)
-					throw new ServletException("need edu.yale.its.tp.cas.proxyUrl");
-			}
-		}
-	}
+    // *********************************************************************
+    // Initialization
 
-	//*********************************************************************
-	// Request handling
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        synchronized (ProxyTicketReceptor.class) {
+            if (pgt == null)
+                pgt = new HashMap();
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException {
-		doGet(request, response);
-	}
+            // retrieve the URL for CAS
+            if (casProxyUrl == null) {
+                ServletContext app = config.getServletContext();
+                casProxyUrl = (String) app.getInitParameter("edu.yale.its.tp.cas.proxyUrl");
+                if (casProxyUrl == null)
+                    throw new ServletException("need edu.yale.its.tp.cas.proxyUrl");
+            }
+        }
+    }
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException {
-		String pgtId = request.getParameter(PGT_ID_PARAM);
-		String pgtIou = request.getParameter(PGT_IOU_PARAM);
-		if (pgtId != null && pgtIou != null) {
-			synchronized (pgt) {
-				pgt.put(pgtIou, pgtId);
-			}
-		}
-		PrintWriter out = response.getWriter();
-		out.println(
-			"<casClient:proxySuccess "
-				+ "xmlns:casClient=\"http://www.yale.edu/tp/casClient\"/>");
-		out.flush();
-	}
+    // *********************************************************************
+    // Request handling
 
-	//*********************************************************************
-	// Interface to package members
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
 
-	// NOTE: PUBLIC FOR THE MOMENT
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String pgtId = request.getParameter(PGT_ID_PARAM);
+        String pgtIou = request.getParameter(PGT_IOU_PARAM);
+        if (pgtId != null && pgtIou != null) {
+            synchronized (pgt) {
+                pgt.put(pgtIou, pgtId);
+            }
+        }
+        PrintWriter out = response.getWriter();
+        out.println("<casClient:proxySuccess " + "xmlns:casClient=\"http://www.yale.edu/tp/casClient\"/>");
+        out.flush();
+    }
 
-	/**
-	 * Retrieves a proxy ticket using the PGT that corresponds to the given
-	 * PGT IOU.
-	 */
-	public static String getProxyTicket(String pgtIou, String target)
-		throws IOException {
-		synchronized (ProxyTicketReceptor.class) {
-			// ensure state is sensible
-			if (casProxyUrl == null || pgt == null)
-				throw new IllegalStateException("getProxyTicket() only works after servlet has been initialized");
-		}
+    // *********************************************************************
+    // Interface to package members
 
-		// retrieve PGT
-		String pgtId = null;
-		synchronized (pgt) {
-			pgtId = (String) pgt.get(pgtIou);
-		}
-		if (pgtId == null)
-			return null;
+    // NOTE: PUBLIC FOR THE MOMENT
 
-		// retrieve an XML response from CAS's "Proxy" actuator
-		String url = casProxyUrl + "?pgt=" + pgtId + "&targetService=" + target;
-		String response = SecureURL.retrieve(url);
+    /**
+     * Retrieves a proxy ticket using the PGT that corresponds to the given PGT IOU.
+     */
+    public static String getProxyTicket(String pgtIou, String target) throws IOException {
+        synchronized (ProxyTicketReceptor.class) {
+            // ensure state is sensible
+            if (casProxyUrl == null || pgt == null)
+                throw new IllegalStateException("getProxyTicket() only works after servlet has been initialized");
+        }
 
-		// parse this response (use a lightweight approach for now)
-		if (response.indexOf("<cas:proxySuccess>") != -1
-			&& response.indexOf("<cas:proxyTicket>") != -1) {
-			int startIndex =
-				response.indexOf("<cas:proxyTicket>") + "<cas:proxyTicket>".length();
-			int endIndex = response.indexOf("</cas:proxyTicket>");
-			return response.substring(startIndex, endIndex);
-		} else {
-			// generic failure
-			return null;
-		}
-	}
+        // retrieve PGT
+        String pgtId = null;
+        synchronized (pgt) {
+            pgtId = (String) pgt.get(pgtIou);
+        }
+        if (pgtId == null)
+            return null;
+
+        // retrieve an XML response from CAS's "Proxy" actuator
+        String url = casProxyUrl + "?pgt=" + pgtId + "&targetService=" + target;
+        String response = SecureURL.retrieve(url);
+
+        // parse this response (use a lightweight approach for now)
+        if (response.indexOf("<cas:proxySuccess>") != -1 && response.indexOf("<cas:proxyTicket>") != -1) {
+            int startIndex = response.indexOf("<cas:proxyTicket>") + "<cas:proxyTicket>".length();
+            int endIndex = response.indexOf("</cas:proxyTicket>");
+            return response.substring(startIndex, endIndex);
+        } else {
+            // generic failure
+            return null;
+        }
+    }
 }

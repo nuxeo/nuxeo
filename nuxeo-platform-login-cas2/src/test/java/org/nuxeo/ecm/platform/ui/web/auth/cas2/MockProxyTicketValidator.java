@@ -28,8 +28,7 @@ import edu.yale.its.tp.cas.client.ProxyTicketValidator;
 public class MockProxyTicketValidator extends ProxyTicketValidator {
 
     @Override
-    public void validate() throws IOException, SAXException,
-            ParserConfigurationException {
+    public void validate() throws IOException, SAXException, ParserConfigurationException {
 
         if (callBackValidator == null) {
             return;
@@ -42,8 +41,7 @@ public class MockProxyTicketValidator extends ProxyTicketValidator {
 
     public static CallBackCheckTicketValidatorState callBackValidator;
 
-    public static void setCallBackValidator(
-            CallBackCheckTicketValidatorState callBackValidator) {
+    public static void setCallBackValidator(CallBackCheckTicketValidatorState callBackValidator) {
         MockProxyTicketValidator.callBackValidator = callBackValidator;
     }
 

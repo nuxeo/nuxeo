@@ -70,8 +70,7 @@ public class DigestLoginPlugin extends BaseLoginModule {
             }
 
             Map<String, String> loginParameters = userIdent.getLoginParameters();
-            String generateDigest = generateDigest(storedHA1,
-                    loginParameters.get(HTTP_METHOD), //
+            String generateDigest = generateDigest(storedHA1, loginParameters.get(HTTP_METHOD), //
                     loginParameters.get(URI), //
                     loginParameters.get(QOP), // RFC 2617 extension
                     loginParameters.get(NONCE), //
@@ -82,8 +81,7 @@ public class DigestLoginPlugin extends BaseLoginModule {
             if (generateDigest.equals(userIdent.getPassword())) {
                 return userIdent.getUserName();
             } else {
-                log.warn("Digest authentication failed for user: "
-                        + userIdent.getUserName() + " realm: "
+                log.warn("Digest authentication failed for user: " + userIdent.getUserName() + " realm: "
                         + loginParameters.get(REALM));
                 return null;
             }
@@ -93,26 +91,22 @@ public class DigestLoginPlugin extends BaseLoginModule {
         }
     }
 
-    public static String generateDigest(String ha1, String httpMethod,
-            String uri, String qop, String nonce, String nc, String cnonce)
-            throws IllegalArgumentException {
+    public static String generateDigest(String ha1, String httpMethod, String uri, String qop, String nonce, String nc,
+            String cnonce) throws IllegalArgumentException {
         String a2 = httpMethod + ":" + uri;
         String ha2 = DigestUtils.md5Hex(a2);
         String digest;
         if (qop == null) {
             digest = ha1 + ":" + nonce + ":" + ha2;
         } else if ("auth".equals(qop)) {
-            digest = ha1 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop
-                    + ":" + ha2;
+            digest = ha1 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":" + ha2;
         } else {
-            throw new IllegalArgumentException(
-                    "This method does not support a qop: '" + qop + "'");
+            throw new IllegalArgumentException("This method does not support a qop: '" + qop + "'");
         }
         return DigestUtils.md5Hex(digest);
     }
 
-    public static String encodeDigestAuthPassword(String username,
-            String realm, String password) {
+    public static String encodeDigestAuthPassword(String username, String realm, String password) {
         String a1 = username + ":" + realm + ":" + password;
         return DigestUtils.md5Hex(a1);
     }
@@ -123,8 +117,7 @@ public class DigestLoginPlugin extends BaseLoginModule {
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         Directory directory = directoryService.getDirectory(dirName);
         if (directory == null) {
-            throw new IllegalArgumentException(
-                    "Digest Auth directory not found: " + dirName);
+            throw new IllegalArgumentException("Digest Auth directory not found: " + dirName);
         }
         Session dir = directoryService.open(dirName);
         try {
@@ -132,8 +125,7 @@ public class DigestLoginPlugin extends BaseLoginModule {
             DocumentModel entry = dir.getEntry(username, true);
             String passwordField = (parameters.containsKey(PASSWORD_FIELD)) ? parameters.get(PASSWORD_FIELD)
                     : dir.getPasswordField();
-            return entry == null ? null : (String) entry.getProperty(schema,
-                    passwordField);
+            return entry == null ? null : (String) entry.getProperty(schema, passwordField);
         } finally {
             dir.close();
         }

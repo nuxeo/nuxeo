@@ -36,11 +36,9 @@ public interface WebSSOProfile {
      */
     public static final String PROFILE_URI = "urn:oasis:names:tc:SAML:2.0:profiles:SSO:browser";
 
-    SAMLCredential processAuthenticationResponse(SAMLMessageContext context)
-            throws SAMLException;
+    SAMLCredential processAuthenticationResponse(SAMLMessageContext context) throws SAMLException;
 
-    AuthnRequest buildAuthRequest(HttpServletRequest request)
-            throws SAMLException;
+    AuthnRequest buildAuthRequest(HttpServletRequest request) throws SAMLException;
 
     Endpoint getEndpoint();
 

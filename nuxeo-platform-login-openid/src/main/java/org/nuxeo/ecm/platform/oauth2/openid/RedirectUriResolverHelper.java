@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
- * Default RedirectUriResolver that allows overriding the redirect uri by setting a session attribute
- * By default it will use a fixed redirect uri since some provider do not support wildcards
+ * Default RedirectUriResolver that allows overriding the redirect uri by setting a session attribute By default it will
+ * use a fixed redirect uri since some provider do not support wildcards
  *
  * @since 5.7
  */
@@ -36,11 +36,10 @@ public class RedirectUriResolverHelper implements RedirectUriResolver {
     public String getRedirectUri(OpenIDConnectProvider openIDConnectProvider, HttpServletRequest request) {
         String redirectUri = (String) request.getSession().getAttribute(REDIRECT_URI_SESSION_ATTRIBUTE);
         // TODO - Use the requestedUrl for providers with support for wildcards
-        //String requestedUrl = request.getParameter(NXAuthConstants.REQUESTED_URL);
+        // String requestedUrl = request.getParameter(NXAuthConstants.REQUESTED_URL);
         if (redirectUri == null) {
-            redirectUri =  VirtualHostHelper.getBaseURL(request) + "nxstartup.faces?" + ""
-                    + "provider=" + openIDConnectProvider.oauth2Provider.getServiceName()
-                    + "&forceAnonymousLogin=true";
+            redirectUri = VirtualHostHelper.getBaseURL(request) + "nxstartup.faces?" + "" + "provider="
+                    + openIDConnectProvider.oauth2Provider.getServiceName() + "&forceAnonymousLogin=true";
         }
         return redirectUri;
     }

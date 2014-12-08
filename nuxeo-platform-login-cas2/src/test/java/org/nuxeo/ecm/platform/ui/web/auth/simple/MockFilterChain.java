@@ -40,14 +40,13 @@ public class MockFilterChain implements FilterChain {
         return pas;
     }
 
-    public void doFilter(ServletRequest request, ServletResponse response)
-            throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
 
-//        for (String filterName : getPAS().getAuthChain()) {
-//            NuxeoAuthenticationPlugin filter = getPAS().getPlugin(filterName);
-//
-//            filter.handleLoginPrompt(httpRequest, httpResponse, baseURL)
-//        }
+        // for (String filterName : getPAS().getAuthChain()) {
+        // NuxeoAuthenticationPlugin filter = getPAS().getPlugin(filterName);
+        //
+        // filter.handleLoginPrompt(httpRequest, httpResponse, baseURL)
+        // }
     }
 
 }

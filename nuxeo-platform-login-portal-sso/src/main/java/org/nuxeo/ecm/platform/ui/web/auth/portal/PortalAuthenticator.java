@@ -59,13 +59,12 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
         return null;
     }
 
-    public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         return false;
     }
 
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
 
         String ts = httpRequest.getHeader(TS_HEADER);
         String random = httpRequest.getHeader(RANDOM_HEADER);
@@ -99,16 +98,13 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
         return false;
     }
 
-    private Boolean validateToken(String ts, String random, String token,
-            String userName) {
+    private Boolean validateToken(String ts, String random, String token, String userName) {
         // reconstruct the token
-        String clearToken = ts + TOKEN_SEP + random + TOKEN_SEP + secret
-                + TOKEN_SEP + userName;
+        String clearToken = ts + TOKEN_SEP + random + TOKEN_SEP + secret + TOKEN_SEP + userName;
 
         byte[] hashedToken;
         try {
-            hashedToken = MessageDigest.getInstance("MD5").digest(
-                    clearToken.getBytes());
+            hashedToken = MessageDigest.getInstance("MD5").digest(clearToken.getBytes());
         } catch (NoSuchAlgorithmException e) {
             return false;
         }
