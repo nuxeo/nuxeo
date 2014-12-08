@@ -51,8 +51,7 @@ public class SpreadsheetActions implements Serializable {
     @In(create = true)
     protected ContentViewService contentViewService;
 
-    public String urlFor(ContentView contentView)
-            throws UnsupportedEncodingException {
+    public String urlFor(ContentView contentView) throws UnsupportedEncodingException {
         Map<String, String> params = new HashMap<>();
 
         // Set the pageprovider name
@@ -67,10 +66,9 @@ public class SpreadsheetActions implements Serializable {
             params.put("cv", encoded);
         }
 
-        ServletRequest request = (ServletRequest)
-            FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        ServletRequest request = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
-        return VirtualHostHelper.getBaseURL(request) + "spreadsheet?" +
-                Joiner.on('&').withKeyValueSeparator("=").join(params);
+        return VirtualHostHelper.getBaseURL(request) + "spreadsheet?"
+                + Joiner.on('&').withKeyValueSeparator("=").join(params);
     }
 }
