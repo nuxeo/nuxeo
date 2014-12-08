@@ -2894,6 +2894,25 @@ public class TestMongoDBRepository extends MongoDBRepositoryTestCase {
     }
 
     @Test
+    public void testOrderingAfterCopy() throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "folder", "OrderedFolder");
+        folder = session.createDocument(folder);
+        DocumentModel doc1 = session.createDocumentModel("/folder", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        DocumentModel doc2 = session.createDocumentModel("/folder", "doc2", "File");
+        doc2 = session.createDocument(doc2);
+
+        // copy doc1 as doc3, should be positioned last
+        session.copy(doc1.getRef(), folder.getRef(), "doc3");
+
+        DocumentModelList children = session.getChildren(folder.getRef());
+        assertEquals(3, children.size());
+        assertEquals("doc1", children.get(0).getName());
+        assertEquals("doc2", children.get(1).getName());
+        assertEquals("doc3", children.get(2).getName());
+    }
+
+    @Test
     public void testPropertyXPath() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel parent = new DocumentModelImpl(root.getPathAsString(),

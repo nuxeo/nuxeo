@@ -675,12 +675,15 @@ public class DBSSession implements Session {
             // checkNotUnder(parentId, sourceId, "copy");
         }
         // do the copy
+        Long pos = getNextPos(parentId);
         String copyId = copyRecurse(sourceId, parentId, ancestorIds, name);
         DBSDocumentState copyState = transaction.getStateForUpdate(copyId);
         // version copy fixup
         if (source.isVersion()) {
             copyState.put(KEY_IS_VERSION, null);
         }
+        // pos fixup
+        copyState.put(KEY_POS, pos);
         // update read acls
         transaction.updateReadAcls(copyId);
 

@@ -1865,6 +1865,24 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    public void testCopyOrdered() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node fold = session.addChildNode(root, "fold", null, "OFolder", false);
+        Node doca = session.addChildNode(fold, "a", null, "TestDoc", false);
+        Node docb = session.addChildNode(fold, "b", null, "TestDoc", false);
+        session.save();
+        // check order
+        List<Node> children = session.getChildren(fold, null, false);
+        assertEquals(Arrays.asList("a", "b"), getNames(children));
+
+        // copy a as c, should be positioned last
+        session.copy(doca, fold, "c");
+        children = session.getChildren(fold, null, false);
+        assertEquals(Arrays.asList("a", "b", "c"), getNames(children));
+    }
+
+    @Test
     public void testVersioning() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
