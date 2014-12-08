@@ -65,8 +65,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  * <li>The Document type is not exposed,</li>
  * <li>Types inheriting from Document are exposed as inheriting cmis:document,</li>
  * <li>The Folder type is mapped to a concrete subtype of cmis:folder,</li>
- * <li>Other folderish types directly under Folder are mapped to subtypes of
- * cmis:folder as well.</li>
+ * <li>Other folderish types directly under Folder are mapped to subtypes of cmis:folder as well.</li>
  * </ul>
  */
 public class NuxeoTypeHelper {
@@ -132,17 +131,14 @@ public class NuxeoTypeHelper {
     /**
      * Helper to construct one type.
      */
-    protected NuxeoTypeHelper(String id, String parentId,
-            BaseTypeId baseTypeId, DocumentType documentType,
+    protected NuxeoTypeHelper(String id, String parentId, BaseTypeId baseTypeId, DocumentType documentType,
             String nuxeoTypeId, boolean creatable) {
         propertyToSchema = new HashMap<String, String>();
-        constructBase(id, parentId, baseTypeId, documentType, nuxeoTypeId,
-                creatable);
+        constructBase(id, parentId, baseTypeId, documentType, nuxeoTypeId, creatable);
     }
 
     /**
-     * Gets the remapped parent type id, or {@code null} if the type is to be
-     * ignored.
+     * Gets the remapped parent type id, or {@code null} if the type is to be ignored.
      */
 
     public static String getParentTypeId(DocumentType documentType) {
@@ -186,12 +182,11 @@ public class NuxeoTypeHelper {
         return parentId;
     }
 
-    public static TypeDefinition construct(DocumentType documentType,
-            String parentId) {
+    public static TypeDefinition construct(DocumentType documentType, String parentId) {
         String nuxeoTypeId = documentType.getName();
         String id = mappedId(nuxeoTypeId);
-        NuxeoTypeHelper h = new NuxeoTypeHelper(id, parentId,
-                getBaseTypeId(documentType), documentType, nuxeoTypeId, true);
+        NuxeoTypeHelper h = new NuxeoTypeHelper(id, parentId, getBaseTypeId(documentType), documentType, nuxeoTypeId,
+                true);
         // Nuxeo Property Definitions
         for (Schema schema : documentType.getSchemas()) {
             h.addSchemaPropertyDefinitions(schema);
@@ -200,13 +195,11 @@ public class NuxeoTypeHelper {
     }
 
     /**
-     * Constructs a base type, not mapped to a Nuxeo type. It has the dublincore
-     * schema though. When created, it actually constructs a File or a Folder.
+     * Constructs a base type, not mapped to a Nuxeo type. It has the dublincore schema though. When created, it
+     * actually constructs a File or a Folder.
      */
-    public static TypeDefinition constructCmisBase(BaseTypeId baseTypeId,
-            SchemaManager schemaManager) {
-        NuxeoTypeHelper h = new NuxeoTypeHelper(baseTypeId.value(), null,
-                baseTypeId, null, null, true);
+    public static TypeDefinition constructCmisBase(BaseTypeId baseTypeId, SchemaManager schemaManager) {
+        NuxeoTypeHelper h = new NuxeoTypeHelper(baseTypeId.value(), null, baseTypeId, null, null, true);
         DocumentType dt = schemaManager.getDocumentType(NUXEO_FOLDER); // has dc
         h.addSchemaPropertyDefinitions(dt.getSchema(NX_DUBLINCORE));
         return h.t;
@@ -220,16 +213,15 @@ public class NuxeoTypeHelper {
             String schemaName = schema.getName();
             if (fieldType.isComplexType()) {
                 // complex type
-                log.debug("Ignoring complex type: " + schemaName + '/'
-                        + field.getName() + " in type: " + t.getId());
+                log.debug("Ignoring complex type: " + schemaName + '/' + field.getName() + " in type: " + t.getId());
                 continue;
             } else {
                 if (fieldType.isListType()) {
                     Type listFieldType = ((ListType) fieldType).getFieldType();
                     if (!listFieldType.isSimpleType()) {
                         // complex list
-                        log.debug("Ignoring complex list: " + schemaName + '/'
-                                + field.getName() + " in type: " + t.getId());
+                        log.debug("Ignoring complex list: " + schemaName + '/' + field.getName() + " in type: "
+                                + t.getId());
                         continue;
                     } else {
                         // array: use a collection table
@@ -243,15 +235,12 @@ public class NuxeoTypeHelper {
                 }
             }
             String name = field.getName().getPrefixedName();
-            PropertyDefinition<?> pd = newPropertyDefinition(name, name,
-                    propertyType, cardinality, Updatability.READWRITE, false,
-                    false, true, true);
+            PropertyDefinition<?> pd = newPropertyDefinition(name, name, propertyType, cardinality,
+                    Updatability.READWRITE, false, false, true, true);
             if (t.getPropertyDefinitions().containsKey(pd.getId())) {
-                log.error("Type '" + t.getId() + "' has duplicate property '"
-                        + name + "' in schemas '"
-                        + propertyToSchema.get(pd.getId()) + "' and '"
-                        + schemaName + "', ignoring the one in '" + schemaName
-                        + "'");
+                log.error("Type '" + t.getId() + "' has duplicate property '" + name + "' in schemas '"
+                        + propertyToSchema.get(pd.getId()) + "' and '" + schemaName + "', ignoring the one in '"
+                        + schemaName + "'");
                 continue;
             }
             propertyToSchema.put(pd.getId(), schemaName);
@@ -259,8 +248,7 @@ public class NuxeoTypeHelper {
         }
     }
 
-    protected void constructBase(String id, String parentId,
-            BaseTypeId baseTypeId, DocumentType documentType,
+    protected void constructBase(String id, String parentId, BaseTypeId baseTypeId, DocumentType documentType,
             String nuxeoTypeId, boolean creatable) {
         if (baseTypeId == BaseTypeId.CMIS_FOLDER) {
             t = new FolderTypeDefinitionImpl();
@@ -275,8 +263,7 @@ public class NuxeoTypeHelper {
         t.setDescription(id);
         t.setDisplayName(id);
         t.setLocalName(nuxeoTypeId == null ? id : nuxeoTypeId);
-        Namespace ns = documentType == null ? null
-                : documentType.getNamespace();
+        Namespace ns = documentType == null ? null : documentType.getNamespace();
         t.setLocalNamespace(ns == null ? NAMESPACE : ns.uri);
         t.setQueryName(id);
         t.setIsCreatable(Boolean.valueOf(creatable));
@@ -298,8 +285,8 @@ public class NuxeoTypeHelper {
             t.setIsFileable(Boolean.FALSE);
         } else {
             DocumentTypeDefinitionImpl dt = (DocumentTypeDefinitionImpl) t;
-            boolean versionable = documentType == null ? false
-                    : documentType.getFacets().contains(FacetNames.VERSIONABLE);
+            boolean versionable = documentType == null ? false : documentType.getFacets().contains(
+                    FacetNames.VERSIONABLE);
             dt.setIsVersionable(Boolean.valueOf(versionable));
             t.setIsFileable(Boolean.TRUE);
             ContentStreamAllowed csa = (documentType != null && supportsBlobHolder(documentType)) ? ContentStreamAllowed.ALLOWED
@@ -310,177 +297,109 @@ public class NuxeoTypeHelper {
     }
 
     protected void addBasePropertyDefinitions() {
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.OBJECT_ID,
-                "Object ID", PropertyType.ID, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.OBJECT_TYPE_ID, "Type ID", PropertyType.ID,
-                Cardinality.SINGLE, Updatability.ONCREATE, false, true, false,
-                false));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.BASE_TYPE_ID,
-                "Base Type ID", PropertyType.ID, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.SECONDARY_OBJECT_TYPE_IDS, "Secondary Type IDs",
-                PropertyType.ID, Cardinality.MULTI, Updatability.READONLY,
-                false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.NAME, "Name",
-                PropertyType.STRING, Cardinality.SINGLE,
-                Updatability.READWRITE, false, true, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.DESCRIPTION,
-                "Description", PropertyType.STRING, Cardinality.SINGLE,
-                Updatability.READWRITE, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CREATED_BY,
-                "Created By", PropertyType.STRING, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.CREATION_DATE, "Creation Date",
-                PropertyType.DATETIME, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.LAST_MODIFIED_BY, "Last Modified By",
-                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
-                false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.LAST_MODIFICATION_DATE, "Last Modification Date",
-                PropertyType.DATETIME, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CHANGE_TOKEN,
-                "Change Token", PropertyType.STRING, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.OBJECT_ID, "Object ID", PropertyType.ID,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.OBJECT_TYPE_ID, "Type ID", PropertyType.ID,
+                Cardinality.SINGLE, Updatability.ONCREATE, false, true, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.BASE_TYPE_ID, "Base Type ID", PropertyType.ID,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.SECONDARY_OBJECT_TYPE_IDS, "Secondary Type IDs",
+                PropertyType.ID, Cardinality.MULTI, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.NAME, "Name", PropertyType.STRING,
+                Cardinality.SINGLE, Updatability.READWRITE, false, true, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.DESCRIPTION, "Description", PropertyType.STRING,
+                Cardinality.SINGLE, Updatability.READWRITE, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CREATED_BY, "Created By", PropertyType.STRING,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CREATION_DATE, "Creation Date",
+                PropertyType.DATETIME, Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.LAST_MODIFIED_BY, "Last Modified By",
+                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.LAST_MODIFICATION_DATE, "Last Modification Date",
+                PropertyType.DATETIME, Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CHANGE_TOKEN, "Change Token", PropertyType.STRING,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
 
         // Nuxeo system properties
-        t.addPropertyDefinition(newPropertyDefinition(NX_LIFECYCLE_STATE,
-                "Lifecycle State", PropertyType.STRING, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(NX_FACETS, "Facets",
-                PropertyType.ID, Cardinality.MULTI, Updatability.READONLY,
-                false, false, true, false));
-        t.addPropertyDefinition(newPropertyDefinition(NX_PARENT_ID,
-                "Nuxeo Parent ID", PropertyType.ID, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(NX_PATH_SEGMENT,
-                "Path Segment", PropertyType.STRING, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(NX_POS,
-                "Position", PropertyType.INTEGER, Cardinality.SINGLE,
+        t.addPropertyDefinition(newPropertyDefinition(NX_LIFECYCLE_STATE, "Lifecycle State", PropertyType.STRING,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(NX_FACETS, "Facets", PropertyType.ID, Cardinality.MULTI,
+                Updatability.READONLY, false, false, true, false));
+        t.addPropertyDefinition(newPropertyDefinition(NX_PARENT_ID, "Nuxeo Parent ID", PropertyType.ID,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(NX_PATH_SEGMENT, "Path Segment", PropertyType.STRING,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(NX_POS, "Position", PropertyType.INTEGER, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, true, true));
     }
 
-    protected static void addFolderPropertyDefinitions(
-            FolderTypeDefinitionImpl t) {
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.PARENT_ID,
-                "Parent ID", PropertyType.ID, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.PATH, "Path",
-                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
-                false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS,
-                "Allowed Child Object Type IDs", PropertyType.ID,
-                Cardinality.MULTI, Updatability.READONLY, false, false, false,
-                false));
+    protected static void addFolderPropertyDefinitions(FolderTypeDefinitionImpl t) {
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.PARENT_ID, "Parent ID", PropertyType.ID,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.PATH, "Path", PropertyType.STRING,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS,
+                "Allowed Child Object Type IDs", PropertyType.ID, Cardinality.MULTI, Updatability.READONLY, false,
+                false, false, false));
     }
 
-    protected static void addRelationshipPropertyDefinitions(
-            RelationshipTypeDefinitionImpl t) {
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.SOURCE_ID,
-                "Source ID", PropertyType.ID, Cardinality.SINGLE,
-                Updatability.READWRITE, false, true, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.TARGET_ID,
-                "Target ID", PropertyType.ID, Cardinality.SINGLE,
-                Updatability.READWRITE, false, true, true, true));
+    protected static void addRelationshipPropertyDefinitions(RelationshipTypeDefinitionImpl t) {
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.SOURCE_ID, "Source ID", PropertyType.ID,
+                Cardinality.SINGLE, Updatability.READWRITE, false, true, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.TARGET_ID, "Target ID", PropertyType.ID,
+                Cardinality.SINGLE, Updatability.READWRITE, false, true, true, true));
     }
 
-    protected static void addDocumentPropertyDefinitions(
-            DocumentTypeDefinitionImpl t) {
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_IMMUTABLE,
-                "Is Immutable", PropertyType.BOOLEAN, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.IS_LATEST_VERSION, "Is Latest Version",
-                PropertyType.BOOLEAN, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.IS_MAJOR_VERSION, "Is Major Version",
-                PropertyType.BOOLEAN, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.IS_LATEST_MAJOR_VERSION, "Is Latest Major Version",
-                PropertyType.BOOLEAN, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.VERSION_LABEL, "Version Label",
-                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
-                false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.VERSION_SERIES_ID, "Version Series ID",
-                PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY,
+    protected static void addDocumentPropertyDefinitions(DocumentTypeDefinitionImpl t) {
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_IMMUTABLE, "Is Immutable", PropertyType.BOOLEAN,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_LATEST_VERSION, "Is Latest Version",
+                PropertyType.BOOLEAN, Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_MAJOR_VERSION, "Is Major Version",
+                PropertyType.BOOLEAN, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_LATEST_MAJOR_VERSION, "Is Latest Major Version",
+                PropertyType.BOOLEAN, Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.VERSION_LABEL, "Version Label", PropertyType.STRING,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.VERSION_SERIES_ID, "Version Series ID",
+                PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
+                "Is Version Series Checked Out", PropertyType.BOOLEAN, Cardinality.SINGLE, Updatability.READONLY,
                 false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
-                "Is Version Series Checked Out", PropertyType.BOOLEAN,
-                Cardinality.SINGLE, Updatability.READONLY, false, false, false,
-                false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.VERSION_SERIES_CHECKED_OUT_BY,
-                "Version Series Checked Out By", PropertyType.STRING,
-                Cardinality.SINGLE, Updatability.READONLY, false, false, false,
-                false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.VERSION_SERIES_CHECKED_OUT_ID,
-                "Version Series Checked Out ID", PropertyType.ID,
-                Cardinality.SINGLE, Updatability.READONLY, false, false, false,
-                false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.CHECKIN_COMMENT, "Checkin Comment",
-                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
-                false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY,
+                "Version Series Checked Out By", PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY, false,
+                false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID,
+                "Version Series Checked Out ID", PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY, false,
+                false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CHECKIN_COMMENT, "Checkin Comment",
+                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
         // mandatory properties even when content stream not allowed
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.CONTENT_STREAM_LENGTH, "Content Stream Length",
-                PropertyType.INTEGER, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.CONTENT_STREAM_MIME_TYPE, "MIME Type",
-                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
-                false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.CONTENT_STREAM_FILE_NAME, "Filename",
-                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
-                false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.CONTENT_STREAM_ID, "Content Stream ID",
-                PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY,
-                false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.CONTENT_STREAM_HASH, "Content Stream Hashes",
-                PropertyType.STRING, Cardinality.MULTI, Updatability.READONLY,
-                false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CONTENT_STREAM_LENGTH, "Content Stream Length",
+                PropertyType.INTEGER, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CONTENT_STREAM_MIME_TYPE, "MIME Type",
+                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CONTENT_STREAM_FILE_NAME, "Filename",
+                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CONTENT_STREAM_ID, "Content Stream ID",
+                PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CONTENT_STREAM_HASH, "Content Stream Hashes",
+                PropertyType.STRING, Cardinality.MULTI, Updatability.READONLY, false, false, false, false));
         // Nuxeo system properties
         // TODO: make digest queryable at some point
-        t.addPropertyDefinition(newPropertyDefinition(NX_DIGEST,
-                "Content Stream Digest", PropertyType.STRING,
-                Cardinality.SINGLE, Updatability.READONLY, false, false, false,
-                false));
-        t.addPropertyDefinition(newPropertyDefinition(NX_ISVERSION,
-                "Is Version", PropertyType.BOOLEAN,
-                Cardinality.SINGLE, Updatability.READONLY, false, false, true,
-                true));
-        t.addPropertyDefinition(newPropertyDefinition(NX_ISCHECKEDIN,
-                "Is Checked In PWC", PropertyType.BOOLEAN, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(
-                PropertyIds.IS_PRIVATE_WORKING_COPY, "Is PWC",
-                PropertyType.BOOLEAN, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(NX_DIGEST, "Content Stream Digest", PropertyType.STRING,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(NX_ISVERSION, "Is Version", PropertyType.BOOLEAN,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(NX_ISCHECKEDIN, "Is Checked In PWC", PropertyType.BOOLEAN,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_PRIVATE_WORKING_COPY, "Is PWC",
+                PropertyType.BOOLEAN, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
     }
 
-    protected static PropertyDefinition<?> newPropertyDefinition(String id,
-            String displayName, PropertyType propertyType,
-            Cardinality cardinality, Updatability updatability,
-            boolean inherited, boolean required, boolean queryable,
-            boolean orderable) {
+    protected static PropertyDefinition<?> newPropertyDefinition(String id, String displayName,
+            PropertyType propertyType, Cardinality cardinality, Updatability updatability, boolean inherited,
+            boolean required, boolean queryable, boolean orderable) {
         AbstractPropertyDefinition<?> p;
         switch (propertyType) {
         case BOOLEAN:
@@ -529,10 +448,8 @@ public class NuxeoTypeHelper {
     // TODO update BlobHolderAdapterService to be able to do this
     // without constructing a fake document
     protected static boolean supportsBlobHolder(DocumentType documentType) {
-        DocumentModel doc = new DocumentModelImpl(null, documentType.getName(),
-                null, new Path("/"), null, null, null,
-                documentType.getSchemaNames(), documentType.getFacets(), null,
-                "default");
+        DocumentModel doc = new DocumentModelImpl(null, documentType.getName(), null, new Path("/"), null, null, null,
+                documentType.getSchemaNames(), documentType.getFacets(), null, "default");
         return doc.getAdapter(BlobHolder.class) != null;
     }
 

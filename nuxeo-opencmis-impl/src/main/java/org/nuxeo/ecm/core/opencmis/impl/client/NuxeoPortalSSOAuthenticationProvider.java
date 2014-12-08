@@ -24,14 +24,14 @@ import java.util.Random;
 import org.apache.chemistry.opencmis.client.bindings.spi.AbstractAuthenticationProvider;
 import org.nuxeo.common.utils.Base64;
 
-public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthenticationProvider   {
+public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthenticationProvider {
 
     private static final long serialVersionUID = 1L;
 
     public final static String SECRET_KEY = "NUXEO_PORTAL_SSO_SECRET";
 
     protected String getSecretKey() {
-        return (String)getSession().get(SECRET_KEY);
+        return (String) getSession().get(SECRET_KEY);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthentication
 
         // set request headers
 
-        Map<String,List<String>> headers = new HashMap<String,List<String>>();
+        Map<String, List<String>> headers = new HashMap<String, List<String>>();
 
         headers.put("NX_USER", Collections.singletonList(username));
         headers.put("NX_TOKEN", Collections.singletonList(base64HashedToken));

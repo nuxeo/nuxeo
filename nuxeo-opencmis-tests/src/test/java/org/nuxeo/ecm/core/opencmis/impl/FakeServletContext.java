@@ -22,14 +22,12 @@ public class FakeServletContext implements InvocationHandler {
 
     public static ServletContext getServletContext() {
         FakeServletContext handler = new FakeServletContext();
-        return (ServletContext) Proxy.newProxyInstance(
-                FakeServletContext.class.getClassLoader(),
+        return (ServletContext) Proxy.newProxyInstance(FakeServletContext.class.getClassLoader(),
                 new Class<?>[] { ServletContext.class }, handler);
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args)
-            throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
         if ("getResourceAsStream".equals(methodName)) {
             String name = (String) args[0];

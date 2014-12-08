@@ -29,8 +29,7 @@ import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**
- * Test class that runs a CMIS servlet on a repository initialized with a few
- * simple documents.
+ * Test class that runs a CMIS servlet on a repository initialized with a few simple documents.
  */
 public class MainWithServlet extends SQLRepositoryTestCase {
 
@@ -95,8 +94,7 @@ public class MainWithServlet extends SQLRepositoryTestCase {
 
         context.setEventListeners(getEventListeners());
         ServletHolder holder = new ServletHolder(getServlet());
-        holder.setInitParameter(PARAM_CALL_CONTEXT_HANDLER,
-                BasicAuthCallContextHandler.class.getName());
+        holder.setInitParameter(PARAM_CALL_CONTEXT_HANDLER, BasicAuthCallContextHandler.class.getName());
         context.addServlet(holder, "/*");
 
         serverURI = new URI("http://" + HOST + ':' + PORT + '/');

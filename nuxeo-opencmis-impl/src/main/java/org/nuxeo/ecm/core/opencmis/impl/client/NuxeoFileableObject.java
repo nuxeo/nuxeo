@@ -31,11 +31,9 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 /**
  * Base abstract fileable live local CMIS Object.
  */
-public abstract class NuxeoFileableObject extends NuxeoObject implements
-        FileableCmisObject {
+public abstract class NuxeoFileableObject extends NuxeoObject implements FileableCmisObject {
 
-    public NuxeoFileableObject(NuxeoSession session, NuxeoObjectData data,
-            ObjectType type) {
+    public NuxeoFileableObject(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
         super(session, data, type);
     }
 
@@ -44,13 +42,11 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
         // context ignored
         try {
             CoreSession coreSession = data.doc.getCoreSession();
-            DocumentModel parent = coreSession.getParentDocument(new IdRef(
-                    getId()));
+            DocumentModel parent = coreSession.getParentDocument(new IdRef(getId()));
             if (parent == null || nuxeoCmisService.isFilteredOut(parent)) {
                 return Collections.emptyList();
             }
-            Folder folder = (Folder) session.getObject(parent,
-                    session.getDefaultContext());
+            Folder folder = (Folder) session.getObject(parent, session.getDefaultContext());
             return Collections.singletonList(folder);
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
@@ -74,13 +70,11 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
 
     @Override
     public void removeFromFolder(ObjectId folderId) {
-        service.removeObjectFromFolder(getRepositoryId(), getId(),
-                folderId == null ? null : folderId.getId(), null);
+        service.removeObjectFromFolder(getRepositoryId(), getId(), folderId == null ? null : folderId.getId(), null);
     }
 
     @Override
-    public NuxeoFileableObject move(ObjectId sourceFolder,
-            ObjectId targetFolder, OperationContext context) {
+    public NuxeoFileableObject move(ObjectId sourceFolder, ObjectId targetFolder, OperationContext context) {
         // context ignored
         Holder<String> objectIdHolder = new Holder<String>(getId());
         if (sourceFolder == null) {
@@ -89,8 +83,7 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
         if (targetFolder == null) {
             throw new CmisInvalidArgumentException("Missing target folder");
         }
-        service.moveObject(getRepositoryId(), objectIdHolder,
-                targetFolder.getId(), sourceFolder.getId(), null);
+        service.moveObject(getRepositoryId(), objectIdHolder, targetFolder.getId(), sourceFolder.getId(), null);
         return this;
     }
 

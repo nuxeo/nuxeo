@@ -52,8 +52,7 @@ import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 /**
  * Test case of the high-level session using a client-server connection.
  */
-public abstract class NuxeoSessionClientServerTestCase extends
-        NuxeoSessionTestCase {
+public abstract class NuxeoSessionClientServerTestCase extends NuxeoSessionTestCase {
 
     private static final Log log = LogFactory.getLog(NuxeoSessionClientServerTestCase.class);
 
@@ -81,8 +80,7 @@ public abstract class NuxeoSessionClientServerTestCase extends
         SessionFactory sf = SessionFactoryImpl.newInstance();
         Map<String, String> params = new HashMap<String, String>();
 
-        params.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS,
-                CmisBindingFactory.STANDARD_AUTHENTICATION_PROVIDER);
+        params.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS, CmisBindingFactory.STANDARD_AUTHENTICATION_PROVIDER);
 
         params.put(SessionParameter.CACHE_SIZE_REPOSITORIES, "10");
         params.put(SessionParameter.CACHE_SIZE_TYPES, "100");
@@ -99,8 +97,7 @@ public abstract class NuxeoSessionClientServerTestCase extends
 
     /** Adds protocol-specific parameters. */
     protected void addParams(Map<String, String> params) {
-        params.put(SessionParameter.HTTP_INVOKER_CLASS,
-                StatusLoggingDefaultHttpInvoker.class.getName());
+        params.put(SessionParameter.HTTP_INVOKER_CLASS, StatusLoggingDefaultHttpInvoker.class.getName());
     }
 
     @Override
@@ -138,8 +135,7 @@ public abstract class NuxeoSessionClientServerTestCase extends
         server.addConnector(connector);
 
         Context context = new Context(server, "/", Context.SESSIONS);
-        context.setBaseResource(Resource.newClassPathResource("/"
-                + BASE_RESOURCE));
+        context.setBaseResource(Resource.newClassPathResource("/" + BASE_RESOURCE));
 
         context.setEventListeners(getEventListeners());
         ServletHolder holder = new ServletHolder(getServlet());
@@ -195,14 +191,12 @@ public abstract class NuxeoSessionClientServerTestCase extends
 
         URL url = getResource(BASE_RESOURCE);
         File docBase = new File(url.getPath());
-        org.apache.catalina.Context context = tomcat.addContext("/",
-                docBase.getAbsolutePath());
+        org.apache.catalina.Context context = tomcat.addContext("/", docBase.getAbsolutePath());
         String SERVLET_NAME = "testServlet";
         Wrapper servlet = tomcat.addServlet("/", SERVLET_NAME, getServlet());
         servlet.addInitParameter(CmisAtomPubServlet.PARAM_CALL_CONTEXT_HANDLER,
                 BasicAuthCallContextHandler.class.getName());
-        servlet.addInitParameter(CmisAtomPubServlet.PARAM_CMIS_VERSION,
-                CmisVersion.CMIS_1_1.value());
+        servlet.addInitParameter(CmisAtomPubServlet.PARAM_CMIS_VERSION, CmisVersion.CMIS_1_1.value());
         context.addServletMapping("/*", SERVLET_NAME);
         context.setApplicationLifecycleListeners(getEventListeners());
         Filter filter = getFilter();
@@ -260,8 +254,7 @@ public abstract class NuxeoSessionClientServerTestCase extends
     // }
     // }
 
-    protected static Object getFieldValue(Object object, String name)
-            throws Exception {
+    protected static Object getFieldValue(Object object, String name) throws Exception {
         Class<? extends Object> klass = object.getClass();
         Field f = null;
         while (f == null && klass != Object.class) {

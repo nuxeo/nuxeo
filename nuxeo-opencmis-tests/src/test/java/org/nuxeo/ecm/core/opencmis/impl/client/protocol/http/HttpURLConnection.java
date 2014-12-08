@@ -37,6 +37,7 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 public class HttpURLConnection extends java.net.HttpURLConnection {
 
     protected final HttpURLClientProvider clientProvider;
+
     protected HttpMethod method;
 
     public HttpURLConnection(HttpURLClientProvider provider, URL url) {
@@ -60,7 +61,6 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
         }
         throw new UnsupportedOperationException("Unsupported method " + name);
     }
-
 
     @Override
     public void setRequestMethod(String name) {
@@ -94,7 +94,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
 
     @Override
     public void setChunkedStreamingMode(int chunklen) {
-       throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -119,11 +119,11 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
 
     @Override
     public OutputStream getOutputStream() throws IOException {
-        PipedOutputStream source =new PipedOutputStream();
+        PipedOutputStream source = new PipedOutputStream();
         PipedInputStream sink = new PipedInputStream();
         source.connect(sink);
         RequestEntity entity = new InputStreamRequestEntity(sink);
-        ((EntityEnclosingMethod)method).setRequestEntity(entity);
+        ((EntityEnclosingMethod) method).setRequestEntity(entity);
         return source;
     }
 
@@ -163,8 +163,8 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
 
     @Override
     public Map<String, List<String>> getHeaderFields() {
-        Map<String,List<String>> fields = new HashMap<String,List<String>>();
-        for (Header header:this.method.getResponseHeaders()) {
+        Map<String, List<String>> fields = new HashMap<String, List<String>>();
+        for (Header header : this.method.getResponseHeaders()) {
             String name = header.getName();
             String value = header.getValue();
             if (!fields.containsKey(name)) {
@@ -181,7 +181,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
             try {
                 return method.getResponseBodyAsStream();
             } catch (IOException e) {
-               throw new Error("Cannot get response content", e);
+                throw new Error("Cannot get response content", e);
             }
         }
         return null;

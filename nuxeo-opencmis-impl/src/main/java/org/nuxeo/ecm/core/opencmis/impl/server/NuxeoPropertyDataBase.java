@@ -28,8 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Base abstract class for a live property of an object.
  * <p>
- * Concrete classes must also implement one of {@link PropertyId},
- * {@link PropertyString}, ...
+ * Concrete classes must also implement one of {@link PropertyId}, {@link PropertyString}, ...
  *
  * @see NuxeoPropertyData
  */
@@ -39,8 +38,7 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
 
     protected final DocumentModel doc;
 
-    public NuxeoPropertyDataBase(PropertyDefinition<T> propertyDefinition,
-            DocumentModel doc) {
+    public NuxeoPropertyDataBase(PropertyDefinition<T> propertyDefinition, DocumentModel doc) {
         this.propertyDefinition = propertyDefinition;
         this.doc = doc;
     }
@@ -80,8 +78,7 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
     @Override
     public List<T> getValues() {
         T v = getFirstValue();
-        return v == null ? Collections.<T> emptyList()
-                : Collections.singletonList(v);
+        return v == null ? Collections.<T> emptyList() : Collections.singletonList(v);
     }
 
     public void setValue(Object value) {
@@ -92,8 +89,7 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
         if (value != null && value.equals(old)) {
             return;
         }
-        throw new CmisConstraintException("Read-only property: "
-                + propertyDefinition.getId());
+        throw new CmisConstraintException("Read-only property: " + propertyDefinition.getId());
     }
 
     @Override
@@ -109,13 +105,11 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
     /**
      * A fixed property (whose value cannot be changed).
      */
-    public static abstract class NuxeoPropertyDataFixed<T> extends
-            NuxeoPropertyDataBase<T> {
+    public static abstract class NuxeoPropertyDataFixed<T> extends NuxeoPropertyDataBase<T> {
 
         protected final T value;
 
-        protected NuxeoPropertyDataFixed(
-                PropertyDefinition<T> propertyDefinition, T value) {
+        protected NuxeoPropertyDataFixed(PropertyDefinition<T> propertyDefinition, T value) {
             super(propertyDefinition, null);
             this.value = value;
         }
@@ -129,13 +123,11 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
     /**
      * A fixed multi-valued property (whose value cannot be changed).
      */
-    public static abstract class NuxeoPropertyMultiDataFixed<T> extends
-            NuxeoPropertyDataBase<T> {
+    public static abstract class NuxeoPropertyMultiDataFixed<T> extends NuxeoPropertyDataBase<T> {
 
         protected final List<T> value;
 
-        protected NuxeoPropertyMultiDataFixed(
-                PropertyDefinition<T> propertyDefinition, List<T> value) {
+        protected NuxeoPropertyMultiDataFixed(PropertyDefinition<T> propertyDefinition, List<T> value) {
             super(propertyDefinition, null);
             this.value = value;
         }
@@ -160,11 +152,9 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
     /**
      * A fixed ID property.
      */
-    public static class NuxeoPropertyIdDataFixed extends
-            NuxeoPropertyDataFixed<String> implements PropertyId {
+    public static class NuxeoPropertyIdDataFixed extends NuxeoPropertyDataFixed<String> implements PropertyId {
 
-        protected NuxeoPropertyIdDataFixed(
-                PropertyDefinition<String> propertyDefinition, String value) {
+        protected NuxeoPropertyIdDataFixed(PropertyDefinition<String> propertyDefinition, String value) {
             super(propertyDefinition, value);
         }
     }
@@ -172,12 +162,9 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
     /**
      * A fixed multi-ID property.
      */
-    public static class NuxeoPropertyIdMultiDataFixed extends
-            NuxeoPropertyMultiDataFixed<String> implements PropertyId {
+    public static class NuxeoPropertyIdMultiDataFixed extends NuxeoPropertyMultiDataFixed<String> implements PropertyId {
 
-        protected NuxeoPropertyIdMultiDataFixed(
-                PropertyDefinition<String> propertyDefinition,
-                List<String> value) {
+        protected NuxeoPropertyIdMultiDataFixed(PropertyDefinition<String> propertyDefinition, List<String> value) {
             super(propertyDefinition, value);
         }
     }
@@ -185,11 +172,9 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
     /**
      * A fixed String property.
      */
-    public static class NuxeoPropertyStringDataFixed extends
-            NuxeoPropertyDataFixed<String> implements PropertyString {
+    public static class NuxeoPropertyStringDataFixed extends NuxeoPropertyDataFixed<String> implements PropertyString {
 
-        protected NuxeoPropertyStringDataFixed(
-                PropertyDefinition<String> propertyDefinition, String value) {
+        protected NuxeoPropertyStringDataFixed(PropertyDefinition<String> propertyDefinition, String value) {
             super(propertyDefinition, value);
         }
     }
@@ -197,11 +182,10 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
     /**
      * A fixed Boolean property.
      */
-    public static class NuxeoPropertyBooleanDataFixed extends
-            NuxeoPropertyDataFixed<Boolean> implements PropertyBoolean {
+    public static class NuxeoPropertyBooleanDataFixed extends NuxeoPropertyDataFixed<Boolean> implements
+            PropertyBoolean {
 
-        protected NuxeoPropertyBooleanDataFixed(
-                PropertyDefinition<Boolean> propertyDefinition, Boolean value) {
+        protected NuxeoPropertyBooleanDataFixed(PropertyDefinition<Boolean> propertyDefinition, Boolean value) {
             super(propertyDefinition, value);
         }
     }
@@ -209,13 +193,11 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
     /**
      * A fixed Integer property.
      */
-    public static class NuxeoPropertyIntegerDataFixed extends
-            NuxeoPropertyDataFixed<BigInteger> implements PropertyInteger {
+    public static class NuxeoPropertyIntegerDataFixed extends NuxeoPropertyDataFixed<BigInteger> implements
+            PropertyInteger {
 
-        protected NuxeoPropertyIntegerDataFixed(
-                PropertyDefinition<BigInteger> propertyDefinition, Long value) {
-            super(propertyDefinition, value == null ? null
-                    : BigInteger.valueOf(value.longValue()));
+        protected NuxeoPropertyIntegerDataFixed(PropertyDefinition<BigInteger> propertyDefinition, Long value) {
+            super(propertyDefinition, value == null ? null : BigInteger.valueOf(value.longValue()));
         }
     }
 

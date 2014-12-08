@@ -25,36 +25,29 @@ public class ListUtils {
     }
 
     /**
-     * Returns a batched version of the list, according to the passed
-     * parameters.
+     * Returns a batched version of the list, according to the passed parameters.
      *
      * @param list the list
-     * @param maxItems the maximum number of items, or {@code null} for the
-     *            default
+     * @param maxItems the maximum number of items, or {@code null} for the default
      * @param skipCount the skip count
-     * @param defaultMax the default maximum number of items if {@code maxItems}
-     *            is {@code null}
+     * @param defaultMax the default maximum number of items if {@code maxItems} is {@code null}
      * @return the batched list, which may be a sublist per {@link List#subList}
      */
-    public static <T> List<T> batchList(List<T> list, BigInteger maxItems,
-            BigInteger skipCount, int defaultMax) {
+    public static <T> List<T> batchList(List<T> list, BigInteger maxItems, BigInteger skipCount, int defaultMax) {
         return getBatchedList(list, maxItems, skipCount, defaultMax).getList();
     }
 
     /**
-     * Returns a batched version of the list, according to the passed
-     * parameters.
+     * Returns a batched version of the list, according to the passed parameters.
      *
      * @param list the list
-     * @param maxItems the maximum number of items, or {@code null} for the
-     *            default
+     * @param maxItems the maximum number of items, or {@code null} for the default
      * @param skipCount the skip count
-     * @param defaultMax the default maximum number of items if {@code maxItems}
-     *            is {@code null}
+     * @param defaultMax the default maximum number of items if {@code maxItems} is {@code null}
      * @return the batched list, which may be a sublist per {@link List#subList}
      */
-    public static <T> BatchedList<T> getBatchedList(List<T> list,
-            BigInteger maxItems, BigInteger skipCount, int defaultMax) {
+    public static <T> BatchedList<T> getBatchedList(List<T> list, BigInteger maxItems, BigInteger skipCount,
+            int defaultMax) {
         int skip = skipCount == null ? 0 : skipCount.intValue();
         if (skip < 0) {
             skip = 0;
@@ -83,9 +76,8 @@ public class ListUtils {
     }
 
     /**
-     * A holder for a sublist of a list, a flag indicating if there were more
-     * elements after the included sublist, and the total number of items if
-     * there had been no batching.
+     * A holder for a sublist of a list, a flag indicating if there were more elements after the included sublist, and
+     * the total number of items if there had been no batching.
      *
      * @param <T> the type of the list elements
      */

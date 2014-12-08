@@ -33,7 +33,6 @@ import org.junit.Test;
  * Manages the web flow for authenticating a client with CAS.
  *
  * @author matic
- *
  */
 public class CasGreeter {
 
@@ -48,9 +47,11 @@ public class CasGreeter {
         this.location = location;
     }
 
-    protected final Pattern loginTicketInputPattern = Pattern.compile(".*(<input.+name=\"lt\"[^<]*>).*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+    protected final Pattern loginTicketInputPattern = Pattern.compile(".*(<input.+name=\"lt\"[^<]*>).*", Pattern.DOTALL
+            | Pattern.CASE_INSENSITIVE);
 
-    protected final Pattern loginTicketValuePattern = Pattern.compile(".*value=\"(.*)\".*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+    protected final Pattern loginTicketValuePattern = Pattern.compile(".*value=\"(.*)\".*", Pattern.DOTALL
+            | Pattern.CASE_INSENSITIVE);
 
     @Test
     public void testExtractLoginTicketValue() {
@@ -89,9 +90,11 @@ public class CasGreeter {
         return actionMatcher.group(1);
     }
 
-    protected final Pattern redirectLinkPattern = Pattern.compile(".*(<a.*href=\".*?ticket=.*\"[^<]*>).*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+    protected final Pattern redirectLinkPattern = Pattern.compile(".*(<a.*href=\".*?ticket=.*\"[^<]*>).*",
+            Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
-    protected final Pattern redirectValuePattern = Pattern.compile(".*href=\"(.*)\".*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+    protected final Pattern redirectValuePattern = Pattern.compile(".*href=\"(.*)\".*", Pattern.DOTALL
+            | Pattern.CASE_INSENSITIVE);
 
     @Test
     public void testExtractRedirectLink() {
@@ -205,11 +208,8 @@ public class CasGreeter {
         }
 
         public void setProxyTicket(String ticket, String proxy, String service) throws HttpException, IOException {
-            method.setQueryString(new NameValuePair[] {
-                    new NameValuePair("ticket", ticket),
-                    new NameValuePair("proxy", proxy),
-                    new NameValuePair("service", service)
-            });
+            method.setQueryString(new NameValuePair[] { new NameValuePair("ticket", ticket),
+                    new NameValuePair("proxy", proxy), new NameValuePair("service", service) });
         }
 
         String extractLoginTicket() {
@@ -218,15 +218,14 @@ public class CasGreeter {
 
         @Override
         void handleNewParams(String... args) {
-           if (args.length == 1) {
-            try {
-                setProxyTicket(args[0], args[1], args[2]);
-            } catch (Exception e) {
-                throw new Error("Cannot set ticket granting");
+            if (args.length == 1) {
+                try {
+                    setProxyTicket(args[0], args[1], args[2]);
+                } catch (Exception e) {
+                    throw new Error("Cannot set ticket granting");
+                }
             }
-           }
         }
-
 
         @Override
         Page handleNewContent(String... args) {
@@ -243,7 +242,8 @@ public class CasGreeter {
         }
 
         void setParams(String ticket, String username, String password) {
-            ((PostMethod)method).setRequestBody(new NameValuePair[] { new NameValuePair("lt", ticket), new NameValuePair("username", username), new NameValuePair("password", password),
+            ((PostMethod) method).setRequestBody(new NameValuePair[] { new NameValuePair("lt", ticket),
+                    new NameValuePair("username", username), new NameValuePair("password", password),
                     new NameValuePair("_eventId", "submit"), new NameValuePair("submit", "LOGIN") });
         }
 
@@ -273,7 +273,6 @@ public class CasGreeter {
             return this;
         }
 
-
     }
 
     public String credsLogon(String username, String password) throws HttpException, IOException {
@@ -283,10 +282,11 @@ public class CasGreeter {
         return servicePage.getTicketGranting();
     }
 
-    public String proxyLogon(String ticket, String proxy, String service) throws IllegalArgumentException, HttpException, IOException {
+    public String proxyLogon(String ticket, String proxy, String service) throws IllegalArgumentException,
+            HttpException, IOException {
         InitialPage initialPage = new InitialPage(location);
         initialPage.setProxyTicket(ticket, proxy, service);
-        Page servicePage= initialPage.next();
+        Page servicePage = initialPage.next();
         return servicePage.getTicketGranting();
     }
 }

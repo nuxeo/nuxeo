@@ -44,9 +44,9 @@ public class TitleFilteringSecurityPolicy3 extends TitleFilteringSecurityPolicy 
     public Transformer getQueryTransformer() {
         return TitleFilteringTransformer.INSTANCE;
     }
+
     /**
-     * Transformer that adds {@code AND dc:title NOT LIKE 'SECRET%'} to the
-     * query.
+     * Transformer that adds {@code AND dc:title NOT LIKE 'SECRET%'} to the query.
      */
     public static class TitleFilteringTransformer implements Transformer {
 
@@ -54,9 +54,8 @@ public class TitleFilteringSecurityPolicy3 extends TitleFilteringSecurityPolicy 
 
         public static final Transformer INSTANCE = new TitleFilteringTransformer();
 
-        public static final Predicate NO_SECRET_TITLE = new Predicate(
-                new Reference("dc:title"), Operator.NOTLIKE, new StringLiteral(
-                        "SECRET%"));
+        public static final Predicate NO_SECRET_TITLE = new Predicate(new Reference("dc:title"), Operator.NOTLIKE,
+                new StringLiteral("SECRET%"));
 
         @Override
         public SQLQuery transform(Principal principal, SQLQuery query) {
@@ -65,12 +64,10 @@ public class TitleFilteringSecurityPolicy3 extends TitleFilteringSecurityPolicy 
             if (where == null || where.predicate == null) {
                 predicate = NO_SECRET_TITLE;
             } else {
-                predicate = new Predicate(NO_SECRET_TITLE, Operator.AND,
-                        where.predicate);
+                predicate = new Predicate(NO_SECRET_TITLE, Operator.AND, where.predicate);
             }
-            SQLQuery newQuery = new SQLQuery(query.select, query.from,
-                    new WhereClause(predicate), query.groupBy, query.having,
-                    query.orderBy, query.limit, query.offset);
+            SQLQuery newQuery = new SQLQuery(query.select, query.from, new WhereClause(predicate), query.groupBy,
+                    query.having, query.orderBy, query.limit, query.offset);
             return newQuery;
         }
     }

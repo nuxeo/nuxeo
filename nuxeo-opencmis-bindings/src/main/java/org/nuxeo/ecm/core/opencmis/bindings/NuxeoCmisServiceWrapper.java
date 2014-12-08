@@ -20,8 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * CMIS Conformance Service Wrapper that has better exception handling than the
- * default.
+ * CMIS Conformance Service Wrapper that has better exception handling than the default.
  */
 public class NuxeoCmisServiceWrapper extends ConformanceCmisServiceWrapper {
 

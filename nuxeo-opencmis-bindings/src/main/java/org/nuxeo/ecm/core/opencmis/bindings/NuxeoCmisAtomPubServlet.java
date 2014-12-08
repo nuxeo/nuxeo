@@ -49,12 +49,11 @@ public class NuxeoCmisAtomPubServlet extends CmisAtomPubServlet {
     private static final Logger LOG = LoggerFactory.getLogger(NuxeoCmisAtomPubServlet.class);
 
     @Override
-    protected void service(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
         String baseUrl = VirtualHostHelper.getBaseURL(request);
         if (baseUrl != null) {
-            baseUrl = StringUtils.stripEnd(baseUrl, "/")
-                    + request.getServletPath() + "/"
+            baseUrl = StringUtils.stripEnd(baseUrl, "/") + request.getServletPath() + "/"
                     + AbstractAtomPubServiceCall.REPOSITORY_PLACEHOLDER + "/";
             request.setAttribute(Dispatcher.BASE_URL_ATTRIBUTE, baseUrl);
         }
@@ -66,7 +65,6 @@ public class NuxeoCmisAtomPubServlet extends CmisAtomPubServlet {
      *
      * @param ex the exception
      * @return the error info
-     *
      * @since 7.1
      */
     protected ErrorInfo extractError(Exception ex) {
@@ -77,8 +75,7 @@ public class NuxeoCmisAtomPubServlet extends CmisAtomPubServlet {
     protected void printError(Exception ex, HttpServletResponse response) {
         ErrorInfo errorInfo = extractError(ex);
         if (response.isCommitted()) {
-            LOG.warn("Failed to send error message to client. "
-                    + "Response is already committed.", ex);
+            LOG.warn("Failed to send error message to client. " + "Response is already committed.", ex);
             return;
         }
 
@@ -96,12 +93,9 @@ public class NuxeoCmisAtomPubServlet extends CmisAtomPubServlet {
                     + "<style><!--H1 {font-size:24px;line-height:normal;font-weight:bold;background-color:#f0f0f0;color:#003366;border-bottom:1px solid #3c78b5;padding:2px;} "
                     + "BODY {font-family:Verdana,arial,sans-serif;color:black;font-size:14px;} "
                     + "HR {color:#3c78b5;height:1px;}--></style></head><body>");
-            pw.print("<h1>HTTP Status " + errorInfo.statusCode
-                    + " - <!--exception-->" + errorInfo.exceptionName
+            pw.print("<h1>HTTP Status " + errorInfo.statusCode + " - <!--exception-->" + errorInfo.exceptionName
                     + "<!--/exception--></h1>");
-            pw.print("<p><!--message-->"
-                    + StringEscapeUtils.escapeHtml(errorInfo.message)
-                    + "<!--/message--></p>");
+            pw.print("<p><!--message-->" + StringEscapeUtils.escapeHtml(errorInfo.message) + "<!--/message--></p>");
 
             String st = ExceptionHelper.getStacktraceAsString(ex);
             if (st != null) {

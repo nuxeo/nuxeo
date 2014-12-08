@@ -69,16 +69,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
 /**
- * Nuxeo Persistent Session, having a direct connection to a Nuxeo
- * {@link CoreSession}.
+ * Nuxeo Persistent Session, having a direct connection to a Nuxeo {@link CoreSession}.
  */
 public class NuxeoSession implements Session {
 
     private static final long serialVersionUID = 1L;
 
-    public static final OperationContext DEFAULT_CONTEXT = new OperationContextImpl(
-            null, false, true, false, IncludeRelationships.NONE, null, true,
-            null, true, 10);
+    public static final OperationContext DEFAULT_CONTEXT = new OperationContextImpl(null, false, true, false,
+            IncludeRelationships.NONE, null, true, null, true, 10);
 
     private final CoreSession coreSession;
 
@@ -150,11 +148,9 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ObjectId createDocument(Map<String, ?> properties,
-            ObjectId folderId, ContentStream contentStream,
+    public ObjectId createDocument(Map<String, ?> properties, ObjectId folderId, ContentStream contentStream,
             VersioningState versioningState) {
-        return createDocument(properties, folderId, contentStream,
-                versioningState, null, null, null);
+        return createDocument(properties, folderId, contentStream, versioningState, null, null, null);
     }
 
     /** Converts from an untyped map to a {@link Properties} object. */
@@ -175,16 +171,11 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ObjectId createDocument(Map<String, ?> properties,
-            ObjectId folderId, ContentStream contentStream,
-            VersioningState versioningState, List<Policy> policies,
-            List<Ace> addAces, List<Ace> removeAces) {
-        String id = service.createDocument(repositoryId,
-                convertProperties(properties), folderId == null ? null
-                        : folderId.getId(), contentStream, versioningState,
-                objectFactory.convertPolicies(policies),
-                objectFactory.convertAces(addAces),
-                objectFactory.convertAces(removeAces), null);
+    public ObjectId createDocument(Map<String, ?> properties, ObjectId folderId, ContentStream contentStream,
+            VersioningState versioningState, List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
+        String id = service.createDocument(repositoryId, convertProperties(properties), folderId == null ? null
+                : folderId.getId(), contentStream, versioningState, objectFactory.convertPolicies(policies),
+                objectFactory.convertAces(addAces), objectFactory.convertAces(removeAces), null);
         return createObjectId(id);
     }
 
@@ -194,13 +185,10 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ObjectId createFolder(Map<String, ?> properties, ObjectId folderId,
-            List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
-        String id = service.createFolder(repositoryId,
-                convertProperties(properties), folderId == null ? null
-                        : folderId.getId(),
-                objectFactory.convertPolicies(policies),
-                objectFactory.convertAces(addAces),
+    public ObjectId createFolder(Map<String, ?> properties, ObjectId folderId, List<Policy> policies,
+            List<Ace> addAces, List<Ace> removeAces) {
+        String id = service.createFolder(repositoryId, convertProperties(properties), folderId == null ? null
+                : folderId.getId(), objectFactory.convertPolicies(policies), objectFactory.convertAces(addAces),
                 objectFactory.convertAces(removeAces), null);
         return createObjectId(id);
     }
@@ -211,11 +199,10 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public OperationContext createOperationContext(Set<String> filter,
-            boolean includeAcls, boolean includeAllowableActions,
-            boolean includePolicies, IncludeRelationships includeRelationships,
-            Set<String> renditionFilter, boolean includePathSegments,
-            String orderBy, boolean cacheEnabled, int maxItemsPerPage) {
+    public OperationContext createOperationContext(Set<String> filter, boolean includeAcls,
+            boolean includeAllowableActions, boolean includePolicies, IncludeRelationships includeRelationships,
+            Set<String> renditionFilter, boolean includePathSegments, String orderBy, boolean cacheEnabled,
+            int maxItemsPerPage) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -226,8 +213,8 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ObjectId createPolicy(Map<String, ?> properties, ObjectId folderId,
-            List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
+    public ObjectId createPolicy(Map<String, ?> properties, ObjectId folderId, List<Policy> policies,
+            List<Ace> addAces, List<Ace> removeAces) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -238,19 +225,17 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ObjectId createRelationship(Map<String, ?> properties,
-            List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
-        String id = service.createRelationship(repositoryId,
-                convertProperties(properties),
-                objectFactory.convertPolicies(policies),
-                objectFactory.convertAces(addAces),
+    public ObjectId createRelationship(Map<String, ?> properties, List<Policy> policies, List<Ace> addAces,
+            List<Ace> removeAces) {
+        String id = service.createRelationship(repositoryId, convertProperties(properties),
+                objectFactory.convertPolicies(policies), objectFactory.convertAces(addAces),
                 objectFactory.convertAces(removeAces), null);
         return createObjectId(id);
     }
 
     @Override
-    public ObjectId createItem(Map<String, ?> properties, ObjectId folderId,
-            List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
+    public ObjectId createItem(Map<String, ?> properties, ObjectId folderId, List<Policy> policies, List<Ace> addAces,
+            List<Ace> removeAces) {
         throw new CmisNotSupportedException();
     }
 
@@ -260,18 +245,14 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ObjectId createDocumentFromSource(ObjectId source,
-            Map<String, ?> properties, ObjectId folderId,
+    public ObjectId createDocumentFromSource(ObjectId source, Map<String, ?> properties, ObjectId folderId,
             VersioningState versioningState) {
-        return createDocumentFromSource(source, properties, folderId,
-                versioningState, null, null, null);
+        return createDocumentFromSource(source, properties, folderId, versioningState, null, null, null);
     }
 
     @Override
-    public ObjectId createDocumentFromSource(ObjectId source,
-            Map<String, ?> properties, ObjectId folderId,
-            VersioningState versioningState, List<Policy> policies,
-            List<Ace> addAces, List<Ace> removeAces) {
+    public ObjectId createDocumentFromSource(ObjectId source, Map<String, ?> properties, ObjectId folderId,
+            VersioningState versioningState, List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -289,30 +270,25 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ChangeEvents getContentChanges(String changeLogToken,
-            boolean includeProperties, long maxNumItems) {
-        return getContentChanges(changeLogToken, includeProperties,
-                maxNumItems, getDefaultContext());
+    public ChangeEvents getContentChanges(String changeLogToken, boolean includeProperties, long maxNumItems) {
+        return getContentChanges(changeLogToken, includeProperties, maxNumItems, getDefaultContext());
     }
 
     @Override
-    public ChangeEvents getContentChanges(String changeLogToken,
-            boolean includeProperties, long maxNumItems,
+    public ChangeEvents getContentChanges(String changeLogToken, boolean includeProperties, long maxNumItems,
             OperationContext context) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ItemIterable<ChangeEvent> getContentChanges(String changeLogToken,
-            boolean includeProperties) {
-        return getContentChanges(changeLogToken, includeProperties,
-                getDefaultContext());
+    public ItemIterable<ChangeEvent> getContentChanges(String changeLogToken, boolean includeProperties) {
+        return getContentChanges(changeLogToken, includeProperties, getDefaultContext());
     };
 
     @Override
-    public ItemIterable<ChangeEvent> getContentChanges(String changeLogToken,
-            boolean includeProperties, OperationContext context) {
+    public ItemIterable<ChangeEvent> getContentChanges(String changeLogToken, boolean includeProperties,
+            OperationContext context) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     };
@@ -355,12 +331,9 @@ public class NuxeoSession implements Session {
         if (context == null) {
             throw new CmisInvalidArgumentException("Missing operation context");
         }
-        ObjectData data = service.getObject(repositoryId, objectId,
-                context.getFilterString(),
-                Boolean.valueOf(context.isIncludeAllowableActions()),
-                context.getIncludeRelationships(),
-                context.getRenditionFilterString(),
-                Boolean.valueOf(context.isIncludePolicies()),
+        ObjectData data = service.getObject(repositoryId, objectId, context.getFilterString(),
+                Boolean.valueOf(context.isIncludeAllowableActions()), context.getIncludeRelationships(),
+                context.getRenditionFilterString(), Boolean.valueOf(context.isIncludePolicies()),
                 Boolean.valueOf(context.isIncludeAcls()), null);
         return objectFactory.convertObject(data, context);
     }
@@ -378,12 +351,9 @@ public class NuxeoSession implements Session {
         if (context == null) {
             throw new CmisInvalidArgumentException("Missing operation context");
         }
-        ObjectData data = service.getObjectByPath(repositoryId, path,
-                context.getFilterString(),
-                Boolean.valueOf(context.isIncludeAllowableActions()),
-                context.getIncludeRelationships(),
-                context.getRenditionFilterString(),
-                Boolean.valueOf(context.isIncludePolicies()),
+        ObjectData data = service.getObjectByPath(repositoryId, path, context.getFilterString(),
+                Boolean.valueOf(context.isIncludeAllowableActions()), context.getIncludeRelationships(),
+                context.getRenditionFilterString(), Boolean.valueOf(context.isIncludePolicies()),
                 Boolean.valueOf(context.isIncludeAcls()), null);
         return getObjectFactory().convertObject(data, context);
     }
@@ -403,23 +373,20 @@ public class NuxeoSession implements Session {
         String id = getRepositoryInfo().getRootFolderId();
         CmisObject folder = getObject(createObjectId(id), context);
         if (!(folder instanceof Folder)) {
-            throw new CmisRuntimeException("Root object is not a Folder but: "
-                    + folder.getClass().getName());
+            throw new CmisRuntimeException("Root object is not a Folder but: " + folder.getClass().getName());
         }
         return (Folder) folder;
     }
 
     @Override
-    public ItemIterable<ObjectType> getTypeChildren(String typeId,
-            boolean includePropertyDefinitions) {
+    public ItemIterable<ObjectType> getTypeChildren(String typeId, boolean includePropertyDefinitions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
     public ObjectType getTypeDefinition(String typeId) {
-        TypeDefinition typeDefinition = service.getTypeDefinition(repositoryId,
-                typeId, null);
+        TypeDefinition typeDefinition = service.getTypeDefinition(repositoryId, typeId, null);
         return objectFactory.convertTypeDefinition(typeDefinition);
     }
 
@@ -429,32 +396,27 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public List<Tree<ObjectType>> getTypeDescendants(String typeId, int depth,
-            boolean includePropertyDefinitions) {
+    public List<Tree<ObjectType>> getTypeDescendants(String typeId, int depth, boolean includePropertyDefinitions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ItemIterable<QueryResult> query(String statement,
-            boolean searchAllVersions) {
+    public ItemIterable<QueryResult> query(String statement, boolean searchAllVersions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ItemIterable<QueryResult> query(final String statement,
-            final boolean searchAllVersions, final OperationContext context) {
+    public ItemIterable<QueryResult> query(final String statement, final boolean searchAllVersions,
+            final OperationContext context) {
         AbstractPageFetcher<QueryResult> pageFetcher = new AbstractPageFetcher<QueryResult>(
                 context.getMaxItemsPerPage()) {
             @Override
             protected Page<QueryResult> fetchPage(long skipCount) {
-                ObjectList results = service.query(repositoryId, statement,
-                        Boolean.valueOf(searchAllVersions),
-                        Boolean.valueOf(context.isIncludeAllowableActions()),
-                        context.getIncludeRelationships(),
-                        context.getRenditionFilterString(),
-                        BigInteger.valueOf(maxNumItems),
+                ObjectList results = service.query(repositoryId, statement, Boolean.valueOf(searchAllVersions),
+                        Boolean.valueOf(context.isIncludeAllowableActions()), context.getIncludeRelationships(),
+                        context.getRenditionFilterString(), BigInteger.valueOf(maxNumItems),
                         BigInteger.valueOf(skipCount), null);
                 // convert objects
                 List<QueryResult> page = new ArrayList<QueryResult>();
@@ -463,16 +425,15 @@ public class NuxeoSession implements Session {
                         page.add(new QueryResultImpl(NuxeoSession.this, data));
                     }
                 }
-                return new Page<QueryResult>(page, results.getNumItems(),
-                        results.hasMoreItems());
+                return new Page<QueryResult>(page, results.getNumItems(), results.hasMoreItems());
             }
         };
         return new CollectionIterable<QueryResult>(pageFetcher);
     }
 
     @Override
-    public ItemIterable<CmisObject> queryObjects(String typeId, String where,
-            boolean searchAllVersions, OperationContext context) {
+    public ItemIterable<CmisObject> queryObjects(String typeId, String where, boolean searchAllVersions,
+            OperationContext context) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -483,30 +444,23 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public QueryStatement createQueryStatement(
-            Collection<String> selectPropertyIds,
-            Map<String, String> fromTypes, String whereClause,
-            List<String> orderByPropertyIds) {
-        return new QueryStatementImpl(this, selectPropertyIds, fromTypes,
-                whereClause, orderByPropertyIds);
+    public QueryStatement createQueryStatement(Collection<String> selectPropertyIds, Map<String, String> fromTypes,
+            String whereClause, List<String> orderByPropertyIds) {
+        return new QueryStatementImpl(this, selectPropertyIds, fromTypes, whereClause, orderByPropertyIds);
     }
 
     @Override
     public ItemIterable<Relationship> getRelationships(final ObjectId objectId,
-            final boolean includeSubRelationshipTypes,
-            final RelationshipDirection relationshipDirection,
+            final boolean includeSubRelationshipTypes, final RelationshipDirection relationshipDirection,
             final ObjectType type, final OperationContext context) {
         final String typeId = type == null ? null : type.getId();
         AbstractPageFetcher<Relationship> pageFetcher = new AbstractPageFetcher<Relationship>(
                 context.getMaxItemsPerPage()) {
             @Override
             protected Page<Relationship> fetchPage(long skipCount) {
-                ObjectList relations = service.getObjectRelationships(
-                        repositoryId, objectId.getId(),
-                        Boolean.valueOf(includeSubRelationshipTypes),
-                        relationshipDirection, typeId, null, null,
-                        BigInteger.valueOf(maxNumItems),
-                        BigInteger.valueOf(skipCount), null);
+                ObjectList relations = service.getObjectRelationships(repositoryId, objectId.getId(),
+                        Boolean.valueOf(includeSubRelationshipTypes), relationshipDirection, typeId, null, null,
+                        BigInteger.valueOf(maxNumItems), BigInteger.valueOf(skipCount), null);
                 // convert objects
                 List<Relationship> page = new ArrayList<Relationship>();
                 if (relations.getObjects() != null) {
@@ -524,8 +478,7 @@ public class NuxeoSession implements Session {
                         page.add((Relationship) ob);
                     }
                 }
-                return new Page<Relationship>(page, relations.getNumItems(),
-                        relations.hasMoreItems());
+                return new Page<Relationship>(page, relations.getNumItems(), relations.hasMoreItems());
             }
         };
         return new CollectionIterable<Relationship>(pageFetcher);
@@ -533,22 +486,18 @@ public class NuxeoSession implements Session {
 
     @Override
     public Acl getAcl(ObjectId objectId, boolean onlyBasicPermissions) {
-        return service.getAcl(repositoryId, objectId.getId(),
-                Boolean.valueOf(onlyBasicPermissions), null);
+        return service.getAcl(repositoryId, objectId.getId(), Boolean.valueOf(onlyBasicPermissions), null);
     }
 
     @Override
     public Acl setAcl(ObjectId objectId, List<Ace> aces) {
-        return service.applyAcl(repositoryId, objectId.getId(),
-                new AccessControlListImpl(aces), null);
+        return service.applyAcl(repositoryId, objectId.getId(), new AccessControlListImpl(aces), null);
     }
 
     @Override
-    public Acl applyAcl(ObjectId objectId, List<Ace> addAces,
-            List<Ace> removeAces, AclPropagation aclPropagation) {
-        return service.applyAcl(repositoryId, objectId.getId(),
-                new AccessControlListImpl(addAces), new AccessControlListImpl(
-                        removeAces), aclPropagation, null);
+    public Acl applyAcl(ObjectId objectId, List<Ace> addAces, List<Ace> removeAces, AclPropagation aclPropagation) {
+        return service.applyAcl(repositoryId, objectId.getId(), new AccessControlListImpl(addAces),
+                new AccessControlListImpl(removeAces), aclPropagation, null);
     }
 
     @Override
@@ -576,8 +525,7 @@ public class NuxeoSession implements Session {
 
     @Override
     public void delete(ObjectId objectId, boolean allVersions) {
-        service.deleteObject(repositoryId, objectId.getId(),
-                Boolean.valueOf(allVersions), null);
+        service.deleteObject(repositoryId, objectId.getId(), Boolean.valueOf(allVersions), null);
     }
 
     @Override
@@ -586,13 +534,11 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ContentStream getContentStream(ObjectId docId, String streamId,
-            BigInteger offset, BigInteger length) {
+    public ContentStream getContentStream(ObjectId docId, String streamId, BigInteger offset, BigInteger length) {
         if (docId == null) {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
-        return service.getContentStream(repositoryId, docId.getId(), streamId,
-                offset, length, null);
+        return service.getContentStream(repositoryId, docId.getId(), streamId, offset, length, null);
     }
 
     @Override
@@ -611,18 +557,13 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public List<BulkUpdateObjectIdAndChangeToken> bulkUpdateProperties(
-            List<CmisObject> objects, Map<String, ?> properties,
-            List<String> addSecondaryTypeIds,
-            List<String> removeSecondaryTypeIds) {
-        List<BulkUpdateObjectIdAndChangeToken> idts = new ArrayList<BulkUpdateObjectIdAndChangeToken>(
-                objects.size());
+    public List<BulkUpdateObjectIdAndChangeToken> bulkUpdateProperties(List<CmisObject> objects,
+            Map<String, ?> properties, List<String> addSecondaryTypeIds, List<String> removeSecondaryTypeIds) {
+        List<BulkUpdateObjectIdAndChangeToken> idts = new ArrayList<BulkUpdateObjectIdAndChangeToken>(objects.size());
         for (CmisObject object : objects) {
-            idts.add(new BulkUpdateObjectIdAndChangeTokenImpl(object.getId(),
-                    object.getChangeToken()));
+            idts.add(new BulkUpdateObjectIdAndChangeTokenImpl(object.getId(), object.getChangeToken()));
         }
-        return service.bulkUpdateProperties(repositoryId, idts,
-                convertProperties(properties), addSecondaryTypeIds,
+        return service.bulkUpdateProperties(repositoryId, idts, convertProperties(properties), addSecondaryTypeIds,
                 removeSecondaryTypeIds, null);
     }
 
@@ -698,8 +639,8 @@ public class NuxeoSession implements Session {
 
                 if (sourceObjectData.getProperties() != null
                         && sourceObjectData.getProperties().getProperties() != null) {
-                    PropertyData<?> verionsSeriesIdProp = sourceObjectData.getProperties().getProperties()
-                            .get(PropertyIds.VERSION_SERIES_ID);
+                    PropertyData<?> verionsSeriesIdProp = sourceObjectData.getProperties().getProperties().get(
+                            PropertyIds.VERSION_SERIES_ID);
                     if (verionsSeriesIdProp != null && verionsSeriesIdProp.getFirstValue() instanceof String) {
                         versionSeriesId = (String) verionsSeriesIdProp.getFirstValue();
                     }
@@ -730,8 +671,7 @@ public class NuxeoSession implements Session {
 
     @Override
     public String getLatestChangeLogToken() {
-        return getBinding().getRepositoryService().getRepositoryInfo(
-                getRepositoryId(), null).getLatestChangeLogToken();
+        return getBinding().getRepositoryService().getRepositoryInfo(getRepositoryId(), null).getLatestChangeLogToken();
     }
 
 }

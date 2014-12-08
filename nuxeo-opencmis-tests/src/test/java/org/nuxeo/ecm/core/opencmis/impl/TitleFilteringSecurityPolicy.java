@@ -35,8 +35,7 @@ public class TitleFilteringSecurityPolicy extends AbstractSecurityPolicy {
     protected static final String PREFIX = "SECRET";
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp,
-            Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         if (!isRestrictingPermission(permission)) {
             return Access.UNKNOWN;

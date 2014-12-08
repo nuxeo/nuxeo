@@ -19,8 +19,7 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
- * Throws a {@link RecoverableClientException} if the document name starts with
- * "throw".
+ * Throws a {@link RecoverableClientException} if the document name starts with "throw".
  */
 public class DummyRecoverableExtListener implements EventListener {
 

@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.storage.StorageBlob;
 
 /**
- * Nuxeo implementation of a CMIS {@link ContentStream}, backed by a
- * {@link Blob}.
+ * Nuxeo implementation of a CMIS {@link ContentStream}, backed by a {@link Blob}.
  */
 public class NuxeoContentStream implements CacheHeaderContentStream, LastModifiedContentStream {
 

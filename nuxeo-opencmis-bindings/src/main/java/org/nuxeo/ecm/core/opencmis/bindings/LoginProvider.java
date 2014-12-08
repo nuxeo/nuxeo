@@ -17,14 +17,12 @@ import javax.security.auth.login.LoginException;
 /**
  * Interface defining a login method, used during SOAP authentication.
  * <p>
- * The provider can be redefined by a Nuxeo Framework property named with the
- * full name of this interface.
+ * The provider can be redefined by a Nuxeo Framework property named with the full name of this interface.
  */
 public interface LoginProvider {
 
     /**
-     * Log in the user given the username and password, and returns a login
-     * context.
+     * Log in the user given the username and password, and returns a login context.
      *
      * @param username the username
      * @param password the password

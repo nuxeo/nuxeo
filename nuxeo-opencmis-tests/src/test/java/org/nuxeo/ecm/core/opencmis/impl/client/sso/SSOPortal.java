@@ -20,7 +20,6 @@ import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoPortalSSOAuthenticationProvi
 
 public class SSOPortal extends AbstractClientSupport {
 
-
     protected final String secret;
 
     public SSOPortal(String location, String secret) {
@@ -32,7 +31,9 @@ public class SSOPortal extends AbstractClientSupport {
     protected void injectParameters() {
         super.injectParameters();
         params.put(NuxeoPortalSSOAuthenticationProvider.SECRET_KEY, secret);
-        params.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS, NuxeoPortalSSOAuthenticationProvider.class.getName());                                                                                     // to                                                                                     // server.
+        params.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS, NuxeoPortalSSOAuthenticationProvider.class.getName()); // to
+                                                                                                                          // //
+                                                                                                                          // server.
         params.put(SessionParameter.USER, "Administrator");
     }
 
@@ -40,7 +41,7 @@ public class SSOPortal extends AbstractClientSupport {
         SSOPortal client = new SSOPortal("http://localhost:8080/nuxeo/atom/cmis", "nuxeo5secretkey");
         Session session = client.connect();
         CmisObject root = session.getRootFolder();
-        for (Property<?> prop:root.getProperties()) {
+        for (Property<?> prop : root.getProperties()) {
             String msg = String.format("%s=%s", prop.getDisplayName(), prop.getValueAsString());
             System.out.println(msg);
         }

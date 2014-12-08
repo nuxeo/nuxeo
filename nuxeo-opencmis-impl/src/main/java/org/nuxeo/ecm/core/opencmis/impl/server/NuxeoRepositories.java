@@ -28,8 +28,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Information about all Nuxeo repositories.
  * <p>
- * Information is cached, and an initial connection to the repository is needed
- * to get the root folder id.
+ * Information is cached, and an initial connection to the repository is needed to get the root folder id.
  */
 public class NuxeoRepositories extends DefaultComponent {
 
@@ -64,8 +63,7 @@ public class NuxeoRepositories extends DefaultComponent {
             for (String repositoryName : repositoryManager.getRepositoryNames()) {
                 try (CoreSession coreSession = CoreInstance.openCoreSession(repositoryName)) {
                     String rootFolderId = coreSession.getRootDocument().getId();
-                    repositories.put(repositoryName, new NuxeoRepository(
-                            repositoryName, rootFolderId));
+                    repositories.put(repositoryName, new NuxeoRepository(repositoryName, rootFolderId));
                 } catch (ClientException e) {
                     throw new CmisRuntimeException(e.toString(), e);
                 }

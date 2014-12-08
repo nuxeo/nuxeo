@@ -53,8 +53,8 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoPropertyData.NuxeoPropertyDa
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoPropertyDataBase;
 
 /**
- * Base abstract live local CMIS Object, wrapping a {@link NuxeoSession} and a
- * {@link NuxeoObjectData} which is backed by a Nuxeo document.
+ * Base abstract live local CMIS Object, wrapping a {@link NuxeoSession} and a {@link NuxeoObjectData} which is backed
+ * by a Nuxeo document.
  */
 public abstract class NuxeoObject implements CmisObject {
 
@@ -72,8 +72,7 @@ public abstract class NuxeoObject implements CmisObject {
 
     protected final ObjectType type;
 
-    public static NuxeoObject construct(NuxeoSession session,
-            NuxeoObjectData data, ObjectType type) {
+    public static NuxeoObject construct(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
         BaseTypeId baseTypeId = type.getBaseTypeId();
         switch (baseTypeId) {
         case CMIS_FOLDER:
@@ -89,8 +88,7 @@ public abstract class NuxeoObject implements CmisObject {
         }
     }
 
-    public NuxeoObject(NuxeoSession session, NuxeoObjectData data,
-            ObjectType type) {
+    public NuxeoObject(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
         this.session = session;
         service = session.getService();
         nuxeoCmisService = NuxeoCmisService.extractFromCmisService(service);
@@ -102,8 +100,7 @@ public abstract class NuxeoObject implements CmisObject {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getAdapter(Class<T> adapterInterface) {
-        throw new CmisRuntimeException("Cannot adapt to "
-                + adapterInterface.getName());
+        throw new CmisRuntimeException("Cannot adapt to " + adapterInterface.getName());
     }
 
     public String getRepositoryId() {
@@ -182,8 +179,7 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public void delete(boolean allVersions) {
-        service.deleteObject(getRepositoryId(), getId(),
-                Boolean.valueOf(allVersions), null);
+        service.deleteObject(getRepositoryId(), getId(), Boolean.valueOf(allVersions), null);
     }
 
     @Override
@@ -259,22 +255,19 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public Acl addAcl(List<Ace> addAces, AclPropagation aclPropagation) {
-        return service.applyAcl(getRepositoryId(), getId(),
-                objectFactory.convertAces(addAces), null, aclPropagation, null);
+        return service.applyAcl(getRepositoryId(), getId(), objectFactory.convertAces(addAces), null, aclPropagation,
+                null);
     }
 
     @Override
-    public Acl applyAcl(List<Ace> addAces, List<Ace> removeAces,
-            AclPropagation aclPropagation) {
-        return service.applyAcl(getRepositoryId(), getId(),
-                objectFactory.convertAces(addAces),
+    public Acl applyAcl(List<Ace> addAces, List<Ace> removeAces, AclPropagation aclPropagation) {
+        return service.applyAcl(getRepositoryId(), getId(), objectFactory.convertAces(addAces),
                 objectFactory.convertAces(removeAces), aclPropagation, null);
     }
 
     @Override
     public Acl setAcl(List<Ace> aces) {
-        return service.applyAcl(getRepositoryId(), getId(),
-                objectFactory.convertAces(aces),
+        return service.applyAcl(getRepositoryId(), getId(), objectFactory.convertAces(aces),
                 AclPropagation.REPOSITORYDETERMINED);
     }
 
@@ -285,8 +278,8 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public Acl removeAcl(List<Ace> removeAces, AclPropagation aclPropagation) {
-        return service.applyAcl(getRepositoryId(), getId(), null,
-                objectFactory.convertAces(removeAces), aclPropagation, null);
+        return service.applyAcl(getRepositoryId(), getId(), null, objectFactory.convertAces(removeAces),
+                aclPropagation, null);
     }
 
     @Override
@@ -324,16 +317,12 @@ public abstract class NuxeoObject implements CmisObject {
         }
         List<Rendition> res = new ArrayList<Rendition>(renditions.size());
         for (RenditionData ren : renditions) {
-            long length = ren.getBigLength() == null ? -1
-                    : ren.getBigLength().longValue();
-            int height = ren.getBigHeight() == null ? -1
-                    : ren.getBigHeight().intValue();
-            int width = ren.getBigWidth() == null ? -1
-                    : ren.getBigWidth().intValue();
-            RenditionImpl rendition = new RenditionImpl(session, getId(),
-                    ren.getStreamId(), ren.getRenditionDocumentId(),
-                    ren.getKind(), length, ren.getMimeType(), ren.getTitle(),
-                    height, width);
+            long length = ren.getBigLength() == null ? -1 : ren.getBigLength().longValue();
+            int height = ren.getBigHeight() == null ? -1 : ren.getBigHeight().intValue();
+            int width = ren.getBigWidth() == null ? -1 : ren.getBigWidth().intValue();
+            RenditionImpl rendition = new RenditionImpl(session, getId(), ren.getStreamId(),
+                    ren.getRenditionDocumentId(), ren.getKind(), length, ren.getMimeType(), ren.getTitle(), height,
+                    width);
             res.add(rendition);
         }
         return res;

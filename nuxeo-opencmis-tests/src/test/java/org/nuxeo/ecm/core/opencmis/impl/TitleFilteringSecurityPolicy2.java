@@ -21,8 +21,7 @@ import java.security.Principal;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
- * Test security policy that forbids titles starting with SECRET. This one can
- * be expressed in CMISQL.
+ * Test security policy that forbids titles starting with SECRET. This one can be expressed in CMISQL.
  *
  * @since 5.7.2
  */
@@ -31,14 +30,12 @@ public class TitleFilteringSecurityPolicy2 extends TitleFilteringSecurityPolicy 
     private static final String CMISQL = "CMISQL";
 
     @Override
-    public boolean isExpressibleInQuery(String repositoryName,
-            String queryLanguage) {
+    public boolean isExpressibleInQuery(String repositoryName, String queryLanguage) {
         return NXQL.NXQL.equals(queryLanguage) || CMISQL.equals(queryLanguage);
     }
 
     @Override
-    public QueryTransformer getQueryTransformer(String repositoryName,
-            String queryLanguage) {
+    public QueryTransformer getQueryTransformer(String repositoryName, String queryLanguage) {
         if (!CMISQL.equals(queryLanguage)) {
             throw new UnsupportedOperationException(queryLanguage);
         }
@@ -46,8 +43,7 @@ public class TitleFilteringSecurityPolicy2 extends TitleFilteringSecurityPolicy 
     }
 
     /**
-     * Transformer that adds {@code AND dc:title NOT LIKE 'SECRET%'} to the
-     * query.
+     * Transformer that adds {@code AND dc:title NOT LIKE 'SECRET%'} to the query.
      */
     public static class TitleFilteringTransformer implements QueryTransformer {
 
@@ -56,17 +52,13 @@ public class TitleFilteringSecurityPolicy2 extends TitleFilteringSecurityPolicy 
         @Override
         public String transform(Principal principal, String statement) {
             /*
-             * If you use this method as an example for a real QueryTransform
-             * implementation, note that you should likely implement a more
-             * complex logic to add things to the query. In particular, if the
-             * query uses column aliases (qualifiers) or JOINs, then this has to
-             * be taken into account to use them correctly to refer to the
-             * columns needed to do the security checks (dc:title in this
-             * example).
+             * If you use this method as an example for a real QueryTransform implementation, note that you should
+             * likely implement a more complex logic to add things to the query. In particular, if the query uses column
+             * aliases (qualifiers) or JOINs, then this has to be taken into account to use them correctly to refer to
+             * the columns needed to do the security checks (dc:title in this example).
              */
             String securityClause = "dc:title NOT LIKE '" + PREFIX + "%'";
-            String sep = statement.toUpperCase().contains(" WHERE ") ? " AND "
-                    : " WHERE ";
+            String sep = statement.toUpperCase().contains(" WHERE ") ? " AND " : " WHERE ";
             return statement + sep + securityClause;
         }
     }

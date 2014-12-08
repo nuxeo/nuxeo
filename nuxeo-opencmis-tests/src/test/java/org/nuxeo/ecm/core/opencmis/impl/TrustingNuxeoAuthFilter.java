@@ -48,8 +48,8 @@ public class TrustingNuxeoAuthFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         // get principal
         String username = getUserName(httpRequest);
@@ -64,8 +64,7 @@ public class TrustingNuxeoAuthFilter implements Filter {
                 Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
                 maybeMakeAdministrator(principal);
                 // propagate
-                ClientLoginModule.getThreadLocalLogin().push(principal, null,
-                        loginContext.getSubject());
+                ClientLoginModule.getThreadLocalLogin().push(principal, null, loginContext.getSubject());
                 // wrap
                 request = new NuxeoSecuredRequestWrapper(httpRequest, principal);
                 // chain
@@ -92,8 +91,7 @@ public class TrustingNuxeoAuthFilter implements Filter {
      * If its name starts with "admin", makes the principal an Administrator.
      */
     protected static void maybeMakeAdministrator(Principal principal) {
-        if (principal.getName().toLowerCase().startsWith("admin")
-                && principal instanceof NuxeoPrincipalImpl) {
+        if (principal.getName().toLowerCase().startsWith("admin") && principal instanceof NuxeoPrincipalImpl) {
             ((NuxeoPrincipalImpl) principal).isAdministrator = true;
         }
     }

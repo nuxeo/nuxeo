@@ -82,7 +82,6 @@ public class NuxeoCmisErrorHelper {
      *
      * @param ex the exception
      * @return the error info
-     *
      * @since 7.1
      */
     // see CmisAtomPubServlet.printError
@@ -121,8 +120,8 @@ public class NuxeoCmisErrorHelper {
     }
 
     /*
-     * A bit of a hack, we need a way to find the HTTP status from the
-     * exception. Convention: last param = "httpStatus=123"
+     * A bit of a hack, we need a way to find the HTTP status from the exception. Convention: last param =
+     * "httpStatus=123"
      */
     public static int getHttpStatus(RecoverableClientException ex) {
         String[] params = ex.geLocalizedMessageParams(); // urgh, typo

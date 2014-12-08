@@ -30,11 +30,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.Authenticator;
 
 /**
- * SOAP handler that extracts authentication information from the SOAP headers
- * and propagates it to Nuxeo for login.
+ * SOAP handler that extracts authentication information from the SOAP headers and propagates it to Nuxeo for login.
  */
-public class NuxeoCmisAuthHandler extends CXFAuthHandler implements
-        LoginProvider {
+public class NuxeoCmisAuthHandler extends CXFAuthHandler implements LoginProvider {
 
     public static final String NUXEO_LOGIN_CONTEXT = "nuxeo.opencmis.LoginContext";
 
@@ -56,14 +54,12 @@ public class NuxeoCmisAuthHandler extends CXFAuthHandler implements
             String username = callContextMap.get(CallContext.USERNAME);
             String password = callContextMap.get(CallContext.PASSWORD);
             try {
-                LoginContext loginContext = getLoginProvider().login(username,
-                        password);
+                LoginContext loginContext = getLoginProvider().login(username, password);
                 // store in message context, for later logout
                 context.put(NUXEO_LOGIN_CONTEXT, loginContext);
                 context.setScope(NUXEO_LOGIN_CONTEXT, Scope.APPLICATION);
             } catch (LoginException e) {
-                throw new RuntimeException("Login failed for user '" + username
-                        + "'", e);
+                throw new RuntimeException("Login failed for user '" + username + "'", e);
             }
         }
         return res;
@@ -92,8 +88,7 @@ public class NuxeoCmisAuthHandler extends CXFAuthHandler implements
                     if (instance instanceof LoginProvider) {
                         loginProvider = (LoginProvider) instance;
                     } else {
-                        log.error(className + " is not an instance of "
-                                + LoginProvider.class.getName());
+                        log.error(className + " is not an instance of " + LoginProvider.class.getName());
                     }
                 } catch (Exception e) {
                     log.error(e);
@@ -109,14 +104,12 @@ public class NuxeoCmisAuthHandler extends CXFAuthHandler implements
         try {
             // check identity against UserManager
             if (!getAuthenticator().checkUsernamePassword(username, password)) {
-                throw new RuntimeException("Authentication failed for user '"
-                        + username + "'");
+                throw new RuntimeException("Authentication failed for user '" + username + "'");
             }
             // login to Nuxeo framework
             return Framework.login(username, password);
         } catch (Exception e) {
-            throw new RuntimeException("Login failed for user '" + username
-                    + "'", e);
+            throw new RuntimeException("Login failed for user '" + username + "'", e);
         }
     }
 

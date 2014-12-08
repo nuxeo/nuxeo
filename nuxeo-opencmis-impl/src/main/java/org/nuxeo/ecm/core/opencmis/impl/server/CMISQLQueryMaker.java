@@ -116,19 +116,16 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     // list of SQL column where NULL (missing value) should be treated as
     // Boolean.FALSE
-    public static final Set<String> NULL_IS_FALSE_COLUMNS = new HashSet<String>(
-            Arrays.asList(Model.HIER_TABLE_NAME + " "
-                    + Model.MAIN_IS_VERSION_KEY, Model.VERSION_TABLE_NAME + " "
-                    + Model.VERSION_IS_LATEST_KEY, Model.VERSION_TABLE_NAME
-                    + " " + Model.VERSION_IS_LATEST_MAJOR_KEY,
-                    Model.HIER_TABLE_NAME + " " + Model.MAIN_CHECKED_IN_KEY));
+    public static final Set<String> NULL_IS_FALSE_COLUMNS = new HashSet<String>(Arrays.asList(Model.HIER_TABLE_NAME
+            + " " + Model.MAIN_IS_VERSION_KEY, Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_KEY,
+            Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_MAJOR_KEY, Model.HIER_TABLE_NAME + " "
+                    + Model.MAIN_CHECKED_IN_KEY));
 
     /**
-     * These mixins never match an instance mixin when used in a clause
-     * nuxeo:secondaryObjectTypeIds = 'foo'
+     * These mixins never match an instance mixin when used in a clause nuxeo:secondaryObjectTypeIds = 'foo'
      */
-    protected static final Set<String> MIXINS_NOT_PER_INSTANCE = new HashSet<String>(
-            Arrays.asList(FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
+    protected static final Set<String> MIXINS_NOT_PER_INSTANCE = new HashSet<String>(Arrays.asList(
+            FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
 
     protected Database database;
 
@@ -184,8 +181,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     protected List<String> virtualColumnNames = new LinkedList<String>();
 
     /**
-     * Column corresponding to a returned value computed from an actual SQL
-     * expression.
+     * Column corresponding to a returned value computed from an actual SQL expression.
      */
     public static class SqlColumn {
 
@@ -218,14 +214,12 @@ public class CMISQLQueryMaker implements QueryMaker {
     /**
      * {@inheritDoc}
      * <p>
-     * The optional parameters must be passed: {@code params[0]} is the
-     * {@link NuxeoCmisService}, optional {@code params[1]} is a type info map,
-     * optional {@code params[2]} is searchAllVersions (default
+     * The optional parameters must be passed: {@code params[0]} is the {@link NuxeoCmisService}, optional
+     * {@code params[1]} is a type info map, optional {@code params[2]} is searchAllVersions (default
      * {@code Boolean.TRUE} for this method).
      */
     @Override
-    public Query buildQuery(SQLInfo sqlInfo, Model model,
-            PathResolver pathResolver, String statement,
+    public Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String statement,
             QueryFilter queryFilter, Object... params) throws StorageException {
         database = sqlInfo.database;
         dialect = sqlInfo.dialect;
@@ -245,8 +239,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         hierTable = database.getTable(Model.HIER_TABLE_NAME);
 
         query = new QueryObject(typeManager);
-        statement = applySecurityPolicyQueryTransformers(service,
-                queryFilter.getPrincipal(), statement);
+        statement = applySecurityPolicyQueryTransformers(service, queryFilter.getPrincipal(), statement);
         CmisQueryWalker walker = null;
         try {
             walker = QueryUtil.getWalker(statement);
@@ -264,8 +257,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         } catch (QueryParseException e) {
             throw e;
         } catch (Exception e) {
-            throw new QueryParseException(e.getMessage() + " for query: "
-                    + statement, e);
+            throw new QueryParseException(e.getMessage() + " for query: " + statement, e);
         }
 
         resolveQualifiers();
@@ -313,8 +305,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 alias = query.getMainTypeAlias();
             } else {
                 join = joins.get(njoin);
-                outerJoin = join.kind.equals("LEFT")
-                        || join.kind.equals("RIGHT");
+                outerJoin = join.kind.equals("LEFT") || join.kind.equals("RIGHT");
                 alias = join.alias;
             }
 
@@ -331,8 +322,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 types.add(td.getId());
             }
             LinkedList<TypeDefinitionContainer> typesTodo = new LinkedList<TypeDefinitionContainer>();
-            typesTodo.addAll(typeManager.getTypeDescendants(td.getId(), -1,
-                    Boolean.TRUE));
+            typesTodo.addAll(typeManager.getTypeDescendants(td.getId(), -1, Boolean.TRUE));
             // recurse to get all subtypes
             TypeDefinitionContainer tc;
             while ((tc = typesTodo.poll()) != null) {
@@ -351,10 +341,8 @@ public class CMISQLQueryMaker implements QueryMaker {
                 }
                 qms.append("?");
             }
-            String primaryTypeClause = String.format(
-                    "%s IN (%s)",
-                    qualHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
-                    qms);
+            String primaryTypeClause = String.format("%s IN (%s)",
+                    qualHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(), qms);
 
             // table this join is about
 
@@ -365,8 +353,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 // find which table in onLeft/onRight refers to current
                 // qualifier
                 table = null;
-                for (ColumnReference col : Arrays.asList(join.onLeft,
-                        join.onRight)) {
+                for (ColumnReference col : Arrays.asList(join.onLeft, join.onRight)) {
                     if (alias.equals(col.getQualifier())) {
                         // TODO match with canonical qualifier instead?
                         table = ((Column) col.getInfo()).getTable();
@@ -374,14 +361,12 @@ public class CMISQLQueryMaker implements QueryMaker {
                     }
                 }
                 if (table == null) {
-                    throw new QueryParseException(
-                            "Bad query, qualifier not found: " + qual);
+                    throw new QueryParseException("Bad query, qualifier not found: " + qual);
                 }
             }
             String tableName;
             if (table.isAlias()) {
-                tableName = table.getRealTable().getQuotedName() + " "
-                        + table.getQuotedName();
+                tableName = table.getRealTable().getQuotedName() + " " + table.getQuotedName();
             } else {
                 tableName = table.getQuotedName();
             }
@@ -425,8 +410,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 }
                 String n;
                 if (t.isAlias()) {
-                    n = t.getRealTable().getQuotedName() + " "
-                            + t.getQuotedName();
+                    n = t.getRealTable().getQuotedName() + " " + t.getQuotedName();
                 } else {
                     n = t.getQuotedName();
                 }
@@ -457,12 +441,10 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             if (skipDeleted) {
                 ModelProperty propertyInfo = model.getPropertyInfo(model.MISC_LIFECYCLE_STATE_PROP);
-                Column lscol = getTable(
-                        database.getTable(propertyInfo.fragmentName), qual).getColumn(
+                Column lscol = getTable(database.getTable(propertyInfo.fragmentName), qual).getColumn(
                         propertyInfo.fragmentKey);
                 String lscolName = lscol.getFullQuotedName();
-                whereClauses.add(String.format("(%s <> ? OR %s IS NULL)",
-                        lscolName, lscolName));
+                whereClauses.add(String.format("(%s <> ? OR %s IS NULL)", lscolName, lscolName));
                 whereParams.add(LifeCycleConstants.DELETED_STATE);
             }
 
@@ -471,8 +453,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             boolean versionable = versionableQualifiers.contains(qual);
             if (searchLatestVersion && versionable) {
                 // add islatestversion = true
-                Table ver = getTable(
-                        database.getTable(model.VERSION_TABLE_NAME), qual);
+                Table ver = getTable(database.getTable(model.VERSION_TABLE_NAME), qual);
                 Column latestvercol = ver.getColumn(model.VERSION_IS_LATEST_KEY);
                 String latestvercolName = latestvercol.getFullQuotedName();
                 whereClauses.add(String.format("(%s = ?)", latestvercolName));
@@ -482,8 +463,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             // security check
 
             boolean checkSecurity = !isRelation //
-                    && queryFilter != null
-                    && queryFilter.getPrincipals() != null;
+                    && queryFilter != null && queryFilter.getPrincipals() != null;
             if (checkSecurity) {
                 Serializable principals;
                 Serializable permissions;
@@ -491,10 +471,8 @@ public class CMISQLQueryMaker implements QueryMaker {
                     principals = queryFilter.getPrincipals();
                     permissions = queryFilter.getPermissions();
                 } else {
-                    principals = StringUtils.join(queryFilter.getPrincipals(),
-                            '|');
-                    permissions = StringUtils.join(
-                            queryFilter.getPermissions(), '|');
+                    principals = StringUtils.join(queryFilter.getPrincipals(), '|');
+                    permissions = StringUtils.join(queryFilter.getPermissions(), '|');
                 }
                 if (dialect.supportsReadAcl()) {
                     /* optimized read acl */
@@ -509,50 +487,39 @@ public class CMISQLQueryMaker implements QueryMaker {
                         aclrumTableAlias = aclrumTable;
                     } else {
                         readAclTableAlias = "nxr" + (njoin + 1);
-                        readAclTable = Model.HIER_READ_ACL_TABLE_NAME + ' '
-                                + readAclTableAlias; // TODO dialect
+                        readAclTable = Model.HIER_READ_ACL_TABLE_NAME + ' ' + readAclTableAlias; // TODO dialect
                         aclrumTableAlias = "aclrum" + (njoin + 1);
-                        aclrumTable = Model.ACLR_USER_MAP_TABLE_NAME + ' '
-                                + aclrumTableAlias; // TODO dialect
+                        aclrumTable = Model.ACLR_USER_MAP_TABLE_NAME + ' ' + aclrumTableAlias; // TODO dialect
                     }
-                    String readAclIdCol = readAclTableAlias + '.'
-                            + Model.HIER_READ_ACL_ID;
-                    String readAclAclIdCol = readAclTableAlias + '.'
-                            + Model.HIER_READ_ACL_ACL_ID;
-                    String aclrumAclIdCol = aclrumTableAlias + '.'
-                            + Model.ACLR_USER_MAP_ACL_ID;
-                    String aclrumUserIdCol = aclrumTableAlias + '.'
-                            + Model.ACLR_USER_MAP_USER_ID;
+                    String readAclIdCol = readAclTableAlias + '.' + Model.HIER_READ_ACL_ID;
+                    String readAclAclIdCol = readAclTableAlias + '.' + Model.HIER_READ_ACL_ACL_ID;
+                    String aclrumAclIdCol = aclrumTableAlias + '.' + Model.ACLR_USER_MAP_ACL_ID;
+                    String aclrumUserIdCol = aclrumTableAlias + '.' + Model.ACLR_USER_MAP_USER_ID;
                     // first join with hierarchy_read_acl
                     if (outerJoin) {
                         from.append(" ");
                         from.append(join.kind);
                     }
-                    from.append(String.format(" JOIN %s ON (%s = %s)",
-                            readAclTable, tableMainId, readAclIdCol));
+                    from.append(String.format(" JOIN %s ON (%s = %s)", readAclTable, tableMainId, readAclIdCol));
                     // second join with aclr_user_map
                     String securityCheck = dialect.getReadAclsCheckSql(aclrumUserIdCol);
-                    String joinOn = String.format("%s = %s", readAclAclIdCol,
-                            aclrumAclIdCol);
+                    String joinOn = String.format("%s = %s", readAclAclIdCol, aclrumAclIdCol);
                     if (outerJoin) {
                         from.append(" ");
                         from.append(join.kind);
                         // outer join, security check must be part of JOIN
-                        joinOn = String.format("%s AND %s", joinOn,
-                                securityCheck);
+                        joinOn = String.format("%s AND %s", joinOn, securityCheck);
                         fromParams.add(principals);
                     } else {
                         // inner join, security check can go in WHERE clause
                         whereClauses.add(securityCheck);
                         whereParams.add(principals);
                     }
-                    from.append(String.format(" JOIN %s ON (%s)", aclrumTable,
-                            joinOn));
+                    from.append(String.format(" JOIN %s ON (%s)", aclrumTable, joinOn));
                 } else {
                     String securityCheck = dialect.getSecurityCheckSql(tableMainId);
                     if (outerJoin) {
-                        securityCheck = String.format("(%s OR %s IS NULL)",
-                                securityCheck, tableMainId);
+                        securityCheck = String.format("(%s OR %s IS NULL)", securityCheck, tableMainId);
                     }
                     whereClauses.add(securityCheck);
                     whereParams.add(principals);
@@ -594,8 +561,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
         selectParams.addAll(realColumnsParams);
 
-        CMISQLMapMaker mapMaker = new CMISQLMapMaker(realColumns,
-                virtualColumns, service);
+        CMISQLMapMaker mapMaker = new CMISQLMapMaker(realColumns, virtualColumns, service);
         String what = StringUtils.join(selectWhat, ", ");
         if (distinct) {
             what = "DISTINCT " + what;
@@ -641,15 +607,13 @@ public class CMISQLQueryMaker implements QueryMaker {
     }
 
     /**
-     * Applies security policies query transformers to the statement, if
-     * possible. Otherwise raises an exception.
+     * Applies security policies query transformers to the statement, if possible. Otherwise raises an exception.
      *
      * @since 5.7.2
-     * @throws CmisRuntimeException If a security policy prevents doing CMIS
-     *             queries.
+     * @throws CmisRuntimeException If a security policy prevents doing CMIS queries.
      */
-    protected String applySecurityPolicyQueryTransformers(
-            NuxeoCmisService service, Principal principal, String statement) {
+    protected String applySecurityPolicyQueryTransformers(NuxeoCmisService service, Principal principal,
+            String statement) {
         SecurityPolicyService securityPolicyService = Framework.getLocalService(SecurityPolicyService.class);
         if (securityPolicyService == null) {
             return statement;
@@ -661,12 +625,10 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
             // check CMISQL transformer (new @since 5.7.2)
             if (!policy.isExpressibleInQuery(repositoryId, TYPE)) {
-                throw new CmisRuntimeException("Security policy "
-                        + policy.getClass().getName()
+                throw new CmisRuntimeException("Security policy " + policy.getClass().getName()
                         + " prevents CMISQL execution");
             }
-            QueryTransformer transformer = policy.getQueryTransformer(
-                    repositoryId, TYPE);
+            QueryTransformer transformer = policy.getQueryTransformer(repositoryId, TYPE);
             statement = transformer.transform(principal, statement);
         }
         return statement;
@@ -693,8 +655,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     }
 
     protected boolean isFacetsColumn(String name) {
-        return PropertyIds.SECONDARY_OBJECT_TYPE_IDS.equals(name)
-                || NuxeoTypeHelper.NX_FACETS.equals(name);
+        return PropertyIds.SECONDARY_OBJECT_TYPE_IDS.equals(name) || NuxeoTypeHelper.NX_FACETS.equals(name);
     }
 
     // add main id to all qualifiers if
@@ -711,8 +672,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             TypeDefinition type = getTypeForQualifier(qual);
 
             // additional references to cmis:objectId and cmis:objectTypeId
-            for (String propertyId : Arrays.asList(PropertyIds.OBJECT_ID,
-                    PropertyIds.OBJECT_TYPE_ID)) {
+            for (String propertyId : Arrays.asList(PropertyIds.OBJECT_ID, PropertyIds.OBJECT_TYPE_ID)) {
                 ColumnReference col = new ColumnReference(qual, propertyId);
                 col.setTypeDefinition(propertyId, type);
                 String key = getColumnKey(col);
@@ -730,8 +690,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (skipDeleted || lifecycleWhereClauseQualifiers.contains(qual)) {
                 // add lifecycle state column
                 ModelProperty propertyInfo = model.getPropertyInfo(model.MISC_LIFECYCLE_STATE_PROP);
-                Table table = getTable(
-                        database.getTable(propertyInfo.fragmentName), qual);
+                Table table = getTable(database.getTable(propertyInfo.fragmentName), qual);
                 recordFragment(qual, table);
             }
             if (mixinTypeWhereClauseQualifiers.contains(qual)) {
@@ -747,14 +706,11 @@ public class CMISQLQueryMaker implements QueryMaker {
         } else {
             if (!addedSystemColumns.isEmpty()) {
                 if (!virtualColumnNames.isEmpty()) {
-                    throw new QueryParseException(
-                            "Cannot use DISTINCT with virtual columns: "
-                                    + StringUtils.join(virtualColumnNames, ", "));
+                    throw new QueryParseException("Cannot use DISTINCT with virtual columns: "
+                            + StringUtils.join(virtualColumnNames, ", "));
                 }
                 if (addSystemColumns) {
-                    throw new QueryParseException(
-                            "Cannot use DISTINCT without explicit "
-                                    + PropertyIds.OBJECT_ID);
+                    throw new QueryParseException("Cannot use DISTINCT without explicit " + PropertyIds.OBJECT_ID);
                 }
                 // don't add system columns as it would prevent DISTINCT from
                 // working
@@ -782,17 +738,14 @@ public class CMISQLQueryMaker implements QueryMaker {
         if (sel instanceof FunctionReference) {
             FunctionReference fr = (FunctionReference) sel;
             if (fr.getFunction() != CmisQlFunction.SCORE) {
-                throw new CmisRuntimeException("Unknown function: "
-                        + fr.getFunction());
+                throw new CmisRuntimeException("Unknown function: " + fr.getFunction());
             }
             String key = fr.getAliasName();
             if (key == null) {
                 key = "SEARCH_SCORE"; // default, from spec
             }
-            String scoreExprSql = fulltextMatchInfo.scoreExpr + " AS "
-                    + fulltextMatchInfo.scoreAlias;
-            SqlColumn c = new SqlColumn(scoreExprSql,
-                    fulltextMatchInfo.scoreCol, key);
+            String scoreExprSql = fulltextMatchInfo.scoreExpr + " AS " + fulltextMatchInfo.scoreAlias;
+            SqlColumn c = new SqlColumn(scoreExprSql, fulltextMatchInfo.scoreCol, key);
             realColumns.add(c);
             if (fulltextMatchInfo.scoreExprParam != null) {
                 realColumnsParams.add(fulltextMatchInfo.scoreExprParam);
@@ -852,20 +805,17 @@ public class CMISQLQueryMaker implements QueryMaker {
     protected static final String ORDER_BY = "ORDER BY";
 
     /**
-     * Records a JOIN / WHERE / ORDER BY selector, and associates it to a
-     * database column.
+     * Records a JOIN / WHERE / ORDER BY selector, and associates it to a database column.
      */
     protected void recordSelector(CmisSelector sel, String clauseType) {
         if (sel instanceof FunctionReference) {
             FunctionReference fr = (FunctionReference) sel;
             if (clauseType != ORDER_BY) { // == ok
-                throw new QueryParseException("Cannot use function in "
-                        + clauseType + " clause: " + fr.getFunction());
+                throw new QueryParseException("Cannot use function in " + clauseType + " clause: " + fr.getFunction());
             }
             // ORDER BY SCORE, nothing further to record
             if (fulltextMatchInfo == null) {
-                throw new QueryParseException(
-                        "Cannot use ORDER BY SCORE without CONTAINS");
+                throw new QueryParseException("Cannot use ORDER BY SCORE without CONTAINS");
             }
             return;
         }
@@ -876,14 +826,13 @@ public class CMISQLQueryMaker implements QueryMaker {
         // fetch column and associate it to the selector
         Column column = getColumn(col);
         if (!isFacetsColumn(col.getPropertyId()) && column == null) {
-            throw new QueryParseException("Cannot use column in " + clauseType
-                    + " clause: " + col.getPropertyQueryName());
+            throw new QueryParseException("Cannot use column in " + clauseType + " clause: "
+                    + col.getPropertyQueryName());
         }
         col.setInfo(column);
         String qual = canonicalQualifier.get(col.getQualifier());
 
-        if (clauseType == WHERE
-                && NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(col.getPropertyId())) {
+        if (clauseType == WHERE && NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(col.getPropertyId())) {
             // explicit lifecycle query: do not include the 'deleted' lifecycle
             // filter
             skipDeleted = false;
@@ -919,8 +868,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     }
 
     /**
-     * Finds what qualifiers are allowed and to what correlation name they are
-     * mapped.
+     * Finds what qualifiers are allowed and to what correlation name they are mapped.
      */
     protected void resolveQualifiers() {
         Map<String, String> types = query.getTypes();
@@ -974,8 +922,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             ModelProperty propertyInfo = model.getPropertyInfo(id);
             boolean multi = propertyInfo.propertyType.isArray();
             Table table = database.getTable(propertyInfo.fragmentName);
-            String key = multi ? model.COLL_TABLE_VALUE_KEY
-                    : propertyInfo.fragmentKey;
+            String key = multi ? model.COLL_TABLE_VALUE_KEY : propertyInfo.fragmentKey;
             column = getTable(table, qual).getColumn(key);
         }
         return column;
@@ -1013,36 +960,29 @@ public class CMISQLQueryMaker implements QueryMaker {
             return hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
         }
         if (id.equals(PropertyIds.VERSION_LABEL)) {
-            return database.getTable(model.VERSION_TABLE_NAME).getColumn(
-                    model.VERSION_LABEL_KEY);
+            return database.getTable(model.VERSION_TABLE_NAME).getColumn(model.VERSION_LABEL_KEY);
         }
         if (id.equals(PropertyIds.IS_LATEST_MAJOR_VERSION)) {
-            return database.getTable(model.VERSION_TABLE_NAME).getColumn(
-                    model.VERSION_IS_LATEST_MAJOR_KEY);
+            return database.getTable(model.VERSION_TABLE_NAME).getColumn(model.VERSION_IS_LATEST_MAJOR_KEY);
         }
         if (id.equals(PropertyIds.IS_LATEST_VERSION)) {
-            return database.getTable(model.VERSION_TABLE_NAME).getColumn(
-                    model.VERSION_IS_LATEST_KEY);
+            return database.getTable(model.VERSION_TABLE_NAME).getColumn(model.VERSION_IS_LATEST_KEY);
         }
         if (id.equals(NuxeoTypeHelper.NX_ISVERSION)) {
-            return database.getTable(model.HIER_TABLE_NAME).getColumn(
-                    model.MAIN_IS_VERSION_KEY);
+            return database.getTable(model.HIER_TABLE_NAME).getColumn(model.MAIN_IS_VERSION_KEY);
         }
         if (id.equals(NuxeoTypeHelper.NX_ISCHECKEDIN)) {
-            return database.getTable(model.HIER_TABLE_NAME).getColumn(
-                    model.MAIN_CHECKED_IN_KEY);
+            return database.getTable(model.HIER_TABLE_NAME).getColumn(model.MAIN_CHECKED_IN_KEY);
         }
         if (id.equals(NuxeoTypeHelper.NX_LIFECYCLE_STATE)) {
             ModelProperty propertyInfo = model.getPropertyInfo(model.MISC_LIFECYCLE_STATE_PROP);
-            return database.getTable(propertyInfo.fragmentName).getColumn(
-                    propertyInfo.fragmentKey);
+            return database.getTable(propertyInfo.fragmentName).getColumn(propertyInfo.fragmentKey);
         }
         if (id.equals(PropertyIds.NAME)) {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_TITLE_KEY);
         }
         if (id.equals(PropertyIds.DESCRIPTION)) {
-            return database.getTable(DC_FRAGMENT_NAME).getColumn(
-                    DC_DESCRIPTION_KEY);
+            return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_DESCRIPTION_KEY);
         }
         if (id.equals(PropertyIds.CREATED_BY)) {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_CREATOR_KEY);
@@ -1051,20 +991,16 @@ public class CMISQLQueryMaker implements QueryMaker {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_CREATED_KEY);
         }
         if (id.equals(PropertyIds.LAST_MODIFICATION_DATE)) {
-            return database.getTable(DC_FRAGMENT_NAME).getColumn(
-                    DC_MODIFIED_KEY);
+            return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_MODIFIED_KEY);
         }
         if (id.equals(PropertyIds.LAST_MODIFIED_BY)) {
-            return database.getTable(DC_FRAGMENT_NAME).getColumn(
-                    DC_LAST_CONTRIBUTOR_KEY);
+            return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_LAST_CONTRIBUTOR_KEY);
         }
         if (id.equals(PropertyIds.SOURCE_ID)) {
-            return database.getTable(REL_FRAGMENT_NAME).getColumn(
-                    REL_SOURCE_KEY);
+            return database.getTable(REL_FRAGMENT_NAME).getColumn(REL_SOURCE_KEY);
         }
         if (id.equals(PropertyIds.TARGET_ID)) {
-            return database.getTable(REL_FRAGMENT_NAME).getColumn(
-                    REL_TARGET_KEY);
+            return database.getTable(REL_FRAGMENT_NAME).getColumn(REL_TARGET_KEY);
         }
         return null;
     }
@@ -1114,8 +1050,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         protected NuxeoCmisService service;
 
-        public CMISQLMapMaker(List<SqlColumn> realColumns,
-                Map<String, ColumnReference> virtualColumns,
+        public CMISQLMapMaker(List<SqlColumn> realColumns, Map<String, ColumnReference> virtualColumns,
                 NuxeoCmisService service) {
             this.realColumns = realColumns;
             this.virtualColumns = virtualColumns;
@@ -1123,8 +1058,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
 
         @Override
-        public Map<String, Serializable> makeMap(ResultSet rs)
-                throws SQLException {
+        public Map<String, Serializable> makeMap(ResultSet rs) throws SQLException {
             Map<String, Serializable> map = new HashMap<String, Serializable>();
 
             // get values from result set
@@ -1140,8 +1074,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     value = BigDecimal.valueOf(((Double) value).doubleValue());
                 } else if (value == null) {
                     // special handling of some columns where NULL means FALSE
-                    String column = rc.column.getTable().getRealTable().getKey()
-                            + " " + rc.column.getKey();
+                    String column = rc.column.getTable().getRealTable().getKey() + " " + rc.column.getKey();
                     if (NULL_IS_FALSE_COLUMNS.contains(column)) {
                         value = Boolean.FALSE;
                     }
@@ -1158,8 +1091,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 String qual = col.getQualifier();
                 if (col.getPropertyId().equals(PropertyIds.BASE_TYPE_ID)) {
                     // special case, no need to get full Nuxeo Document
-                    String typeId = (String) map.get(getPropertyKey(qual,
-                            PropertyIds.OBJECT_TYPE_ID));
+                    String typeId = (String) map.get(getPropertyKey(qual, PropertyIds.OBJECT_TYPE_ID));
                     TypeDefinitionContainer type = service.repository.getTypeManager().getTypeById(typeId);
                     String baseTypeId = type.getTypeDefinition().getBaseTypeId().value();
                     map.put(key, baseTypeId);
@@ -1173,8 +1105,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     // find main id for this qualifier in the result set
                     // (main id always included in joins)
                     // TODO check what happens if cmis:objectId is aliased
-                    String id = (String) map.get(getPropertyKey(qual,
-                            PropertyIds.OBJECT_ID));
+                    String id = (String) map.get(getPropertyKey(qual, PropertyIds.OBJECT_ID));
                     try {
                         // reentrant call to the same session, but the MapMaker
                         // is only called from the IterableQueryResult in
@@ -1182,8 +1113,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                         // TODO constructing the DocumentModel (in
                         // NuxeoObjectData) is expensive, try to get value
                         // directly
-                        data = (NuxeoObjectData) service.getObject(
-                                service.getNuxeoRepository().getId(), id, null,
+                        data = (NuxeoObjectData) service.getObject(service.getNuxeoRepository().getId(), id, null,
                                 null, null, null, null, null, null);
                     } catch (CmisRuntimeException e) {
                         log.error("Cannot get document: " + id, e);
@@ -1225,8 +1155,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         @Override
         public Boolean walkContains(Tree opNode, Tree qualNode, Tree queryNode) {
             if (hasContains) {
-                throw new QueryParseException(
-                        "At most one CONTAINS() is allowed");
+                throw new QueryParseException("At most one CONTAINS() is allowed");
             }
             hasContains = true;
 
@@ -1240,29 +1169,23 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (statement.startsWith(NX_FULLTEXT_INDEX_PREFIX)) {
                 statement = statement.substring(NX_FULLTEXT_INDEX_PREFIX.length());
                 int firstColumnIdx = statement.indexOf(':');
-                if (firstColumnIdx > 0
-                        && firstColumnIdx < statement.length() - 1) {
-                    String requestedIndexName = statement.substring(0,
-                            firstColumnIdx);
+                if (firstColumnIdx > 0 && firstColumnIdx < statement.length() - 1) {
+                    String requestedIndexName = statement.substring(0, firstColumnIdx);
                     statement = statement.substring(firstColumnIdx + 1);
                     if (model.getFulltextConfiguration().indexNames.contains(requestedIndexName)) {
                         indexName = requestedIndexName;
                     } else {
-                        throw new QueryParseException(
-                                "No such fulltext index: " + requestedIndexName);
+                        throw new QueryParseException("No such fulltext index: " + requestedIndexName);
                     }
                 } else {
-                    log.warn(String.format(
-                            "fail to microparse custom fulltext index:"
-                                    + " fallback to '%s'", indexName));
+                    log.warn(String.format("fail to microparse custom fulltext index:" + " fallback to '%s'", indexName));
                 }
             }
             // CMIS syntax to our internal google-like internal syntax
             statement = cmisToFulltextQuery(statement);
             // internal syntax to backend syntax
             statement = dialect.getDialectFulltextQuery(statement);
-            fulltextMatchInfo = dialect.getFulltextScoredMatchInfo(statement,
-                    indexName, 1, column, model, database);
+            fulltextMatchInfo = dialect.getFulltextScoredMatchInfo(statement, indexName, 1, column, model, database);
             return null;
         }
     }
@@ -1319,8 +1242,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 walkFacets(opNode, leftNode, rightNode);
                 return null;
             }
-            if (leftNode.getType() == CmisQlStrictLexer.COL
-                    && rightNode.getType() == CmisQlStrictLexer.BOOL_LIT
+            if (leftNode.getType() == CmisQlStrictLexer.COL && rightNode.getType() == CmisQlStrictLexer.BOOL_LIT
                     && !Boolean.parseBoolean(rightNode.getText())) {
                 // special handling of the " = false" case for column where
                 // NULL means false
@@ -1336,8 +1258,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkNotEquals(Tree opNode, Tree leftNode, Tree rightNode) {
-            if (leftNode.getType() == CmisQlStrictLexer.COL
-                    && rightNode.getType() == CmisQlStrictLexer.BOOL_LIT
+            if (leftNode.getType() == CmisQlStrictLexer.COL && rightNode.getType() == CmisQlStrictLexer.BOOL_LIT
                     && Boolean.parseBoolean(rightNode.getText())) {
                 // special handling of the " <> true" case for column where
                 // NULL means false
@@ -1352,8 +1273,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         protected void walkIsNullOrFalse(Tree leftNode) {
             Column c = resolveColumn(leftNode);
-            String columnSpec = c.getTable().getRealTable().getKey() + " "
-                    + c.getKey();
+            String columnSpec = c.getTable().getRealTable().getKey() + " " + c.getKey();
             if (NULL_IS_FALSE_COLUMNS.contains(columnSpec)) {
                 // treat NULL and FALSE as equivalent
                 whereBuf.append("(");
@@ -1371,8 +1291,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
 
         @Override
-        public Boolean walkGreaterThan(Tree opNode, Tree leftNode,
-                Tree rightNode) {
+        public Boolean walkGreaterThan(Tree opNode, Tree leftNode, Tree rightNode) {
             walkExpr(leftNode);
             whereBuf.append(" > ");
             walkExpr(rightNode);
@@ -1380,8 +1299,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
 
         @Override
-        public Boolean walkGreaterOrEquals(Tree opNode, Tree leftNode,
-                Tree rightNode) {
+        public Boolean walkGreaterOrEquals(Tree opNode, Tree leftNode, Tree rightNode) {
             walkExpr(leftNode);
             whereBuf.append(" >= ");
             walkExpr(rightNode);
@@ -1397,8 +1315,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
 
         @Override
-        public Boolean walkLessOrEquals(Tree opNode, Tree leftNode,
-                Tree rightNode) {
+        public Boolean walkLessOrEquals(Tree opNode, Tree leftNode, Tree rightNode) {
             walkExpr(leftNode);
             whereBuf.append(" <= ");
             walkExpr(rightNode);
@@ -1457,8 +1374,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             ColumnReference col = (ColumnReference) query.getColumnReference(Integer.valueOf(token));
             PropertyDefinition<?> pd = col.getPropertyDefinition();
             if (pd.getCardinality() != Cardinality.MULTI) {
-                throw new QueryParseException("Cannot use " + op
-                        + " ANY with single-valued property: "
+                throw new QueryParseException("Cannot use " + op + " ANY with single-valued property: "
                         + col.getPropertyQueryName());
             }
             Column column = (Column) col.getInfo();
@@ -1466,8 +1382,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             // we need the real table and column in the subquery
             Table realTable = column.getTable().getRealTable();
             Column realColumn = realTable.getColumn(column.getKey());
-            Column hierMainColumn = getTable(hierTable, qual).getColumn(
-                    model.MAIN_KEY);
+            Column hierMainColumn = getTable(hierTable, qual).getColumn(model.MAIN_KEY);
             Column multiMainColumn = realTable.getColumn(model.MAIN_KEY);
 
             whereBuf.append("EXISTS (SELECT 1 FROM ");
@@ -1505,8 +1420,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 Column column = (Column) col.getInfo();
                 String qual = canonicalQualifier.get(col.getQualifier());
                 Table realTable = column.getTable().getRealTable();
-                Column hierMainColumn = getTable(hierTable, qual).getColumn(
-                        model.MAIN_KEY);
+                Column hierMainColumn = getTable(hierTable, qual).getColumn(model.MAIN_KEY);
                 Column multiMainColumn = realTable.getColumn(model.MAIN_KEY);
                 if (isNull) {
                     whereBuf.append("NOT ");
@@ -1637,8 +1551,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (sel instanceof ColumnReference) {
                 return (ColumnReference) sel;
             } else {
-                throw new QueryParseException(
-                        "Cannot use column in WHERE clause: " + sel.getName());
+                throw new QueryParseException("Cannot use column in WHERE clause: " + sel.getName());
             }
         }
 
@@ -1654,21 +1567,18 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (opType == CmisQlStrictLexer.EQ_ANY) {
                 include = true;
                 if (literalNode.getType() != CmisQlStrictLexer.STRING_LIT) {
-                    throw new QueryMakerException(colNodel.getText()
-                            + " = requires literal string as right argument");
+                    throw new QueryMakerException(colNodel.getText() + " = requires literal string as right argument");
                 }
                 String value = super.walkString(literalNode).toString();
                 mixins = Collections.singleton(value);
-            } else if (opType == CmisQlStrictLexer.IN_ANY
-                    || opType == CmisQlStrictLexer.NOT_IN_ANY) {
+            } else if (opType == CmisQlStrictLexer.IN_ANY || opType == CmisQlStrictLexer.NOT_IN_ANY) {
                 include = opType == CmisQlStrictLexer.IN_ANY;
                 mixins = new TreeSet<String>();
                 for (int i = 0; i < literalNode.getChildCount(); i++) {
                     mixins.add(super.walkString(literalNode.getChild(i)).toString());
                 }
             } else {
-                throw new QueryMakerException(colNodel.getText()
-                        + " unsupported operator: " + opNode.getText());
+                throw new QueryMakerException(colNodel.getText() + " unsupported operator: " + opNode.getText());
             }
 
             /*
@@ -1730,8 +1640,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 String[] returnParam = new String[1];
                 for (Iterator<String> it = instanceMixins.iterator(); it.hasNext();) {
                     String mixin = it.next();
-                    String sql = dialect.getMatchMixinType(mixinsColumn, mixin,
-                            include, returnParam);
+                    String sql = dialect.getMatchMixinType(mixinsColumn, mixin, include, returnParam);
                     whereBuf.append(sql);
                     if (returnParam[0] != null) {
                         whereBufParams.add(returnParam[0]);

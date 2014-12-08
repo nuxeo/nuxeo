@@ -46,8 +46,7 @@ import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
  * Test the high-level session using a WebServices connection.
  */
 @Ignore
-public class TestNuxeoSessionWebServices extends
-        NuxeoSessionClientServerTestCase {
+public class TestNuxeoSessionWebServices extends NuxeoSessionClientServerTestCase {
 
     public static final String JAXWS_XML = "/sun-jaxws.xml";
 
@@ -66,8 +65,7 @@ public class TestNuxeoSessionWebServices extends
     @Override
     protected void setUpServer() throws Exception {
         // disable SOAP login checks
-        System.setProperty(LoginProvider.class.getName(),
-                TrustingLoginProvider.class.getName());
+        System.setProperty(LoginProvider.class.getName(), TrustingLoginProvider.class.getName());
         super.setUpServer();
     }
 
@@ -82,26 +80,16 @@ public class TestNuxeoSessionWebServices extends
         super.addParams(params);
         String uri = serverURI.toString();
         uri += "services/"; // from sun-jaxws.xml
-        params.put(SessionParameter.BINDING_TYPE,
-                BindingType.WEBSERVICES.value());
-        params.put(SessionParameter.WEBSERVICES_REPOSITORY_SERVICE, uri
-                + "RepositoryService?wsdl");
-        params.put(SessionParameter.WEBSERVICES_NAVIGATION_SERVICE, uri
-                + "NavigationService?wsdl");
-        params.put(SessionParameter.WEBSERVICES_OBJECT_SERVICE, uri
-                + "ObjectService?wsdl");
-        params.put(SessionParameter.WEBSERVICES_VERSIONING_SERVICE, uri
-                + "VersioningService?wsdl");
-        params.put(SessionParameter.WEBSERVICES_DISCOVERY_SERVICE, uri
-                + "DiscoveryService?wsdl");
-        params.put(SessionParameter.WEBSERVICES_RELATIONSHIP_SERVICE, uri
-                + "RelationshipService?wsdl");
-        params.put(SessionParameter.WEBSERVICES_MULTIFILING_SERVICE, uri
-                + "MultiFilingService?wsdl");
-        params.put(SessionParameter.WEBSERVICES_POLICY_SERVICE, uri
-                + "PolicyService?wsdl");
-        params.put(SessionParameter.WEBSERVICES_ACL_SERVICE, uri
-                + "ACLService?wsdl");
+        params.put(SessionParameter.BINDING_TYPE, BindingType.WEBSERVICES.value());
+        params.put(SessionParameter.WEBSERVICES_REPOSITORY_SERVICE, uri + "RepositoryService?wsdl");
+        params.put(SessionParameter.WEBSERVICES_NAVIGATION_SERVICE, uri + "NavigationService?wsdl");
+        params.put(SessionParameter.WEBSERVICES_OBJECT_SERVICE, uri + "ObjectService?wsdl");
+        params.put(SessionParameter.WEBSERVICES_VERSIONING_SERVICE, uri + "VersioningService?wsdl");
+        params.put(SessionParameter.WEBSERVICES_DISCOVERY_SERVICE, uri + "DiscoveryService?wsdl");
+        params.put(SessionParameter.WEBSERVICES_RELATIONSHIP_SERVICE, uri + "RelationshipService?wsdl");
+        params.put(SessionParameter.WEBSERVICES_MULTIFILING_SERVICE, uri + "MultiFilingService?wsdl");
+        params.put(SessionParameter.WEBSERVICES_POLICY_SERVICE, uri + "PolicyService?wsdl");
+        params.put(SessionParameter.WEBSERVICES_ACL_SERVICE, uri + "ACLService?wsdl");
     }
 
     @Override
@@ -116,15 +104,13 @@ public class TestNuxeoSessionWebServices extends
 
     @Override
     protected EventListener[] getEventListeners() {
-        return new EventListener[] { new NuxeoCmisContextListener(),
-                new LocalWSServletContextListener() };
+        return new EventListener[] { new NuxeoCmisContextListener(), new LocalWSServletContextListener() };
     }
 
     /**
      * Loads a delegate configured for a local sun-jaxws.xml file.
      */
-    public static class LocalWSServletContextListener implements
-            ServletContextListener {
+    public static class LocalWSServletContextListener implements ServletContextListener {
 
         /** Delegate expected by WSServlet */
         protected WSServletDelegate delegate;
@@ -138,8 +124,7 @@ public class TestNuxeoSessionWebServices extends
         }
 
         /*
-         * Puts in the servlet context the proper delegate expected by
-         * WSServlet.
+         * Puts in the servlet context the proper delegate expected by WSServlet.
          */
         @Override
         public void contextInitialized(ServletContextEvent event) {
@@ -149,21 +134,17 @@ public class TestNuxeoSessionWebServices extends
                 if (cl == null) {
                     cl = getClass().getClassLoader();
                 }
-                ResourceLoader loader = new ServletContextResourceLoader(
-                        context);
+                ResourceLoader loader = new ServletContextResourceLoader(context);
                 Container container = newServletContainer(context);
                 AdapterFactory<ServletAdapter> adapterFactory = new ServletAdapterList();
 
-                DeploymentDescriptorParser<ServletAdapter> parser = new DeploymentDescriptorParser<ServletAdapter>(
-                        cl, loader, container, adapterFactory);
+                DeploymentDescriptorParser<ServletAdapter> parser = new DeploymentDescriptorParser<ServletAdapter>(cl,
+                        loader, container, adapterFactory);
                 URL endpoints = context.getResource(JAXWS_XML);
                 if (endpoints == null) {
-                    throw new WebServiceException(
-                            "No endpoints configured, missing file: "
-                                    + JAXWS_XML);
+                    throw new WebServiceException("No endpoints configured, missing file: " + JAXWS_XML);
                 }
-                List<ServletAdapter> adapters = parser.parse(
-                        endpoints.toExternalForm(), endpoints.openStream());
+                List<ServletAdapter> adapters = parser.parse(endpoints.toExternalForm(), endpoints.openStream());
 
                 delegate = new WSServletDelegate(adapters, context);
                 context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO, delegate);
@@ -174,8 +155,7 @@ public class TestNuxeoSessionWebServices extends
             }
         }
 
-        protected Container newServletContainer(ServletContext context)
-                throws Exception {
+        protected Container newServletContainer(ServletContext context) throws Exception {
             // return new ServletContainer(context);
             // the ServletContainer class from JAX-WS RI is package-private doh!
             Class<?> klass = Class.forName("com.sun.xml.ws.transport.http.servlet.ServletContainer");
@@ -186,8 +166,7 @@ public class TestNuxeoSessionWebServices extends
     }
 
     // The ServletResourceLoader class from JAX-WS RI is package-private doh!
-    public static final class ServletContextResourceLoader implements
-            ResourceLoader {
+    public static final class ServletContextResourceLoader implements ResourceLoader {
 
         protected final ServletContext context;
 
