@@ -39,8 +39,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         initializeRegistrations();
 
         // Create workspaces where users will be invited
-        DocumentModel testWorkspace = session.createDocumentModel(
-                "/default-domain", "testWorkspace", "Workspace");
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain", "testWorkspace", "Workspace");
         testWorkspace.setPropertyValue("dc:title", "Test Workspace");
         String workspaceId = session.createDocument(testWorkspace).getId();
         session.save();
@@ -59,28 +58,23 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         docInfo.setPermission(SecurityConstants.READ_WRITE);
 
         // Invite first user with defautl conf
-        String requestId = userRegistrationService.submitRegistrationRequest(
-                DEFAULT_CONFIGURATION_NAME, userInfo, docInfo,
-                new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
-        userRegistrationService.validateRegistration(requestId,
-                new HashMap<String, Serializable>());
+        String requestId = userRegistrationService.submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userInfo,
+                docInfo, new HashMap<String, Serializable>(), UserRegistrationService.ValidationMethod.NONE, true,
+                "adminTest");
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         // Invite second user with test conf
         userInfo.setLogin("testUser2");
-        requestId = userRegistrationService.submitRegistrationRequest("test",
-                userInfo, docInfo, new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
-        userRegistrationService.validateRegistration(requestId,
-                new HashMap<String, Serializable>());
+        requestId = userRegistrationService.submitRegistrationRequest("test", userInfo, docInfo,
+                new HashMap<String, Serializable>(), UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         session.save();
 
         // Default registration container
         assertEquals(1, session.getChildren(new PathRef("/requests")).size());
         // Test registration container
-        assertEquals(1,
-                session.getChildren(new PathRef("/test-requests")).size());
+        assertEquals(1, session.getChildren(new PathRef("/test-requests")).size());
 
         assertNotNull(userManager.getUserModel("testUser"));
         assertNotNull(userManager.getUserModel("testUser2"));

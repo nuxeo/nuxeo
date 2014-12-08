@@ -70,8 +70,8 @@ public class UserRegistrationConfigurationActions implements Serializable {
 
     public DocumentModel getConfigurationDocument() throws ClientException {
         if (selectedConfigurationDocument == null) {
-            selectedConfigurationDocument = userRegistrationService.getRegistrationRulesDocument(
-                    documentManager, selectedConfiguration);
+            selectedConfigurationDocument = userRegistrationService.getRegistrationRulesDocument(documentManager,
+                    selectedConfiguration);
         }
         return selectedConfigurationDocument;
     }
@@ -80,17 +80,12 @@ public class UserRegistrationConfigurationActions implements Serializable {
         try {
             documentManager.saveDocument(selectedConfigurationDocument);
             selectedConfigurationDocument = null;
-            facesMessages.add(
-                    INFO,
-                    resourcesAccessor.getMessages().get(
-                            "label.save.configuration.registration"));
+            facesMessages.add(INFO, resourcesAccessor.getMessages().get("label.save.configuration.registration"));
         } catch (ClientException e) {
             log.warn("Unable to save configuration document: " + e.getMessage());
             log.info(e);
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.unable.save.configuration.registration"));
+            facesMessages.add(ERROR,
+                    resourcesAccessor.getMessages().get("label.unable.save.configuration.registration"));
         }
     }
 

@@ -65,18 +65,15 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
         assertEquals(0, userManager.searchUsers("jolivier").size());
 
-        String requestId = userRegistrationService.submitRegistrationRequest(
-                userInfo, new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
-        userRegistrationService.validateRegistration(requestId,
-                new HashMap<String, Serializable>());
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo,
+                new HashMap<String, Serializable>(), UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         assertEquals(1, userManager.searchUsers("jolivier").size());
     }
 
     @Test
-    public void testBasicUserRegistrationWithLoginChanged()
-            throws ClientException {
+    public void testBasicUserRegistrationWithLoginChanged() throws ClientException {
         UserRegistrationInfo userInfo = new UserRegistrationInfo();
         String templogin = "templogin";
         String newUser = "newUser";
@@ -89,13 +86,11 @@ public class TestUserRegistration extends AbstractUserRegistration {
         assertEquals(0, userManager.searchUsers(templogin).size());
         assertEquals(0, userManager.searchUsers(newUser).size());
 
-        String requestId = userRegistrationService.submitRegistrationRequest(
-                userInfo, new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo,
+                new HashMap<String, Serializable>(), UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
         Map<String, Serializable> additionnalInfos = new HashMap<String, Serializable>();
         additionnalInfos.put("userinfo:login", newUser);
-        userRegistrationService.validateRegistration(requestId,
-                additionnalInfos);
+        userRegistrationService.validateRegistration(requestId, additionnalInfos);
 
         assertEquals(0, userManager.searchUsers(templogin).size());
         assertEquals(1, userManager.searchUsers(newUser).size());
@@ -103,8 +98,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
     @Test
     public void testUserRegistrationWithDocument() throws ClientException {
-        DocumentModel testWorkspace = session.createDocumentModel(
-                "/default-domain", "testWorkspace", "Workspace");
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain", "testWorkspace", "Workspace");
         testWorkspace.setPropertyValue("dc:title", "Test Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         session.save();
@@ -121,15 +115,12 @@ public class TestUserRegistration extends AbstractUserRegistration {
         docInfo.setPermission(SecurityConstants.READ_WRITE);
 
         assertEquals(0, userManager.searchUsers(userInfo.getLogin()).size());
-        assertFalse(session.getACP(testWorkspace.getRef()).getAccess(
-                "testUser", SecurityConstants.READ_WRITE).toBoolean());
+        assertFalse(session.getACP(testWorkspace.getRef()).getAccess("testUser", SecurityConstants.READ_WRITE).toBoolean());
 
-        String requestId = userRegistrationService.submitRegistrationRequest(
-                DEFAULT_CONFIGURATION_NAME, userInfo, docInfo,
-                new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
-        userRegistrationService.validateRegistration(requestId,
-                new HashMap<String, Serializable>());
+        String requestId = userRegistrationService.submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userInfo,
+                docInfo, new HashMap<String, Serializable>(), UserRegistrationService.ValidationMethod.NONE, true,
+                "adminTest");
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         session.save();
 
@@ -137,8 +128,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
         assertEquals(1, userManager.searchUsers(userInfo.getLogin()).size());
         // ACL added
         assertEquals(2, session.getACP(testWorkspace.getRef()).getACLs().length);
-        assertTrue(session.getACP(testWorkspace.getRef()).getAccess("testUser",
-                SecurityConstants.READ_WRITE).toBoolean());
+        assertTrue(session.getACP(testWorkspace.getRef()).getAccess("testUser", SecurityConstants.READ_WRITE).toBoolean());
 
         String searchUserRegistration = "Select * from Document where ecm:mixinType = 'UserRegistration'";
         assertEquals(1, session.query(searchUserRegistration).size());

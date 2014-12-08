@@ -32,8 +32,7 @@ public class RegistrationCleanerListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) throws ClientException {
-        if (!event.getName().equals(DOCUMENT_REMOVED)
-                || !(event.getContext() instanceof DocumentEventContext)) {
+        if (!event.getName().equals(DOCUMENT_REMOVED) || !(event.getContext() instanceof DocumentEventContext)) {
             return;
         }
 

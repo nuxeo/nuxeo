@@ -39,8 +39,7 @@ public class UserRegistrationListener implements EventListener {
 
             UserRegistrationService userRegistrationService = Framework.getService(UserRegistrationService.class);
 
-            if (!event.getName().equals(
-                    userRegistrationService.getNameEventRegistrationValidated())) {
+            if (!event.getName().equals(userRegistrationService.getNameEventRegistrationValidated())) {
                 return;
             }
 
@@ -52,14 +51,12 @@ public class UserRegistrationListener implements EventListener {
                 UserRegistrationConfiguration config = userRegistrationService.getConfiguration(registration);
                 RegistrationRules rules = userRegistrationService.getRegistrationRules(config.getName());
                 if (rules.allowUserCreation()) {
-                    NuxeoPrincipal principal = userRegistrationService.createUser(
-                            ctx.getCoreSession(), registration);
+                    NuxeoPrincipal principal = userRegistrationService.createUser(ctx.getCoreSession(), registration);
                     docCtx.setProperty("registeredUser", principal);
                 }
 
                 if (rules.allowUserCreation() || rules.isForcingRight()) {
-                    userRegistrationService.addRightsOnDoc(
-                            ctx.getCoreSession(), registration);
+                    userRegistrationService.addRightsOnDoc(ctx.getCoreSession(), registration);
                 }
             }
 

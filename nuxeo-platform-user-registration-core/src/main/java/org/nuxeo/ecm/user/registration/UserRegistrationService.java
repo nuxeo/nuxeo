@@ -36,10 +36,8 @@ public interface UserRegistrationService extends UserInvitationService {
      *
      * @return
      */
-    String submitRegistrationRequest(UserRegistrationInfo userInfo,
-            Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept,
-            String principalName) throws ClientException,
+    String submitRegistrationRequest(UserRegistrationInfo userInfo, Map<String, Serializable> additionnalInfo,
+            ValidationMethod validationMethod, boolean autoAccept, String principalName) throws ClientException,
             UserRegistrationException;
 
     /**
@@ -47,31 +45,25 @@ public interface UserRegistrationService extends UserInvitationService {
      *
      * @param requestId
      */
-    Map<String, Serializable> validateRegistrationAndSendEmail(
-            String requestId, Map<String, Serializable> additionnalInfo)
-            throws ClientException, UserRegistrationException;
+    Map<String, Serializable> validateRegistrationAndSendEmail(String requestId,
+            Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException;
 
     /**
-     * Add an ACL with the right specified in the registration Doc or nothing,
-     * if no rights needed.
+     * Add an ACL with the right specified in the registration Doc or nothing, if no rights needed.
      *
      * @param registrationDoc containing all registration info
      * @since 5.6
      */
-    void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc)
-            throws ClientException;
+    void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc) throws ClientException;
 
     /**
-     * Stores a registration request like submitRegistrationRequest with
-     * Document information
+     * Stores a registration request like submitRegistrationRequest with Document information
      *
      * @return a unique ID for it`
      * @since 5.6
      */
-    String submitRegistrationRequest(String configurationName,
-            UserRegistrationInfo userInfo, DocumentRegistrationInfo docInfo,
-            Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept,
-            String principalName) throws ClientException,
+    String submitRegistrationRequest(String configurationName, UserRegistrationInfo userInfo,
+            DocumentRegistrationInfo docInfo, Map<String, Serializable> additionnalInfo,
+            ValidationMethod validationMethod, boolean autoAccept, String principalName) throws ClientException,
             UserRegistrationException;
 }

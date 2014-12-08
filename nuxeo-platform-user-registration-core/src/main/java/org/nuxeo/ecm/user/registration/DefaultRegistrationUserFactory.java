@@ -30,14 +30,12 @@ import org.nuxeo.ecm.user.invite.DefaultInvitationUserFactory;
 import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 
-public class DefaultRegistrationUserFactory extends
-        DefaultInvitationUserFactory implements RegistrationUserFactory {
+public class DefaultRegistrationUserFactory extends DefaultInvitationUserFactory implements RegistrationUserFactory {
 
     private static final Log log = LogFactory.getLog(DefaultRegistrationUserFactory.class);
 
     @Override
-    public DocumentModel doAddDocumentPermission(CoreSession session,
-            DocumentModel registrationDoc,
+    public DocumentModel doAddDocumentPermission(CoreSession session, DocumentModel registrationDoc,
             UserRegistrationConfiguration configuration) throws ClientException {
         String docId = (String) registrationDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD);
 
@@ -60,16 +58,14 @@ public class DefaultRegistrationUserFactory extends
 
             session.setACP(document.getRef(), document.getACP(), true);
         } else {
-            log.info(String.format("User %s already have %s on doc %s", login,
-                    permission, docId));
+            log.info(String.format("User %s already have %s on doc %s", login, permission, docId));
         }
 
         return document;
     }
 
     @Override
-    public void doPostAddDocumentPermission(CoreSession session,
-            DocumentModel registrationDoc, DocumentModel document)
+    public void doPostAddDocumentPermission(CoreSession session, DocumentModel registrationDoc, DocumentModel document)
             throws ClientException {
         // Nothing to do in the default implementation
     }

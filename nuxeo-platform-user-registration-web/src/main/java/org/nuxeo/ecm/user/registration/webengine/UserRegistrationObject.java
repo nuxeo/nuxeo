@@ -25,7 +25,6 @@ import org.nuxeo.ecm.webengine.invite.UserInvitationObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 
-
 @Path("/userRegistration")
 @Produces("text/html;charset=UTF-8")
 @WebObject(type = "userRegistration")

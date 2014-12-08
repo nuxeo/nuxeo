@@ -26,11 +26,9 @@ public class DocumentRegistrationInfo {
 
     public static final String DOCUMENT_ID_FIELD = SCHEMA_NAME + ":documentId";
 
-    public static final String DOCUMENT_TITLE_FIELD = SCHEMA_NAME
-            + ":documentTitle";
+    public static final String DOCUMENT_TITLE_FIELD = SCHEMA_NAME + ":documentTitle";
 
-    public static final String DOCUMENT_RIGHT_FIELD = SCHEMA_NAME
-            + ":permission";
+    public static final String DOCUMENT_RIGHT_FIELD = SCHEMA_NAME + ":permission";
 
     public static final String ACL_NAME = "local";
 

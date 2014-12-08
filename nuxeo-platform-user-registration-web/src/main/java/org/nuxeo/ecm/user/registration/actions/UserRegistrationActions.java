@@ -143,13 +143,11 @@ public class UserRegistrationActions implements Serializable {
     }
 
     public String getValidationBaseUrl(String name) throws ClientException {
-        return BaseURL.getBaseURL()
-                + userRegistrationService.getConfiguration(name).getValidationRelUrl();
+        return BaseURL.getBaseURL() + userRegistrationService.getConfiguration(name).getValidationRelUrl();
     }
 
     public String getEnterPasswordUrl(String name) throws ClientException {
-        return BaseURL.getBaseURL()
-                + userRegistrationService.getConfiguration(name).getEnterPasswordUrl();
+        return BaseURL.getBaseURL() + userRegistrationService.getConfiguration(name).getEnterPasswordUrl();
     }
 
     public String getInvitationLayout(String name) {
@@ -187,8 +185,7 @@ public class UserRegistrationActions implements Serializable {
             String docUrl = DocumentModelFunctions.documentUrl(doc);
             additionalInfo.put("docUrl", docUrl);
 
-            userRegistrationService.acceptRegistrationRequest(request.getId(),
-                    additionalInfo);
+            userRegistrationService.acceptRegistrationRequest(request.getId(), additionalInfo);
 
             // EventManager.raiseEventsOnDocumentChange(request);
             Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
@@ -201,8 +198,7 @@ public class UserRegistrationActions implements Serializable {
         try {
             Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
             additionalInfo.put("validationBaseURL", getValidationBaseUrl());
-            userRegistrationService.rejectRegistrationRequest(request.getId(),
-                    additionalInfo);
+            userRegistrationService.rejectRegistrationRequest(request.getId(), additionalInfo);
             // EventManager.raiseEventsOnDocumentChange(request);
             Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
         } catch (ClientException e) {
@@ -222,13 +218,9 @@ public class UserRegistrationActions implements Serializable {
         }
     }
 
-    public void submitMultipleUserRegistration(String configurationName)
-            throws AddressException {
+    public void submitMultipleUserRegistration(String configurationName) throws AddressException {
         if (StringUtils.isBlank(multipleEmails)) {
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.registration.multiple.empty"));
+            facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.registration.multiple.empty"));
             return;
         }
         docinfo.setDocumentId(navigationContext.getCurrentDocument().getId());
@@ -245,15 +237,12 @@ public class UserRegistrationActions implements Serializable {
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
-    protected InternetAddress[] splitAddresses(String emails)
-            throws AddressException {
-        return StringUtils.isNotBlank(emails) ? InternetAddress.parse(
-                emails.replace(MULTIPLE_EMAILS_SEPARATOR, ","), false)
-                : new InternetAddress[] {};
+    protected InternetAddress[] splitAddresses(String emails) throws AddressException {
+        return StringUtils.isNotBlank(emails) ? InternetAddress.parse(emails.replace(MULTIPLE_EMAILS_SEPARATOR, ","),
+                false) : new InternetAddress[] {};
     }
 
-    public void validateMultipleUser(FacesContext context,
-            UIComponent component, Object value) {
+    public void validateMultipleUser(FacesContext context, UIComponent component, Object value) {
         if (value instanceof String) {
             try {
                 splitAddresses((String) value);
@@ -263,9 +252,8 @@ public class UserRegistrationActions implements Serializable {
             }
         }
 
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                ComponentUtils.translate(context,
-                        "label.request.error.multiple.emails"), null);
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                "label.request.error.multiple.emails"), null);
 
         // also add global message
         context.addMessage(null, message);
@@ -284,8 +272,7 @@ public class UserRegistrationActions implements Serializable {
         try {
             return "accepted".equals(doc.getCurrentLifeCycleState());
         } catch (ClientException e) {
-            log.warn("Unable to get lifecycle state for " + doc.getId() + ": "
-                    + e.getMessage());
+            log.warn("Unable to get lifecycle state for " + doc.getId() + ": " + e.getMessage());
             log.debug(e);
             return false;
         }
@@ -303,8 +290,7 @@ public class UserRegistrationActions implements Serializable {
         try {
             return !"validated".equals(doc.getCurrentLifeCycleState());
         } catch (ClientException e) {
-            log.warn("Unable to get lifecycle state for " + doc.getId() + ": "
-                    + e.getMessage());
+            log.warn("Unable to get lifecycle state for " + doc.getId() + ": " + e.getMessage());
             log.debug(e);
             return false;
         }
@@ -322,8 +308,7 @@ public class UserRegistrationActions implements Serializable {
         try {
             return "accepted".equals(doc.getCurrentLifeCycleState());
         } catch (ClientException e) {
-            log.warn("Unable to get lifecycle state for " + doc.getId() + ": "
-                    + e.getMessage());
+            log.warn("Unable to get lifecycle state for " + doc.getId() + ": " + e.getMessage());
             log.info(e);
             return false;
         }
@@ -333,23 +318,16 @@ public class UserRegistrationActions implements Serializable {
         if (!documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST)) {
             try {
                 for (DocumentModel registration : documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST)) {
-                    userRegistrationService.validateRegistration(
-                            registration.getId(),
+                    userRegistrationService.validateRegistration(registration.getId(),
                             new HashMap<String, Serializable>());
                 }
                 Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
-                facesMessages.add(
-                        INFO,
-                        resourcesAccessor.getMessages().get(
-                                "label.validate.request"));
+                facesMessages.add(INFO, resourcesAccessor.getMessages().get("label.validate.request"));
                 documentsListsManager.resetWorkingList(REQUEST_DOCUMENT_LIST);
             } catch (ClientException e) {
                 log.warn("Unable to validate registration: " + e.getMessage());
                 log.info(e);
-                facesMessages.add(
-                        ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "label.unable.validate.request"));
+                facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.unable.validate.request"));
             }
         }
     }
@@ -357,22 +335,15 @@ public class UserRegistrationActions implements Serializable {
     public void reviveUserRegistration() {
         if (!documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST)) {
             try {
-                userRegistrationService.reviveRegistrationRequests(
-                        documentManager,
+                userRegistrationService.reviveRegistrationRequests(documentManager,
                         documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST));
                 Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
-                facesMessages.add(
-                        INFO,
-                        resourcesAccessor.getMessages().get(
-                                "label.revive.request"));
+                facesMessages.add(INFO, resourcesAccessor.getMessages().get("label.revive.request"));
                 documentsListsManager.resetWorkingList(REQUEST_DOCUMENT_LIST);
             } catch (ClientException e) {
                 log.warn("Unable to revive user: " + e.getMessage());
                 log.info(e);
-                facesMessages.add(
-                        ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "label.unable.revive.request"));
+                facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.unable.revive.request"));
             }
         }
     }
@@ -380,22 +351,15 @@ public class UserRegistrationActions implements Serializable {
     public void deleteUserRegistration() {
         if (!documentsListsManager.isWorkingListEmpty(REQUEST_DOCUMENT_LIST)) {
             try {
-                userRegistrationService.deleteRegistrationRequests(
-                        documentManager,
+                userRegistrationService.deleteRegistrationRequests(documentManager,
                         documentsListsManager.getWorkingList(REQUEST_DOCUMENT_LIST));
                 Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
-                facesMessages.add(
-                        INFO,
-                        resourcesAccessor.getMessages().get(
-                                "label.delete.request"));
+                facesMessages.add(INFO, resourcesAccessor.getMessages().get("label.delete.request"));
                 documentsListsManager.resetWorkingList(REQUEST_DOCUMENT_LIST);
             } catch (ClientException e) {
                 log.warn("Unable to delete user request:" + e.getMessage());
                 log.info(e);
-                facesMessages.add(
-                        ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "label.unable.delete.request"));
+                facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.unable.delete.request"));
             }
 
         }
@@ -407,34 +371,23 @@ public class UserRegistrationActions implements Serializable {
         }
 
         try {
-            userRegistrationService.submitRegistrationRequest(
-                    configurationName, userinfo, docinfo,
-                    getAdditionalsParameters(), EMAIL, false,
-                    documentManager.getPrincipal().getName());
+            userRegistrationService.submitRegistrationRequest(configurationName, userinfo, docinfo,
+                    getAdditionalsParameters(), EMAIL, false, documentManager.getPrincipal().getName());
 
-            facesMessages.add(
-                    INFO,
-                    resourcesAccessor.getMessages().get(
-                            "label.user.invited.success"));
+            facesMessages.add(INFO, resourcesAccessor.getMessages().get("label.user.invited.success"));
         } catch (ClientException e) {
             log.info("Unable to register user: " + e.getMessage());
             log.debug(e, e);
-            facesMessages.add(
-                    ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.unable.invite.user"));
+            facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.unable.invite.user"));
         }
     }
 
     protected Map<String, Serializable> getAdditionalsParameters() {
         Map<String, Serializable> additionalsInfo = new HashMap<String, Serializable>();
         try {
-            additionalsInfo.put("docinfo:documentTitle",
-                    navigationContext.getCurrentDocument().getTitle());
+            additionalsInfo.put("docinfo:documentTitle", navigationContext.getCurrentDocument().getTitle());
             if (copyOwner) {
-                additionalsInfo.put(
-                        "registration:copyTo",
-                        ((NuxeoPrincipal) documentManager.getPrincipal()).getEmail());
+                additionalsInfo.put("registration:copyTo", ((NuxeoPrincipal) documentManager.getPrincipal()).getEmail());
             }
             additionalsInfo.put("registration:comment", comment);
         } catch (ClientException e) {
