@@ -32,8 +32,7 @@ public class FilterBindingResolver {
     protected static final Map<String, FilterBindingConfig> bindingCache = new LRUCachingMap<String, FilterBindingConfig>(
             50);
 
-    public static FilterBindingConfig getBinding(HttpServletRequest request)
-            throws Exception {
+    public static FilterBindingConfig getBinding(HttpServletRequest request) throws Exception {
 
         String UA = request.getHeader("User-Agent");
         if (FPRPCConts.MSOFFICE_USERAGENT.equals(UA)) {
@@ -48,20 +47,19 @@ public class FilterBindingResolver {
 
     public static FilterBindingConfig getBinding(String uri) throws Exception {
         FilterBindingConfig binding;
-        synchronized(bindingCache) {
+        synchronized (bindingCache) {
             binding = bindingCache.get(uri);
         }
         if (binding == null) {
             binding = computeBindingForRequest(uri);
-            synchronized(bindingCache) {
+            synchronized (bindingCache) {
                 bindingCache.put(uri, binding);
             }
         }
         return binding;
     }
 
-    protected static synchronized FilterBindingConfig computeBindingForRequest(String uri)
-            throws Exception {
+    protected static synchronized FilterBindingConfig computeBindingForRequest(String uri) throws Exception {
         List<FilterBindingConfig> bindings = XmlConfigHandler.getConfigEntries();
         for (FilterBindingConfig binding : bindings) {
             Pattern pat = binding.getUrlPattern();

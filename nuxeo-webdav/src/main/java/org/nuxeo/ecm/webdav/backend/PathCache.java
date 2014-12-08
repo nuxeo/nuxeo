@@ -49,11 +49,8 @@ public class PathCache {
         if (pathToUuidCache.size() >= maxSize) {
             clean();
         }
-        pathToUuidCache.put(path,
-                new Value(
-                        System.currentTimeMillis()
-                                + (model.isFolder() ? FOLDER_LIFE_TIME
-                                        : FILE_LIFE_TIME), model.getId()));
+        pathToUuidCache.put(path, new Value(System.currentTimeMillis()
+                + (model.isFolder() ? FOLDER_LIFE_TIME : FILE_LIFE_TIME), model.getId()));
     }
 
     public DocumentModel get(String path) {
@@ -82,8 +79,8 @@ public class PathCache {
 
     public void remove(String path) {
         Map<String, Value> cacheCopy = new HashMap<String, Value>(pathToUuidCache);
-        for(String key : cacheCopy.keySet()){
-            if(key.startsWith(path)){
+        for (String key : cacheCopy.keySet()) {
+            if (key.startsWith(path)) {
                 pathToUuidCache.remove(key);
             }
         }

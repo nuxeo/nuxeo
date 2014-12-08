@@ -329,8 +329,7 @@ public class FakeRequest implements HttpServletRequest {
 
     @Override
     public String getParameter(String name) {
-        if (parameters == null || parameters.get(name) == null
-                || parameters.get(name).length == 0) {
+        if (parameters == null || parameters.get(name) == null || parameters.get(name).length == 0) {
             return null;
         }
         return parameters.get(name)[0];
@@ -419,8 +418,7 @@ public class FakeRequest implements HttpServletRequest {
     }
 
     @Override
-    public void setCharacterEncoding(String env)
-            throws UnsupportedEncodingException {
+    public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
     }
 
     @Override
@@ -434,8 +432,8 @@ public class FakeRequest implements HttpServletRequest {
     }
 
     @Override
-    public AsyncContext startAsync(ServletRequest servletRequest,
-            ServletResponse servletResponse) throws IllegalStateException {
+    public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse)
+            throws IllegalStateException {
         throw new NotImplementedException();
     }
 
@@ -460,8 +458,7 @@ public class FakeRequest implements HttpServletRequest {
     }
 
     @Override
-    public boolean authenticate(HttpServletResponse response)
-            throws IOException, ServletException {
+    public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
         throw new NotImplementedException();
     }
 

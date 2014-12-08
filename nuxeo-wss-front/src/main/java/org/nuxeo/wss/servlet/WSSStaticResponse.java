@@ -58,10 +58,8 @@ public class WSSStaticResponse {
     }
 
     protected void processHeaders() throws Exception {
-        getHttpResponse().setHeader(MSWSSConsts.TSSERVER_VERSION_HEADER,
-                WSSConfig.instance().getTSServerVersion());
-        getHttpResponse().setHeader("Set-Cookie",
-                "WSS_KeepSessionAuthenticated=80; path=/");
+        getHttpResponse().setHeader(MSWSSConsts.TSSERVER_VERSION_HEADER, WSSConfig.instance().getTSServerVersion());
+        getHttpResponse().setHeader("Set-Cookie", "WSS_KeepSessionAuthenticated=80; path=/");
         // getHttpResponse().setHeader("Server","Microsoft-IIS/6.0");
         getHttpResponse().setHeader("X-Powered-By", "ASP.NET");
 

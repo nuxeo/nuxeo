@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlValue;
 public final class Win32FileAttributes {
 
     @XmlValue
-	private String value;
+    private String value;
 
     public Win32FileAttributes() {
     }

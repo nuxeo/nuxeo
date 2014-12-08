@@ -84,8 +84,7 @@ public class WSSFakeBackend implements WSSBackend {
     }
 
     @Override
-    public DWSMetaData getMetaData(String s, WSSRequest wssRequest)
-            throws WSSException {
+    public DWSMetaData getMetaData(String s, WSSRequest wssRequest) throws WSSException {
         return null;
     }
 

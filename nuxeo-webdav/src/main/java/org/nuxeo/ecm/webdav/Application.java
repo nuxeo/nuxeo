@@ -24,8 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Registers the application (root resource classes and providers)
- * in a standard / container-neutral way.
+ * Registers the application (root resource classes and providers) in a standard / container-neutral way.
  */
 public class Application extends javax.ws.rs.core.Application {
 

@@ -47,9 +47,8 @@ public class WSSResponse extends WSSStaticResponse {
         super(httpResponse);
     }
 
-
     protected void processRender() throws Exception {
-        if (renderingTemplateName!=null) {
+        if (renderingTemplateName != null) {
 
             Writer writer = null;
             ByteArrayOutputStream bufferedOs = null;
@@ -65,13 +64,13 @@ public class WSSResponse extends WSSStaticResponse {
 
             writer.flush();
 
-            if (bufferizeRendering && additionnalStream!=null) {
-                 byte[] buffer = new byte[BUFFER_SIZE];
-                 int read;
-                 while ((read = additionnalStream.read(buffer)) != -1) {
-                     bufferedOs.write(buffer, 0, read);
-                     bufferedOs.flush();
-                 }
+            if (bufferizeRendering && additionnalStream != null) {
+                byte[] buffer = new byte[BUFFER_SIZE];
+                int read;
+                while ((read = additionnalStream.read(buffer)) != -1) {
+                    bufferedOs.write(buffer, 0, read);
+                    bufferedOs.flush();
+                }
 
             }
 
@@ -89,7 +88,6 @@ public class WSSResponse extends WSSStaticResponse {
             }
         }
     }
-
 
     public Map<String, Object> getRenderingContext() {
         return renderingContext;

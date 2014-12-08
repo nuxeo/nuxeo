@@ -25,16 +25,13 @@ public class VHHelper {
 
     private static final String VH_HEADER = "nuxeo-virtual-host";
 
-
-    private static String getServerUrl(String scheme, String serverName,
-            int serverPort) {
+    private static String getServerUrl(String scheme, String serverName, int serverPort) {
         StringBuilder sbaseURL = new StringBuilder();
         sbaseURL.append(scheme);
         sbaseURL.append("://");
         sbaseURL.append(serverName);
         if (serverPort != 0) {
-            if ("http".equals(scheme) && serverPort != 80
-                    || "https".equals(scheme) && serverPort != 443) {
+            if ("http".equals(scheme) && serverPort != 80 || "https".equals(scheme) && serverPort != 443) {
                 sbaseURL.append(':');
                 sbaseURL.append(serverPort);
             }
@@ -46,7 +43,7 @@ public class VHHelper {
     public static boolean isVirtualHosted(HttpServletRequest httpRequest) {
         String nuxeoVH = httpRequest.getHeader(VH_HEADER);
         String forwardedHost = httpRequest.getHeader(X_FORWARDED_HOST);
-        if (nuxeoVH!=null || forwardedHost!=null) {
+        if (nuxeoVH != null || forwardedHost != null) {
             return true;
         }
         return false;
@@ -65,13 +62,11 @@ public class VHHelper {
                 int serverPort = httpRequest.getServerPort();
                 if (!local) {
                     // Detect virtual hosting based in standard header
-                    String forwardedHost = httpRequest
-                            .getHeader(X_FORWARDED_HOST);
+                    String forwardedHost = httpRequest.getHeader(X_FORWARDED_HOST);
                     if (forwardedHost != null) {
                         if (forwardedHost.contains(":")) {
                             serverName = forwardedHost.split(":")[0];
-                            serverPort = Integer.valueOf(forwardedHost
-                                    .split(":")[1]);
+                            serverPort = Integer.valueOf(forwardedHost.split(":")[1]);
                         } else {
                             serverName = forwardedHost;
                             serverPort = 80; // fallback
@@ -83,7 +78,7 @@ public class VHHelper {
             }
         }
         if (baseURL == null) {
-            //log.error("Could not retrieve base url correctly");
+            // log.error("Could not retrieve base url correctly");
         }
         return baseURL;
     }

@@ -63,8 +63,7 @@ public class FileResource extends ExistingResource {
 
     private static final Log log = LogFactory.getLog(FileResource.class);
 
-    public FileResource(String path, DocumentModel doc,
-            HttpServletRequest request, Backend backend) throws Exception {
+    public FileResource(String path, DocumentModel doc, HttpServletRequest request, Backend backend) throws Exception {
         super(path, doc, request, backend);
     }
 
@@ -102,8 +101,7 @@ public class FileResource extends ExistingResource {
         }
 
         try {
-            Blob content = new StreamingBlob(new InputStreamSource(
-                    request.getInputStream()));
+            Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
             content.persist();
             String contentType = request.getContentType();
             if (contentType == null) {
@@ -113,7 +111,7 @@ public class FileResource extends ExistingResource {
             content.setFilename(name);
 
             backend.updateDocument(doc, name, content);
-        return Response.created(new URI(URLEncoder.encode(path, "UTF8"))).build();
+            return Response.created(new URI(URLEncoder.encode(path, "UTF8"))).build();
         } catch (Exception e) {
             log.error("Error during PUT method execution", e);
             return Response.status(409).build();
@@ -135,7 +133,7 @@ public class FileResource extends ExistingResource {
             }
             prop = propFind.getProp();
         }
-        //Util.printAsXml(prop);
+        // Util.printAsXml(prop);
 
         PropStatBuilderExt props = getPropStatBuilderExt(doc, uriInfo);
         PropStat propStatFound = props.build();
@@ -146,29 +144,23 @@ public class FileResource extends ExistingResource {
 
         net.java.dev.webdav.jaxrs.xml.elements.Response response;
         URI uri = uriInfo.getRequestUri();
-        PropStat filePropStat = new PropStat(
-                new Prop(new SupportedLock(new LockEntry(LockScope.EXCLUSIVE, LockType.WRITE))),
-                new Status(OK));
+        PropStat filePropStat = new PropStat(new Prop(new SupportedLock(new LockEntry(LockScope.EXCLUSIVE,
+                LockType.WRITE))), new Status(OK));
         if (doc.isLocked()) {
-            PropStat lockDiscoveryPropStat = new PropStat(
-                    new Prop(getLockDiscovery(doc, uriInfo)), new Status(OK));
+            PropStat lockDiscoveryPropStat = new PropStat(new Prop(getLockDiscovery(doc, uriInfo)), new Status(OK));
             if (propStatNotFound != null) {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null,
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
                         filePropStat, propStatFound, propStatNotFound, lockDiscoveryPropStat);
             } else {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null,
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
                         filePropStat, propStatFound, lockDiscoveryPropStat);
             }
         } else {
             if (propStatNotFound != null) {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null,
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
                         filePropStat, propStatFound, propStatNotFound);
             } else {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null,
+                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
                         filePropStat, propStatFound);
             }
         }

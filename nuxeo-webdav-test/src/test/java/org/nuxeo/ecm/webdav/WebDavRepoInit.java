@@ -26,40 +26,33 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 
-
 /**
- *
- *
  * @since 5.8
  */
-public class WebDavRepoInit implements RepositoryInit{
+public class WebDavRepoInit implements RepositoryInit {
 
     @Override
     public void populate(CoreSession session) throws ClientException {
         LogFactory.getLog(WebDavRepoInit.class).trace("enter populate webdav");
-        DocumentModel ws = session.createDocumentModel("/", "workspaces",
-                "WorkspaceRoot");
+        DocumentModel ws = session.createDocumentModel("/", "workspaces", "WorkspaceRoot");
         ws.setPropertyValue("dc:title", "Workspaces");
         session.createDocument(ws);
-        DocumentModel w = session.createDocumentModel("/workspaces",
-                "workspace", "Workspace");
+        DocumentModel w = session.createDocumentModel("/workspaces", "workspace", "Workspace");
         w.setPropertyValue("dc:title", "Workspace");
         session.createDocument(w);
 
-        createFile(w, "quality.jpg", "image/jpg",session);
-        createFile(w, "test.html", "text/html",session);
-        createFile(w, "test.txt", "text/plain",session);
+        createFile(w, "quality.jpg", "image/jpg", session);
+        createFile(w, "test.html", "text/html", session);
+        createFile(w, "test.txt", "text/plain", session);
 
         session.save();
     }
 
     protected void createFile(DocumentModel folder, String name, String mimeType, CoreSession session)
             throws ClientException {
-        DocumentModel file = session.createDocumentModel(
-                folder.getPathAsString(), name, "File");
+        DocumentModel file = session.createDocumentModel(folder.getPathAsString(), name, "File");
         file.setProperty("dublincore", "title", name);
-        String testDocsPath = Thread.currentThread().getContextClassLoader().getResource(
-                "testdocs").getPath();
+        String testDocsPath = Thread.currentThread().getContextClassLoader().getResource("testdocs").getPath();
         Blob fb = new FileBlob(new File(testDocsPath + "/" + name));
         fb.setMimeType(mimeType);
         fb.setFilename(name);

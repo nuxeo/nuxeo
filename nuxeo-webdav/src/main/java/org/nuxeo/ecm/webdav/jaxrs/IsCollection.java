@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlValue;
 public final class IsCollection {
 
     @XmlValue
-	private Integer collection;
+    private Integer collection;
 
     public IsCollection() {
     }

@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-
 public class FakeRequestBuilder {
 
     public static FakeRequest build(File file) throws Exception {
@@ -42,27 +41,25 @@ public class FakeRequestBuilder {
         FakeRequest request = null;
         reader = new BufferedReader(new InputStreamReader(in));
         String line;
-        boolean firstLine=true;
-        boolean inBody=false;
+        boolean firstLine = true;
+        boolean inBody = false;
         StringBuffer bodyBuffer = new StringBuffer();
         while ((line = reader.readLine()) != null) {
             if (firstLine) {
                 request = initFakeRequest(line);
-                firstLine=false;
-            }
-            else {
+                firstLine = false;
+            } else {
                 if (inBody) {
                     bodyBuffer.append(line);
                     bodyBuffer.append("\n");
-                }
-                else {
+                } else {
                     if ("".equals(line.trim())) {
-                        inBody=true;
+                        inBody = true;
                     } else {
                         String[] parts = line.split(":");
                         int idx = line.indexOf(":");
-                        //request.addHeader(parts[0].trim(), parts[1].trim());
-                        request.addHeader(line.substring(0,idx).trim(), line.substring(idx+1).trim());
+                        // request.addHeader(parts[0].trim(), parts[1].trim());
+                        request.addHeader(line.substring(0, idx).trim(), line.substring(idx + 1).trim());
                     }
                 }
             }

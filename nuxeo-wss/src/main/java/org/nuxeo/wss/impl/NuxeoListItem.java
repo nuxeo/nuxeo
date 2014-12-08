@@ -56,8 +56,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         return doc.getCoreSession();
     }
 
-    public NuxeoListItem(DocumentModel doc, String corePathPrefix,
-            String urlRoot) {
+    public NuxeoListItem(DocumentModel doc, String corePathPrefix, String urlRoot) {
         this.doc = doc;
         this.corePathPrefix = corePathPrefix;
         this.urlRoot = urlRoot;
@@ -123,8 +122,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                 getSession().setLock(doc.getRef());
             } else {
                 if (!userName.equals(getCheckoutUser())) {
-                    throw new WSSException(
-                            "Document is already locked by another user");
+                    throw new WSSException("Document is already locked by another user");
                 }
             }
         } catch (ClientException e) {
@@ -297,15 +295,13 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                     }
                 }
                 bh.setBlob(blob);
-                doc.putContextData(VersioningService.VERSIONING_OPTION,
-                        VersioningOption.MINOR);
+                doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
                 doc = getSession().saveDocument(doc);
             } catch (ClientException e) {
                 log.error("Error while setting stream", e);
             }
         } else {
-            log.error("Update of type " + doc.getType()
-                    + " is not supported for now");
+            log.error("Update of type " + doc.getType() + " is not supported for now");
         }
     }
 
@@ -392,8 +388,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         boolean canCheckOut = super.canCheckOut(userName);
         if (canCheckOut) {
             try {
-                return getSession().hasPermission(doc.getRef(),
-                        "WriteProperties");
+                return getSession().hasPermission(doc.getRef(), "WriteProperties");
             } catch (ClientException e) {
                 log.error("Error during permission check", e);
                 return false;
@@ -407,8 +402,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         boolean canUnCheckOut = super.canUnCheckOut(userName);
         if (canUnCheckOut) {
             try {
-                return getSession().hasPermission(doc.getRef(),
-                        "WriteProperties");
+                return getSession().hasPermission(doc.getRef(), "WriteProperties");
             } catch (ClientException e) {
                 log.error("Error during permission check", e);
                 return false;

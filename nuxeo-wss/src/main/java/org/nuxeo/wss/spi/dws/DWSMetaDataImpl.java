@@ -25,10 +25,15 @@ import org.nuxeo.wss.spi.dummy.DummyWSSListItem;
 public class DWSMetaDataImpl implements DWSMetaData {
 
     protected User currentUser;
+
     protected List<User> users;
+
     protected List<WSSListItem> documents;
+
     protected List<Link> links;
+
     protected List<Task> tasks;
+
     protected Site site;
 
     public void setCurrentUser(User currentUser) {
@@ -72,9 +77,9 @@ public class DWSMetaDataImpl implements DWSMetaData {
     }
 
     public Site getSite() {
-        if (site==null) {
+        if (site == null) {
             site = new SiteImpl("MySite");
-            ((SiteImpl)site).setItem(new DummyWSSListItem("MySite", "", null));
+            ((SiteImpl) site).setItem(new DummyWSSListItem("MySite", "", null));
         }
         return site;
     }

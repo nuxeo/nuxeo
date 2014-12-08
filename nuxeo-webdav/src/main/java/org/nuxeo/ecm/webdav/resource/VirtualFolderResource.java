@@ -73,7 +73,8 @@ public class VirtualFolderResource extends AbstractResource {
 
     private LinkedList<String> rootFolderNames;
 
-    public VirtualFolderResource(String path, HttpServletRequest request, LinkedList<String> rootFolderNames) throws Exception {
+    public VirtualFolderResource(String path, HttpServletRequest request, LinkedList<String> rootFolderNames)
+            throws Exception {
         super(path, request);
         this.rootFolderNames = rootFolderNames;
     }
@@ -101,11 +102,9 @@ public class VirtualFolderResource extends AbstractResource {
     }
 
     @PROPFIND
-    public Response propfind(@Context UriInfo uriInfo,
-            @HeaderParam("depth") String depth
-            ) throws Exception {
+    public Response propfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) throws Exception {
 
-        if(depth == null){
+        if (depth == null) {
             depth = "1";
         }
 
@@ -113,34 +112,28 @@ public class VirtualFolderResource extends AbstractResource {
         Date creationDate = new Date();
 
         @SuppressWarnings("deprecation")
-        final net.java.dev.webdav.jaxrs.xml.elements.Response response
-                = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                new HRef(uriInfo.getRequestUri()),
-                null,
-                null,
-                null,
-                new PropStat(
-                        new Prop(
-                                new DisplayName("nuxeo"), /* @TODO: fix this. Hardcoded root name*/
-                                new LockDiscovery(),
-                                new SupportedLock(),
-                                new IsFolder("t"),
-                                new IsCollection(Integer.valueOf(1)),
-                                new IsHidden(Integer.valueOf(0)),
-                                new GetContentType("application/octet-stream"),
-                                new GetContentLength(0),
-                                new CreationDate(creationDate),
-                                new GetLastModified(lastModified),
-                                COLLECTION
-                        ),
-                        new Status(OK)));
+        final net.java.dev.webdav.jaxrs.xml.elements.Response response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+                new HRef(uriInfo.getRequestUri()), null, null, null, new PropStat(new Prop(new DisplayName("nuxeo"), /*
+                                                                                                                      * @
+                                                                                                                      * TODO
+                                                                                                                      * :
+                                                                                                                      * fix
+                                                                                                                      * this
+                                                                                                                      * .
+                                                                                                                      * Hardcoded
+                                                                                                                      * root
+                                                                                                                      * name
+                                                                                                                      */
+                new LockDiscovery(), new SupportedLock(), new IsFolder("t"), new IsCollection(Integer.valueOf(1)),
+                        new IsHidden(Integer.valueOf(0)), new GetContentType("application/octet-stream"),
+                        new GetContentLength(0), new CreationDate(creationDate), new GetLastModified(lastModified),
+                        COLLECTION), new Status(OK)));
 
         if (depth.equals("0")) {
             return Response.status(207).entity(new MultiStatus(response)).build();
         }
 
-        List<net.java.dev.webdav.jaxrs.xml.elements.Response> responses
-                = new ArrayList<net.java.dev.webdav.jaxrs.xml.elements.Response>();
+        List<net.java.dev.webdav.jaxrs.xml.elements.Response> responses = new ArrayList<net.java.dev.webdav.jaxrs.xml.elements.Response>();
         responses.add(response);
 
         for (String name : rootFolderNames) {
@@ -155,14 +148,14 @@ public class VirtualFolderResource extends AbstractResource {
             net.java.dev.webdav.jaxrs.xml.elements.Response childResponse;
             URI childUri = uriInfo.getRequestUriBuilder().path(name).build();
 
-            childResponse = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(childUri), null, null, null, found);
+            childResponse = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(childUri), null, null, null,
+                    found);
 
             responses.add(childResponse);
         }
 
-        MultiStatus st = new MultiStatus(responses.toArray(
-                new net.java.dev.webdav.jaxrs.xml.elements.Response[responses.size()]));
+        MultiStatus st = new MultiStatus(
+                responses.toArray(new net.java.dev.webdav.jaxrs.xml.elements.Response[responses.size()]));
         return Response.status(207).entity(st).build();
     }
 
@@ -198,21 +191,16 @@ public class VirtualFolderResource extends AbstractResource {
 
     @LOCK
     public Response lock(@Context UriInfo uriInfo) throws Exception {
-        Prop prop = new Prop(new LockDiscovery(new ActiveLock(
-                LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
-                new Owner("Administrator"),
-                new TimeOut(10000L), new LockToken(new HRef("urn:uuid:Administrator")),
-                new LockRoot(new HRef(uriInfo.getRequestUri()))
-        )));
+        Prop prop = new Prop(new LockDiscovery(new ActiveLock(LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
+                new Owner("Administrator"), new TimeOut(10000L), new LockToken(new HRef("urn:uuid:Administrator")),
+                new LockRoot(new HRef(uriInfo.getRequestUri())))));
 
-        return Response.ok().entity(prop)
-                .header("Lock-Token", "urn:uuid:Administrator").build();
+        return Response.ok().entity(prop).header("Lock-Token", "urn:uuid:Administrator").build();
     }
 
     @UNLOCK
     public Response unlock() throws Exception {
         return Response.status(204).build();
     }
-
 
 }

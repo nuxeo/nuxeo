@@ -88,12 +88,9 @@ public class TestFMRendering {
         String[] lines = WindowsHelper.splitLines(result);
 
         assertEquals("FPVersion=\"12.0.0.000\"", lines[1]);
-        assertEquals("FPShtmlScriptUrl=\"_vti_bin/shtml.dll/_vti_rpc\"",
-                lines[2]);
-        assertEquals("FPAuthorScriptUrl=\"_vti_bin/_vti_aut/author.dll\"",
-                lines[3]);
-        assertEquals("FPAdminScriptUrl=\"_vti_bin/_vti_adm/admin.dll\"",
-                lines[4]);
+        assertEquals("FPShtmlScriptUrl=\"_vti_bin/shtml.dll/_vti_rpc\"", lines[2]);
+        assertEquals("FPAuthorScriptUrl=\"_vti_bin/_vti_aut/author.dll\"", lines[3]);
+        assertEquals("FPAdminScriptUrl=\"_vti_bin/_vti_adm/admin.dll\"", lines[4]);
         assertEquals("TPScriptUrl=\"_vti_bin/owssvr.dll\"", lines[5]);
     }
 

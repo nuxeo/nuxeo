@@ -88,23 +88,22 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
         try {
             if (backend.isVirtual()) {
                 List<String> backendNames = ((VirtualBackend) backend).getOrderedBackendNames();
-                for(String name : backendNames){
+                for (String name : backendNames) {
                     result.add(createItem(name));
-            }
+                }
             } else {
                 DocumentModel parent = backend.resolveLocation(location);
-                if(parent == null){
+                if (parent == null) {
                     throw new WSSException("Parent document with location " + location + " not found");
                 }
                 List<DocumentModel> children = backend.getChildren(parent.getRef());
-            for (DocumentModel model : children) {
-                NuxeoListItem item = createItem(model);
-                result.add(item);
-            }
+                for (DocumentModel model : children) {
+                    NuxeoListItem item = createItem(model);
+                    result.add(item);
+                }
             }
         } catch (ClientException e) {
-            throw new WSSException("Error while getting children for "
-                    + location, e);
+            throw new WSSException("Error while getting children for " + location, e);
         }
         return result;
     }
@@ -124,19 +123,16 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
     }
 
     @Override
-    public WSSListItem moveItem(String location, String destination)
-            throws WSSException {
+    public WSSListItem moveItem(String location, String destination) throws WSSException {
         location = cleanLocation(location);
         destination = cleanLocation(destination);
         try {
             DocumentModel model = backend.resolveLocation(location);
             if (model == null) {
-                throw new WSSException(
-                        "Can't move document. Source did not found.");
+                throw new WSSException("Can't move document. Source did not found.");
             }
             Path destinationPath = backend.parseLocation(destination);
-            DocumentModel doc = backend.moveItem(model, new PathRef(
-                    destinationPath.removeLastSegments(1).toString()),
+            DocumentModel doc = backend.moveItem(model, new PathRef(destinationPath.removeLastSegments(1).toString()),
                     destinationPath.lastSegment());
             return createItem(doc);
         } catch (ClientException e) {
@@ -144,17 +140,14 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
         }
     }
 
-    public WSSListItem moveItem(DocumentModel model, String destination)
-            throws WSSException {
+    public WSSListItem moveItem(DocumentModel model, String destination) throws WSSException {
         destination = cleanLocation(destination);
         try {
             if (model == null) {
-                throw new WSSException(
-                        "Can't move document. Source did not found.");
+                throw new WSSException("Can't move document. Source did not found.");
             }
             Path destinationPath = backend.parseLocation(destination);
-            DocumentModel doc = backend.moveItem(model, new PathRef(
-                    destinationPath.removeLastSegments(1).toString()),
+            DocumentModel doc = backend.moveItem(model, new PathRef(destinationPath.removeLastSegments(1).toString()),
                     destinationPath.lastSegment());
             return createItem(doc);
         } catch (ClientException e) {
@@ -177,14 +170,12 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
         try {
             backend.removeItem(location);
         } catch (ClientException e) {
-            throw new WSSException("Error while deleting doc. Location:"
-                    + location, e);
+            throw new WSSException("Error while deleting doc. Location:" + location, e);
         }
     }
 
     @Override
-    public WSSListItem createFolder(String parentPath, String name)
-            throws WSSException {
+    public WSSListItem createFolder(String parentPath, String name) throws WSSException {
         parentPath = cleanLocation(parentPath);
         try {
             DocumentModel model = backend.createFolder(parentPath, name);
@@ -195,8 +186,7 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
     }
 
     @Override
-    public WSSListItem createFileItem(String parentPath, String name)
-            throws WSSException {
+    public WSSListItem createFileItem(String parentPath, String name) throws WSSException {
         parentPath = cleanLocation(parentPath);
         try {
             DocumentModel model = backend.createFile(parentPath, name);
@@ -207,8 +197,7 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
     }
 
     @Override
-    public DWSMetaData getMetaData(String location, WSSRequest wssRequest)
-            throws WSSException {
+    public DWSMetaData getMetaData(String location, WSSRequest wssRequest) throws WSSException {
         location = cleanLocation(location);
         try {
             DWSMetaDataImpl metadata = new DWSMetaDataImpl();
@@ -223,8 +212,7 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
 
             List<String> userNames = new ArrayList<String>();
             for (WSSListItem item : documents) {
-                if (item.getAuthor() != null
-                        && !userNames.contains(item.getAuthor())) {
+                if (item.getAuthor() != null && !userNames.contains(item.getAuthor())) {
                     userNames.add(item.getAuthor());
                 }
                 String[] contributors = (String[]) (((NuxeoListItem) item).getDoc().getPropertyValue("dc:contributors"));
@@ -265,11 +253,9 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
         NuxeoListItem parent = (NuxeoListItem) getItem(parentPath);
         String siteName = parent.getDisplayName();
         SiteImpl site = new SiteImpl(siteName);
-        String nxUrl = urlRoot + "/nxpath/default"
-                + parent.getDoc().getPathAsString() + "@view_documents";
+        String nxUrl = urlRoot + "/nxpath/default" + parent.getDoc().getPathAsString() + "@view_documents";
         try {
-            site.setAccessUrl("?" + WSSFilter.FILTER_FORWARD_PARAM + "="
-                    + URLEncoder.encode(nxUrl, "UTF-8"));
+            site.setAccessUrl("?" + WSSFilter.FILTER_FORWARD_PARAM + "=" + URLEncoder.encode(nxUrl, "UTF-8"));
             // site.setAccessUrl(URLEncoder.encode(nxUrl, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             throw new WSSException("Error encoding url", e);
@@ -296,10 +282,8 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
         UserManager um = Framework.getService(UserManager.class);
         NuxeoPrincipal principal = um.getPrincipal(userLogin);
         if (principal != null) {
-            String email = (String) principal.getModel().getProperty(
-                    um.getUserSchemaName(), um.getUserEmailField());
-            String fullname = principal.getFirstName() + " "
-                    + principal.getLastName();
+            String email = (String) principal.getModel().getProperty(um.getUserSchemaName(), um.getUserEmailField());
+            String fullname = principal.getFirstName() + " " + principal.getLastName();
             if (fullname.equals(" ")) {
                 fullname = userLogin;
             }

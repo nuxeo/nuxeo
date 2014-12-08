@@ -54,7 +54,7 @@ public class WSSRequest {
             base.append("://");
             base.append(getHttpRequest().getServerName());
 
-            if (getHttpRequest().getServerPort()!=80) {
+            if (getHttpRequest().getServerPort() != 80) {
                 base.append(":");
                 base.append(getHttpRequest().getServerPort());
             }
@@ -63,7 +63,6 @@ public class WSSRequest {
             return base.toString();
         }
     }
-
 
     public String getResourcesUrl() {
         StringBuffer base = new StringBuffer();
@@ -81,10 +80,9 @@ public class WSSRequest {
         return base.toString();
     }
 
-
     public String getUserName() {
         Principal principal = getHttpRequest().getUserPrincipal();
-        if (principal==null) {
+        if (principal == null) {
             return "";
         } else {
             return principal.getName();

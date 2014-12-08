@@ -72,16 +72,18 @@ public class TestFPRequests extends NXRuntimeTestCase {
 
         byte[] buffer = new byte[255];
         StringBuilder sb = new StringBuilder();
-        int i ;
-        while ((i = is.read(buffer))>0) {
-            sb.append(new String(buffer,0,i));
+        int i;
+        while ((i = is.read(buffer)) > 0) {
+            sb.append(new String(buffer, 0, i));
         }
         assertEquals("AAABBBCCCDDD", sb.toString().replace("\n", ""));
 
-        String result= response.getOutput();
+        String result = response.getOutput();
 
         String[] lines = WindowsHelper.splitLines(result);
-        assertEquals("<p>message=successfully put document 'DocLib0/Workspace-1-1/Document-2-1.doc' as 'DocLib0/Workspace-1-1/Document-2-1.doc'", lines[3]);
+        assertEquals(
+                "<p>message=successfully put document 'DocLib0/Workspace-1-1/Document-2-1.doc' as 'DocLib0/Workspace-1-1/Document-2-1.doc'",
+                lines[3]);
     }
 
 }

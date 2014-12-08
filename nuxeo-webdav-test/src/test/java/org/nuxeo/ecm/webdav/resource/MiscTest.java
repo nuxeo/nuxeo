@@ -32,16 +32,14 @@ import static org.mockito.Mockito.when;
 
 public class MiscTest {
 
-    public static String getTokenFromHeaders(String headerName,
-            HttpServletRequest request) {
+    public static String getTokenFromHeaders(String headerName, HttpServletRequest request) {
         String header = request.getHeader(headerName);
         if (header == null) {
             return null;
         }
         String token = header.trim();
         int tokenStart = token.indexOf("<urn:uuid:");
-        token = token.substring(tokenStart + "<urn:uuid:".length(),
-                token.length());
+        token = token.substring(tokenStart + "<urn:uuid:".length(), token.length());
         int tokenEnd = token.indexOf(">");
         token = token.substring(0, tokenEnd);
         return token;
@@ -67,8 +65,7 @@ public class MiscTest {
         when(request.getHeader("if")).thenReturn(" (<urn:uuid:tototiti>) ");
         assertEquals("tototiti", getTokenFromHeaders("if", request));
 
-        when(request.getHeader("lock-token")).thenReturn(
-                " (<urn:uuid:tototiti>) ");
+        when(request.getHeader("lock-token")).thenReturn(" (<urn:uuid:tototiti>) ");
         assertEquals("tototiti", getTokenFromHeaders("lock-token", request));
     }
 

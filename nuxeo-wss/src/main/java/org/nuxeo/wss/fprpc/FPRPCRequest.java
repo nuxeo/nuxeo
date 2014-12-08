@@ -47,7 +47,9 @@ public class FPRPCRequest extends WSSRequest {
     private String windowsEncoding = System.getProperty(WSSConfig.DEFAULT_ENCODING);
 
     public static final int FPRPC_GET_REQUEST = 0;
+
     public static final int FPRPC_POST_REQUEST = 1;
+
     public static final int FPRPC_CAML_REQUEST = 2;
 
     protected String version;
@@ -231,7 +233,7 @@ public class FPRPCRequest extends WSSRequest {
         return vermeerBinary;
     }
 
-    public String getPrincipalName(){
+    public String getPrincipalName() {
         return principal != null ? principal.getName() : "anonymous";
     }
 
@@ -272,7 +274,7 @@ public class FPRPCRequest extends WSSRequest {
         try {
             path = new String(path.getBytes(encoding), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            //nothing
+            // nothing
         }
         return path;
     }

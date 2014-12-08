@@ -45,17 +45,17 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         int status = 500;
-        //String msg;
+        // String msg;
         if (e instanceof WebApplicationException) {
             status = ((WebApplicationException) e).getResponse().getStatus();
             if (status < 400 || status >= 500) {
                 log.error("Status = " + status);
                 log.error(e, e);
             }
-            //msg = "Error " + status + "\n" + e.getMessage() + "\n" + sw;
+            // msg = "Error " + status + "\n" + e.getMessage() + "\n" + sw;
         } else {
             log.error(e, e);
-            //msg = "Error\n\n" + e.getMessage() + "\n\n" + sw;
+            // msg = "Error\n\n" + e.getMessage() + "\n\n" + sw;
         }
         return Response.status(status).build();
     }

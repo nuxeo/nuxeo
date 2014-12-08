@@ -51,8 +51,7 @@ public class RootResource {
 
     private HttpServletRequest request;
 
-    public RootResource(@Context HttpServletRequest request)
-            throws Exception {
+    public RootResource(@Context HttpServletRequest request) throws Exception {
         log.debug(request.getMethod() + " " + request.getRequestURI());
         this.request = request;
     }
@@ -79,14 +78,12 @@ public class RootResource {
     }
 
     @PROPFIND
-    public Object getRootPropfind(@Context UriInfo uriInfo,
-                                  @HeaderParam("depth") String depth) throws Exception {
+    public Object getRootPropfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) throws Exception {
         Object resource = findResource("");
         if (resource instanceof FolderResource) {
             return ((FolderResource) resource).propfind(uriInfo, depth);
         } else {
-            return ((VirtualFolderResource) findResource("")).propfind(uriInfo,
-                    depth);
+            return ((VirtualFolderResource) findResource("")).propfind(uriInfo, depth);
         }
     }
 
@@ -101,8 +98,7 @@ public class RootResource {
         }
 
         if (backend.isVirtual()) {
-            return new VirtualFolderResource(path, request,
-                    backend.getVirtualFolderNames());
+            return new VirtualFolderResource(path, request, backend.getVirtualFolderNames());
         }
 
         DocumentModel doc = null;
@@ -123,8 +119,7 @@ public class RootResource {
         }
 
         if (doc.isFolder()) {
-            return new FolderResource(getDocumentPath(doc), doc, request,
-                    backend);
+            return new FolderResource(getDocumentPath(doc), doc, request, backend);
         } else {
             return new FileResource(getDocumentPath(doc), doc, request, backend);
         }

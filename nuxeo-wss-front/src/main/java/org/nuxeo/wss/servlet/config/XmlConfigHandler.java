@@ -49,38 +49,36 @@ public class XmlConfigHandler extends DefaultHandler {
     protected static XmlConfigHandler instance;
 
     @Override
-    public void startElement(String uri, String localName, String name,
-            Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
         if (FILTERMAPPING_TAG.equalsIgnoreCase(name)) {
             synchronized (this) {
-            currentConfig = new FilterBindingConfig();
+                currentConfig = new FilterBindingConfig();
 
-            if (attributes != null) {
-                currentConfig.setUrl(getAttributeValue(attributes, URL_ATTRIBUTE));
-                currentConfig.setRedirectURL(getAttributeValue(attributes, REDIRECT_ATTRIBUTE));
-                currentConfig.setTargetService(getAttributeValue(attributes, SERVICE_ATTRIBUTE));
-                currentConfig.setRequestType(getAttributeValue(attributes, TYPE_ATTRIBUTE));
+                if (attributes != null) {
+                    currentConfig.setUrl(getAttributeValue(attributes, URL_ATTRIBUTE));
+                    currentConfig.setRedirectURL(getAttributeValue(attributes, REDIRECT_ATTRIBUTE));
+                    currentConfig.setTargetService(getAttributeValue(attributes, SERVICE_ATTRIBUTE));
+                    currentConfig.setRequestType(getAttributeValue(attributes, TYPE_ATTRIBUTE));
+                }
             }
-        }
         }
     }
 
     @Override
-    public void endElement(String uri, String localName, String name)
-            throws SAXException {
+    public void endElement(String uri, String localName, String name) throws SAXException {
         if (FILTERMAPPING_TAG.equalsIgnoreCase(name)) {
             synchronized (this) {
-            if (configEntries == null) {
-                configEntries = new ArrayList<FilterBindingConfig>();
+                if (configEntries == null) {
+                    configEntries = new ArrayList<FilterBindingConfig>();
+                }
+                configEntries.add(currentConfig);
+                currentConfig = null;
             }
-            configEntries.add(currentConfig);
-            currentConfig = null;
         }
     }
-    }
 
-    //Sometimes we got java.lang.NullPointerException during attribute value extraction
-    private String getAttributeValue(Attributes attributes, String key){
+    // Sometimes we got java.lang.NullPointerException during attribute value extraction
+    private String getAttributeValue(Attributes attributes, String key) {
         try {
             return attributes.getValue(key);
         } catch (Exception e) {
@@ -108,8 +106,7 @@ public class XmlConfigHandler extends DefaultHandler {
     }
 
     public static void loadConfig(String configName) throws Exception {
-        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                configName);
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(configName);
 
         XMLReader reader;
         reader = XMLReaderFactory.createXMLReader();

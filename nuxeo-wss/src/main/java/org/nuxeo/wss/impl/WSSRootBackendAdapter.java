@@ -52,7 +52,7 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
     @Override
     public WSSListItem getItem(String location) throws WSSException {
         if ("".equals(location) || "/".equals(location)) {
-            return  new DummyWSSListItem("", "WSS Root", null);
+            return new DummyWSSListItem("", "WSS Root", null);
         }
         return getBackend(location).getItem(location);
     }
@@ -74,8 +74,7 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
     }
 
     @Override
-    public WSSListItem moveItem(String location, String destination)
-            throws WSSException {
+    public WSSListItem moveItem(String location, String destination) throws WSSException {
         WSSBackend sourceBackend = getBackend(location);
         DocumentModel source = null;
         if (sourceBackend instanceof WSSBackendAdapter) {
@@ -86,8 +85,7 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
         }
         WSSBackend destinationBackend = getBackend(destination);
         if (destinationBackend instanceof WSSBackendAdapter) {
-            return ((WSSBackendAdapter) destinationBackend).moveItem(source,
-                    destination);
+            return ((WSSBackendAdapter) destinationBackend).moveItem(source, destination);
         } else {
             return sourceBackend.moveItem(location, destination);
         }
@@ -99,20 +97,17 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
     }
 
     @Override
-    public WSSListItem createFolder(String parentPath, String name)
-            throws WSSException {
+    public WSSListItem createFolder(String parentPath, String name) throws WSSException {
         return getBackend(parentPath).createFolder(parentPath, name);
     }
 
     @Override
-    public WSSListItem createFileItem(String parentPath, String name)
-            throws WSSException {
+    public WSSListItem createFileItem(String parentPath, String name) throws WSSException {
         return getBackend(parentPath).createFileItem(parentPath, name);
     }
 
     @Override
-    public DWSMetaData getMetaData(String location, WSSRequest wssRequest)
-            throws WSSException {
+    public DWSMetaData getMetaData(String location, WSSRequest wssRequest) throws WSSException {
         return getBackend(location).getMetaData(location, wssRequest);
     }
 
@@ -127,15 +122,14 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
             Path locationPath = new Path(location);
             String[] segments = locationPath.segments();
             int removeSegments = 0;
-            for (String segment : segments){
-                if(names.contains(segment)){
+            for (String segment : segments) {
+                if (names.contains(segment)) {
                     break;
                 } else {
                     removeSegments++;
                 }
             }
-            Path localVirtualRootPath = locationPath.removeLastSegments(
-                    locationPath.segmentCount() - removeSegments);
+            Path localVirtualRootPath = locationPath.removeLastSegments(locationPath.segmentCount() - removeSegments);
             virtualRoot = cleanPath(localVirtualRootPath.toString());
         } catch (ClientException e) {
             log.warn("Error during resolve virtual root");

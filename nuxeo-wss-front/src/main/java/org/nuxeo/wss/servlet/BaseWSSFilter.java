@@ -65,8 +65,8 @@ public abstract class BaseWSSFilter implements Filter {
     private static final Log log = LogFactory.getLog(WSSFrontFilter.class);
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -83,8 +83,7 @@ public abstract class BaseWSSFilter implements Filter {
 
             // check WebDAV calls
             try {
-                if (isWebDavRequest(httpRequest)
-                        && !uri.startsWith(nuxeoRootUrl + webDavUrl)) {
+                if (isWebDavRequest(httpRequest) && !uri.startsWith(nuxeoRootUrl + webDavUrl)) {
                     handleWebDavCall(httpRequest, httpResponse);
                     return;
                 }
@@ -103,33 +102,28 @@ public abstract class BaseWSSFilter implements Filter {
 
             if (forwardedConfig != null) {
                 try {
-                    handleForwardedCall(httpRequest, httpResponse,
-                            (FilterBindingConfig) forwardedConfig);
+                    handleForwardedCall(httpRequest, httpResponse, (FilterBindingConfig) forwardedConfig);
                 } catch (Exception e) {
-                    throw new ServletException("Error processing WSS request",
-                            e);
+                    throw new ServletException("Error processing WSS request", e);
                 }
             } else {
                 FilterBindingConfig config = null;
                 try {
                     config = FilterBindingResolver.getBinding(httpRequest);
                 } catch (Exception e) {
-                    throw new ServletException("Error processing WSS request",
-                            e);
+                    throw new ServletException("Error processing WSS request", e);
                 }
                 if (config != null) {
                     try {
                         if (isRootFilter()) {
                             log.debug("Forward call to backend filter");
-                            httpRequest.setAttribute(FILTER_FORWARD_PARAM,
-                                    config);
+                            httpRequest.setAttribute(FILTER_FORWARD_PARAM, config);
                             doForward(httpRequest, httpResponse, config);
                         } else {
                             handleWSSCall(httpRequest, httpResponse, config);
                         }
                     } catch (Exception e) {
-                        throw new ServletException(
-                                "Error processing WSS request", e);
+                        throw new ServletException("Error processing WSS request", e);
                     }
                     return;
                 } else {
@@ -163,16 +157,14 @@ public abstract class BaseWSSFilter implements Filter {
         }
     }
 
-    protected void handleWebDavCall(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) throws Exception {
+    protected void handleWebDavCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws Exception {
 
         // Wrap 'Destination' header parameter if need. Need for COPY and MOVE
         // WebDAV methods
         String destination = httpRequest.getHeader("Destination");
         if (StringUtils.isNotEmpty(destination)) {
             destination = resolveDestinationPath(destination);
-            HttpServletRequestWrapper httpRequestWrapper = new HttpServletRequestWrapper(
-                    httpRequest);
+            HttpServletRequestWrapper httpRequestWrapper = new HttpServletRequestWrapper(httpRequest);
             httpRequestWrapper.setHeader("destination", destination);
             httpRequest = httpRequestWrapper;
         }
@@ -181,12 +173,10 @@ public abstract class BaseWSSFilter implements Filter {
         if (isMSWebDavRequest(httpRequest)) {
             httpResponse.setHeader("Server", "Microsoft-IIS/6.0");
             httpResponse.setHeader("X-Powered-By", "ASP.NET");
-            httpResponse.setHeader("MicrosoftSharePointTeamServices",
-                    "12.0.0.6421");
+            httpResponse.setHeader("MicrosoftSharePointTeamServices", "12.0.0.6421");
             httpResponse.setHeader("Content-Type", "text/xml");
             httpResponse.setHeader("Cache-Control", "no-cache");
-            httpResponse.setHeader("Public-Extension",
-                    "http://schemas.microsoft.com/repl-2");
+            httpResponse.setHeader("Public-Extension", "http://schemas.microsoft.com/repl-2");
         }
 
         // forward request to WebDAV
@@ -209,8 +199,7 @@ public abstract class BaseWSSFilter implements Filter {
 
     private boolean isWebDavRequest(HttpServletRequest request) {
         String ua = request.getHeader("User-Agent");
-        return StringUtils.isNotEmpty(ua)
-                && (ua.contains(FPRPCConts.MS_WEBDAV_USERAGENT));
+        return StringUtils.isNotEmpty(ua) && (ua.contains(FPRPCConts.MS_WEBDAV_USERAGENT));
         // || ua.contains(FPRPCConts.MAC_FINDER_USERAGENT));
     }
 
@@ -227,8 +216,7 @@ public abstract class BaseWSSFilter implements Filter {
         return prefix + webDavUrl + suffix;
     }
 
-    protected void handleForwardedCall(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse,
+    protected void handleForwardedCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
             FilterBindingConfig forwardedConfig) throws Exception {
         log.debug("handle call forwarded by root filter");
         handleWSSCall(httpRequest, httpResponse, forwardedConfig);
@@ -240,13 +228,11 @@ public abstract class BaseWSSFilter implements Filter {
 
     protected abstract boolean isRootFilter();
 
-    protected abstract void doForward(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, FilterBindingConfig config)
-            throws Exception;
+    protected abstract void doForward(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+            FilterBindingConfig config) throws Exception;
 
-    protected abstract void handleWSSCall(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, FilterBindingConfig config)
-            throws Exception;
+    protected abstract void handleWSSCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+            FilterBindingConfig config) throws Exception;
 
     @Override
     public void destroy() {

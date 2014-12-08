@@ -12,10 +12,10 @@ import javax.xml.bind.annotation.XmlValue;
 public final class IsHidden {
 
     @XmlValue
-	private Integer hidden;
+    private Integer hidden;
 
     public IsHidden() {
-        
+
     }
 
     public IsHidden(Integer hidden) {

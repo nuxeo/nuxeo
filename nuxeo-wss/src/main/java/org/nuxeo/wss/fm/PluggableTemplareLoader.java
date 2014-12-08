@@ -23,8 +23,7 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.TemplateLoader;
 
 /**
- * {@link TemplateLoader} implementation that deletgates work to several underlaying
- * {@link ClassTemplateLoader}.
+ * {@link TemplateLoader} implementation that deletgates work to several underlaying {@link ClassTemplateLoader}.
  * <p>
  * Using the class allow to have buil-in templates that can be overwritten by the backend implementation.
  *
@@ -33,6 +32,7 @@ import freemarker.cache.TemplateLoader;
 public class PluggableTemplareLoader implements TemplateLoader {
 
     protected ClassTemplateLoader defaultLoader;
+
     protected ClassTemplateLoader additionnalLoader;
 
     public PluggableTemplareLoader(ClassTemplateLoader defaultLoader) {

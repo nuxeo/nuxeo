@@ -65,11 +65,9 @@ import org.w3c.dom.Element;
 import com.google.inject.Inject;
 
 /**
- * Jackrabbit includes a WebDAV client library. Let's use it to test our
- * server.
+ * Jackrabbit includes a WebDAV client library. Let's use it to test our server.
  */
 public class WebDavClientTest extends AbstractServerTest {
-
 
     private static String USERNAME = "Administrator";
 
@@ -106,16 +104,16 @@ public class WebDavClientTest extends AbstractServerTest {
 
     @Test
     public void testNotFoundVirtualRoot() throws Exception {
-        DavMethod method = new PropFindMethod(TEST_URI + "/nosuchpath",
-                DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_0);
+        DavMethod method = new PropFindMethod(TEST_URI + "/nosuchpath", DavConstants.PROPFIND_ALL_PROP,
+                DavConstants.DEPTH_0);
         int status = client.executeMethod(method);
         assertEquals(HttpStatus.SC_NOT_FOUND, status);
     }
 
     @Test
     public void testNotFoundRegularPath() throws Exception {
-        DavMethod method = new PropFindMethod(ROOT_URI + "/nosuchpath",
-                DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_0);
+        DavMethod method = new PropFindMethod(ROOT_URI + "/nosuchpath", DavConstants.PROPFIND_ALL_PROP,
+                DavConstants.DEPTH_0);
         int status = client.executeMethod(method);
         assertEquals(HttpStatus.SC_NOT_FOUND, status);
     }
@@ -127,7 +125,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
         MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
 
-        //Not quite nice, but for a example ok
+        // Not quite nice, but for a example ok
         DavPropertySet props = multiStatus.getResponses()[0].getProperties(200);
 
         for (DavPropertyName propName : props.getPropertyNames()) {
@@ -142,7 +140,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
         MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
 
-        //Not quite nice, but for a example ok
+        // Not quite nice, but for a example ok
         DavPropertySet props = multiStatus.getResponses()[0].getProperties(200);
 
         for (DavPropertyName propName : props.getPropertyNames()) {
@@ -179,8 +177,8 @@ public class WebDavClientTest extends AbstractServerTest {
 
     @Test
     public void testGetDocProperties() throws Exception {
-        DavMethod pFind = new PropFindMethod(
-                ROOT_URI + "quality.jpg", DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
+        DavMethod pFind = new PropFindMethod(ROOT_URI + "quality.jpg", DavConstants.PROPFIND_ALL_PROP,
+                DavConstants.DEPTH_1);
         client.executeMethod(pFind);
 
         MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
@@ -238,12 +236,10 @@ public class WebDavClientTest extends AbstractServerTest {
         doTestPutFile(name, bytes, mimeType, expectedType);
     }
 
-    protected void doTestPutFile(String name, byte[] bytes, String mimeType,
-            String expectedType) throws Exception {
+    protected void doTestPutFile(String name, byte[] bytes, String mimeType, String expectedType) throws Exception {
         InputStream is = new ByteArrayInputStream(bytes);
         PutMethod method = new PutMethod(ROOT_URI + name);
-        method.setRequestEntity(new InputStreamRequestEntity(is, bytes.length,
-                mimeType));
+        method.setRequestEntity(new InputStreamRequestEntity(is, bytes.length, mimeType));
         int status = client.executeMethod(method);
         assertEquals(HttpStatus.SC_CREATED, status);
 
@@ -302,8 +298,7 @@ public class WebDavClientTest extends AbstractServerTest {
     }
 
     protected void checkAccept(String accept) throws Exception {
-        DavMethod pFind = new PropFindMethod(ROOT_URI,
-                DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_0);
+        DavMethod pFind = new PropFindMethod(ROOT_URI, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_0);
         pFind.setRequestHeader("Accept", accept);
         client.executeMethod(pFind);
 
@@ -312,22 +307,17 @@ public class WebDavClientTest extends AbstractServerTest {
         assertEquals(1, responses.length);
 
         MultiStatusResponse response = responses[0];
-        assertEquals(
-                "workspace",
-                response.getProperties(200).get(
-                        DavConstants.PROPERTY_DISPLAYNAME).getValue());
+        assertEquals("workspace", response.getProperties(200).get(DavConstants.PROPERTY_DISPLAYNAME).getValue());
     }
 
     @Test
     public void testPropFindOnLockedFile() throws Exception {
         String fileUri = ROOT_URI + "quality.jpg";
-        DavMethod pLock = new LockMethod(
-                fileUri, Scope.EXCLUSIVE, Type.WRITE, USERNAME, 10000l, false);
+        DavMethod pLock = new LockMethod(fileUri, Scope.EXCLUSIVE, Type.WRITE, USERNAME, 10000l, false);
         client.executeMethod(pLock);
         pLock.checkSuccess();
 
-        DavMethod pFind = new PropFindMethod(
-                fileUri, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
+        DavMethod pFind = new PropFindMethod(fileUri, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
         client.executeMethod(pFind);
 
         MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
@@ -335,10 +325,8 @@ public class WebDavClientTest extends AbstractServerTest {
         assertEquals(1L, responses.length);
 
         MultiStatusResponse response = responses[0];
-        DavProperty<?> pLockDiscovery =
-                response.getProperties(200).get(DavConstants.PROPERTY_LOCKDISCOVERY);
-        Element eLockDiscovery =
-                (Element) ((Element) pLockDiscovery.getValue()).getParentNode();
+        DavProperty<?> pLockDiscovery = response.getProperties(200).get(DavConstants.PROPERTY_LOCKDISCOVERY);
+        Element eLockDiscovery = (Element) ((Element) pLockDiscovery.getValue()).getParentNode();
         LockDiscovery lockDiscovery = LockDiscovery.createFromXml(eLockDiscovery);
         assertEquals(USERNAME, lockDiscovery.getValue().get(0).getOwner());
     }

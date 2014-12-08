@@ -40,8 +40,7 @@ import org.nuxeo.wss.spi.dws.Task;
 import org.nuxeo.wss.spi.dws.User;
 
 /**
- * Minimal fake implementation of the DWS WebService. Uses FreeMarker to render
- * responses.
+ * Minimal fake implementation of the DWS WebService. Uses FreeMarker to render responses.
  *
  * @author Thierry Delprat
  */
@@ -51,8 +50,7 @@ public class FakeDWS implements FakeWSHandler {
 
     public static final String url_TAG = "url";
 
-    public void handleRequest(FakeWSRequest request, WSSResponse response)
-            throws WSSException {
+    public void handleRequest(FakeWSRequest request, WSSResponse response) throws WSSException {
 
         response.addRenderingParameter("siteRoot", request.getSitePath());
         response.addRenderingParameter("request", request);
@@ -112,8 +110,7 @@ public class FakeDWS implements FakeWSHandler {
                 docIdx++;
             }
 
-            String siteUrl = metadata.getSite().getItem().getRelativeSubPath(
-                    siteRoot);
+            String siteUrl = metadata.getSite().getItem().getRelativeSubPath(siteRoot);
 
             Map<String, Object> renderingContext = new HashMap<String, Object>();
             renderingContext.put("doc", item);
@@ -132,11 +129,9 @@ public class FakeDWS implements FakeWSHandler {
             try {
                 String xmlMetaData = "";
                 if (withMeta) {
-                    xmlMetaData = renderSubTemplate("GetDwsMetaDataBody.ftl",
-                            renderingContext);
+                    xmlMetaData = renderSubTemplate("GetDwsMetaDataBody.ftl", renderingContext);
                 } else {
-                    xmlMetaData = renderSubTemplate("GetDwsDataBody.ftl",
-                            renderingContext);
+                    xmlMetaData = renderSubTemplate("GetDwsDataBody.ftl", renderingContext);
                 }
 
                 xmlMetaData = StringEscapeUtils.escapeXml(xmlMetaData);
@@ -180,19 +175,17 @@ public class FakeDWS implements FakeWSHandler {
 
             response.setRenderingTemplateName("CreateFolderResponse.ftl");
         } else {
-            throw new WSSException("no FakeWS implemented for action "
-                    + request.getAction());
+            throw new WSSException("no FakeWS implemented for action " + request.getAction());
         }
     }
 
-    protected String renderSubTemplate(String renderingTemplateName,
-            Map<String, Object> renderingContext) throws Exception {
+    protected String renderSubTemplate(String renderingTemplateName, Map<String, Object> renderingContext)
+            throws Exception {
         Writer writer;
         ByteArrayOutputStream bufferedOs;
         bufferedOs = new ByteArrayOutputStream();
         writer = new BufferedWriter(new OutputStreamWriter(bufferedOs));
-        FreeMarkerRenderer.instance().render(renderingTemplateName,
-                renderingContext, writer);
+        FreeMarkerRenderer.instance().render(renderingTemplateName, renderingContext, writer);
         writer.flush();
         writer.close();
         return bufferedOs.toString("UTF-8");

@@ -38,7 +38,7 @@ public class LitmusTest extends AbstractServerTest {
      */
     @Test
     public void testWithLitmus() throws Exception {
-        String[] envp = { "TESTS=basic copymove"};
+        String[] envp = { "TESTS=basic copymove" };
         Process p = Runtime.getRuntime().exec("litmus -k " + ROOT_URI, envp);
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
         String s;

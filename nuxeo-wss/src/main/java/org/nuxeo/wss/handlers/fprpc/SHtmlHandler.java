@@ -31,7 +31,8 @@ public class SHtmlHandler extends AbstractFPRPCHandler implements FPRPCHandler {
 
     private static final Log log = LogFactory.getLog(SHtmlHandler.class);
 
-    protected void processCall(FPRPCRequest request, FPRPCResponse fpResponse, int callIndex, WSSBackend backend) throws WSSException {
+    protected void processCall(FPRPCRequest request, FPRPCResponse fpResponse, int callIndex, WSSBackend backend)
+            throws WSSException {
 
         FPRPCCall call = request.getCalls().get(callIndex);
 

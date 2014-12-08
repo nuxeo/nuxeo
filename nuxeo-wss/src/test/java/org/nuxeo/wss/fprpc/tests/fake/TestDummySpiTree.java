@@ -31,7 +31,7 @@ import org.nuxeo.wss.spi.dummy.DummyMemoryTree;
 public class TestDummySpiTree {
 
     @Test
-    public void testTree() throws Exception{
+    public void testTree() throws Exception {
         List<WSSListItem> items;
 
         DummyMemoryTree.resetInstance();
@@ -81,7 +81,7 @@ public class TestDummySpiTree {
         assertNotNull(is);
         byte[] buffer = new byte[1024 * 10];
         int read = is.read(buffer);
-        assertTrue(read>0);
+        assertTrue(read > 0);
         assertEquals(7680, read);
 
         item = instance.getItem("/DocLib0/Workspace-1-1/toto.doc");

@@ -43,11 +43,12 @@ public class FreeMarkerRenderer {
     protected Configuration fmConfig;
 
     protected static FreeMarkerRenderer instance;
+
     protected static ClassTemplateLoader addLoader;
+
     protected PluggableTemplareLoader loader;
 
-    public static final String FM_TEMPLATE_PATH = File.separator + "templates"
-            + File.separator;
+    public static final String FM_TEMPLATE_PATH = File.separator + "templates" + File.separator;
 
     private static final Log log = LogFactory.getLog(FreeMarkerRenderer.class);
 
@@ -95,10 +96,10 @@ public class FreeMarkerRenderer {
             log.error("Error creating FreeMarker engine", e);
         }
 
-        //fmConfig.setTemplateLoader(new ClassTemplateLoader(this.getClass(),"/templates/"));
+        // fmConfig.setTemplateLoader(new ClassTemplateLoader(this.getClass(),"/templates/"));
 
-        //ClassTemplateLoader defaultLoader = new ClassTemplateLoader(this.getClass(),"/templates/");
-        //TemplateLoader loader = new PluggableTemplareLoader(defaultLoader);
+        // ClassTemplateLoader defaultLoader = new ClassTemplateLoader(this.getClass(),"/templates/");
+        // TemplateLoader loader = new PluggableTemplareLoader(defaultLoader);
 
         fmConfig.setTemplateLoader(getLoader());
     }

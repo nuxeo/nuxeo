@@ -31,7 +31,7 @@ public class FakeWSRequest extends WSSRequest {
         String soapAction = getHttpRequest().getHeader("SOAPAction");
         if (soapAction == null) {
             return "";
-        }else {
+        } else {
             return soapAction.trim();
         }
     }

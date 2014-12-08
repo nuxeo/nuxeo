@@ -25,8 +25,7 @@ import org.nuxeo.wss.WSSException;
 public abstract class AbstractWSSBackend implements WSSBackend {
 
     @Override
-    public List<WSSListItem> listFolderishItems(String location)
-            throws WSSException {
+    public List<WSSListItem> listFolderishItems(String location) throws WSSException {
 
         List<WSSListItem> folderish = new ArrayList<WSSListItem>();
         List<WSSListItem> all = listItems(location);
@@ -54,7 +53,7 @@ public abstract class AbstractWSSBackend implements WSSBackend {
     public boolean exists(String location) {
         try {
             WSSListItem item = getItem(location);
-            if (item==null) {
+            if (item == null) {
                 return false;
             } else {
                 return true;

@@ -88,8 +88,7 @@ public class VirtualListItem extends AbstractWSSListItem implements WSSListItem 
     }
 
     @Override
-    public void setStream(InputStream inputStream, String s)
-            throws WSSException {
+    public void setStream(InputStream inputStream, String s) throws WSSException {
         // nothing
     }
 

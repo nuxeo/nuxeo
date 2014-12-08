@@ -76,8 +76,8 @@ public class FakeWebS implements FakeWSHandler {
 
         return mapping.getSiteUrl();
 
-        //String siteUrl = request.getBaseUrl();
-        //return siteUrl;
+        // String siteUrl = request.getBaseUrl();
+        // return siteUrl;
     }
 
 }

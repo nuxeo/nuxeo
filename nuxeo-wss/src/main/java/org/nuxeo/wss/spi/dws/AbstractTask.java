@@ -22,9 +22,7 @@ import java.util.List;
 
 public abstract class AbstractTask extends AbstractDWSItem implements Task {
 
-
-    public AbstractTask(String id, String authorLogin, Date created,
-            Date modified, String fileRef) {
+    public AbstractTask(String id, String authorLogin, Date created, Date modified, String fileRef) {
         super(id, authorLogin, created, modified, fileRef);
     }
 
@@ -36,18 +34,19 @@ public abstract class AbstractTask extends AbstractDWSItem implements Task {
 
     public String getDueDateTS() {
         Date date = getDueDate();
-        if (date==null) {
+        if (date == null) {
             date = new Date(System.currentTimeMillis());
         }
-        return getDateFormat().format(date);    }
+        return getDateFormat().format(date);
+    }
 
     public void updateReferences(List<User> users, List<User> assignees) {
 
         super.updateReferences(users);
-        if (assignees!=null) {
-            for (int i =0; i< assignees.size(); i++) {
+        if (assignees != null) {
+            for (int i = 0; i < assignees.size(); i++) {
                 if (assignees.get(i).getLogin().equals(getAssigneeLogin())) {
-                    //assigneeId = ""+ i+1;
+                    // assigneeId = ""+ i+1;
                     assigneeId = assignees.get(i).getId();
                     break;
                 }

@@ -34,8 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 
-public abstract class AbstractVirtualBackend extends AbstractCoreBackend
-        implements VirtualBackend {
+public abstract class AbstractVirtualBackend extends AbstractCoreBackend implements VirtualBackend {
 
     private static final Log log = LogFactory.getLog(AbstractVirtualBackend.class);
 
@@ -49,16 +48,15 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
 
     private RealBackendFactory realBackendFactory;
 
-    protected AbstractVirtualBackend(String name, String rootUrl,
-            CoreSession session, RealBackendFactory realBackendFactory) {
+    protected AbstractVirtualBackend(String name, String rootUrl, CoreSession session,
+            RealBackendFactory realBackendFactory) {
         super(session);
         this.backendDisplayName = name;
         this.rootUrl = new Path(rootUrl).append(this.backendDisplayName).toString();
         this.realBackendFactory = realBackendFactory;
     }
 
-    protected void registerSimpleBackends(List<DocumentModel> docs)
-            throws ClientException {
+    protected void registerSimpleBackends(List<DocumentModel> docs) throws ClientException {
         List<String> paths = new ArrayList<String>();
         for (DocumentModel doc : docs) {
             paths.add(doc.getPathAsString());
@@ -82,8 +80,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
             }
 
             Backend backend = realBackendFactory.createBackend(name, head,
-                    new Path(this.rootUrl).append(name).toString(),
-                    getSession());
+                    new Path(this.rootUrl).append(name).toString(), getSession());
 
             registerBackend(backend);
         }
@@ -181,9 +178,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
                 init();
                 return true;
             } catch (Exception e) {
-                log.error(
-                        "Execute during virtual backend initialization. Backend name:"
-                                + getBackendDisplayName(), e);
+                log.error("Execute during virtual backend initialization. Backend name:" + getBackendDisplayName(), e);
             }
         }
         return false;
@@ -217,8 +212,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
     }
 
     @Override
-    public DocumentModel resolveLocation(String location)
-            throws ClientException {
+    public DocumentModel resolveLocation(String location) throws ClientException {
         throw new UnsupportedOperationException(location);
     }
 
@@ -238,44 +232,37 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
     }
 
     @Override
-    public void renameItem(DocumentModel source, String destinationName)
-            throws ClientException {
+    public void renameItem(DocumentModel source, String destinationName) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel moveItem(DocumentModel source, PathRef targetParentRef)
-            throws ClientException {
+    public DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef)
-            throws ClientException {
+    public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel createFolder(String parentPath, String name)
-            throws ClientException {
+    public DocumentModel createFolder(String parentPath, String name) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel createFile(String parentPath, String name, Blob content)
-            throws ClientException {
+    public DocumentModel createFile(String parentPath, String name, Blob content) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel createFile(String parentPath, String name)
-            throws ClientException {
+    public DocumentModel createFile(String parentPath, String name) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<DocumentModel> getChildren(DocumentRef ref)
-            throws ClientException {
+    public List<DocumentModel> getChildren(DocumentRef ref) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -295,8 +282,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
     }
 
     @Override
-    public boolean hasPermission(DocumentRef docRef, String permission)
-            throws ClientException {
+    public boolean hasPermission(DocumentRef docRef, String permission) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -306,14 +292,13 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
     }
 
     @Override
-    public DocumentModel updateDocument(DocumentModel doc, String name,
-            Blob content) throws ClientException {
+    public DocumentModel updateDocument(DocumentModel doc, String name, Blob content) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel moveItem(DocumentModel source,
-            DocumentRef targetParentRef, String name) throws ClientException {
+    public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 

@@ -32,8 +32,7 @@ public abstract class AbstractFPRPCHandler implements FPRPCHandler {
 
     private static final Log log = LogFactory.getLog(AbstractFPRPCHandler.class);
 
-    public void handleRequest(FPRPCRequest request, FPRPCResponse fpResponse)
-            throws WSSException {
+    public void handleRequest(FPRPCRequest request, FPRPCResponse fpResponse) throws WSSException {
         List<FPRPCCall> calls = request.getCalls();
 
         if (calls.size() > 1) {
@@ -45,6 +44,7 @@ public abstract class AbstractFPRPCHandler implements FPRPCHandler {
         processCall(request, fpResponse, 0, backend);
     }
 
-    protected abstract void processCall(FPRPCRequest request, FPRPCResponse fpResponse, int callIndex, WSSBackend backend) throws WSSException;
+    protected abstract void processCall(FPRPCRequest request, FPRPCResponse fpResponse, int callIndex,
+            WSSBackend backend) throws WSSException;
 
 }

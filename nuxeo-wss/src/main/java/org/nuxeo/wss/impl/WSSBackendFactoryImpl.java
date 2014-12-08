@@ -28,8 +28,8 @@ import org.nuxeo.wss.spi.WSSBackendFactory;
 public class WSSBackendFactoryImpl implements WSSBackendFactory {
 
     protected String computeVirtualRoot(WSSRequest request) {
-        if(request == null){
-            return "nuxeo"; //for tests
+        if (request == null) {
+            return "nuxeo"; // for tests
         }
 
         String virtualRoot = request.getSitePath();

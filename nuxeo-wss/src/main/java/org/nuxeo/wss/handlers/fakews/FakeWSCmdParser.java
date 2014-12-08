@@ -44,25 +44,21 @@ public class FakeWSCmdParser extends DefaultHandler {
     }
 
     @Override
-    public void startElement(String uri, String localName, String name,
-            Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
         if (paramNameTag.equalsIgnoreCase(name)) {
             readString = true;
         }
     }
 
     @Override
-    public void endElement(String uri, String localName, String name)
-            throws SAXException {
+    public void endElement(String uri, String localName, String name) throws SAXException {
         if (paramNameTag.equalsIgnoreCase(name)) {
             readString = false;
         }
     }
 
-
     @Override
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
+    public void characters(char[] ch, int start, int length) throws SAXException {
         if (readString) {
             if (paramValue == null) {
                 paramValue = String.valueOf(ch, start, length);

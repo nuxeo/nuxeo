@@ -45,8 +45,7 @@ public class FakeResponse implements HttpServletResponse {
 
     protected final OutputStream out = new ByteArrayOutputStream();
 
-    protected final FakeServletOutputStream fout = new FakeServletOutputStream(
-            out);
+    protected final FakeServletOutputStream fout = new FakeServletOutputStream(out);
 
     protected final PrintWriter printer = new PrintWriter(out);
 

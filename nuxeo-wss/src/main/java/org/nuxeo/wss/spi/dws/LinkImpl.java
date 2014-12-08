@@ -22,13 +22,14 @@ import java.util.Date;
 public class LinkImpl extends AbstractDWSItem implements Link {
 
     protected String comments;
+
     protected String url;
 
-    public LinkImpl(String id, String authorLogin, Date created, Date modified,
-            String fileRef, String comments, String url) {
+    public LinkImpl(String id, String authorLogin, Date created, Date modified, String fileRef, String comments,
+            String url) {
         super(id, authorLogin, created, modified, fileRef);
-        this.comments=comments;
-        this.url=url;
+        this.comments = comments;
+        this.url = url;
     }
 
     public String getComments() {

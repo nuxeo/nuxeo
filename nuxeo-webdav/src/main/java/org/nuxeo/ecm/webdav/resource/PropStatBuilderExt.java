@@ -34,7 +34,9 @@ import java.util.*;
  */
 public class PropStatBuilderExt {
     private List<Object> properties;
+
     private Status status;
+
     private Set<String> names;
 
     public PropStatBuilderExt() {
@@ -105,11 +107,11 @@ public class PropStatBuilderExt {
         return this;
     }
 
-    public PropStatBuilderExt isHidden(boolean hide){
-        if(!names.contains("ishidden")){
-            IsHidden hidden = new IsHidden(hide?1:0);
+    public PropStatBuilderExt isHidden(boolean hide) {
+        if (!names.contains("ishidden")) {
+            IsHidden hidden = new IsHidden(hide ? 1 : 0);
             properties.add(hidden);
-           names.add("ishidden");
+            names.add("ishidden");
         }
 
         return this;
