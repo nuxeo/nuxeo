@@ -45,15 +45,13 @@ import org.nuxeo.ecm.webapp.tree.nav.MultiNavTreeManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Back seam component for the top right search box using the suggestion
- * service to help decode the user intent and minimize the number of clicks to
- * find the relevant information.
+ * Back seam component for the top right search box using the suggestion service to help decode the user intent and
+ * minimize the number of clicks to find the relevant information.
  */
 @Name("suggestboxActions")
 @Scope(CONVERSATION)
 @AutomaticDocumentBasedInvalidation
-public class SuggestboxActions extends DocumentContextBoundActionBean implements
-        Serializable {
+public class SuggestboxActions extends DocumentContextBoundActionBean implements Serializable {
 
     private static final Log log = LogFactory.getLog(SuggestboxActions.class);
 
@@ -84,8 +82,7 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     // keep suggestions in cache for maximum 10 seconds to avoid useless and
     // costly re-computation of the suggestions by rich:suggestionbox at
     // selection time
-    protected Cached<List<Suggestion>> cachedSuggestions = new Cached<List<Suggestion>>(
-            10000);
+    protected Cached<List<Suggestion>> cachedSuggestions = new Cached<List<Suggestion>>(10000);
 
     protected String searchKeywords = "";
 
@@ -109,27 +106,23 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     }
 
     protected SuggestionContext getSuggestionContext() {
-        SuggestionContext ctx = new SuggestionContext(suggesterGroup,
-                documentManager.getPrincipal()).withSession(documentManager).withCurrentDocument(
-                navigationContext.getCurrentDocument()).withLocale(locale).withMessages(
+        SuggestionContext ctx = new SuggestionContext(suggesterGroup, documentManager.getPrincipal()).withSession(
+                documentManager).withCurrentDocument(navigationContext.getCurrentDocument()).withLocale(locale).withMessages(
                 messages);
         return ctx;
     }
 
     /**
-     * Callback for the ajax keypress event that triggers the generation of
-     * context sensitive action suggestions. The most specific actions (e.g.
-     * direct navigation to a document with matching titles) should be
-     * suggested in the first position and more generic (traditional free-text
-     * search for documents) last.
+     * Callback for the ajax keypress event that triggers the generation of context sensitive action suggestions. The
+     * most specific actions (e.g. direct navigation to a document with matching titles) should be suggested in the
+     * first position and more generic (traditional free-text search for documents) last.
      */
     public List<Suggestion> getSuggestions(Object input) {
         if (cachedSuggestions.hasExpired(input, locale)) {
             SuggestionService service = Framework.getLocalService(SuggestionService.class);
             SuggestionContext ctx = getSuggestionContext();
             try {
-                List<Suggestion> suggestions = service.suggest(
-                        input.toString(), ctx);
+                List<Suggestion> suggestions = service.suggest(input.toString(), ctx);
                 cachedSuggestions.cache(suggestions, input, locale);
             } catch (SuggestionException e) {
                 // log the exception rather than trying to display it since

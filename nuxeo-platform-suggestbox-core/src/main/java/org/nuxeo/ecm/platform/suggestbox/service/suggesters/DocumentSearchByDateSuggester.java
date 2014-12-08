@@ -33,9 +33,8 @@ import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor
 import org.nuxeo.ecm.platform.suggestbox.utils.DateMatcher;
 
 /**
- * Simple stateless suggester that parses the input and suggest to search
- * document by date if the input can be interpreted as a date in the user
- * locale.
+ * Simple stateless suggester that parses the input and suggest to search document by date if the input can be
+ * interpreted as a date in the user locale.
  */
 public class DocumentSearchByDateSuggester implements Suggester {
 
@@ -54,16 +53,14 @@ public class DocumentSearchByDateSuggester implements Suggester {
     protected String suggesterId = "DocumentSearchByDateSuggester";
 
     @Override
-    public List<Suggestion> suggest(String userInput, SuggestionContext context)
-            throws SuggestionException {
+    public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
         List<Suggestion> suggestions = new ArrayList<Suggestion>();
         I18nHelper i18n = I18nHelper.instanceFor(context.messages);
 
         // TODO: use SimpleDateFormat and use the locale information from the
         // context
         DateMatcher matcher = DateMatcher.fromInput(userInput);
-        DateFormat labelDateFormatter = DateFormat.getDateInstance(
-                DateFormat.MEDIUM, context.locale);
+        DateFormat labelDateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, context.locale);
 
         if (matcher.hasMatch()) {
             Date date = matcher.getDateSuggestion().getTime();
@@ -71,36 +68,29 @@ public class DocumentSearchByDateSuggester implements Suggester {
 
             for (String field : searchFields) {
                 String searchFieldAfter = field + "_min";
-                String labelAfterPrefix = LABEL_AFTER_PREFIX
-                        + field.replace(':', '_');
-                String labelAfter = i18n.translate(labelAfterPrefix,
-                        formattedDateLabel);
-                suggestions.add(new SearchDocumentsSuggestion(suggesterId, labelAfter,
-                        iconURL).withSearchCriterion(searchFieldAfter, date));
+                String labelAfterPrefix = LABEL_AFTER_PREFIX + field.replace(':', '_');
+                String labelAfter = i18n.translate(labelAfterPrefix, formattedDateLabel);
+                suggestions.add(new SearchDocumentsSuggestion(suggesterId, labelAfter, iconURL).withSearchCriterion(
+                        searchFieldAfter, date));
 
                 String searchFieldBefore = field + "_max";
-                String labelBeforePrefix = LABEL_BEFORE_PREFIX
-                        + field.replace(':', '_');
-                String labelBefore = i18n.translate(labelBeforePrefix,
-                        formattedDateLabel);
-                suggestions.add(new SearchDocumentsSuggestion(suggesterId, labelBefore,
-                        iconURL).withSearchCriterion(searchFieldBefore, date));
+                String labelBeforePrefix = LABEL_BEFORE_PREFIX + field.replace(':', '_');
+                String labelBefore = i18n.translate(labelBeforePrefix, formattedDateLabel);
+                suggestions.add(new SearchDocumentsSuggestion(suggesterId, labelBefore, iconURL).withSearchCriterion(
+                        searchFieldBefore, date));
             }
         }
         return suggestions;
     }
 
     @Override
-    public void initWithParameters(SuggesterDescriptor descriptor)
-            throws ComponentInitializationException {
+    public void initWithParameters(SuggesterDescriptor descriptor) throws ComponentInitializationException {
         Map<String, String> params = descriptor.getParameters();
         iconURL = params.get("iconURL");
         String searchFields = params.get("searchFields");
         if (searchFields == null || iconURL == null) {
-            throw new ComponentInitializationException(
-                    String.format("Could not initialize suggester '%s': "
-                            + "searchFields and iconURL"
-                            + " are mandatory parameters", descriptor.getName()));
+            throw new ComponentInitializationException(String.format("Could not initialize suggester '%s': "
+                    + "searchFields and iconURL" + " are mandatory parameters", descriptor.getName()));
         }
         this.searchFields = searchFields.split(", *");
     }

@@ -33,8 +33,7 @@ public class SearchDocumentsSuggestion extends Suggestion {
         super(id, CommonSuggestionTypes.SEARCH_DOCUMENTS, label, iconURL);
     }
 
-    public SearchDocumentsSuggestion withSearchCriterion(String searchField,
-            Serializable searchValue) {
+    public SearchDocumentsSuggestion withSearchCriterion(String searchField, Serializable searchValue) {
         searchCriteria.put(searchField, searchValue);
         return this;
     }

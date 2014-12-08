@@ -17,8 +17,7 @@
 package org.nuxeo.ecm.platform.suggestbox.service;
 
 /**
- * Exception raised when the SuggestionService is unable to execute the selected
- * suggestion.
+ * Exception raised when the SuggestionService is unable to execute the selected suggestion.
  */
 public class SuggestionHandlingException extends Exception {
 

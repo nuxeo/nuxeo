@@ -40,17 +40,14 @@ public class DocumentSuggestion extends Suggestion {
 
     protected final DocumentLocation documentLocation;
 
-    public DocumentSuggestion(String id, DocumentLocation documentLocation, String label,
-            String iconURL) {
+    public DocumentSuggestion(String id, DocumentLocation documentLocation, String label, String iconURL) {
         super(id, CommonSuggestionTypes.DOCUMENT, label, iconURL);
         this.documentLocation = documentLocation;
     }
 
-    public static Suggestion fromDocumentModel(DocumentModel doc)
-            throws ClientException {
+    public static Suggestion fromDocumentModel(DocumentModel doc) throws ClientException {
         TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
-        String description = doc.getProperty("dc:description").getValue(
-                String.class);
+        String description = doc.getProperty("dc:description").getValue(String.class);
         String icon = null;
         if (doc.hasSchema("common")) {
             icon = (String) doc.getProperty("common", "icon");
@@ -58,8 +55,7 @@ public class DocumentSuggestion extends Suggestion {
         if (StringUtils.isEmpty(icon)) {
             icon = typeInfo.getIcon();
         }
-        return new DocumentSuggestion(doc.getId(), new DocumentLocationImpl(doc),
-                doc.getTitle(), icon).withDescription(description);
+        return new DocumentSuggestion(doc.getId(), new DocumentLocationImpl(doc), doc.getTitle(), icon).withDescription(description);
     }
 
     public DocumentLocation getDocumentLocation() {

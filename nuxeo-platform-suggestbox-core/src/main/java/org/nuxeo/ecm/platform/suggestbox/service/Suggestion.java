@@ -19,8 +19,7 @@ package org.nuxeo.ecm.platform.suggestbox.service;
 import java.io.Serializable;
 
 /**
- * Base class for building data transfer objects for results of requests to the
- * SuggestionService.
+ * Base class for building data transfer objects for results of requests to the SuggestionService.
  *
  * @author ogrisel
  */
@@ -59,9 +58,8 @@ public abstract class Suggestion implements Serializable {
     }
 
     /**
-     * A string marker to give the type (i.e. category) of the suggested user
-     * action / intent. The type is used to broadcast the selected suggestion to
-     * the correct handler.
+     * A string marker to give the type (i.e. category) of the suggested user action / intent. The type is used to
+     * broadcast the selected suggestion to the correct handler.
      */
     public String getType() {
         return type;
@@ -75,9 +73,8 @@ public abstract class Suggestion implements Serializable {
     }
 
     /**
-     * Relative URL path to download an icon (can represent the type of
-     * suggestion or the specific instance such as the mimetype icon of a
-     * document suggestion or the avatar icon of a user profile suggestion).
+     * Relative URL path to download an icon (can represent the type of suggestion or the specific instance such as the
+     * mimetype icon of a document suggestion or the avatar icon of a user profile suggestion).
      */
     public String getIconURL() {
         return iconURL;
@@ -93,12 +90,10 @@ public abstract class Suggestion implements Serializable {
     }
 
     /**
-     * Disabled suggestions can be useful to display suggestions that might have
-     * been relevant if the context was slightly different (e.g. if the user was
-     * logged in instead of anonymous): the UI should not make them selectable
-     * but the description should give information to the user on how to make
-     * that suggestion enabled (e.g. by logging in). The SuggestionService will
-     * throw an exception if the user selects a disabled suggestion.
+     * Disabled suggestions can be useful to display suggestions that might have been relevant if the context was
+     * slightly different (e.g. if the user was logged in instead of anonymous): the UI should not make them selectable
+     * but the description should give information to the user on how to make that suggestion enabled (e.g. by logging
+     * in). The SuggestionService will throw an exception if the user selects a disabled suggestion.
      */
     public boolean getIsDisabled() {
         return disabled;
@@ -111,14 +106,12 @@ public abstract class Suggestion implements Serializable {
 
     /**
      * @return the url to access to the object. It used by the navigation in the select2.
-     *
      * @since 6.0
      */
     public abstract String getObjectUrl();
 
     @Override
     public String toString() {
-        return String.format("Suggestion(\"%s\", \"%s\", \"%s\")", type, label,
-                iconURL);
+        return String.format("Suggestion(\"%s\", \"%s\", \"%s\")", type, label, iconURL);
     }
 }

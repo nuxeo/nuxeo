@@ -35,11 +35,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Perform a lookup by name query on the UserManager service and suggest to
- * navigate to the top user and / or group profiles matching that query.
- *
- * If searchFields are provided in the parameters, suggestion for searching
- * document with reference to the users are also generated.
+ * Perform a lookup by name query on the UserManager service and suggest to navigate to the top user and / or group
+ * profiles matching that query. If searchFields are provided in the parameters, suggestion for searching document with
+ * reference to the users are also generated.
  *
  * @author ogrisel
  */
@@ -64,8 +62,7 @@ public class UserGroupLookupSuggester implements Suggester {
     protected String suggesterId = "UserGroupLookupSuggester";
 
     @Override
-    public List<Suggestion> suggest(String userInput, SuggestionContext context)
-            throws SuggestionException {
+    public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
         I18nHelper i18n = I18nHelper.instanceFor(context.messages);
         UserManager userManager = Framework.getLocalService(UserManager.class);
         if (userManager == null) {
@@ -76,7 +73,7 @@ public class UserGroupLookupSuggester implements Suggester {
         try {
             int count = 0;
             for (DocumentModel userDoc : userManager.searchUsers(userInput)) {
-            	UserAdapter user = userDoc.getAdapter(UserAdapter.class);
+                UserAdapter user = userDoc.getAdapter(UserAdapter.class);
                 // suggest to navigate to the user profile
                 String firstName = user.getFirstName();
                 String userLabel = firstName != null ? firstName : "";
@@ -87,22 +84,16 @@ public class UserGroupLookupSuggester implements Suggester {
                 if (userLabel.isEmpty()) {
                     userLabel = user.getName();
                 }
-                suggestions.add(new UserSuggestion(userDoc.getId(), userLabel,
-                        userIconURL));
+                suggestions.add(new UserSuggestion(userDoc.getId(), userLabel, userIconURL));
 
                 // suggest to search documents related to the user profile
-                /* TODO Reactivate when the new search tab will be done
-                for (String searchField : searchFields) {
-                    String i18nLabel = i18n.translate(searchLabelPrefix
-                            + searchField.replaceAll(":", "_"), userLabel);
-                    Suggestion suggestion = new SearchDocumentsSuggestion(
-                            suggesterId,
-                            i18nLabel,
-                            searchIconURL).withSearchCriterion(
-                            searchField,
-                            userDoc.getId());
-                    searchSuggestions.add(suggestion);
-                }*/
+                /*
+                 * TODO Reactivate when the new search tab will be done for (String searchField : searchFields) { String
+                 * i18nLabel = i18n.translate(searchLabelPrefix + searchField.replaceAll(":", "_"), userLabel);
+                 * Suggestion suggestion = new SearchDocumentsSuggestion( suggesterId, i18nLabel,
+                 * searchIconURL).withSearchCriterion( searchField, userDoc.getId()); searchSuggestions.add(suggestion);
+                 * }
+                 */
                 count++;
                 if (count >= userSuggestionsLimit) {
                     break;
@@ -112,14 +103,11 @@ public class UserGroupLookupSuggester implements Suggester {
             String groupIdField = userManager.getGroupIdField();
             String groupLabelField = userManager.getGroupLabelField();
             for (DocumentModel group : userManager.searchGroups(userInput)) {
-                String label = group.getProperty(groupLabelField).getValue(
-                        String.class);
+                String label = group.getProperty(groupLabelField).getValue(String.class);
                 if (label == null || label.isEmpty()) {
-                    label = group.getProperty(groupIdField).getValue(
-                            String.class);
+                    label = group.getProperty(groupIdField).getValue(String.class);
                 }
-                suggestions.add(new GroupSuggestion(group.getId(), label,
-                        groupIconURL));
+                suggestions.add(new GroupSuggestion(group.getId(), label, groupIconURL));
                 count++;
                 if (count >= groupSuggestionsLimit) {
                     break;
@@ -128,8 +116,7 @@ public class UserGroupLookupSuggester implements Suggester {
             suggestions.addAll(searchSuggestions);
             return suggestions;
         } catch (ClientException e) {
-            throw new SuggestionException(String.format(
-                    "Suggester '%s' failed to perform query with input '%s'",
+            throw new SuggestionException(String.format("Suggester '%s' failed to perform query with input '%s'",
                     descriptor.getName(), userInput), e);
         }
     }

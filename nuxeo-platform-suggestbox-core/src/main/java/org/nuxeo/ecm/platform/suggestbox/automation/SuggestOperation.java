@@ -34,8 +34,7 @@ import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
 
 /**
- * Operation used to suggest result by getting and calling all the suggesters
- * defined in contributions.
+ * Operation used to suggest result by getting and calling all the suggesters defined in contributions.
  *
  * @since 6.0
  */
@@ -59,36 +58,23 @@ public class SuggestOperation {
     public Blob run() throws Exception {
         JSONArray result = new JSONArray();
 
-        SuggestionContext suggestionContext = new SuggestionContext(
-                SUGGESTER_GROUP,
-                session.getPrincipal());
+        SuggestionContext suggestionContext = new SuggestionContext(SUGGESTER_GROUP, session.getPrincipal());
         suggestionContext.withSession(session);
 
-        List<Suggestion> listSuggestions = serviceSuggestion.suggest(
-                searchTerm,
-                suggestionContext);
+        List<Suggestion> listSuggestions = serviceSuggestion.suggest(searchTerm, suggestionContext);
 
         // For each suggestion, create a JSON object and add it to the result
         for (Suggestion suggestion : listSuggestions) {
             JSONObject suggestionJSON = new JSONObject();
-            suggestionJSON.put("id",
-                    suggestion.getId());
-            suggestionJSON.put(
-                    "label",
-                    suggestion.getLabel());
-            suggestionJSON.put(
-                    "type",
-                    suggestion.getType());
-            suggestionJSON.put(
-                    "icon",
-                    suggestion.getIconURL());
+            suggestionJSON.put("id", suggestion.getId());
+            suggestionJSON.put("label", suggestion.getLabel());
+            suggestionJSON.put("type", suggestion.getType());
+            suggestionJSON.put("icon", suggestion.getIconURL());
             suggestionJSON.put("url", suggestion.getObjectUrl());
 
             result.add(suggestionJSON);
         }
 
-        return new StringBlob(
-                result.toString(),
-                "application/json");
+        return new StringBlob(result.toString(), "application/json");
     }
 }

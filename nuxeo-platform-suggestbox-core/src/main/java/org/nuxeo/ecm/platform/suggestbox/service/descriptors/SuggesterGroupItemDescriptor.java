@@ -20,8 +20,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * XMap descriptor for registering suggester names in a suggesterGroup
- * contribution.
+ * XMap descriptor for registering suggester names in a suggesterGroup contribution.
  *
  * @author ataillefer
  */
@@ -83,8 +82,7 @@ public class SuggesterGroupItemDescriptor implements Cloneable {
         }
 
         String otherName = ((SuggesterGroupItemDescriptor) other).getName();
-        return name == null && otherName == null || name != null
-                && name.equals(otherName);
+        return name == null && otherName == null || name != null && name.equals(otherName);
     }
 
     @Override

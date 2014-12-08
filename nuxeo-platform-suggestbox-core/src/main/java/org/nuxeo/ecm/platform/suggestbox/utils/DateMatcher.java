@@ -31,8 +31,7 @@ public class DateMatcher {
 
     private final Calendar dateSuggestion;
 
-    private DateMatcher(boolean withYears, boolean withMonth, boolean withDay,
-            Calendar dateSuggestion) {
+    private DateMatcher(boolean withYears, boolean withMonth, boolean withDay, Calendar dateSuggestion) {
         this.withYears = withYears;
         this.withMonth = withMonth;
         this.withDay = withDay;
@@ -87,8 +86,7 @@ public class DateMatcher {
         Matcher matcher = parsingDate(YEAR_ONLY_MATCHER, input);
 
         if (matcher.find()) {
-            return new DateMatcher(true, false, false, dateToInstance(
-                    Integer.parseInt(matcher.group()), 1, 1));
+            return new DateMatcher(true, false, false, dateToInstance(Integer.parseInt(matcher.group()), 1, 1));
         }
         matcher = parsingDate(MONTH_DIGIT_ONLY_MATCHER, input);
         if (matcher.find()) {
@@ -96,8 +94,8 @@ public class DateMatcher {
             if (month > 12 || month < 1) {
                 return new DateMatcher(false, true, false, null);
             }
-            return new DateMatcher(false, true, false, dateToInstance(
-                    Calendar.getInstance().get(Calendar.YEAR), month, 1));
+            return new DateMatcher(false, true, false, dateToInstance(Calendar.getInstance().get(Calendar.YEAR), month,
+                    1));
         }
         matcher = parsingDate(YEAR_MONTHS_MATCHER, input);
         if (matcher.find()) {
@@ -107,8 +105,7 @@ public class DateMatcher {
             }
             int year = Integer.parseInt(matcher.group().substring(0, 4));
 
-            return new DateMatcher(true, true, false, dateToInstance(year,
-                    month, 1));
+            return new DateMatcher(true, true, false, dateToInstance(year, month, 1));
         }
         matcher = parsingDate(MONTHS_YEAR_MATCHER, input);
         if (matcher.find()) {
@@ -118,8 +115,7 @@ public class DateMatcher {
             }
             int year = Integer.parseInt(matcher.group().substring(3));
 
-            return new DateMatcher(true, true, false, dateToInstance(year,
-                    month, 1));
+            return new DateMatcher(true, true, false, dateToInstance(year, month, 1));
 
         }
         matcher = parsingDate(MONTHS_DAY_YEAR_MATCHER, input);
@@ -131,8 +127,7 @@ public class DateMatcher {
             if (control < 2 || control > 12 + 31 || first < 1 || second < 1) {
                 return new DateMatcher(true, true, true, null);
             } else if (control < 12 + 12 + 1) {
-                return new DateMatcher(true, true, true, dateToInstance(year,
-                        first, second));
+                return new DateMatcher(true, true, true, dateToInstance(year, first, second));
             }
             int month = first;
             int day = second;
@@ -156,8 +151,7 @@ public class DateMatcher {
             if (control < 2 || control > 12 + 31 || first < 1 || second < 1) {
                 return new DateMatcher(true, true, true, null);
             } else if (control < 12 + 12 + 1) {
-                return new DateMatcher(true, true, true, dateToInstance(year,
-                        first, second));
+                return new DateMatcher(true, true, true, dateToInstance(year, first, second));
             }
             int month = first;
             int day = second;

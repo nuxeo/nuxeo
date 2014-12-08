@@ -17,9 +17,8 @@
 package org.nuxeo.ecm.platform.suggestbox.service;
 
 /**
- * Exception thrown when a runtime component related to the SuggestionService
- * fails to initialize due to invalid configuration parameters or missing
- * requirements on the platform.
+ * Exception thrown when a runtime component related to the SuggestionService fails to initialize due to invalid
+ * configuration parameters or missing requirements on the platform.
  */
 public class ComponentInitializationException extends Exception {
 

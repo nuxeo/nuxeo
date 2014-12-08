@@ -33,8 +33,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * The Class SuggestionServiceImpl.
  */
-public class SuggestionServiceImpl extends DefaultComponent implements
-        SuggestionService {
+public class SuggestionServiceImpl extends DefaultComponent implements SuggestionService {
 
     private static final Log log = LogFactory.getLog(SuggestionServiceImpl.class);
 
@@ -43,13 +42,11 @@ public class SuggestionServiceImpl extends DefaultComponent implements
     protected SuggesterRegistry suggesters;
 
     @Override
-    public List<Suggestion> suggest(String userInput, SuggestionContext context)
-            throws SuggestionException {
+    public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
         List<Suggestion> suggestions = new ArrayList<Suggestion>();
         SuggesterGroupDescriptor suggesterGroup = suggesterGroups.getSuggesterGroupDescriptor(context.suggesterGroup);
         if (suggesterGroup == null) {
-            log.warn("No registered SuggesterGroup with id: "
-                    + context.suggesterGroup);
+            log.warn("No registered SuggesterGroup with id: " + context.suggesterGroup);
             return suggestions;
         }
 
@@ -65,8 +62,7 @@ public class SuggestionServiceImpl extends DefaultComponent implements
             }
             Suggester suggester = suggesterDescritor.getSuggester();
             if (suggester == null) {
-                log.warn("Suggester with id '" + suggesterId
-                        + "' has a configuration that prevents instanciation"
+                log.warn("Suggester with id '" + suggesterId + "' has a configuration that prevents instanciation"
                         + " (no className in aggregate descriptor)");
                 continue;
             }
@@ -76,24 +72,20 @@ public class SuggestionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<Suggestion> suggest(String input, SuggestionContext context,
-            String suggesterName) throws SuggestionException {
+    public List<Suggestion> suggest(String input, SuggestionContext context, String suggesterName)
+            throws SuggestionException {
         SuggesterDescriptor suggesterDescriptor = suggesters.getSuggesterDescriptor(suggesterName);
         if (suggesterDescriptor == null) {
-            throw new SuggestionException(String.format(
-                    "No suggester registered under the name '%s'.",
-                    suggesterName));
+            throw new SuggestionException(String.format("No suggester registered under the name '%s'.", suggesterName));
         }
         if (!suggesterDescriptor.isEnabled()) {
-            throw new SuggestionException(String.format(
-                    "Suggester registered under the name '%s' is disabled.",
+            throw new SuggestionException(String.format("Suggester registered under the name '%s' is disabled.",
                     suggesterName));
         }
         Suggester suggester = suggesterDescriptor.getSuggester();
         if (suggester == null) {
             String message = "Suggester with id '" + suggesterName
-                    + "' has a configuration that prevents instanciation"
-                    + " (no className in aggregate descriptor)";
+                    + "' has a configuration that prevents instanciation" + " (no className in aggregate descriptor)";
             throw new SuggestionException(message);
         }
         return suggester.suggest(input, context);
@@ -109,12 +101,10 @@ public class SuggestionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof SuggesterDescriptor) {
             SuggesterDescriptor suggesterDescriptor = (SuggesterDescriptor) contribution;
-            log.info(String.format("Registering suggester '%s'",
-                    suggesterDescriptor.getName()));
+            log.info(String.format("Registering suggester '%s'", suggesterDescriptor.getName()));
             try {
                 suggesterDescriptor.setRuntimeContext(contributor.getRuntimeContext());
             } catch (ComponentInitializationException e) {
@@ -123,35 +113,27 @@ public class SuggestionServiceImpl extends DefaultComponent implements
             suggesters.addContribution(suggesterDescriptor);
         } else if (contribution instanceof SuggesterGroupDescriptor) {
             SuggesterGroupDescriptor suggesterGroupDescriptor = (SuggesterGroupDescriptor) contribution;
-            log.info(String.format("Registering suggester group '%s'",
-                    suggesterGroupDescriptor.getName()));
+            log.info(String.format("Registering suggester group '%s'", suggesterGroupDescriptor.getName()));
             suggesterGroups.addContribution(suggesterGroupDescriptor);
         } else {
-            log.error(String.format(
-                    "Unknown contribution to the SuggestionService "
-                            + "styling service, extension point '%s': '%s",
-                    extensionPoint, contribution));
+            log.error(String.format("Unknown contribution to the SuggestionService "
+                    + "styling service, extension point '%s': '%s", extensionPoint, contribution));
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof SuggesterDescriptor) {
             SuggesterDescriptor suggesterDescriptor = (SuggesterDescriptor) contribution;
-            log.info(String.format("Unregistering suggester '%s'",
-                    suggesterDescriptor.getName()));
+            log.info(String.format("Unregistering suggester '%s'", suggesterDescriptor.getName()));
             suggesters.removeContribution(suggesterDescriptor);
         } else if (contribution instanceof SuggesterGroupDescriptor) {
             SuggesterGroupDescriptor suggesterGroupDescriptor = (SuggesterGroupDescriptor) contribution;
-            log.info(String.format("Unregistering suggester group '%s'",
-                    suggesterGroupDescriptor.getName()));
+            log.info(String.format("Unregistering suggester group '%s'", suggesterGroupDescriptor.getName()));
             suggesterGroups.removeContribution(suggesterGroupDescriptor);
         } else {
-            log.error(String.format(
-                    "Unknown contribution to the SuggestionService "
-                            + "styling service, extension point '%s': '%s",
-                    extensionPoint, contribution));
+            log.error(String.format("Unknown contribution to the SuggestionService "
+                    + "styling service, extension point '%s': '%s", extensionPoint, contribution));
         }
     }
 

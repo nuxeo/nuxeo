@@ -20,8 +20,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * XMap descriptor for registering overridable suggestion handlers (individual
- * operations or named chains of operations).
+ * XMap descriptor for registering overridable suggestion handlers (individual operations or named chains of
+ * operations).
  *
  * @author ogrisel
  */

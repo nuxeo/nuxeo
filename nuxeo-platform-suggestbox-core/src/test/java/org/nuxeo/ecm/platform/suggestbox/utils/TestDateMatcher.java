@@ -92,8 +92,7 @@ public class TestDateMatcher {
         assertNotNull(dateOnlyYear.getDateSuggestion());
         assertEquals(1980, dateOnlyYear.getDateSuggestion().get(Calendar.YEAR));
         assertEquals(0, dateOnlyYear.getDateSuggestion().get(Calendar.MONTH));
-        assertEquals(1,
-                dateOnlyYear.getDateSuggestion().get(Calendar.DAY_OF_MONTH));
+        assertEquals(1, dateOnlyYear.getDateSuggestion().get(Calendar.DAY_OF_MONTH));
 
         DateMatcher dateOnlyMonth = DateMatcher.fromInput("10");
         assertNotNull(dateOnlyMonth);
@@ -101,11 +100,9 @@ public class TestDateMatcher {
         assertTrue(dateOnlyMonth.isWithMonth());
         assertFalse(dateOnlyMonth.isWitDay());
         assertNotNull(dateOnlyMonth.getDateSuggestion());
-        assertEquals(Calendar.getInstance().get(Calendar.YEAR),
-                dateOnlyMonth.getDateSuggestion().get(Calendar.YEAR));
+        assertEquals(Calendar.getInstance().get(Calendar.YEAR), dateOnlyMonth.getDateSuggestion().get(Calendar.YEAR));
         assertEquals(9, dateOnlyMonth.getDateSuggestion().get(Calendar.MONTH));
-        assertEquals(1,
-                dateOnlyMonth.getDateSuggestion().get(Calendar.DAY_OF_MONTH));
+        assertEquals(1, dateOnlyMonth.getDateSuggestion().get(Calendar.DAY_OF_MONTH));
 
         DateMatcher impossibleDate = DateMatcher.fromInput("02 29 2011");
         assertNotNull(impossibleDate);
@@ -120,12 +117,9 @@ public class TestDateMatcher {
         assertTrue(dateMonthDayYear.isWithMonth());
         assertTrue(dateMonthDayYear.isWitDay());
         assertNotNull(dateMonthDayYear.getDateSuggestion());
-        assertEquals(2011,
-                dateMonthDayYear.getDateSuggestion().get(Calendar.YEAR));
-        assertEquals(1,
-                dateMonthDayYear.getDateSuggestion().get(Calendar.MONTH));
-        assertEquals(28,
-                dateMonthDayYear.getDateSuggestion().get(Calendar.DAY_OF_MONTH));
+        assertEquals(2011, dateMonthDayYear.getDateSuggestion().get(Calendar.YEAR));
+        assertEquals(1, dateMonthDayYear.getDateSuggestion().get(Calendar.MONTH));
+        assertEquals(28, dateMonthDayYear.getDateSuggestion().get(Calendar.DAY_OF_MONTH));
 
         DateMatcher dateMonthDayUnder12Year = DateMatcher.fromInput("02 12 2011");
         assertNotNull(dateMonthDayUnder12Year);
@@ -133,14 +127,9 @@ public class TestDateMatcher {
         assertTrue(dateMonthDayUnder12Year.isWithMonth());
         assertTrue(dateMonthDayUnder12Year.isWitDay());
         assertNotNull(dateMonthDayUnder12Year.getDateSuggestion());
-        assertEquals(2011,
-                dateMonthDayUnder12Year.getDateSuggestion().get(Calendar.YEAR));
-        assertEquals(1,
-                dateMonthDayUnder12Year.getDateSuggestion().get(Calendar.MONTH));
-        assertEquals(
-                12,
-                dateMonthDayUnder12Year.getDateSuggestion().get(
-                        Calendar.DAY_OF_MONTH));
+        assertEquals(2011, dateMonthDayUnder12Year.getDateSuggestion().get(Calendar.YEAR));
+        assertEquals(1, dateMonthDayUnder12Year.getDateSuggestion().get(Calendar.MONTH));
+        assertEquals(12, dateMonthDayUnder12Year.getDateSuggestion().get(Calendar.DAY_OF_MONTH));
 
         DateMatcher dateYearMonthDay = DateMatcher.fromInput("2009 03 30");
         assertNotNull(dateYearMonthDay);
@@ -148,12 +137,9 @@ public class TestDateMatcher {
         assertTrue(dateYearMonthDay.isWithMonth());
         assertTrue(dateYearMonthDay.isWitDay());
         assertNotNull(dateYearMonthDay.getDateSuggestion());
-        assertEquals(2009,
-                dateYearMonthDay.getDateSuggestion().get(Calendar.YEAR));
-        assertEquals(2,
-                dateYearMonthDay.getDateSuggestion().get(Calendar.MONTH));
-        assertEquals(30,
-                dateYearMonthDay.getDateSuggestion().get(Calendar.DAY_OF_MONTH));
+        assertEquals(2009, dateYearMonthDay.getDateSuggestion().get(Calendar.YEAR));
+        assertEquals(2, dateYearMonthDay.getDateSuggestion().get(Calendar.MONTH));
+        assertEquals(30, dateYearMonthDay.getDateSuggestion().get(Calendar.DAY_OF_MONTH));
 
     }
 

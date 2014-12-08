@@ -17,9 +17,8 @@
 package org.nuxeo.ecm.platform.suggestbox.service;
 
 /**
- * Exception raised when a suggester cannot perform it's suggestion due to
- * inconsistent configuration or problem when calling a backend service: in that
- * case the backend service exception should be wrapped as the cause.
+ * Exception raised when a suggester cannot perform it's suggestion due to inconsistent configuration or problem when
+ * calling a backend service: in that case the backend service exception should be wrapped as the cause.
  */
 public class SuggestionException extends Exception {
 

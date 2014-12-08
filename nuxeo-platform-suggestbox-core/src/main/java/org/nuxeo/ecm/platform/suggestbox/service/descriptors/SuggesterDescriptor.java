@@ -27,8 +27,7 @@ import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
- * XMap descriptor for registering overridable parameterized Suggester
- * implementation on the SuggesterService.
+ * XMap descriptor for registering overridable parameterized Suggester implementation on the SuggesterService.
  *
  * @author ogrisel
  */
@@ -63,15 +62,13 @@ public class SuggesterDescriptor implements Cloneable {
         return parameters;
     }
 
-    public void setRuntimeContext(RuntimeContext context)
-            throws ComponentInitializationException {
+    public void setRuntimeContext(RuntimeContext context) throws ComponentInitializationException {
         // store the runtime context for later usage if a merge is required
         this.runtimeContext = context;
         loadParameterizedSuggester();
     }
 
-    protected void loadParameterizedSuggester()
-            throws ComponentInitializationException {
+    protected void loadParameterizedSuggester() throws ComponentInitializationException {
         if (enabled && className != null) {
             // try build the suggester instance as early as possible to throw
             // errors at deployment time rather than lazily at first access time
@@ -80,8 +77,7 @@ public class SuggesterDescriptor implements Cloneable {
                 suggester = (Suggester) runtimeContext.loadClass(className).newInstance();
             } catch (Exception e) {
                 throw new ComponentInitializationException(String.format(
-                        "Failed to initialize suggester '%s' with class '%s'",
-                        name, className), e);
+                        "Failed to initialize suggester '%s' with class '%s'", name, className), e);
             }
             suggester.initWithParameters(this);
         }
@@ -94,19 +90,15 @@ public class SuggesterDescriptor implements Cloneable {
         return suggester;
     }
 
-    public void mergeFrom(SuggesterDescriptor newDescriptor)
-            throws ComponentInitializationException {
+    public void mergeFrom(SuggesterDescriptor newDescriptor) throws ComponentInitializationException {
         if (name == null || !name.equals(newDescriptor.name)) {
-            throw new RuntimeException("Cannot merge descriptor with name '"
-                    + name + "' with another descriptor with different name "
-                    + newDescriptor.getName() + "'");
+            throw new RuntimeException("Cannot merge descriptor with name '" + name
+                    + "' with another descriptor with different name " + newDescriptor.getName() + "'");
         }
         if (className == null) {
             if (enabled && newDescriptor.className == null) {
-                throw new RuntimeException(
-                        "Cannot merge descriptor with name '" + name
-                                + "' with source a source version that has no"
-                                + " className defined.");
+                throw new RuntimeException("Cannot merge descriptor with name '" + name
+                        + "' with source a source version that has no" + " className defined.");
             }
             className = newDescriptor.className;
             runtimeContext = newDescriptor.runtimeContext;

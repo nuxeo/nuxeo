@@ -22,8 +22,7 @@ import java.util.Map;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterGroupDescriptor;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
-public class SuggesterGroupRegistry extends
-        ContributionFragmentRegistry<SuggesterGroupDescriptor> {
+public class SuggesterGroupRegistry extends ContributionFragmentRegistry<SuggesterGroupDescriptor> {
 
     protected final Map<String, SuggesterGroupDescriptor> suggesterGroupDescriptors = new HashMap<String, SuggesterGroupDescriptor>();
 
@@ -47,9 +46,7 @@ public class SuggesterGroupRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            SuggesterGroupDescriptor contrib,
-            SuggesterGroupDescriptor newOrigContrib) {
+    public void contributionUpdated(String id, SuggesterGroupDescriptor contrib, SuggesterGroupDescriptor newOrigContrib) {
         suggesterGroupDescriptors.put(id, contrib);
     }
 

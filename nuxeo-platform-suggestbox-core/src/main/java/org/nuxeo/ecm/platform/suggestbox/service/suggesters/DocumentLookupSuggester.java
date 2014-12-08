@@ -38,8 +38,8 @@ import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Perform a NXQL full-text query (on the title by default) on the repository
- * and suggest to navigate to the top documents matching that query.
+ * Perform a NXQL full-text query (on the title by default) on the repository and suggest to navigate to the top
+ * documents matching that query.
  *
  * @author ogrisel
  */
@@ -60,15 +60,13 @@ public class DocumentLookupSuggester implements Suggester {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Suggestion> suggest(String userInput, SuggestionContext context)
-            throws SuggestionException {
+    public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
         PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
         if (ppService == null) {
             throw new SuggestionException("PageProviderService is not active");
         }
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) context.session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) context.session);
         userInput = NXQLQueryBuilder.sanitizeFulltextInput(userInput);
         if (userInput.trim().isEmpty()) {
             return Collections.emptyList();
@@ -79,16 +77,14 @@ public class DocumentLookupSuggester implements Suggester {
         }
         try {
             List<Suggestion> suggestions = new ArrayList<Suggestion>();
-            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    providerName, null, null, null, props,
-                    new Object[] { userInput });
+            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(providerName,
+                    null, null, null, props, new Object[] { userInput });
             for (DocumentModel doc : pp.getCurrentPage()) {
                 suggestions.add(DocumentSuggestion.fromDocumentModel(doc));
             }
             return suggestions;
         } catch (ClientException e) {
-            throw new SuggestionException(String.format(
-                    "Suggester '%s' failed to perform query with input '%s'",
+            throw new SuggestionException(String.format("Suggester '%s' failed to perform query with input '%s'",
                     descriptor.getName(), userInput), e);
         }
     }

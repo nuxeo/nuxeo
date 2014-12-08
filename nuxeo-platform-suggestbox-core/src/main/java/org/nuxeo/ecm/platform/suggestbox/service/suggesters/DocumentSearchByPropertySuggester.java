@@ -29,8 +29,7 @@ import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor;
 
 /**
- * Simple stateless document search suggester that propose to use the user
- * input for searching a specific field.
+ * Simple stateless document search suggester that propose to use the user input for searching a specific field.
  */
 public class DocumentSearchByPropertySuggester implements Suggester {
 
@@ -52,12 +51,11 @@ public class DocumentSearchByPropertySuggester implements Suggester {
     protected boolean disabled;
 
     @Override
-    public List<Suggestion> suggest(String userInput, SuggestionContext context)
-            throws SuggestionException {
+    public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
         I18nHelper i18n = I18nHelper.instanceFor(context.messages);
         String i18nLabel = i18n.translate(label, userInput);
-        SearchDocumentsSuggestion suggestion = new SearchDocumentsSuggestion(suggesterId,
-                i18nLabel, iconURL).withSearchCriterion(searchField, userInput);
+        SearchDocumentsSuggestion suggestion = new SearchDocumentsSuggestion(suggesterId, i18nLabel, iconURL).withSearchCriterion(
+                searchField, userInput);
         if (searchFields != null) {
             for (String field : searchFields) {
                 suggestion.withSearchCriterion(field, userInput);
@@ -73,8 +71,7 @@ public class DocumentSearchByPropertySuggester implements Suggester {
     }
 
     @Override
-    public void initWithParameters(SuggesterDescriptor descriptor)
-            throws ComponentInitializationException {
+    public void initWithParameters(SuggesterDescriptor descriptor) throws ComponentInitializationException {
         Map<String, String> params = descriptor.getParameters();
         searchField = params.get("searchField");
         label = params.get("label");
@@ -92,10 +89,8 @@ public class DocumentSearchByPropertySuggester implements Suggester {
             searchFields = psearchFields.split(", *");
         }
         if (label == null || (searchField == null && searchFields == null)) {
-            throw new ComponentInitializationException(
-                    String.format("Could not initialize suggester '%s': "
-                            + "label, searchField (or searchFields)"
-                            + " are mandatory parameters", descriptor.getName()));
+            throw new ComponentInitializationException(String.format("Could not initialize suggester '%s': "
+                    + "label, searchField (or searchFields)" + " are mandatory parameters", descriptor.getName()));
         }
     }
 
