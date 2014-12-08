@@ -40,51 +40,44 @@ public class AbstractTestSnapshot {
     protected DocumentModel folderB13;
 
     protected DocumentModel docB131;
+
     boolean verbose = false;
 
     protected void buildTree() throws Exception {
         root = session.createDocumentModel("/", "root", "SnapshotableFolder");
         root = session.createDocument(root);
 
-        folder1 = session.createDocumentModel(root.getPathAsString(),
-                "folder1", "Folder");
+        folder1 = session.createDocumentModel(root.getPathAsString(), "folder1", "Folder");
         folder1.setPropertyValue("dc:title", "Folder 1");
         folder1 = session.createDocument(folder1);
 
-        folder2 = session.createDocumentModel(root.getPathAsString(),
-                "folder2", "Folder");
+        folder2 = session.createDocumentModel(root.getPathAsString(), "folder2", "Folder");
         folder2.setPropertyValue("dc:title", "Folder 2");
         folder2 = session.createDocument(folder2);
 
-        folder11 = session.createDocumentModel(folder1.getPathAsString(),
-                "folder11", "Folder");
+        folder11 = session.createDocumentModel(folder1.getPathAsString(), "folder11", "Folder");
         folder11.setPropertyValue("dc:title", "Folder 11");
         folder11 = session.createDocument(folder11);
 
-        doc12 = session.createDocumentModel(folder1.getPathAsString(), "doc12",
-                "File");
+        doc12 = session.createDocumentModel(folder1.getPathAsString(), "doc12", "File");
         doc12.setPropertyValue("dc:title", "Doc 12");
         doc12 = session.createDocument(doc12);
 
-        folder13 = session.createDocumentModel(folder1.getPathAsString(),
-                "folder13", "Folder");
+        folder13 = session.createDocumentModel(folder1.getPathAsString(), "folder13", "Folder");
         folder13.setPropertyValue("dc:title", "Folder 13");
         folder13 = session.createDocument(folder13);
 
-        folder131 = session.createDocumentModel(folder13.getPathAsString(),
-                "folder131", "Folder");
+        folder131 = session.createDocumentModel(folder13.getPathAsString(), "folder131", "Folder");
         folder131.setPropertyValue("dc:title", "Folder 131");
         folder131 = session.createDocument(folder131);
 
-        doc1311 = session.createDocumentModel(folder131.getPathAsString(),
-                "doc1311", "File");
+        doc1311 = session.createDocumentModel(folder131.getPathAsString(), "doc1311", "File");
         doc1311.setPropertyValue("dc:title", "Doc 1311");
         doc1311 = session.createDocument(doc1311);
 
         session.checkIn(doc1311.getRef(), VersioningOption.MINOR, null);
 
-        doc1312 = session.createDocumentModel(folder131.getPathAsString(),
-                "doc1312", "File");
+        doc1312 = session.createDocumentModel(folder131.getPathAsString(), "doc1312", "File");
         doc1312.setPropertyValue("dc:title", "Doc 1312");
         doc1312 = session.createDocument(doc1312);
 
@@ -96,33 +89,27 @@ public class AbstractTestSnapshot {
         rootB = session.createDocumentModel("/", "rootB", "SnapshotableFolder");
         rootB = session.createDocument(rootB);
 
-        folderB1 = session.createDocumentModel(rootB.getPathAsString(),
-                "folderB1", "Folder");
+        folderB1 = session.createDocumentModel(rootB.getPathAsString(), "folderB1", "Folder");
         folderB1.setPropertyValue("dc:title", "Folder B1");
         folderB1 = session.createDocument(folderB1);
 
-        folderB2 = session.createDocumentModel(rootB.getPathAsString(),
-                "folderB2", "Folder");
+        folderB2 = session.createDocumentModel(rootB.getPathAsString(), "folderB2", "Folder");
         folderB2.setPropertyValue("dc:title", "Folder B2");
         folderB2 = session.createDocument(folderB2);
 
-        folderB11 = session.createDocumentModel(folderB1.getPathAsString(),
-                "folderB11", "Folder");
+        folderB11 = session.createDocumentModel(folderB1.getPathAsString(), "folderB11", "Folder");
         folderB11.setPropertyValue("dc:title", "Folder B11");
         folderB11 = session.createDocument(folderB11);
 
-        docB12 = session.createDocumentModel(folderB1.getPathAsString(),
-                "docB12", "File");
+        docB12 = session.createDocumentModel(folderB1.getPathAsString(), "docB12", "File");
         docB12.setPropertyValue("dc:title", "Doc B12");
         docB12 = session.createDocument(docB12);
 
-        folderB13 = session.createDocumentModel(folderB1.getPathAsString(),
-                "folderB13", "Folder");
+        folderB13 = session.createDocumentModel(folderB1.getPathAsString(), "folderB13", "Folder");
         folderB13.setPropertyValue("dc:title", "Folder B13");
         folderB13 = session.createDocument(folderB13);
 
-        docB131 = session.createDocumentModel(folderB13.getPathAsString(),
-                "docB131", "File");
+        docB131 = session.createDocumentModel(folderB13.getPathAsString(), "docB131", "File");
         docB131.setPropertyValue("dc:title", "Doc B131");
         docB131 = session.createDocument(docB131);
 
@@ -168,20 +155,18 @@ public class AbstractTestSnapshot {
     }
 
     // helper method for creating a standard proxy
-    protected DocumentModel createStandardProxy(DocumentModel targetDocument,
-            DocumentModel parentForProxy) throws Exception {
-        DocumentModel proxy = session.publishDocument(targetDocument,
-                parentForProxy);
+    protected DocumentModel createStandardProxy(DocumentModel targetDocument, DocumentModel parentForProxy)
+            throws Exception {
+        DocumentModel proxy = session.publishDocument(targetDocument, parentForProxy);
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         session.save();
         return proxy;
     }
 
     // helper method for creating a live proxy
-    protected DocumentModel createLiveProxy(DocumentModel targetDocument,
-            DocumentModel parentForProxy) throws Exception {
-        DocumentModel proxy = session.createProxy(targetDocument.getRef(),
-                parentForProxy.getRef());
+    protected DocumentModel createLiveProxy(DocumentModel targetDocument, DocumentModel parentForProxy)
+            throws Exception {
+        DocumentModel proxy = session.createProxy(targetDocument.getRef(), parentForProxy.getRef());
         session.save();
         return proxy;
     }

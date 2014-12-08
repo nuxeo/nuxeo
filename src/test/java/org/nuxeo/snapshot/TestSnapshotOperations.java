@@ -39,8 +39,7 @@ public class TestSnapshotOperations extends AbstractTestSnapshot {
 
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("versioning option", VersioningOption.MAJOR.name());
-        DocumentModel version = (DocumentModel) as.run(ctx, CreateTreeSnapshot.ID,
-                params);
+        DocumentModel version = (DocumentModel) as.run(ctx, CreateTreeSnapshot.ID, params);
 
         assertTrue(version.isVersion());
         assertEquals("1.0", version.getVersionLabel());

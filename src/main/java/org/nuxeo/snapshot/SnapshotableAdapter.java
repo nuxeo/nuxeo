@@ -47,22 +47,18 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return doc.getRef();
     }
 
-    protected DocumentRef createLeafVersion(DocumentModel targetDoc,
-            VersioningOption option) throws ClientException {
+    protected DocumentRef createLeafVersion(DocumentModel targetDoc, VersioningOption option) throws ClientException {
         if (targetDoc.isFolder() && !targetDoc.hasSchema(SCHEMA)) {
-            throw new ClientException(
-                    "Can not version a folder that has not snapshot schema");
+            throw new ClientException("Can not version a folder that has not snapshot schema");
         }
         if (targetDoc.isVersion()) {
             return targetDoc.getRef();
         }
         if (!targetDoc.isProxy() && !targetDoc.isCheckedOut()) {
-            return targetDoc.getCoreSession().getLastDocumentVersionRef(
-                    targetDoc.getRef());
+            return targetDoc.getCoreSession().getLastDocumentVersionRef(targetDoc.getRef());
         }
         if (targetDoc.isProxy()) {
-            DocumentModel proxyTarget = targetDoc.getCoreSession().getDocument(
-                    new IdRef(targetDoc.getSourceId()));
+            DocumentModel proxyTarget = targetDoc.getCoreSession().getDocument(new IdRef(targetDoc.getSourceId()));
             if (proxyTarget.isVersion()) {
                 // standard proxy : nothing to snapshot
                 return targetDoc.getRef();
@@ -78,8 +74,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         }
 
         // Fire event to change document
-        DocumentEventContext ctx = new DocumentEventContext(
-                targetDoc.getCoreSession(),
+        DocumentEventContext ctx = new DocumentEventContext(targetDoc.getCoreSession(),
                 targetDoc.getCoreSession().getPrincipal(), targetDoc);
         ctx.setProperty(ROOT_DOCUMENT_PROPERTY, doc);
 
@@ -89,12 +84,10 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             targetDoc.getCoreSession().saveDocument(targetDoc);
         }
 
-        return targetDoc.getCoreSession().checkIn(targetDoc.getRef(), option,
-                null);
+        return targetDoc.getCoreSession().checkIn(targetDoc.getRef(), option, null);
     }
 
-    protected DocumentModel createLeafVersionAndFetch(VersioningOption option)
-            throws ClientException {
+    protected DocumentModel createLeafVersionAndFetch(VersioningOption option) throws ClientException {
         DocumentRef versionRef = createLeafVersion(doc, option);
 
         DocumentModel version = doc.getCoreSession().getDocument(versionRef);
@@ -107,13 +100,11 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
     }
 
     @Override
-    public Snapshot createSnapshot(VersioningOption option)
-            throws ClientException {
+    public Snapshot createSnapshot(VersioningOption option) throws ClientException {
 
         if (!doc.isFolder()) {
             if (doc.isCheckedOut()) {
-                return new SnapshotableAdapter(
-                        createLeafVersionAndFetch(option));
+                return new SnapshotableAdapter(createLeafVersionAndFetch(option));
             } else {
                 return new SnapshotableAdapter(doc);
             }
@@ -131,8 +122,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             throw new ClientException("snapshot schema not added !");
         }
 
-        DocumentModelList children = doc.getCoreSession().getChildren(
-                doc.getRef());
+        DocumentModelList children = doc.getCoreSession().getChildren(doc.getRef());
 
         String[] vuuids = new String[children.size()];
 
@@ -143,11 +133,8 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
                 if (leafRef != null) {
                     vuuids[i] = leafRef.toString();
                 } else {
-                    throw new ClientException(
-                            "Unable to create leaf version for "
-                                    + child.getPathAsString() + " (V:"
-                                    + child.isVersion() + ",P:"
-                                    + child.isProxy() + ")");
+                    throw new ClientException("Unable to create leaf version for " + child.getPathAsString() + " (V:"
+                            + child.isVersion() + ",P:" + child.isProxy() + ")");
                 }
             } else {
                 SnapshotableAdapter adapter = new SnapshotableAdapter(child);
@@ -173,14 +160,12 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             doc = doc.getCoreSession().saveDocument(doc);
             return new SnapshotableAdapter(createLeafVersionAndFetch(option));
         } else {
-            DocumentModel lastversion = doc.getCoreSession().getLastDocumentVersion(
-                    doc.getRef());
+            DocumentModel lastversion = doc.getCoreSession().getLastDocumentVersion(doc.getRef());
             return new SnapshotableAdapter(lastversion);
         }
     }
 
-    protected List<DocumentModel> getChildren(DocumentModel target)
-            throws ClientException {
+    protected List<DocumentModel> getChildren(DocumentModel target) throws ClientException {
         if (!target.isVersion()) {
             throw new ClientException("Not a version:");
         }
@@ -190,8 +175,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         }
 
         if (target.isFolder() && !target.hasSchema(SCHEMA)) {
-            throw new ClientException(
-                    "Folderish children should have the snapshot schema");
+            throw new ClientException("Folderish children should have the snapshot schema");
         }
 
         try {
@@ -250,16 +234,14 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         try {
             for (Snapshot snap : getChildrenSnapshots()) {
                 sb.append(new String(new char[level]).replace('\0', ' '));
-                sb.append(snap.getDocument().getName() + " -- "
-                        + snap.getDocument().getVersionLabel());
+                sb.append(snap.getDocument().getName() + " -- " + snap.getDocument().getVersionLabel());
                 sb.append("\n");
                 if (snap.getDocument().isFolder()) {
                     ((SnapshotableAdapter) snap).dump(level + 1, sb);
                 }
             }
         } catch (Exception e) {
-            sb.append(doc.getId() + ":" + doc.getPathAsString() + ":ERR:"
-                    + e.toString() + "\n");
+            sb.append(doc.getId() + ":" + doc.getPathAsString() + ":ERR:" + e.toString() + "\n");
         }
     }
 
@@ -274,10 +256,8 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return sb.toString();
     }
 
-    protected DocumentModel getVersionForLabel(DocumentModel target,
-            String versionLabel) throws ClientException {
-        List<DocumentModel> versions = target.getCoreSession().getVersions(
-                target.getRef());
+    protected DocumentModel getVersionForLabel(DocumentModel target, String versionLabel) throws ClientException {
+        List<DocumentModel> versions = target.getCoreSession().getVersions(target.getRef());
         for (DocumentModel version : versions) {
             if (version.getVersionLabel().equals(versionLabel)) {
                 return version;
@@ -286,18 +266,15 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return null;
     }
 
-    protected DocumentModel getCheckoutDocument(DocumentModel target)
-            throws ClientException {
+    protected DocumentModel getCheckoutDocument(DocumentModel target) throws ClientException {
         if (target.isVersion()) {
-            target = target.getCoreSession().getDocument(
-                    new IdRef(doc.getSourceId()));
+            target = target.getCoreSession().getDocument(new IdRef(doc.getSourceId()));
         }
         return target;
     }
 
-    protected DocumentModel restore(DocumentModel leafVersion,
-            DocumentModel target, boolean first, DocumentModelList olddocs)
-            throws ClientException {
+    protected DocumentModel restore(DocumentModel leafVersion, DocumentModel target, boolean first,
+            DocumentModelList olddocs) throws ClientException {
 
         CoreSession session = doc.getCoreSession();
 
@@ -307,16 +284,14 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
         if (target.isFolder() && first) {
             // save all subtree
-            olddocs = session.query("select * from Document where ecm:path STARTSWITH '"
-                    + target.getPathAsString() + "'");
+            olddocs = session.query("select * from Document where ecm:path STARTSWITH '" + target.getPathAsString()
+                    + "'");
             if (olddocs.size() > 0) {
                 DocumentModel container = session.createDocumentModel(
-                        target.getPath().removeLastSegments(1).toString(),
-                        target.getName() + "_tmp", "Folder");
+                        target.getPath().removeLastSegments(1).toString(), target.getName() + "_tmp", "Folder");
                 container = session.createDocument(container);
                 for (DocumentModel oldChild : olddocs) {
-                    session.move(oldChild.getRef(), container.getRef(),
-                            oldChild.getName());
+                    session.move(oldChild.getRef(), container.getRef(), oldChild.getName());
                 }
                 olddocs.add(container);
             }
@@ -343,8 +318,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             }
             if (placeholder != null) {
                 olddocs.remove(placeholder);
-                session.move(placeholder.getRef(), target.getRef(),
-                        placeholder.getName());
+                session.move(placeholder.getRef(), target.getRef(), placeholder.getName());
             } else {
                 String name = child.getName();
                 // name will be null if there is no checkecout version
@@ -359,19 +333,16 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
                 if (name == null) {
                     name = child.getType() + System.currentTimeMillis();
                 }
-                placeholder = new DocumentModelImpl((String) null,
-                        child.getType(), liveUUID, new Path(name), null, null,
-                        target.getRef(), null, null, null, null);
-                placeholder.putContextData(CoreSession.IMPORT_CHECKED_IN,
-                        Boolean.TRUE);
+                placeholder = new DocumentModelImpl((String) null, child.getType(), liveUUID, new Path(name), null,
+                        null, target.getRef(), null, null, null, null);
+                placeholder.putContextData(CoreSession.IMPORT_CHECKED_IN, Boolean.TRUE);
                 placeholder.addFacet(Snapshot.FACET);
                 placeholder.addFacet(FacetNames.VERSIONABLE);
                 session.importDocuments(Collections.singletonList(placeholder));
                 placeholder = session.getDocument(new IdRef(liveUUID));
             }
 
-            new SnapshotableAdapter(child).restore(child, placeholder, false,
-                    olddocs);
+            new SnapshotableAdapter(child).restore(child, placeholder, false, olddocs);
         }
 
         if (first) {

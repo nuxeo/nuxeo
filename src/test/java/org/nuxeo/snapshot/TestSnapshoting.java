@@ -74,8 +74,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         DocumentModelList docs = session.query("select * from Document where ecm:isCheckedInVersion=1 order by ecm:path");
         for (DocumentModel doc : docs) {
             if (doc.isFolder() && !doc.hasFacet(Snapshot.FACET)) {
-                System.out.println("ERR : doc " + doc.getPathAsString()
-                        + " has no shapshot schema");
+                System.out.println("ERR : doc " + doc.getPathAsString() + " has no shapshot schema");
                 assertTrue(doc.hasFacet(Snapshot.FACET));
             }
             assertTrue(doc.hasFacet("Versionable"));
@@ -126,8 +125,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
 
         for (Snapshot snap : snapshot.getFlatTree()) {
             DocumentModel doc = snap.getDocument();
-            if (doc.getName().startsWith("doc131")
-                    || doc.getName().startsWith("folder13")
+            if (doc.getName().startsWith("doc131") || doc.getName().startsWith("folder13")
                     || doc.getName().equals("folder1")) {
                 assertEquals("0.2", doc.getVersionLabel());
             } else {
@@ -197,8 +195,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
 
     @Test
     public void testSnapshotableListener() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "doc1",
-                "SnapshotableFolder");
+        DocumentModel doc = session.createDocumentModel("/", "doc1", "SnapshotableFolder");
         doc = session.createDocument(doc);
         session.save();
         assertEquals("", doc.getVersionLabel());
@@ -211,8 +208,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         assertEquals("without versioning", doc.getPropertyValue("dc:title"));
 
         doc.setPropertyValue("dc:title", "with minor versioning");
-        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption",
-                "MINOR");
+        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption", "MINOR");
         doc = session.saveDocument(doc);
         session.save();
         doc = session.getDocument(doc.getRef());
@@ -220,8 +216,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         assertEquals("with minor versioning", doc.getPropertyValue("dc:title"));
 
         doc.setPropertyValue("dc:title", "with major versioning");
-        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption",
-                "MAJOR");
+        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption", "MAJOR");
         doc = session.saveDocument(doc);
         session.save();
         doc = session.getDocument(doc.getRef());
@@ -229,8 +224,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         assertEquals("with major versioning", doc.getPropertyValue("dc:title"));
 
         doc.setPropertyValue("dc:title", "with none versioning");
-        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption",
-                "NONE");
+        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption", "NONE");
         doc = session.saveDocument(doc);
         session.save();
         doc = session.getDocument(doc.getRef());
@@ -238,13 +232,11 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         assertEquals("with none versioning", doc.getPropertyValue("dc:title"));
 
         doc.setPropertyValue("dc:title", "with non existing versioning value");
-        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption",
-                "NON_EXISTING VALUE");
+        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption", "NON_EXISTING VALUE");
         doc = session.saveDocument(doc);
         session.save();
         doc = session.getDocument(doc.getRef());
         assertEquals("1.0+", doc.getVersionLabel());
-        assertEquals("with non existing versioning value",
-                doc.getPropertyValue("dc:title"));
+        assertEquals("with non existing versioning value", doc.getPropertyValue("dc:title"));
     }
 }

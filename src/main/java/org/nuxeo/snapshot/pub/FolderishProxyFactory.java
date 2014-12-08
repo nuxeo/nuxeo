@@ -16,8 +16,7 @@ import org.nuxeo.snapshot.Snapshotable;
 
 public class FolderishProxyFactory extends CoreProxyWithWorkflowFactory {
 
-    protected DocumentModel subPublish(CoreSession session,
-            DocumentModel parentProxy, Snapshot tree, boolean skipParent)
+    protected DocumentModel subPublish(CoreSession session, DocumentModel parentProxy, Snapshot tree, boolean skipParent)
             throws ClientException {
 
         DocumentModel newFolderishProxy = null;
@@ -25,8 +24,7 @@ public class FolderishProxyFactory extends CoreProxyWithWorkflowFactory {
             newFolderishProxy = parentProxy;
         } else {
             DocumentModel version = tree.getDocument();
-            newFolderishProxy = session.createProxy(version.getRef(),
-                    parentProxy.getRef());
+            newFolderishProxy = session.createProxy(version.getRef(), parentProxy.getRef());
         }
 
         for (Snapshot snap : tree.getChildrenSnapshots()) {
@@ -37,8 +35,7 @@ public class FolderishProxyFactory extends CoreProxyWithWorkflowFactory {
     }
 
     @Override
-    public PublishedDocument publishDocument(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
 
         Snapshot snapshot = null;
@@ -50,16 +47,14 @@ public class FolderishProxyFactory extends CoreProxyWithWorkflowFactory {
             }
         }
 
-        PublishedDocument result = super.publishDocument(doc, targetNode,
-                params);
+        PublishedDocument result = super.publishDocument(doc, targetNode, params);
 
         if (snapshot != null) {
 
             final Snapshot tree = snapshot;
             final DocumentModel parent = ((SimpleCorePublishedDocument) result).getProxy();
 
-            UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
-                    doc.getCoreSession()) {
+            UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getCoreSession()) {
                 @Override
                 public void run() throws ClientException {
                     // force cleanup of the tree !!!

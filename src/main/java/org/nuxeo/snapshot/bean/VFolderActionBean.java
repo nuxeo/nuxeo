@@ -35,8 +35,7 @@ public class VFolderActionBean implements Serializable {
         if (vuuid != null) {
 
             DocumentModel vfolder = documentManager.getDocument(new IdRef(vuuid));
-            DocumentModel livefolder = documentManager.getDocument(new IdRef(
-                    vfolder.getVersionSeriesId()));
+            DocumentModel livefolder = documentManager.getDocument(new IdRef(vfolder.getVersionSeriesId()));
 
             Snapshot snap = livefolder.getAdapter(Snapshot.class);
             DocumentModel restoredFolder = snap.restore(vfolder.getVersionLabel());
@@ -44,8 +43,7 @@ public class VFolderActionBean implements Serializable {
             documentManager.save();
 
             EventManager.raiseEventsOnDocumentChange(restoredFolder);
-            return navigationContext.navigateToDocument(restoredFolder,
-                    "after-edit");
+            return navigationContext.navigateToDocument(restoredFolder, "after-edit");
         }
         return null;
     }

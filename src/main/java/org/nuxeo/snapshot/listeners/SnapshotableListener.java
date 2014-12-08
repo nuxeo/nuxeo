@@ -13,8 +13,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.snapshot.Snapshotable;
 
 /**
- * Listener snapshoting documents with the {@link Snapshotable#FACET} facet if
- * the property {@code snapshotVersioningOption} is set.
+ * Listener snapshoting documents with the {@link Snapshotable#FACET} facet if the property
+ * {@code snapshotVersioningOption} is set.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
@@ -32,13 +32,12 @@ public class SnapshotableListener implements EventListener {
             return;
         }
 
-         if (!(event.getContext() instanceof DocumentEventContext)) {
+        if (!(event.getContext() instanceof DocumentEventContext)) {
             return;
         }
         DocumentEventContext ctx = (DocumentEventContext) event.getContext();
         DocumentModel doc = ctx.getSourceDocument();
-        if (doc.isProxy() || doc.isVersion()
-                || !doc.hasFacet(Snapshotable.FACET)) {
+        if (doc.isProxy() || doc.isVersion() || !doc.hasFacet(Snapshotable.FACET)) {
             return;
         }
 
@@ -51,8 +50,7 @@ public class SnapshotableListener implements EventListener {
         try {
             option = VersioningOption.valueOf(versioningOption);
         } catch (Exception e) {
-            log.error(String.format("Unknown versioning option value '%s': %s",
-                    versioningOption, e.getMessage()));
+            log.error(String.format("Unknown versioning option value '%s': %s", versioningOption, e.getMessage()));
             log.debug(e, e);
             return;
         }

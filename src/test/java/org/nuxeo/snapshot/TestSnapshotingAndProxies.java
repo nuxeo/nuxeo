@@ -28,14 +28,12 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
     // helper method that provides children listing using different technics
     // in the target solution this should probably be encapsulated in a
     // PageProvider ...
-    protected List<DocumentModel> getChildren(DocumentModel parent)
-            throws ClientException {
+    protected List<DocumentModel> getChildren(DocumentModel parent) throws ClientException {
 
         String query = "select * from Document where ecm:parentId = ";
 
         if (parent.isProxy()) {
-            DocumentModel target = session.getDocument(new IdRef(
-                    parent.getSourceId()));
+            DocumentModel target = session.getDocument(new IdRef(parent.getSourceId()));
             if (target.isVersion()) {
                 // need to use tree versioning
                 Snapshot snapshot = target.getAdapter(Snapshot.class);
@@ -175,8 +173,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
             dumpDBContent();
         }
 
-        session.createDocument(session.createDocumentModel(
-                root.getPathAsString(), "tmp2", "File"));
+        session.createDocument(session.createDocumentModel(root.getPathAsString(), "tmp2", "File"));
         session.save();
 
         // Create another one
@@ -188,8 +185,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
         }
     }
 
-    protected DocumentModel findFirstDocument(List<DocumentModel> docs,
-            String nameRegex) {
+    protected DocumentModel findFirstDocument(List<DocumentModel> docs, String nameRegex) {
         for (DocumentModel doc : docs) {
             if (doc.getName().matches(nameRegex)) {
                 return doc;
@@ -198,19 +194,15 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
         return null;
     }
 
-    protected DocumentModel rootClassifications, folderClassification1,
-            folderC11, folderClassification11Proxy, docClassification111,
-            docClassification112Proxy;
+    protected DocumentModel rootClassifications, folderClassification1, folderC11, folderClassification11Proxy,
+            docClassification111, docClassification112Proxy;
 
     /**
-     * Children added in proxyFolder should be in its targetFolder, and
-     * proxyFolder's getChildren return its target folder's.
-     *
-     * If (probably) Nuxeo wants to keep the current proxy behaviour, it could
-     * be done either as (EasySOA-) custom methods, or custom type / facet (?).
+     * Children added in proxyFolder should be in its targetFolder, and proxyFolder's getChildren return its target
+     * folder's. If (probably) Nuxeo wants to keep the current proxy behaviour, it could be done either as (EasySOA-)
+     * custom methods, or custom type / facet (?).
      *
      * @throws Exception
-     *
      * @author mdutoo Open Wide - EasySOA use case
      */
     @Ignore
@@ -222,60 +214,45 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
         // create third, classification & proxy-only tree
 
         // root of classifications
-        rootClassifications = session.createDocumentModel("/",
-                "rootClassifications", "SnapshotableFolder");
+        rootClassifications = session.createDocumentModel("/", "rootClassifications", "SnapshotableFolder");
         rootClassifications = session.createDocument(rootClassifications);
 
         // first classification folder (ex. "my folders" or
         // "business X folders")...
-        folderClassification1 = session.createDocumentModel(
-                rootClassifications.getPathAsString(), "folderClassification1",
-                "Folder");
-        folderClassification1.setPropertyValue("dc:title",
-                "Folder Classification1");
+        folderClassification1 = session.createDocumentModel(rootClassifications.getPathAsString(),
+                "folderClassification1", "Folder");
+        folderClassification1.setPropertyValue("dc:title", "Folder Classification1");
         folderClassification1 = session.createDocument(folderClassification1);
 
         // containing a proxied folder of the "actual" model
-        folderClassification11Proxy = createLiveProxy(folder1,
-                folderClassification1);
+        folderClassification11Proxy = createLiveProxy(folder1, folderClassification1);
 
         // adding a new doc in this proxy folder
-        docClassification111 = session.createDocumentModel(
-                folderClassification11Proxy.getPathAsString(),
+        docClassification111 = session.createDocumentModel(folderClassification11Proxy.getPathAsString(),
                 "docClassification111", "File");
-        docClassification111.setPropertyValue("dc:title",
-                "Doc Classification111");
+        docClassification111.setPropertyValue("dc:title", "Doc Classification111");
         docClassification111 = session.createDocument(docClassification111);
 
         // adding an (elsewhere) existing doc in this proxy folder
-        docClassification112Proxy = createLiveProxy(docB131,
-                folderClassification11Proxy);
+        docClassification112Proxy = createLiveProxy(docB131, folderClassification11Proxy);
 
         dumpAllContent();
 
         // checking that the proxy folder contains the new doc :
-        assertTrue(contains(
-                session.getChildren(folderClassification11Proxy.getRef()),
-                docClassification111));
+        assertTrue(contains(session.getChildren(folderClassification11Proxy.getRef()), docClassification111));
 
         // checking that the proxy folder contains the actual existing doc, and
         // not its proxy :
-        assertTrue(contains(
-                session.getChildren(folderClassification11Proxy.getRef()),
-                docB131));
-        assertFalse(contains(
-                session.getChildren(folderClassification11Proxy.getRef()),
-                docClassification112Proxy));
+        assertTrue(contains(session.getChildren(folderClassification11Proxy.getRef()), docB131));
+        assertFalse(contains(session.getChildren(folderClassification11Proxy.getRef()), docClassification112Proxy));
 
         // checking that the new & existing docs is also in the actual folder :
         assertTrue(contains(session.getChildren(folder1.getRef()), docB131));
-        assertTrue(contains(session.getChildren(folder1.getRef()),
-                docClassification111));
+        assertTrue(contains(session.getChildren(folder1.getRef()), docClassification111));
 
     }
 
-    private boolean contains(DocumentModelList docList,
-            DocumentModel lookedForDoc) throws ClientException {
+    private boolean contains(DocumentModelList docList, DocumentModel lookedForDoc) throws ClientException {
         for (DocumentModel child : docList) {
             if (child.getPath().equals(lookedForDoc.getPath())) {
                 return true;

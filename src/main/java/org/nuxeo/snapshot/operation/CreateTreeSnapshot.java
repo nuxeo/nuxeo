@@ -23,11 +23,8 @@ public class CreateTreeSnapshot {
     public DocumentModel run(DocumentModel doc) throws ClientException {
         Snapshotable adapter = doc.getAdapter(Snapshotable.class);
         if (adapter == null) {
-            throw new ClientException(
-                    "Unable to get Snapshotable adapter with document: "
-                            + doc.getPathAsString());
+            throw new ClientException("Unable to get Snapshotable adapter with document: " + doc.getPathAsString());
         }
-        return adapter.createSnapshot(
-                VersioningOption.valueOf(versioningOption)).getDocument();
+        return adapter.createSnapshot(VersioningOption.valueOf(versioningOption)).getDocument();
     }
 }

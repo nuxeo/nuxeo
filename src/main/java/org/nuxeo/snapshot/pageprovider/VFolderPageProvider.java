@@ -9,8 +9,7 @@ import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.snapshot.Snapshot;
 
-public class VFolderPageProvider extends AbstractPageProvider<DocumentModel>
-        implements PageProvider<DocumentModel> {
+public class VFolderPageProvider extends AbstractPageProvider<DocumentModel> implements PageProvider<DocumentModel> {
 
     private static final long serialVersionUID = 1L;
 
