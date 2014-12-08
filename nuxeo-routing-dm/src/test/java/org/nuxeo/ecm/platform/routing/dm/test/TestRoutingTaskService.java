@@ -40,13 +40,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author ldoguin
- * @deprecated since 5.9.2 - Use only routes of type 'graph'. This class tests
- *             {@link RoutingTaskService} deprecated since 5.6
- *
- *
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'. This class tests {@link RoutingTaskService} deprecated
+ *             since 5.6
  */
 @Deprecated
-
 public class TestRoutingTaskService extends SQLRepositoryTestCase {
 
     protected UserManager userManager;
@@ -117,13 +114,11 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
         TaskService taskService = Framework.getLocalService(TaskService.class);
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         List<String> actorIds = new ArrayList<String>();
-        List<Task> tasks = taskService.createTask(session, administrator,
-                targetDoc, "MyRoutingTask", actorIds, false, null, null, null,
-                null, "/");
+        List<Task> tasks = taskService.createTask(session, administrator, targetDoc, "MyRoutingTask", actorIds, false,
+                null, null, null, null, "/");
         routing.makeRoutingTasks(session, tasks);
         session.save();
-        DocumentModel taskDoc = session.getDocument(new PathRef(
-                "/MyRoutingTask"));
+        DocumentModel taskDoc = session.getDocument(new PathRef("/MyRoutingTask"));
         RoutingTask routingTask = taskDoc.getAdapter(RoutingTask.class);
         assertNotNull(routingTask);
         closeSession(session);
@@ -132,8 +127,7 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
     @Test
     @Deprecated
     public void testTaskStep() throws Exception {
-        DocumentModel taskStep = session.createDocumentModel("/", "simpleTask",
-                "SimpleTask");
+        DocumentModel taskStep = session.createDocumentModel("/", "simpleTask", "SimpleTask");
         assertNotNull(taskStep);
         taskStep = session.createDocument(taskStep);
         assertNotNull(taskStep);

@@ -25,8 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 
 /**
- * A route graph, defining a workflow with arbitrarily complex transitions
- * between nodes.
+ * A route graph, defining a workflow with arbitrarily complex transitions between nodes.
  *
  * @since 5.6
  */
@@ -79,13 +78,9 @@ public interface GraphRoute {
     void setVariables(Map<String, Serializable> map);
 
     /**
-     * Sets the variables of the workflow based on their JSON representation
-     * (especially for scalar lists).
-     *
-     * Eg. Map<String, String> map = new
-     * HashMap<String, String>();
-     * map.put("contributors","[\"John Doe\", \"John Smith\"]");
-     * map.put("title","Test Title");
+     * Sets the variables of the workflow based on their JSON representation (especially for scalar lists). Eg.
+     * Map<String, String> map = new HashMap<String, String>();
+     * map.put("contributors","[\"John Doe\", \"John Smith\"]"); map.put("title","Test Title");
      *
      * @param map the map of variables
      * @since 5.9.3, 5.8.0-HF10
@@ -117,7 +112,6 @@ public interface GraphRoute {
      * Checks if this graph instance has been started from another graph.
      *
      * @return {@code true} if this is a sub-route instance
-     *
      * @since 5.7.2
      */
     boolean hasParentRoute();
@@ -126,7 +120,6 @@ public interface GraphRoute {
      * Resumes execution of the parent route from which this graph was started.
      *
      * @param session the session
-     *
      * @since 5.7.2
      */
     void resumeParentRoute(CoreSession session);

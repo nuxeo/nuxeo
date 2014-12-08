@@ -66,8 +66,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.6
  */
-public class GraphNodeImpl extends DocumentRouteElementImpl implements
-        GraphNode {
+public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode {
 
     private static final long serialVersionUID = 1L;
 
@@ -275,12 +274,10 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             }
             // Increment node counter
             incrementProp(PROP_COUNT);
-            document.setPropertyValue(PROP_NODE_START_DATE,
-                    Calendar.getInstance());
+            document.setPropertyValue(PROP_NODE_START_DATE, Calendar.getInstance());
             // reset taskInfo property
             tasksInfo = null;
-            document.setPropertyValue(PROP_TASKS_INFO,
-                    new ArrayList<TaskInfo>());
+            document.setPropertyValue(PROP_TASKS_INFO, new ArrayList<TaskInfo>());
             saveDocument();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -290,8 +287,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     @Override
     public void ending() {
         try {
-            document.setPropertyValue(PROP_NODE_END_DATE,
-                    Calendar.getInstance());
+            document.setPropertyValue(PROP_NODE_END_DATE, Calendar.getInstance());
             saveDocument();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -316,8 +312,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                 }
                 vars.put(key, (String) map.get(key));
             }
-            GraphVariablesUtil.setJSONVariables(document, PROP_VARIABLES_FACET,
-                    vars);
+            GraphVariablesUtil.setJSONVariables(document, PROP_VARIABLES_FACET, vars);
         } else {
             GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, map);
         }
@@ -374,13 +369,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             }
         }
         if (changedNodeVariables) {
-            nodeVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON,
-                    mapToJSON);
+            nodeVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
             setVariables(nodeVariables);
         }
         if (changedGraphVariables) {
-            graphVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON,
-                    mapToJSON);
+            graphVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
             graph.setVariables(graphVariables);
         }
     }
@@ -415,8 +408,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public Map<String, Serializable> getWorkflowContextualInfo(
-            CoreSession session, boolean detached) {
+    public Map<String, Serializable> getWorkflowContextualInfo(CoreSession session, boolean detached) {
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         // workflow context
         context.put("WorkflowVariables", (Serializable) graph.getVariables());
@@ -444,11 +436,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         String button = (String) getProperty(PROP_NODE_BUTTON);
         Map<String, Serializable> nodeVariables = getVariables();
         nodeVariables.put("button", button);
-        nodeVariables.put("numberOfProcessedTasks",
-                getProcessedTasksInfo().size());
+        nodeVariables.put("numberOfProcessedTasks", getProcessedTasksInfo().size());
         nodeVariables.put("numberOfTasks", getTasksInfo().size());
-        nodeVariables.put("tasks", (Serializable) new TasksInfoWrapper(
-                getTasksInfo()));
+        nodeVariables.put("tasks", (Serializable) new TasksInfoWrapper(getTasksInfo()));
         context.put("NodeVariables", (Serializable) nodeVariables);
         context.put("nodeId", getId());
         String state = getState().name().toLowerCase();
@@ -465,8 +455,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     protected String getWorkflowInitiator() {
         try {
-            return (String) graph.getDocument().getPropertyValue(
-                    DocumentRoutingConstants.INITIATOR);
+            return (String) graph.getDocument().getPropertyValue(DocumentRoutingConstants.INITIATOR);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -482,8 +471,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     protected String getWorkflowParentRouteId() {
         try {
-            return (String) graph.getDocument().getPropertyValue(
-                    GraphRoute.PROP_PARENT_ROUTE);
+            return (String) graph.getDocument().getPropertyValue(GraphRoute.PROP_PARENT_ROUTE);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -491,8 +479,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     protected String getWorkflowParentNodeId() {
         try {
-            return (String) graph.getDocument().getPropertyValue(
-                    GraphRoute.PROP_PARENT_NODE);
+            return (String) graph.getDocument().getPropertyValue(GraphRoute.PROP_PARENT_NODE);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -500,8 +487,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     protected Calendar getNodeStartTime() {
         try {
-            return (Calendar) getDocument().getPropertyValue(
-                    PROP_NODE_START_DATE);
+            return (Calendar) getDocument().getPropertyValue(PROP_NODE_START_DATE);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -529,13 +515,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public void executeTransitionChain(Transition transition)
-            throws DocumentRouteException {
+    public void executeTransitionChain(Transition transition) throws DocumentRouteException {
         executeChain(transition.chain, transition.id);
     }
 
-    public void executeChain(String chainId, String transitionId)
-            throws DocumentRouteException {
+    public void executeChain(String chainId, String transitionId) throws DocumentRouteException {
         // TODO events
         if (StringUtils.isEmpty(chainId)) {
             return;
@@ -551,8 +535,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         try {
             automationService.run(context, chainId);
         } catch (OperationException e) {
-            throw new DocumentRouteException("Error running chain: " + chainId,
-                    e);
+            throw new DocumentRouteException("Error running chain: " + chainId, e);
         }
 
         setAllVariables(context);
@@ -591,23 +574,17 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             OperationContext context = getExecutionContext(getSession());
             for (Transition t : getOutputTransitions()) {
                 context.put("transition", t.id);
-                Expression expr = new RoutingScriptingExpression(t.condition,
-                        new RoutingScriptingFunctions(context));
+                Expression expr = new RoutingScriptingExpression(t.condition, new RoutingScriptingFunctions(context));
                 Object res = null;
                 try {
                     res = expr.eval(context);
                     // stupid eval() method throws generic Exception
                 } catch (RuntimeException e) {
-                    throw new DocumentRouteException(
-                            "Error evaluating condition: " + t.condition, e);
+                    throw new DocumentRouteException("Error evaluating condition: " + t.condition, e);
                 }
                 if (!(res instanceof Boolean)) {
-                    throw new DocumentRouteException(
-                            "Condition for transition " + t + " of node '"
-                                    + getId() + "' of graph '"
-                                    + graph.getName()
-                                    + "' does not evaluate to a boolean: "
-                                    + t.condition);
+                    throw new DocumentRouteException("Condition for transition " + t + " of node '" + getId()
+                            + "' of graph '" + graph.getName() + "' does not evaluate to a boolean: " + t.condition);
                 }
                 boolean bool = Boolean.TRUE.equals(res);
                 t.setResult(bool);
@@ -641,8 +618,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         try {
             res = expr.eval(context);
         } catch (RuntimeException e) {
-            throw new DocumentRouteException(
-                    "Error evaluating task assignees: " + taskAssigneesVar, e);
+            throw new DocumentRouteException("Error evaluating task assignees: " + taskAssigneesVar, e);
         }
         if (res instanceof List<?>) {
             res = ((List<?>) res).toArray();
@@ -659,8 +635,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             }
         }
         if (!(res instanceof String || res instanceof String[])) {
-            throw new DocumentRouteException(
-                    "Can not evaluate task assignees from " + taskAssigneesVar);
+            throw new DocumentRouteException("Can not evaluate task assignees from " + taskAssigneesVar);
         }
         if (res instanceof String) {
             taskAssignees.add((String) res);
@@ -686,8 +661,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         } else if (MERGE_ALL.equals(merge)) {
             return n == inputTransitions.size();
         } else {
-            throw new ClientRuntimeException("Illegal merge mode '" + merge
-                    + "' for node " + this);
+            throw new ClientRuntimeException("Illegal merge mode '" + merge + "' for node " + this);
         }
     }
 
@@ -757,8 +731,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         List<String> allTasksAssignees = getTaskAssignees();
         allTasksAssignees.addAll(taskAssignees);
         try {
-            document.setPropertyValue(PROP_TASK_ASSIGNEES,
-                    (Serializable) allTasksAssignees);
+            document.setPropertyValue(PROP_TASK_ASSIGNEES, (Serializable) allTasksAssignees);
             saveDocument();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -785,8 +758,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         try {
             res = expr.eval(context);
         } catch (RuntimeException e) {
-            throw new DocumentRouteException("Error evaluating task due date: "
-                    + taskDueDateExpr, e);
+            throw new DocumentRouteException("Error evaluating task due date: " + taskDueDateExpr, e);
         }
         if (res instanceof DateWrapper) {
             return ((DateWrapper) res).getDate();
@@ -797,9 +769,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         } else if (res instanceof String) {
             return DateParser.parseW3CDateTime((String) res);
         } else
-            throw new DocumentRouteException(
-                    "The following expression can not be evaluated to a date: "
-                            + taskDueDateExpr);
+            throw new DocumentRouteException("The following expression can not be evaluated to a date: "
+                    + taskDueDateExpr);
 
     }
 
@@ -833,8 +804,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             return null;
         }
         OperationContext context = getExecutionContext(getSession());
-        String res = valueOrExpression(String.class, subRouteModelExpr,
-                context, "Sub-workflow id expression");
+        String res = valueOrExpression(String.class, subRouteModelExpr, context, "Sub-workflow id expression");
         return StringUtils.defaultIfBlank((String) res, null);
     }
 
@@ -848,20 +818,15 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         // create the instance without starting it
         DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
         List<String> docs = graph.getAttachedDocuments();
-        String subRouteInstanceId = service.createNewInstance(subRouteModelId,
-                docs, getSession(), false);
+        String subRouteInstanceId = service.createNewInstance(subRouteModelId, docs, getSession(), false);
         try {
             // set info about parent in subroute
-            DocumentModel subRouteInstance = getSession().getDocument(
-                    new IdRef(subRouteInstanceId));
-            subRouteInstance.setPropertyValue(GraphRoute.PROP_PARENT_ROUTE,
-                    getDocument().getParentRef().toString());
-            subRouteInstance.setPropertyValue(GraphRoute.PROP_PARENT_NODE,
-                    getDocument().getName());
+            DocumentModel subRouteInstance = getSession().getDocument(new IdRef(subRouteInstanceId));
+            subRouteInstance.setPropertyValue(GraphRoute.PROP_PARENT_ROUTE, getDocument().getParentRef().toString());
+            subRouteInstance.setPropertyValue(GraphRoute.PROP_PARENT_NODE, getDocument().getName());
             subRouteInstance = getSession().saveDocument(subRouteInstance);
             // set info about subroute in parent
-            document.setPropertyValue(PROP_SUB_ROUTE_INSTANCE_ID,
-                    subRouteInstanceId);
+            document.setPropertyValue(PROP_SUB_ROUTE_INSTANCE_ID, subRouteInstanceId);
             saveDocument();
             // start the sub-route
             Map<String, Serializable> map = getSubRouteInitialVariables();
@@ -875,8 +840,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
     }
 
-    protected Map<String, Serializable> getSubRouteInitialVariables()
-            throws ClientException {
+    protected Map<String, Serializable> getSubRouteInitialVariables() throws ClientException {
         ListProperty props = (ListProperty) document.getProperty(PROP_SUB_ROUTE_VARS);
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         OperationContext context = null;
@@ -887,8 +851,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             if (context == null) {
                 context = getExecutionContext(getSession());
             }
-            Serializable value = valueOrExpression(Serializable.class, v,
-                    context, "Sub-workflow variable expression");
+            Serializable value = valueOrExpression(Serializable.class, v, context, "Sub-workflow variable expression");
             map.put(key, value);
         }
         return map;
@@ -897,8 +860,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     /*
      * Code similar to the one in OperationChainContribution.
      */
-    protected <T> T valueOrExpression(Class<T> klass, String v,
-            OperationContext context, String kind)
+    protected <T> T valueOrExpression(Class<T> klass, String v, OperationContext context, String kind)
             throws DocumentRouteException {
         if (!v.startsWith(EXPR_PREFIX)) {
             return (T) v;
@@ -915,14 +877,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             res = expr.eval(context);
             // stupid eval() method throws generic Exception
         } catch (RuntimeException e) {
-            throw new DocumentRouteException("Error evaluating expression: "
-                    + v, e);
+            throw new DocumentRouteException("Error evaluating expression: " + v, e);
         }
         if (!(klass.isAssignableFrom(res.getClass()))) {
-            throw new DocumentRouteException(kind + " of node '" + getId()
-                    + "' of graph '" + graph.getName()
-                    + "' does not evaluate to " + klass.getSimpleName()
-                    + " but " + res.getClass().getName() + ": " + v);
+            throw new DocumentRouteException(kind + " of node '" + getId() + "' of graph '" + graph.getName()
+                    + "' does not evaluate to " + klass.getSimpleName() + " but " + res.getClass().getName() + ": " + v);
         }
         return (T) res;
     }
@@ -932,8 +891,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         String subRouteInstanceId = getSubRouteInstanceId();
         if (!StringUtils.isEmpty(subRouteInstanceId)) {
             try {
-                DocumentModel subRouteDoc = getSession().getDocument(
-                        new IdRef(subRouteInstanceId));
+                DocumentModel subRouteDoc = getSession().getDocument(new IdRef(subRouteInstanceId));
                 DocumentRoute subRoute = subRouteDoc.getAdapter(DocumentRoute.class);
                 subRoute.cancel(getSession());
             } catch (ClientException e) {
@@ -945,8 +903,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     protected List<EscalationRule> computeEscalationRules() {
         try {
             ListProperty props = (ListProperty) document.getProperty(PROP_ESCALATION_RULES);
-            List<EscalationRule> rules = new ArrayList<EscalationRule>(
-                    props.size());
+            List<EscalationRule> rules = new ArrayList<EscalationRule>(props.size());
             for (Property p : props) {
                 rules.add(new EscalationRule(this, p));
             }
@@ -971,22 +928,17 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             OperationContext context = getExecutionContext(getSession());
             // add specific helpers for escalation
             for (EscalationRule rule : getEscalationRules()) {
-                Expression expr = new RoutingScriptingExpression(
-                        rule.condition, new RoutingScriptingFunctions(context,
-                                rule));
+                Expression expr = new RoutingScriptingExpression(rule.condition, new RoutingScriptingFunctions(context,
+                        rule));
                 Object res = null;
                 try {
                     res = expr.eval(context);
                 } catch (RuntimeException e) {
-                    throw new DocumentRouteException(
-                            "Error evaluating condition: " + rule.condition, e);
+                    throw new DocumentRouteException("Error evaluating condition: " + rule.condition, e);
                 }
                 if (!(res instanceof Boolean)) {
-                    throw new DocumentRouteException("Condition for rule "
-                            + rule + " of node '" + getId() + "' of graph '"
-                            + graph.getName()
-                            + "' does not evaluate to a boolean: "
-                            + rule.condition);
+                    throw new DocumentRouteException("Condition for rule " + rule + " of node '" + getId()
+                            + "' of graph '" + graph.getName() + "' does not evaluate to a boolean: " + rule.condition);
                 }
                 boolean bool = Boolean.TRUE.equals(res);
                 if ((!rule.isExecuted() || rule.isMultipleExecution()) && bool) {
@@ -1033,8 +985,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public void updateTaskInfo(String taskId, boolean ended, String status,
-            String actor, String comment) throws ClientException {
+    public void updateTaskInfo(String taskId, boolean ended, String status, String actor, String comment)
+            throws ClientException {
         boolean updated = false;
         List<TaskInfo> tasksInfo = getTasksInfo();
         for (TaskInfo taskInfo : tasksInfo) {
@@ -1094,8 +1046,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     }
 
-    protected void cancelTask(CoreSession session, final String taskId)
-            throws DocumentRouteException {
+    protected void cancelTask(CoreSession session, final String taskId) throws DocumentRouteException {
         try {
             DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
             Task task = taskDoc.getAdapter(Task.class);
@@ -1103,8 +1054,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                 throw new DocumentRouteException("Invalid taskId: " + taskId);
             }
             DocumentModelList docs = graph.getAttachedDocumentModels();
-            Framework.getLocalService(DocumentRoutingService.class).removePermissionsForTaskActors(
-                    session, docs, task);
+            Framework.getLocalService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs, task);
             if (task.isOpened()) {
                 task.cancel(session);
             }

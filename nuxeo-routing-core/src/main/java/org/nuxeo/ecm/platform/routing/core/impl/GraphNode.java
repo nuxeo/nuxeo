@@ -34,8 +34,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 
 /**
- * A node for a route graph. Represents operation chains, associated task and
- * form, output transitions and their conditions, etc.
+ * A node for a route graph. Represents operation chains, associated task and form, output transitions and their
+ * conditions, etc.
  *
  * @since 5.6
  */
@@ -106,8 +106,7 @@ public interface GraphNode {
     String PROP_NODE_Y_COORDINATE = "rnode:taskY";
 
     /**
-     * @since 5.7.3 a node can create multiple tasks, in this case, this stores
-     *        the status of the last task ended
+     * @since 5.7.3 a node can create multiple tasks, in this case, this stores the status of the last task ended
      */
     String PROP_NODE_BUTTON = "rnode:button";
 
@@ -280,8 +279,7 @@ public interface GraphNode {
         /** Computed by graph. */
         public boolean loop;
 
-        protected Transition(GraphNode source, Property p)
-                throws ClientException {
+        protected Transition(GraphNode source, Property p) throws ClientException {
             this.source = source;
             prop = (MapProperty) p;
             id = (String) prop.get(PROP_TRANS_NAME).getValue();
@@ -307,8 +305,7 @@ public interface GraphNode {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("id", id).append(
-                    "condition", condition).append("result", result).toString();
+            return new ToStringBuilder(this).append("id", id).append("condition", condition).append("result", result).toString();
         }
 
         public String getTarget() {
@@ -388,8 +385,7 @@ public interface GraphNode {
          */
         protected Calendar lastExcutionTime;
 
-        public EscalationRule(GraphNode node, Property p)
-                throws ClientException {
+        public EscalationRule(GraphNode node, Property p) throws ClientException {
             this.prop = (MapProperty) p;
             this.node = node;
             this.id = (String) p.get(PROP_ESCALATION_RULE_ID).getValue();
@@ -426,8 +422,7 @@ public interface GraphNode {
 
         public void setExecuted(boolean executed) throws ClientException {
             this.executed = executed;
-            prop.get(PROP_ESCALATION_RULE_EXECUTED).setValue(
-                    Boolean.valueOf(executed));
+            prop.get(PROP_ESCALATION_RULE_EXECUTED).setValue(Boolean.valueOf(executed));
             if (executed) {
                 setExecutionTime(Calendar.getInstance());
             }
@@ -451,8 +446,8 @@ public interface GraphNode {
         }
 
         /**
-         * @since 5.9.3 Returns 'null' if the node was not executed, or the
-         *        executed date was not computed ( for rules created before
+         * @since 5.9.3 Returns 'null' if the node was not executed, or the executed date was not computed ( for rules
+         *        created before
          * @5.9.3)
          */
         public Calendar getLastExecutionTime() {
@@ -495,11 +490,9 @@ public interface GraphNode {
             }
         }
 
-        public TaskInfo(GraphNode node, String taskDocId)
-                throws ClientException {
+        public TaskInfo(GraphNode node, String taskDocId) throws ClientException {
             this.node = node;
-            this.prop = (MapProperty) ((ListProperty) node.getDocument().getProperty(
-                    PROP_TASKS_INFO)).addEmpty();
+            this.prop = (MapProperty) ((ListProperty) node.getDocument().getProperty(PROP_TASKS_INFO)).addEmpty();
             this.prop.get(PROP_TASK_INFO_TASK_DOC_ID).setValue(taskDocId);
             this.taskDocId = taskDocId;
         }
@@ -592,8 +585,7 @@ public interface GraphNode {
     boolean isMerge();
 
     /**
-     * Checks if the merge is ready to execute (enough input transitions are
-     * present).
+     * Checks if the merge is ready to execute (enough input transitions are present).
      */
     boolean canMerge();
 
@@ -655,8 +647,7 @@ public interface GraphNode {
     String getTaskDirective();
 
     /**
-     * Gets the permission to the granted to the actors on this task on the
-     * document following the workflow
+     * Gets the permission to the granted to the actors on this task on the document following the workflow
      *
      * @return
      */
@@ -670,8 +661,7 @@ public interface GraphNode {
     String getTaskLayout();
 
     /**
-     * @returns the taskDocType. If none is specified, the default task type is
-     *          returned.
+     * @returns the taskDocType. If none is specified, the default task type is returned.
      */
     String getTaskDocType();
 
@@ -710,22 +700,18 @@ public interface GraphNode {
     String getTaskDueDateExpr();
 
     /**
-     * Executes an Automation chain in the context of this node for a given
-     * transition
+     * Executes an Automation chain in the context of this node for a given transition
      *
      * @param transition the transition
      */
-    void executeTransitionChain(Transition transition)
-            throws DocumentRouteException;
+    void executeTransitionChain(Transition transition) throws DocumentRouteException;
 
     /**
-     * Evaluates transition conditions and returns the transitions that were
-     * true.
+     * Evaluates transition conditions and returns the transitions that were true.
      * <p>
-     * Transitions are evaluated in the order set on the node when the workflow
-     * was designed. Since @5.7.2 if the node has the property
-     * "executeOnlyFirstTransition" set to true, only the first transition
-     * evaluated to true is returned
+     * Transitions are evaluated in the order set on the node when the workflow was designed. Since @5.7.2 if the node
+     * has the property "executeOnlyFirstTransition" set to true, only the first transition evaluated to true is
+     * returned
      *
      * @return the true transitions
      */
@@ -758,8 +744,8 @@ public interface GraphNode {
     Map<String, Serializable> getVariables();
 
     /**
-     * Sets the property button on the node, keeping the id of the last action
-     * executed by the user on the associated task if any
+     * Sets the property button on the node, keeping the id of the last action executed by the user on the associated
+     * task if any
      *
      * @param status
      */
@@ -781,8 +767,7 @@ public interface GraphNode {
     List<String> evaluateTaskAssignees() throws DocumentRouteException;
 
     /**
-     * Evaluates the task due date from the taskDueDateExpr and sets it as the
-     * dueDate
+     * Evaluates the task due date from the taskDueDateExpr and sets it as the dueDate
      *
      * @return
      * @throws DocumentRouteException
@@ -790,17 +775,15 @@ public interface GraphNode {
     Date computeTaskDueDate() throws DocumentRouteException;
 
     /**
-     * Gets a map containing the workflow and node variables and workflow
-     * documents.
+     * Gets a map containing the workflow and node variables and workflow documents.
      *
      * @param detached The documents added into this map can be detached or not
      */
-    Map<String, Serializable> getWorkflowContextualInfo(CoreSession session,
-            boolean detached);
+    Map<String, Serializable> getWorkflowContextualInfo(CoreSession session, boolean detached);
 
     /**
-     * When workflow engine runs an exclusive node, it evaluates the transition
-     * one by one and stops a soon as one of the transition is evaluated to true
+     * When workflow engine runs an exclusive node, it evaluates the transition one by one and stops a soon as one of
+     * the transition is evaluated to true
      *
      * @since 5.7.2
      */
@@ -810,7 +793,6 @@ public interface GraphNode {
      * Checks if this node has a sub-route model defined.
      *
      * @return {@code true} if there is a sub-route
-     *
      * @since 5.7.2
      */
     boolean hasSubRoute() throws DocumentRouteException;
@@ -818,11 +800,10 @@ public interface GraphNode {
     /**
      * Gets the sub-route model id.
      * <p>
-     * If this is present, then this node will be suspended while the sub-route
-     * is run. When the sub-route ends, this node will resume.
+     * If this is present, then this node will be suspended while the sub-route is run. When the sub-route ends, this
+     * node will resume.
      *
      * @return the sub-route id, or {@code null} if none is defined
-     *
      * @since 5.7.2
      */
     String getSubRouteModelId() throws DocumentRouteException;
@@ -831,7 +812,6 @@ public interface GraphNode {
      * Starts the sub-route on this node.
      *
      * @return the sub-route
-     *
      * @since 5.7.2
      */
     DocumentRoute startSubRoute() throws DocumentRouteException;
@@ -844,9 +824,8 @@ public interface GraphNode {
     void cancelSubRoute() throws DocumentRouteException;
 
     /**
-     * Evaluates the rules for the escalation rules and returns the ones to be
-     * executed. The rules already executed and not having the property
-     * multipleExecution = true are also ignored
+     * Evaluates the rules for the escalation rules and returns the ones to be executed. The rules already executed and
+     * not having the property multipleExecution = true are also ignored
      *
      * @since 5.7.2
      */
@@ -881,25 +860,24 @@ public interface GraphNode {
     void addTaskInfo(String taskId) throws ClientException;
 
     /**
-     * Persist these info from the task on the node. Status is the id of the
-     * button clicked to end the task by the actor.
+     * Persist these info from the task on the node. Status is the id of the button clicked to end the task by the
+     * actor.
      *
      * @since 5.7.3
      */
-    void updateTaskInfo(String taskId, boolean ended, String status,
-            String actor, String comment) throws ClientException;
+    void updateTaskInfo(String taskId, boolean ended, String status, String actor, String comment)
+            throws ClientException;
 
     /**
-     * Gets all the ended tasks originating from this node. This also counts the
-     * canceled tasks.
+     * Gets all the ended tasks originating from this node. This also counts the canceled tasks.
      *
      * @since 5.7.3
      */
     List<TaskInfo> getEndedTasksInfo();
 
     /**
-     * Gets all the ended tasks originating from this node that were processed
-     * with a status. Doesn't count the canceled tasks.
+     * Gets all the ended tasks originating from this node that were processed with a status. Doesn't count the canceled
+     * tasks.
      *
      * @since 5.7.3
      */
@@ -935,12 +913,9 @@ public interface GraphNode {
     void setVariables(Map<String, Serializable> map);
 
     /**
-     * Sets the variables of the workflow based on their JSON representation
-     * (especially for scalar lists).
-     *
-     * Eg. Map<String, String> map = new HashMap<String, String>();
-     * map.put("contributors","[\"John Doe\", \"John Smith\"]");
-     * map.put("title","Test Title");
+     * Sets the variables of the workflow based on their JSON representation (especially for scalar lists). Eg.
+     * Map<String, String> map = new HashMap<String, String>();
+     * map.put("contributors","[\"John Doe\", \"John Smith\"]"); map.put("title","Test Title");
      *
      * @param map the map of variables
      * @since 5.9.3, 5.8.0-HF11

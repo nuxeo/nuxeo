@@ -22,7 +22,6 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 @XObject("persister")
 public class PersisterDescriptor {

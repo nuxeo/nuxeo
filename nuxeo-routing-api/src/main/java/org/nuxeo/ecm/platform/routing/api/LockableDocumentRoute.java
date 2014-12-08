@@ -22,9 +22,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- *
  * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
- *
  */
 public interface LockableDocumentRoute extends Serializable {
 

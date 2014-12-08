@@ -45,9 +45,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Bulk operation to cancel and restart all the workflow instances of the
- * workflow model with the id <param>workflowId</param>. If the <param>
- * nodeId</param> parameter is specified, then only the workflows suspened on
+ * Bulk operation to cancel and restart all the workflow instances of the workflow model with the id
+ * <param>workflowId</param>. If the <param> nodeId</param> parameter is specified, then only the workflows suspened on
  * that node are restarted.
  *
  * @since 5.7
@@ -125,20 +124,17 @@ public class BulkRestartWorkflow {
             long routesRestartedCount = 0;
             for (String routeId : routeIds) {
                 try {
-                    DocumentModel docRoute = session.getDocument(new IdRef(
-                            routeId));
+                    DocumentModel docRoute = session.getDocument(new IdRef(routeId));
                     DocumentRoute route = docRoute.getAdapter(DocumentRoute.class);
                     List<String> relatedDocIds = route.getAttachedDocuments();
                     route.cancel(session);
 
-                    log.debug("Canceling workflow  "
-                            + route.getDocument().getName());
+                    log.debug("Canceling workflow  " + route.getDocument().getName());
 
                     if (reinitLifecycle) {
                         reinitLifecycle(relatedDocIds, session);
                     }
-                    routingService.createNewInstance(workflowId, relatedDocIds,
-                            session, true);
+                    routingService.createNewInstance(workflowId, relatedDocIds, session, true);
                     for (String string : relatedDocIds) {
                         log.debug("Starting workflow for " + string);
                     }
@@ -154,10 +150,8 @@ public class BulkRestartWorkflow {
                     }
                 } catch (Exception e) {
                     Throwable t = unwrapException(e);
-                    log.error(t.getClass().getSimpleName() + ": "
-                            + t.getMessage());
-                    log.error("Workflow with the docId '" + routeId
-                            + "' cannot be canceled. " + routesRestartedCount
+                    log.error(t.getClass().getSimpleName() + ": " + t.getMessage());
+                    log.error("Workflow with the docId '" + routeId + "' cannot be canceled. " + routesRestartedCount
                             + " workflows have been processed.");
                 }
             }
@@ -188,8 +182,7 @@ public class BulkRestartWorkflow {
         }
     }
 
-    protected void reinitLifecycle(List<String> docIds, CoreSession session)
-            throws ClientException {
+    protected void reinitLifecycle(List<String> docIds, CoreSession session) throws ClientException {
         for (String docId : docIds) {
             session.reinitLifeCycleState(new IdRef(docId));
         }

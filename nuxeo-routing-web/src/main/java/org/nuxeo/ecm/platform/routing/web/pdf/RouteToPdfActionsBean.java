@@ -51,8 +51,7 @@ public class RouteToPdfActionsBean implements Serializable {
 
     public void doRenderView(String view_name) throws Exception {
         String base = BaseURL.getBaseURL(getHttpServletRequest());
-        String url = base + view_name + "?conversationId="
-                + Conversation.instance().getId();
+        String url = base + view_name + "?conversationId=" + Conversation.instance().getId();
         /**
          * hack needed for jboss 4
          */
@@ -60,8 +59,7 @@ public class RouteToPdfActionsBean implements Serializable {
         response.resetBuffer();
         response.sendRedirect(url);
         response.flushBuffer();
-        getHttpServletRequest().setAttribute(
-                NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
+        getHttpServletRequest().setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
         FacesContext.getCurrentInstance().responseComplete();
     }
 

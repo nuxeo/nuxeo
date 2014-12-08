@@ -69,11 +69,8 @@ public class RouteSecurityChecker implements Serializable {
         return getDocumentRoutingService().canUserValidateRoute(currentUser);
     }
 
-    public boolean canValidateRoute(DocumentModel routeDocument)
-            throws ClientException {
-        return canValidateRoute()
-                || getDocumentRoutingService().canValidateRoute(routeDocument,
-                        documentManager);
+    public boolean canValidateRoute(DocumentModel routeDocument) throws ClientException {
+        return canValidateRoute() || getDocumentRoutingService().canValidateRoute(routeDocument, documentManager);
     }
 
     public DocumentRoutingService getDocumentRoutingService() {

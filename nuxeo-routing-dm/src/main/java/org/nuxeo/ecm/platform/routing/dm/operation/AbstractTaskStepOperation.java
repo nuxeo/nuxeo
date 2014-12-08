@@ -28,7 +28,6 @@ import org.nuxeo.ecm.platform.routing.dm.adapter.RoutingTask;
 /**
  * @since 5.6
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
- *
  */
 @Deprecated
 public class AbstractTaskStepOperation {
@@ -55,8 +54,7 @@ public class AbstractTaskStepOperation {
         return null;
     }
 
-    public String getRoutingStepDocumentId(OperationContext context)
-            throws ClientException {
+    public String getRoutingStepDocumentId(OperationContext context) throws ClientException {
         if (getRoutingTask(context) != null) {
             String stepDocumentId = routingTask.getVariable(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
             return stepDocumentId;

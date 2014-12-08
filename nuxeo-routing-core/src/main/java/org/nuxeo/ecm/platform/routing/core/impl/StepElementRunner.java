@@ -33,9 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  * Run the operation chain for this step.
  *
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
- *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 @Deprecated
 public class StepElementRunner implements ElementRunner {
@@ -48,22 +46,17 @@ public class StepElementRunner implements ElementRunner {
             element.setRunning(session);
         }
         if (!(element instanceof DocumentRouteStep)) {
-            throw new RuntimeException(
-                    "Method run should be overriden in parent class.");
+            throw new RuntimeException("Method run should be overriden in parent class.");
         }
-        EventFirer.fireEvent(session, element, null,
-                DocumentRoutingConstants.Events.beforeStepRunning.name());
+        EventFirer.fireEvent(session, element, null, DocumentRoutingConstants.Events.beforeStepRunning.name());
         OperationContext context = new OperationContext(session);
-        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
-                element);
+        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, element);
         context.setInput(element.getAttachedDocuments(session));
         if (!element.isDone()) {
-            EventFirer.fireEvent(session, element, null,
-                    DocumentRoutingConstants.Events.stepWaiting.name());
+            EventFirer.fireEvent(session, element, null, DocumentRoutingConstants.Events.stepWaiting.name());
         }
         try {
-            String chainId = getDocumentRoutingService().getOperationChainId(
-                    element.getDocument().getType());
+            String chainId = getDocumentRoutingService().getOperationChainId(element.getDocument().getType());
             getAutomationService().run(context, chainId);
         } catch (InvalidChainException e) {
             throw new RuntimeException(e);
@@ -73,15 +66,13 @@ public class StepElementRunner implements ElementRunner {
     }
 
     @Override
-    public void run(CoreSession session, DocumentRouteElement element,
-            Map<String, Serializable> map) {
+    public void run(CoreSession session, DocumentRouteElement element, Map<String, Serializable> map) {
         run(session, element);
     }
 
     @Override
-    public void resume(CoreSession session, DocumentRouteElement element,
-            String nodeId, String taskId, Map<String, Object> data,
-            String status) {
+    public void resume(CoreSession session, DocumentRouteElement element, String nodeId, String taskId,
+            Map<String, Object> data, String status) {
         throw new UnsupportedOperationException();
     }
 
@@ -103,31 +94,25 @@ public class StepElementRunner implements ElementRunner {
 
     @Override
     public void undo(CoreSession session, DocumentRouteElement element) {
-        EventFirer.fireEvent(session, element, null,
-                DocumentRoutingConstants.Events.beforeUndoingStep.name());
+        EventFirer.fireEvent(session, element, null, DocumentRoutingConstants.Events.beforeUndoingStep.name());
         OperationContext context = new OperationContext(session);
-        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
-                element);
+        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, element);
         context.setInput(element.getAttachedDocuments(session));
         String operationChainId;
         String docType = element.getDocument().getType();
         if (element.isDone()) {
-            operationChainId = getDocumentRoutingService().getUndoFromDoneOperationChainId(
-                    docType);
+            operationChainId = getDocumentRoutingService().getUndoFromDoneOperationChainId(docType);
         } else if (element.isRunning()) {
-            operationChainId = getDocumentRoutingService().getUndoFromRunningOperationChainId(
-                    docType);
+            operationChainId = getDocumentRoutingService().getUndoFromRunningOperationChainId(docType);
         } else {
-            throw new RuntimeException(
-                    "Trying to undo a step neither in done nor running state.");
+            throw new RuntimeException("Trying to undo a step neither in done nor running state.");
         }
         try {
             getAutomationService().run(context, operationChainId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        EventFirer.fireEvent(session, element, null,
-                DocumentRoutingConstants.Events.afterUndoingStep.name());
+        EventFirer.fireEvent(session, element, null, DocumentRoutingConstants.Events.afterUndoingStep.name());
     }
 
     @Override
@@ -144,8 +129,7 @@ public class StepElementRunner implements ElementRunner {
                 element.setCanceled(session);
             }
         } else {
-            throw new RuntimeException(
-                    "Not allowed to cancel an element neither in ready, done or running state.");
+            throw new RuntimeException("Not allowed to cancel an element neither in ready, done or running state.");
         }
     }
 }

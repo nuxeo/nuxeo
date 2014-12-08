@@ -39,8 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 5.7.2
  */
-public class DocumentRoutingEscalationServiceImpl implements
-        DocumentRoutingEscalationService {
+public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEscalationService {
 
     private static Log log = LogFactory.getLog(DocumentRoutingEscalationServiceImpl.class);
 
@@ -48,18 +47,15 @@ public class DocumentRoutingEscalationServiceImpl implements
             + "AND ( rnode:escalationRules/*1/executed = 0 OR rnode:escalationRules/*1/multipleExecution = 1 )";
 
     @Override
-    public List<String> queryForSuspendedNodesWithEscalation(CoreSession session)
-            throws ClientException {
+    public List<String> queryForSuspendedNodesWithEscalation(CoreSession session) throws ClientException {
         final List<String> nodesDocIds = new ArrayList<String>();
         new UnrestrictedSessionRunner(session) {
             @Override
             public void run() throws ClientException {
-                IterableQueryResult results = session.queryAndFetch(
-                        queryForSuspendedNodesWithEscalation, "NXQL");
+                IterableQueryResult results = session.queryAndFetch(queryForSuspendedNodesWithEscalation, "NXQL");
                 for (Map<String, Serializable> result : results) {
                     nodesDocIds.add(result.get("ecm:uuid").toString());
-                    log.trace("Inspecting node for escalation rules:"
-                            + result.get("ecm:uuid").toString());
+                    log.trace("Inspecting node for escalation rules:" + result.get("ecm:uuid").toString());
                 }
                 results.close();
             }
@@ -68,8 +64,7 @@ public class DocumentRoutingEscalationServiceImpl implements
     }
 
     @Override
-    public List<EscalationRule> computeEscalationRulesToExecute(GraphNode node)
-            throws ClientException {
+    public List<EscalationRule> computeEscalationRulesToExecute(GraphNode node) throws ClientException {
         return node.evaluateEscalationRules();
     }
 
@@ -77,9 +72,7 @@ public class DocumentRoutingEscalationServiceImpl implements
     public void scheduleExecution(EscalationRule rule, CoreSession session) {
         WorkManager manager = Framework.getLocalService(WorkManager.class);
         manager.schedule(
-                new EscalationRuleWork(rule.getId(),
-                        rule.getNode().getDocument().getId(),
-                        session.getRepositoryName()),
+                new EscalationRuleWork(rule.getId(), rule.getNode().getDocument().getId(), session.getRepositoryName()),
                 WorkManager.Scheduling.IF_NOT_SCHEDULED);
     }
 
@@ -93,10 +86,8 @@ public class DocumentRoutingEscalationServiceImpl implements
 
         public static final String CATEGORY = "routingEscalation";
 
-        public EscalationRuleWork(String escalationRuleId, String nodeDocId,
-                String repositoryName) {
-            super(repositoryName + ":" + nodeDocId + ":escalationRule:"
-                    + escalationRuleId);
+        public EscalationRuleWork(String escalationRuleId, String nodeDocId, String repositoryName) {
+            super(repositoryName + ":" + nodeDocId + ":escalationRule:" + escalationRuleId);
             this.repositoryName = repositoryName;
             this.escalationRuleId = escalationRuleId;
             this.nodeDocId = nodeDocId;
@@ -118,8 +109,7 @@ public class DocumentRoutingEscalationServiceImpl implements
             DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
             GraphNode node = nodeDoc.getAdapter(GraphNode.class);
             if (node == null) {
-                throw new ClientException("Can't execute worker '" + getId()
-                        + "' : the document '" + nodeDocId
+                throw new ClientException("Can't execute worker '" + getId() + "' : the document '" + nodeDocId
                         + "' can not be adapted to a GraphNode");
             }
             List<EscalationRule> rules = node.getEscalationRules();
@@ -131,8 +121,7 @@ public class DocumentRoutingEscalationServiceImpl implements
                 }
             }
             if (rule == null) {
-                throw new ClientException("Can't execute worker '" + getId()
-                        + "' : the rule '" + escalationRuleId
+                throw new ClientException("Can't execute worker '" + getId() + "' : the rule '" + escalationRuleId
                         + "' was not found on the node '" + nodeDocId + "'");
             }
             OperationContext context = new OperationContext(session);
@@ -142,8 +131,7 @@ public class DocumentRoutingEscalationServiceImpl implements
                 // check to see if the rule wasn't executed meanwhile
                 boolean alreadyExecuted = getExecutionStatus(rule, session);
                 if (alreadyExecuted && !rule.isMultipleExecution()) {
-                    log.trace("Rule " + rule.getId() + "on node "
-                            + node.getId() + " already executed");
+                    log.trace("Rule " + rule.getId() + "on node " + node.getId() + " already executed");
                     return;
                 }
                 node.executeChain(rule.getChain());
@@ -152,22 +140,18 @@ public class DocumentRoutingEscalationServiceImpl implements
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
-                throw new ClientException("Error when executing worker: "
-                        + getTitle(), e);
+                throw new ClientException("Error when executing worker: " + getTitle(), e);
             }
         }
 
         /**
-         * Used to check the executed status when the escalationRule is run by a
-         * worker in a work queue
+         * Used to check the executed status when the escalationRule is run by a worker in a work queue
          *
          * @param session
          * @throws ClientException
          */
-        public boolean getExecutionStatus(EscalationRule rule,
-                CoreSession session) throws ClientException {
-            DocumentModel nodeDoc = session.getDocument(new IdRef(
-                    rule.getNode().getDocument().getId()));
+        public boolean getExecutionStatus(EscalationRule rule, CoreSession session) throws ClientException {
+            DocumentModel nodeDoc = session.getDocument(new IdRef(rule.getNode().getDocument().getId()));
             GraphNode node = nodeDoc.getAdapter(GraphNode.class);
             List<EscalationRule> rules = node.getEscalationRules();
             for (EscalationRule escalationRule : rules) {
@@ -180,8 +164,7 @@ public class DocumentRoutingEscalationServiceImpl implements
 
     }
 
-    private static void markRuleAsExecuted(String nodeDocId,
-            String escalationRuleId, CoreSession session)
+    private static void markRuleAsExecuted(String nodeDocId, String escalationRuleId, CoreSession session)
             throws ClientException {
         DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
         GraphNode node = nodeDoc.getAdapter(GraphNode.class);

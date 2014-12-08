@@ -31,8 +31,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 
 public abstract class AbstractRunner implements ElementRunner {
 
-    protected List<DocumentRouteElement> getChildrenElement(
-            CoreSession session, DocumentRouteElement element) {
+    protected List<DocumentRouteElement> getChildrenElement(CoreSession session, DocumentRouteElement element) {
         try {
             DocumentModelList children = session.getChildren(element.getDocument().getRef());
             List<DocumentRouteElement> elements = new ArrayList<DocumentRouteElement>();
@@ -46,15 +45,13 @@ public abstract class AbstractRunner implements ElementRunner {
     }
 
     @Override
-    public void run(CoreSession session, DocumentRouteElement element,
-            Map<String, Serializable> map) {
+    public void run(CoreSession session, DocumentRouteElement element, Map<String, Serializable> map) {
         run(session, element);
     }
 
     @Override
-    public void resume(CoreSession session, DocumentRouteElement element,
-            String nodeId, String taskId, Map<String, Object> data,
-            String status) {
+    public void resume(CoreSession session, DocumentRouteElement element, String nodeId, String taskId,
+            Map<String, Object> data, String status) {
         throw new UnsupportedOperationException();
     }
 
@@ -66,8 +63,7 @@ public abstract class AbstractRunner implements ElementRunner {
 
     @Override
     public void cancel(CoreSession session, DocumentRouteElement element) {
-        List<DocumentRouteElement> children = getChildrenElement(session,
-                element);
+        List<DocumentRouteElement> children = getChildrenElement(session, element);
         for (DocumentRouteElement child : children) {
             child.cancel(session);
         }

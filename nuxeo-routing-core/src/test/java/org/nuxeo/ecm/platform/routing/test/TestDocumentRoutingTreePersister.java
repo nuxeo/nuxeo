@@ -34,7 +34,6 @@ import org.nuxeo.ecm.platform.routing.core.impl.DocumentRoutingTreePersister;
 
 /**
  * @author arussel
- *
  */
 public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
 
@@ -47,18 +46,15 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
     }
 
     @Test
-    public void testGetOrCreateRootOfDocumentRouteInstanceStructure()
-            throws Exception {
+    public void testGetOrCreateRootOfDocumentRouteInstanceStructure() throws Exception {
         deployBundle(TEST_BUNDLE);
         DocumentModel doc = persister.getOrCreateRootOfDocumentRouteInstanceStructure(session);
         assertNotNull(doc);
-        assertEquals(doc.getPathAsString(),
-                TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
+        assertEquals(doc.getPathAsString(), TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
         session.save();
         closeSession();
         CoreSession membersSession = openSessionAs("members");
-        assertFalse(membersSession.hasPermission(doc.getRef(),
-                SecurityConstants.READ));
+        assertFalse(membersSession.hasPermission(doc.getRef(), SecurityConstants.READ));
         closeSession(membersSession);
     }
 
@@ -66,8 +62,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
      * Test creation when there's a non-folderish doc at the root.
      */
     @Test
-    public void testDocumentRouteInstancesRootCreation()
-            throws Exception {
+    public void testDocumentRouteInstancesRootCreation() throws Exception {
         deployBundle(TEST_BUNDLE);
         // create a document coming before '/default-domain' in name order
         DocumentModel firstDoc = session.createDocumentModel("/", "aaa", "File");
@@ -75,40 +70,31 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         session.save();
         DocumentModel doc = persister.getOrCreateRootOfDocumentRouteInstanceStructure(session);
         assertNotNull(doc);
-        assertEquals(doc.getPathAsString(),
-                TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
+        assertEquals(doc.getPathAsString(), TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
         session.save();
         closeSession();
         CoreSession membersSession = openSessionAs("members");
-        assertFalse(membersSession.hasPermission(doc.getRef(),
-                SecurityConstants.READ));
+        assertFalse(membersSession.hasPermission(doc.getRef(), SecurityConstants.READ));
         closeSession(membersSession);
     }
+
     @Test
     public void testGetParentFolderForDocumentRouteInstance() {
-        DocumentModel parent = persister.getParentFolderForDocumentRouteInstance(
-                null, session);
+        DocumentModel parent = persister.getParentFolderForDocumentRouteInstance(null, session);
         assertNotNull(parent);
-        assertTrue(parent.getPathAsString().startsWith(
-                TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT));
+        assertTrue(parent.getPathAsString().startsWith(TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT));
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCreateDocumentRouteInstanceFromDocumentRouteModel()
-            throws ClientException {
-        DocumentModel model = createDocumentRouteModel(session,
-                DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
+    public void testCreateDocumentRouteInstanceFromDocumentRouteModel() throws ClientException {
+        DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
         List<String> docsId = new ArrayList<String>();
         docsId.add("1");
-        model.setPropertyValue(
-                DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
-                (Serializable) docsId);
-        DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(
-                model, session);
+        model.setPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME, (Serializable) docsId);
+        DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(model, session);
         assertNotNull(instance);
-        assertTrue(instance.getPathAsString().startsWith(
-                TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT));
+        assertTrue(instance.getPathAsString().startsWith(TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT));
         docsId = (List<String>) instance.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
         assertEquals("1", docsId.get(0));
         closeSession();
@@ -118,14 +104,11 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
     }
 
     @Test
-    public void testSaveDocumentRouteInstanceAsNewModel()
-            throws ClientException {
-        DocumentModel model = createDocumentRouteModel(session,
-                DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
-        DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(
-                model, session);
-        DocumentModel newModel = persister.saveDocumentRouteInstanceAsNewModel(
-                instance, session.getRootDocument(), null, session);
+    public void testSaveDocumentRouteInstanceAsNewModel() throws ClientException {
+        DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
+        DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(model, session);
+        DocumentModel newModel = persister.saveDocumentRouteInstanceAsNewModel(instance, session.getRootDocument(),
+                null, session);
         assertNotNull(newModel);
     }
 }

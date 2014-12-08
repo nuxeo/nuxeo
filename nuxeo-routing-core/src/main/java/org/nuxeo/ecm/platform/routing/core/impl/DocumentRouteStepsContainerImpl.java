@@ -28,10 +28,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
  * @author arussel
- *
  */
-public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl
-        implements DocumentRouteStepsContainer {
+public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl implements DocumentRouteStepsContainer {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,8 +39,7 @@ public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl
 
     public void setAttachedDocuments(List<String> documentIds) {
         try {
-            document.setPropertyValue(
-                    DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
+            document.setPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
                     (Serializable) documentIds);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -66,11 +63,9 @@ public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl
     @Override
     public void validate(CoreSession session) throws ClientException {
         // validate this routeModel
-        EventFirer.fireEvent(session, this, null,
-                DocumentRoutingConstants.Events.beforeRouteValidated.name());
+        EventFirer.fireEvent(session, this, null, DocumentRoutingConstants.Events.beforeRouteValidated.name());
         setValidated(session);
-        EventFirer.fireEvent(session, this, null,
-                DocumentRoutingConstants.Events.afterRouteValidated.name());
+        EventFirer.fireEvent(session, this, null, DocumentRoutingConstants.Events.afterRouteValidated.name());
         setReadOnly(session);
     }
 }

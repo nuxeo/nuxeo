@@ -29,11 +29,10 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.task.Task;
 
 /**
- * Applies the mapping passed as parameter on the input task document. The
- * sourceDoc in the mapping is the input document in the workflow.
+ * Applies the mapping passed as parameter on the input task document. The sourceDoc in the mapping is the input
+ * document in the workflow.
  *
  * @since 5.6
- *
  */
 @Operation(id = MapPropertiesOnTaskOperation.ID, category = Constants.CAT_WORKFLOW, label = "Apply mapping on input task doc", requires = Constants.WORKFLOW_CONTEXT, description = "Applies the mapping passed in parameter on the task document. "
         + "The sourceDoc in the mapping is the input document in the workflow. The operation throws a ClientException if the input document is not a Task.")
@@ -64,11 +63,9 @@ public class MapPropertiesOnTaskOperation {
         if (task == null) {
             throw new ClientException("Input document is not a Task");
         }
-        List<DocumentModel> docs = routing.getWorkflowInputDocuments(session,
-                task);
+        List<DocumentModel> docs = routing.getWorkflowInputDocuments(session, task);
         if (docs.size() == 0) {
-            throw new ClientException(
-                    "Can not fetch the input documents in the related workflow instance");
+            throw new ClientException("Can not fetch the input documents in the related workflow instance");
         }
         if (docs.size() > 1) {
             log.warn("Using as mapping source only the first document in the input documents in the workflow");

@@ -22,20 +22,17 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 
 /**
- * Run all its children one after the other and is donen when the last children
- * is done.
+ * Run all its children one after the other and is donen when the last children is done.
  *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
- *
  */
 @Deprecated
 public class SerialRunner extends AbstractRunner implements ElementRunner {
 
     @Override
     public void run(CoreSession session, DocumentRouteElement element) {
-        List<DocumentRouteElement> children = getChildrenElement(session,
-                element);
+        List<DocumentRouteElement> children = getChildrenElement(session, element);
         if (!element.isRunning()) {
             element.setRunning(session);
         }

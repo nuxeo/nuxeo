@@ -95,15 +95,12 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
                 GraphNode node = new GraphNodeImpl(doc, this);
                 String id = node.getId();
                 if (nodesById.put(id, node) != null) {
-                    throw new DocumentRouteException(
-                            "Duplicate nodes with id: " + id);
+                    throw new DocumentRouteException("Duplicate nodes with id: " + id);
                 }
                 nodes.add(node);
                 if (node.isStart()) {
                     if (startNodeId != null) {
-                        throw new DocumentRouteException(
-                                "Duplicate start nodes: " + startNodeId
-                                        + " and " + id);
+                        throw new DocumentRouteException("Duplicate start nodes: " + startNodeId + " and " + id);
                     }
                     startNodeId = id;
                 }
@@ -128,17 +125,15 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
     /**
      * Finds which transitions are re-looping (feedback arc set).
      */
-    protected void computeLoopTransitions(String startNodeId)
-            throws DocumentRouteException {
+    protected void computeLoopTransitions(String startNodeId) throws DocumentRouteException {
         if (startNodeId == null) {
             // incomplete graph
             return;
         }
         /*
-         * Depth-first search. In the todo stack, each element records a list
-         * of the siblings left to visit at that depth. After visiting the last
-         * sibling, we go back to the parent and at this point mark it as
-         * visited in post-traversal order.
+         * Depth-first search. In the todo stack, each element records a list of the siblings left to visit at that
+         * depth. After visiting the last sibling, we go back to the parent and at this point mark it as visited in
+         * post-traversal order.
          */
         List<String> postOrder = new LinkedList<String>();
         Deque<Deque<String>> stack = new LinkedList<Deque<String>>();
@@ -210,8 +205,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
                 return node;
             }
         }
-        throw new DocumentRouteException("No start node for graph: "
-                + getName());
+        throw new DocumentRouteException("No start node for graph: " + getName());
     }
 
     @Override
@@ -221,8 +215,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         if (node != null) {
             return node;
         }
-        throw new IllegalArgumentException("No node with id: " + id
-                + " in graph: " + this);
+        throw new IllegalArgumentException("No node with id: " + id + " in graph: " + this);
     }
 
     @Override
@@ -243,8 +236,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
                 }
                 vars.put(key, (String) map.get(key));
             }
-            GraphVariablesUtil.setJSONVariables(document, PROP_VARIABLES_FACET,
-                    vars);
+            GraphVariablesUtil.setJSONVariables(document, PROP_VARIABLES_FACET, vars);
         } else {
             GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, map);
         }
@@ -264,8 +256,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
             for (String id : ids) {
                 docRefs.add(new IdRef(id));
             }
-            return document.getCoreSession().getDocuments(
-                    docRefs.toArray(new DocumentRef[0]));
+            return document.getCoreSession().getDocuments(docRefs.toArray(new DocumentRef[0]));
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -296,8 +287,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         try {
             String parentRouteInstanceId = (String) document.getPropertyValue(PROP_PARENT_ROUTE);
             String parentRouteNodeId = (String) document.getPropertyValue(PROP_PARENT_NODE);
-            routing.resumeInstance(parentRouteInstanceId, parentRouteNodeId,
-                    null, null, session);
+            routing.resumeInstance(parentRouteInstanceId, parentRouteNodeId, null, null, session);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }

@@ -26,13 +26,10 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /***
- *
- * Updates the number of comments stored on the {@link DocumentRouteStep}. This
- * is used to avoid unnecessary jena calls when displaying the number of comments
- * on each step.
+ * Updates the number of comments stored on the {@link DocumentRouteStep}. This is used to avoid unnecessary jena calls
+ * when displaying the number of comments on each step.
  *
  * @author mcedica
- *
  */
 public class DocumentRoutingUpdateCommentsInfoListener implements EventListener {
 
@@ -40,8 +37,7 @@ public class DocumentRoutingUpdateCommentsInfoListener implements EventListener 
     public void handleEvent(Event event) throws ClientException {
         String eventId = event.getName();
 
-        if (!eventId.equals(CommentEvents.COMMENT_ADDED)
-                && !eventId.equals(CommentEvents.COMMENT_REMOVED)) {
+        if (!eventId.equals(CommentEvents.COMMENT_ADDED) && !eventId.equals(CommentEvents.COMMENT_REMOVED)) {
             return;
         }
         DocumentEventContext docCtx;
@@ -57,14 +53,10 @@ public class DocumentRoutingUpdateCommentsInfoListener implements EventListener 
         Long comments = (Long) doc.getPropertyValue(DocumentRoutingConstants.COMMENTS_NO_PROPERTY_NAME);
         // else increase or decrease the number of comments on the doc
         if (eventId.equals(CommentEvents.COMMENT_ADDED)) {
-            doc.setPropertyValue(
-                    DocumentRoutingConstants.COMMENTS_NO_PROPERTY_NAME,
-                    ++comments);
+            doc.setPropertyValue(DocumentRoutingConstants.COMMENTS_NO_PROPERTY_NAME, ++comments);
         }
         if (eventId.equals(CommentEvents.COMMENT_REMOVED)) {
-            doc.setPropertyValue(
-                    DocumentRoutingConstants.COMMENTS_NO_PROPERTY_NAME,
-                    --comments);
+            doc.setPropertyValue(DocumentRoutingConstants.COMMENTS_NO_PROPERTY_NAME, --comments);
         }
         event.getContext().getCoreSession().saveDocument(doc);
     }

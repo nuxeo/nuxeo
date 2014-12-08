@@ -44,12 +44,10 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * The default persister. It persists the {@link DocumentRoute} in a tree
- * hierarchy ressembling the current date. New model created from instance are
- * stored in the personal workspace of the user.
+ * The default persister. It persists the {@link DocumentRoute} in a tree hierarchy ressembling the current date. New
+ * model created from instance are stored in the personal workspace of the user.
  *
  * @author arussel
- *
  */
 public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
 
@@ -58,22 +56,18 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     protected static final Log log = LogFactory.getLog(DocumentRoutingTreePersister.class);
 
     @Override
-    public DocumentModel getParentFolderForDocumentRouteInstance(
-            DocumentModel document, CoreSession session) {
+    public DocumentModel getParentFolderForDocumentRouteInstance(DocumentModel document, CoreSession session) {
         try {
             return TreeHelper.getOrCreateDateTreeFolder(session,
-                    getOrCreateRootOfDocumentRouteInstanceStructure(session),
-                    new Date(), "HiddenFolder");
+                    getOrCreateRootOfDocumentRouteInstanceStructure(session), new Date(), "HiddenFolder");
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
     @Override
-    public DocumentModel createDocumentRouteInstanceFromDocumentRouteModel(
-            DocumentModel model, CoreSession session) {
-        DocumentModel parent = getParentFolderForDocumentRouteInstance(model,
-                session);
+    public DocumentModel createDocumentRouteInstanceFromDocumentRouteModel(DocumentModel model, CoreSession session) {
+        DocumentModel parent = getParentFolderForDocumentRouteInstance(model, session);
         DocumentModel result = null;
         try {
             result = session.copy(model.getRef(), parent.getRef(), null);
@@ -84,12 +78,10 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             // set initiator
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
             String initiator = principal.getActingUser();
-            result.setPropertyValue(DocumentRoutingConstants.INITIATOR,
-                    initiator);
+            result.setPropertyValue(DocumentRoutingConstants.INITIATOR, initiator);
             // using the ref, the value of the attached document might not been
             // saved on the model
-            result.setPropertyValue(
-                    DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
+            result.setPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
                     model.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
             // reset creation date, used for workflow start time
             result.setPropertyValue("dc:created", Calendar.getInstance());
@@ -101,13 +93,11 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     }
 
     @Override
-    public DocumentModel saveDocumentRouteInstanceAsNewModel(
-            DocumentModel routeInstance, DocumentModel parentFolder,
+    public DocumentModel saveDocumentRouteInstanceAsNewModel(DocumentModel routeInstance, DocumentModel parentFolder,
             String newName, CoreSession session) {
         DocumentModel result = null;
         try {
-            result = session.copy(routeInstance.getRef(),
-                    parentFolder.getRef(), newName);
+            result = session.copy(routeInstance.getRef(), parentFolder.getRef(), newName);
             return undoReadOnlySecurityPolicy(result, session);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -115,19 +105,16 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     }
 
     @Override
-    public DocumentModel getOrCreateRootOfDocumentRouteInstanceStructure(
-            CoreSession session) {
+    public DocumentModel getOrCreateRootOfDocumentRouteInstanceStructure(CoreSession session) {
         DocumentModel root;
         try {
-            root = getDocumentRoutesStructure(
-                    DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE,
+            root = getDocumentRoutesStructure(DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE,
                     session);
 
             if (root == null) {
                 root = createDocumentRoutesStructure(
                         DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE,
-                        DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_ID,
-                        session);
+                        DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_ID, session);
             }
             return root;
         } catch (ClientException e) {
@@ -136,14 +123,12 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     }
 
     /**
-     * Finds the first domain by name, and creates under it the root container
-     * for the structure containing the route instances.
+     * Finds the first domain by name, and creates under it the root container for the structure containing the route
+     * instances.
      */
-    protected DocumentModel createDocumentRoutesStructure(
-            String routeStructureDocType, String id, CoreSession session)
+    protected DocumentModel createDocumentRoutesStructure(String routeStructureDocType, String id, CoreSession session)
             throws ClientException {
-        DocumentModel root = session.createDocumentModel(
-                session.getRootDocument().getPathAsString(), id,
+        DocumentModel root = session.createDocumentModel(session.getRootDocument().getPathAsString(), id,
                 routeStructureDocType);
         root.setPropertyValue(DC_TITLE, routeStructureDocType);
         root = session.createDocument(root);
@@ -155,8 +140,8 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     }
 
     /**
-     * Create the rootModels under to root document. Grant READ to everyone on
-     * the root models ; workflow availability is specified on each route
+     * Create the rootModels under to root document. Grant READ to everyone on the root models ; workflow availability
+     * is specified on each route
      *
      * @param routeStructureDocType
      * @param id
@@ -164,17 +149,14 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
      * @return
      * @throws ClientException
      */
-    protected DocumentModel createModelsRoutesStructure(
-            String routeStructureDocType, String id, CoreSession session)
+    protected DocumentModel createModelsRoutesStructure(String routeStructureDocType, String id, CoreSession session)
             throws ClientException {
-        DocumentModel rootModels = session.createDocumentModel("/", id,
-                routeStructureDocType);
+        DocumentModel rootModels = session.createDocumentModel("/", id, routeStructureDocType);
         rootModels.setPropertyValue(DC_TITLE, routeStructureDocType);
         rootModels = session.createDocument(rootModels);
         ACP acp = session.getACP(rootModels.getRef());
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ,
-                true));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true));
         session.setACP(rootModels.getRef(), acp, true);
         return rootModels;
     }
@@ -187,10 +169,8 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         for (String group : getUserManager().getAdministratorsGroups()) {
             aces.add(new ACE(group, SecurityConstants.EVERYTHING, true));
         }
-        aces.add(new ACE(DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME,
-                SecurityConstants.READ_WRITE, true));
-        aces.add(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false));
+        aces.add(new ACE(DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME, SecurityConstants.READ_WRITE, true));
+        aces.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
         return aces;
     }
 
@@ -202,10 +182,8 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         }
     }
 
-    protected DocumentModel getDocumentRoutesStructure(String type,
-            CoreSession session) throws ClientException {
-        DocumentModelList res = session.query(String.format("SELECT * from %s",
-                type));
+    protected DocumentModel getDocumentRoutesStructure(String type, CoreSession session) throws ClientException {
+        DocumentModelList res = session.query(String.format("SELECT * from %s", type));
         if (res == null || res.isEmpty()) {
             return null;
         }
@@ -213,8 +191,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             if (log.isWarnEnabled()) {
                 log.warn("More han one DocumentRouteInstanceRoot found:");
                 for (DocumentModel model : res) {
-                    log.warn(" - " + model.getName() + ", "
-                            + model.getPathAsString());
+                    log.warn(" - " + model.getName() + ", " + model.getPathAsString());
                 }
             }
         }
@@ -222,8 +199,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     }
 
     @Override
-    public DocumentModel getParentFolderForNewModel(CoreSession session,
-            DocumentModel instance) {
+    public DocumentModel getParentFolderForNewModel(CoreSession session, DocumentModel instance) {
         try {
             UserWorkspaceService service = Framework.getService(UserWorkspaceService.class);
             return service.getCurrentUserPersonalWorkspace(session, instance);
@@ -241,10 +217,9 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         }
     }
 
-    protected DocumentModel undoReadOnlySecurityPolicy(DocumentModel instance,
-            CoreSession session) throws ClientException {
-        UndoReadOnlySecurityPolicy runner = new UndoReadOnlySecurityPolicy(
-                session, instance.getRef());
+    protected DocumentModel undoReadOnlySecurityPolicy(DocumentModel instance, CoreSession session)
+            throws ClientException {
+        UndoReadOnlySecurityPolicy runner = new UndoReadOnlySecurityPolicy(session, instance.getRef());
         runner.runUnrestricted();
         return session.getDocument(runner.getInstanceRef());
     }
@@ -253,8 +228,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
 
         DocumentRef documentRef;
 
-        public UndoReadOnlySecurityPolicy(CoreSession session,
-                DocumentRef documentRef) {
+        public UndoReadOnlySecurityPolicy(CoreSession session, DocumentRef documentRef) {
             super(session);
             this.documentRef = documentRef;
         }
@@ -268,12 +242,10 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             ACP acp = instance.getACP();
             // remove READ for everyone
             ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
-            routingACL.remove(new ACE(SecurityConstants.EVERYONE,
-                    SecurityConstants.READ, true));
+            routingACL.remove(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true));
             // unblock rights inheritance
             ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
-            localACL.remove(new ACE(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false));
+            localACL.remove(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
             instance.setACP(acp, true);
         }
 
@@ -283,18 +255,14 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     }
 
     @Override
-    public DocumentModel getParentFolderForDocumentRouteModels(
-            CoreSession session) {
+    public DocumentModel getParentFolderForDocumentRouteModels(CoreSession session) {
         DocumentModel root;
         try {
-            root = getDocumentRoutesStructure(
-                    DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE,
+            root = getDocumentRoutesStructure(DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE,
                     session);
             if (root == null) {
-                root = createModelsRoutesStructure(
-                        DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE,
-                        DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_ID,
-                        session);
+                root = createModelsRoutesStructure(DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE,
+                        DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_ID, session);
             }
             return root;
         } catch (ClientException e) {

@@ -60,8 +60,7 @@ public class RouteModelsReloader implements EventListener {
                 throw new ClientException("Can not acces the RepositoryManager");
             }
             // Transaction management
-            final boolean txStarted = !TransactionHelper.isTransactionActive()
-                    && TransactionHelper.startTransaction();
+            final boolean txStarted = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
             boolean txSucceed = false;
             try {
                 new UnrestrictedSessionRunner(rm.getDefaultRepositoryName()) {

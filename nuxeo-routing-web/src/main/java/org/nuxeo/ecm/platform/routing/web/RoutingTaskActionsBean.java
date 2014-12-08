@@ -95,12 +95,10 @@ public class RoutingTaskActionsBean implements Serializable {
     public static final String SUBJECT_PATTERN = "([a-zA-Z_0-9]*(:)[a-zA-Z_0-9]*)";
 
     /**
-     * Runtime property name, that makes it possible to cache actions available
-     * on a given task, depending on its type.
+     * Runtime property name, that makes it possible to cache actions available on a given task, depending on its type.
      * <p>
-     * This caching is global to all tasks in the platform, and will not work
-     * correctly if some tasks are filtering some actions depending on local
-     * variables, for instance.
+     * This caching is global to all tasks in the platform, and will not work correctly if some tasks are filtering some
+     * actions depending on local variables, for instance.
      *
      * @since 5.7
      */
@@ -136,8 +134,7 @@ public class RoutingTaskActionsBean implements Serializable {
 
     protected Task currentTask;
 
-    public void validateTaskDueDate(FacesContext context,
-            UIComponent component, Object value) {
+    public void validateTaskDueDate(FacesContext context, UIComponent component, Object value) {
         final String DATE_FORMAT = "dd/MM/yyyy";
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 
@@ -157,22 +154,17 @@ public class RoutingTaskActionsBean implements Serializable {
         }
 
         if (messageString != null) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "label.workflow.error.outdated_duedate"),
-                    null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    "label.workflow.error.outdated_duedate"), null);
             ((EditableValueHolder) component).setValid(false);
             context.addMessage(component.getClientId(context), message);
         }
     }
 
-    public void validateSubject(FacesContext context, UIComponent component,
-            Object value) {
+    public void validateSubject(FacesContext context, UIComponent component, Object value) {
         if (!((value instanceof String) && ((String) value).matches(SUBJECT_PATTERN))) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "label.document.routing.invalid.subject"),
-                    null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    "label.document.routing.invalid.subject"), null);
             context.addMessage(null, message);
             throw new ValidatorException(message);
         }
@@ -186,8 +178,7 @@ public class RoutingTaskActionsBean implements Serializable {
         List<Button> buttons = getTaskInfo(task, true).buttons;
         List<Action> actions = new ArrayList<Action>();
 
-        DocumentModel workflowInstance = documentManager.getDocument(new IdRef(
-                task.getProcessId()));
+        DocumentModel workflowInstance = documentManager.getDocument(new IdRef(task.getProcessId()));
         GraphRoute workflow = workflowInstance.getAdapter(GraphRoute.class);
         if (workflow == null) {
             // task was not created by a workflow process , no actions to
@@ -196,20 +187,17 @@ public class RoutingTaskActionsBean implements Serializable {
         }
         GraphNode node = workflow.getNode(task.getType());
         for (Button button : buttons) {
-            Action action = new Action(button.getName(),
-                    Action.EMPTY_CATEGORIES);
+            Action action = new Action(button.getName(), Action.EMPTY_CATEGORIES);
             action.setLabel(button.getLabel());
             boolean displayAction = true;
             if (StringUtils.isNotEmpty(button.getFilter())) {
                 ActionContext actionContext = actionContextProvider.createActionContext();
                 if (node != null) {
                     Map<String, Object> workflowContextualInfo = new HashMap<String, Object>();
-                    workflowContextualInfo.putAll(node.getWorkflowContextualInfo(
-                            documentManager, true));
+                    workflowContextualInfo.putAll(node.getWorkflowContextualInfo(documentManager, true));
                     actionContext.putAllLocalVariables(workflowContextualInfo);
                 }
-                displayAction = getActionService().checkFilter(button.filter,
-                        actionContext);
+                displayAction = getActionService().checkFilter(button.filter, actionContext);
             }
             if (displayAction) {
                 actions.add(action);
@@ -229,28 +217,24 @@ public class RoutingTaskActionsBean implements Serializable {
             // logged
             // by audit
             if (formVariables.containsKey(GraphNode.NODE_VARIABLE_COMMENT)) {
-                data.put(GraphNode.NODE_VARIABLE_COMMENT,
-                        formVariables.get(GraphNode.NODE_VARIABLE_COMMENT));
+                data.put(GraphNode.NODE_VARIABLE_COMMENT, formVariables.get(GraphNode.NODE_VARIABLE_COMMENT));
             }
         }
         // add the button name that was clicked
         try {
             DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
             routing.endTask(documentManager, task, data, button);
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get("workflow.feedback.info.taskEnded"));
+            facesMessages.add(StatusMessage.Severity.INFO, messages.get("workflow.feedback.info.taskEnded"));
         } catch (DocumentRouteException e) {
             if (log.isDebugEnabled()) {
                 log.debug(e, e);
             }
-            facesMessages.add(StatusMessage.Severity.ERROR,
-                    messages.get("workflow.feedback.error.taskEnded"));
+            facesMessages.add(StatusMessage.Severity.ERROR, messages.get("workflow.feedback.error.taskEnded"));
         }
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
         clear(task.getId());
         if (navigationContext.getCurrentDocument() != null
-                && documentManager.hasPermission(
-                        navigationContext.getCurrentDocument().getRef(),
+                && documentManager.hasPermission(navigationContext.getCurrentDocument().getRef(),
                         SecurityConstants.READ)) {
             return null;
         }
@@ -266,8 +250,7 @@ public class RoutingTaskActionsBean implements Serializable {
         }
     }
 
-    public Map<String, Serializable> getFormVariables(Task task)
-            throws ClientException {
+    public Map<String, Serializable> getFormVariables(Task task) throws ClientException {
         return getTaskInfo(task, true).formVariables;
     }
 
@@ -288,8 +271,7 @@ public class RoutingTaskActionsBean implements Serializable {
 
         protected String name;
 
-        protected TaskInfo(String taskId,
-                HashMap<String, Serializable> formVariables, String layout,
+        protected TaskInfo(String taskId, HashMap<String, Serializable> formVariables, String layout,
                 List<Button> buttons, boolean canBeReassigned, String name) {
             this.formVariables = formVariables;
             this.layout = layout;
@@ -331,20 +313,17 @@ public class RoutingTaskActionsBean implements Serializable {
     // we have to be unrestricted to get this info
     // because the current user may not be the one that started the
     // workflow
-    public TaskInfo getTaskInfo(final Task task, final boolean getFormVariables)
-            throws ClientException {
+    public TaskInfo getTaskInfo(final Task task, final boolean getFormVariables) throws ClientException {
         if (tasksInfoCache.containsKey(task.getId())) {
             return tasksInfoCache.get(task.getId());
         }
         final String routeDocId = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
         final String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
         if (routeDocId == null) {
-            throw new ClientException(
-                    "Can not get the source graph for this task");
+            throw new ClientException("Can not get the source graph for this task");
         }
         if (nodeId == null) {
-            throw new ClientException(
-                    "Can not get the source node for this task");
+            throw new ClientException("Can not get the source node for this task");
         }
         final TaskInfo[] res = new TaskInfo[1];
         new UnrestrictedSessionRunner(documentManager) {
@@ -358,9 +337,8 @@ public class RoutingTaskActionsBean implements Serializable {
                     map.putAll(node.getVariables());
                     map.putAll(route.getVariables());
                 }
-                res[0] = new TaskInfo(task.getId(), map, node.getTaskLayout(),
-                        node.getTaskButtons(), node.allowTaskReassignment(),
-                        task.getName());
+                res[0] = new TaskInfo(task.getId(), map, node.getTaskLayout(), node.getTaskButtons(),
+                        node.allowTaskReassignment(), task.getName());
             }
         }.runUnrestricted();
         // don't add tasks in cache when are fetched without the form variables
@@ -376,8 +354,7 @@ public class RoutingTaskActionsBean implements Serializable {
      * @since 5.6
      */
     public boolean isRoutingTask(Task task) {
-        return task.getDocument().hasFacet(
-                DocumentRoutingConstants.ROUTING_TASK_FACET_NAME);
+        return task.getDocument().hasFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME);
     }
 
     /**
@@ -413,16 +390,14 @@ public class RoutingTaskActionsBean implements Serializable {
      *
      * @since 5.7
      */
-    protected String getTaskActionId(Task task, String buttonId)
-            throws ClientException {
+    protected String getTaskActionId(Task task, String buttonId) throws ClientException {
         return String.format("%s_%s", task.getType(), buttonId);
     }
 
     /**
      * @since 5.6
      */
-    public Map<String, Action> getTaskActionsMap(Task task)
-            throws ClientException {
+    public Map<String, Action> getTaskActionsMap(Task task) throws ClientException {
         Map<String, Action> actions = new LinkedHashMap<String, Action>();
         // bulk processing, don't fetch formVariables to avoid overriding them
         TaskInfo taskInfo = getTaskInfo(task, false);
@@ -455,8 +430,7 @@ public class RoutingTaskActionsBean implements Serializable {
                 }
                 boolean displayAction = true;
                 if (StringUtils.isNotEmpty(button.getFilter())) {
-                    displayAction = getActionService().checkFilter(
-                            button.filter,
+                    displayAction = getActionService().checkFilter(button.filter,
                             actionContextProvider.createActionContext());
                 }
                 if (displayAction) {
@@ -487,8 +461,7 @@ public class RoutingTaskActionsBean implements Serializable {
      * @since 5.6
      */
     @SuppressWarnings("boxing")
-    public List<Action> getTaskActions(String selectionListName)
-            throws ClientException {
+    public List<Action> getTaskActions(String selectionListName) throws ClientException {
         Map<String, Action> actions = new LinkedHashMap<String, Action>();
         Map<String, Map<String, Action>> actionsPerTaskType = new LinkedHashMap<String, Map<String, Action>>();
         Map<String, Integer> actionsCounter = new HashMap<String, Integer>();
@@ -547,8 +520,7 @@ public class RoutingTaskActionsBean implements Serializable {
      * @since 5.6
      */
     @SuppressWarnings("unchecked")
-    public String endTasks(String selectionListName, Action taskAction)
-            throws ClientException {
+    public String endTasks(String selectionListName, Action taskAction) throws ClientException {
         // collect form data
         Map<String, Object> data = new HashMap<String, Object>();
         String buttonId = (String) taskAction.getProperties().get("buttonId");
@@ -573,8 +545,7 @@ public class RoutingTaskActionsBean implements Serializable {
                 if (doc.hasFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME)) {
                     // add the button name that was clicked
                     try {
-                        routing.endTask(documentManager, new TaskImpl(doc),
-                                data, buttonId);
+                        routing.endTask(documentManager, new TaskImpl(doc), data, buttonId);
                     } catch (DocumentRouteException e) {
                         log.error(e, e);
                         hasErrors = true;
@@ -583,11 +554,9 @@ public class RoutingTaskActionsBean implements Serializable {
             }
         }
         if (hasErrors) {
-            facesMessages.add(StatusMessage.Severity.ERROR,
-                    messages.get("workflow.feedback.error.tasksEnded"));
+            facesMessages.add(StatusMessage.Severity.ERROR, messages.get("workflow.feedback.error.tasksEnded"));
         } else {
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get("workflow.feedback.info.tasksEnded"));
+            facesMessages.add(StatusMessage.Severity.INFO, messages.get("workflow.feedback.info.tasksEnded"));
         }
         // reset selection list
         documentsListsManager.resetWorkingList(selectionListName);
@@ -608,8 +577,7 @@ public class RoutingTaskActionsBean implements Serializable {
     /***
      * @since 5.7
      */
-    @Observer(value = { TaskEventNames.WORKFLOW_TASK_COMPLETED,
-            TaskEventNames.WORKFLOW_TASK_REASSIGNED,
+    @Observer(value = { TaskEventNames.WORKFLOW_TASK_COMPLETED, TaskEventNames.WORKFLOW_TASK_REASSIGNED,
             TaskEventNames.WORKFLOW_TASK_DELEGATED })
     @BypassInterceptors
     public void OnTaskCompleted() {
@@ -626,15 +594,12 @@ public class RoutingTaskActionsBean implements Serializable {
      */
     public String reassignTask(TaskInfo taskInfo) {
         try {
-            Framework.getLocalService(DocumentRoutingService.class).reassignTask(
-                    documentManager, taskInfo.getTaskId(),
+            Framework.getLocalService(DocumentRoutingService.class).reassignTask(documentManager, taskInfo.getTaskId(),
                     taskInfo.getActors(), taskInfo.getComment());
-            Events.instance().raiseEvent(
-                    TaskEventNames.WORKFLOW_TASK_REASSIGNED);
+            Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_REASSIGNED);
         } catch (DocumentRouteException e) {
             log.error(e);
-            facesMessages.add(StatusMessage.Severity.ERROR,
-                    messages.get("workflow.feedback.error.taskEnded"));
+            facesMessages.add(StatusMessage.Severity.ERROR, messages.get("workflow.feedback.error.taskEnded"));
         }
         return null;
     }
@@ -646,8 +611,7 @@ public class RoutingTaskActionsBean implements Serializable {
         String workflowTitle = "";
 
         try {
-            DocumentModel routeInstance = documentManager.getDocument(new IdRef(
-                    instanceId));
+            DocumentModel routeInstance = documentManager.getDocument(new IdRef(instanceId));
             workflowTitle = routeInstance.getTitle();
         } catch (ClientException e) {
             log.error("Can not fetch route instance with id " + instanceId, e);
@@ -660,14 +624,12 @@ public class RoutingTaskActionsBean implements Serializable {
      */
     public String delegateTask(TaskInfo taskInfo) {
         try {
-            Framework.getLocalService(DocumentRoutingService.class).delegateTask(
-                    documentManager, taskInfo.getTaskId(),
+            Framework.getLocalService(DocumentRoutingService.class).delegateTask(documentManager, taskInfo.getTaskId(),
                     taskInfo.getActors(), taskInfo.getComment());
             Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_DELEGATED);
         } catch (DocumentRouteException e) {
             log.error(e);
-            facesMessages.add(StatusMessage.Severity.ERROR,
-                    messages.get("workflow.feedback.error.taskEnded"));
+            facesMessages.add(StatusMessage.Severity.ERROR, messages.get("workflow.feedback.error.taskEnded"));
         }
         return null;
     }
@@ -703,16 +665,14 @@ public class RoutingTaskActionsBean implements Serializable {
     }
 
     /**
-     * Added to avoid an error when opening a task created @before 5.8 see
-     * NXP-14047
+     * Added to avoid an error when opening a task created @before 5.8 see NXP-14047
      *
      * @since 5.9.3, 5.8.0-HF10
      * @return
      * @throws ClientException
      */
     @SuppressWarnings("deprecation")
-    public List<String> getCurrentTaskTargetDocumentsIds()
-            throws ClientException {
+    public List<String> getCurrentTaskTargetDocumentsIds() throws ClientException {
         Set<String> uniqueTargetDocIds = new HashSet<String>();
         List<String> docIds = new ArrayList<String>();
         if (currentTask == null) {
@@ -731,8 +691,7 @@ public class RoutingTaskActionsBean implements Serializable {
         if (currentTask == null) {
             return false;
         }
-        DocumentModel workflowInstance = documentManager.getDocument(new IdRef(
-                currentTask.getProcessId()));
+        DocumentModel workflowInstance = documentManager.getDocument(new IdRef(currentTask.getProcessId()));
         GraphRoute workflow = workflowInstance.getAdapter(GraphRoute.class);
         if (workflow == null) {
             return false;

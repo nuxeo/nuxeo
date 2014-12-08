@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.routing.core.impl.LockableDocumentRouteImpl;
  * Provides {@link LockableDocumentRoute} for a {@link DocumentModel}.
  *
  * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
- *
  */
 public class LockableDocumentAdapterFactory implements DocumentAdapterFactory {
 

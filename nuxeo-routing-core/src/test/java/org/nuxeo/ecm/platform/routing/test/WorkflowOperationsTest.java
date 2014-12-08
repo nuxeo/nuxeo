@@ -47,6 +47,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
+
 /**
  * @since 5.7.2
  */
@@ -82,8 +83,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node1 = session.saveDocument(node1);
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         validate(routeDoc, session);
@@ -99,20 +99,16 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         jsonProperties.put(
                 "datefield",
                 (String) Scripting.newExpression(
-                        "org.nuxeo.ecm.core.schema.utils.DateParser.formatW3CDateTime(CurrentDate.date)").eval(
-                        ctx));
+                        "org.nuxeo.ecm.core.schema.utils.DateParser.formatW3CDateTime(CurrentDate.date)").eval(ctx));
         OperationChain startWorkflowChain = new OperationChain("startWorkflow");
-        startWorkflowChain.add(StartWorkflowOperation.ID).set("id", "myroute").set(
-                "variables", jsonProperties);
+        startWorkflowChain.add(StartWorkflowOperation.ID).set("id", "myroute").set("variables", jsonProperties);
         automationService.run(ctx, startWorkflowChain);
         session.save();
 
-        DocumentModel routeInstance = session.getDocument(new IdRef(
-                (String) ctx.get("WorkflowId")));
+        DocumentModel routeInstance = session.getDocument(new IdRef((String) ctx.get("WorkflowId")));
         GraphRoute graph = routeInstance.getAdapter(GraphRoute.class);
         Map<String, Serializable> vars = graph.getVariables();
-        assertEquals(routeInstance.getPropertyValue("fctroute1:stringfield"),
-                "test");
+        assertEquals(routeInstance.getPropertyValue("fctroute1:stringfield"), "test");
         assertEquals(vars.get("stringfield"), "test");
         String[] assignesVar = (String[]) vars.get("myassignees");
         assertEquals(2, assignesVar.length);
@@ -121,13 +117,11 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
 
         Calendar varDate = Calendar.getInstance();
         varDate.setTime((Date) graph.getVariables().get("datefield"));
-        assertEquals(Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
-                varDate.get(Calendar.DAY_OF_MONTH));
+        assertEquals(Calendar.getInstance().get(Calendar.DAY_OF_MONTH), varDate.get(Calendar.DAY_OF_MONTH));
 
         // test SetWorkflowVar on the same context with StartWorkflow
         OperationChain setWorkflowVar = new OperationChain("setVar");
-        setWorkflowVar.add(SetWorkflowVar.ID).set("name", "stringfield").set(
-                "value", "test1");
+        setWorkflowVar.add(SetWorkflowVar.ID).set("name", "stringfield").set("value", "test1");
         automationService.run(ctx, setWorkflowVar);
         session.save();
 
@@ -141,9 +135,8 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         ctx.setCoreSession(session);
         ctx.setInput(doc);
         setWorkflowVar = new OperationChain("setWVar");
-        setWorkflowVar.add(SetWorkflowVar.ID).set("workflowInstanceId",
-                routeInstance.getId()).set("name", "stringfield").set("value",
-                "test2");
+        setWorkflowVar.add(SetWorkflowVar.ID).set("workflowInstanceId", routeInstance.getId()).set("name",
+                "stringfield").set("value", "test2");
         automationService.run(ctx, setWorkflowVar);
         session.save();
 
@@ -155,19 +148,15 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testTasksOperations() throws Exception {
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.addFacet("FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
-                transition("trans1", "node2",
-                        "NodeVariables[\"button\"] == \"trans1\"",
-                        "testchain_title1"));
+        setTransitions(node1,
+                transition("trans1", "node2", "NodeVariables[\"button\"] == \"trans1\"", "testchain_title1"));
         // task properties
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
@@ -186,8 +175,8 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         OperationContext ctx = new OperationContext();
         ctx.setCoreSession(session);
         ctx.setInput(doc);
-        List<DocumentModel> tasks = (List<DocumentModel>) automationService.run(
-                ctx, GetOpenTasksOperation.ID, new HashMap<String, Object>());
+        List<DocumentModel> tasks = (List<DocumentModel>) automationService.run(ctx, GetOpenTasksOperation.ID,
+                new HashMap<String, Object>());
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
 
@@ -202,8 +191,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         params.put("username", users[0]);
         params.put("nodeId", "node1");
         params.put("processId", instance.getDocument().getId());
-        tasks = (List<DocumentModel>) automationService.run(ctx,
-                GetOpenTasksOperation.ID, params);
+        tasks = (List<DocumentModel>) automationService.run(ctx, GetOpenTasksOperation.ID, params);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
 
@@ -220,20 +208,16 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         Properties nodeVars = new Properties();
         nodeVars.put("stringfield2", "testNodeVar");
 
-        OperationChain completeTask = new OperationChain(
-                CompleteTaskOperation.ID);
-        completeTask.add(CompleteTaskOperation.ID).set("status", "trans1").set(
-                "workflowVariables", workflowVars).set("nodeVariables",
-                nodeVars);
+        OperationChain completeTask = new OperationChain(CompleteTaskOperation.ID);
+        completeTask.add(CompleteTaskOperation.ID).set("status", "trans1").set("workflowVariables", workflowVars).set(
+                "nodeVariables", nodeVars);
         automationService.run(ctx, completeTask);
 
         session.save();
-        DocumentModel routeInstance = session.getDocument(new IdRef(
-                instance.getDocument().getId()));
+        DocumentModel routeInstance = session.getDocument(new IdRef(instance.getDocument().getId()));
         GraphRoute graph = routeInstance.getAdapter(GraphRoute.class);
         Map<String, Serializable> vars = graph.getVariables();
-        assertEquals(routeInstance.getPropertyValue("fctroute1:stringfield"),
-                "completeTaskTest");
+        assertEquals(routeInstance.getPropertyValue("fctroute1:stringfield"), "completeTaskTest");
         assertEquals(vars.get("stringfield"), "completeTaskTest");
         String[] assignesVar = (String[]) vars.get("myassignees");
         assertEquals(2, assignesVar.length);
@@ -247,8 +231,8 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         ctx = new OperationContext();
         ctx.setCoreSession(session);
         ctx.setInput(doc);
-        tasks = (List<DocumentModel>) automationService.run(ctx,
-                GetOpenTasksOperation.ID, new HashMap<String, Object>());
+        tasks = (List<DocumentModel>) automationService.run(ctx, GetOpenTasksOperation.ID,
+                new HashMap<String, Object>());
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
     }

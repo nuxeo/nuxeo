@@ -29,12 +29,10 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.helper.ActionableValidator;
 
 /**
- * A Test Helper class that simulate persistence of Step information. This
- * persistence is transient to the JVM.
+ * A Test Helper class that simulate persistence of Step information. This persistence is transient to the JVM.
  *
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 @Deprecated
 public class WaitingStepRuntimePersister {
@@ -53,10 +51,8 @@ public class WaitingStepRuntimePersister {
         return runningSteps;
     }
 
-    static public DocumentRouteStep getStep(String id, CoreSession session)
-            throws ClientException {
-        return session.getDocument(new IdRef(id)).getAdapter(
-                DocumentRouteStep.class);
+    static public DocumentRouteStep getStep(String id, CoreSession session) throws ClientException {
+        return session.getDocument(new IdRef(id)).getAdapter(DocumentRouteStep.class);
     }
 
     static public List<String> getDoneStepIds() {
@@ -67,23 +63,21 @@ public class WaitingStepRuntimePersister {
         if (!runningSteps.contains(id)) {
             throw new RuntimeException("Asking to resume a non peristed step.");
         }
-        ActionableValidator validator = new ActionableValidator(
-                new SimpleActionableObject(id), session);
+        ActionableValidator validator = new ActionableValidator(new SimpleActionableObject(id), session);
         validator.validate();
         runningSteps.remove(id);
         doneSteps.add(id);
     }
 
-    static public void resumeDecisionalStep(final String id,
-            CoreSession session, String nextStepPos) {
+    static public void resumeDecisionalStep(final String id, CoreSession session, String nextStepPos) {
         if (!runningSteps.contains(id)) {
             throw new RuntimeException("Asking to resume a non peristed step.");
         }
 
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("nextStepPos", nextStepPos);
-        ActionableValidator validator = new ActionableValidator(
-                new SimpleDecisionalActionableObject(id), session, properties);
+        ActionableValidator validator = new ActionableValidator(new SimpleDecisionalActionableObject(id), session,
+                properties);
         validator.validate();
         runningSteps.remove(id);
         doneSteps.add(id);

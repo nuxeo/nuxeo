@@ -29,12 +29,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 
-
 /**
  * JSF Converter used for rendering, transforming a docId into the document title
  *
  * @author Mariana Cedica
- *
  */
 public class DocumentModelConvertor implements Converter {
 
@@ -48,22 +46,18 @@ public class DocumentModelConvertor implements Converter {
      * Returns given value (does not do any reverse conversion)
      */
     @Override
-    public Object getAsObject(FacesContext arg0, UIComponent component,
-            String value) {
+    public Object getAsObject(FacesContext arg0, UIComponent component, String value) {
         return value;
     }
-
 
     /**
      * Returns the document title using the docId passed as value
      */
     @Override
-    public String getAsString(FacesContext arg0, UIComponent component,
-            Object value) {
+    public String getAsString(FacesContext arg0, UIComponent component, Object value) {
         if (value instanceof String && !StringUtils.isEmpty((String) value)) {
             try {
-                DocumentModel doc = session.getDocument((new IdRef(
-                        (String) value)));
+                DocumentModel doc = session.getDocument((new IdRef((String) value)));
                 return doc.getTitle();
             } catch (ClientException e) {
                 return null;

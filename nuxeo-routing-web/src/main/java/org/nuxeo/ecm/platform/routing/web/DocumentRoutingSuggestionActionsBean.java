@@ -51,8 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("docRoutingSuggestionActions")
 @Scope(CONVERSATION)
 @AutomaticDocumentBasedInvalidation
-public class DocumentRoutingSuggestionActionsBean extends
-        DocumentContextBoundActionBean implements Serializable {
+public class DocumentRoutingSuggestionActionsBean extends DocumentContextBoundActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -65,24 +64,20 @@ public class DocumentRoutingSuggestionActionsBean extends
         return documentManager.getDocument(new IdRef(id));
     }
 
-    public List<DocumentModel> getDocumentSuggestions(Object input)
-            throws ClientException {
+    public List<DocumentModel> getDocumentSuggestions(Object input) throws ClientException {
         PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
         props.put(CORE_SESSION_PROPERTY, (Serializable) documentManager);
         @SuppressWarnings("unchecked")
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC, null, null, 0L, props,
-                String.format("%s%%", input));
+                CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC, null, null, 0L, props, String.format("%s%%", input));
         return pageProvider.getCurrentPage();
     }
 
-    public List<DocumentModel> getRouteModelSuggestions(Object input)
-            throws ClientException {
+    public List<DocumentModel> getRouteModelSuggestions(Object input) throws ClientException {
         DocumentRoutingService documentRoutingService = Framework.getLocalService(DocumentRoutingService.class);
-        return documentRoutingService.searchRouteModels(documentManager,
-                (String) input);
+        return documentRoutingService.searchRouteModels(documentManager, (String) input);
     }
 
     @Override

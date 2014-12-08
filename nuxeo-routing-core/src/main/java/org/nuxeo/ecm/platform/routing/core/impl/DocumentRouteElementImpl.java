@@ -42,10 +42,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
  */
-public class DocumentRouteElementImpl implements DocumentRouteElement,
-        DocumentRouteStep {
+public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentRouteStep {
 
     private static final long serialVersionUID = 1L;
 
@@ -83,8 +81,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     }
 
     @Override
-    public void resume(CoreSession session, String nodeId, String taskId,
-            Map<String, Object> data, String status) {
+    public void resume(CoreSession session, String nodeId, String taskId, Map<String, Object> data, String status) {
         runner.resume(session, this, nodeId, taskId, data, status);
     }
 
@@ -139,8 +136,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
 
     protected boolean checkLifeCycleState(ElementLifeCycleState state) {
         try {
-            return document.getCurrentLifeCycleState().equalsIgnoreCase(
-                    state.name());
+            return document.getCurrentLifeCycleState().equalsIgnoreCase(state.name());
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -172,8 +168,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     }
 
     @Override
-    public void followTransition(ElementLifeCycleTransistion transition,
-            CoreSession session, boolean recursive) {
+    public void followTransition(ElementLifeCycleTransistion transition, CoreSession session, boolean recursive) {
         try {
             if (document.followTransition(transition.name())) {
                 if (Framework.isTestModeSet()) {
@@ -207,8 +202,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     @Override
     public void setDone(CoreSession session) {
         followTransition(ElementLifeCycleTransistion.toDone, session, false);
-        EventFirer.fireEvent(session, this, null,
-                DocumentRoutingConstants.Events.afterStepRunning.name());
+        EventFirer.fireEvent(session, this, null, DocumentRoutingConstants.Events.afterStepRunning.name());
     }
 
     @Override
@@ -234,11 +228,9 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
         readOnlySetter.runUnrestricted();
     }
 
-    protected class SetDocumentOnReadOnlyUnrestrictedSessionRunner extends
-            UnrestrictedSessionRunner {
+    protected class SetDocumentOnReadOnlyUnrestrictedSessionRunner extends UnrestrictedSessionRunner {
 
-        public SetDocumentOnReadOnlyUnrestrictedSessionRunner(
-                CoreSession session, DocumentRef ref) {
+        public SetDocumentOnReadOnlyUnrestrictedSessionRunner(CoreSession session, DocumentRef ref) {
             super(session);
             this.ref = ref;
         }
@@ -251,12 +243,10 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
             ACP acp = new ACPImpl();
             // add new ACL to set READ permission to everyone
             ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
-            routingACL.add(new ACE(SecurityConstants.EVERYONE,
-                    SecurityConstants.READ, true));
+            routingACL.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true));
             // block rights inheritance
             ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
-            localACL.add(new ACE(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false));
+            localACL.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
             doc.setACP(acp, true);
             session.saveDocument(doc);
         }
@@ -264,12 +254,10 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
 
     @Override
     public boolean canValidateStep(CoreSession session) {
-        return hasPermissionOnDocument(session,
-                SecurityConstants.WRITE_LIFE_CYCLE);
+        return hasPermissionOnDocument(session, SecurityConstants.WRITE_LIFE_CYCLE);
     }
 
-    protected boolean hasPermissionOnDocument(CoreSession session,
-            String permission) {
+    protected boolean hasPermissionOnDocument(CoreSession session, String permission) {
         try {
             return session.hasPermission(document.getRef(), permission);
         } catch (ClientException e) {
@@ -279,12 +267,10 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
 
     @Override
     public void setCanValidateStep(CoreSession session, String userOrGroup) {
-        setPermissionOnDocument(session, userOrGroup,
-                SecurityConstants.WRITE_LIFE_CYCLE);
+        setPermissionOnDocument(session, userOrGroup, SecurityConstants.WRITE_LIFE_CYCLE);
     }
 
-    protected void setPermissionOnDocument(CoreSession session,
-            String userOrGroup, String permission) {
+    protected void setPermissionOnDocument(CoreSession session, String userOrGroup, String permission) {
         try {
             ACP acp = document.getACP();
             ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
@@ -298,14 +284,12 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
 
     @Override
     public boolean canUpdateStep(CoreSession session) {
-        return hasPermissionOnDocument(session,
-                SecurityConstants.WRITE_PROPERTIES);
+        return hasPermissionOnDocument(session, SecurityConstants.WRITE_PROPERTIES);
     }
 
     @Override
     public void setCanUpdateStep(CoreSession session, String userOrGroup) {
-        setPermissionOnDocument(session, userOrGroup,
-                SecurityConstants.WRITE_PROPERTIES);
+        setPermissionOnDocument(session, userOrGroup, SecurityConstants.WRITE_PROPERTIES);
     }
 
     @Override
@@ -325,12 +309,9 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
 
     @Override
     public void backToReady(CoreSession session) {
-        EventFirer.fireEvent(session, this, null,
-                DocumentRoutingConstants.Events.beforeStepBackToReady.name());
-        followTransition(ElementLifeCycleTransistion.backToReady, session,
-                false);
-        EventFirer.fireEvent(session, this, null,
-                DocumentRoutingConstants.Events.afterStepBackToReady.name());
+        EventFirer.fireEvent(session, this, null, DocumentRoutingConstants.Events.beforeStepBackToReady.name());
+        followTransition(ElementLifeCycleTransistion.backToReady, session, false);
+        EventFirer.fireEvent(session, this, null, DocumentRoutingConstants.Events.afterStepBackToReady.name());
     }
 
     @Override
@@ -347,8 +328,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     @Override
     public boolean canUndoStep(CoreSession session) {
         try {
-            GetIsParentRunningUnrestricted runner = new GetIsParentRunningUnrestricted(
-                    session);
+            GetIsParentRunningUnrestricted runner = new GetIsParentRunningUnrestricted(session);
             runner.runUnrestricted();
             return runner.isRunning();
         } catch (ClientException e) {
@@ -356,8 +336,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
         }
     }
 
-    protected class GetIsParentRunningUnrestricted extends
-            UnrestrictedSessionRunner {
+    protected class GetIsParentRunningUnrestricted extends UnrestrictedSessionRunner {
         public GetIsParentRunningUnrestricted(CoreSession session) {
             super(session);
         }

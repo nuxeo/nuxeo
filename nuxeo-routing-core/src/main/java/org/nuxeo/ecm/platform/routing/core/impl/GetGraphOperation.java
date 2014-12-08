@@ -68,13 +68,10 @@ public class GetGraphOperation {
 
     @OperationMethod
     public Blob run() throws Exception {
-        Locale locale = language != null && !language.isEmpty() ? new Locale(
-                language) : Locale.ENGLISH;
-        GetRouteAsJsonUnrestricted unrestrictedRunner = new GetRouteAsJsonUnrestricted(
-                session, routeDocId, locale);
+        Locale locale = language != null && !language.isEmpty() ? new Locale(language) : Locale.ENGLISH;
+        GetRouteAsJsonUnrestricted unrestrictedRunner = new GetRouteAsJsonUnrestricted(session, routeDocId, locale);
         String json = unrestrictedRunner.getJSON();
-        return new InputStreamBlob(new ByteArrayInputStream(
-                json.getBytes("UTF-8")), "application/json");
+        return new InputStreamBlob(new ByteArrayInputStream(json.getBytes("UTF-8")), "application/json");
 
     }
 
@@ -90,9 +87,7 @@ public class GetGraphOperation {
                 for (Transition transition : transitions) {
                     GraphNode targetNode = route.getNode(transition.getTarget());
                     tranViews.put(transition.getId(),
-                            new TransitionView(node.getId(),
-                                    targetNode.getId(), transition.getLabel(),
-                                    locale));
+                            new TransitionView(node.getId(), targetNode.getId(), transition.getLabel(), locale));
                 }
             }
             graph.put("nodes", nodeViews);
@@ -115,8 +110,7 @@ public class GetGraphOperation {
 
         Locale locale;
 
-        protected GetRouteAsJsonUnrestricted(CoreSession session, String docId,
-                Locale locale) {
+        protected GetRouteAsJsonUnrestricted(CoreSession session, String docId, Locale locale) {
             super(session);
             this.docId = docId;
             this.locale = locale;
@@ -146,15 +140,12 @@ public class GetGraphOperation {
 class NodeView {
 
     public NodeView(GraphNode node, Locale locale) throws ClientException {
-        this.x = Integer.parseInt((String) node.getDocument().getPropertyValue(
-                GraphNode.PROP_NODE_X_COORDINATE));
-        this.y = Integer.parseInt((String) node.getDocument().getPropertyValue(
-                GraphNode.PROP_NODE_Y_COORDINATE));
+        this.x = Integer.parseInt((String) node.getDocument().getPropertyValue(GraphNode.PROP_NODE_X_COORDINATE));
+        this.y = Integer.parseInt((String) node.getDocument().getPropertyValue(GraphNode.PROP_NODE_Y_COORDINATE));
         this.isStartNode = node.isStart();
         this.isEndNode = node.isStop();
         this.id = node.getId();
-        String titleProp = (String) node.getDocument().getPropertyValue(
-                GraphNode.PROP_TITLE);
+        String titleProp = (String) node.getDocument().getPropertyValue(GraphNode.PROP_TITLE);
         this.title = GetGraphOperation.getI18nLabel(titleProp, locale);
         this.state = node.getDocument().getCurrentLifeCycleState();
         this.isMerge = node.isMerge();
@@ -213,8 +204,7 @@ class NodeView {
 
 class TransitionView {
 
-    public TransitionView(String nodeSourceId, String nodeTargetId,
-            String label, Locale locale) {
+    public TransitionView(String nodeSourceId, String nodeTargetId, String label, Locale locale) {
         this.nodeSourceId = nodeSourceId;
         this.nodeTargetId = nodeTargetId;
         this.label = GetGraphOperation.getI18nLabel(label, locale);

@@ -32,8 +32,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants.EvaluationOperators;
 
 /***
- * Evaluates the condition specified by the parameters against the input
- * document. Supports only Integer and String parameters
+ * Evaluates the condition specified by the parameters against the input document. Supports only Integer and String
+ * parameters
  *
  * @author mcedica
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
@@ -77,16 +77,11 @@ public class EvaluateCondition extends AbstractTaskStepOperation {
         }
 
         if ((result == 0 && EvaluationOperators.equal.name().equals(operator))
-                || (result != 0 && EvaluationOperators.not_equal.name().equals(
-                        operator))
-                || (result < 0 && EvaluationOperators.less_than.name().equals(
-                        operator))
-                || (result > 0 && EvaluationOperators.greater_than.name().equals(
-                        operator))
-                || (result <= 0 && EvaluationOperators.less_or_equal_than.name().equals(
-                        operator))
-                || (result >= 0 && EvaluationOperators.greater_or_equal_than.name().equals(
-                        operator))) {
+                || (result != 0 && EvaluationOperators.not_equal.name().equals(operator))
+                || (result < 0 && EvaluationOperators.less_than.name().equals(operator))
+                || (result > 0 && EvaluationOperators.greater_than.name().equals(operator))
+                || (result <= 0 && EvaluationOperators.less_or_equal_than.name().equals(operator))
+                || (result >= 0 && EvaluationOperators.greater_or_equal_than.name().equals(operator))) {
             context.put("nextStepPos", "1");
         } else {
             context.put("nextStepPos", "2");

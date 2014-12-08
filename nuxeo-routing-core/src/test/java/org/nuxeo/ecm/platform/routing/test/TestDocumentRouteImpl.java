@@ -24,7 +24,6 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 
 /**
  * @author arussel
- *
  */
 public class TestDocumentRouteImpl extends DocumentRoutingTestCase {
     protected DocumentRoute routeModel;
@@ -33,8 +32,7 @@ public class TestDocumentRouteImpl extends DocumentRoutingTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        routeModel = createDocumentRouteModel(session, ROUTE1, ROOT_PATH).getAdapter(
-                DocumentRoute.class);
+        routeModel = createDocumentRouteModel(session, ROUTE1, ROOT_PATH).getAdapter(DocumentRoute.class);
     }
 
     @Test

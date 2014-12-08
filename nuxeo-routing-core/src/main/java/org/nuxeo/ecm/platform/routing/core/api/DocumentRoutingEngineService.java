@@ -25,9 +25,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 
 /**
- * The DocumentRoutingEngineService is responsible for managing the lifecycle of
- * the DocumentRoute. This is an internal service, you should use method on the
- * {@link DocumentRoutingService} to start a route.
+ * The DocumentRoutingEngineService is responsible for managing the lifecycle of the DocumentRoute. This is an internal
+ * service, you should use method on the {@link DocumentRoutingService} to start a route.
  */
 public interface DocumentRoutingEngineService {
 
@@ -39,8 +38,7 @@ public interface DocumentRoutingEngineService {
      * @param session the session
      * @since 5.6
      */
-    void start(DocumentRoute routeInstance, Map<String, Serializable> map,
-            CoreSession session);
+    void start(DocumentRoute routeInstance, Map<String, Serializable> map, CoreSession session);
 
     /**
      * Resumes a route, optionnally for a given task only.
@@ -49,17 +47,16 @@ public interface DocumentRoutingEngineService {
      * @param nodeId the node id to resume on (optional)
      * @param taskId the task id that resumes (optional)
      * @param data the data coming from UI form
-     * @param status the name of the button clicked to submit the associated
-     *            task form
+     * @param status the name of the button clicked to submit the associated task form
      * @param session the session
      * @since 5.6
      */
-    void resume(DocumentRoute routeInstance, String nodeId, String taskId,
-            Map<String, Object> data, String status, CoreSession session);
+    void resume(DocumentRoute routeInstance, String nodeId, String taskId, Map<String, Object> data, String status,
+            CoreSession session);
 
     /**
-     * Cancels a route using an unrestricted session.
-     * (@since 5.7.2 the event 'workflowCanceled' is notified.)
+     * Cancels a route using an unrestricted session. (@since 5.7.2 the event 'workflowCanceled' is notified.)
+     * 
      * @param routeInstance the route instance
      * @param session the session
      * @since 5.6

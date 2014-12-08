@@ -27,10 +27,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
  * @author arussel
- *
  */
-public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl
-        implements DocumentRoute {
+public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implements DocumentRoute {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,19 +37,14 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl
     @Override
     public void setDone(CoreSession session) {
         followTransition(ElementLifeCycleTransistion.toDone, session, false);
-        EventFirer.fireEvent(session, this, null,
-                DocumentRoutingConstants.Events.afterRouteFinish.name());
+        EventFirer.fireEvent(session, this, null, DocumentRoutingConstants.Events.afterRouteFinish.name());
         // Fire events for route audit log
         for (String attachDocumentID : this.getAttachedDocuments()) {
             try {
-                DocumentModel doc = session.getDocument(new IdRef(
-                        attachDocumentID));
-                AuditEventFirer.fireEvent(session, this, null, "auditLogRoute",
-                        doc);
+                DocumentModel doc = session.getDocument(new IdRef(attachDocumentID));
+                AuditEventFirer.fireEvent(session, this, null, "auditLogRoute", doc);
             } catch (ClientException e) {
-                log.error(String.format(
-                        "Unable to fetch document with id '%s': %s",
-                        attachDocumentID, e.getMessage()));
+                log.error(String.format("Unable to fetch document with id '%s': %s", attachDocumentID, e.getMessage()));
                 log.debug(e, e);
             }
         }

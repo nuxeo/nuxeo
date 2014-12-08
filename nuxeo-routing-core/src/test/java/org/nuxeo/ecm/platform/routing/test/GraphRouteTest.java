@@ -107,8 +107,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // breakpoint here to examine database after test
     }
 
-    protected CoreSession openSession(NuxeoPrincipal principal)
-            throws ClientException {
+    protected CoreSession openSession(NuxeoPrincipal principal) throws ClientException {
         return settings.openSessionAs(principal);
     }
 
@@ -120,10 +119,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     protected void setSubRouteVariables(DocumentModel node,
-            @SuppressWarnings("unchecked")
-            Map<String, Serializable>... keyvalues) throws ClientException {
-        node.setPropertyValue(GraphNode.PROP_SUB_ROUTE_VARS,
-                (Serializable) Arrays.asList(keyvalues));
+            @SuppressWarnings("unchecked") Map<String, Serializable>... keyvalues) throws ClientException {
+        node.setPropertyValue(GraphNode.PROP_SUB_ROUTE_VARS, (Serializable) Arrays.asList(keyvalues));
     }
 
     @Test
@@ -182,8 +179,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @Test
     public void testStartWithMap() throws Exception {
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
@@ -191,11 +187,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1 = session.saveDocument(node1);
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("stringfield", "ABC");
-        DocumentRoute route = instantiateAndRun(session,
-                Collections.singletonList(doc.getId()), map);
+        DocumentRoute route = instantiateAndRun(session, Collections.singletonList(doc.getId()), map);
         assertTrue(route.isDone());
-        String v = (String) route.getDocument().getPropertyValue(
-                "fctroute1:stringfield");
+        String v = (String) route.getDocument().getPropertyValue("fctroute1:stringfield");
         assertEquals("ABC", v);
     }
 
@@ -233,17 +227,14 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     @Test
     public void testAutomationChainVariableChange() throws Exception {
         // route model var
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         // node model
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
-        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
-                "testchain_stringfield");
-        node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN,
-                "testchain_stringfield2");
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_stringfield");
+        node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_stringfield2");
         // node model var
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1 = session.saveDocument(node1);
@@ -273,8 +264,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1,
-                transition("trans1", "node2", "true", "testchain_title1"),
+        setTransitions(node1, transition("trans1", "node2", "true", "testchain_title1"),
                 transition("trans2", "node2", "false", "testchain_title2"));
         node1 = session.saveDocument(node1);
 
@@ -301,8 +291,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1,
-                transition("trans12", "node2", "true", "testchain_title1"));
+        setTransitions(node1, transition("trans12", "node2", "true", "testchain_title1"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -319,8 +308,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertFalse(route.isDone());
 
         // now resume, as if the task was actually executed
-        routing.resumeInstance(route.getDocument().getId(), "node2", null,
-                null, session);
+        routing.resumeInstance(route.getDocument().getId(), "node2", null, null, session);
 
         route.getDocument().refresh();
         assertTrue(route.isDone());
@@ -332,8 +320,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1,
-                transition("trans12", "node2", "true", "testchain_title1"));
+        setTransitions(node1, transition("trans12", "node2", "true", "testchain_title1"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -349,8 +336,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         assertFalse(route.isDone());
 
-        List<Task> tasks = taskService.getTaskInstances(doc,
-                (NuxeoPrincipal) null, session);
+        List<Task> tasks = taskService.getTaskInstances(doc, (NuxeoPrincipal) null, session);
         assertEquals(1, tasks.size());
 
         route.cancel(session);
@@ -358,15 +344,13 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertTrue(route.isCanceled());
         session.save();
 
-        tasks = taskService.getTaskInstances(doc, (NuxeoPrincipal) null,
-                session);
+        tasks = taskService.getTaskInstances(doc, (NuxeoPrincipal) null, session);
         assertEquals(0, tasks.size());
         DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
         assertEquals(1, cancelledTasks.size());
         DocumentRef routeRef = route.getDocument().getRef();
 
-        routing.cleanupDoneAndCanceledRouteInstances(
-                session.getRepositoryName(), 0);
+        routing.cleanupDoneAndCanceledRouteInstances(session.getRepositoryName(), 0);
         session.save();
         assertFalse(session.exists(routeRef));
     }
@@ -376,8 +360,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     public void testForkMergeAll() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1,
-                transition("trans1", "node2", "true", "testchain_title1"),
+        setTransitions(node1, transition("trans1", "node2", "true", "testchain_title1"),
                 transition("trans2", "node2", "true", "testchain_descr1"));
         node1 = session.saveDocument(node1);
 
@@ -402,8 +385,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     public void testForkMergeAll2() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1, transition("trans1", "node2"),
-                transition("trans2", "node3"));
+        setTransitions(node1, transition("trans1", "node2"), transition("trans2", "node3"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -446,8 +428,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1, transition("trans1", "node2"),
-                transition("trans2", "node3"), transition("trans3", "node4"));
+        setTransitions(node1, transition("trans1", "node2"), transition("trans2", "node3"),
+                transition("trans3", "node4"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -455,10 +437,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         setTransitions(node2, transition("trans1", "node5"));
 
         node2.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
-        node2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "Write");
-        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
-                "test_setGlobalvariable");
+        node2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "test_setGlobalvariable");
         node2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users = { user1.getName() };
         node2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
@@ -470,10 +450,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         setTransitions(node3, transition("trans2", "node5"));
 
         node3.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
-        node3.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "Write");
-        node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
-                "test_setGlobalvariable");
+        node3.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "test_setGlobalvariable");
         node3.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users2 = { user2.getName() };
         node3.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users2);
@@ -485,10 +463,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         setTransitions(node4, transition("trans3", "node5"));
 
         node4.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
-        node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "Write");
-        node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
-                "test_setGlobalvariable");
+        node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "test_setGlobalvariable");
         node4.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users3 = { user3.getName() };
         node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users3);
@@ -528,8 +504,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
         try (CoreSession session = openSession(admin)) {
-            route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                    DocumentRoute.class);
+            route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
             assertFalse(route.isDone());
         }
 
@@ -548,8 +523,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         admin = new UserPrincipal("admin", null, false, true);
 
         try (CoreSession session = openSession(admin)) {
-            route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                    DocumentRoute.class);
+            route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
             assertTrue(route.isDone());
         }
     }
@@ -559,8 +533,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     public void testForkMergeOne() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1, transition("trans12", "node2"),
-                transition("trans13", "node3"));
+        setTransitions(node1, transition("trans12", "node2"), transition("trans13", "node3"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -600,8 +573,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     public void testForkMergeWithLoopTransition() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1,
-                transition("trans1", "node2", "true", "testchain_title1"),
+        setTransitions(node1, transition("trans1", "node2", "true", "testchain_title1"),
                 transition("trans2", "node2", "true", "testchain_descr1"));
         node1 = session.saveDocument(node1);
 
@@ -634,33 +606,25 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // Create nodes
         DocumentModel startNode = createNode(routeDoc, "startNode", session);
         startNode.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(startNode,
-                transition("transToParallel1", "parallelNode1"),
+        setTransitions(startNode, transition("transToParallel1", "parallelNode1"),
                 transition("transToParallel2", "parallelNode2"));
         startNode = session.saveDocument(startNode);
 
-        DocumentModel parallelNode1 = createNode(routeDoc, "parallelNode1",
-                session);
+        DocumentModel parallelNode1 = createNode(routeDoc, "parallelNode1", session);
         parallelNode1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users1 = { user1.getName() };
         parallelNode1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users1);
-        setTransitions(
-                parallelNode1,
-                transition("transLoop", "parallelNode1",
-                        "NodeVariables[\"button\"] ==\"loop\""),
-                transition("transToMerge", "mergeNode",
-                        "NodeVariables[\"button\"] ==\"toMerge\""));
+        setTransitions(parallelNode1, transition("transLoop", "parallelNode1", "NodeVariables[\"button\"] ==\"loop\""),
+                transition("transToMerge", "mergeNode", "NodeVariables[\"button\"] ==\"toMerge\""));
         parallelNode1 = session.saveDocument(parallelNode1);
 
-        DocumentModel parallelNode2 = createNode(routeDoc, "parallelNode2",
-                session);
+        DocumentModel parallelNode2 = createNode(routeDoc, "parallelNode2", session);
         parallelNode2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users2 = { user2.getName() };
         parallelNode2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users2);
         setTransitions(
                 parallelNode2,
-                transition("transLoop", "parallelNode2",
-                        "NodeVariables[\"button\"] ==\"loop\""),
+                transition("transLoop", "parallelNode2", "NodeVariables[\"button\"] ==\"loop\""),
                 transition("transToMerge", "mergeNode",
                         "NodeVariables[\"tasks\"].getNumberEndedWithStatus(\"toMerge\") ==1"));
         parallelNode2 = session.saveDocument(parallelNode2);
@@ -669,12 +633,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         mergeNode.setPropertyValue(GraphNode.PROP_MERGE, "all");
         mergeNode.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         mergeNode.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users1);
-        setTransitions(
-                mergeNode,
-                transition("transLoop", "startNode",
-                        "NodeVariables[\"button\"] ==\"loop\""),
-                transition("transEnd", "endNode",
-                        "NodeVariables[\"button\"] ==\"end\""));
+        setTransitions(mergeNode, transition("transLoop", "startNode", "NodeVariables[\"button\"] ==\"loop\""),
+                transition("transEnd", "endNode", "NodeVariables[\"button\"] ==\"end\""));
         mergeNode = session.saveDocument(mergeNode);
 
         DocumentModel endNode = createNode(routeDoc, "endNode", session);
@@ -741,18 +701,13 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // Check that route is done
         session.save();
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertTrue(route.isDone());
         GraphRoute graph = route.getDocument().getAdapter(GraphRoute.class);
-        assertEquals(1,
-                graph.getNode("parallelNode1").getEndedTasksInfo().size());
-        assertEquals(1,
-                graph.getNode("parallelNode1").getProcessedTasksInfo().size());
-        assertEquals(1,
-                graph.getNode("parallelNode2").getEndedTasksInfo().size());
-        assertEquals(1,
-                graph.getNode("parallelNode2").getProcessedTasksInfo().size());
+        assertEquals(1, graph.getNode("parallelNode1").getEndedTasksInfo().size());
+        assertEquals(1, graph.getNode("parallelNode1").getProcessedTasksInfo().size());
+        assertEquals(1, graph.getNode("parallelNode2").getEndedTasksInfo().size());
+        assertEquals(1, graph.getNode("parallelNode2").getProcessedTasksInfo().size());
 
     }
 
@@ -761,13 +716,11 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     public void testTwoForkMergeWithLoopTransition() throws Exception {
         DocumentModel fork1 = createNode(routeDoc, "fork1", session);
         fork1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(fork1, transition("trans1", "fork2"),
-                transition("trans2", "task3"));
+        setTransitions(fork1, transition("trans1", "fork2"), transition("trans2", "task3"));
         fork1 = session.saveDocument(fork1);
 
         DocumentModel fork2 = createNode(routeDoc, "fork2", session);
-        setTransitions(fork2, transition("trans3", "task1"),
-                transition("trans4", "task2"));
+        setTransitions(fork2, transition("trans3", "task1"), transition("trans4", "task2"));
         fork2 = session.saveDocument(fork2);
 
         DocumentModel task1 = createNode(routeDoc, "task1", session);
@@ -792,8 +745,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         DocumentModel merge2 = createNode(routeDoc, "merge2", session);
         merge2.setPropertyValue(GraphNode.PROP_MERGE, "all");
-        setTransitions(merge2, transition("transloop", "fork1", "false"),
-                transition("trans8", "stop"));
+        setTransitions(merge2, transition("transloop", "fork1", "false"), transition("trans8", "stop"));
         merge2 = session.saveDocument(merge2);
 
         DocumentModel stop = createNode(routeDoc, "stop", session);
@@ -819,32 +771,26 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals(State.SUSPENDED, graph.getNode("task2").getState());
         assertEquals(State.SUSPENDED, graph.getNode("task3").getState());
 
-        routing.resumeInstance(route.getDocument().getId(), "task1", null,
-                null, session);
+        routing.resumeInstance(route.getDocument().getId(), "task1", null, null, session);
 
         // refresh state
-        graph = (GraphRoute) session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
+        graph = (GraphRoute) session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertEquals(State.READY, graph.getNode("task1").getState());
         assertEquals(State.SUSPENDED, graph.getNode("task2").getState());
         assertEquals(State.SUSPENDED, graph.getNode("task3").getState());
 
-        routing.resumeInstance(route.getDocument().getId(), "task2", null,
-                null, session);
+        routing.resumeInstance(route.getDocument().getId(), "task2", null, null, session);
 
         // refresh state
-        graph = (GraphRoute) session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
+        graph = (GraphRoute) session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertEquals(State.READY, graph.getNode("task1").getState());
         assertEquals(State.READY, graph.getNode("task2").getState());
         assertEquals(State.SUSPENDED, graph.getNode("task3").getState());
 
-        routing.resumeInstance(route.getDocument().getId(), "task3", null,
-                null, session);
+        routing.resumeInstance(route.getDocument().getId(), "task3", null, null, session);
 
         // refresh state
-        graph = (GraphRoute) session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
+        graph = (GraphRoute) session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertEquals(State.READY, graph.getNode("task1").getState());
         assertEquals(State.READY, graph.getNode("task2").getState());
         assertEquals(State.READY, graph.getNode("task3").getState());
@@ -870,35 +816,24 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         startNode.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users1 = { user1.getName() };
         startNode.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users1);
-        setTransitions(
-                startNode,
-                transition("transToParallel1", "parallelNode1",
-                        "NodeVariables[\"button\"] ==\"validate\""),
-                transition("transToParallel2", "parallelNode2",
-                        "NodeVariables[\"button\"] ==\"validate\""));
+        setTransitions(startNode,
+                transition("transToParallel1", "parallelNode1", "NodeVariables[\"button\"] ==\"validate\""),
+                transition("transToParallel2", "parallelNode2", "NodeVariables[\"button\"] ==\"validate\""));
         startNode = session.saveDocument(startNode);
 
-        DocumentModel parallelNode1 = createNode(routeDoc, "parallelNode1",
-                session);
+        DocumentModel parallelNode1 = createNode(routeDoc, "parallelNode1", session);
         parallelNode1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         parallelNode1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users1);
-        setTransitions(
-                parallelNode1,
-                transition("transLoop", "startNode",
-                        "NodeVariables[\"button\"] ==\"loop\""),
-                transition("transToMerge", "mergeNode",
-                        "NodeVariables[\"button\"] ==\"toMerge\""));
+        setTransitions(parallelNode1, transition("transLoop", "startNode", "NodeVariables[\"button\"] ==\"loop\""),
+                transition("transToMerge", "mergeNode", "NodeVariables[\"button\"] ==\"toMerge\""));
         parallelNode1 = session.saveDocument(parallelNode1);
 
-        DocumentModel parallelNode2 = createNode(routeDoc, "parallelNode2",
-                session);
+        DocumentModel parallelNode2 = createNode(routeDoc, "parallelNode2", session);
         parallelNode2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users2 = { user2.getName() };
         parallelNode2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users2);
-        setTransitions(
-                parallelNode2,
-                transition("transToMerge", "mergeNode",
-                        "NodeVariables[\"button\"] ==\"toMerge\""));
+        setTransitions(parallelNode2,
+                transition("transToMerge", "mergeNode", "NodeVariables[\"button\"] ==\"toMerge\""));
         parallelNode2 = session.saveDocument(parallelNode2);
 
         DocumentModel mergeNode = createNode(routeDoc, "mergeNode", session);
@@ -960,8 +895,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // Check that route is done
         session.save();
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertTrue(route.isDone());
     }
 
@@ -972,8 +906,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
 
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
@@ -981,19 +914,15 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(
                 node1,
-                transition(
-                        "trans1",
-                        "node2",
+                transition("trans1", "node2",
                         "NodeVariables[\"button\"] == \"trans1\" && WorkflowFn.timeSinceWorkflowWasStarted()>=0",
                         "testchain_title1"));
 
         // task properties
 
         node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
-        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "Write");
-        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
-                "test_setGlobalvariable");
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "test_setGlobalvariable");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
         String[] users = { user1.getName() };
@@ -1019,8 +948,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             assertNotNull(sessionUser1.getDocument(route.getDocument().getRef()));
             Task task1 = tasks.get(0);
             assertEquals("MyTaskDoc", task1.getDocument().getType());
-            List<DocumentModel> docs = routing.getWorkflowInputDocuments(
-                    sessionUser1, task1);
+            List<DocumentModel> docs = routing.getWorkflowInputDocuments(sessionUser1, task1);
             assertEquals(doc.getId(), docs.get(0).getId());
             routing.endTask(sessionUser1, tasks.get(0), data, "trans1");
         }
@@ -1029,16 +957,11 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
         try (CoreSession session = openSession(admin)) {
             DocumentRef routeRef = route.getDocument().getRef();
-            route = session.getDocument(routeRef).getAdapter(
-                    DocumentRoute.class);
+            route = session.getDocument(routeRef).getAdapter(DocumentRoute.class);
 
             assertTrue(route.isDone());
-            assertEquals(
-                    "test",
-                    route.getDocument().getPropertyValue(
-                            "fctroute1:globalVariable"));
-            routing.cleanupDoneAndCanceledRouteInstances(
-                    session.getRepositoryName(), 0);
+            assertEquals("test", route.getDocument().getPropertyValue("fctroute1:globalVariable"));
+            routing.cleanupDoneAndCanceledRouteInstances(session.getRepositoryName(), 0);
             session.save();
             assertFalse(session.exists(routeRef));
         }
@@ -1051,24 +974,19 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
         List<String> assignees = Arrays.asList(user1.getName(), user2.getName());
 
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
-        routeDoc.setPropertyValue("fctroute1:myassignees",
-                (Serializable) assignees);
+        routeDoc.setPropertyValue("fctroute1:myassignees", (Serializable) assignees);
         routeDoc = session.saveDocument(routeDoc);
 
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
-        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "Write");
-        setTransitions(node1,
-                transition("trans1", "node2", "true", "testchain_title1"));
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        setTransitions(node1, transition("trans1", "node2", "true", "testchain_title1"));
         // add a workflow variables with name "myassignees"
-        node1.setPropertyValue("rnode:taskAssigneesExpr",
-                "WorkflowVariables[\"myassignees\"]");
+        node1.setPropertyValue("rnode:taskAssigneesExpr", "WorkflowVariables[\"myassignees\"]");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1 = session.saveDocument(node1);
 
@@ -1099,8 +1017,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
         try (CoreSession session = openSession(admin)) {
-            route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                    DocumentRoute.class);
+            route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
             assertTrue(route.isDone());
 
             // permissions are reset
@@ -1110,8 +1027,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     /**
-     * Check that when running as non-Administrator the assignees are set
-     * correctly.
+     * Check that when running as non-Administrator the assignees are set correctly.
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -1123,10 +1039,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
-        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "Write");
-        setTransitions(node1,
-                transition("trans1", "node2", "true", "testchain_title1"));
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        setTransitions(node1, transition("trans1", "node2", "true", "testchain_title1"));
         // add a workflow node assignees expression
         node1.setPropertyValue("rnode:taskAssigneesExpr", "\"myuser1\"");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
@@ -1155,30 +1069,25 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // process task as user1
         try (CoreSession session1 = openSession(user1)) {
-            routing.endTask(session1, tasks.get(0),
-                    new HashMap<String, Object>(), "trans1");
+            routing.endTask(session1, tasks.get(0), new HashMap<String, Object>(), "trans1");
         }
 
         // verify that route was done
         session.save(); // process invalidations
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertTrue(route.isDone());
         assertFalse(session.hasPermission(user1, doc.getRef(), "Write"));
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testDynamicallyComputeDueDate() throws PropertyException,
-            ClientException {
+    public void testDynamicallyComputeDueDate() throws PropertyException, ClientException {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
-        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "Write");
-        setTransitions(node1,
-                transition("trans1", "node2", "true", "testchain_title1"));
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        setTransitions(node1, transition("trans1", "node2", "true", "testchain_title1"));
 
         node1.setPropertyValue("rnode:taskAssigneesExpr", "\"Administrator\"");
         node1.setPropertyValue("rnode:taskDueDateExpr", "CurrentDate.days(1)");
@@ -1193,8 +1102,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         session.save();
         instantiateAndRun(session);
         session.save();
-        List<Task> tasks = taskService.getTaskInstances(doc,
-                (NuxeoPrincipal) session.getPrincipal(), session);
+        List<Task> tasks = taskService.getTaskInstances(doc, (NuxeoPrincipal) session.getPrincipal(), session);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
         Task ts = tasks.get(0);
@@ -1214,21 +1122,16 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
 
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
 
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
-                transition("trans1", "node2", "true",
-                        "test_setGlobalVariableToWorkflowInitiator"));
+        setTransitions(node1, transition("trans1", "node2", "true", "test_setGlobalVariableToWorkflowInitiator"));
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
-        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES,
-                new String[] { user2.getName() });
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, new String[] { user2.getName() });
         setButtons(node1, button("btn1", "label-btn1", "filterrr"));
         node1 = session.saveDocument(node1);
 
@@ -1257,8 +1160,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             // task assignees have READ on the route instance
             assertNotNull(sessionUser2.getDocument(routeDocRef));
             Task task = tasks.get(0);
-            List<DocumentModel> docs = routing.getWorkflowInputDocuments(
-                    sessionUser2, task);
+            List<DocumentModel> docs = routing.getWorkflowInputDocuments(sessionUser2, task);
             assertEquals(doc.getId(), docs.get(0).getId());
             Map<String, Object> data = new HashMap<String, Object>();
             routing.endTask(sessionUser2, tasks.get(0), data, "trans1");
@@ -1267,11 +1169,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // verify things
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
         try (CoreSession sessionAdmin = openSession(admin)) {
-            DocumentRoute route = sessionAdmin.getDocument(routeDocRef).getAdapter(
-                    DocumentRoute.class);
+            DocumentRoute route = sessionAdmin.getDocument(routeDocRef).getAdapter(DocumentRoute.class);
             assertTrue(route.isDone());
-            Serializable v = route.getDocument().getPropertyValue(
-                    "fctroute1:globalVariable");
+            Serializable v = route.getDocument().getPropertyValue("fctroute1:globalVariable");
             assertEquals("myuser1", v);
         }
     }
@@ -1282,8 +1182,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1,
-                transition("trans12", "node2", "true", "testchain_title1"));
+        setTransitions(node1, transition("trans12", "node2", "true", "testchain_title1"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -1298,8 +1197,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         DocumentRoute route = instantiateAndRun(session);
         assertFalse(route.isDone());
 
-        List<Task> tasks = taskService.getTaskInstances(doc,
-                (NuxeoPrincipal) null, session);
+        List<Task> tasks = taskService.getTaskInstances(doc, (NuxeoPrincipal) null, session);
         assertEquals(1, tasks.size());
 
         OperationContext ctx = new OperationContext(session);
@@ -1318,8 +1216,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         String restartedWorkflowId = workflows.get(0).getId();
         assertFalse(restartedWorkflowId.equals(route.getDocument().getId()));
 
-        chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle()).set(
-                "nodeId", "node2");
+        chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle()).set("nodeId", "node2");
         automationService.run(ctx, chain);
         // process invalidations from automation context
         session.save();
@@ -1338,8 +1235,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     public void testMergeOneWhenHavinOpenedTasks() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1, transition("trans12", "node2"),
-                transition("trans13", "node3"));
+        setTransitions(node1, transition("trans12", "node2"), transition("trans13", "node3"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -1358,8 +1254,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         setTransitions(node4, transition("trans45", "node5"));
         node4.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
-        node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES,
-                new String[] { user1.getName() });
+        node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, new String[] { user1.getName() });
         node4 = session.saveDocument(node4);
 
         DocumentModel node5 = createNode(routeDoc, "node5", session);
@@ -1371,29 +1266,24 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         DocumentRoute route = instantiateAndRun(session);
         session.save(); // process invalidations
         // verify that there are 2 open tasks
-        List<Task> tasks = taskService.getAllTaskInstances(
-                route.getDocument().getId(), session);
+        List<Task> tasks = taskService.getAllTaskInstances(route.getDocument().getId(), session);
         assertNotNull(tasks);
         assertEquals(2, tasks.size());
 
-        tasks = taskService.getAllTaskInstances(route.getDocument().getId(),
-                user1, session);
+        tasks = taskService.getAllTaskInstances(route.getDocument().getId(), user1, session);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
 
         // process one of the tasks
         try (CoreSession session1 = openSession(user1)) {
-            routing.endTask(session1, tasks.get(0),
-                    new HashMap<String, Object>(), null);
+            routing.endTask(session1, tasks.get(0), new HashMap<String, Object>(), null);
         }
 
         // verify that route was done
         session.save(); // process invalidations
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
         // verify that the merge one canceled the other tasks
-        tasks = taskService.getAllTaskInstances(route.getDocument().getId(),
-                session);
+        tasks = taskService.getAllTaskInstances(route.getDocument().getId(), session);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
         DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
@@ -1405,8 +1295,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     public void testForceResumeOnMerge() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1, transition("trans12", "node2"),
-                transition("trans13", "node3"));
+        setTransitions(node1, transition("trans12", "node2"), transition("trans13", "node3"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -1433,14 +1322,10 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         DocumentRoute route = instantiateAndRun(session);
         // force resume on normal node, shouldn't change anything
-        Map<String, Object> data = Collections.<String, Object> singletonMap(
-                WORKFLOW_FORCE_RESUME, Boolean.TRUE);
-        routing.resumeInstance(route.getDocument().getId(), "node2", data,
-                null, session);
+        Map<String, Object> data = Collections.<String, Object> singletonMap(WORKFLOW_FORCE_RESUME, Boolean.TRUE);
+        routing.resumeInstance(route.getDocument().getId(), "node2", data, null, session);
         session.save();
-        assertEquals(
-                "done",
-                session.getDocument(route.getDocument().getRef()).getCurrentLifeCycleState());
+        assertEquals("done", session.getDocument(route.getDocument().getRef()).getCurrentLifeCycleState());
 
         // force resume on merge on Waiting, but it shouldn't work
         // since the type of merge is all
@@ -1450,27 +1335,20 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         GraphNode nodeMerge = graph.getNode("node5");
         assertTrue(State.WAITING.equals(nodeMerge.getState()));
 
-        data = Collections.<String, Object> singletonMap(WORKFLOW_FORCE_RESUME,
-                Boolean.TRUE);
-        routing.resumeInstance(route.getDocument().getId(), "node5", data,
-                null, session);
+        data = Collections.<String, Object> singletonMap(WORKFLOW_FORCE_RESUME, Boolean.TRUE);
+        routing.resumeInstance(route.getDocument().getId(), "node5", data, null, session);
         session.save();
 
         // verify that the route is still running
-        assertEquals(
-                "running",
-                session.getDocument(route.getDocument().getRef()).getCurrentLifeCycleState());
+        assertEquals("running", session.getDocument(route.getDocument().getRef()).getCurrentLifeCycleState());
 
         // change merge type on the route instance and force resume again
         nodeMerge.getDocument().setPropertyValue(GraphNode.PROP_MERGE, "one");
         session.saveDocument(nodeMerge.getDocument());
-        routing.resumeInstance(route.getDocument().getId(), "node5", data,
-                null, session);
+        routing.resumeInstance(route.getDocument().getId(), "node5", data, null, session);
         session.save();
 
-        assertEquals(
-                "done",
-                session.getDocument(route.getDocument().getRef()).getCurrentLifeCycleState());
+        assertEquals("done", session.getDocument(route.getDocument().getRef()).getCurrentLifeCycleState());
 
     }
 
@@ -1479,10 +1357,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     public void testRouteWithExclusiveNode() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        node1.setPropertyValue(GraphNode.PROP_EXECUTE_ONLY_FIRST_TRANSITION,
-                Boolean.TRUE);
-        setTransitions(node1,
-                transition("trans12", "node2", "true", "testchain_title1"),
+        node1.setPropertyValue(GraphNode.PROP_EXECUTE_ONLY_FIRST_TRANSITION, Boolean.TRUE);
+        setTransitions(node1, transition("trans12", "node2", "true", "testchain_title1"),
                 transition("trans13", "node3", "true", "testchain_title2"));
         node1 = session.saveDocument(node1);
 
@@ -1510,19 +1386,16 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @SuppressWarnings("unchecked")
-    protected void createWorkflowWithSubRoute(String subRouteModelId)
-            throws ClientException, PropertyException {
+    protected void createWorkflowWithSubRoute(String subRouteModelId) throws ClientException, PropertyException {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(node1, transition("trans12", "node2"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
-        node2.setPropertyValue(GraphNode.PROP_SUB_ROUTE_MODEL_EXPR,
-                subRouteModelId);
+        node2.setPropertyValue(GraphNode.PROP_SUB_ROUTE_MODEL_EXPR, subRouteModelId);
         setTransitions(node2, transition("trans23", "node3"));
-        setSubRouteVariables(node2, keyvalue("stringfield", "foo"),
-                keyvalue("globalVariable", "expr:bar@{4+3}baz"));
+        setSubRouteVariables(node2, keyvalue("stringfield", "foo"), keyvalue("globalVariable", "expr:bar@{4+3}baz"));
         node2 = session.saveDocument(node2);
 
         DocumentModel node3 = createNode(routeDoc, "node3", session);
@@ -1537,16 +1410,12 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // create the sub-route
 
         DocumentModel subRouteDoc = createRoute("subroute", session);
-        subRouteDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        subRouteDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         subRouteDoc = session.saveDocument(subRouteDoc);
 
         DocumentModel subNode1 = createNode(subRouteDoc, "subnode1", session);
         subNode1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                subNode1,
-                transition("trans12", "subnode2", "true",
-                        "testchain_title_subroute"));
+        setTransitions(subNode1, transition("trans12", "subnode2", "true", "testchain_title_subroute"));
         subNode1 = session.saveDocument(subNode1);
 
         DocumentModel subNode2 = createNode(subRouteDoc, "subnode2", session);
@@ -1566,8 +1435,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertTrue(route.isDone());
         // check that transition got the correct variables
         doc.refresh();
-        assertEquals(route.getDocument().getId() + " node2 foo bar7baz",
-                doc.getTitle());
+        assertEquals(route.getDocument().getId() + " node2 foo bar7baz", doc.getTitle());
     }
 
     @SuppressWarnings("unchecked")
@@ -1576,16 +1444,12 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // create the sub-route
 
         DocumentModel subRouteDoc = createRoute("subroute", session);
-        subRouteDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        subRouteDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         subRouteDoc = session.saveDocument(subRouteDoc);
 
         DocumentModel subNode1 = createNode(subRouteDoc, "subnode1", session);
         subNode1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                subNode1,
-                transition("trans12", "subnode2", "true",
-                        "testchain_title_subroute"));
+        setTransitions(subNode1, transition("trans12", "subnode2", "true", "testchain_title_subroute"));
         subNode1 = session.saveDocument(subNode1);
 
         DocumentModel subNode2 = createNode(subRouteDoc, "subnode2", session);
@@ -1613,16 +1477,13 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // check that it's suspended on node 2
         assertFalse(route.isDone());
-        DocumentModel n2 = session.getChild(route.getDocument().getRef(),
-                "node2");
+        DocumentModel n2 = session.getChild(route.getDocument().getRef(), "node2");
         assertNotNull(n2);
-        assertEquals(State.SUSPENDED.getLifeCycleState(),
-                n2.getCurrentLifeCycleState());
+        assertEquals(State.SUSPENDED.getLifeCycleState(), n2.getCurrentLifeCycleState());
 
         // check that transition got the correct variables
         doc.refresh();
-        assertEquals(route.getDocument().getId() + " node2 foo bar7baz",
-                doc.getTitle());
+        assertEquals(route.getDocument().getId() + " node2 foo bar7baz", doc.getTitle());
 
         // find the sub-route instance
         String subid = (String) n2.getPropertyValue(GraphNode.PROP_SUB_ROUTE_INSTANCE_ID);
@@ -1650,11 +1511,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // check that it's suspended on node 2
         assertFalse(route.isDone());
-        DocumentModel n2 = session.getChild(route.getDocument().getRef(),
-                "node2");
+        DocumentModel n2 = session.getChild(route.getDocument().getRef(), "node2");
         assertNotNull(n2);
-        assertEquals(State.SUSPENDED.getLifeCycleState(),
-                n2.getCurrentLifeCycleState());
+        assertEquals(State.SUSPENDED.getLifeCycleState(), n2.getCurrentLifeCycleState());
 
         // cancel the main workflow
         route.cancel(session);
@@ -1677,14 +1536,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
-                transition("trans1", "node12",
-                        "NodeVariables[\"button\"] == \"trans1\"",
-                        "testchain_title1"),
-                transition("trans1", "node22",
-                        "NodeVariables[\"button\"] == \"trans1\"",
-                        "testchain_title1"),
+        setTransitions(node1,
+                transition("trans1", "node12", "NodeVariables[\"button\"] == \"trans1\"", "testchain_title1"),
+                transition("trans1", "node22", "NodeVariables[\"button\"] == \"trans1\"", "testchain_title1"),
                 transition("trans2", "node2", "true", ""));
 
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
@@ -1693,21 +1547,15 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1 = session.saveDocument(node1);
 
         DocumentModel node12 = createNode(routeDoc, "node12", session);
-        setTransitions(
-                node1,
-                transition("trans12", "node2",
-                        "NodeVariables[\"button\"] == \"trans12\"",
-                        "testchain_title1"));
+        setTransitions(node1,
+                transition("trans12", "node2", "NodeVariables[\"button\"] == \"trans12\"", "testchain_title1"));
 
         node12.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node12 = session.saveDocument(node12);
 
         DocumentModel node22 = createNode(routeDoc, "node22", session);
-        setTransitions(
-                node1,
-                transition("trans22", "node2",
-                        "NodeVariables[\"button\"] == \"trans22\"",
-                        "testchain_title1"));
+        setTransitions(node1,
+                transition("trans22", "node2", "NodeVariables[\"button\"] == \"trans22\"", "testchain_title1"));
 
         node22.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node22 = session.saveDocument(node22);
@@ -1718,19 +1566,15 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         DocumentRoute route = instantiateAndRun(session);
         session.save();
 
-        List<Task> tasks = taskService.getAllTaskInstances(
-                route.getDocument().getId(), session);
+        List<Task> tasks = taskService.getAllTaskInstances(route.getDocument().getId(), session);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
-        routing.endTask(session, tasks.get(0), new HashMap<String, Object>(),
-                "trans1");
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
+        routing.endTask(session, tasks.get(0), new HashMap<String, Object>(), "trans1");
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertTrue(route.isDone());
         session.save();
 
-        tasks = taskService.getAllTaskInstances(route.getDocument().getId(),
-                session);
+        tasks = taskService.getAllTaskInstances(route.getDocument().getId(), session);
         assertEquals(0, tasks.size());
         DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
         assertEquals(2, cancelledTasks.size());
@@ -1746,8 +1590,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         NuxeoPrincipal user3 = userManager.getPrincipal("myuser3");
         assertNotNull(user3);
 
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
@@ -1755,18 +1598,13 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(
                 node1,
-                transition(
-                        "trans1",
-                        "node2",
-                        "NodeVariables[\"tasks\"].getNumberEndedWithStatus(\"trans1\") ==1",
+                transition("trans1", "node2", "NodeVariables[\"tasks\"].getNumberEndedWithStatus(\"trans1\") ==1",
                         "testchain_title1"));
 
         // task properties
         node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
-        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "Write");
-        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
-                "test_setGlobalvariable");
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "test_setGlobalvariable");
         node1.setPropertyValue(GraphNode.PROP_HAS_MULTIPLE_TASKS, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
 
@@ -1787,8 +1625,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         GraphRoute graph = route.getDocument().getAdapter(GraphRoute.class);
 
         // verify that there are 3 tasks created from this node
-        List<Task> tasks = taskService.getAllTaskInstances(
-                route.getDocument().getId(), "node1", session);
+        List<Task> tasks = taskService.getAllTaskInstances(route.getDocument().getId(), "node1", session);
         assertNotNull(tasks);
         assertEquals(3, tasks.size());
         assertEquals(3, graph.getNode("node1").getTasksInfo().size());
@@ -1802,8 +1639,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             assertEquals(1, tasks.size());
             task1 = tasks.get(0);
             assertEquals("MyTaskDoc", task1.getDocument().getType());
-            List<DocumentModel> docs = routing.getWorkflowInputDocuments(
-                    sessionUser1, task1);
+            List<DocumentModel> docs = routing.getWorkflowInputDocuments(sessionUser1, task1);
             assertEquals(doc.getId(), docs.get(0).getId());
             routing.endTask(sessionUser1, tasks.get(0), data, "faketrans1");
         }
@@ -1812,13 +1648,11 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // open tasks
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
         try (CoreSession session = openSession(admin)) {
-            route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                    DocumentRoute.class);
+            route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
             graph = route.getDocument().getAdapter(GraphRoute.class);
             assertFalse(route.isDone());
             assertEquals(1, graph.getNode("node1").getEndedTasksInfo().size());
-            assertEquals(1,
-                    graph.getNode("node1").getProcessedTasksInfo().size());
+            assertEquals(1, graph.getNode("node1").getProcessedTasksInfo().size());
         }
 
         // end task2 as user 2
@@ -1832,8 +1666,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             assertEquals(1, tasks.size());
             task2 = tasks.get(0);
             assertEquals("MyTaskDoc", task2.getDocument().getType());
-            List<DocumentModel> docs = routing.getWorkflowInputDocuments(
-                    sessionUser2, task2);
+            List<DocumentModel> docs = routing.getWorkflowInputDocuments(sessionUser2, task2);
             assertEquals(doc.getId(), docs.get(0).getId());
             routing.endTask(sessionUser2, tasks.get(0), data, "trans1");
         }
@@ -1841,8 +1674,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // verify that route is not done yet, 2 tasks were done but there is
         // still one open
         try (CoreSession session = openSession(admin)) {
-            route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                    DocumentRoute.class);
+            route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
             graph = route.getDocument().getAdapter(GraphRoute.class);
             assertFalse(route.isDone());
             assertEquals(2, graph.getNode("node1").getEndedTasksInfo().size());
@@ -1855,11 +1687,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         Task task3 = tasks.get(0);
 
         routing.cancelTask(session, task3.getId());
-        routing.resumeInstance(route.getDocument().getId(), "node1", null,
-                null, session);
+        routing.resumeInstance(route.getDocument().getId(), "node1", null, null, session);
 
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
         graph = route.getDocument().getAdapter(GraphRoute.class);
 
         assertTrue(route.isDone());
@@ -1908,29 +1738,22 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
         assertNotNull(user2);
 
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
-                transition("trans1", "node2",
-                        "NodeVariables[\"button\"] == \"trans1\"",
-                        "testchain_title1"));
+        setTransitions(node1,
+                transition("trans1", "node2", "NodeVariables[\"button\"] == \"trans1\"", "testchain_title1"));
 
         // task properties
 
         node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
-        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "Write");
-        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
-                "test_setGlobalvariable");
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "test_setGlobalvariable");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
-        node1.setPropertyValue(GraphNode.PROP_ALLOW_TASK_REASSIGNMENT,
-                Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_ALLOW_TASK_REASSIGNMENT, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
@@ -1955,8 +1778,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // open session as user1 to reassign the task
         try (CoreSession sessionUser1 = openSession(user1)) {
             assertEquals("MyTaskDoc", task1.getDocument().getType());
-            List<DocumentModel> docs = routing.getWorkflowInputDocuments(
-                    sessionUser1, task1);
+            List<DocumentModel> docs = routing.getWorkflowInputDocuments(sessionUser1, task1);
             assertEquals(doc.getId(), docs.get(0).getId());
             // user1 has Write on the document following the workflow
             assertTrue(sessionUser1.hasPermission(docs.get(0).getRef(), "Write"));
@@ -1964,17 +1786,14 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
             List<String> newActors = new ArrayList<String>();
             newActors.add("myuser2");
-            routing.reassignTask(sessionUser1, task1.getId(), newActors,
-                    "Reassigned");
+            routing.reassignTask(sessionUser1, task1.getId(), newActors, "Reassigned");
 
             // check that user1 doesn't have Write permission any more on
             // documents following the workflow
             docs = routing.getWorkflowInputDocuments(sessionUser1, task1);
-            assertFalse(sessionUser1.hasPermission(docs.get(0).getRef(),
-                    "Write"));
+            assertFalse(sessionUser1.hasPermission(docs.get(0).getRef(), "Write"));
             // check that user1 can no longer access the task
-            assertFalse(sessionUser1.hasPermission(
-                    task1.getDocument().getRef(), "Read"));
+            assertFalse(sessionUser1.hasPermission(task1.getDocument().getRef(), "Read"));
         }
 
         // open session as User2
@@ -1987,8 +1806,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             assertEquals(1, task2.getActors().size());
             assertEquals("myuser2", task2.getActors().get(0));
 
-            List<DocumentModel> docs = routing.getWorkflowInputDocuments(
-                    sessionUser2, task1);
+            List<DocumentModel> docs = routing.getWorkflowInputDocuments(sessionUser2, task1);
             // user2 has now Write on the document following the workflow
             assertTrue(sessionUser2.hasPermission(docs.get(0).getRef(), "Write"));
             routing.endTask(sessionUser2, tasks.get(0), data, "trans1");
@@ -1997,13 +1815,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
         try (CoreSession adminSession = openSession(admin)) {
-            route = adminSession.getDocument(route.getDocument().getRef()).getAdapter(
-                    DocumentRoute.class);
+            route = adminSession.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
             assertTrue(route.isDone());
-            assertEquals(
-                    "test",
-                    route.getDocument().getPropertyValue(
-                            "fctroute1:globalVariable"));
+            assertEquals("test", route.getDocument().getPropertyValue("fctroute1:globalVariable"));
         }
     }
 
@@ -2017,26 +1831,20 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
         assertNotNull(user2);
 
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
-                transition("trans1", "node2",
-                        "NodeVariables[\"button\"] == \"trans1\"",
-                        "testchain_title1"));
+        setTransitions(node1,
+                transition("trans1", "node2", "NodeVariables[\"button\"] == \"trans1\"", "testchain_title1"));
 
         // task properties
 
         node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
-        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "Write");
-        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
-                "test_setGlobalvariable");
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "test_setGlobalvariable");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
         String[] users = { user1.getName() };
@@ -2062,8 +1870,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // open session as user1 to delegate the task
         try (CoreSession sessionUser1 = openSession(user1)) {
             assertEquals("MyTaskDoc", task1.getDocument().getType());
-            List<DocumentModel> docs = routing.getWorkflowInputDocuments(
-                    sessionUser1, task1);
+            List<DocumentModel> docs = routing.getWorkflowInputDocuments(sessionUser1, task1);
             assertEquals(doc.getId(), docs.get(0).getId());
             // user1 has Write on the document following the workflow
             assertTrue(sessionUser1.hasPermission(docs.get(0).getRef(), "Write"));
@@ -2071,16 +1878,14 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
             List<String> newActors = new ArrayList<String>();
             newActors.add("myuser2");
-            routing.delegateTask(sessionUser1, task1.getId(), newActors,
-                    "Delegated");
+            routing.delegateTask(sessionUser1, task1.getId(), newActors, "Delegated");
 
             // check that user1 still have Write permission on documents
             // following the workflow
             docs = routing.getWorkflowInputDocuments(sessionUser1, task1);
             assertTrue(sessionUser1.hasPermission(docs.get(0).getRef(), "Write"));
             // check that user1 still can access the task
-            assertTrue(sessionUser1.hasPermission(task1.getDocument().getRef(),
-                    "Read"));
+            assertTrue(sessionUser1.hasPermission(task1.getDocument().getRef(), "Read"));
         }
 
         List<DocumentModel> docs;
@@ -2092,9 +1897,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             assertEquals(0, tasks.size());
 
             // check that the user can get the task as a delegate
-            tasks = taskService.getTaskInstances(doc,
-                    Arrays.asList(new String[] { "myuser2" }), true,
-                    sessionUser2);
+            tasks = taskService.getTaskInstances(doc, Arrays.asList(new String[] { "myuser2" }), true, sessionUser2);
             assertNotNull(tasks);
             assertEquals(1, tasks.size());
 
@@ -2114,20 +1917,14 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
         try (CoreSession adminSession = openSession(admin)) {
-            route = adminSession.getDocument(route.getDocument().getRef()).getAdapter(
-                    DocumentRoute.class);
+            route = adminSession.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
             assertTrue(route.isDone());
-            assertEquals(
-                    "test",
-                    route.getDocument().getPropertyValue(
-                            "fctroute1:globalVariable"));
+            assertEquals("test", route.getDocument().getPropertyValue("fctroute1:globalVariable"));
             // user1 and user 2 have no longer Write on the document following
             // the
             // workflow
-            assertFalse(adminSession.hasPermission(user2, docs.get(0).getRef(),
-                    "Write"));
-            assertFalse(adminSession.hasPermission(user1, docs.get(0).getRef(),
-                    "Write"));
+            assertFalse(adminSession.hasPermission(user2, docs.get(0).getRef(), "Write"));
+            assertFalse(adminSession.hasPermission(user1, docs.get(0).getRef(), "Write"));
         }
     }
 
@@ -2145,26 +1942,20 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
 
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
-                transition("trans1", "node2",
-                        "NodeVariables[\"button\"] == \"trans1\"",
-                        "testchain_title1"));
+        setTransitions(node1,
+                transition("trans1", "node2", "NodeVariables[\"button\"] == \"trans1\"", "testchain_title1"));
 
         // task properties
 
         node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_title1");
-        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "Write");
-        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
-                "test_setGlobalvariable");
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "test_setGlobalvariable");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
         String[] users = { user1.getName() };
@@ -2208,13 +1999,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
         try (CoreSession adminSession = openSession(admin)) {
-            route = adminSession.getDocument(route.getDocument().getRef()).getAdapter(
-                    DocumentRoute.class);
+            route = adminSession.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
             assertTrue(route.isDone());
-            assertEquals(
-                    "test",
-                    route.getDocument().getPropertyValue(
-                            "fctroute1:globalVariable"));
+            assertEquals("test", route.getDocument().getPropertyValue("fctroute1:globalVariable"));
 
             // verify that the optput chain was executed on both docs
             doc = adminSession.getDocument(doc.getRef());
@@ -2227,10 +2014,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             // following
             // the workflow
             // workflow
-            assertFalse(adminSession.hasPermission(user1, docs.get(0).getRef(),
-                    "Write"));
-            assertFalse(adminSession.hasPermission(user1, docs.get(1).getRef(),
-                    "Write"));
+            assertFalse(adminSession.hasPermission(user1, docs.get(0).getRef(), "Write"));
+            assertFalse(adminSession.hasPermission(user1, docs.get(1).getRef(), "Write"));
         }
     }
 

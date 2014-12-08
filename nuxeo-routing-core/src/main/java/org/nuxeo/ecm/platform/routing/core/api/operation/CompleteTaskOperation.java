@@ -68,8 +68,7 @@ public class CompleteTaskOperation {
     protected DocumentRoutingService documentRoutingService;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel completeTask(DocumentModel task)
-            throws ClientException {
+    public DocumentModel completeTask(DocumentModel task) throws ClientException {
         Map<String, Object> data = new HashMap<String, Object>();
         if (comment != null) {
             data.put("comment", comment);
@@ -84,8 +83,7 @@ public class CompleteTaskOperation {
             data.put(Constants.VAR_WORKFLOW, workflowVariables);
         }
         data.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, Boolean.TRUE);
-        documentRoutingService.endTask(session, task.getAdapter(Task.class),
-               data, status);
+        documentRoutingService.endTask(session, task.getAdapter(Task.class), data, status);
         return task;
     }
 }

@@ -48,8 +48,7 @@ public class GraphVariablesUtil {
         return Framework.getLocalService(SchemaManager.class);
     }
 
-    public static Map<String, Serializable> getVariables(DocumentModel doc,
-            String facetProp) {
+    public static Map<String, Serializable> getVariables(DocumentModel doc, String facetProp) {
         try {
             String facet = (String) doc.getPropertyValue(facetProp);
             Map<String, Serializable> map = new LinkedHashMap<String, Serializable>();
@@ -63,8 +62,7 @@ public class GraphVariablesUtil {
             boolean hasFacet = doc.hasFacet(facet);
             for (Field f : type.getFields()) {
                 String name = f.getName().getLocalName();
-                Serializable value = hasFacet ? doc.getPropertyValue(name)
-                        : null;
+                Serializable value = hasFacet ? doc.getPropertyValue(name) : null;
                 if (value instanceof Calendar) {
                     value = ((Calendar) value).getTime();
                 }
@@ -76,8 +74,7 @@ public class GraphVariablesUtil {
         }
     }
 
-    public static void setVariables(DocumentModel doc, String facetProp,
-            Map<String, Serializable> map) {
+    public static void setVariables(DocumentModel doc, String facetProp, Map<String, Serializable> map) {
         try {
             String facet = (String) doc.getPropertyValue(facetProp);
             if (StringUtils.isBlank(facet)) {
@@ -111,17 +108,14 @@ public class GraphVariablesUtil {
     }
 
     /**
-     * Sets the variables of the workflow based on their JSON representation
-     * (especially for scalar lists).
+     * Sets the variables of the workflow based on their JSON representation (especially for scalar lists).
      *
      * @param doc
      * @param facetProp
      * @param map
-     *
      * @since 5.9.3, 5.8.0-HF10
      */
-    public static void setJSONVariables(DocumentModel doc, String facetProp,
-            Map<String, String> map) {
+    public static void setJSONVariables(DocumentModel doc, String facetProp, Map<String, String> map) {
         // normally the variables in the map don't contain the schema prefix
         Properties jsonProperties = new Properties();
         try {

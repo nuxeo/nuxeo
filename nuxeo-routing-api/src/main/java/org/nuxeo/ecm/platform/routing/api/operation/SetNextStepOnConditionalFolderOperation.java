@@ -27,8 +27,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.helper.ConditionalFolderUpdateRunner;
 
 /***
- * Set the position of the child to be run once the step with the given id it's
- * finished.
+ * Set the position of the child to be run once the step with the given id it's finished.
  *
  * @since 5.5
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
@@ -51,8 +50,7 @@ public class SetNextStepOnConditionalFolderOperation {
     @OperationMethod
     public void setStepToBeExcutedNext() {
         DocumentRouteStep step = (DocumentRouteStep) context.get(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
-        ConditionalFolderUpdateRunner condFolderUpdater = new ConditionalFolderUpdateRunner(
-                step.getDocument().getId());
+        ConditionalFolderUpdateRunner condFolderUpdater = new ConditionalFolderUpdateRunner(step.getDocument().getId());
         condFolderUpdater.setStepToBeExecutedNext(session, nextStepPos);
     }
 }

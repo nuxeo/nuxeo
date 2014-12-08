@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
  *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
- *
  */
 @Deprecated
 public class StepResumeRunner {
@@ -48,8 +47,7 @@ public class StepResumeRunner {
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() throws ClientException {
-                    DocumentModel model = session.getDocument(new IdRef(
-                            stepDocId));
+                    DocumentModel model = session.getDocument(new IdRef(stepDocId));
                     DocumentRouteStep step = model.getAdapter(DocumentRouteStep.class);
                     DocumentRoute route = step.getDocumentRoute(session);
                     route.run(session);

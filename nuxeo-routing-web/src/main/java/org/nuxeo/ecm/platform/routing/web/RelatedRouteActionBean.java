@@ -35,7 +35,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 @Name("relatedRouteAction")
 @Scope(ScopeType.EVENT)
@@ -58,7 +57,7 @@ public class RelatedRouteActionBean {
 
     public List<DocumentModel> findRelatedRoute(String documentId) throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
-        if(documentId == null || "".equals(documentId)) {
+        if (documentId == null || "".equals(documentId)) {
             return docs;
         }
         List<DocumentRoute> relatedRoutes = getDocumentRoutingService().getDocumentRoutesForAttachedDocument(
@@ -76,7 +75,6 @@ public class RelatedRouteActionBean {
     public boolean hasRelatedRoute() throws ClientException {
         return !findRelatedRoute().isEmpty();
     }
-
 
     public DocumentRoutingService getDocumentRoutingService() {
         try {

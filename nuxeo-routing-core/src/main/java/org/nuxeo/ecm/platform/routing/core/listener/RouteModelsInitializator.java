@@ -26,18 +26,15 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Imports route models in the root folder defined by the current persister from
- * a contributed zip resource. Uses the IO core service, through @{link
- * FileManager}
+ * Imports route models in the root folder defined by the current persister from a contributed zip resource. Uses the IO
+ * core service, through @{link FileManager}
  *
  * @since 5.6
- *
  */
 public class RouteModelsInitializator extends RepositoryInitializationHandler {
 
     @Override
-    public void doInitializeRepository(CoreSession session)
-            throws ClientException {
+    public void doInitializeRepository(CoreSession session) throws ClientException {
         // This method gets called as a system user
         // so we have all needed rights to do the check and the creation
         DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);

@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.routing.dm.test;
 
 /**
  * @author ldoguin
- *
  */
 public interface TestConstants {
     String DM_BUNDLE = "org.nuxeo.ecm.platform.routing.dm";

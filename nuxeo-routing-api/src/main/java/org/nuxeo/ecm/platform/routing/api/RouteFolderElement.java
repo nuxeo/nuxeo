@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.routing.api;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
 @Deprecated
@@ -35,8 +34,8 @@ public class RouteFolderElement {
 
     protected int depth;
 
-    public RouteFolderElement(DocumentRouteElement element, RouteTable table,
-            boolean isFirstChild, RouteFolderElement parent, int depth) {
+    public RouteFolderElement(DocumentRouteElement element, RouteTable table, boolean isFirstChild,
+            RouteFolderElement parent, int depth) {
         this.table = table;
         this.element = element;
         this.isFirstChild = isFirstChild;

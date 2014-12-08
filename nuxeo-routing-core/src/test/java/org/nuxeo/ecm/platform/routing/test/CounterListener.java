@@ -24,9 +24,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
-public class CounterListener implements EventListener{
+public class CounterListener implements EventListener {
     protected static int counter = 0;
 
     public void handleEvent(Event event) throws ClientException {

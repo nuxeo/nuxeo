@@ -47,16 +47,14 @@ public class TreeHelper {
      *
      * @return the last child created (day)
      */
-    public static DocumentModel getOrCreateDateTreeFolder(
-            CoreSession session, DocumentModel root, Date date,
+    public static DocumentModel getOrCreateDateTreeFolder(CoreSession session, DocumentModel root, Date date,
             String folderType) throws ClientException {
         String subPath = new SimpleDateFormat("yyyy/MM/dd").format(date);
         return getOrCreatePath(session, root, subPath, folderType);
     }
 
-    public static DocumentModel getOrCreatePath(CoreSession session,
-            DocumentModel root, String subPath, String folderType)
-            throws ClientException {
+    public static DocumentModel getOrCreatePath(CoreSession session, DocumentModel root, String subPath,
+            String folderType) throws ClientException {
         String[] pathSplit = subPath.split("/");
         String parentPath = root.getPathAsString();
         DocumentModel child = root;
@@ -67,9 +65,8 @@ public class TreeHelper {
         return child;
     }
 
-    public static synchronized DocumentModel getOrCreate(
-            CoreSession session, String rootPath, String id, String folderType)
-            throws ClientException {
+    public static synchronized DocumentModel getOrCreate(CoreSession session, String rootPath, String id,
+            String folderType) throws ClientException {
         String path = String.format("%s/%s", rootPath, id);
         DocumentRef pathRef = new PathRef(path);
         boolean exists = session.exists(pathRef);
@@ -80,8 +77,7 @@ public class TreeHelper {
             }
         }
         // create it
-        DocumentModel newDocument = session.createDocumentModel(rootPath,
-                IdUtils.generateId(id), folderType);
+        DocumentModel newDocument = session.createDocumentModel(rootPath, IdUtils.generateId(id), folderType);
         newDocument.setPropertyValue(TITLE_PROPERTY_NAME, id);
         newDocument = session.createDocument(newDocument);
         return newDocument;

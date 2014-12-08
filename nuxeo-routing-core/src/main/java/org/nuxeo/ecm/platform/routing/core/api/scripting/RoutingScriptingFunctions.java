@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 
 /**
  * @since 5.9.3
- *
  */
 public class RoutingScriptingFunctions {
 
@@ -42,69 +41,54 @@ public class RoutingScriptingFunctions {
         this.ctx = ctx;
     }
 
-    public RoutingScriptingFunctions(OperationContext ctx,
-            GraphNode.EscalationRule rule) {
+    public RoutingScriptingFunctions(OperationContext ctx, GraphNode.EscalationRule rule) {
         this.ctx = ctx;
         this.rule = rule;
     }
 
     /**
-     * Returns the time difference in milliseconds between the current time and
-     * the time the current workflow was started
-     *
+     * Returns the time difference in milliseconds between the current time and the time the current workflow was
+     * started
      */
     public long timeSinceWorkflowWasStarted() {
-        return Calendar.getInstance().getTimeInMillis()
-                - ((Calendar) ctx.get("workflowStartTime")).getTimeInMillis();
+        return Calendar.getInstance().getTimeInMillis() - ((Calendar) ctx.get("workflowStartTime")).getTimeInMillis();
     }
 
     /**
-     * Returns the time difference in milliseconds between the current time and
-     * the time the current node was started
-     *
+     * Returns the time difference in milliseconds between the current time and the time the current node was started
      */
     public long timeSinceTaskWasStarted() {
-        return Calendar.getInstance().getTimeInMillis()
-                - ((Calendar) ctx.get("nodeStartTime")).getTimeInMillis();
+        return Calendar.getInstance().getTimeInMillis() - ((Calendar) ctx.get("nodeStartTime")).getTimeInMillis();
     }
 
     /**
-     * Returns the time difference in milliseconds between the current time and
-     * the task due date
-     *
+     * Returns the time difference in milliseconds between the current time and the task due date
      */
     public long timeSinceDueDateIsOver() {
-        return Calendar.getInstance().getTimeInMillis()
-                - ((Calendar) ctx.get("taskDueTime")).getTimeInMillis();
+        return Calendar.getInstance().getTimeInMillis() - ((Calendar) ctx.get("taskDueTime")).getTimeInMillis();
     }
 
     /**
-     * Returns -1 if the current rule hasn't been executed or the execution date
-     * was not set on this rule;
-     *
-     * Returns the time difference in milliseconds between the current time and
-     * the last time the rule was executed ( equivalent to the rule being
-     * evaluated to 'true').
-     *
+     * Returns -1 if the current rule hasn't been executed or the execution date was not set on this rule; Returns the
+     * time difference in milliseconds between the current time and the last time the rule was executed ( equivalent to
+     * the rule being evaluated to 'true').
      */
     public long timeSinceRuleHasBeenFalse() {
         if (rule == null) {
-            throw new ClientRuntimeException(
-                    "No escalation rule available in this context");
+            throw new ClientRuntimeException("No escalation rule available in this context");
         }
         Calendar lastExecutionTime = rule.getLastExecutionTime();
         if (lastExecutionTime == null) {
-            log.warn("Trying to evaluate timeSinceRuleHasBeenFalse() for the rule "
-                    + rule.getId() + " that hasn't been executed yet");
+            log.warn("Trying to evaluate timeSinceRuleHasBeenFalse() for the rule " + rule.getId()
+                    + " that hasn't been executed yet");
             return -1L;
         }
         if (!rule.isExecuted()) {
-            log.warn("Rule " + rule.getId() + " was never executed. Use with "
-                    + BINDING_KEY + " ruleAlreadyExecuted().");
+            log.warn("Rule " + rule.getId() + " was never executed. Use with " + BINDING_KEY
+                    + " ruleAlreadyExecuted().");
             return -1L;
         }
-        return Calendar.getInstance().getTimeInMillis()
-                - rule.getLastExecutionTime().getTimeInMillis();
+        return Calendar.getInstance().getTimeInMillis() - rule.getLastExecutionTime().getTimeInMillis();
     }
 
     /**
@@ -112,8 +96,7 @@ public class RoutingScriptingFunctions {
      */
     public boolean ruleAlreadyExecuted() {
         if (rule == null) {
-            throw new ClientRuntimeException(
-                    "No escalation rule available in this context");
+            throw new ClientRuntimeException("No escalation rule available in this context");
         }
         return rule.isExecuted();
     }

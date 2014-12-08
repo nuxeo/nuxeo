@@ -27,11 +27,10 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 
 /**
- * Set a workflow variable. The workflow variable must exists on the workflow.
- * If no workflowId is specified the variable is set on the current workflow.
+ * Set a workflow variable. The workflow variable must exists on the workflow. If no workflowId is specified the
+ * variable is set on the current workflow.
  *
  * @since 5.6
- *
  */
 @Operation(id = SetWorkflowVar.ID, category = Constants.CAT_WORKFLOW, label = "Set Workflow Variable", requires = Constants.WORKFLOW_CONTEXT, description = "Set a workflow variable. The workflow variable must exists on "
         + "the workflow. If no workflowId is specified the variable is set on the current workflow."
@@ -60,8 +59,7 @@ public class SetWorkflowVar {
     public void run() throws ClientException {
         if (workflowInstanceId == null) {
             if (ctx.get(Constants.VAR_WORKFLOW) != null) {
-                ((Map<String, Serializable>) ctx.get(Constants.VAR_WORKFLOW)).put(
-                        name, (Serializable) value);
+                ((Map<String, Serializable>) ctx.get(Constants.VAR_WORKFLOW)).put(name, (Serializable) value);
             }
             if (ctx.get("workflowInstanceId") != null) {
                 workflowInstanceId = (String) ctx.get("workflowInstanceId");
@@ -70,8 +68,7 @@ public class SetWorkflowVar {
         if (workflowInstanceId == null) {
             return;
         }
-        DocumentModel workflowInstance = session.getDocument(new IdRef(
-                workflowInstanceId));
+        DocumentModel workflowInstance = session.getDocument(new IdRef(workflowInstanceId));
         GraphRoute graph = workflowInstance.getAdapter(GraphRoute.class);
         Map<String, Serializable> vars = graph.getVariables();
         vars.put(name, (Serializable) value);

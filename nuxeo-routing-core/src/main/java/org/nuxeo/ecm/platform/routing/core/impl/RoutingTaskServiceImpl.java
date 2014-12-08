@@ -33,19 +33,16 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @deprecated since 5.6, use DocumentRoutingService instead
  */
 @Deprecated
-public class RoutingTaskServiceImpl extends DefaultComponent implements
-        RoutingTaskService {
+public class RoutingTaskServiceImpl extends DefaultComponent implements RoutingTaskService {
 
     @Override
-    public void makeRoutingTasks(CoreSession session, List<Task> tasks)
-            throws ClientException {
+    public void makeRoutingTasks(CoreSession session, List<Task> tasks) throws ClientException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         routing.makeRoutingTasks(session, tasks);
     }
 
     @Override
-    public void endTask(CoreSession session, Task task,
-            Map<String, Object> data, String status)
+    public void endTask(CoreSession session, Task task, Map<String, Object> data, String status)
             throws DocumentRouteException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         try {
@@ -58,8 +55,7 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<DocumentModel> getWorkflowInputDocuments(CoreSession session,
-            Task task) throws DocumentRouteException {
+    public List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task) throws DocumentRouteException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         try {
             return routing.getWorkflowInputDocuments(session, task);

@@ -24,8 +24,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /***
- * Set the position of the child to be run once the step with the given id it's
- * finished.
+ * Set the position of the child to be run once the step with the given id it's finished.
  *
  * @since 5.5
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
@@ -39,8 +38,7 @@ public class ConditionalFolderUpdateRunner {
         this.stepDocId = stepDocId;
     }
 
-    public void setStepToBeExecutedNext(CoreSession session,
-            final String nextStepPos) {
+    public void setStepToBeExecutedNext(CoreSession session, final String nextStepPos) {
         try {
             new UnrestrictedSessionRunner(session) {
 
@@ -48,13 +46,11 @@ public class ConditionalFolderUpdateRunner {
                 public void run() throws ClientException {
                     // get the parent container and set on it the id of the doc
                     // to be run next
-                    DocumentModel condFolder = session.getDocument(session.getParentDocumentRef(new IdRef(
-                            stepDocId)));
+                    DocumentModel condFolder = session.getDocument(session.getParentDocumentRef(new IdRef(stepDocId)));
                     if (!condFolder.hasFacet(DocumentRoutingConstants.CONDITIONAL_STEP_FACET)) {
                         return;
                     }
-                    condFolder.setPropertyValue(
-                            DocumentRoutingConstants.STEP_TO_BE_EXECUTED_NEXT_PROPERTY_NAME,
+                    condFolder.setPropertyValue(DocumentRoutingConstants.STEP_TO_BE_EXECUTED_NEXT_PROPERTY_NAME,
                             nextStepPos);
                     session.saveDocument(condFolder);
                 }

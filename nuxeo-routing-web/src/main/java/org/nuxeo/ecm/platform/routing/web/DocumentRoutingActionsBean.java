@@ -161,15 +161,13 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
     }
 
-    @Observer(value = { EventNames.DOCUMENT_CHANGED,
-            EventNames.DOCUMENT_SELECTION_CHANGED })
+    @Observer(value = { EventNames.DOCUMENT_CHANGED, EventNames.DOCUMENT_SELECTION_CHANGED })
     public void resetRelatedRouteDocumentId() {
         relatedRouteModelDocumentId = null;
     }
 
     public boolean isRoutable() {
-        return getDocumentRoutingService().isRoutable(
-                navigationContext.getCurrentDocument());
+        return getDocumentRoutingService().isRoutable(navigationContext.getCurrentDocument());
     }
 
     public String startRoute() throws ClientException {
@@ -177,17 +175,13 @@ public class DocumentRoutingActionsBean implements Serializable {
         DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
         if (currentRoute == null) {
             log.warn("Current document is not a workflow model");
-            facesMessages.add(
-                    StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.document.routing.no.workflow"));
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("label.document.routing.no.workflow"));
             return null;
         }
-        getDocumentRoutingService().createNewInstance(
-                currentDocument.getName(), currentRoute.getAttachedDocuments(),
+        getDocumentRoutingService().createNewInstance(currentDocument.getName(), currentRoute.getAttachedDocuments(),
                 documentManager, true);
-        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                currentDocument);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
         webActions.resetTabList();
         return null;
@@ -198,12 +192,11 @@ public class DocumentRoutingActionsBean implements Serializable {
      * <p>
      * When called on an actual route or route element, the route is returned.
      * <p>
-     * When called on a regular document, the routing service is queried to get
-     * the routes which have the current document attached.
+     * When called on a regular document, the routing service is queried to get the routes which have the current
+     * document attached.
      * <p>
-     * When dealing with a regular document, this is DEPRECATED as several
-     * graph routes may be related to the current document (for instance in the
-     * case of sub-workflows). Use {@link #getRelatedRoutes} instead.
+     * When dealing with a regular document, this is DEPRECATED as several graph routes may be related to the current
+     * document (for instance in the case of sub-workflows). Use {@link #getRelatedRoutes} instead.
      */
     public DocumentRoute getRelatedRoute() {
         // try to see if actually the current document is a route
@@ -229,16 +222,14 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     /**
-     * Gets the list of routes related to the current document, by querying the
-     * routing service.
+     * Gets the list of routes related to the current document, by querying the routing service.
      *
      * @return the list of routes (may be empty)
      * @since 5.7.2
      */
     public List<DocumentRoute> getRelatedRoutes() {
         queryForRelatedRoutes();
-        List<DocumentRoute> routes = new ArrayList<DocumentRoute>(
-                relatedRoutes.size());
+        List<DocumentRoute> routes = new ArrayList<DocumentRoute>(relatedRoutes.size());
         for (DocumentModel doc : relatedRoutes) {
             routes.add(doc.getAdapter(DocumentRoute.class));
         }
@@ -266,8 +257,7 @@ public class DocumentRoutingActionsBean implements Serializable {
             return null;
         }
         DocumentRoute route = routes.get(0);
-        Framework.getLocalService(DocumentRoutingEngineService.class).cancel(
-                route, documentManager);
+        Framework.getLocalService(DocumentRoutingEngineService.class).cancel(route, documentManager);
         // force computing of tabs
         webActions.resetTabList();
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_CANCELED);
@@ -277,13 +267,10 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public void saveRouteAsNewInstance() {
-        getDocumentRoutingService().saveRouteAsNewModel(getRelatedRoute(),
-                documentManager);
+        getDocumentRoutingService().saveRouteAsNewModel(getRelatedRoute(), documentManager);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
-        facesMessages.add(
-                StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get(
-                        "feedback.casemanagement.document.route.route_duplicated"));
+        facesMessages.add(StatusMessage.Severity.INFO,
+                resourcesAccessor.getMessages().get("feedback.casemanagement.document.route.route_duplicated"));
     }
 
     public void saveSelectedRouteAsNewInstance() {
@@ -293,16 +280,13 @@ public class DocumentRoutingActionsBean implements Serializable {
             for (DocumentModel doc : docs) {
                 route = doc.getAdapter(DocumentRoute.class);
                 if (route != null) {
-                    getDocumentRoutingService().saveRouteAsNewModel(route,
-                            documentManager);
+                    getDocumentRoutingService().saveRouteAsNewModel(route, documentManager);
                 }
             }
         }
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
-        facesMessages.add(
-                StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get(
-                        "feedback.casemanagement.document.route.selected_route_duplicated"));
+        facesMessages.add(StatusMessage.Severity.INFO,
+                resourcesAccessor.getMessages().get("feedback.casemanagement.document.route.selected_route_duplicated"));
     }
 
     public boolean getCanDuplicateRouteInstance() {
@@ -321,19 +305,14 @@ public class DocumentRoutingActionsBean implements Serializable {
     public String validateRouteModel() throws ClientException {
         DocumentRoute currentRouteModel = getRelatedRoute();
         try {
-            getDocumentRoutingService().validateRouteModel(currentRouteModel,
-                    documentManager);
+            getDocumentRoutingService().validateRouteModel(currentRouteModel, documentManager);
         } catch (DocumentRouteNotLockedException e) {
-            facesMessages.add(
-                    StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.casemanagement.document.route.not.locked"));
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("feedback.casemanagement.document.route.not.locked"));
             return null;
         }
-        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                currentRouteModel.getDocument());
-        getDocumentRoutingService().unlockDocumentRouteUnrestrictedSession(
-                currentRouteModel, documentManager);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentRouteModel.getDocument());
+        getDocumentRoutingService().unlockDocumentRouteUnrestrictedSession(currentRouteModel, documentManager);
         return null;
     }
 
@@ -341,8 +320,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
     @Deprecated
-    protected List<DocumentRouteTableElement> computeRouteElements()
-            throws ClientException {
+    protected List<DocumentRouteTableElement> computeRouteElements() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
         return getElements(currentRoute);
@@ -352,13 +330,11 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
     @Deprecated
-    protected List<DocumentRouteTableElement> computeRelatedRouteElements()
-            throws ClientException {
+    protected List<DocumentRouteTableElement> computeRelatedRouteElements() throws ClientException {
         if (relatedRoutes.isEmpty()) {
             return new ArrayList<DocumentRouteTableElement>();
         }
-        DocumentModel relatedRouteDocumentModel = documentManager.getDocument(new IdRef(
-                relatedRoutes.get(0).getId()));
+        DocumentModel relatedRouteDocumentModel = documentManager.getDocument(new IdRef(relatedRoutes.get(0).getId()));
         DocumentRoute currentRoute = relatedRouteDocumentModel.getAdapter(DocumentRoute.class);
         return getElements(currentRoute);
     }
@@ -367,15 +343,12 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
     @Deprecated
-    protected List<DocumentRouteTableElement> getElements(
-            DocumentRoute currentRoute) {
-        return getDocumentRoutingService().getRouteElements(currentRoute,
-                documentManager);
+    protected List<DocumentRouteTableElement> getElements(DocumentRoute currentRoute) {
+        return getDocumentRoutingService().getRouteElements(currentRoute, documentManager);
     }
 
     /**
-     * Check if the related route to this case is started (ready or running) or
-     * no
+     * Check if the related route to this case is started (ready or running) or no
      */
     public boolean hasRelatedRoute() {
         queryForRelatedRoutes();
@@ -386,35 +359,28 @@ public class DocumentRoutingActionsBean implements Serializable {
         DocumentRoute route = getRelatedRoute();
         // check relatedRoutedoc id
         if (!StringUtils.isEmpty(relatedRouteModelDocumentId)) {
-            DocumentModel model = documentManager.getDocument(new IdRef(
-                    relatedRouteModelDocumentId));
+            DocumentModel model = documentManager.getDocument(new IdRef(relatedRouteModelDocumentId));
             route = model.getAdapter(DocumentRoute.class);
         }
         if (route == null) {
-            facesMessages.add(
-                    StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.casemanagement.document.route.no.valid.route"));
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("feedback.casemanagement.document.route.no.valid.route"));
             return null;
         }
 
         List<String> documentIds = new ArrayList<String>();
         documentIds.add(navigationContext.getCurrentDocument().getId());
         route.setAttachedDocuments(documentIds);
-        getDocumentRoutingService().createNewInstance(
-                route.getDocument().getName(), documentIds, documentManager,
-                true);
+        getDocumentRoutingService().createNewInstance(route.getDocument().getName(), documentIds, documentManager, true);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
         webActions.resetTabList();
         return null;
     }
 
     /**
-     * returns true if the routeStarted on the current Document is editable (is
-     * Ready )
+     * returns true if the routeStarted on the current Document is editable (is Ready )
      */
-    public boolean routeRelatedToCurrentDocumentIsRunning()
-            throws ClientException {
+    public boolean routeRelatedToCurrentDocumentIsRunning() throws ClientException {
         DocumentRoute route = getRelatedRoute();
         if (route == null) {
             return false;
@@ -423,8 +389,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String getTypeDescription(DocumentRouteTableElement localizable) {
-        return depthFormatter(localizable.getDepth(),
-                localizable.getElement().getDocument().getType());
+        return depthFormatter(localizable.getDepth(), localizable.getElement().getDocument().getType());
     }
 
     private String depthFormatter(int depth, String type) {
@@ -458,8 +423,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     public String removeStep() throws ClientException {
         boolean alreadyLockedByCurrentUser = false;
         DocumentRoute routeModel = getRelatedRoute();
-        if (getDocumentRoutingService().isLockedByCurrentUser(routeModel,
-                documentManager)) {
+        if (getDocumentRoutingService().isLockedByCurrentUser(routeModel, documentManager)) {
             alreadyLockedByCurrentUser = true;
         } else {
             if (lockRoute(routeModel) == null) {
@@ -472,24 +436,19 @@ public class DocumentRoutingActionsBean implements Serializable {
         DocumentRef docRef = new IdRef(stepId);
         DocumentModel stepToDelete = documentManager.getDocument(docRef);
         try {
-            getDocumentRoutingService().removeRouteElement(
-                    stepToDelete.getAdapter(DocumentRouteElement.class),
+            getDocumentRoutingService().removeRouteElement(stepToDelete.getAdapter(DocumentRouteElement.class),
                     documentManager);
         } catch (DocumentRouteNotLockedException e) {
-            facesMessages.add(
-                    StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.casemanagement.document.route.not.locked"));
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("feedback.casemanagement.document.route.not.locked"));
             return null;
         }
         Contexts.removeFromAllContexts("relatedRoutes");
-        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                routeModel.getDocument());
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, routeModel.getDocument());
         // Release the lock only when currentUser had locked it before
         // entering this method.
         if (!alreadyLockedByCurrentUser) {
-            getDocumentRoutingService().unlockDocumentRoute(routeModel,
-                    documentManager);
+            getDocumentRoutingService().unlockDocumentRoute(routeModel, documentManager);
         }
         return null;
     }
@@ -515,21 +474,18 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
     @Deprecated
-    public boolean isEditableRouteElement(DocumentModel stepDoc)
-            throws ClientException {
+    public boolean isEditableRouteElement(DocumentModel stepDoc) throws ClientException {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
         return stepElement.isModifiable();
     }
 
     @Factory(value = "currentRouteLockedByCurrentUser", scope = ScopeType.EVENT)
     public boolean isCurrentRouteLockedByCurrentUser() throws ClientException {
-        return getDocumentRoutingService().isLockedByCurrentUser(
-                getRelatedRoute(), documentManager);
+        return getDocumentRoutingService().isLockedByCurrentUser(getRelatedRoute(), documentManager);
     }
 
     public boolean isCurrentRouteLocked() throws ClientException {
-        LockableDocumentRoute lockableRoute = getRelatedRoute().getDocument().getAdapter(
-                LockableDocumentRoute.class);
+        LockableDocumentRoute lockableRoute = getRelatedRoute().getDocument().getAdapter(LockableDocumentRoute.class);
         return lockableRoute.isLocked(documentManager);
     }
 
@@ -541,8 +497,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return Boolean.TRUE.equals(lockActions.getCanLockDoc(getRelatedRoute().getDocument()));
     }
 
-    public Map<String, Serializable> getCurrentRouteLockDetails()
-            throws ClientException {
+    public Map<String, Serializable> getCurrentRouteLockDetails() throws ClientException {
         return lockActions.getLockDetails(getRelatedRoute().getDocument());
     }
 
@@ -551,17 +506,13 @@ public class DocumentRoutingActionsBean implements Serializable {
         return lockRoute(docRouteElement);
     }
 
-    protected String lockRoute(DocumentRoute docRouteElement)
-            throws ClientException {
+    protected String lockRoute(DocumentRoute docRouteElement) throws ClientException {
         try {
-            getDocumentRoutingService().lockDocumentRoute(
-                    docRouteElement.getDocumentRoute(documentManager),
+            getDocumentRoutingService().lockDocumentRoute(docRouteElement.getDocumentRoute(documentManager),
                     documentManager);
         } catch (DocumentRouteAlredayLockedException e) {
-            facesMessages.add(
-                    StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.casemanagement.document.route.already.locked"));
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("feedback.casemanagement.document.route.already.locked"));
             return null;
         }
         return null;
@@ -574,8 +525,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public boolean isEmptyFork(DocumentModel forkDoc) throws ClientException {
-        return forkDoc.hasFacet("Folderish")
-                && !documentManager.hasChildren(forkDoc.getRef());
+        return forkDoc.hasFacet("Folderish") && !documentManager.hasChildren(forkDoc.getRef());
     }
 
     public String editStep() throws ClientException {
@@ -587,8 +537,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         if (currentDoc.getAdapter(DocumentRoute.class) == null) {
             setDocWithAttachedRouteId(currentDoc.getId());
         }
-        return navigationContext.navigateToDocument(
-                documentManager.getDocument(stepRef), "edit");
+        return navigationContext.navigateToDocument(documentManager.getDocument(stepRef), "edit");
     }
 
     public String updateRouteElement() throws ClientException {
@@ -596,8 +545,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRouteElement docRouteElement = currentDocument.getAdapter(DocumentRouteElement.class);
         DocumentRoute route = docRouteElement.getDocumentRoute(documentManager);
-        if (getDocumentRoutingService().isLockedByCurrentUser(route,
-                documentManager)) {
+        if (getDocumentRoutingService().isLockedByCurrentUser(route, documentManager)) {
             alreadyLockedByCurrentUser = true;
         } else {
             if (lockRoute(route) == null) {
@@ -605,43 +553,35 @@ public class DocumentRoutingActionsBean implements Serializable {
             }
         }
         try {
-            getDocumentRoutingService().updateRouteElement(docRouteElement,
-                    documentManager);
+            getDocumentRoutingService().updateRouteElement(docRouteElement, documentManager);
         } catch (DocumentRouteNotLockedException e) {
-            facesMessages.add(
-                    StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.casemanagement.document.route.already.locked"));
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("feedback.casemanagement.document.route.already.locked"));
             return null;
         }
         navigationContext.invalidateCurrentDocument();
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get("document_modified"),
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_modified"),
                 resourcesAccessor.getMessages().get(currentDocument.getType()));
         EventManager.raiseEventsOnDocumentChange(currentDocument);
         // Release the lock only when currentUser had locked it before
         // entering this method.
         if (!alreadyLockedByCurrentUser) {
-            getDocumentRoutingService().unlockDocumentRoute(route,
-                    documentManager);
+            getDocumentRoutingService().unlockDocumentRoute(route, documentManager);
         }
         if (docWithAttachedRouteId == null) {
-            return webActions.setCurrentTabAndNavigate(
-                    docRouteElement.getDocumentRoute(documentManager).getDocument(),
+            return webActions.setCurrentTabAndNavigate(docRouteElement.getDocumentRoute(documentManager).getDocument(),
                     "TAB_DOCUMENT_ROUTE_ELEMENTS");
         }
 
         setRelatedRouteWhenNavigateBackToCase();
-        return webActions.setCurrentTabAndNavigate(
-                documentManager.getDocument(new IdRef(docWithAttachedRouteId)),
+        return webActions.setCurrentTabAndNavigate(documentManager.getDocument(new IdRef(docWithAttachedRouteId)),
                 "TAB_CASE_MANAGEMENT_VIEW_RELATED_ROUTE");
     }
 
     public String goBackToRoute() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRouteElement docRouteElement = currentDocument.getAdapter(DocumentRouteElement.class);
-        return webActions.setCurrentTabAndNavigate(
-                docRouteElement.getDocumentRoute(documentManager).getDocument(),
+        return webActions.setCurrentTabAndNavigate(docRouteElement.getDocumentRoute(documentManager).getDocument(),
                 "TAB_DOCUMENT_ROUTE_ELEMENTS");
     }
 
@@ -664,8 +604,8 @@ public class DocumentRoutingActionsBean implements Serializable {
             if (StepOrder.before.toString().equals(hiddenDocOrder)) {
                 sourceDocName = sourceDoc.getName();
             } else {
-                DocumentModelList orderedChilds = getDocumentRoutingService().getOrderedRouteElement(
-                        parentDoc.getId(), documentManager);
+                DocumentModelList orderedChilds = getDocumentRoutingService().getOrderedRouteElement(parentDoc.getId(),
+                        documentManager);
                 int selectedDocumentIndex = orderedChilds.indexOf(sourceDoc);
                 int nextIndex = selectedDocumentIndex + 1;
                 if (nextIndex >= orderedChilds.size()) {
@@ -693,10 +633,9 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     /**
-     * Moves the step in the parent container in the specified direction. If
-     * the step is in a parallel container, it can't be moved. A step can't be
-     * moved before a step already done or running. Assumed that the route is
-     * already locked to have this action available, so no check is done.
+     * Moves the step in the parent container in the specified direction. If the step is in a parallel container, it
+     * can't be moved. A step can't be moved before a step already done or running. Assumed that the route is already
+     * locked to have this action available, so no check is done.
      *
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
@@ -705,8 +644,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         if (StringUtils.isEmpty(stepId)) {
             return null;
         }
-        DocumentModel routeElementDocToMove = documentManager.getDocument(new IdRef(
-                stepId));
+        DocumentModel routeElementDocToMove = documentManager.getDocument(new IdRef(stepId));
         DocumentModel parentDoc = documentManager.getDocument(routeElementDocToMove.getParentRef());
         ExecutionTypeValues executionType = ExecutionTypeValues.valueOf((String) parentDoc.getPropertyValue(DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
         if (!DocumentRoutingConstants.ExecutionTypeValues.serial.equals(executionType)) {
@@ -716,8 +654,8 @@ public class DocumentRoutingActionsBean implements Serializable {
                             "feedback.casemanagement.document.route.cant.move.steps.in.parallel.container"));
             return null;
         }
-        DocumentModelList orderedChilds = getDocumentRoutingService().getOrderedRouteElement(
-                parentDoc.getId(), documentManager);
+        DocumentModelList orderedChilds = getDocumentRoutingService().getOrderedRouteElement(parentDoc.getId(),
+                documentManager);
         int selectedDocumentIndex = orderedChilds.indexOf(routeElementDocToMove);
         if (DocumentRoutingWebConstants.MOVE_STEP_UP.equals(direction)) {
             if (selectedDocumentIndex == 0) {
@@ -744,8 +682,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                                 "feedback.casemanagement.document.route.cant.move.step.after.no.modifiable.step"));
                 return null;
             }
-            documentManager.orderBefore(parentDoc.getRef(),
-                    routeElementDocToMove.getName(), stepMoveBefore.getName());
+            documentManager.orderBefore(parentDoc.getRef(), routeElementDocToMove.getName(), stepMoveBefore.getName());
         }
         if (DocumentRoutingWebConstants.MOVE_STEP_DOWN.equals(direction)) {
             if (selectedDocumentIndex == orderedChilds.size() - 1) {
@@ -765,27 +702,22 @@ public class DocumentRoutingActionsBean implements Serializable {
                                 "feedback.casemanagement.document.route.cant.move.step.after.already.running.step"));
                 return null;
             }
-            documentManager.orderBefore(parentDoc.getRef(),
-                    orderedChilds.get(selectedDocumentIndex + 1).getName(),
+            documentManager.orderBefore(parentDoc.getRef(), orderedChilds.get(selectedDocumentIndex + 1).getName(),
                     routeElementDocToMove.getName());
         }
         if (docWithAttachedRouteId == null) {
-            return webActions.setCurrentTabAndNavigate(
-                    getRelatedRoute().getDocument(),
-                    "TAB_DOCUMENT_ROUTE_ELEMENTS");
+            return webActions.setCurrentTabAndNavigate(getRelatedRoute().getDocument(), "TAB_DOCUMENT_ROUTE_ELEMENTS");
         }
 
         setRelatedRouteWhenNavigateBackToCase();
-        return webActions.setCurrentTabAndNavigate(
-                documentManager.getDocument(new IdRef(docWithAttachedRouteId)),
+        return webActions.setCurrentTabAndNavigate(documentManager.getDocument(new IdRef(docWithAttachedRouteId)),
                 "TAB_CASE_MANAGEMENT_VIEW_RELATED_ROUTE");
     }
 
     public String saveRouteElement() throws ClientException {
         boolean alreadyLockedByCurrentUser = false;
         DocumentRoute routeModel = getRelatedRoute();
-        if (getDocumentRoutingService().isLockedByCurrentUser(routeModel,
-                documentManager)) {
+        if (getDocumentRoutingService().isLockedByCurrentUser(routeModel, documentManager)) {
             alreadyLockedByCurrentUser = true;
         } else {
             lockRoute(routeModel);
@@ -797,40 +729,29 @@ public class DocumentRoutingActionsBean implements Serializable {
         // too many times.
         if (newDocument.getId() != null) {
             log.debug("Document " + newDocument.getName() + " already created");
-            return navigationContext.navigateToDocument(newDocument,
-                    "after-create");
+            return navigationContext.navigateToDocument(newDocument, "after-create");
         }
         try {
-            String parentDocumentPath = (String) newDocument.getContextData().get(
-                    CoreEventConstants.PARENT_PATH);
-            String sourceDocumentName = (String) newDocument.getContextData().get(
-                    SOURCE_DOC_NAME);
-            DocumentRef routeDocRef = (DocumentRef) newDocument.getContextData().get(
-                    ROUTE_DOCUMENT_REF);
+            String parentDocumentPath = (String) newDocument.getContextData().get(CoreEventConstants.PARENT_PATH);
+            String sourceDocumentName = (String) newDocument.getContextData().get(SOURCE_DOC_NAME);
+            DocumentRef routeDocRef = (DocumentRef) newDocument.getContextData().get(ROUTE_DOCUMENT_REF);
             try {
-                getDocumentRoutingService().addRouteElementToRoute(
-                        new PathRef(parentDocumentPath), sourceDocumentName,
-                        newDocument.getAdapter(DocumentRouteElement.class),
-                        documentManager);
+                getDocumentRoutingService().addRouteElementToRoute(new PathRef(parentDocumentPath), sourceDocumentName,
+                        newDocument.getAdapter(DocumentRouteElement.class), documentManager);
             } catch (DocumentRouteNotLockedException e) {
-                facesMessages.add(
-                        StatusMessage.Severity.WARN,
-                        resourcesAccessor.getMessages().get(
-                                "feedback.casemanagement.document.route.not.locked"));
+                facesMessages.add(StatusMessage.Severity.WARN,
+                        resourcesAccessor.getMessages().get("feedback.casemanagement.document.route.not.locked"));
                 return null;
             }
             DocumentModel routeDocument = documentManager.getDocument(routeDocRef);
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get("document_saved"),
+            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_saved"),
                     resourcesAccessor.getMessages().get(newDocument.getType()));
 
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    routeDocument);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, routeDocument);
             // Release the lock only when currentUser had locked it before
             // entering this method.
             if (!alreadyLockedByCurrentUser) {
-                getDocumentRoutingService().unlockDocumentRoute(routeModel,
-                        documentManager);
+                getDocumentRoutingService().unlockDocumentRoute(routeModel, documentManager);
             }
             return navigationContext.navigateToDocument(routeDocument);
         } catch (Throwable t) {
@@ -840,11 +761,10 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     @Deprecated
     // @deprecated since 5.9.2 - Use only routes of type 'graph'
-    public List<DocumentModel> getOrderedChildren(String docRouteElementId,
-            String type) throws ClientException {
+    public List<DocumentModel> getOrderedChildren(String docRouteElementId, String type) throws ClientException {
         // xxx move me in serice with query
-        DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(
-                docRouteElementId, documentManager);
+        DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(docRouteElementId,
+                documentManager);
         List<DocumentModel> filteredChildren = new ArrayList<DocumentModel>();
         for (DocumentModel documentModel : orderedChildren) {
             if (type.equals(documentModel.getType())) {
@@ -856,19 +776,17 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     @Deprecated
     // @deprecated since 5.9.2 - Use only routes of type 'graph'
-    public DocumentModel getChildWithPosition(DocumentModel docRouteElement,
-            String pos) throws ClientException {
-        DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(
-                docRouteElement.getId(), documentManager);
+    public DocumentModel getChildWithPosition(DocumentModel docRouteElement, String pos) throws ClientException {
+        DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(docRouteElement.getId(),
+                documentManager);
         return orderedChildren.get(Integer.parseInt(pos));
     }
 
     @Deprecated
     // @deprecated since 5.9.2 - Use only routes of type 'graph'
-    public String getPositionForChild(DocumentModel docRouteElement,
-            DocumentModel docChild) throws ClientException {
-        DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(
-                docRouteElement.getId(), documentManager);
+    public String getPositionForChild(DocumentModel docRouteElement, DocumentModel docChild) throws ClientException {
+        DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(docRouteElement.getId(),
+                documentManager);
         return String.valueOf(orderedChildren.indexOf(docChild));
     }
 
@@ -892,8 +810,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return relatedRouteModelDocumentId;
     }
 
-    public void setRelatedRouteModelDocumentId(
-            String relatedRouteModelDocumentId) {
+    public void setRelatedRouteModelDocumentId(String relatedRouteModelDocumentId) {
         this.relatedRouteModelDocumentId = relatedRouteModelDocumentId;
     }
 
@@ -908,13 +825,11 @@ public class DocumentRoutingActionsBean implements Serializable {
     private void setRelatedRouteWhenNavigateBackToCase() throws ClientException {
         // recompute factory
         webActions.resetTabList();
-        navigationContext.setCurrentDocument(documentManager.getDocument(new IdRef(
-                docWithAttachedRouteId)));
+        navigationContext.setCurrentDocument(documentManager.getDocument(new IdRef(docWithAttachedRouteId)));
         relatedRoutes = relatedRouteAction.findRelatedRoute();
     }
 
-    @Observer(value = { TaskEventNames.WORKFLOW_ENDED,
-            TaskEventNames.WORKFLOW_CANCELED }, create = false)
+    @Observer(value = { TaskEventNames.WORKFLOW_ENDED, TaskEventNames.WORKFLOW_CANCELED }, create = false)
     public void resetCache() {
         webActions.resetTabList();
     }
@@ -951,8 +866,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      */
     public List<DocumentModel> getFilteredRouteModels() throws ClientException {
         DocumentRoutingService documentRoutingService = Framework.getLocalService(DocumentRoutingService.class);
-        List<DocumentModel> routeModels = documentRoutingService.searchRouteModels(
-                documentManager, "");
+        List<DocumentModel> routeModels = documentRoutingService.searchRouteModels(documentManager, "");
         for (Iterator<DocumentModel> it = routeModels.iterator(); it.hasNext();) {
             DocumentModel route = it.next();
             Object graphRouteObj = route.getAdapter(GraphRoute.class);
@@ -978,8 +892,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         TaskService taskService = Framework.getLocalService(TaskService.class);
         DocumentRoute currentRoute = getRelatedRoute();
         if (currentRoute != null) {
-            return taskService.getAllTaskInstances(
-                    currentRoute.getDocument().getId(), documentManager);
+            return taskService.getAllTaskInstances(currentRoute.getDocument().getId(), documentManager);
         }
         return null;
     }
@@ -991,10 +904,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         TaskService taskService = Framework.getLocalService(TaskService.class);
         DocumentRoute currentRoute = getRelatedRoute();
         if (currentRoute != null) {
-            return taskService.getAllTaskInstances(
-                    currentRoute.getDocument().getId(),
-                    (NuxeoPrincipal) documentManager.getPrincipal(),
-                    documentManager);
+            return taskService.getAllTaskInstances(currentRoute.getDocument().getId(),
+                    (NuxeoPrincipal) documentManager.getPrincipal(), documentManager);
         }
         return null;
     }
@@ -1005,8 +916,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     public String getCurrentWorkflowInitiator() throws ClientException {
         DocumentRoute currentRoute = getRelatedRoute();
         if (currentRoute != null) {
-            return (String) currentRoute.getDocument().getPropertyValue(
-                    DocumentRoutingConstants.INITIATOR);
+            return (String) currentRoute.getDocument().getPropertyValue(DocumentRoutingConstants.INITIATOR);
         }
         return "";
     }
@@ -1026,8 +936,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     public boolean isRouteGraph(DocumentRoute route) throws ClientException {
         return route != null
                 && ExecutionTypeValues.graph.toString().equals(
-                        route.getDocument().getPropertyValue(
-                                DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
+                        route.getDocument().getPropertyValue(DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
     }
 
 }

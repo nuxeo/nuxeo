@@ -37,13 +37,11 @@ import org.nuxeo.ecm.platform.routing.core.impl.StepElementRunner;
  * Provides {@link DocumentRoute} for a {@link DocumentModel}.
  *
  * @author arussel
- *
  */
 public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
 
     @Override
-    public Object getAdapter(DocumentModel doc,
-            @SuppressWarnings("rawtypes") Class itf) {
+    public Object getAdapter(DocumentModel doc, @SuppressWarnings("rawtypes") Class itf) {
         String type = doc.getType();
         if (doc.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
             ExecutionTypeValues executionType = getExecutionType(doc, type);
@@ -60,17 +58,14 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
         } else if (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET)) {
             return new DocumentRouteElementImpl(doc, new StepElementRunner());
         } else if (doc.hasFacet(DocumentRoutingConstants.CONDITIONAL_STEP_FACET)) {
-            return new DocumentRouteStepsContainerImpl(doc,
-                    new ConditionalRunner());
+            return new DocumentRouteStepsContainerImpl(doc, new ConditionalRunner());
         } else if (doc.hasFacet(DocumentRoutingConstants.STEP_FOLDER_FACET)) {
             ExecutionTypeValues executionType = getExecutionType(doc, type);
             switch (executionType) {
             case serial:
-                return new DocumentRouteStepsContainerImpl(doc,
-                        new SerialRunner());
+                return new DocumentRouteStepsContainerImpl(doc, new SerialRunner());
             case parallel:
-                return new DocumentRouteStepsContainerImpl(doc,
-                        new ParallelRunner());
+                return new DocumentRouteStepsContainerImpl(doc, new ParallelRunner());
             case graph:
                 throw new UnsupportedOperationException();
             }
@@ -78,10 +73,9 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
         return null;
     }
 
-    protected ExecutionTypeValues getExecutionType(DocumentModel doc,
-            String type) {
-        ExecutionTypeValues executionType = ExecutionTypeValues.valueOf((String) getProperty(
-                doc, DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
+    protected ExecutionTypeValues getExecutionType(DocumentModel doc, String type) {
+        ExecutionTypeValues executionType = ExecutionTypeValues.valueOf((String) getProperty(doc,
+                DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
         return executionType;
     }
 

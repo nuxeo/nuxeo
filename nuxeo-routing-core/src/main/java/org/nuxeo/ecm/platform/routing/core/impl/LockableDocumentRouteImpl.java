@@ -25,9 +25,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 
 /**
- *
  * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
- *
  */
 public class LockableDocumentRouteImpl implements LockableDocumentRoute {
     protected final DocumentModel doc;
@@ -44,8 +42,7 @@ public class LockableDocumentRouteImpl implements LockableDocumentRoute {
     }
 
     @Override
-    public boolean isLockedByCurrentUser(CoreSession session)
-            throws ClientException {
+    public boolean isLockedByCurrentUser(CoreSession session) throws ClientException {
         Lock lockInfo = session.getLockInfo(doc.getRef());
         if (lockInfo == null) {
             return false;

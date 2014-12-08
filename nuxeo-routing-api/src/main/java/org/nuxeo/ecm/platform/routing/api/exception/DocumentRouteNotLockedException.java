@@ -17,10 +17,8 @@
 package org.nuxeo.ecm.platform.routing.api.exception;
 
 /**
-*
-* @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
-*
-*/
+ * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
+ */
 public class DocumentRouteNotLockedException extends DocumentRouteException {
 
     private static final long serialVersionUID = 1L;

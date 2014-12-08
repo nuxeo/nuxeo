@@ -31,11 +31,10 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.EscalationRule;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Triggers the execution of all escalation rules on all running workflows. This
- * listener is notified by the 'executeEscalationRules' event.
+ * Triggers the execution of all escalation rules on all running workflows. This listener is notified by the
+ * 'executeEscalationRules' event.
  *
  * @since 5.7.2
- *
  */
 public class DocumentRoutingEscalationListener implements EventListener {
 
@@ -52,8 +51,7 @@ public class DocumentRoutingEscalationListener implements EventListener {
         }
     }
 
-    protected void triggerEsclationRulesExecution(String repositoryName)
-            throws ClientException {
+    protected void triggerEsclationRulesExecution(String repositoryName) throws ClientException {
         new UnrestrictedSessionRunner(repositoryName) {
 
             @Override

@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.routing.api;
  * A container of steps.
  *
  * @author arussel
- *
  */
 public interface DocumentRouteStepsContainer extends DocumentRouteElement {
 

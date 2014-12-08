@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 @Operation(id = StepUndoOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME)
 public class StepUndoOperation {

@@ -35,12 +35,10 @@ import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
- * Returns all open tasks on the input document(s). If the operation is invoked
- * with parameters, all tasks instances for the given 'processId' originating
- * from the given 'nodeId' are returned. The 'processId' is the id of the
- * document representing the workflow instance. The parameter 'username' is used
- * to fetch only tasks assigned to the given user. Tasks are queried using an
- * unrestricted session.
+ * Returns all open tasks on the input document(s). If the operation is invoked with parameters, all tasks instances for
+ * the given 'processId' originating from the given 'nodeId' are returned. The 'processId' is the id of the document
+ * representing the workflow instance. The parameter 'username' is used to fetch only tasks assigned to the given user.
+ * Tasks are queried using an unrestricted session.
  *
  * @since 5.7.2
  */
@@ -70,13 +68,11 @@ public class GetOpenTasksOperation {
     protected UserManager userManager;
 
     @OperationMethod
-    public DocumentModelList getAllTasks(DocumentModel doc)
-            throws ClientException {
+    public DocumentModelList getAllTasks(DocumentModel doc) throws ClientException {
         DocumentModelList taskDocs = new DocumentModelListImpl();
         List<Task> tasks = new ArrayList<Task>();
         if (nodeId == null && processId == null) {
-            NuxeoPrincipal principal = username != null ? userManager.getPrincipal(username)
-                    : null;
+            NuxeoPrincipal principal = username != null ? userManager.getPrincipal(username) : null;
             tasks = taskService.getTaskInstances(doc, principal, session);
             for (Task task : tasks) {
                 taskDocs.add(task.getDocument());
@@ -84,8 +80,7 @@ public class GetOpenTasksOperation {
             return taskDocs;
         }
         if (nodeId == null || processId == null) {
-            throw new ClientException(
-                    "Need both nodeId and processId to invoke the operation with parameters");
+            throw new ClientException("Need both nodeId and processId to invoke the operation with parameters");
         }
         tasks = taskService.getAllTaskInstances(processId, nodeId, session);
         for (Task task : tasks) {
@@ -103,8 +98,7 @@ public class GetOpenTasksOperation {
     }
 
     @OperationMethod
-    public DocumentModelList getAllTasks(DocumentModelList docs)
-            throws ClientException {
+    public DocumentModelList getAllTasks(DocumentModelList docs) throws ClientException {
         DocumentModelList taskDocs = new DocumentModelListImpl();
         for (DocumentModel doc : docs) {
             taskDocs.addAll(getAllTasks(doc));

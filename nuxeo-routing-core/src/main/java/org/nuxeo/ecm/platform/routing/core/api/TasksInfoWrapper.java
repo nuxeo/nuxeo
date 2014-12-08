@@ -27,8 +27,8 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.TaskInfo;
 
 /**
- * Wraps the list of {@link GraphNode.TaskInfo} on a {@link GraphNode} to expose
- * in a pretty way information to MVEL scripts.
+ * Wraps the list of {@link GraphNode.TaskInfo} on a {@link GraphNode} to expose in a pretty way information to MVEL
+ * scripts.
  *
  * @since 5.7.3
  */
@@ -49,8 +49,7 @@ public class TasksInfoWrapper implements List<GraphNode.TaskInfo>, Serializable 
     public int getNumberEndedWithStatus(String status) {
         int noEndedWithStatus = 0;
         for (GraphNode.TaskInfo taskInfo : tasks) {
-            if (taskInfo.getStatus() != null
-                    && status.equals(taskInfo.getStatus())) {
+            if (taskInfo.getStatus() != null && status.equals(taskInfo.getStatus())) {
                 noEndedWithStatus++;
             }
         }

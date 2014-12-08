@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.routing.api.helper.StepResumeRunner;
  *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
- *
  */
 @Deprecated
 @Operation(id = ResumeStepOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Resume Step", description = "Resume a step that were in running step.", addToStudio = false)
@@ -42,8 +41,7 @@ public class ResumeStepOperation {
     @OperationMethod
     public void resume() {
         DocumentRouteStep step = (DocumentRouteStep) context.get(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
-        StepResumeRunner runner = new StepResumeRunner(
-                step.getDocument().getId());
+        StepResumeRunner runner = new StepResumeRunner(step.getDocument().getId());
         runner.resumeStep(context.getCoreSession());
     }
 }

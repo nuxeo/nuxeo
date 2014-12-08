@@ -48,7 +48,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
-
 /**
  * @since 5.7.2
  */
@@ -102,19 +101,12 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
-                transition("trans1", "node2",
-                        "NodeVariables[\"button\"] == \"trans1\"",
-                        "testchain_title1"));
+        setTransitions(node1,
+                transition("trans1", "node2", "NodeVariables[\"button\"] == \"trans1\"", "testchain_title1"));
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
-        node1.setPropertyValue(GraphNode.PROP_TASK_DUE_DATE_EXPR,
-                "CurrentDate.days(-1)");
-        setEscalationRules(
-                node1,
-                escalationRule("rule1",
-                        "WorkflowFn.timeSinceDueDateIsOver() >=3600000",
-                        "testchain_title1", false));
+        node1.setPropertyValue(GraphNode.PROP_TASK_DUE_DATE_EXPR, "CurrentDate.days(-1)");
+        setEscalationRules(node1,
+                escalationRule("rule1", "WorkflowFn.timeSinceDueDateIsOver() >=3600000", "testchain_title1", false));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -156,8 +148,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         // cancel the route
         routingService.cancel(routeInstance, session);
-        routeInstance = session.getDocument(new IdRef(routeInstanceId)).getAdapter(
-                DocumentRoute.class);
+        routeInstance = session.getDocument(new IdRef(routeInstanceId)).getAdapter(DocumentRoute.class);
         assertTrue(routeInstance.isCanceled());
     }
 
@@ -165,28 +156,21 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
     public void testEscalationMultipleExecution() throws Exception {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
-        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
-                "FacetRoute1");
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
 
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
-                transition("trans1", "node2",
-                        "NodeVariables[\"button\"] == \"trans1\"",
-                        "testchain_title1"));
+        setTransitions(node1,
+                transition("trans1", "node2", "NodeVariables[\"button\"] == \"trans1\"", "testchain_title1"));
 
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
-        setEscalationRules(
-                node1,
-                escalationRule(
-                        "rule1",
+        setEscalationRules(node1,
+                escalationRule("rule1",
                         "( (WorkflowFn.ruleAlreadyExecuted() && WorkflowFn.timeSinceRuleHasBeenFalse() >0 ) ||"
                                 + " !WorkflowFn.ruleAlreadyExecuted()) && "
-                                + "WorkflowFn.timeSinceTaskWasStarted() >=0",
-                        "testchain_title1", true),
+                                + "WorkflowFn.timeSinceTaskWasStarted() >=0", "testchain_title1", true),
                 escalationRule("rule2", "true", "testchain_title2", false),
                 escalationRule("rule3", "true", "testchain_stringfield", false),
                 escalationRule("rule4", "true", "testchain_stringfield2", false));
@@ -262,27 +246,22 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         assertEquals("bar", nodeDoc.getPropertyValue("fctnd1:stringfield2"));
         // cancel the route
         routingService.cancel(route, session);
-        DocumentRoute routeInstance = session.getDocument(
-                new IdRef(routeInstanceId)).getAdapter(DocumentRoute.class);
+        DocumentRoute routeInstance = session.getDocument(new IdRef(routeInstanceId)).getAdapter(DocumentRoute.class);
         assertTrue(routeInstance.isCanceled());
 
     }
 
-    protected void setEscalationRules(DocumentModel node,
-            Map<String, Serializable>... rules) throws ClientException {
-        node.setPropertyValue(GraphNode.PROP_ESCALATION_RULES,
-                (Serializable) Arrays.asList(rules));
+    protected void setEscalationRules(DocumentModel node, Map<String, Serializable>... rules) throws ClientException {
+        node.setPropertyValue(GraphNode.PROP_ESCALATION_RULES, (Serializable) Arrays.asList(rules));
     }
 
-    protected Map<String, Serializable> escalationRule(String id,
-            String condition, String chain, boolean multipleExecution)
-            throws ClientException {
+    protected Map<String, Serializable> escalationRule(String id, String condition, String chain,
+            boolean multipleExecution) throws ClientException {
         Map<String, Serializable> m = new HashMap<String, Serializable>();
         m.put(GraphNode.PROP_ESCALATION_RULE_ID, id);
         m.put(GraphNode.PROP_ESCALATION_RULE_CONDITION, condition);
         m.put(GraphNode.PROP_ESCALATION_RULE_CHAIN, chain);
-        m.put(GraphNode.PROP_ESCALATION_RULE_MULTIPLE_EXECUTION,
-                multipleExecution);
+        m.put(GraphNode.PROP_ESCALATION_RULE_MULTIPLE_EXECUTION, multipleExecution);
         return m;
     }
 

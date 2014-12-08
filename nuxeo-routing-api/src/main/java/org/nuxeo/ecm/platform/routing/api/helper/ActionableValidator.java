@@ -32,9 +32,7 @@ import org.nuxeo.runtime.api.Framework;
  * An actionable validator allows to run an {@link ActionableObject}.
  *
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
- *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 @Deprecated
 public class ActionableValidator {
@@ -50,8 +48,8 @@ public class ActionableValidator {
         this.session = session;
     }
 
-    public ActionableValidator(ActionableObject actionnable,
-            CoreSession session, Map<String, Serializable> additionalProperties) {
+    public ActionableValidator(ActionableObject actionnable, CoreSession session,
+            Map<String, Serializable> additionalProperties) {
         this.actionnable = actionnable;
         this.session = session;
         this.additionalProperties = additionalProperties;
@@ -70,8 +68,7 @@ public class ActionableValidator {
     protected void runChain(String chainId) {
         AutomationService automationService = getAutomationService();
         OperationContext context = new OperationContext(session);
-        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
-                actionnable.getDocumentRouteStep(session));
+        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, actionnable.getDocumentRouteStep(session));
         context.setInput(actionnable.getAttachedDocuments(session));
         context.putAll(additionalProperties);
         try {

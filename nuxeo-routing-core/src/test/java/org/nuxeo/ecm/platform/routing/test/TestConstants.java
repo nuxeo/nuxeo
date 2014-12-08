@@ -18,9 +18,9 @@ package org.nuxeo.ecm.platform.routing.test;
 
 /**
  * @author arussel
- *
  */
 public interface TestConstants {
     String CORE_BUNDLE = "org.nuxeo.ecm.platform.routing.core";
+
     static final String DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT = "/document-route-instances-root";
 }

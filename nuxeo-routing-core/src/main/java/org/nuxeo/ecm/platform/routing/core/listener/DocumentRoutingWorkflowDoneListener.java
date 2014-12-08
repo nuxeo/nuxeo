@@ -31,11 +31,9 @@ import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Cancels any remaining open tasks created by this workflow when this workflow
- * is done
+ * Cancels any remaining open tasks created by this workflow when this workflow is done
  *
  * @since 5.7.3
- *
  */
 public class DocumentRoutingWorkflowDoneListener implements EventListener {
 
@@ -43,8 +41,7 @@ public class DocumentRoutingWorkflowDoneListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) throws ClientException {
-        if (!DocumentRoutingConstants.Events.afterRouteFinish.name().equals(
-                event.getName())) {
+        if (!DocumentRoutingConstants.Events.afterRouteFinish.name().equals(event.getName())) {
             return;
         }
         DocumentEventContext docCtx = (DocumentEventContext) event.getContext();

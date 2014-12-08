@@ -112,8 +112,7 @@ public class CreateRoutingTask {
     public DocumentModel createTask(DocumentModel document) throws Exception {
         Principal pal = coreSession.getPrincipal();
         if (!(pal instanceof NuxeoPrincipal)) {
-            throw new OperationException(
-                    "Principal is not an instance of NuxeoPrincipal");
+            throw new OperationException("Principal is not an instance of NuxeoPrincipal");
         }
 
         DocumentRouteStep step = (DocumentRouteStep) ctx.get(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
@@ -129,20 +128,13 @@ public class CreateRoutingTask {
 
         // create the task, passing operation chains in task variables
         Map<String, String> taskVariables = new HashMap<String, String>();
-        taskVariables.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
-                step.getDocument().getId());
-        taskVariables.put(
-                OperationTaskVariableName.createdFromCreateTaskOperation.name(),
-                "true");
+        taskVariables.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, step.getDocument().getId());
+        taskVariables.put(OperationTaskVariableName.createdFromCreateTaskOperation.name(), "true");
         if (!StringUtils.isEmpty(acceptOperationChain)) {
-            taskVariables.put(
-                    OperationTaskVariableName.acceptOperationChain.name(),
-                    acceptOperationChain);
+            taskVariables.put(OperationTaskVariableName.acceptOperationChain.name(), acceptOperationChain);
         }
         if (!StringUtils.isEmpty(rejectOperationChain)) {
-            taskVariables.put(
-                    OperationTaskVariableName.rejectOperationChain.name(),
-                    rejectOperationChain);
+            taskVariables.put(OperationTaskVariableName.rejectOperationChain.name(), rejectOperationChain);
         }
 
         // disable notification service
@@ -152,20 +144,16 @@ public class CreateRoutingTask {
             throw new OperationException("Service routingTaskService not found");
         }
         if (mappingTaskVariables != null) {
-            mapPropertiesToTaskVariables(taskVariables, stepDocument, document,
-                    mappingTaskVariables);
+            mapPropertiesToTaskVariables(taskVariables, stepDocument, document, mappingTaskVariables);
         }
         // TODO: call method with number of comments after NXP-8068 is merged
-        List<Task> tasks = taskService.createTask(coreSession,
-                (NuxeoPrincipal) pal, document, taskStep.getName(), actors,
-                false, taskStep.getDirective(), null, taskStep.getDueDate(),
-                taskVariables, null);
+        List<Task> tasks = taskService.createTask(coreSession, (NuxeoPrincipal) pal, document, taskStep.getName(),
+                actors, false, taskStep.getDirective(), null, taskStep.getDueDate(), taskVariables, null);
         routing.makeRoutingTasks(coreSession, tasks);
         DocumentModelList docList = new DocumentModelListImpl(tasks.size());
         for (Task task : tasks) {
-            docList.add(((mappingProperties == null) ? (task.getDocument())
-                    : mapPropertiesToTaskDocument(coreSession, stepDocument,
-                            task.getDocument(), document, mappingProperties)));
+            docList.add(((mappingProperties == null) ? (task.getDocument()) : mapPropertiesToTaskDocument(coreSession,
+                    stepDocument, task.getDocument(), document, mappingProperties)));
         }
 
         // all the actors should be able to validate the step creating the task
@@ -176,15 +164,12 @@ public class CreateRoutingTask {
         }
         ctx.put(OperationTaskVariableName.taskDocuments.name(), docList);
 
-        ctx.put(RoutingTaskConstants.ROUTING_TASK_ACTORS_KEY, new StringList(
-                getAllActors(actors)));
+        ctx.put(RoutingTaskConstants.ROUTING_TASK_ACTORS_KEY, new StringList(getAllActors(actors)));
         return document;
     }
 
-    protected void mapPropertiesToTaskVariables(
-            Map<String, String> taskVariables, DocumentModel stepDoc,
-            DocumentModel inputDoc, Properties mappingProperties)
-            throws ClientException {
+    protected void mapPropertiesToTaskVariables(Map<String, String> taskVariables, DocumentModel stepDoc,
+            DocumentModel inputDoc, Properties mappingProperties) throws ClientException {
         for (Map.Entry<String, String> prop : mappingProperties.entrySet()) {
             String getter = prop.getKey();
             String setter = prop.getValue();
@@ -197,20 +182,15 @@ public class CreateRoutingTask {
                 setter = setter.substring(STEP_PREFIX.length());
             }
             try {
-                taskVariables.put(getter,
-                        (String) setterDoc.getPropertyValue(setter));
+                taskVariables.put(getter, (String) setterDoc.getPropertyValue(setter));
             } catch (PropertyException e) {
-                log.error(
-                        "Could not map property on the task document in the taskVariables ",
-                        e);
+                log.error("Could not map property on the task document in the taskVariables ", e);
             }
         }
     }
 
-    DocumentModel mapPropertiesToTaskDocument(CoreSession session,
-            DocumentModel stepDoc, DocumentModel taskDoc,
-            DocumentModel inputDoc, Properties mappingProperties)
-            throws ClientException {
+    DocumentModel mapPropertiesToTaskDocument(CoreSession session, DocumentModel stepDoc, DocumentModel taskDoc,
+            DocumentModel inputDoc, Properties mappingProperties) throws ClientException {
         for (Map.Entry<String, String> prop : mappingProperties.entrySet()) {
             String getter = prop.getKey();
             String setter = prop.getValue();
@@ -223,19 +203,15 @@ public class CreateRoutingTask {
                 setter = setter.substring(STEP_PREFIX.length());
             }
             try {
-                taskDoc.setPropertyValue(getter,
-                        setterDoc.getPropertyValue(setter));
+                taskDoc.setPropertyValue(getter, setterDoc.getPropertyValue(setter));
             } catch (PropertyException e) {
-                log.error(
-                        "Could not map property on the task document in the taskVariables ",
-                        e);
+                log.error("Could not map property on the task document in the taskVariables ", e);
             }
         }
         return session.saveDocument(taskDoc);
     }
 
-    protected List<String> getAllActors(List<String> actors)
-            throws ClientException {
+    protected List<String> getAllActors(List<String> actors) throws ClientException {
         List<String> allActors = new ArrayList<String>();
         for (String actor : actors) {
             if (userManager.getGroup(actor) != null) {

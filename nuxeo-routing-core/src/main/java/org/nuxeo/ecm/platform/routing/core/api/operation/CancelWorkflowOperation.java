@@ -31,8 +31,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 
 /**
- * Cancels the workflow with the given id, where the id is the id of the
- * document representing the workflow instance.
+ * Cancels the workflow with the given id, where the id is the id of the document representing the workflow instance.
  *
  * @since 5.7.2
  */
@@ -62,7 +61,6 @@ public class CancelWorkflowOperation {
             log.error("Can not get workflow instance with id" + id);
             throw new ClientException(e);
         }
-        documentRoutingEngineService.cancel(
-                workflowInstance.getAdapter(DocumentRoute.class), session);
+        documentRoutingEngineService.cancel(workflowInstance.getAdapter(DocumentRoute.class), session);
     }
 }

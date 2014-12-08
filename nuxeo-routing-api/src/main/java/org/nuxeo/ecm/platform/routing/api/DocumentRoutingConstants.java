@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.routing.api;
 
 /**
  * @author arussel
- *
  */
 public interface DocumentRoutingConstants {
 
@@ -91,9 +90,8 @@ public interface DocumentRoutingConstants {
     String WORKFLOW_FORCE_RESUME = "_FORCE_RESUME_";
 
     /*
-     * @since 5.9.3
-     * If this flag is set to Boolean.TRUE in the map of variables to be
-     * set on node or workflow, these variables will be decoded to JSON format
+     * @since 5.9.3 If this flag is set to Boolean.TRUE in the map of variables to be set on node or workflow, these
+     * variables will be decoded to JSON format
      */
     String _MAP_VAR_FORMAT_JSON = "_MAP_VAR_FORMAT_JSON";
 
@@ -114,55 +112,48 @@ public interface DocumentRoutingConstants {
     // event
     enum Events {
         /**
-         * before the route is validated, each part of the route is in "Draft"
-         * state. The session used is unrestricted. The element key is the
-         * route.
+         * before the route is validated, each part of the route is in "Draft" state. The session used is unrestricted.
+         * The element key is the route.
          */
         beforeRouteValidated,
         /**
-         * after the route is validated, each part of the route is in
-         * "Validated" state. The session used is unrestricted. The element key
-         * is the route.
+         * after the route is validated, each part of the route is in "Validated" state. The session used is
+         * unrestricted. The element key is the route.
          */
         afterRouteValidated,
         /**
-         * before the route is ready, each part of the route is in "Validated"
-         * state.The session used is unrestricted. The element key is the route.
+         * before the route is ready, each part of the route is in "Validated" state.The session used is unrestricted.
+         * The element key is the route.
          */
         beforeRouteReady,
         /**
-         * after the route is ready, each part of the route is in "Ready"
-         * state.The session used is unrestricted. The element key is the route.
+         * after the route is ready, each part of the route is in "Ready" state.The session used is unrestricted. The
+         * element key is the route.
          */
         afterRouteReady,
         /**
-         * before the route starts. The RouteDocument is in "Running" state,
-         * other parts of the route is either in Ready, Running or Done
-         * state.The session used is unrestricted. The element key is the route.
+         * before the route starts. The RouteDocument is in "Running" state, other parts of the route is either in
+         * Ready, Running or Done state.The session used is unrestricted. The element key is the route.
          */
         beforeRouteStart,
         /**
-         * after the route is finished. The route and each part of the route is
-         * in Done state.The session used is unrestricted. The element key is
-         * the route.
+         * after the route is finished. The route and each part of the route is in Done state.The session used is
+         * unrestricted. The element key is the route.
          */
         afterRouteFinish,
         /**
-         * before the operation chain for this step is called. The step is in
-         * "Running" state.The session used is unrestricted. The element key is
-         * the step.
+         * before the operation chain for this step is called. The step is in "Running" state.The session used is
+         * unrestricted. The element key is the step.
          */
         beforeStepRunning,
         /**
-         * After the operation chain of this step ran and if the step is not
-         * done, ie: if we are in a waiting state.The session used is
-         * unrestricted. The element key is the step.
+         * After the operation chain of this step ran and if the step is not done, ie: if we are in a waiting state.The
+         * session used is unrestricted. The element key is the step.
          */
         stepWaiting,
         /**
-         * after the operation chain for this step is called.The step is in
-         * "Done" state.The session used is unrestricted. The element key is the
-         * step.
+         * after the operation chain for this step is called.The step is in "Done" state.The session used is
+         * unrestricted. The element key is the step.
          */
         afterStepRunning,
         /**

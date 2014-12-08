@@ -69,12 +69,10 @@ public class SetCurrentRunningStepFromTask extends AbstractTaskStepOperation {
         if (mappingComments) {
             mappCommentsFromTaskToStep(session, docStep);
         }
-        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
-                docStep.getAdapter(DocumentRouteStep.class));
+        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, docStep.getAdapter(DocumentRouteStep.class));
     }
 
-    protected void mappCommentsFromTaskToStep(CoreSession session,
-            DocumentModel docStep) throws ClientException {
+    protected void mappCommentsFromTaskToStep(CoreSession session, DocumentModel docStep) throws ClientException {
         List<String> comments = new ArrayList<String>();
 
         RoutingTask task = getRoutingTask(context);
@@ -91,9 +89,7 @@ public class SetCurrentRunningStepFromTask extends AbstractTaskStepOperation {
             comments.add(commentBuilder.toString());
         }
         if (docStep.hasFacet(RoutingTaskConstants.TASK_STEP_FACET_NAME)) {
-            docStep.setPropertyValue(
-                    RoutingTaskConstants.TASK_STEP_COMMENTS_PROPERTY_NAME,
-                    (Serializable) comments);
+            docStep.setPropertyValue(RoutingTaskConstants.TASK_STEP_COMMENTS_PROPERTY_NAME, (Serializable) comments);
             session.saveDocument(docStep);
         }
     }

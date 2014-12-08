@@ -39,22 +39,18 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.ExportedZipImporter;
 import org.nuxeo.ecm.platform.types.TypeManager;
 
 /**
- *
- * Imports a route document from a zip archive using the IO core service .
- * Existing route model with the same path as the are one to be imported is
- * deleted before import.
+ * Imports a route document from a zip archive using the IO core service . Existing route model with the same path as
+ * the are one to be imported is deleted before import.
  *
  * @since 5.6
- *
  */
 public class RouteModelsZipImporter extends ExportedZipImporter {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public DocumentModel create(CoreSession session, Blob content, String path,
-            boolean overwrite, String filename, TypeManager typeService)
-            throws ClientException, IOException {
+    public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String filename,
+            TypeManager typeService) throws ClientException, IOException {
 
         File tmp = File.createTempFile("xml-importer", null);
         content.transferTo(tmp);

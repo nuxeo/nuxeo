@@ -74,8 +74,7 @@ public class DocumentRoutingWebActionsBean implements Serializable {
     public List<Action> getAddStepActions(DocumentModel step) {
         ActionContext context = actionContextProvider.createActionContext();
         context.setCurrentDocument(step);
-        addStepActions = webActions.getActionsList(
-                DocumentRoutingWebConstants.ADD_STEP_ACTIONS_LIST, context);
+        addStepActions = webActions.getActionsList(DocumentRoutingWebConstants.ADD_STEP_ACTIONS_LIST, context);
         return addStepActions;
     }
 
@@ -86,8 +85,7 @@ public class DocumentRoutingWebActionsBean implements Serializable {
     public List<Action> getAddStepInActions(DocumentModel step) {
         ActionContext context = actionContextProvider.createActionContext();
         context.setCurrentDocument(step);
-        addStepInForkActions = webActions.getActionsList(
-                DocumentRoutingWebConstants.ADD_STEP_IN_FORK_ACTIONS_LIST,
+        addStepInForkActions = webActions.getActionsList(DocumentRoutingWebConstants.ADD_STEP_IN_FORK_ACTIONS_LIST,
                 context);
         return addStepInForkActions;
     }
@@ -99,8 +97,7 @@ public class DocumentRoutingWebActionsBean implements Serializable {
     public List<Action> getRemoveStepActions(DocumentModel step) {
         ActionContext context = actionContextProvider.createActionContext();
         context.setCurrentDocument(step);
-        removeStepActions = webActions.getActionsList(
-                DocumentRoutingWebConstants.REMOVE_STEP_ACTIONS_LIST, context);
+        removeStepActions = webActions.getActionsList(DocumentRoutingWebConstants.REMOVE_STEP_ACTIONS_LIST, context);
         return removeStepActions;
     }
 
@@ -111,13 +108,11 @@ public class DocumentRoutingWebActionsBean implements Serializable {
     public List<Action> getEditStepActions(DocumentModel step) {
         ActionContext context = actionContextProvider.createActionContext();
         context.setCurrentDocument(step);
-        editStepActions = webActions.getActionsList(
-                DocumentRoutingWebConstants.EDIT_STEP_ACTIONS_LIST, context);
+        editStepActions = webActions.getActionsList(DocumentRoutingWebConstants.EDIT_STEP_ACTIONS_LIST, context);
         return editStepActions;
     }
 
-    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
-            EventNames.LOCATION_SELECTION_CHANGED }, create = false)
+    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, EventNames.LOCATION_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetTabList() {
         addStepActions = null;

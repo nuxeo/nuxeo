@@ -25,8 +25,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Wraps a documentElement adding informations about the level where the
- * document is inside the container documentRoute
+ * Wraps a documentElement adding informations about the level where the document is inside the container documentRoute
  *
  * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
@@ -45,9 +44,8 @@ public class DocumentRouteTableElement {
 
     protected List<RouteFolderElement> firstChildList = new ArrayList<RouteFolderElement>();
 
-    public DocumentRouteTableElement(DocumentRouteElement element,
-            RouteTable table, int depth, RouteFolderElement parent,
-            boolean isFirstChild) {
+    public DocumentRouteTableElement(DocumentRouteElement element, RouteTable table, int depth,
+            RouteFolderElement parent, boolean isFirstChild) {
         this.table = table;
         this.depth = depth;
         this.element = element;

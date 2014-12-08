@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 
 /**
- * Resumes a workflow on a give node. If nodeId is null, is applies to the
- * current node of the given workflow resumed.
+ * Resumes a workflow on a give node. If nodeId is null, is applies to the current node of the given workflow resumed.
  *
  * @since 5.7.2
  */
@@ -56,12 +55,9 @@ public class ResumeNodeOperation {
             nodeId = (String) ctx.get("nodeId");
         }
         if (workflowInstanceId == null) {
-            throw new ClientException(
-                    "Can not resume workflow instance with id "
-                            + workflowInstanceId
-                            + ". No current instance in the context");
+            throw new ClientException("Can not resume workflow instance with id " + workflowInstanceId
+                    + ". No current instance in the context");
         }
-        documentRoutingService.resumeInstance(workflowInstanceId, nodeId, null,
-                null, session);
+        documentRoutingService.resumeInstance(workflowInstanceId, nodeId, null, null, session);
     }
 }

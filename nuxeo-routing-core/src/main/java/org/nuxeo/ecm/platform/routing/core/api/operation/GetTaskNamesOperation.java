@@ -36,18 +36,15 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- * Returns a list of current user open tasks where their translated name
- * matches (partially or fully) the 'searchTerm' parameter. This operation is
- * invoked from a select2widget and the number of returned results is limited
- * to 15.
+ * Returns a list of current user open tasks where their translated name matches (partially or fully) the 'searchTerm'
+ * parameter. This operation is invoked from a select2widget and the number of returned results is limited to 15.
  *
  * @since 5.8
  */
 @Operation(id = GetTaskNamesOperation.ID, category = Constants.CAT_WORKFLOW, label = "Get Task Translated Names", description = "Returns a "
         + "list of current user open tasks where their translated name matches "
         + "(partially or fully ) the 'searchTerm' parameter. This operation is "
-        + "invoked from a select2widget and the number of returned results is "
-        + "limited to 15.", addToStudio = false)
+        + "invoked from a select2widget and the number of returned results is " + "limited to 15.", addToStudio = false)
 public class GetTaskNamesOperation {
 
     public static final String ID = "Context.GetTaskNames";
@@ -71,15 +68,13 @@ public class GetTaskNamesOperation {
     protected String xpath;
 
     /**
-     * Limit the number of results displayed to the user to avoid performance
-     * problems
+     * Limit the number of results displayed to the user to avoid performance problems
      */
     public static int LIMIT_RESULTS = 15;
 
     @OperationMethod
     public DocumentModelList run() {
-        Locale locale = lang != null && !lang.isEmpty() ? new Locale(lang)
-                : Locale.ENGLISH;
+        Locale locale = lang != null && !lang.isEmpty() ? new Locale(lang) : Locale.ENGLISH;
         if (value != null && !"".equals(value)) {
             return getAllUserOpenTask(session, locale, value, false);
         }
@@ -87,11 +82,10 @@ public class GetTaskNamesOperation {
     }
 
     /**
-     * Returns all user tasks having their translated name matching ( partially
-     * or fully ) the given label.
+     * Returns all user tasks having their translated name matching ( partially or fully ) the given label.
      */
-    protected DocumentModelList getAllUserOpenTask(CoreSession session,
-            Locale locale, String searchTerm, boolean partialMatch) {
+    protected DocumentModelList getAllUserOpenTask(CoreSession session, Locale locale, String searchTerm,
+            boolean partialMatch) {
         DocumentModelList list = new DocumentModelListImpl();
         String query = "Select * from TaskDoc where ecm:mixinType IN ('RoutingTask') AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState = 'opened'";
         Map<String, DocumentModel> results = new HashMap<String, DocumentModel>();
@@ -105,27 +99,24 @@ public class GetTaskNamesOperation {
                     // a translaedLabel == "" corresponds to the list of all
                     // tasks
                     if (searchTerm == null || "".equals(searchTerm)) {
-                        doc.setPropertyValue("dc:title", "["
-                                + getWorkflowTranslatedTitle(doc, locale) + "]"
-                                + " " + taskLabel);
+                        doc.setPropertyValue("dc:title", "[" + getWorkflowTranslatedTitle(doc, locale) + "]" + " "
+                                + taskLabel);
                         results.put(taskName, doc);
                         i++;
                     } else {
                         // add doc to result set only if the translated label
                         // starts with the 'searchTerm'
                         if (taskLabel.startsWith(searchTerm)) {
-                            doc.setPropertyValue("dc:title", "["
-                                    + getWorkflowTranslatedTitle(doc, locale)
-                                    + "]" + " " + taskLabel);
+                            doc.setPropertyValue("dc:title", "[" + getWorkflowTranslatedTitle(doc, locale) + "]" + " "
+                                    + taskLabel);
                             results.put(taskName, doc);
                             i++;
                         }
                     }
                 }
                 if (!partialMatch && searchTerm.equals(taskName)) {
-                    doc.setPropertyValue("dc:title", "["
-                            + getWorkflowTranslatedTitle(doc, locale) + "]"
-                            + " " + taskLabel);
+                    doc.setPropertyValue("dc:title", "[" + getWorkflowTranslatedTitle(doc, locale) + "]" + " "
+                            + taskLabel);
                     results.put(taskName, doc);
                     i++;
                     break;
@@ -148,8 +139,8 @@ public class GetTaskNamesOperation {
         return I18NUtils.getMessageString("messages", label, null, locale);
     }
 
-    protected String getWorkflowTranslatedTitle(DocumentModel taskDoc,
-            Locale locale) throws PropertyException, ClientException {
+    protected String getWorkflowTranslatedTitle(DocumentModel taskDoc, Locale locale) throws PropertyException,
+            ClientException {
         String workflowId = (String) taskDoc.getPropertyValue("nt:processId");
         DocumentModel workflowDoc = session.getDocument(new IdRef(workflowId));
         return getI18nLabel(workflowDoc.getTitle(), locale);

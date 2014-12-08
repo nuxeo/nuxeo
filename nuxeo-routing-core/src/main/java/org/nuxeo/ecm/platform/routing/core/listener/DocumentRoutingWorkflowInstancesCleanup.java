@@ -24,9 +24,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * @since 5.8
- *
  */
 public class DocumentRoutingWorkflowInstancesCleanup implements EventListener {
 
@@ -41,13 +39,11 @@ public class DocumentRoutingWorkflowInstancesCleanup implements EventListener {
             return;
         }
 
-        int batchSize = Integer.parseInt(Framework.getProperty(
-                CLEANUP_WORKFLOW_INSTANCES_BATCH_SIZE_PROPERTY, "100"));
+        int batchSize = Integer.parseInt(Framework.getProperty(CLEANUP_WORKFLOW_INSTANCES_BATCH_SIZE_PROPERTY, "100"));
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            routing.cleanupDoneAndCanceledRouteInstances(repositoryName,
-                    batchSize);
+            routing.cleanupDoneAndCanceledRouteInstances(repositoryName, batchSize);
         }
     }
 }

@@ -35,12 +35,10 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 
 /**
- * Starts the workflow with the given model id on the input documents. Returns
- * back the input documents. The id of the created workflow instance is
- * available under the \"WorkflowId\" context variable.
+ * Starts the workflow with the given model id on the input documents. Returns back the input documents. The id of the
+ * created workflow instance is available under the \"WorkflowId\" context variable.
  *
  * @since 5.6
- *
  */
 @Operation(id = StartWorkflowOperation.ID, category = Constants.CAT_WORKFLOW, label = "Start workflow", requires = Constants.WORKFLOW_CONTEXT, description = "Starts the workflow with the given model id on the input documents. Returns back the input documents."
         + "The id of the created workflow instance is available under the \"workflowInstanceId\" context variable."
@@ -100,8 +98,7 @@ public class StartWorkflowOperation {
             }
         }
         vars.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, Boolean.TRUE);
-        String workflowId = documentRoutingService.createNewInstance(id, ids,
-                vars, session, Boolean.TRUE.equals(start));
+        String workflowId = documentRoutingService.createNewInstance(id, ids, vars, session, Boolean.TRUE.equals(start));
         ctx.put("WorkflowId", workflowId);
         // to be consistent with all the other workflow variablesin the context
         // @since 5.7.2

@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
  * Lock a newly created route.
  *
  * @author Laurent Doguin
- *
  */
 public class DocumentRouteCreationListener implements EventListener {
 

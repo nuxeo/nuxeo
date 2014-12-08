@@ -28,6 +28,7 @@ import org.nuxeo.ecm.platform.task.Task;
 /**
  * A small service adding Routing behavior to tasks.
  * <p>
+ * 
  * @deprecated since 5.6, use DocumentRoutingService instead
  */
 @Deprecated
@@ -43,8 +44,7 @@ public interface RoutingTaskService {
      * @deprecated since 5.6, use DocumentRoutingService instead
      */
     @Deprecated
-    void makeRoutingTasks(CoreSession session, List<Task> tasks)
-            throws ClientException;
+    void makeRoutingTasks(CoreSession session, List<Task> tasks) throws ClientException;
 
     /**
      * Ends a task
@@ -57,8 +57,7 @@ public interface RoutingTaskService {
      * @deprecated since 5.6, use DocumentRoutingService instead
      */
     @Deprecated
-    void endTask(CoreSession session, Task task, Map<String, Object> data,
-            String status) throws DocumentRouteException;
+    void endTask(CoreSession session, Task task, Map<String, Object> data, String status) throws DocumentRouteException;
 
     /**
      * Gets the documents following the workflow to which the given task belongs
@@ -70,6 +69,5 @@ public interface RoutingTaskService {
      * @deprecated since 5.6, use DocumentRoutingService instead
      */
     @Deprecated
-    List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task)
-            throws DocumentRouteException;
+    List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task) throws DocumentRouteException;
 }

@@ -39,7 +39,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
- *
  * @since 5.7.2
  */
 @RunWith(FeaturesRunner.class)
@@ -55,27 +54,22 @@ public class AbstractGraphRouteTest {
 
     protected static final String TYPE_ROUTE_NODE = "RouteNode";
 
-    protected DocumentModel createRoute(String name, CoreSession session)
-            throws ClientException, PropertyException {
-        DocumentModel route = session.createDocumentModel("/", name,
-                DOCUMENT_ROUTE_DOCUMENT_TYPE);
+    protected DocumentModel createRoute(String name, CoreSession session) throws ClientException, PropertyException {
+        DocumentModel route = session.createDocumentModel("/", name, DOCUMENT_ROUTE_DOCUMENT_TYPE);
         route.setPropertyValue(EXECUTION_TYPE_PROPERTY_NAME, graph.name());
         route.setPropertyValue("dc:title", name);
-        route.setPropertyValue(ATTACHED_DOCUMENTS_PROPERTY_NAME,
-                (Serializable) Collections.singletonList(doc.getId()));
+        route.setPropertyValue(ATTACHED_DOCUMENTS_PROPERTY_NAME, (Serializable) Collections.singletonList(doc.getId()));
         return session.createDocument(route);
     }
 
-    protected DocumentModel createNode(DocumentModel route, String name,
-            CoreSession session) throws ClientException, PropertyException {
-        DocumentModel node = session.createDocumentModel(
-                route.getPathAsString(), name, TYPE_ROUTE_NODE);
+    protected DocumentModel createNode(DocumentModel route, String name, CoreSession session) throws ClientException,
+            PropertyException {
+        DocumentModel node = session.createDocumentModel(route.getPathAsString(), name, TYPE_ROUTE_NODE);
         node.setPropertyValue(GraphNode.PROP_NODE_ID, name);
         return session.createDocument(node);
     }
 
-    protected Map<String, Serializable> transition(String name, String target,
-            String condition) throws ClientException {
+    protected Map<String, Serializable> transition(String name, String target, String condition) throws ClientException {
         Map<String, Serializable> m = new HashMap<String, Serializable>();
         m.put(GraphNode.PROP_TRANS_NAME, name);
         m.put(GraphNode.PROP_TRANS_TARGET, target);
@@ -83,26 +77,22 @@ public class AbstractGraphRouteTest {
         return m;
     }
 
-    protected Map<String, Serializable> transition(String name, String target,
-            String condition, String chainId) throws ClientException {
+    protected Map<String, Serializable> transition(String name, String target, String condition, String chainId)
+            throws ClientException {
         Map<String, Serializable> m = transition(name, target, condition);
         m.put(GraphNode.PROP_TRANS_CHAIN, chainId);
         return m;
     }
 
-    protected Map<String, Serializable> transition(String name, String target)
-            throws ClientException {
+    protected Map<String, Serializable> transition(String name, String target) throws ClientException {
         return transition(name, target, "true");
     }
 
-    protected void setTransitions(DocumentModel node,
-            Map<String, Serializable>... transitions) throws ClientException {
-        node.setPropertyValue(GraphNode.PROP_TRANSITIONS,
-                (Serializable) Arrays.asList(transitions));
+    protected void setTransitions(DocumentModel node, Map<String, Serializable>... transitions) throws ClientException {
+        node.setPropertyValue(GraphNode.PROP_TRANSITIONS, (Serializable) Arrays.asList(transitions));
     }
 
-    protected Map<String, Serializable> button(String name, String label,
-            String filter) {
+    protected Map<String, Serializable> button(String name, String label, String filter) {
         Map<String, Serializable> m = new HashMap<String, Serializable>();
         m.put(GraphNode.PROP_BTN_NAME, name);
         m.put(GraphNode.PROP_BTN_LABEL, label);
@@ -110,19 +100,16 @@ public class AbstractGraphRouteTest {
         return m;
     }
 
-    protected void setButtons(DocumentModel node,
-            Map<String, Serializable>... buttons) throws ClientException {
-        node.setPropertyValue(GraphNode.PROP_TASK_BUTTONS,
-                (Serializable) Arrays.asList(buttons));
+    protected void setButtons(DocumentModel node, Map<String, Serializable>... buttons) throws ClientException {
+        node.setPropertyValue(GraphNode.PROP_TASK_BUTTONS, (Serializable) Arrays.asList(buttons));
     }
 
-    protected DocumentRoute instantiateAndRun(CoreSession session)
-            throws ClientException {
+    protected DocumentRoute instantiateAndRun(CoreSession session) throws ClientException {
         return instantiateAndRun(session, null);
     }
 
-    protected DocumentRoute instantiateAndRun(CoreSession session,
-            Map<String, Serializable> map) throws ClientException {
+    protected DocumentRoute instantiateAndRun(CoreSession session, Map<String, Serializable> map)
+            throws ClientException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         // route model
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
@@ -132,22 +119,19 @@ public class AbstractGraphRouteTest {
         }
         session.save();
         // create instance and start
-        String id = routing.createNewInstance(route.getDocument().getName(),
-                Collections.singletonList(doc.getId()), map, session, true);
-        return session.getDocument(new IdRef(id)).getAdapter(
-                DocumentRoute.class);
+        String id = routing.createNewInstance(route.getDocument().getName(), Collections.singletonList(doc.getId()),
+                map, session, true);
+        return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
     }
 
-    protected DocumentRoute instantiateAndRun(CoreSession session,
-            List<String> docIds, Map<String, Serializable> map)
+    protected DocumentRoute instantiateAndRun(CoreSession session, List<String> docIds, Map<String, Serializable> map)
             throws ClientException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         DocumentRoute route = validate(routeDoc, session);
         // create instance and start
         String id = Framework.getLocalService(DocumentRoutingService.class).createNewInstance(
                 route.getDocument().getName(), docIds, map, session, true);
-        return session.getDocument(new IdRef(id)).getAdapter(
-                DocumentRoute.class);
+        return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
     }
 
     protected DocumentRoute validate(DocumentModel routeDoc, CoreSession session)
@@ -155,8 +139,7 @@ public class AbstractGraphRouteTest {
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
         // draft -> validated
         if (!route.isValidated()) {
-            route = Framework.getLocalService(DocumentRoutingService.class).validateRouteModel(
-                    route, session);
+            route = Framework.getLocalService(DocumentRoutingService.class).validateRouteModel(route, session);
         }
         return route;
     }

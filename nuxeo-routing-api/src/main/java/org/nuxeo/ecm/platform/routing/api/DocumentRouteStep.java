@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * A Step. The element of the route that will process the documents.
  *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public interface DocumentRouteStep extends DocumentRouteElement {
 

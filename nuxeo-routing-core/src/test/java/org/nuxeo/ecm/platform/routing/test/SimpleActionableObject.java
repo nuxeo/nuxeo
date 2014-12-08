@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
- *
  */
 @Deprecated
 public class SimpleActionableObject implements ActionableObject {
@@ -50,8 +49,7 @@ public class SimpleActionableObject implements ActionableObject {
     @Override
     public DocumentRouteStep getDocumentRouteStep(CoreSession session) {
         try {
-            return session.getDocument(new IdRef(id)).getAdapter(
-                    DocumentRouteStep.class);
+            return session.getDocument(new IdRef(id)).getAdapter(DocumentRouteStep.class);
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }

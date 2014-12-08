@@ -32,21 +32,18 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class DocumentRoutingEngineServiceImpl extends DefaultComponent
-        implements DocumentRoutingEngineService {
+public class DocumentRoutingEngineServiceImpl extends DefaultComponent implements DocumentRoutingEngineService {
 
     public static final String WORKFLOW_NAME_EVENT_PROPERTY_KEY = "wfName";
 
     @Override
-    public void start(DocumentRoute routeInstance,
-            Map<String, Serializable> map, CoreSession session) {
+    public void start(DocumentRoute routeInstance, Map<String, Serializable> map, CoreSession session) {
         routeInstance.run(session, map);
     }
 
     @Override
-    public void resume(DocumentRoute routeInstance, String nodeId,
-            String taskId, Map<String, Object> data, String status,
-            CoreSession session) {
+    public void resume(DocumentRoute routeInstance, String nodeId, String taskId, Map<String, Object> data,
+            String status, CoreSession session) {
         routeInstance.resume(session, nodeId, taskId, data, status);
     }
 
@@ -58,12 +55,10 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() throws ClientException {
-                    DocumentModel routeDoc = session.getDocument(new IdRef(
-                            routeDocId));
+                    DocumentModel routeDoc = session.getDocument(new IdRef(routeDocId));
                     DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
                     if (routeInstance == null) {
-                        throw new ClientException("Document " + routeDoc
-                                + " can not be adapted to a DocumentRoute");
+                        throw new ClientException("Document " + routeDoc + " can not be adapted to a DocumentRoute");
                     }
                     routeInstance.cancel(session);
                 }
@@ -73,8 +68,7 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent
         }
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(WORKFLOW_NAME_EVENT_PROPERTY_KEY, routeInstance.getName());
-        EventFirer.fireEvent(session,
-                routeInstance.getAttachedDocuments(session), properties,
+        EventFirer.fireEvent(session, routeInstance.getAttachedDocuments(session), properties,
                 DocumentRoutingConstants.Events.workflowCanceled.name());
     }
 }

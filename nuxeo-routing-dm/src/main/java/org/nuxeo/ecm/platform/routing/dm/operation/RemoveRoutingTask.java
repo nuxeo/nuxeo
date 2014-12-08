@@ -88,8 +88,7 @@ public class RemoveRoutingTask {
         DocumentRouteStep step = (DocumentRouteStep) ctx.get(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
         DocumentModelList list = coreSession.query(String.format(
                 "Select * from TaskDoc WHERE nt:task_variables/*/key like '%s' AND nt:task_variables/*/value like '%s'",
-                DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
-                step.getDocument().getId()));
+                DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, step.getDocument().getId()));
         for (DocumentModel documentModel : list) {
             tasks.add(documentModel.getAdapter(Task.class));
         }

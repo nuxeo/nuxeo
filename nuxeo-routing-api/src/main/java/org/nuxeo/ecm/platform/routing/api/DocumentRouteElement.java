@@ -29,13 +29,11 @@ import org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener;
  * An element of a {@link DocumentRoute}
  *
  * @author arussel
- *
  */
 public interface DocumentRouteElement extends Serializable {
 
     /**
      * The lifecycle state of an element
-     *
      */
     enum ElementLifeCycleState {
         draft, validated, ready, running, done, canceled
@@ -43,7 +41,6 @@ public interface DocumentRouteElement extends Serializable {
 
     /**
      * The transition of the lifecycle state.
-     *
      */
     enum ElementLifeCycleTransistion {
         toValidated, toReady, toRunning, toDone, backToReady, toCanceled, toDraft
@@ -115,16 +112,16 @@ public interface DocumentRouteElement extends Serializable {
     String getDescription();
 
     /**
-     * Execute this element. If this is a step, it will run the operation, if
-     * this is a containter it will run its children.
+     * Execute this element. If this is a step, it will run the operation, if this is a containter it will run its
+     * children.
      *
      * @param session
      */
     void run(CoreSession session);
 
     /**
-     * Execute this element. If this is a step, it will run the operation, if
-     * this is a container it will run its children.
+     * Execute this element. If this is a step, it will run the operation, if this is a container it will run its
+     * children.
      *
      * @param session
      * @param map the values to pass as initial workflow variables
@@ -138,12 +135,10 @@ public interface DocumentRouteElement extends Serializable {
      * @param nodeId the node id to resume on
      * @param taskId the task id
      * @param data the data coming from UI form
-     * @param status the id of the button clicked to submit the related task
-     *            form
+     * @param status the id of the button clicked to submit the related task form
      * @since 5.6
      */
-    void resume(CoreSession session, String nodeId, String taskId,
-            Map<String, Object> data, String status);
+    void resume(CoreSession session, String nodeId, String taskId, Map<String, Object> data, String status);
 
     /**
      * Set this element to the validate state and put it in read only mode.
@@ -197,12 +192,10 @@ public interface DocumentRouteElement extends Serializable {
      *
      * @param transition the followed transition.
      * @param session the session used to follow the transition.
-     * @param recursive If this element has children, do we recurse the follow
-     *            transition.
+     * @param recursive If this element has children, do we recurse the follow transition.
      * @see BulkLifeCycleChangeListener
      */
-    void followTransition(ElementLifeCycleTransistion transition,
-            CoreSession session, boolean recursive);
+    void followTransition(ElementLifeCycleTransistion transition, CoreSession session, boolean recursive);
 
     /**
      * If this session can validate the step.
@@ -235,8 +228,7 @@ public interface DocumentRouteElement extends Serializable {
     boolean canDeleteStep(CoreSession session);
 
     /**
-     * If this step can be undone. Default is to allow undoing only if the
-     * parent folder is running.
+     * If this step can be undone. Default is to allow undoing only if the parent folder is running.
      */
     boolean canUndoStep(CoreSession session);
 
@@ -246,15 +238,14 @@ public interface DocumentRouteElement extends Serializable {
     void setCanDeleteStep(CoreSession session, String userOrGroup);
 
     /**
-     * Set the step back to the ready state from running or done. This method
-     * only modify the step state, it does not run any other action (such as
-     * undoing the step action)
+     * Set the step back to the ready state from running or done. This method only modify the step state, it does not
+     * run any other action (such as undoing the step action)
      */
     void backToReady(CoreSession session);
 
     /**
-     * Set the step to a cancel step. This method only modify the state of this
-     * element and does not run any other action.
+     * Set the step to a cancel step. This method only modify the state of this element and does not run any other
+     * action.
      */
     void setCanceled(CoreSession session);
 

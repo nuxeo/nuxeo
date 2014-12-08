@@ -32,23 +32,18 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class EventFirer {
 
-    static public void fireEvent(CoreSession coreSession,
-            DocumentRouteElement element,
+    static public void fireEvent(CoreSession coreSession, DocumentRouteElement element,
             Map<String, Serializable> eventProperties, String eventName) {
         if (eventProperties == null) {
             eventProperties = new HashMap<String, Serializable>();
         }
-        eventProperties.put(
-                DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY,
-                element);
-        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
-                DocumentRoutingConstants.ROUTING_CATEGORY);
-        DocumentEventContext envContext = new DocumentEventContext(coreSession,
-                coreSession.getPrincipal(), element.getDocument());
+        eventProperties.put(DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY, element);
+        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
+        DocumentEventContext envContext = new DocumentEventContext(coreSession, coreSession.getPrincipal(),
+                element.getDocument());
         envContext.setProperties(eventProperties);
         try {
             getEventProducer().fireEvent(envContext.newEvent(eventName));
@@ -62,18 +57,15 @@ public class EventFirer {
      *
      * @since 5.7.2
      */
-    static public void fireEvent(CoreSession coreSession,
-            List<DocumentModel> docs,
+    static public void fireEvent(CoreSession coreSession, List<DocumentModel> docs,
             Map<String, Serializable> eventProperties, String eventName) {
         if (eventProperties == null) {
             eventProperties = new HashMap<String, Serializable>();
         }
-        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
-                DocumentRoutingConstants.ROUTING_CATEGORY);
+        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
         try {
             for (DocumentModel doc : docs) {
-                DocumentEventContext envContext = new DocumentEventContext(
-                        coreSession, coreSession.getPrincipal(), doc);
+                DocumentEventContext envContext = new DocumentEventContext(coreSession, coreSession.getPrincipal(), doc);
                 envContext.setProperties(eventProperties);
                 getEventProducer().fireEvent(envContext.newEvent(eventName));
             }

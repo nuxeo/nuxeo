@@ -32,12 +32,10 @@ public interface ElementRunner {
     /**
      * Run this element.
      */
-    void run(CoreSession session, DocumentRouteElement element,
-            Map<String, Serializable> map);
+    void run(CoreSession session, DocumentRouteElement element, Map<String, Serializable> map);
 
     /**
-     * Run this element. If an exception is thrown while doing, it cancels the
-     * route.
+     * Run this element. If an exception is thrown while doing, it cancels the route.
      */
     void run(CoreSession session, DocumentRouteElement element);
 
@@ -46,13 +44,11 @@ public interface ElementRunner {
      *
      * @since 5.6
      */
-    void resume(CoreSession session, DocumentRouteElement element,
-            String nodeId, String taskId, Map<String, Object> data,
-            String status);
+    void resume(CoreSession session, DocumentRouteElement element, String nodeId, String taskId,
+            Map<String, Object> data, String status);
 
     /**
-     * Run the undo chain on this element. If this element is not a step, then
-     * throw an exception.
+     * Run the undo chain on this element. If this element is not a step, then throw an exception.
      *
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */

@@ -56,8 +56,7 @@ public class SetWorkflowVariablesOperation {
         try {
             DocumentHelper.setProperties(session, workflowInstance, properties);
         } catch (Exception e) {
-            log.error("Can not set properties on workflow instance with the id "
-                    + id);
+            log.error("Can not set properties on workflow instance with the id " + id);
             throw new ClientException(e);
         }
     }

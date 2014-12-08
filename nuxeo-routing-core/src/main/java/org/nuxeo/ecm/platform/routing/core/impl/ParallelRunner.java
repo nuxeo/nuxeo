@@ -22,20 +22,17 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 
 /**
- * Run all of its children simultaneous and is done when all the children are
- * done.
+ * Run all of its children simultaneous and is done when all the children are done.
  *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
- *
  */
 @Deprecated
 public class ParallelRunner extends AbstractRunner implements ElementRunner {
 
     @Override
     public void run(CoreSession session, DocumentRouteElement element) {
-        List<DocumentRouteElement> children = getChildrenElement(session,
-                element);
+        List<DocumentRouteElement> children = getChildrenElement(session, element);
         if (children.isEmpty()) {
             element.setRunning(session);
             element.setDone(session);

@@ -22,14 +22,12 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
- * This feature provides the basic deployments needed to run a test that uses
- * Document Routing.
+ * This feature provides the basic deployments needed to run a test that uses Document Routing.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  */
 @Features(CoreFeature.class)
-@Deploy({
-        "org.nuxeo.ecm.platform.task.core:OSGI-INF/task-core-types-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.platform.task.core:OSGI-INF/task-core-types-contrib.xml",
         "org.nuxeo.ecm.platform.task.core:OSGI-INF/TaskService.xml",
         "org.nuxeo.ecm.platform.task.core:OSGI-INF/task-adapter-contrib.xml",
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-service.xml",

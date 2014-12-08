@@ -66,8 +66,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
     public static final int MAX_LOOPS = 100;
 
     @Override
-    public void run(CoreSession session, DocumentRouteElement element,
-            Map<String, Serializable> map) {
+    public void run(CoreSession session, DocumentRouteElement element, Map<String, Serializable> map) {
         try {
             GraphRoute graph = (GraphRoute) element;
             element.setRunning(session);
@@ -87,29 +86,25 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void resume(CoreSession session, DocumentRouteElement element,
-            String nodeId, String taskId, Map<String, Object> varData,
-            String status) {
+    public void resume(CoreSession session, DocumentRouteElement element, String nodeId, String taskId,
+            Map<String, Object> varData, String status) {
         try {
             GraphRoute graph = (GraphRoute) element;
             Task task = null;
             if (taskId == null) {
                 if (nodeId == null) {
-                    throw new DocumentRouteException(
-                            "nodeId and taskId both missing");
+                    throw new DocumentRouteException("nodeId and taskId both missing");
                 }
             } else {
                 DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
                 task = taskDoc.getAdapter(Task.class);
                 if (task == null) {
-                    throw new DocumentRouteException("Invalid taskId: "
-                            + taskId);
+                    throw new DocumentRouteException("Invalid taskId: " + taskId);
                 }
                 if (nodeId == null) {
                     nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
                     if (StringUtils.isEmpty(nodeId)) {
-                        throw new DocumentRouteException(
-                                "No nodeId found on task: " + taskId);
+                        throw new DocumentRouteException("No nodeId found on task: " + taskId);
                     }
                 }
             }
@@ -120,15 +115,11 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             boolean forceResume = (varData != null
                     && varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME) != null && (Boolean) varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME));
 
-            if (forceResume && node.getState() != State.SUSPENDED
-                    && node.getState() != State.WAITING) {
-                throw new DocumentRouteException(
-                        "Cannot force resume on non-suspended or non-waiting node: "
-                                + node);
+            if (forceResume && node.getState() != State.SUSPENDED && node.getState() != State.WAITING) {
+                throw new DocumentRouteException("Cannot force resume on non-suspended or non-waiting node: " + node);
             }
             if (!forceResume && node.getState() != State.SUSPENDED) {
-                throw new DocumentRouteException(
-                        "Cannot resume on non-suspended node: " + node);
+                throw new DocumentRouteException("Cannot resume on non-suspended node: " + node);
             }
             node.setAllVariables(varData);
 
@@ -143,9 +134,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 node.cancelTasks();
             }
             if (node.hasOpenTasks()) {
-                log.info("Node "
-                        + node.getId()
-                        + "has open tasks, the workflow can not be resumed for now.");
+                log.info("Node " + node.getId() + "has open tasks, the workflow can not be resumed for now.");
                 // do nothing, the workflow is resumed only when all the tasks
                 // created from
                 // this node are processed
@@ -189,9 +178,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
      * @param graph the graph
      * @param initialNode the initial node to run
      */
-    protected void runGraph(CoreSession session, DocumentRouteElement element,
-            GraphNode initialNode) throws DocumentRouteException,
-            ClientException {
+    protected void runGraph(CoreSession session, DocumentRouteElement element, GraphNode initialNode)
+            throws DocumentRouteException, ClientException {
         GraphRoute graph = (GraphRoute) element;
         List<GraphNode> pendingSubRoutes = new LinkedList<GraphNode>();
         LinkedList<GraphNode> pendingNodes = new LinkedList<GraphNode>();
@@ -202,8 +190,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             GraphNode node = pendingNodes.pop();
             count++;
             if (count > MAX_LOOPS) {
-                throw new DocumentRouteException("Execution is looping, node: "
-                        + node);
+                throw new DocumentRouteException("Execution is looping, node: " + node);
             }
             State jump = null;
             switch (node.getState()) {
@@ -243,8 +230,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 break;
             case SUSPENDED:
                 if (node != initialNode) {
-                    throw new DocumentRouteException(
-                            "Executing unexpected SUSPENDED state");
+                    throw new DocumentRouteException("Executing unexpected SUSPENDED state");
                 }
                 // actor
                 NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
@@ -260,17 +246,13 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 node.setState(State.READY);
                 if (node.isStop()) {
                     if (!pendingNodes.isEmpty()) {
-                        throw new DocumentRouteException(
-                                String.format(
-                                        "Route %s stopped with still pending nodes: %s",
-                                        graph, pendingNodes));
+                        throw new DocumentRouteException(String.format("Route %s stopped with still pending nodes: %s",
+                                graph, pendingNodes));
                     }
                     done = true;
                 } else {
                     if (trueTrans.isEmpty()) {
-                        throw new DocumentRouteException(
-                                "No transition evaluated to true from node "
-                                        + node);
+                        throw new DocumentRouteException("No transition evaluated to true from node " + node);
                     }
                     for (Transition t : trueTrans) {
                         node.executeTransitionChain(t);
@@ -299,8 +281,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             }
         }
         /*
-         * Now run the sub-routes. If they are done, they'll call back into the
-         * routing service to resume the parent node (above code).
+         * Now run the sub-routes. If they are done, they'll call back into the routing service to resume the parent
+         * node (above code).
          */
         for (GraphNode node : pendingSubRoutes) {
             DocumentRoute subRoute = node.startSubRoute();
@@ -308,8 +290,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         session.save();
     }
 
-    protected void recursiveCancelInput(GraphRoute graph,
-            GraphNode originalNode, LinkedList<GraphNode> pendingNodes) {
+    protected void recursiveCancelInput(GraphRoute graph, GraphNode originalNode, LinkedList<GraphNode> pendingNodes) {
         LinkedList<GraphNode> todo = new LinkedList<GraphNode>();
         todo.add(originalNode);
         Set<String> done = new HashSet<String>();
@@ -341,26 +322,19 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         }
     }
 
-    protected void createTask(CoreSession session, GraphRoute graph,
-            GraphNode node) throws DocumentRouteException {
+    protected void createTask(CoreSession session, GraphRoute graph, GraphNode node) throws DocumentRouteException {
         DocumentRouteElement routeInstance = (DocumentRouteElement) graph;
         Map<String, String> taskVariables = new HashMap<String, String>();
-        taskVariables.put(
-                DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY,
+        taskVariables.put(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY,
                 routeInstance.getDocument().getId());
-        taskVariables.put(DocumentRoutingConstants.TASK_NODE_ID_KEY,
-                node.getId());
-        taskVariables.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
-                node.getDocument().getId());
+        taskVariables.put(DocumentRoutingConstants.TASK_NODE_ID_KEY, node.getId());
+        taskVariables.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, node.getDocument().getId());
         String taskNotiftemplate = node.getTaskNotificationTemplate();
         if (!StringUtils.isEmpty(taskNotiftemplate)) {
-            taskVariables.put(
-                    DocumentRoutingConstants.TASK_ASSIGNED_NOTIFICATION_TEMPLATE,
-                    taskNotiftemplate);
+            taskVariables.put(DocumentRoutingConstants.TASK_ASSIGNED_NOTIFICATION_TEMPLATE, taskNotiftemplate);
         } else {
             // disable notification service
-            taskVariables.put(TaskEventNames.DISABLE_NOTIFICATION_SERVICE,
-                    "true");
+            taskVariables.put(TaskEventNames.DISABLE_NOTIFICATION_SERVICE, "true");
         }
         // evaluate task assignees from taskVar if any
         HashSet<String> actors = new LinkedHashSet<String>();
@@ -377,13 +351,11 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             // we may get several tasks if there's one per actor when the node
             // has the property
             // hasMultipleTasks set to true
-            List<Task> tasks = taskService.createTask(session,
-                    (NuxeoPrincipal) session.getPrincipal(), docs,
-                    node.getTaskDocType(), node.getDocument().getTitle(),
-                    node.getId(), routeInstance.getDocument().getId(),
-                    new ArrayList<String>(actors), node.hasMultipleTasks(),
-                    node.getTaskDirective(), null, dueDate, taskVariables,
-                    null, node.getWorkflowContextualInfo(session, true));
+            List<Task> tasks = taskService.createTask(session, (NuxeoPrincipal) session.getPrincipal(), docs,
+                    node.getTaskDocType(), node.getDocument().getTitle(), node.getId(),
+                    routeInstance.getDocument().getId(), new ArrayList<String>(actors), node.hasMultipleTasks(),
+                    node.getTaskDirective(), null, dueDate, taskVariables, null,
+                    node.getWorkflowContextualInfo(session, true));
 
             routing.makeRoutingTasks(session, tasks);
             for (Task task : tasks) {
@@ -394,8 +366,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 return;
             }
             for (Task task : tasks) {
-                routing.grantPermissionToTaskAssignees(session,
-                        taskAssigneesPermission, docs, task);
+                routing.grantPermissionToTaskAssignees(session, taskAssigneesPermission, docs, task);
             }
 
         } catch (ClientException e) {
@@ -403,15 +374,13 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         }
     }
 
-    protected void finishTask(CoreSession session, GraphRoute graph,
-            GraphNode node, Task task, boolean delete)
+    protected void finishTask(CoreSession session, GraphRoute graph, GraphNode node, Task task, boolean delete)
             throws DocumentRouteException {
         finishTask(session, graph, node, task, delete, null);
     }
 
-    protected void finishTask(CoreSession session, GraphRoute graph,
-            GraphNode node, Task task, boolean delete, String status)
-            throws DocumentRouteException {
+    protected void finishTask(CoreSession session, GraphRoute graph, GraphNode node, Task task, boolean delete,
+            String status) throws DocumentRouteException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         DocumentModelList docs = graph.getAttachedDocumentModels();
         try {
@@ -423,9 +392,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             // get the last comment on the task, if there are several:
             // task might have been previously reassigned or delegated
             List<TaskComment> comments = task.getComments();
-            String comment = comments.size() > 0 ? comments.get(
-                    comments.size() -1 ).getText()
-                    : "";
+            String comment = comments.size() > 0 ? comments.get(comments.size() - 1).getText() : "";
             // actor
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
             String actor = principal.getActingUser();

@@ -38,12 +38,10 @@ import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Grants the READ/WRITE permissions on the route instance to all task actors.
- * This is needed beacuse an user having a task assigned should be able to see
- * the relatedRoute and to set global workflow variables.
+ * Grants the READ/WRITE permissions on the route instance to all task actors. This is needed beacuse an user having a
+ * task assigned should be able to see the relatedRoute and to set global workflow variables.
  *
  * @author mcedica
- *
  */
 public class RoutingTaskSecurityUpdaterListener implements EventListener {
 
@@ -74,8 +72,7 @@ public class RoutingTaskSecurityUpdaterListener implements EventListener {
         if (actors == null || actors.isEmpty()) {
             return;
         }
-        String routeDocId = task.getVariables().get(
-                DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
+        String routeDocId = task.getVariables().get(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
         if (routeDocId == null) {
             return;
         }

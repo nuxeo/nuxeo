@@ -24,33 +24,28 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.EscalationRule;
 
 /**
- *
  * @since 5.7.2
  */
 public interface DocumentRoutingEscalationService {
 
     /**
-     * Query all running workflows and returns a list of nodes that are
-     * suspended and have escalation rules that can be inspected. Uses an
-     * unrestricted session.
+     * Query all running workflows and returns a list of nodes that are suspended and have escalation rules that can be
+     * inspected. Uses an unrestricted session.
      *
      * @return
      * @throws ClientException
      * @since 5.7.2
      */
-    List<String> queryForSuspendedNodesWithEscalation(CoreSession session)
-            throws ClientException;
+    List<String> queryForSuspendedNodesWithEscalation(CoreSession session) throws ClientException;
 
     /**
-     * Computes the list of escalation rules to be executed after their
-     * conditions are evaluated for the given node.
+     * Computes the list of escalation rules to be executed after their conditions are evaluated for the given node.
      *
      * @return
      * @throws ClientException
      * @since 5.7.2
      */
-    public List<EscalationRule> computeEscalationRulesToExecute(GraphNode node)
-            throws ClientException;
+    public List<EscalationRule> computeEscalationRulesToExecute(GraphNode node) throws ClientException;
 
     /**
      * Schedules for execution an escalation rule. Uses an unrestricted session.

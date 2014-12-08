@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.routing.dm.api;
 
 /**
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
- *
  */
 @Deprecated
 public class RoutingTaskConstants {

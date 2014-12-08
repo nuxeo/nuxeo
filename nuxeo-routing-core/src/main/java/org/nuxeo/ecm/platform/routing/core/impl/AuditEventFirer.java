@@ -31,28 +31,21 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Fire events for Route audit logs (used by previous route content view)
+ * 
  * @since 5.6
- *
  */
 public class AuditEventFirer {
 
-    static public void fireEvent(CoreSession coreSession,
-            DocumentRouteElement element,
-            Map<String, Serializable> eventProperties, String eventName,
-            DocumentModel doc) {
+    static public void fireEvent(CoreSession coreSession, DocumentRouteElement element,
+            Map<String, Serializable> eventProperties, String eventName, DocumentModel doc) {
         if (eventProperties == null) {
             eventProperties = new HashMap<String, Serializable>();
         }
-        eventProperties.put(
-                DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY,
+        eventProperties.put(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY,
                 element.getDocumentRoute(coreSession).getDocument().getId());
-        eventProperties.put(
-                DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY,
-                element);
-        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
-                DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
-        DocumentEventContext envContext = new DocumentEventContext(coreSession,
-                coreSession.getPrincipal(), doc);
+        eventProperties.put(DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY, element);
+        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
+        DocumentEventContext envContext = new DocumentEventContext(coreSession, coreSession.getPrincipal(), doc);
         envContext.setProperties(eventProperties);
         try {
             getEventProducer().fireEvent(envContext.newEvent(eventName));
