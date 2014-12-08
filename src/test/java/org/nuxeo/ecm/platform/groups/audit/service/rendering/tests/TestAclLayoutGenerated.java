@@ -44,7 +44,6 @@ import com.google.inject.Inject;
 
 /**
  * Test excel export of groups
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
@@ -61,8 +60,7 @@ public class TestAclLayoutGenerated extends AbstractAclLayoutTest {
 
     private final static Log log = LogFactory.getLog(TestAclLayoutGenerated.class);
 
-    protected static File testFile = new File(folder
-            + TestAclLayoutGenerated.class.getSimpleName() + ".xls");
+    protected static File testFile = new File(folder + TestAclLayoutGenerated.class.getSimpleName() + ".xls");
 
     @Test
     public void testExcelExportReport() throws Exception {
@@ -71,8 +69,7 @@ public class TestAclLayoutGenerated extends AbstractAclLayoutTest {
         int width = 10;
         int groups = 30;
 
-        log.info("Build a test repository: depth=" + depth + ", width:" + width
-                + ", groups:" + groups);
+        log.info("Build a test repository: depth=" + depth + ", width:" + width + ", groups:" + groups);
         makeDocumentTree(session, depth, width, groups);
         session.save();
         log.info("done building test data");

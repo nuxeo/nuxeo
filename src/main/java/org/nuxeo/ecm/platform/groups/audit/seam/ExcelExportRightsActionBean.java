@@ -81,8 +81,7 @@ public class ExcelExportRightsActionBean implements Serializable {
             buildAndSendByMail();
         } catch (Exception e) {
             log.error(e, e);
-            facesMessages.add(StatusMessage.Severity.ERROR,
-                    "doGet error: " + e.getMessage());
+            facesMessages.add(StatusMessage.Severity.ERROR, "doGet error: " + e.getMessage());
         }
         return null;
     }
@@ -110,8 +109,7 @@ public class ExcelExportRightsActionBean implements Serializable {
     /**
      * Execute ACL audit asynchronously and send the result to current user.
      */
-    protected void buildAndSendByMail(final File tmpFile)
-            throws ClientException {
+    protected void buildAndSendByMail(final File tmpFile) throws ClientException {
         final DocumentModel auditRoot = navigationContext.getCurrentDocument();
         final String repositoryName = documentManager.getRepositoryName();
         final String to = currentNuxeoPrincipal.getEmail();
@@ -120,16 +118,13 @@ public class ExcelExportRightsActionBean implements Serializable {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
 
         if (StringUtils.isBlank(to)) {
-            facesMessages.add(StatusMessage.Severity.ERROR,
-                    "Your email is missing from your profile.");
+            facesMessages.add(StatusMessage.Severity.ERROR, "Your email is missing from your profile.");
             return;
         }
 
         // Work to do and publishing
-        IResultPublisher publisher = new PublishByMail(to, defaultFrom,
-                repositoryName);
-        Work work = new AclAuditWork(workName, repositoryName,
-                auditRoot.getId(), tmpFile, publisher);
+        IResultPublisher publisher = new PublishByMail(to, defaultFrom, repositoryName);
+        Work work = new AclAuditWork(workName, repositoryName, auditRoot.getId(), tmpFile, publisher);
         wm.schedule(work, true);
 
         // Shows information about work, and output

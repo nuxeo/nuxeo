@@ -39,18 +39,15 @@ public class AclAuditWork extends AbstractWork {
     protected File out;
 
     /**
-     * Initialize a runnable Acl Audit process, and register this process in the
-     * {@link Work} instance that will execute it.
+     * Initialize a runnable Acl Audit process, and register this process in the {@link Work} instance that will execute
+     * it.
      */
-    public AclAuditWork(String name, String repositoryName, String rootId,
-            File out, IResultPublisher publisher) {
-        this(name, repositoryName, rootId, out, publisher,
-                getAclAuditTimeoutFromProperties());
+    public AclAuditWork(String name, String repositoryName, String rootId, File out, IResultPublisher publisher) {
+        this(name, repositoryName, rootId, out, publisher, getAclAuditTimeoutFromProperties());
     }
 
     public static int getAclAuditTimeoutFromProperties() {
-        String v = Framework.getProperty(PROPERTY_ACL_AUDIT_TIMEOUT,
-                UNDEFINED_TIMEOUT + "");
+        String v = Framework.getProperty(PROPERTY_ACL_AUDIT_TIMEOUT, UNDEFINED_TIMEOUT + "");
         try {
             return Integer.parseInt(v);
         } catch (Exception e) {
@@ -59,11 +56,11 @@ public class AclAuditWork extends AbstractWork {
     }
 
     /**
-     * Initialize a runnable Acl Audit process, and register this process in the
-     * {@link Work} instance that will execute it.
+     * Initialize a runnable Acl Audit process, and register this process in the {@link Work} instance that will execute
+     * it.
      */
-    public AclAuditWork(String name, String repositoryName, String rootId,
-            File out, IResultPublisher publisher, int timeout) {
+    public AclAuditWork(String name, String repositoryName, String rootId, File out, IResultPublisher publisher,
+            int timeout) {
         super(repositoryName + ':' + rootId + ":aclAudit");
         setDocument(repositoryName, rootId, true);
         this.name = name;

@@ -11,20 +11,18 @@ import org.nuxeo.runtime.api.Framework;
 public class MessageAccessor {
     protected static LocaleProvider localeProvider = Framework.getLocalService(LocaleProvider.class);
 
-    public static String get(CoreSession session, String key)
-            throws ClientException {
+    public static String get(CoreSession session, String key) throws ClientException {
         Locale locale = null;
-        if(localeProvider!=null)
+        if (localeProvider != null)
             locale = localeProvider.getLocale(session);
-        if(locale==null)
+        if (locale == null)
             locale = Locale.ENGLISH;
 
-        try{
+        try {
             return I18NUtils.getMessageString("messages", key, null, locale);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return key;
-            //throw new ClientException("error while getting " + key + ". " + e.getLocalizedMessage());
+            // throw new ClientException("error while getting " + key + ". " + e.getLocalizedMessage());
         }
     }
 }

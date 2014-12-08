@@ -26,13 +26,13 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class, AutomationFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit",
-    /* following bundles are required to be able to send an email with attachement */
-    "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core",
-    "org.nuxeo.ecm.platform.notification.core", "org.nuxeo.ecm.platform.notification.api",
-    "org.nuxeo.ecm.platform.placeful.api"})
+/* following bundles are required to be able to send an email with attachement */
+"org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.notification.core",
+        "org.nuxeo.ecm.platform.notification.api", "org.nuxeo.ecm.platform.placeful.api" })
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
-@Ignore // wrong content and no smtp mock, not an unit test at all
+@Ignore
+// wrong content and no smtp mock, not an unit test at all
 public class TrialSendViaGmail {
 
     @Test
@@ -42,7 +42,7 @@ public class TrialSendViaGmail {
         // sender account
         final String defaultFrom = "nuxeomailtester@gmail.com"; //
         final String password = "nuxeo1mailtester2";
-        //configureGmailSmtp(defaultFrom, password);
+        // configureGmailSmtp(defaultFrom, password);
         configureIntranetSmtp(defaultFrom, password);
 
         // content to send
@@ -59,8 +59,7 @@ public class TrialSendViaGmail {
     /**
      * Configure Mailer properties to access a gmail sender account.
      */
-    public void configureGmailSmtp(final String defaultFrom,
-            final String password) {
+    public void configureGmailSmtp(final String defaultFrom, final String password) {
         Mailer m = SendMail.COMPOSER.getMailer();
         m.getConfiguration().put("mail.smtp.auth", "true");
         m.getConfiguration().put("mail.smtp.starttls.enable", "true");
@@ -68,28 +67,27 @@ public class TrialSendViaGmail {
         m.getConfiguration().put("mail.smtp.port", "587");
         m.getConfiguration().put("mail.smtp.user", defaultFrom);
         m.getConfiguration().put("mail.smtp.password", password);
-        m.setAuthenticator(new Authenticator(){
+        m.setAuthenticator(new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(defaultFrom, password);
             }
         });
-        //GMAIL Verification code: bd63ad13-98eb2234-8ffd777412
+        // GMAIL Verification code: bd63ad13-98eb2234-8ffd777412
     }
 
-    public void configureIntranetSmtp(final String defaultFrom,
-            final String password) {
+    public void configureIntranetSmtp(final String defaultFrom, final String password) {
         Mailer m = SendMail.COMPOSER.getMailer();
         m.getConfiguration().put("mail.smtp.host", "smtp.in.nuxeo.com");
         m.getConfiguration().put("mail.smtp.user", defaultFrom);
         m.getConfiguration().put("mail.smtp.password", password);
-        m.setAuthenticator(new Authenticator(){
+        m.setAuthenticator(new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(defaultFrom, password);
             }
         });
-        //GMAIL Verification code: bd63ad13-98eb2234-8ffd777412
+        // GMAIL Verification code: bd63ad13-98eb2234-8ffd777412
     }
 
 }

@@ -46,7 +46,6 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Test excel export of groups
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
@@ -61,8 +60,7 @@ public class TestAclLayoutSimple extends AbstractAclLayoutTest {
     @Inject
     UserManager userManager;
 
-    protected static File testFile = new File(folder
-            + TestAclLayoutSimple.class.getSimpleName() + ".xls");
+    protected static File testFile = new File(folder + TestAclLayoutSimple.class.getSimpleName() + ".xls");
 
     @Test
     public void testSimpleExcelExport() throws Exception {
@@ -98,40 +96,27 @@ public class TestAclLayoutSimple extends AbstractAclLayoutTest {
         // add all possible acl
         addAcl(session, doc121, "test_g1", SecurityConstants.ADD_CHILDREN, true);
         if (session.isNegativeAclAllowed()) {
-            addAcl(session, doc121, "test_g2", SecurityConstants.ADD_CHILDREN,
-                    false);
+            addAcl(session, doc121, "test_g2", SecurityConstants.ADD_CHILDREN, false);
         }
 
-        addAcl(session, doc121, "test_u1", SecurityConstants.MANAGE_WORKFLOWS,
-                true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.MANAGE_WORKFLOWS, true);
         addAcl(session, doc121, "test_u1", SecurityConstants.READ, true);
-        addAcl(session, doc121, "test_u1", SecurityConstants.READ_LIFE_CYCLE,
-                true);
-        addAcl(session, doc121, "test_u1", SecurityConstants.READ_CHILDREN,
-                true);
-        addAcl(session, doc121, "test_u1", SecurityConstants.READ_PROPERTIES,
-                true);
-        addAcl(session, doc121, "test_u1", SecurityConstants.READ_SECURITY,
-                true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.READ_LIFE_CYCLE, true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.READ_CHILDREN, true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.READ_PROPERTIES, true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.READ_SECURITY, true);
         addAcl(session, doc121, "test_u1", SecurityConstants.READ_VERSION, true);
         addAcl(session, doc121, "test_u1", SecurityConstants.REMOVE, true);
-        addAcl(session, doc121, "test_u1", SecurityConstants.REMOVE_CHILDREN,
-                true);
-        addAcl(session, doc121, "test_u1", SecurityConstants.RESTRICTED_READ,
-                true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.REMOVE_CHILDREN, true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.RESTRICTED_READ, true);
         addAcl(session, doc121, "test_u1", SecurityConstants.UNLOCK, true);
         addAcl(session, doc121, "test_u1", SecurityConstants.VERSION, true);
-        addAcl(session, doc121, "test_u1", SecurityConstants.VIEW_WORKLFOW,
-                true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.VIEW_WORKLFOW, true);
         addAcl(session, doc121, "test_u1", SecurityConstants.WRITE, true);
-        addAcl(session, doc121, "test_u1", SecurityConstants.WRITE_LIFE_CYCLE,
-                true);
-        addAcl(session, doc121, "test_u1", SecurityConstants.WRITE_SECURITY,
-                true);
-        addAcl(session, doc121, "test_u1", SecurityConstants.WRITE_VERSION,
-                true);
-        addAcl(session, doc121, "test_u1", SecurityConstants.WRITE_PROPERTIES,
-                true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.WRITE_LIFE_CYCLE, true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.WRITE_SECURITY, true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.WRITE_VERSION, true);
+        addAcl(session, doc121, "test_u1", SecurityConstants.WRITE_PROPERTIES, true);
         addAcl(session, doc121, "test_u2", SecurityConstants.READ_WRITE, true);
         addAcl(session, doc121, "test_u3", SecurityConstants.EVERYTHING, true);
 

@@ -84,8 +84,7 @@ public class DataProcessor implements IDataProcessor {
     }
 
     @Override
-    public void analyze(CoreSession session, DocumentModel doc, int timeout)
-            throws ClientException {
+    public void analyze(CoreSession session, DocumentModel doc, int timeout) throws ClientException {
         init();
         doAnalyze(session, doc, timeout);
         log();
@@ -99,8 +98,7 @@ public class DataProcessor implements IDataProcessor {
     }
 
     // timeout ignored
-    protected void doAnalyze(CoreSession session, DocumentModel root, int timeout)
-            throws ClientException {
+    protected void doAnalyze(CoreSession session, DocumentModel root, int timeout) throws ClientException {
         // get data
         final DataFetch fetch = new DataFetch();
         DocumentModelList list;
@@ -126,9 +124,8 @@ public class DataProcessor implements IDataProcessor {
     }
 
     /**
-     * Extract relevant information from document model, to only keep a
-     * {@link DocumentSummary} and a few general informations about the document
-     * repository.
+     * Extract relevant information from document model, to only keep a {@link DocumentSummary} and a few general
+     * informations about the document repository.
      */
     protected void processDocument(DocumentModel doc) throws ClientException {
         final DocumentSummary da = computeSummary(doc);
@@ -140,11 +137,10 @@ public class DataProcessor implements IDataProcessor {
     }
 
     /** Extract usefull document information for report rendering */
-    protected DocumentSummary computeSummary(DocumentModel doc)
-            throws ClientException {
+    protected DocumentSummary computeSummary(DocumentModel doc) throws ClientException {
         String title = doc.getTitle();
         String path = doc.getPathAsString();
-        if(path==null)
+        if (path == null)
             path = "";
         int depth = computeDepth(doc);
 
@@ -152,8 +148,7 @@ public class DataProcessor implements IDataProcessor {
         Multimap<String, Pair<String, Boolean>> aclLo = acl.getAclLocalByUser(doc);
         Multimap<String, Pair<String, Boolean>> aclIn = acl.getAclInheritedByUser(doc);
 
-        DocumentSummary da = new DocumentSummary(title, depth, lock, aclLo,
-                aclIn, path);
+        DocumentSummary da = new DocumentSummary(title, depth, lock, aclLo, aclIn, path);
         return da;
     }
 
@@ -173,8 +168,7 @@ public class DataProcessor implements IDataProcessor {
     }
 
     /** store set of users and set of permission types */
-    protected void computeGlobalAclSummary(DocumentModel doc)
-            throws ClientException {
+    protected void computeGlobalAclSummary(DocumentModel doc) throws ClientException {
         Pair<HashSet<String>, HashSet<String>> s = acl.getAclSummary(doc);
         userAndGroups.addAll(s.a);
         permissions.addAll(s.b);
@@ -227,12 +221,11 @@ public class DataProcessor implements IDataProcessor {
 
     public void log() {
         log.debug("doc tree depth    : " + getDocumentTreeMaxDepth());
-        log.debug("#docs (or folders): " + getNumberOfDocuments()
+        log.debug("#docs (or folders): "
+                + getNumberOfDocuments()
                 + " (analyzed by processor, may differ from actual number of doc in repo if exceeding timeout or max number of doc)");
-        log.debug("#users (or groups): "
-                + getUserAndGroups().size()
+        log.debug("#users (or groups): " + getUserAndGroups().size()
                 + " (mentionned in ACLs, may differ from actual user directory)");
-        log.debug("#permissions types: " + getPermissions().size()
-                + " (mentionned in ACLs)");
+        log.debug("#permissions types: " + getPermissions().size() + " (mentionned in ACLs)");
     }
 }

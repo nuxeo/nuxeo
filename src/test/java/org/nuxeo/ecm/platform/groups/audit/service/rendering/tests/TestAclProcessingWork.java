@@ -67,8 +67,7 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
 
     private final static Log log = LogFactory.getLog(TestAclProcessingWork.class);
 
-    protected static File testFile = new File(folder
-            + TestAclProcessingWork.class.getSimpleName() + ".xls");
+    protected static File testFile = new File(folder + TestAclProcessingWork.class.getSimpleName() + ".xls");
 
     @Test
     public void testWork() throws Exception {
@@ -79,8 +78,7 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
         int width = 10;
         int groups = 1;
 
-        log.debug("Build a test repository: depth=" + depth + ", width:" + width
-                + ", groups:" + groups);
+        log.debug("Build a test repository: depth=" + depth + ", width:" + width + ", groups:" + groups);
         DocumentModel root = makeDocumentTree(session, depth, width, groups);
         session.save();
         TransactionHelper.commitOrRollbackTransaction();

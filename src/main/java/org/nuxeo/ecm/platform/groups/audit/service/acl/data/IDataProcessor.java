@@ -28,8 +28,7 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.data.DataProcessor.Proces
 public interface IDataProcessor {
     public void analyze(CoreSession session) throws ClientException;
 
-    public void analyze(CoreSession session, DocumentModel doc, int timeout)
-            throws ClientException;
+    public void analyze(CoreSession session, DocumentModel doc, int timeout) throws ClientException;
 
     public Set<String> getUserAndGroups();
 
@@ -39,8 +38,8 @@ public interface IDataProcessor {
     public int getDocumentTreeMaxDepth();
 
     /**
-     * The minimum doc tree depth, 0 if analysis was run on repository root, >0
-     * if the analysis was run on a child document of repository root.
+     * The minimum doc tree depth, 0 if analysis was run on repository root, >0 if the analysis was run on a child
+     * document of repository root.
      */
     public int getDocumentTreeMinDepth();
 

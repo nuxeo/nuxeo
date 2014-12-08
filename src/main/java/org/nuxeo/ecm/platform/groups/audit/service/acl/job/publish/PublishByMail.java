@@ -66,8 +66,7 @@ public class PublishByMail implements IResultPublisher {
         }.runUnrestricted();
     }
 
-    protected void doCallOperationSendMail(CoreSession session,
-            DocumentModel docToSend, String to, String defaultFrom)
+    protected void doCallOperationSendMail(CoreSession session, DocumentModel docToSend, String to, String defaultFrom)
             throws ClientException {
         String title = MessageAccessor.get(session, PROPERTY_MAIL_SUBJECT);
         String body = MessageAccessor.get(session, PROPERTY_MAIL_BODY);
@@ -78,12 +77,10 @@ public class PublishByMail implements IResultPublisher {
         ctx.setInput(docToSend);
 
         try {
-            OperationChain chain = new OperationChain(
-                    PROPERTY_ACLAUDIT_SENDMAIL_CHAIN);
+            OperationChain chain = new OperationChain(PROPERTY_ACLAUDIT_SENDMAIL_CHAIN);
             OperationParameters params = chain.add(SendMail.ID);
             if (params == null) {
-                log.error("failed to retrieve operation " + SendMail.ID
-                        + " in chain " + chain);
+                log.error("failed to retrieve operation " + SendMail.ID + " in chain " + chain);
                 return;
             }
 
@@ -97,11 +94,9 @@ public class PublishByMail implements IResultPublisher {
             // TODO: see SendMail test case where we can directly pass a blob
 
             // do send mail
-            log.debug("Automation run " + PROPERTY_ACLAUDIT_SENDMAIL_CHAIN
-                    + " for " + to);
+            log.debug("Automation run " + PROPERTY_ACLAUDIT_SENDMAIL_CHAIN + " for " + to);
             automation.run(ctx, chain);
-            log.debug("Automation done " + PROPERTY_ACLAUDIT_SENDMAIL_CHAIN
-                    + " for " + to);
+            log.debug("Automation done " + PROPERTY_ACLAUDIT_SENDMAIL_CHAIN + " for " + to);
         } catch (InvalidChainException e) {
             throw new ClientException(e);
         } catch (OperationException e) {
@@ -119,8 +114,8 @@ public class PublishByMail implements IResultPublisher {
         return null;
     }
 
-    protected DocumentModel createDocument(CoreSession session, Blob blob,
-            String title, String filename) throws ClientException {
+    protected DocumentModel createDocument(CoreSession session, Blob blob, String title, String filename)
+            throws ClientException {
         DocumentModel document = session.createDocumentModel("File");
         document.setPropertyValue("file:content", (Serializable) blob);
         document.setPropertyValue("file:filename", filename);
@@ -131,11 +126,9 @@ public class PublishByMail implements IResultPublisher {
     protected void logMailerConfiguration() {
         Mailer m = SendMail.COMPOSER.getMailer();
         log.info("mail.smtp.auth:" + m.getConfiguration().get("mail.smtp.auth"));
-        log.info("mail.smtp.starttls.enable:"
-                + m.getConfiguration().get("mail.smtp.starttls.enable"));
+        log.info("mail.smtp.starttls.enable:" + m.getConfiguration().get("mail.smtp.starttls.enable"));
         log.info("mail.smtp.host:" + m.getConfiguration().get("mail.smtp.host"));
         log.info("mail.smtp.user:" + m.getConfiguration().get("mail.smtp.user"));
-        log.info("mail.smtp.password:"
-                + m.getConfiguration().get("mail.smtp.password"));
+        log.info("mail.smtp.password:" + m.getConfiguration().get("mail.smtp.password"));
     }
 }

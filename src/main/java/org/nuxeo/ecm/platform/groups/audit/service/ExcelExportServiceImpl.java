@@ -32,8 +32,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @since 5.7
  */
-public class ExcelExportServiceImpl extends DefaultComponent implements
-        ExcelExportService {
+public class ExcelExportServiceImpl extends DefaultComponent implements ExcelExportService {
 
     public static final Log log = LogFactory.getLog(ExcelExportServiceImpl.class);
 
@@ -42,8 +41,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements
     protected static final Map<String, ExcelExportServiceDescriptor> exportExcelRegistry = new HashMap<String, ExcelExportServiceDescriptor>();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (EXCEL_EXPORT_EP.equals(extensionPoint)) {
             ExcelExportServiceDescriptor desc = (ExcelExportServiceDescriptor) contribution;
             exportExcelRegistry.put(desc.getName(), desc);
@@ -53,8 +51,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
     /**
@@ -68,10 +65,8 @@ public class ExcelExportServiceImpl extends DefaultComponent implements
             resultReport = new File(getWorkingDir(), "audit-groups.xls");
             resultReport.createNewFile();
             ExcelExportServiceDescriptor descriptor = exportExcelRegistry.get(exportName);
-            transformer.transformXLS(
-                    descriptor.getTemplate().getAbsolutePath(),
-                    descriptor.getFactory().getDataToInject(),
-                    resultReport.getAbsolutePath());
+            transformer.transformXLS(descriptor.getTemplate().getAbsolutePath(),
+                    descriptor.getFactory().getDataToInject(), resultReport.getAbsolutePath());
         } catch (Exception e) {
             log.error("Unable to create excel report result file:", e);
         }
@@ -89,9 +84,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements
             resultReport = new File(getWorkingDir(), "audit-groups.xls");
             resultReport.createNewFile();
             ExcelExportServiceDescriptor descriptor = exportExcelRegistry.get(exportName);
-            transformer.transformXLS(
-                    descriptor.getTemplate().getAbsolutePath(), data,
-                    resultReport.getAbsolutePath());
+            transformer.transformXLS(descriptor.getTemplate().getAbsolutePath(), data, resultReport.getAbsolutePath());
         } catch (Exception e) {
             log.error("Unable to create excel report result file:", e);
         }
@@ -99,8 +92,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements
     }
 
     protected File getWorkingDir() {
-        String dirPath = System.getProperty("java.io.tmpdir")
-                + "/NXExcelExport" + System.currentTimeMillis();
+        String dirPath = System.getProperty("java.io.tmpdir") + "/NXExcelExport" + System.currentTimeMillis();
         File workingDir = new File(dirPath);
         if (workingDir.exists()) {
             FileUtils.deleteTree(workingDir);

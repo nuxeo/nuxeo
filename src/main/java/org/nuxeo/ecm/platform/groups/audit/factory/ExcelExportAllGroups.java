@@ -30,8 +30,7 @@ public class ExcelExportAllGroups implements ExcelExportFactory {
                 groups.add(group);
             }
         } catch (ClientException e) {
-            log.debug("Unable to fetch Nuxeo groups"
-                    + e.getCause().getMessage());
+            log.debug("Unable to fetch Nuxeo groups" + e.getCause().getMessage());
         }
         Map<String, Object> beans = new HashMap<String, Object>();
         beans.put("groups", groups);

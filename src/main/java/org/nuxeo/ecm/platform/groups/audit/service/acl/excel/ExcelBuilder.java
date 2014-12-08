@@ -53,22 +53,17 @@ import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
- * A utility wrapper around Apache POI Excel spreadsheet builder.
- *
- * Comments only supported on XLS type (no XLSX)
- *
- * To add new excel features, see
+ * A utility wrapper around Apache POI Excel spreadsheet builder. Comments only supported on XLS type (no XLSX) To add
+ * new excel features, see
  *
  * @see http://poi.apache.org/spreadsheet/quick-guide.html (or a copy in /doc)
- *
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
 public class ExcelBuilder implements IExcelBuilder {
     static Log log = LogFactory.getLog(ExcelBuilder.class);
 
     /**
-     * The max number of columns supported by an excel sheet (256="IV" column
-     * header)
+     * The max number of columns supported by an excel sheet (256="IV" column header)
      */
     public static int MAX_COLUMN = 256;
 
@@ -80,8 +75,8 @@ public class ExcelBuilder implements IExcelBuilder {
     public static int LAST_ROW = MAX_ROW - 1;
 
     /**
-     * States if the builder should throw an IllegalArgumentException or simply
-     * warn with a log once a cell index exceed max number of columns or row.
+     * States if the builder should throw an IllegalArgumentException or simply warn with a log once a cell index exceed
+     * max number of columns or row.
      */
     public static boolean CRASH_ON_CELL_OVERFLOW = false;
 
@@ -158,20 +153,15 @@ public class ExcelBuilder implements IExcelBuilder {
     }
 
     /**
-     * Validate a cell index.
-     *
-     * If cell index is out of maximum number of rows/columns:
+     * Validate a cell index. If cell index is out of maximum number of rows/columns:
      * <ul>
-     * <li>throws an {@link IllegalArgumentException} if
-     * {@link CRASH_ON_CELL_OVERFLOW} is set to true.
-     * <li>otherwise emit a log warning and return false to invalidate this
-     * cell.
+     * <li>throws an {@link IllegalArgumentException} if {@link CRASH_ON_CELL_OVERFLOW} is set to true.
+     * <li>otherwise emit a log warning and return false to invalidate this cell.
      * </ul>
      */
     protected boolean validateCellIndex(int row, int column, String content) {
         if (row >= MAX_ROW) {
-            String message = "max number of row (" + MAX_ROW + ") exceeded @ "
-                    + row + " by '" + content + "'";
+            String message = "max number of row (" + MAX_ROW + ") exceeded @ " + row + " by '" + content + "'";
             if (CRASH_ON_CELL_OVERFLOW)
                 throw new IllegalArgumentException(message);
             else
@@ -179,8 +169,7 @@ public class ExcelBuilder implements IExcelBuilder {
             return false;
         }
         if (column >= MAX_COLUMN) {
-            String message = "max number of column (" + MAX_COLUMN
-                    + ") exceeded @ " + column + " by '" + content + "'";
+            String message = "max number of column (" + MAX_COLUMN + ") exceeded @ " + column + " by '" + content + "'";
             if (CRASH_ON_CELL_OVERFLOW)
                 throw new IllegalArgumentException(message);
             else
@@ -263,27 +252,21 @@ public class ExcelBuilder implements IExcelBuilder {
 
     /** {@inheritDoc} */
     @Override
-    public void setFreezePane(int colSplit, int rowSplit, int leftmostColumn,
-            int topRow) {
-        getCurrentSheet().createFreezePane(colSplit, rowSplit, leftmostColumn,
-                topRow);
+    public void setFreezePane(int colSplit, int rowSplit, int leftmostColumn, int topRow) {
+        getCurrentSheet().createFreezePane(colSplit, rowSplit, leftmostColumn, topRow);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setSplitPane(int xSplitPos, int ySplitPos, int leftmostColumn,
-            int topRow, int activePane) {
-        getCurrentSheet().createSplitPane(xSplitPos, ySplitPos, leftmostColumn,
-                topRow, activePane);
+    public void setSplitPane(int xSplitPos, int ySplitPos, int leftmostColumn, int topRow, int activePane) {
+        getCurrentSheet().createSplitPane(xSplitPos, ySplitPos, leftmostColumn, topRow, activePane);
     }
 
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("deprecation")
-    public void mergeRange(int firstRow, int firstColumn, int lastRow,
-            int lastColumn) {
-        getCurrentSheet().addMergedRegion(
-                new CellRangeAddress(firstRow, lastRow, firstColumn, lastColumn));
+    public void mergeRange(int firstRow, int firstColumn, int lastRow, int lastColumn) {
+        getCurrentSheet().addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstColumn, lastColumn));
     }
 
     /* BUILDER METHODS */
@@ -320,8 +303,7 @@ public class ExcelBuilder implements IExcelBuilder {
 
     /** {@inheritDoc} */
     @Override
-    public Comment addComment(Cell cell, String text, int row, int col,
-            int colWidth, int rowHeight) {
+    public Comment addComment(Cell cell, String text, int row, int col, int colWidth, int rowHeight) {
         Comment comment = buildComment(text, row, col, colWidth, rowHeight);
         if (comment != null)
             cell.setCellComment(comment);
@@ -329,9 +311,7 @@ public class ExcelBuilder implements IExcelBuilder {
     }
 
     /**
-     * Return a Comment.
-     *
-     * Comments are supported only on XLS file (HSSF framework).
+     * Return a Comment. Comments are supported only on XLS file (HSSF framework).
      *
      * @param row
      * @param col
@@ -339,8 +319,7 @@ public class ExcelBuilder implements IExcelBuilder {
      * @param rowHeight
      * @return
      */
-    public Comment buildComment(String text, int row, int col, int colWidth,
-            int rowHeight) {
+    public Comment buildComment(String text, int row, int col, int colWidth, int rowHeight) {
         ClientAnchor anchor = create.createClientAnchor();
         anchor.setCol1(col);
         anchor.setCol2(col + colWidth);
@@ -431,7 +410,7 @@ public class ExcelBuilder implements IExcelBuilder {
     }
 
     @Override
-    public Font newFont(){
+    public Font newFont() {
         return workbook.createFont();
     }
 
@@ -453,8 +432,7 @@ public class ExcelBuilder implements IExcelBuilder {
 
     /** {@inheritDoc} */
     @Override
-    public Workbook load(String file) throws InvalidFormatException,
-            IOException {
+    public Workbook load(String file) throws InvalidFormatException, IOException {
         return load(file);
     }
 

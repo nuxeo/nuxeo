@@ -51,8 +51,7 @@ public class ExcelExportServiceDescriptor implements Serializable {
 
     @XNode("@template")
     public void setTemplate(String templatePath) {
-        URL templateUrl = ExcelExportServiceDescriptor.class.getResource("/"
-                + templatePath);
+        URL templateUrl = ExcelExportServiceDescriptor.class.getResource("/" + templatePath);
         try {
             template = File.createTempFile("ExcelTemplate", ".xls");
             template.createNewFile();
@@ -61,8 +60,7 @@ public class ExcelExportServiceDescriptor implements Serializable {
         }
     }
 
-    public ExcelExportFactory getFactory() throws InstantiationException,
-            IllegalAccessException {
+    public ExcelExportFactory getFactory() throws InstantiationException, IllegalAccessException {
         if (factoryClass != null) {
             return (ExcelExportFactory) factoryClass.newInstance();
         }

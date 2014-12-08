@@ -49,12 +49,10 @@ public class DataProcessorPaginated extends DataProcessor {
     }
 
     @Override
-    protected void doAnalyze(CoreSession session, DocumentModel root,
-            int timeout) throws ClientException {
+    protected void doAnalyze(CoreSession session, DocumentModel root, int timeout) throws ClientException {
         // get data
         DataFetch fetch = new DataFetch();
-        CoreQueryDocumentPageProvider pages = fetch.getAllChildrenPaginated(
-                session, root, pageSize, false);
+        CoreQueryDocumentPageProvider pages = fetch.getAllChildrenPaginated(session, root, pageSize, false);
         initSummarySet();
 
         // analyse root
@@ -66,10 +64,8 @@ public class DataProcessorPaginated extends DataProcessor {
         if (timeout > 0) {
             maxProcessTime = timeout - EXCEL_RENDERING_RESERVED_TIME;
             if (maxProcessTime <= 0) {
-                throw new IllegalArgumentException(
-                        "can't start a time bounded process with a timeout < "
-                                + EXCEL_RENDERING_RESERVED_TIME
-                                + "(time period reserved for excel rendering)");
+                throw new IllegalArgumentException("can't start a time bounded process with a timeout < "
+                        + EXCEL_RENDERING_RESERVED_TIME + "(time period reserved for excel rendering)");
             }
         }
 
@@ -80,8 +76,7 @@ public class DataProcessorPaginated extends DataProcessor {
             overPages: do {
                 log.debug("will get page " + p);
                 final List<DocumentModel> page = pages.getCurrentPage();
-                log.debug("page retrieved with query: "
-                        + pages.getCurrentQuery());
+                log.debug("page retrieved with query: " + pages.getCurrentQuery());
                 log.debug("page size: " + page.size());
 
                 // iterate over current page content
@@ -95,8 +90,7 @@ public class DataProcessorPaginated extends DataProcessor {
                         status = ProcessorStatus.ERROR_TOO_MANY_DOCUMENTS;
                         break overPages;
                     }
-                    if (maxProcessTime != UNBOUNDED_PROCESS_TIME
-                            && t.toc() >= maxProcessTime) {
+                    if (maxProcessTime != UNBOUNDED_PROCESS_TIME && t.toc() >= maxProcessTime) {
                         status = ProcessorStatus.ERROR_TOO_LONG_PROCESS;
                         break overPages;
                     }
@@ -114,15 +108,13 @@ public class DataProcessorPaginated extends DataProcessor {
 
     @Override
     public void initSummarySet() {
-        allDocuments = new TreeSet<DocumentSummary>(
-                new Comparator<DocumentSummary>() {
-                    @Override
-                    public int compare(DocumentSummary arg0,
-                            DocumentSummary arg1) {
-                        final String dp0 = arg0.getPath();
-                        final String dp1 = arg1.getPath();
-                        return dp0.compareTo(dp1);
-                    }
-                });
+        allDocuments = new TreeSet<DocumentSummary>(new Comparator<DocumentSummary>() {
+            @Override
+            public int compare(DocumentSummary arg0, DocumentSummary arg1) {
+                final String dp0 = arg0.getPath();
+                final String dp1 = arg1.getPath();
+                return dp0.compareTo(dp1);
+            }
+        });
     }
 }

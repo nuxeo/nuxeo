@@ -20,8 +20,8 @@ package org.nuxeo.ecm.platform.groups.audit.service.acl.excel;
 import org.apache.poi.ss.usermodel.Cell;
 
 /**
- * Override the default {@link ExcelBuilder} to write over several excel sheet
- * once a cell column exceeds the maximum number of column for excel.
+ * Override the default {@link ExcelBuilder} to write over several excel sheet once a cell column exceeds the maximum
+ * number of column for excel.
  *
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
@@ -45,8 +45,7 @@ public class ExcelBuilderMultiSheet extends ExcelBuilder {
     }
 
     /**
-     * If true, the builder is able to switch on next sheets to fill cells with
-     * column id > 255.
+     * If true, the builder is able to switch on next sheets to fill cells with column id > 255.
      */
     public void setMultiSheetColumns(boolean multiSheetMode) {
         this.multiSheetMode = multiSheetMode;
@@ -60,16 +59,13 @@ public class ExcelBuilderMultiSheet extends ExcelBuilder {
     }
 
     /**
-     * Only invalidate cells having a too large row id.
-     *
-     * {@inheritDoc}
+     * Only invalidate cells having a too large row id. {@inheritDoc}
      */
     @Override
     protected boolean validateCellIndex(int row, int column, String content) {
         if (multiSheetMode) {
             if (row >= MAX_ROW) {
-                String message = "max number of row (" + MAX_ROW
-                        + ") exceeded @ " + row + " by '" + content + "'";
+                String message = "max number of row (" + MAX_ROW + ") exceeded @ " + row + " by '" + content + "'";
                 if (CRASH_ON_CELL_OVERFLOW)
                     throw new IllegalArgumentException(message);
                 else {
@@ -110,8 +106,8 @@ public class ExcelBuilderMultiSheet extends ExcelBuilder {
     }
 
     /**
-     * Compute the sheet/column required to access the given column. If expected
-     * sheet is not current, change it. If it does not exist, create it.
+     * Compute the sheet/column required to access the given column. If expected sheet is not current, change it. If it
+     * does not exist, create it.
      *
      * @return an updated column index.
      */

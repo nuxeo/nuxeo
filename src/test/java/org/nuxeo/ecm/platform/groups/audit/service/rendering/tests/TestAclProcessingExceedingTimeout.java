@@ -59,9 +59,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 /**
- * This test asserts that an audit exceeding its dedicated transaction time
- * will be able to cleanly exit and indicate an error status in the output
- * excel file.
+ * This test asserts that an audit exceeding its dedicated transaction time will be able to cleanly exit and indicate an
+ * error status in the output excel file.
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
@@ -69,7 +68,7 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit" })
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
-@ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.IgnoreLongRunning.class)
+@ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreLongRunning.class)
 public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
 
     @Inject
@@ -86,8 +85,7 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
 
     private final static Log log = LogFactory.getLog(TestAclProcessingExceedingTimeout.class);
 
-    protected static File testFile = new File(folder
-            + TestAclProcessingExceedingTimeout.class.getSimpleName() + ".xls");
+    protected static File testFile = new File(folder + TestAclProcessingExceedingTimeout.class.getSimpleName() + ".xls");
 
     @Test
     public void testTimeout() throws Exception {
@@ -98,8 +96,7 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
         int width = 10;
         int groups = 1;
 
-        log.debug("Build a test repository: depth=" + depth + ", width:" + width
-                + ", groups:" + groups);
+        log.debug("Build a test repository: depth=" + depth + ", width:" + width + ", groups:" + groups);
         DocumentModel root = makeDocumentTree(session, depth, width, groups);
         session.save();
         log.debug("done building test data");
@@ -128,8 +125,7 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
                 }
             }
         };
-        Work work = new AclAuditWork(wname, session.getRepositoryName(),
-                root.getId(), testFile, publisher, testTimeout);
+        Work work = new AclAuditWork(wname, session.getRepositoryName(), root.getId(), testFile, publisher, testTimeout);
 
         // Go!
         workManager.schedule(work, true);
@@ -142,9 +138,8 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
         // reload and assert we have the expected error message
         IExcelBuilder v = new ExcelBuilder();
         Workbook workbook = v.load(testFile);
-        String txt = get(workbook, 1, AclExcelLayoutBuilder.STATUS_ROW,
-                AclExcelLayoutBuilder.STATUS_COL);
-        if(txt!=null) {
+        String txt = get(workbook, 1, AclExcelLayoutBuilder.STATUS_ROW, AclExcelLayoutBuilder.STATUS_COL);
+        if (txt != null) {
             assertTrue("assert we found an error message",
                     txt.contains(ProcessorStatus.ERROR_TOO_LONG_PROCESS.toString()));
         } else {

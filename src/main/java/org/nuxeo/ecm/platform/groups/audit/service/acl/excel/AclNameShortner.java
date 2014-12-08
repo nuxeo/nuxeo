@@ -23,11 +23,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Holds a short name translation for each existing ACL.
- *
- * The implementation based on {@link HashBiMap} ensures no two short name can
- * coexist. Any attempt to register a permission short name with an existing one
- * will lead to an {@link IllegalArgumentException}.
+ * Holds a short name translation for each existing ACL. The implementation based on {@link HashBiMap} ensures no two
+ * short name can coexist. Any attempt to register a permission short name with an existing one will lead to an
+ * {@link IllegalArgumentException}.
  *
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */

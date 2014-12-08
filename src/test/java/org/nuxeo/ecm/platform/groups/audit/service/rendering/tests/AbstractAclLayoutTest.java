@@ -25,25 +25,23 @@ import com.google.common.collect.Lists;
 public class AbstractAclLayoutTest {
     protected static String folder = "target/";
 
-    protected DocumentModel makeFolder(CoreSession session, String path,
-            String name, boolean save) throws ClientException,
-            PropertyException {
+    protected DocumentModel makeFolder(CoreSession session, String path, String name, boolean save)
+            throws ClientException, PropertyException {
         return makeItem(session, path, name, "Folder", save);
     }
 
-    protected DocumentModel makeFolder(CoreSession session, String path,
-            String name) throws ClientException, PropertyException {
+    protected DocumentModel makeFolder(CoreSession session, String path, String name) throws ClientException,
+            PropertyException {
         return makeItem(session, path, name, "Folder", true);
     }
 
-    protected DocumentModel makeDoc(CoreSession session, String path,
-            String name) throws ClientException, PropertyException {
+    protected DocumentModel makeDoc(CoreSession session, String path, String name) throws ClientException,
+            PropertyException {
         return makeItem(session, path, name, "Document", true);
     }
 
-    protected DocumentModel makeItem(CoreSession session, String path,
-            String name, String type, boolean save) throws ClientException,
-            PropertyException {
+    protected DocumentModel makeItem(CoreSession session, String path, String name, String type, boolean save)
+            throws ClientException, PropertyException {
         DocumentModel folder = session.createDocumentModel(path, name, type);
         folder = session.createDocument(folder);
         if (save)
@@ -51,28 +49,24 @@ public class AbstractAclLayoutTest {
         return folder;
     }
 
-    protected DocumentModel makeGroup(UserManager userManager, String groupId)
-            throws Exception {
+    protected DocumentModel makeGroup(UserManager userManager, String groupId) throws Exception {
         DocumentModel newGroup = userManager.getBareGroupModel();
         newGroup.setProperty("group", "groupname", groupId);
         return newGroup;
     }
 
-    protected DocumentModel makeUser(UserManager userManager, String userId)
-            throws Exception {
+    protected DocumentModel makeUser(UserManager userManager, String userId) throws Exception {
         DocumentModel newUser = userManager.getBareUserModel();
         newUser.setProperty("user", "username", userId);
         return newUser;
     }
 
-    protected void addAcl(CoreSession session, DocumentModel doc,
-            String userOrGroup, String right, boolean allow)
+    protected void addAcl(CoreSession session, DocumentModel doc, String userOrGroup, String right, boolean allow)
             throws ClientException {
         addAcl(session, doc, userOrGroup, right, allow, false);
     }
 
-    protected void addAcl(CoreSession session, DocumentModel doc,
-            String userOrGroup, String right, boolean allow,
+    protected void addAcl(CoreSession session, DocumentModel doc, String userOrGroup, String right, boolean allow,
             boolean blockInheritance) throws ClientException {
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();// local
@@ -81,13 +75,11 @@ public class AbstractAclLayoutTest {
         session.saveDocument(doc);
     }
 
-    protected void addAclLockInheritance(CoreSession session,
-            DocumentModel doc, String userOrGroup, boolean save)
+    protected void addAclLockInheritance(CoreSession session, DocumentModel doc, String userOrGroup, boolean save)
             throws ClientException {
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();// local
-        acl.add(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
         doc.setACP(acp, true);
         if (save)
             session.saveDocument(doc);
@@ -96,18 +88,10 @@ public class AbstractAclLayoutTest {
     /* BUILD DOC TREE */
 
     /**
-     * Do not forget to call session.save()
-     *
-     * d=2 w=10 > 11
-     *
-     * d=3 w=10 > 111
-     *
-     * d=5 w=10 > 11111 ~15sec to generate
-     *
-     * d=6 w=10 > ~1 min to generate
+     * Do not forget to call session.save() d=2 w=10 > 11 d=3 w=10 > 111 d=5 w=10 > 11111 ~15sec to generate d=6 w=10 >
+     * ~1 min to generate
      */
-    protected DocumentModel makeDocumentTree(CoreSession session, int depth,
-            int width, int nGroups) throws Exception {
+    protected DocumentModel makeDocumentTree(CoreSession session, int depth, int width, int nGroups) throws Exception {
         DocumentModel root = makeFolder(session, "/", "root", false);
 
         List<String> groups = new ArrayList<String>(nGroups);
@@ -121,23 +105,17 @@ public class AbstractAclLayoutTest {
 
     protected int MOD = 3;
 
-    protected DocumentModel makeDocumentTree(CoreSession session, int maxDepth,
-            int width, int nGroups, int currentDepth, DocumentModel folder,
-            List<String> groups) throws PropertyException, ClientException {
+    protected DocumentModel makeDocumentTree(CoreSession session, int maxDepth, int width, int nGroups,
+            int currentDepth, DocumentModel folder, List<String> groups) throws PropertyException, ClientException {
 
         // populate current folder with ACL
         boolean save = false;
         for (String group : groups) {
-            addAcl(session, folder, group, SecurityConstants.READ_WRITE, true,
-                    save);
-            addAcl(session, folder, group, SecurityConstants.ADD_CHILDREN,
-                    true, save);
-            addAcl(session, folder, group, SecurityConstants.REMOVE_CHILDREN,
-                    true, save);
-            addAcl(session, folder, group, SecurityConstants.READ_LIFE_CYCLE,
-                    true, save);
-            addAcl(session, folder, group, SecurityConstants.WRITE_SECURITY,
-                    true, save);
+            addAcl(session, folder, group, SecurityConstants.READ_WRITE, true, save);
+            addAcl(session, folder, group, SecurityConstants.ADD_CHILDREN, true, save);
+            addAcl(session, folder, group, SecurityConstants.REMOVE_CHILDREN, true, save);
+            addAcl(session, folder, group, SecurityConstants.READ_LIFE_CYCLE, true, save);
+            addAcl(session, folder, group, SecurityConstants.WRITE_SECURITY, true, save);
 
             // final rule with lock inherit
             if (currentDepth != 0 && currentDepth % MOD == 0)
@@ -164,17 +142,14 @@ public class AbstractAclLayoutTest {
             for (int i = 0; i < width; i++) {
                 // create a folder
                 String name = "[" + currentDepth + "]folder-" + i;
-                DocumentModel f = makeFolder(session, folder.getPathAsString(),
-                        name);
+                DocumentModel f = makeFolder(session, folder.getPathAsString(), name);
 
                 // generate children folders
                 if (i < subgroups.size()) {
                     List<String> subgroup = subgroups.get(i);
-                    makeDocumentTree(session, maxDepth, width, nGroups,
-                            currentDepth + 1, f, subgroup);
+                    makeDocumentTree(session, maxDepth, width, nGroups, currentDepth + 1, f, subgroup);
                 } else {
-                    makeDocumentTree(session, maxDepth, width, nGroups,
-                            currentDepth + 1, f, new ArrayList<String>());
+                    makeDocumentTree(session, maxDepth, width, nGroups, currentDepth + 1, f, new ArrayList<String>());
                 }
             }
             return folder;
@@ -196,8 +171,7 @@ public class AbstractAclLayoutTest {
                     RichTextString rts = cell.getRichStringCellValue();
                     return rts.getString();
                 } else {
-                    fail("no cell at id " + c + " in row " + r + " at sheet "
-                            + s);
+                    fail("no cell at id " + c + " in row " + r + " at sheet " + s);
                 }
             } else {
                 fail("no row at id " + r + " in sheet " + s);

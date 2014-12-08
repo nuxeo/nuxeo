@@ -43,8 +43,7 @@ public class DataFetch {
 
     public static boolean ORDERBY_PATH = true;
 
-    public DocumentModelList getAllChildren(CoreSession session,
-            DocumentModel doc) throws ClientException, IOException {
+    public DocumentModelList getAllChildren(CoreSession session, DocumentModel doc) throws ClientException, IOException {
         String request = getChildrenDocQuery(doc, ORDERBY_PATH);
         log.debug("start query: " + request);
         DocumentModelList res = session.query(request);
@@ -53,14 +52,12 @@ public class DataFetch {
         return res;
     }
 
-    public PageProvider<DocumentModel> getAllChildrenPaginated(
-            CoreSession session, DocumentModel doc) throws ClientException {
-        return getAllChildrenPaginated(session, doc, DEFAULT_PAGE_SIZE,
-                ORDERBY_PATH);
+    public PageProvider<DocumentModel> getAllChildrenPaginated(CoreSession session, DocumentModel doc)
+            throws ClientException {
+        return getAllChildrenPaginated(session, doc, DEFAULT_PAGE_SIZE, ORDERBY_PATH);
     }
 
-    public CoreQueryDocumentPageProvider getAllChildrenPaginated(
-            CoreSession session, DocumentModel doc, long pageSize,
+    public CoreQueryDocumentPageProvider getAllChildrenPaginated(CoreSession session, DocumentModel doc, long pageSize,
             boolean orderByPath) throws ClientException {
         String request = getChildrenDocQuery(doc, orderByPath);
         log.debug("will initialize a paginated query:" + request);
@@ -74,11 +71,10 @@ public class DataFetch {
         List<SortInfo> sortInfos = null;
         Object[] parameters = null;
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> provider = pps.getPageProvider("", desc, null,
-                sortInfos, targetPageSize, targetPage, props, parameters);
+        PageProvider<?> provider = pps.getPageProvider("", desc, null, sortInfos, targetPageSize, targetPage, props,
+                parameters);
         // TODO: edit pps implementation to really set parameters!
         provider.setPageSize(pageSize);
         provider.setMaxPageSize(pageSize);
@@ -91,10 +87,8 @@ public class DataFetch {
     public String getChildrenDocQuery(DocumentModel doc, boolean ordered) {
         String parentPath = doc.getPathAsString();
 
-        String request = String.format(
-                "SELECT * FROM Document WHERE ecm:path STARTSWITH '%s' AND "
-                        + "ecm:mixinType = 'Folderish' AND %s", parentPath,
-                baseRequest());
+        String request = String.format("SELECT * FROM Document WHERE ecm:path STARTSWITH '%s' AND "
+                + "ecm:mixinType = 'Folderish' AND %s", parentPath, baseRequest());
         if (ordered)
             return request + " ORDER BY ecm:path";
         else
@@ -112,8 +106,7 @@ public class DataFetch {
      * @return
      */
     protected static String baseRequest() {
-        return "ecm:mixinType != 'HiddenInNavigation'"
-                + " AND ecm:isCheckedInVersion = 0"
+        return "ecm:mixinType != 'HiddenInNavigation'" + " AND ecm:isCheckedInVersion = 0"
                 + " AND ecm:currentLifeCycleState != 'deleted'";
     }
 }

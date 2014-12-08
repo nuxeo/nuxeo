@@ -32,21 +32,15 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 public interface IExcelBuilder {
     /**
-     * Set a cell content at the given indices, and apply the style if it is not
-     * null.
-     *
-     * If row(i) does not exist yet, it is created, otherwise it is recycled. If
-     * cell(i,j) does not exist yet, it is created, otherwise it is recycled.
-     *
-     * Reminder: excel support a maximum of 65,536 rows and 256 columns per
-     * sheet
+     * Set a cell content at the given indices, and apply the style if it is not null. If row(i) does not exist yet, it
+     * is created, otherwise it is recycled. If cell(i,j) does not exist yet, it is created, otherwise it is recycled.
+     * Reminder: excel support a maximum of 65,536 rows and 256 columns per sheet
      *
      * @param row row index
      * @param column column index
      * @param content a string to display in the cell
      * @param style a style to apply to the cell
-     * @return the created or retrieved cell in case additional stuff should be
-     *         done on it.
+     * @return the created or retrieved cell in case additional stuff should be done on it.
      */
     public Cell setCell(int row, int column, String content, CellStyle style);
 
@@ -76,17 +70,13 @@ public interface IExcelBuilder {
 
     public void setFreezePane(int colSplit, int rowSplit);
 
-    public void setFreezePane(int colSplit, int rowSplit, int leftmostColumn,
-            int topRow);
+    public void setFreezePane(int colSplit, int rowSplit, int leftmostColumn, int topRow);
 
-    public void setSplitPane(int xSplitPos, int ySplitPos, int leftmostColumn,
-            int topRow, int activePane);
+    public void setSplitPane(int xSplitPos, int ySplitPos, int leftmostColumn, int topRow, int activePane);
 
-    public void mergeRange(int firstRow, int firstColumn, int lastRow,
-            int lastColumn);
+    public void mergeRange(int firstRow, int firstColumn, int lastRow, int lastColumn);
 
-    public Comment addComment(Cell cell, String text, int row, int col,
-            int colWidth, int rowHeight);
+    public Comment addComment(Cell cell, String text, int row, int col, int colWidth, int rowHeight);
 
     public CellStyle newColoredCellStyle(ByteColor color);
 
@@ -94,12 +84,12 @@ public interface IExcelBuilder {
 
     public void save(File file) throws IOException;
 
-    public Workbook load(String file) throws InvalidFormatException,
-            IOException;
+    public Workbook load(String file) throws InvalidFormatException, IOException;
 
     public Workbook load(File file) throws InvalidFormatException, IOException;
 
     public Font newFont(int size);
+
     public Font newFont();
 
     public Font getBoldFont();

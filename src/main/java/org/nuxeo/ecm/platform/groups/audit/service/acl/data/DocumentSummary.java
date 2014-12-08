@@ -31,7 +31,8 @@ public class DocumentSummary {
     }
 
     public DocumentSummary(String title, int depth, boolean aclLockInheritance,
-            Multimap<String, Pair<String, Boolean>> aclLocal, Multimap<String, Pair<String, Boolean>> aclInherited, String path) {
+            Multimap<String, Pair<String, Boolean>> aclLocal, Multimap<String, Pair<String, Boolean>> aclInherited,
+            String path) {
         this.title = title;
         this.depth = depth;
         this.aclLockInheritance = aclLockInheritance;

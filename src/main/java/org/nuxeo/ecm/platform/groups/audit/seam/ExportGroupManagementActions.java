@@ -74,10 +74,8 @@ public class ExportGroupManagementActions implements Serializable {
         File excelReport = excelExportAllGroupsDefinition();
 
         response.setContentType(new MimetypesFileTypeMap().getContentType(excelReport));
-        response.setHeader("Content-disposition", "attachment; filename=\""
-                + excelReport.getName() + "\"");
-        response.setHeader("Content-Length",
-                String.valueOf(excelReport.length()));
+        response.setHeader("Content-disposition", "attachment; filename=\"" + excelReport.getName() + "\"");
+        response.setHeader("Content-Length", String.valueOf(excelReport.length()));
         try {
             ServletOutputStream os = response.getOutputStream();
             InputStream in = new FileInputStream(excelReport);
@@ -99,10 +97,8 @@ public class ExportGroupManagementActions implements Serializable {
         File excelReport = excelExportListedGroupsDefinition();
 
         response.setContentType(new MimetypesFileTypeMap().getContentType(excelReport));
-        response.setHeader("Content-disposition", "attachment; filename=\""
-                + excelReport.getName() + "\"");
-        response.setHeader("Content-Length",
-                String.valueOf(excelReport.length()));
+        response.setHeader("Content-disposition", "attachment; filename=\"" + excelReport.getName() + "\"");
+        response.setHeader("Content-Length", String.valueOf(excelReport.length()));
         try {
             ServletOutputStream os = response.getOutputStream();
             InputStream in = new FileInputStream(excelReport);
@@ -124,8 +120,7 @@ public class ExportGroupManagementActions implements Serializable {
 
     protected File excelExportListedGroupsDefinition() throws ClientException {
         ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
-        return exportService.getExcelReport("exportListedGroupsAudit",
-                getDataInject());
+        return exportService.getExcelReport("exportListedGroupsAudit", getDataInject());
     }
 
     private Map<String, Object> getDataInject() throws ClientException {

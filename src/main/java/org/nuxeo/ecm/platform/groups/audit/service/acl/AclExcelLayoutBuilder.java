@@ -61,14 +61,9 @@ import com.google.common.collect.Multimap;
  * <li>Render ACL matrix
  * </ul>
  * </ul>
- *
- * One can apply a {@link IContentFilter} to ignore some users/groups.
- *
- * This report builder uses one column per user, and write the list of existing
- * ACL in one cell, by using "," as separator character.
- *
- * A denying ACL is indicated by !S, where S is the short name given to the ACL,
- * as stated by the {@link AclNameShortner}.
+ * One can apply a {@link IContentFilter} to ignore some users/groups. This report builder uses one column per user, and
+ * write the list of existing ACL in one cell, by using "," as separator character. A denying ACL is indicated by !S,
+ * where S is the short name given to the ACL, as stated by the {@link AclNameShortner}.
  *
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
@@ -80,6 +75,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     protected static final String PROPERTY_LEGEND_SHEET_NAME = "message.acl.audit.xl.legend";
 
     protected static final String PROPERTY_LEGEND_LOCK_INHERITANCE = "message.acl.audit.xl.legend.lockInheritance";
+
     protected static final String PROPERTY_LEGEND_PERM_DENIED = "message.acl.audit.xl.legend.denied";
 
     protected IExcelBuilder excel = new ExcelBuilder();
@@ -114,6 +110,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     protected String legendSheetName;
 
     protected String legendLockInheritance = "Permission inheritance locked";
+
     protected String legendPermissionDenied = "Permission denied";
 
     public static ReportLayoutSettings defaultLayout() {
@@ -157,8 +154,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         this(layout, null);
     }
 
-    public AclExcelLayoutBuilder(ReportLayoutSettings layout,
-            IContentFilter filter) {
+    public AclExcelLayoutBuilder(ReportLayoutSettings layout, IContentFilter filter) {
         this.layoutSettings = layout;
 
         if (SpanMode.NONE.equals(layout.spanMode))
@@ -167,8 +163,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
             excel = new ExcelBuilderMultiSheet(Type.XLS, "Permissions"); // missing context, no I18N
             ((ExcelBuilderMultiSheet) excel).setMultiSheetColumns(true);
         } else
-            throw new IllegalArgumentException("layout span mode unknown: "
-                    + layout.spanMode);
+            throw new IllegalArgumentException("layout span mode unknown: " + layout.spanMode);
 
         if (filter == null)
             this.filter = new AcceptsAllContent();
@@ -176,8 +171,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
             this.filter = filter;
 
         if (layoutSettings.pageSize > 0)
-            this.data = new DataProcessorPaginated(this.filter,
-                    layoutSettings.pageSize);
+            this.data = new DataProcessorPaginated(this.filter, layoutSettings.pageSize);
         else
             this.data = new DataProcessor(this.filter);
 
@@ -191,26 +185,22 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     }
 
     @Override
-    public void renderAudit(CoreSession session, final DocumentModel doc)
-            throws ClientException {
+    public void renderAudit(CoreSession session, final DocumentModel doc) throws ClientException {
         renderAudit(session, doc, true);
     }
 
     @Override
-    public void renderAudit(CoreSession session, final DocumentModel doc,
-            boolean unrestricted) throws ClientException {
+    public void renderAudit(CoreSession session, final DocumentModel doc, boolean unrestricted) throws ClientException {
         renderAudit(session, doc, unrestricted, 0);
     }
 
     @Override
-    public void renderAudit(CoreSession session, final DocumentModel doc,
-            boolean unrestricted, final int timeout)
+    public void renderAudit(CoreSession session, final DocumentModel doc, boolean unrestricted, final int timeout)
             throws ClientException {
         if (!unrestricted) {
             analyzeAndRender(session, doc, timeout);
         } else {
-            UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
-                    session) {
+            UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() throws ClientException {
                     analyzeAndRender(session, doc, timeout);
@@ -220,8 +210,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         }
     }
 
-    protected void analyzeAndRender(CoreSession session,
-            final DocumentModel doc, int timeout) throws ClientException {
+    protected void analyzeAndRender(CoreSession session, final DocumentModel doc, int timeout) throws ClientException {
         log.debug("start processing data");
         data.analyze(session, doc, timeout);
 
@@ -232,9 +221,8 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     /* EXCEL RENDERING */
 
     protected void configure(CoreSession session) throws ClientException {
-        //mainSheetName = MessageAccessor.get(session, PROPERTY_MAIN_SHEET_NAME);
-        legendSheetName = MessageAccessor.get(session,
-                PROPERTY_LEGEND_SHEET_NAME);
+        // mainSheetName = MessageAccessor.get(session, PROPERTY_MAIN_SHEET_NAME);
+        legendSheetName = MessageAccessor.get(session, PROPERTY_LEGEND_SHEET_NAME);
         legendLockInheritance = MessageAccessor.get(session, PROPERTY_LEGEND_LOCK_INHERITANCE);
         legendPermissionDenied = MessageAccessor.get(session, PROPERTY_LEGEND_PERM_DENIED);
     }
@@ -245,8 +233,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         int colStart = maxDepth + (layoutSettings.showFullPath ? 1 : 0);
 
         mainSheetId = excel.getCurrentSheetId();
-        legendSheetId = excel.newSheet(excel.getCurrentSheetId() + 1,
-                legendSheetName);
+        legendSheetId = excel.newSheet(excel.getCurrentSheetId() + 1, legendSheetName);
 
         renderInit();
         renderHeader(colStart, data.getUserAndGroups(), data.getPermissions());
@@ -284,24 +271,21 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     /** Perform various general tasks, such as setting the current sheet zoom. */
     protected void renderFinal() {
         for (Sheet s : excel.getAllSheets()) {
-            s.setZoom(layoutSettings.zoomRatioNumerator,
-                    layoutSettings.zoomRatioDenominator);
+            s.setZoom(layoutSettings.zoomRatioNumerator, layoutSettings.zoomRatioDenominator);
         }
     }
 
     /* HEADER RENDERING */
 
     /**
-     * Write users and groups on the first row. Memorize the user (or group)
-     * column which can later be retrieved with getColumn(user)
+     * Write users and groups on the first row. Memorize the user (or group) column which can later be retrieved with
+     * getColumn(user)
      */
-    protected void renderHeader(int tableStartColumn, Set<String> userOrGroups,
-            Set<String> permission) {
+    protected void renderHeader(int tableStartColumn, Set<String> userOrGroups, Set<String> permission) {
         renderHeaderUsers(tableStartColumn, userOrGroups);
     }
 
-    protected void renderHeaderUsers(int tableStartColumn,
-            Set<String> userOrGroups) {
+    protected void renderHeaderUsers(int tableStartColumn, Set<String> userOrGroups) {
         int column = tableStartColumn;
         for (String userOrGroup : userOrGroups) {
             excel.setCell(0, column, userOrGroup, userHeaderStyle);
@@ -313,30 +297,25 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
     /* FILE TREE AND MATRIX CONTENT RENDERING */
 
-    protected void renderFileTreeAndAclMatrix(
-            Collection<DocumentSummary> analyses, int minDepth, int maxDepth)
+    protected void renderFileTreeAndAclMatrix(Collection<DocumentSummary> analyses, int minDepth, int maxDepth)
             throws ClientException {
         treeLineCursor = layoutSettings.treeLineCursorRowStart;
 
         for (DocumentSummary summary : analyses) {
-            renderFilename(summary.getTitle(), summary.getDepth() - minDepth,
-                    summary.isAclLockInheritance());
+            renderFilename(summary.getTitle(), summary.getDepth() - minDepth, summary.isAclLockInheritance());
 
             if (layoutSettings.showFullPath)
-                excel.setCell(treeLineCursor, maxDepth - minDepth + 1,
-                        summary.getPath());
+                excel.setCell(treeLineCursor, maxDepth - minDepth + 1, summary.getPath());
 
             if (summary.getAclInheritedByUser() != null)
-                renderAcl(summary.getAclByUser(),
-                        summary.getAclInheritedByUser());
+                renderAcl(summary.getAclByUser(), summary.getAclInheritedByUser());
             else
                 renderAcl(summary.getAclByUser());
             treeLineCursor++;
         }
     }
 
-    protected void renderFilename(String title, int depth,
-            boolean lockInheritance) throws ClientException {
+    protected void renderFilename(String title, int depth, boolean lockInheritance) throws ClientException {
         // draw title
         excel.setCell(treeLineCursor, depth, title);
 
@@ -347,13 +326,11 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     }
 
     /** Render a row with all ACL of a given input file. */
-    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls)
-            throws ClientException {
+    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls) throws ClientException {
         renderAcl(userAcls, (CellStyle) null);
     }
 
-    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls,
-            CellStyle style) throws ClientException {
+    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls, CellStyle style) throws ClientException {
         for (String user : userAcls.keySet()) {
             int column = layout.getUserColumn(user);
             String info = formatAcl(userAcls.get(user));
@@ -363,7 +340,6 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
     /**
      * Render local AND inherited ACL.
-     *
      * <ul>
      * <li>Local acl only are rendered with default font.
      * <li>Inherited acl only are rendered with gray font.
@@ -371,8 +347,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
      * </ul>
      */
     protected void renderAcl(Multimap<String, Pair<String, Boolean>> localAcls,
-            Multimap<String, Pair<String, Boolean>> inheritedAcls)
-            throws ClientException {
+            Multimap<String, Pair<String, Boolean>> inheritedAcls) throws ClientException {
         Set<String> users = new HashSet<String>();
         users.addAll(localAcls.keySet());
         users.addAll(inheritedAcls.keySet());
@@ -383,16 +358,13 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
             String inheritedAclsString = formatAcl(inheritedAcls.get(user));
 
             if ("".equals(localAclsString) && "".equals(inheritedAclsString)) {
-            } else if (!"".equals(localAclsString)
-                    && !"".equals(inheritedAclsString)) {
+            } else if (!"".equals(localAclsString) && !"".equals(inheritedAclsString)) {
                 String info = localAclsString + "," + inheritedAclsString;
                 excel.setCell(treeLineCursor, column, info);
-            } else if (!"".equals(localAclsString)
-                    && "".equals(inheritedAclsString)) {
+            } else if (!"".equals(localAclsString) && "".equals(inheritedAclsString)) {
                 String info = localAclsString;
                 excel.setCell(treeLineCursor, column, info);
-            } else if ("".equals(localAclsString)
-                    && !"".equals(inheritedAclsString)) {
+            } else if ("".equals(localAclsString) && !"".equals(inheritedAclsString)) {
                 String info = inheritedAclsString;
                 excel.setCell(treeLineCursor, column, info, grayTextStyle);
             }
@@ -410,12 +382,11 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         off = renderLegendAcl(off + 1, 0);
         off++;
         excel.setCell(off, col, "", lockInheritanceStyle);
-        excel.setCell(off, col+1, legendLockInheritance);
+        excel.setCell(off, col + 1, legendLockInheritance);
         off++;
     }
 
-    protected int renderLegendErrorMessage(int row, int col,
-            ProcessorStatus status, String message) {
+    protected int renderLegendErrorMessage(int row, int col, ProcessorStatus status, String message) {
         if (!ProcessorStatus.SUCCESS.equals(status)) {
             excel.setCell(row++, col, "Status: " + status);
             if (message != null && !"".equals(message))
@@ -438,10 +409,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     /* ACL TEXT FORMATTER FOR MATRIX */
 
     /**
-     * Renders all ACE separated by a ,
-     *
-     * Each ACE name is formated using {@link formatAce(Pair<String, Boolean>
-     * ace)}
+     * Renders all ACE separated by a , Each ACE name is formated using {@link formatAce(Pair<String, Boolean> ace)}
      *
      * @return
      */
@@ -470,16 +438,12 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     /* CELL FORMATTER */
 
     /**
-     * Set column of size of each file tree column, and apply a freeze pan to
-     * fix the tree columns and header rows.
+     * Set column of size of each file tree column, and apply a freeze pan to fix the tree columns and header rows.
      */
-    protected void formatFileTreeCellLayout(int maxDepth, int minDepth,
-            int colStart) {
+    protected void formatFileTreeCellLayout(int maxDepth, int minDepth, int colStart) {
         int realMax = maxDepth - minDepth;
         for (int i = 0; i < realMax; i++) {
-            excel.setColumnWidth(
-                    i,
-                    (int) (layoutSettings.fileTreeColumnWidth * CELL_WIDTH_UNIT));
+            excel.setColumnWidth(i, (int) (layoutSettings.fileTreeColumnWidth * CELL_WIDTH_UNIT));
         }
         excel.setColumnWidthAuto(realMax);
         excel.setFreezePane(colStart, layoutSettings.freezePaneRowSplit);

@@ -44,23 +44,19 @@ import com.google.inject.Inject;
 
 /**
  * Test excel export of groups
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory.api",
-        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.platform.usermanager",
-        "org.nuxeo.ecm.platform.usermanager.api", "nuxeo-groups-rights-audit",
+@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management",
+        "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.usermanager.api", "nuxeo-groups-rights-audit",
         "org.nuxeo.ecm.automation.core" })
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml"})
+        "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml" })
 public class TestExcelExportGroups {
-    
-    
+
     @Inject
     CoreSession session;
 

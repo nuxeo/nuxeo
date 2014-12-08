@@ -50,7 +50,6 @@ import com.google.inject.Inject;
 
 /**
  * Test excel export of groups
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
@@ -67,8 +66,7 @@ public class TrialAclProcessingExceedingDocuments extends AbstractAclLayoutTest 
 
     private final static Log log = LogFactory.getLog(TrialAclProcessingExceedingDocuments.class);
 
-    protected static File testFile = new File(folder
-            + TrialAclProcessingExceedingDocuments.class.getSimpleName()
+    protected static File testFile = new File(folder + TrialAclProcessingExceedingDocuments.class.getSimpleName()
             + ".xls");
 
     @Test
@@ -83,8 +81,7 @@ public class TrialAclProcessingExceedingDocuments extends AbstractAclLayoutTest 
         int width = ExcelBuilder.MAX_ROW + 1;
         int groups = 1;
 
-        log.info("Build a test repository: depth=" + depth + ", width:" + width
-                + ", groups:" + groups);
+        log.info("Build a test repository: depth=" + depth + ", width:" + width + ", groups:" + groups);
         DocumentModel root = makeDocumentTree(session, depth, width, groups);
         session.save();
         log.info("done building test data");
@@ -107,11 +104,8 @@ public class TrialAclProcessingExceedingDocuments extends AbstractAclLayoutTest 
 
         // reload and assert we have the expected error message
         Workbook w = v.getExcel().load(testFile);
-        String txt = get(w, 1, AclExcelLayoutBuilder.STATUS_ROW,
-                AclExcelLayoutBuilder.STATUS_COL);
-        assertTrue(
-                "",
-                txt.contains(ProcessorStatus.ERROR_TOO_MANY_DOCUMENTS.toString()));
+        String txt = get(w, 1, AclExcelLayoutBuilder.STATUS_ROW, AclExcelLayoutBuilder.STATUS_COL);
+        assertTrue("", txt.contains(ProcessorStatus.ERROR_TOO_MANY_DOCUMENTS.toString()));
 
         ExcelBuilder.MAX_ROW = realMaxRow;
     }

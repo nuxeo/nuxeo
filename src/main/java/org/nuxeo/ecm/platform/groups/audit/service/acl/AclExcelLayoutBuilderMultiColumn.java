@@ -33,8 +33,8 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
 import com.google.common.collect.Multimap;
 
 /**
- * An excel layout builder that uses one group of columns per user, using one
- * column for each right type (read, write, etc).
+ * An excel layout builder that uses one group of columns per user, using one column for each right type (read, write,
+ * etc).
  *
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
@@ -102,8 +102,7 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
         this(defaultLayout(), filter);
     }
 
-    public AclExcelLayoutBuilderMultiColumn(ReportLayoutSettings layout,
-            IContentFilter filter) {
+    public AclExcelLayoutBuilderMultiColumn(ReportLayoutSettings layout, IContentFilter filter) {
         super(layout, filter);
     }
 
@@ -156,12 +155,11 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
     /* HEADER RENDERING */
 
     /**
-     * Write users and groups on the first row. Memorize the user (or group)
-     * column which can later be retrieved with getColumn(user)
+     * Write users and groups on the first row. Memorize the user (or group) column which can later be retrieved with
+     * getColumn(user)
      */
     @Override
-    protected void renderHeader(int tableStartColumn, Set<String> userOrGroups,
-            Set<String> permissions) {
+    protected void renderHeader(int tableStartColumn, Set<String> userOrGroups, Set<String> permissions) {
         renderHeaderPicture();
         renderHeaderUsers(tableStartColumn, userOrGroups, permissions);
         renderHeaderAcl(userOrGroups, permissions);
@@ -173,8 +171,7 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
         excel.setPicture(logoPictureId, 0, 0, false);
     }
 
-    protected void renderHeaderUsers(int tableStartColumn,
-            Set<String> userOrGroups, Set<String> permissions) {
+    protected void renderHeaderUsers(int tableStartColumn, Set<String> userOrGroups, Set<String> permissions) {
 
         int userColumn = tableStartColumn;
         for (String user : userOrGroups) {
@@ -185,18 +182,15 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
             // merge cells indicating user name
             final int from = userColumn;
             final int to = userColumn + permissions.size() - 1;
-            if (from < ExcelBuilder.LAST_COLUMN
-                    && to < ExcelBuilder.LAST_COLUMN)
+            if (from < ExcelBuilder.LAST_COLUMN && to < ExcelBuilder.LAST_COLUMN)
                 excel.mergeRange(USERS_ROW, from, USERS_ROW, to);
 
             userColumn += permissions.size();
-            log.debug("user header: " + USERS_ROW + "," + userColumn + " > "
-                    + user);
+            log.debug("user header: " + USERS_ROW + "," + userColumn + " > " + user);
         }
     }
 
-    protected void renderHeaderAcl(Set<String> userOrGroups,
-            Set<String> permissions) {
+    protected void renderHeaderAcl(Set<String> userOrGroups, Set<String> permissions) {
         for (String user : userOrGroups) {
             // render ACL column header for this user
             int userColumn;
@@ -211,24 +205,18 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
                 aclHeaderText = permission;// formatPermission(permission);
                 aclHeaderShort = formatPermission(permission);
 
-                Cell cell = excel.setCell(PERMISSIONS_ROW, aclHeaderColumn,
-                        aclHeaderShort, aclHeaderStyle);
-                excel.setColumnWidth(aclHeaderColumn,
-                        (int) (layoutSettings.aclColumnWidth * CELL_WIDTH_UNIT));
+                Cell cell = excel.setCell(PERMISSIONS_ROW, aclHeaderColumn, aclHeaderShort, aclHeaderStyle);
+                excel.setColumnWidth(aclHeaderColumn, (int) (layoutSettings.aclColumnWidth * CELL_WIDTH_UNIT));
 
                 // add a comment with the acl complete name
                 if ((aclHeaderColumn + layoutSettings.aclHeaderCommentColSpan) < ExcelBuilder.LAST_COLUMN)
-                    excel.addComment(cell, aclHeaderText, PERMISSIONS_ROW,
-                            aclHeaderColumn,
-                            layoutSettings.aclHeaderCommentColSpan,
-                            layoutSettings.aclHeaderCommentRowSpan);
+                    excel.addComment(cell, aclHeaderText, PERMISSIONS_ROW, aclHeaderColumn,
+                            layoutSettings.aclHeaderCommentColSpan, layoutSettings.aclHeaderCommentRowSpan);
 
-                layout.setUserAclColumn(aclHeaderColumn,
-                        Pair.of(user, permission));
+                layout.setUserAclColumn(aclHeaderColumn, Pair.of(user, permission));
                 aclColumn++;
 
-                log.debug("permission header: " + PERMISSIONS_ROW + ","
-                        + aclHeaderColumn + " > "
+                log.debug("permission header: " + PERMISSIONS_ROW + "," + aclHeaderColumn + " > "
                         + formatPermission(permission));
             }
         }
@@ -244,11 +232,9 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
     /* FILE TREE AND MATRIX CONTENT RENDERING */
 
     @Override
-    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls)
-            throws ClientException {
+    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls) throws ClientException {
         for (String user : userAcls.keySet()) {
-            List<Pair<String, Boolean>> acls = new ArrayList<Pair<String, Boolean>>(
-                    userAcls.get(user));
+            List<Pair<String, Boolean>> acls = new ArrayList<Pair<String, Boolean>>(userAcls.get(user));
             int last = acls.size() - 1;
 
             // TODO: IF ACLS not contain an ACL that should be first or last,
@@ -261,8 +247,7 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
                 Pair<String, Boolean> ace = acls.get(i);
                 String permission = ace.a;
                 boolean accept = ace.b;
-                int aclColumn = layout.getUserAclColumn(Pair.of(user,
-                        permission));
+                int aclColumn = layout.getUserAclColumn(Pair.of(user, permission));
                 String aceText = "";// formatAce(ace)
 
                 if (accept) {
@@ -278,11 +263,9 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
     }
 
     /**
-     * Render a cell with a 'deny' color with left, right or no border according
-     * to its position.
+     * Render a cell with a 'deny' color with left, right or no border according to its position.
      */
-    protected void renderDenyCell(boolean isFirst, boolean isLast,
-            int aclColumn, String aceText) {
+    protected void renderDenyCell(boolean isFirst, boolean isLast, int aclColumn, String aceText) {
         if (isFirst) {
             excel.setCell(treeLineCursor, aclColumn, aceText, denyStyleLeft);
         } else if (isLast) {
@@ -293,11 +276,9 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
     }
 
     /**
-     * Render a cell with a 'accept' color with left, right or no border
-     * according to its position.
+     * Render a cell with a 'accept' color with left, right or no border according to its position.
      */
-    protected void renderAcceptCell(boolean isFirst, boolean isLast,
-            int aclColumn, String aceText) {
+    protected void renderAcceptCell(boolean isFirst, boolean isLast, int aclColumn, String aceText) {
         if (isFirst) {
             excel.setCell(treeLineCursor, aclColumn, aceText, acceptStyleLeft);
         } else if (isLast) {

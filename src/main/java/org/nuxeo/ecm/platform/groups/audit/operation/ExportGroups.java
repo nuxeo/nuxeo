@@ -29,8 +29,7 @@ import org.nuxeo.ecm.platform.groups.audit.ExcelExportConstants;
 import org.nuxeo.ecm.platform.groups.audit.service.ExcelExportService;
 
 /**
- * Export Groups returns the Nuxeo groups excel report listing subgroups/users
- * as a blob
+ * Export Groups returns the Nuxeo groups excel report listing subgroups/users as a blob
  * 
  * @since 5.7
  */
