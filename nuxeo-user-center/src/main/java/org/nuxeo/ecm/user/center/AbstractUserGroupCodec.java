@@ -58,21 +58,15 @@ public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
      * @param paramShowName
      * @return
      */
-    public DocumentView getDocumentViewFromUrl(
-            String url,
-            String defaultTab,
-            String paramIdName,
-            String paramShowName) {
-        Pattern pattern = Pattern.compile(getPrefix()
-                + GET_URL_PATTERN);
+    public DocumentView getDocumentViewFromUrl(String url, String defaultTab, String paramIdName, String paramShowName) {
+        Pattern pattern = Pattern.compile(getPrefix() + GET_URL_PATTERN);
         Matcher m = pattern.matcher(url);
         if (m.matches()) {
             if (m.groupCount() >= 1) {
                 String id = m.group(1);
 
                 String viewId = m.group(3);
-                if (viewId == null
-                        || "".equals(viewId)) {
+                if (viewId == null || "".equals(viewId)) {
                     viewId = DEFAULT_VIEW_ID;
                 }
 
@@ -82,24 +76,15 @@ public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
                     params = new HashMap<String, String>();
                 }
 
-                params.put(paramIdName,
-                        id);
-                params.put(
-                        paramShowName,
-                        "true");
+                params.put(paramIdName, id);
+                params.put(paramShowName, "true");
 
                 if (!params.containsKey("tabIds")) {
-                    params.put(
-                            "tabIds",
-                            defaultTab);
+                    params.put("tabIds", defaultTab);
                 }
 
-                final DocumentLocation docLoc = new DocumentLocationImpl(
-                        getDefaultRepositoryName(),
-                        null);
-                return new DocumentViewImpl(
-                        docLoc, viewId,
-                        params);
+                final DocumentLocation docLoc = new DocumentLocationImpl(getDefaultRepositoryName(), null);
+                return new DocumentViewImpl(docLoc, viewId, params);
             }
         }
         return null;

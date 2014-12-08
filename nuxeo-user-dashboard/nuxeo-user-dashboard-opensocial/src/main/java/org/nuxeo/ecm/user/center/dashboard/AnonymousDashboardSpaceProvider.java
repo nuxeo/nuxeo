@@ -19,8 +19,7 @@ import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 /**
  * Space provider for Anonymous user dashboard.
  * <p>
- * Used when administrating the dashboard and when an anonymous user requests
- * its dashboard.
+ * Used when administrating the dashboard and when an anonymous user requests its dashboard.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
@@ -29,8 +28,7 @@ public class AnonymousDashboardSpaceProvider extends AbstractSpaceProvider {
     private static final Log log = LogFactory.getLog(AnonymousDashboardSpaceProvider.class);
 
     @Override
-    protected Space doGetSpace(CoreSession session,
-            DocumentModel contextDocument, String spaceName,
+    protected Space doGetSpace(CoreSession session, DocumentModel contextDocument, String spaceName,
             Map<String, String> parameters) throws SpaceException {
         try {
             return getOrCreateSpace(session, parameters);
@@ -40,26 +38,22 @@ public class AnonymousDashboardSpaceProvider extends AbstractSpaceProvider {
         }
     }
 
-    protected Space getOrCreateSpace(CoreSession session,
-            Map<String, String> parameters) throws ClientException {
-        DocumentRef spaceRef = new PathRef(DASHBOARD_MANAGEMENT_PATH,
-                ANONYMOUS_DASHBOARD_SPACE_NAME);
+    protected Space getOrCreateSpace(CoreSession session, Map<String, String> parameters) throws ClientException {
+        DocumentRef spaceRef = new PathRef(DASHBOARD_MANAGEMENT_PATH, ANONYMOUS_DASHBOARD_SPACE_NAME);
         if (session.exists(spaceRef)) {
             DocumentModel existingSpace = session.getDocument(spaceRef);
             return existingSpace.getAdapter(Space.class);
         } else {
-            DocumentRef anonymousDashboardSpaceRef = getOrCreateAnonymousDashboardSpace(
-                    session, parameters);
+            DocumentRef anonymousDashboardSpaceRef = getOrCreateAnonymousDashboardSpace(session, parameters);
             DocumentModel anonymousDashboardSpace = session.getDocument(anonymousDashboardSpaceRef);
             return anonymousDashboardSpace.getAdapter(Space.class);
         }
     }
 
-    protected DocumentRef getOrCreateAnonymousDashboardSpace(
-            CoreSession session, Map<String, String> parameters)
+    protected DocumentRef getOrCreateAnonymousDashboardSpace(CoreSession session, Map<String, String> parameters)
             throws ClientException {
-        AnonymousDashboardSpaceCreator anonymousDashboardSpaceCreator = new AnonymousDashboardSpaceCreator(
-                session, parameters);
+        AnonymousDashboardSpaceCreator anonymousDashboardSpaceCreator = new AnonymousDashboardSpaceCreator(session,
+                parameters);
         anonymousDashboardSpaceCreator.runUnrestricted();
         return anonymousDashboardSpaceCreator.anonymousDashboardSpaceRef;
     }

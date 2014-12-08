@@ -24,12 +24,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({TransactionalFeature.class,PlatformFeature.class})
+@Features({ TransactionalFeature.class, PlatformFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.user.center.profile" })
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.user.center.profile" })
 public class TestUserProfileCreation {
 
     @Inject
@@ -59,8 +57,7 @@ public class TestUserProfileCreation {
         }
 
         try (CoreSession session = repositorySettings.openSessionAs(user.getId())) {
-            DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                    session, null);
+            DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
             Assert.assertEquals(user.getId(), userWorkspace.getName());
 
             DocumentModel up = ups.getUserProfileDocument(session);

@@ -32,19 +32,16 @@ public class DefaultDashboardSpaceCreator extends AbstractDashboardSpaceCreator 
 
     public DocumentRef defaultDashboardSpaceRef;
 
-    public DefaultDashboardSpaceCreator(CoreSession session,
-            Map<String, String> parameters) {
+    public DefaultDashboardSpaceCreator(CoreSession session, Map<String, String> parameters) {
         super(session, parameters);
     }
 
     @Override
     public void run() throws ClientException {
         DocumentModel dashboardManagement = getDashboardManagement();
-        String defaultDashboardSpacePath = new Path(
-                dashboardManagement.getPathAsString()).append(
+        String defaultDashboardSpacePath = new Path(dashboardManagement.getPathAsString()).append(
                 DEFAULT_DASHBOARD_SPACE_NAME).toString();
-        DocumentRef defaultDashboardSpacePathRef = new PathRef(
-                defaultDashboardSpacePath);
+        DocumentRef defaultDashboardSpacePathRef = new PathRef(defaultDashboardSpacePath);
 
         DocumentModel defaultDashboardSpace;
         if (!session.exists(defaultDashboardSpacePathRef)) {
@@ -55,15 +52,11 @@ public class DefaultDashboardSpaceCreator extends AbstractDashboardSpaceCreator 
         defaultDashboardSpaceRef = defaultDashboardSpace.getRef();
     }
 
-    protected DocumentModel createDefaultDashboardSpace(
-            String dashboardManagementPath) throws ClientException {
-        DocumentModel defaultDashboardSpace = session.createDocumentModel(
-                dashboardManagementPath, DEFAULT_DASHBOARD_SPACE_NAME,
-                SPACE_DOCUMENT_TYPE);
-        defaultDashboardSpace.setPropertyValue("dc:title",
-                "default dashboard space");
-        defaultDashboardSpace.setPropertyValue("dc:description",
-                "default dashboard space");
+    protected DocumentModel createDefaultDashboardSpace(String dashboardManagementPath) throws ClientException {
+        DocumentModel defaultDashboardSpace = session.createDocumentModel(dashboardManagementPath,
+                DEFAULT_DASHBOARD_SPACE_NAME, SPACE_DOCUMENT_TYPE);
+        defaultDashboardSpace.setPropertyValue("dc:title", "default dashboard space");
+        defaultDashboardSpace.setPropertyValue("dc:description", "default dashboard space");
         defaultDashboardSpace = session.createDocument(defaultDashboardSpace);
 
         addInitialGadgets(defaultDashboardSpace);
@@ -71,8 +64,7 @@ public class DefaultDashboardSpaceCreator extends AbstractDashboardSpaceCreator 
         return session.saveDocument(defaultDashboardSpace);
     }
 
-    protected void addDefaultACP(DocumentModel defaultDashboardSpace)
-            throws ClientException {
+    protected void addDefaultACP(DocumentModel defaultDashboardSpace) throws ClientException {
         ACP acp = defaultDashboardSpace.getACP();
         ACL acl = acp.getOrCreateACL();
         for (String group : getUserManager().getAdministratorsGroups()) {

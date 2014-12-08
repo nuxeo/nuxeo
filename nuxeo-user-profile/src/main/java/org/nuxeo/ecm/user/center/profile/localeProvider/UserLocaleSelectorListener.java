@@ -29,8 +29,7 @@ import org.nuxeo.ecm.webapp.locale.LocaleStartup;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Refresh Faces locale and timezone when the userProfileDocument is updated
- * (and created).
+ * Refresh Faces locale and timezone when the userProfileDocument is updated (and created).
  *
  * @since 5.6
  */

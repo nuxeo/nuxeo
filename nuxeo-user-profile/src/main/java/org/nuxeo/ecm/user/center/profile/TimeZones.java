@@ -71,10 +71,7 @@ public class TimeZones implements Serializable {
         if (id == null || id.trim().length() == 0 || "none".equals(id)) {
             return "";
         }
-        return id
-                + " - "
-                + TimeZone.getTimeZone(id).getDisplayName(
-                        localeSelector.getLocale());
+        return id + " - " + TimeZone.getTimeZone(id).getDisplayName(localeSelector.getLocale());
     }
 
     private void initTimeZones() {

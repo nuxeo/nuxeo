@@ -19,13 +19,11 @@ package org.nuxeo.ecm.user.center;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
- * Codec handling a groupname, an optional view and additional request
- * parameters.
+ * Codec handling a groupname, an optional view and additional request parameters.
  *
  * @since 6.0
  */
-public class GroupCodec extends
-        AbstractUserGroupCodec {
+public class GroupCodec extends AbstractUserGroupCodec {
 
     public static final String PREFIX = "group";
 
@@ -40,21 +38,14 @@ public class GroupCodec extends
     }
 
     @Override
-    public DocumentView getDocumentViewFromUrl(
-            String url) {
+    public DocumentView getDocumentViewFromUrl(String url) {
 
-        return getDocumentViewFromUrl(
-                url,
-                DEFAULT_GROUPS_TAB,
-                "groupname",
-                "showGroup");
+        return getDocumentViewFromUrl(url, DEFAULT_GROUPS_TAB, "groupname", "showGroup");
     }
 
     @Override
-    public String getUrlFromDocumentView(
-            DocumentView docView) {
-        return getUrlFromDocumentViewAndID(
-                docView, "groupname");
+    public String getUrlFromDocumentView(DocumentView docView) {
+        return getUrlFromDocumentViewAndID(docView, "groupname");
     }
 
 }

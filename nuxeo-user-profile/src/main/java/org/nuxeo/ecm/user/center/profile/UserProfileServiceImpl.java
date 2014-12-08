@@ -48,8 +48,7 @@ import com.google.common.cache.CacheBuilder;
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
  */
-public class UserProfileServiceImpl extends DefaultComponent implements
-        UserProfileService {
+public class UserProfileServiceImpl extends DefaultComponent implements UserProfileService {
 
     protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
 
@@ -58,50 +57,41 @@ public class UserProfileServiceImpl extends DefaultComponent implements
     protected static final Integer CACHE_MAXIMUM_SIZE = 1000;
 
     protected final Cache<String, String> profileUidCache = CacheBuilder.newBuilder().concurrencyLevel(
-            CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(
-            CACHE_TIMEOUT, TimeUnit.MINUTES).build();
+            CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
 
     private UserWorkspaceService userWorkspaceService;
 
     @Override
-    public DocumentModel getUserProfileDocument(CoreSession session)
-            throws ClientException {
-        DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(
-                session, null);
+    public DocumentModel getUserProfileDocument(CoreSession session) throws ClientException {
+        DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(session, null);
         String uid = profileUidCache.getIfPresent(session.getPrincipal().getName());
         if (uid != null) {
             return session.getDocument(new IdRef(uid));
         } else {
-            DocumentModel profile = new UserProfileDocumentGetter(session,
-                    userWorkspace).getOrCreate();
-            profileUidCache.put(session.getPrincipal().getName(),
-                    profile.getId());
+            DocumentModel profile = new UserProfileDocumentGetter(session, userWorkspace).getOrCreate();
+            profileUidCache.put(session.getPrincipal().getName(), profile.getId());
             return profile;
         }
     }
 
     @Override
-    public DocumentModel getUserProfileDocument(String userName,
-            CoreSession session) throws ClientException {
-        DocumentModel userWorkspace = getUserWorkspaceService().getUserPersonalWorkspace(
-                userName, session.getRootDocument());
+    public DocumentModel getUserProfileDocument(String userName, CoreSession session) throws ClientException {
+        DocumentModel userWorkspace = getUserWorkspaceService().getUserPersonalWorkspace(userName,
+                session.getRootDocument());
 
         String uid = profileUidCache.getIfPresent(userName);
         if (uid != null) {
             return session.getDocument(new IdRef(uid));
         } else {
-            DocumentModel profile = new UserProfileDocumentGetter(session,
-                    userWorkspace).getOrCreate();
+            DocumentModel profile = new UserProfileDocumentGetter(session, userWorkspace).getOrCreate();
             profileUidCache.put(userName, profile.getId());
             return profile;
         }
     }
 
     @Override
-    public DocumentModel getUserProfile(DocumentModel userModel,
-            CoreSession session) throws ClientException {
-        DocumentModel userProfileDoc = getUserProfileDocument(
-                userModel.getId(), session);
+    public DocumentModel getUserProfile(DocumentModel userModel, CoreSession session) throws ClientException {
+        DocumentModel userProfileDoc = getUserProfileDocument(userModel.getId(), session);
         userProfileDoc.detach(true);
         userProfileDoc.getDataModels().putAll(userModel.getDataModels());
         return userProfileDoc;
@@ -120,8 +110,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements
 
         private DocumentRef userProfileDocRef;
 
-        public UserProfileDocumentGetter(CoreSession session,
-                DocumentModel userWorkspace) {
+        public UserProfileDocumentGetter(CoreSession session, DocumentModel userWorkspace) {
             super(session);
             this.userWorkspace = userWorkspace;
         }
@@ -129,21 +118,15 @@ public class UserProfileServiceImpl extends DefaultComponent implements
         @Override
         public void run() throws ClientException {
 
-            String query = "select * from "
-                    + USER_PROFILE_DOCTYPE
-                    + " where ecm:parentId='"
-                    + userWorkspace.getId()
-                    + "' "
-                    + " AND ecm:isProxy = 0 "
+            String query = "select * from " + USER_PROFILE_DOCTYPE + " where ecm:parentId='" + userWorkspace.getId()
+                    + "' " + " AND ecm:isProxy = 0 "
                     + " AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'";
             DocumentModelList children = session.query(query);
             if (!children.isEmpty()) {
                 userProfileDocRef = children.get(0).getRef();
             } else {
-                DocumentModel userProfileDoc = session.createDocumentModel(
-                        userWorkspace.getPathAsString(),
-                        String.valueOf(System.currentTimeMillis()),
-                        USER_PROFILE_DOCTYPE);
+                DocumentModel userProfileDoc = session.createDocumentModel(userWorkspace.getPathAsString(),
+                        String.valueOf(System.currentTimeMillis()), USER_PROFILE_DOCTYPE);
                 userProfileDoc = session.createDocument(userProfileDoc);
                 userProfileDocRef = userProfileDoc.getRef();
                 ACP acp = session.getACP(userProfileDocRef);

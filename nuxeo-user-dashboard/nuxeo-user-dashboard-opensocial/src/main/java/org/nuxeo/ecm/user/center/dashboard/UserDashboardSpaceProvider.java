@@ -48,8 +48,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Default User dashboard space provider.
  * <p>
- * If the user does not have any dashboard, it tries to copy the one configured
- * by the Administrator. If it fails, create an empty dashboard.
+ * If the user does not have any dashboard, it tries to copy the one configured by the Administrator. If it fails,
+ * create an empty dashboard.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
@@ -62,8 +62,7 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
     private static final Log log = LogFactory.getLog(UserDashboardSpaceProvider.class);
 
     @Override
-    protected Space doGetSpace(CoreSession session,
-            DocumentModel contextDocument, String spaceName,
+    protected Space doGetSpace(CoreSession session, DocumentModel contextDocument, String spaceName,
             Map<String, String> parameters) throws SpaceException {
         try {
             return getOrCreateSpace(session, parameters);
@@ -73,23 +72,19 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
         }
     }
 
-    protected Space getOrCreateSpace(CoreSession session,
-            Map<String, String> parameters) throws ClientException {
+    protected Space getOrCreateSpace(CoreSession session, Map<String, String> parameters) throws ClientException {
         String userWorkspacePath = getUserPersonalWorkspace(session).getPathAsString();
-        DocumentRef spaceRef = new PathRef(userWorkspacePath,
-                USER_DASHBOARD_SPACE_NAME);
+        DocumentRef spaceRef = new PathRef(userWorkspacePath, USER_DASHBOARD_SPACE_NAME);
         if (session.exists(spaceRef)) {
             DocumentModel existingSpace = session.getDocument(spaceRef);
             return existingSpace.getAdapter(Space.class);
         } else {
             // copy the existing one from /management
-            DefaultDashboardSpaceCopy defaultDashboardSpaceCopy = new DefaultDashboardSpaceCopy(
-                    session, parameters, userWorkspacePath);
+            DefaultDashboardSpaceCopy defaultDashboardSpaceCopy = new DefaultDashboardSpaceCopy(session, parameters,
+                    userWorkspacePath);
             defaultDashboardSpaceCopy.runUnrestricted();
             if (defaultDashboardSpaceCopy.copiedSpaceRef != null) {
-                Space space = session.getDocument(
-                        defaultDashboardSpaceCopy.copiedSpaceRef).getAdapter(
-                        Space.class);
+                Space space = session.getDocument(defaultDashboardSpaceCopy.copiedSpaceRef).getAdapter(Space.class);
                 if (space != null) {
                     i18nGadgets(space, session, parameters);
                     return space;
@@ -100,8 +95,7 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
         }
     }
 
-    protected DocumentModel getUserPersonalWorkspace(CoreSession session)
-            throws ClientException {
+    protected DocumentModel getUserPersonalWorkspace(CoreSession session) throws ClientException {
         try {
             UserWorkspaceService svc = Framework.getService(UserWorkspaceService.class);
             return svc.getCurrentUserPersonalWorkspace(session, null);
@@ -110,19 +104,15 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
         }
     }
 
-    protected void i18nGadgets(Space space, CoreSession session,
-            Map<String, String> parameters) throws ClientException {
+    protected void i18nGadgets(Space space, CoreSession session, Map<String, String> parameters) throws ClientException {
         List<WebContentData> webContentDatas = space.readWebContents();
         for (WebContentData data : webContentDatas) {
             String userLanguage = parameters.get("userLanguage");
-            Locale locale = userLanguage != null ? new Locale(userLanguage)
-                    : null;
+            Locale locale = userLanguage != null ? new Locale(userLanguage) : null;
 
-            WebContentAdapter adapter = session.getDocument(
-                    new IdRef(data.getId())).getAdapter(WebContentAdapter.class);
+            WebContentAdapter adapter = session.getDocument(new IdRef(data.getId())).getAdapter(WebContentAdapter.class);
             if (adapter != null) {
-                String name = data instanceof OpenSocialData ? ((OpenSocialData) data).getGadgetName()
-                        : data.getName();
+                String name = data instanceof OpenSocialData ? ((OpenSocialData) data).getGadgetName() : data.getName();
                 String title = GadgetI18nHelper.getI18nGadgetTitle(name, locale);
                 adapter.setTitle(title);
                 adapter.update();
@@ -131,10 +121,9 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
         session.save();
     }
 
-    protected Space createEmptyDashboard(String userWorkspacePath,
-            CoreSession session) throws ClientException {
-        DocumentModel model = session.createDocumentModel(userWorkspacePath,
-                USER_DASHBOARD_SPACE_NAME, SPACE_DOCUMENT_TYPE);
+    protected Space createEmptyDashboard(String userWorkspacePath, CoreSession session) throws ClientException {
+        DocumentModel model = session.createDocumentModel(userWorkspacePath, USER_DASHBOARD_SPACE_NAME,
+                SPACE_DOCUMENT_TYPE);
         model.setPropertyValue("dc:title", "nuxeo user dashboard space");
         model.setPropertyValue("dc:description", "user dashboard space");
         model = session.createDocument(model);
@@ -146,8 +135,7 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
         return true;
     }
 
-    public static class DefaultDashboardSpaceCopy extends
-            UnrestrictedSessionRunner {
+    public static class DefaultDashboardSpaceCopy extends UnrestrictedSessionRunner {
 
         protected Map<String, String> parameters;
 
@@ -155,8 +143,8 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
 
         public DocumentRef copiedSpaceRef;
 
-        protected DefaultDashboardSpaceCopy(CoreSession session,
-                Map<String, String> parameters, String userWorkspacePath) {
+        protected DefaultDashboardSpaceCopy(CoreSession session, Map<String, String> parameters,
+                String userWorkspacePath) {
             super(session);
             this.parameters = parameters;
             this.userWorkspacePath = userWorkspacePath;
@@ -165,16 +153,13 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
         @Override
         public void run() throws ClientException {
             SpaceManager spaceManager = getSpaceManager();
-            Space defaultSpace = spaceManager.getSpace(
-                    DEFAULT_DASHBOARD_SPACE_PROVIDER, session, null, null,
+            Space defaultSpace = spaceManager.getSpace(DEFAULT_DASHBOARD_SPACE_PROVIDER, session, null, null,
                     parameters);
             if (defaultSpace != null) {
-                DocumentModel newSpace = session.copy(
-                        new IdRef(defaultSpace.getId()), new PathRef(
-                                userWorkspacePath), USER_DASHBOARD_SPACE_NAME);
+                DocumentModel newSpace = session.copy(new IdRef(defaultSpace.getId()), new PathRef(userWorkspacePath),
+                        USER_DASHBOARD_SPACE_NAME);
                 newSpace.setPropertyValue("dc:title", "user dashboard space");
-                newSpace.setPropertyValue("dc:description",
-                        "user dashboard space");
+                newSpace.setPropertyValue("dc:description", "user dashboard space");
 
                 ACP acp = newSpace.getACP();
                 ACL acl = acp.getOrCreateACL();

@@ -95,8 +95,7 @@ public class UserProfileActions implements Serializable {
             // Ensure to remove user schema from datamodel when saving changes
             // on user profile, otherwise an exception is thrown, see
             // NXP-11397.
-            userProfileDocument.getDataModels().remove(
-                    userManager.getUserSchemaName());
+            userProfileDocument.getDataModels().remove(userManager.getUserSchemaName());
             documentManager.saveDocument(userProfileDocument);
             documentManager.save();
         }
@@ -114,8 +113,7 @@ public class UserProfileActions implements Serializable {
     }
 
     public boolean getCanEdit() throws ClientException {
-        return userManagementActions.getAllowEditUser()
-                && userManagementActions.isNotReadOnly();
+        return userManagementActions.getAllowEditUser() && userManagementActions.isNotReadOnly();
     }
 
     public void setMode(String mode) {
@@ -125,8 +123,7 @@ public class UserProfileActions implements Serializable {
     public DocumentModel getCurrentUserModel() {
         DocumentModel selectedUser = userManagementActions.getSelectedUser();
         DocumentModel currentUserModel = currentUser.getModel();
-        if (selectedUser == null
-                || !selectedUser.getId().equals(currentUserModel.getId())) {
+        if (selectedUser == null || !selectedUser.getId().equals(currentUserModel.getId())) {
             userManagementActions.setSelectedUser(currentUserModel);
         }
         return currentUserModel;
@@ -138,31 +135,25 @@ public class UserProfileActions implements Serializable {
         // been set to null meanwhile (by opening a new tab for instance).
         getCurrentUserModel();
         if (userProfileDocument == null) {
-            userProfileDocument = getUserProfileService().getUserProfileDocument(
-                    documentManager);
+            userProfileDocument = getUserProfileService().getUserProfileDocument(documentManager);
             String locale = (String) userProfileDocument.getPropertyValue(UserProfileConstants.USER_PROFILE_LOCALE);
             if (StringUtils.isEmpty(locale)) {
                 String currentLocale = localeSelector.getLocaleString();
                 if (!StringUtils.isEmpty(currentLocale)) {
-                    userProfileDocument.setPropertyValue(
-                            UserProfileConstants.USER_PROFILE_LOCALE,
-                            currentLocale);
+                    userProfileDocument.setPropertyValue(UserProfileConstants.USER_PROFILE_LOCALE, currentLocale);
                 }
             }
         }
         return userProfileDocument;
     }
 
-    public DocumentModel getUserProfileDocument(String userName)
-            throws ClientException {
-        return getUserProfileService().getUserProfileDocument(userName,
-                documentManager);
+    public DocumentModel getUserProfileDocument(String userName) throws ClientException {
+        return getUserProfileService().getUserProfileDocument(userName, documentManager);
     }
 
     public DocumentModel getUserProfile() throws ClientException {
         if (currentUserProfile == null) {
-            currentUserProfile = getUserProfileService().getUserProfile(
-                    getCurrentUserModel(), documentManager);
+            currentUserProfile = getUserProfileService().getUserProfile(getCurrentUserModel(), documentManager);
         }
         return currentUserProfile;
     }
@@ -173,8 +164,7 @@ public class UserProfileActions implements Serializable {
             return null;
         }
         if (userProfileDocument == null) {
-            userProfileDocument = getUserProfileService().getUserProfile(
-                    selectedUser, documentManager);
+            userProfileDocument = getUserProfileService().getUserProfile(selectedUser, documentManager);
         }
         return userProfileDocument;
     }
@@ -199,8 +189,7 @@ public class UserProfileActions implements Serializable {
             CURRENT_TAB_SELECTED_EVENT + "_" + NUXEO_ADMIN_CATEGORY,
             CURRENT_TAB_SELECTED_EVENT + "_" + USER_CENTER_CATEGORY,
             CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
-            CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB,
-            USERS_LISTING_CHANGED, USER_SELECTED_CHANGED }, create = false)
+            CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB, USERS_LISTING_CHANGED, USER_SELECTED_CHANGED }, create = false)
     @BypassInterceptors
     public void resetState() {
         userProfileDocument = null;

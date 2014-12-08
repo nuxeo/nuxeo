@@ -17,8 +17,7 @@ import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 
 /**
- * Dashboard space provider returning the default dashboard to be configured by
- * the Administrator.
+ * Dashboard space provider returning the default dashboard to be configured by the Administrator.
  * <p>
  * The default dashboard is used when initializing the user dashboard.
  *
@@ -29,8 +28,7 @@ public class DefaultDashboardSpaceProvider extends AbstractSpaceProvider {
     private static final Log log = LogFactory.getLog(DefaultDashboardSpaceProvider.class);
 
     @Override
-    protected Space doGetSpace(CoreSession session,
-            DocumentModel contextDocument, String spaceName,
+    protected Space doGetSpace(CoreSession session, DocumentModel contextDocument, String spaceName,
             Map<String, String> parameters) throws SpaceException {
         try {
             return getOrCreateSpace(session, parameters);
@@ -40,25 +38,22 @@ public class DefaultDashboardSpaceProvider extends AbstractSpaceProvider {
         }
     }
 
-    protected Space getOrCreateSpace(CoreSession session,
-            Map<String, String> parameters) throws ClientException {
-        DocumentRef spaceRef = new PathRef(DASHBOARD_MANAGEMENT_PATH,
-                DEFAULT_DASHBOARD_SPACE_NAME);
+    protected Space getOrCreateSpace(CoreSession session, Map<String, String> parameters) throws ClientException {
+        DocumentRef spaceRef = new PathRef(DASHBOARD_MANAGEMENT_PATH, DEFAULT_DASHBOARD_SPACE_NAME);
         if (session.exists(spaceRef)) {
             DocumentModel existingSpace = session.getDocument(spaceRef);
             return existingSpace.getAdapter(Space.class);
         } else {
-            DocumentRef defaultDashboardSpaceRef = getOrCreateDefaultDashboardSpace(
-                    session, parameters);
+            DocumentRef defaultDashboardSpaceRef = getOrCreateDefaultDashboardSpace(session, parameters);
             DocumentModel defaultDashboardSpace = session.getDocument(defaultDashboardSpaceRef);
             return defaultDashboardSpace.getAdapter(Space.class);
         }
     }
 
-    protected DocumentRef getOrCreateDefaultDashboardSpace(CoreSession session,
-            Map<String, String> parameters) throws ClientException {
-        DefaultDashboardSpaceCreator defaultDashboardSpaceCreator = new DefaultDashboardSpaceCreator(
-                session, parameters);
+    protected DocumentRef getOrCreateDefaultDashboardSpace(CoreSession session, Map<String, String> parameters)
+            throws ClientException {
+        DefaultDashboardSpaceCreator defaultDashboardSpaceCreator = new DefaultDashboardSpaceCreator(session,
+                parameters);
         defaultDashboardSpaceCreator.runUnrestricted();
         return defaultDashboardSpaceCreator.defaultDashboardSpaceRef;
     }

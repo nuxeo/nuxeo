@@ -53,8 +53,7 @@ public class UserNotificationActions implements Serializable {
         } catch (Exception e) {
             throw new ClientException(e);
         }
-        String className = service.getAnnotationRegistry().get(
-                NotificationService.SUBSCRIPTION_NAME);
+        String className = service.getAnnotationRegistry().get(NotificationService.SUBSCRIPTION_NAME);
         String shortClassName = className.substring(className.lastIndexOf('.') + 1);
 
         PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
@@ -68,14 +67,12 @@ public class UserNotificationActions implements Serializable {
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("userId", NuxeoPrincipal.PREFIX + currentUser.getName());
 
-        tempSubscriptions.addAll(serviceBean.getAnnotationListByParamMap(
-                paramMap, shortClassName));
+        tempSubscriptions.addAll(serviceBean.getAnnotationListByParamMap(paramMap, shortClassName));
 
         // Then, get group subscriptions
         for (String group : currentUser.getAllGroups()) {
             paramMap.put("userId", NuxeoGroup.PREFIX + group);
-            tempSubscriptions.addAll(serviceBean.getAnnotationListByParamMap(
-                    paramMap, shortClassName));
+            tempSubscriptions.addAll(serviceBean.getAnnotationListByParamMap(paramMap, shortClassName));
         }
         reorderSubscriptions(tempSubscriptions);
 
@@ -84,7 +81,7 @@ public class UserNotificationActions implements Serializable {
 
     private void reorderSubscriptions(List<Annotation> allSubscriptions) throws ClientException {
         Map<String, List<UserSubscription>> unsortedSubscriptions = new HashMap<String, List<UserSubscription>>();
-        for (Object obj : allSubscriptions ) {
+        for (Object obj : allSubscriptions) {
             UserSubscription us = (UserSubscription) obj;
             DocumentModel doc = getDocument(us.getDocId());
             String path;
@@ -98,7 +95,7 @@ public class UserNotificationActions implements Serializable {
             }
             unsortedSubscriptions.get(path).add(us);
         }
-        SortedSet<String> sortedset= new TreeSet<String>(unsortedSubscriptions.keySet());
+        SortedSet<String> sortedset = new TreeSet<String>(unsortedSubscriptions.keySet());
         subscriptions = new ArrayList<UserSubscription>();
         Iterator<String> it = sortedset.iterator();
         while (it.hasNext()) {
@@ -117,9 +114,7 @@ public class UserNotificationActions implements Serializable {
 
     public boolean getCanRemoveNotification(String userId) {
         // Do not allow removing for group subscription
-        if (userId != null
-                && userId.equals(NuxeoPrincipal.PREFIX
-                        + currentUser.getName())) {
+        if (userId != null && userId.equals(NuxeoPrincipal.PREFIX + currentUser.getName())) {
             return true;
         }
         return false;

@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class AnonymousDashboardSpaceCreator extends
-        AbstractDashboardSpaceCreator {
+public class AnonymousDashboardSpaceCreator extends AbstractDashboardSpaceCreator {
 
     public static final String ANONYMOUS_DASHBOARD_SPACE_NAME = "anonymousDashboardSpace";
 
@@ -31,19 +30,16 @@ public class AnonymousDashboardSpaceCreator extends
 
     public DocumentRef anonymousDashboardSpaceRef;
 
-    public AnonymousDashboardSpaceCreator(CoreSession session,
-            Map<String, String> parameters) {
+    public AnonymousDashboardSpaceCreator(CoreSession session, Map<String, String> parameters) {
         super(session, parameters);
     }
 
     @Override
     public void run() throws ClientException {
         DocumentModel dashboardManagement = getDashboardManagement();
-        String anonymousDashboardSpacePath = new Path(
-                dashboardManagement.getPathAsString()).append(
+        String anonymousDashboardSpacePath = new Path(dashboardManagement.getPathAsString()).append(
                 ANONYMOUS_DASHBOARD_SPACE_NAME).toString();
-        DocumentRef anonymousDashboardSpacePathRef = new PathRef(
-                anonymousDashboardSpacePath);
+        DocumentRef anonymousDashboardSpacePathRef = new PathRef(anonymousDashboardSpacePath);
 
         DocumentModel anonymousDashboardSpace;
         if (!session.exists(anonymousDashboardSpacePathRef)) {
@@ -54,15 +50,11 @@ public class AnonymousDashboardSpaceCreator extends
         anonymousDashboardSpaceRef = anonymousDashboardSpace.getRef();
     }
 
-    protected DocumentModel createAnonymousDashboardSpace(
-            String dashboardManagementPath) throws ClientException {
-        DocumentModel anonymousDashboardSpace = session.createDocumentModel(
-                dashboardManagementPath, ANONYMOUS_DASHBOARD_SPACE_NAME,
-                SPACE_DOCUMENT_TYPE);
-        anonymousDashboardSpace.setPropertyValue("dc:title",
-                "anonymous dashboard space");
-        anonymousDashboardSpace.setPropertyValue("dc:description",
-                "anonymous dashboard space");
+    protected DocumentModel createAnonymousDashboardSpace(String dashboardManagementPath) throws ClientException {
+        DocumentModel anonymousDashboardSpace = session.createDocumentModel(dashboardManagementPath,
+                ANONYMOUS_DASHBOARD_SPACE_NAME, SPACE_DOCUMENT_TYPE);
+        anonymousDashboardSpace.setPropertyValue("dc:title", "anonymous dashboard space");
+        anonymousDashboardSpace.setPropertyValue("dc:description", "anonymous dashboard space");
         anonymousDashboardSpace = session.createDocument(anonymousDashboardSpace);
 
         addInitialGadgets(anonymousDashboardSpace);
@@ -72,12 +64,10 @@ public class AnonymousDashboardSpaceCreator extends
         return anonymousDashboardSpace;
     }
 
-    protected void addAnonymousACP(DocumentModel anonymousDashboardSpace)
-            throws ClientException {
+    protected void addAnonymousACP(DocumentModel anonymousDashboardSpace) throws ClientException {
         ACP acp = anonymousDashboardSpace.getACP();
         ACL acl = acp.getOrCreateACL();
-        acl.add(new ACE(getUserManager().getAnonymousUserId(),
-                SecurityConstants.READ, true));
+        acl.add(new ACE(getUserManager().getAnonymousUserId(), SecurityConstants.READ, true));
         anonymousDashboardSpace.setACP(acp, true);
     }
 

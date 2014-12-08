@@ -50,8 +50,7 @@ public class AuthorizedApplicationsActions implements Serializable {
 
     protected DirectoryService directoryService;
 
-    public List<DocumentModel> getAuthorizedApplications()
-            throws ClientException {
+    public List<DocumentModel> getAuthorizedApplications() throws ClientException {
         DirectoryService directoryService = getDirectoryService();
         Session session = directoryService.open(OAuthTokenStoreImpl.DIRECTORY_NAME);
         try {

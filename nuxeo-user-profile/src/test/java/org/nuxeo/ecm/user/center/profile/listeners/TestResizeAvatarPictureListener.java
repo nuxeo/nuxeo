@@ -50,12 +50,9 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.commandline.executor",
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.picture.api",
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.commandline.executor",
         "org.nuxeo.ecm.user.center.profile" })
 public class TestResizeAvatarPictureListener {
 
@@ -69,8 +66,7 @@ public class TestResizeAvatarPictureListener {
 
     @Test
     public void testResizeAvatar() throws Exception {
-        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session, null);
+        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
         userWorkspace.addFacet(UserProfileConstants.USER_PROFILE_FACET);
 
         ImagingService imagingService = Framework.getService(ImagingService.class);
@@ -94,8 +90,7 @@ public class TestResizeAvatarPictureListener {
         Blob limitSizeAvatar = lookForAvatarBlob("data/MediumAvatar.jpg");
         assertNotNull(tooBigAvatar);
 
-        userWorkspace.setPropertyValue(USER_PROFILE_AVATAR_FIELD,
-                (Serializable) limitSizeAvatar);
+        userWorkspace.setPropertyValue(USER_PROFILE_AVATAR_FIELD, (Serializable) limitSizeAvatar);
 
         underTest.resizeAvatar(userWorkspace, limitSizeAvatar);
         resizedImage = (Blob) userWorkspace.getPropertyValue(USER_PROFILE_AVATAR_FIELD);
@@ -111,8 +106,7 @@ public class TestResizeAvatarPictureListener {
         Blob underLimitSizeAvatar = lookForAvatarBlob("data/SmallAvatar.jpg");
         assertNotNull(tooBigAvatar);
 
-        userWorkspace.setPropertyValue(USER_PROFILE_AVATAR_FIELD,
-                (Serializable) underLimitSizeAvatar);
+        userWorkspace.setPropertyValue(USER_PROFILE_AVATAR_FIELD, (Serializable) underLimitSizeAvatar);
 
         underTest.resizeAvatar(userWorkspace, underLimitSizeAvatar);
         resizedImage = (Blob) userWorkspace.getPropertyValue(USER_PROFILE_AVATAR_FIELD);
@@ -127,8 +121,7 @@ public class TestResizeAvatarPictureListener {
     }
 
     protected Blob lookForAvatarBlob(String avatarImagePath) {
-        URL avatarURL = this.getClass().getClassLoader().getResource(
-                avatarImagePath);
+        URL avatarURL = this.getClass().getClassLoader().getResource(avatarImagePath);
         Blob originalImage = new URLBlob(avatarURL);
         return originalImage;
     }

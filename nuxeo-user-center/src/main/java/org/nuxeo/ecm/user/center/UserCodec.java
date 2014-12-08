@@ -20,8 +20,7 @@ package org.nuxeo.ecm.user.center;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
- * Codec handling a username, an optional view and additional request
- * parameters.
+ * Codec handling a username, an optional view and additional request parameters.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
@@ -42,11 +41,7 @@ public class UserCodec extends AbstractUserGroupCodec {
 
     @Override
     public DocumentView getDocumentViewFromUrl(String url) {
-        return getDocumentViewFromUrl(
-                url,
-                DEFAULT_USERS_TAB,
-                "username",
-                "showUser");
+        return getDocumentViewFromUrl(url, DEFAULT_USERS_TAB, "username", "showUser");
     }
 
     @Override

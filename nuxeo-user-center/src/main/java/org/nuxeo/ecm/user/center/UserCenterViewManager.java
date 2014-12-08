@@ -73,9 +73,7 @@ public class UserCenterViewManager implements Serializable {
     }
 
     public void setCurrentSubView(Action currentSubView) {
-        webActions.setCurrentTabAction(
-                TabActionsSelection.getSubTabCategory(getCurrentViewId()),
-                currentSubView);
+        webActions.setCurrentTabAction(TabActionsSelection.getSubTabCategory(getCurrentViewId()), currentSubView);
     }
 
     @Factory(value = "currentUserCenterSubViewId", scope = ScopeType.EVENT)
@@ -84,9 +82,7 @@ public class UserCenterViewManager implements Serializable {
     }
 
     public void setCurrentSubViewId(String currentSubViewId) {
-        webActions.setCurrentTabId(
-                TabActionsSelection.getSubTabCategory(getCurrentViewId()),
-                currentSubViewId);
+        webActions.setCurrentTabId(TabActionsSelection.getSubTabCategory(getCurrentViewId()), currentSubViewId);
     }
 
     public List<Action> getAvailableActions() {

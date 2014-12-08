@@ -29,9 +29,8 @@ import org.nuxeo.ecm.webapp.action.WebActionsBean;
 import org.nuxeo.ecm.webapp.locale.LocaleStartup;
 
 /**
- * Seam component to manage user preferences editing. UI is showing user
- * preferences in a separate screen than user profile, but storing data the
- * same way it is stored with user profile.
+ * Seam component to manage user preferences editing. UI is showing user preferences in a separate screen than user
+ * profile, but storing data the same way it is stored with user profile.
  *
  * @since 5.6
  */
@@ -58,8 +57,7 @@ public class UserPreferencesActions extends UserProfileActions {
     }
 
     /**
-     * Reset timezone from the cookie. The cookie need to be setted/reset
-     * before. (done in javascript)
+     * Reset timezone from the cookie. The cookie need to be setted/reset before. (done in javascript)
      *
      * @since 5.6
      */
@@ -67,16 +65,14 @@ public class UserPreferencesActions extends UserProfileActions {
         LocaleStartup localeStartup = LocaleStartup.instance();
         if (localeStartup == null) {
             log.warn("Locale Startup not available. Can't reset time zone");
-            facesMessages.add(StatusMessage.Severity.WARN,
-                    messages.get("label.userPreferences.resetTimeZone.error"));
+            facesMessages.add(StatusMessage.Severity.WARN, messages.get("label.userPreferences.resetTimeZone.error"));
             return;
         }
         // performing the locale update
         localeStartup.setupLocale(documentManager);
         // performing time zone update form cookie
         localeStartup.setupTimeZone(documentManager);
-        facesMessages.add(StatusMessage.Severity.INFO,
-                messages.get("label.userPreferences.resetTimeZone.done"));
+        facesMessages.add(StatusMessage.Severity.INFO, messages.get("label.userPreferences.resetTimeZone.done"));
     }
 
 }

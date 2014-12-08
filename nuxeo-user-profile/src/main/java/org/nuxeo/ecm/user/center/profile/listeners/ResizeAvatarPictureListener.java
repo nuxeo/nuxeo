@@ -50,12 +50,10 @@ import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author rlegall Listener to handle the maximum dimensions of the avatar
- *         picture. This listener is triggered on
- *         DocumentEventTypes.BEFORE_DOC_UPDATE events. It verifies if the
- *         picture width is above 300 pixels and its height above 200. In that
- *         case, the picture saved in the rich profile is a resized version of
- *         it which fits those constrains.
+ * @author rlegall Listener to handle the maximum dimensions of the avatar picture. This listener is triggered on
+ *         DocumentEventTypes.BEFORE_DOC_UPDATE events. It verifies if the picture width is above 300 pixels and its
+ *         height above 200. In that case, the picture saved in the rich profile is a resized version of it which fits
+ *         those constrains.
  */
 public class ResizeAvatarPictureListener implements EventListener {
 
@@ -81,12 +79,10 @@ public class ResizeAvatarPictureListener implements EventListener {
     }
 
     protected boolean isBeforeUpdate(Event event) {
-        return BEFORE_DOC_UPDATE.equals(event.getName())
-                && (event.getContext() instanceof DocumentEventContext);
+        return BEFORE_DOC_UPDATE.equals(event.getName()) && (event.getContext() instanceof DocumentEventContext);
     }
 
-    protected void resizeAvatar(DocumentModel doc, Blob avatarImage)
-            throws ClientException, PropertyException {
+    protected void resizeAvatar(DocumentModel doc, Blob avatarImage) throws ClientException, PropertyException {
         ImagingService service;
         try {
             service = Framework.getService(ImagingService.class);
@@ -102,12 +98,10 @@ public class ResizeAvatarPictureListener implements EventListener {
         float scale = Math.min(wScale, hscale);
 
         if (scale < 1) {
-            avatarImage = service.resize(avatarImage, "jpg",
-                    (int) (width * scale), (int) (height * scale),
+            avatarImage = service.resize(avatarImage, "jpg", (int) (width * scale), (int) (height * scale),
                     info.getDepth());
             avatarImage.setMimeType("image/jpeg");// XXX : Should be automatic
-            doc.setPropertyValue(USER_PROFILE_AVATAR_FIELD,
-                    (Serializable) avatarImage);
+            doc.setPropertyValue(USER_PROFILE_AVATAR_FIELD, (Serializable) avatarImage);
         }
     }
 

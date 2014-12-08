@@ -111,8 +111,7 @@ public class TestUserCodec {
         assertEquals("view_user", docView.getViewId());
         assertEquals("true", docView.getParameter("showUser"));
         assertEquals(DEFAULT_USERS_TAB, docView.getParameter("tabIds"));
-        assertEquals("zoidberg@planet-express.com",
-                docView.getParameter("username"));
+        assertEquals("zoidberg@planet-express.com", docView.getParameter("username"));
     }
 
 }

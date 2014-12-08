@@ -25,20 +25,18 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public abstract class AbstractDashboardSpaceCreator extends
-        UnrestrictedSessionRunner {
+public abstract class AbstractDashboardSpaceCreator extends UnrestrictedSessionRunner {
 
     public static final String DASHBOARD_MANAGEMENT_NAME = "dashboard-management";
 
-    public static final String DASHBOARD_MANAGEMENT_PATH = DocumentStoreManager.MANAGEMENT_ROOT_PATH
-            + "/" + DASHBOARD_MANAGEMENT_NAME;
+    public static final String DASHBOARD_MANAGEMENT_PATH = DocumentStoreManager.MANAGEMENT_ROOT_PATH + "/"
+            + DASHBOARD_MANAGEMENT_NAME;
 
     public static final String DASHBOARD_MANAGEMENT_TYPE = "HiddenFolder";
 
     protected Map<String, String> parameters = new HashMap<String, String>();
 
-    protected AbstractDashboardSpaceCreator(CoreSession session,
-            Map<String, String> parameters) {
+    protected AbstractDashboardSpaceCreator(CoreSession session, Map<String, String> parameters) {
         super(session);
         this.parameters = parameters;
     }
@@ -47,15 +45,12 @@ public abstract class AbstractDashboardSpaceCreator extends
      * Returns the dashboard management document, creates it if needed.
      */
     protected DocumentModel getDashboardManagement() throws ClientException {
-        String dashboardManagementPath = new Path(
-                DocumentStoreManager.MANAGEMENT_ROOT_PATH).append(
+        String dashboardManagementPath = new Path(DocumentStoreManager.MANAGEMENT_ROOT_PATH).append(
                 DASHBOARD_MANAGEMENT_NAME).toString();
-        DocumentRef dashboardManagementPathRef = new PathRef(
-                dashboardManagementPath);
+        DocumentRef dashboardManagementPathRef = new PathRef(dashboardManagementPath);
         DocumentModel dashboardManagement;
         if (!session.exists(dashboardManagementPathRef)) {
-            dashboardManagement = session.createDocumentModel(
-                    DocumentStoreManager.MANAGEMENT_ROOT_PATH,
+            dashboardManagement = session.createDocumentModel(DocumentStoreManager.MANAGEMENT_ROOT_PATH,
                     DASHBOARD_MANAGEMENT_NAME, DASHBOARD_MANAGEMENT_TYPE);
             return session.createDocument(dashboardManagement);
         } else {
@@ -63,8 +58,7 @@ public abstract class AbstractDashboardSpaceCreator extends
         }
     }
 
-    protected void addInitialGadgets(DocumentModel anonymousDashboardSpace)
-            throws ClientException {
+    protected void addInitialGadgets(DocumentModel anonymousDashboardSpace) throws ClientException {
         Space space = anonymousDashboardSpace.getAdapter(Space.class);
         initializeLayout(space);
         String userLanguage = parameters.get("userLanguage");
@@ -73,34 +67,25 @@ public abstract class AbstractDashboardSpaceCreator extends
     }
 
     protected void initializeLayout(Space space) throws ClientException {
-        space.initLayout(LayoutHelper.buildLayout(YUI_ZT_50_50, YUI_ZT_50_50,
-                YUI_ZT_50_50));
+        space.initLayout(LayoutHelper.buildLayout(YUI_ZT_50_50, YUI_ZT_50_50, YUI_ZT_50_50));
     }
 
-    protected void initializeGadgets(Space space, CoreSession session,
-            Locale locale) throws ClientException {
+    protected void initializeGadgets(Space space, CoreSession session, Locale locale) throws ClientException {
         // first column
-        WebContentHelper.createOpenSocialGadget(space, session, locale,
-                "favorites", 0, 0, 0);
-        WebContentHelper.createOpenSocialGadget(space, session, locale,
-                "userworkspaces", 0, 0, 1);
-        WebContentHelper.createOpenSocialGadget(space, session, locale,
-                "userdocuments", 0, 0, 2);
-        WebContentHelper.createOpenSocialGadget(space, session, locale,
-                "lastdocuments", 0, 0, 3);
+        WebContentHelper.createOpenSocialGadget(space, session, locale, "favorites", 0, 0, 0);
+        WebContentHelper.createOpenSocialGadget(space, session, locale, "userworkspaces", 0, 0, 1);
+        WebContentHelper.createOpenSocialGadget(space, session, locale, "userdocuments", 0, 0, 2);
+        WebContentHelper.createOpenSocialGadget(space, session, locale, "lastdocuments", 0, 0, 3);
         // second column
-        WebContentHelper.createOpenSocialGadget(space, session, locale,
-                "quicksearch", 0, 1, 0);
-        WebContentHelper.createOpenSocialGadget(space, session, locale,
-                "tasks", 0, 1, 2);
+        WebContentHelper.createOpenSocialGadget(space, session, locale, "quicksearch", 0, 1, 0);
+        WebContentHelper.createOpenSocialGadget(space, session, locale, "tasks", 0, 1, 2);
     }
 
     protected UserManager getUserManager() throws ClientException {
         try {
             return Framework.getService(UserManager.class);
         } catch (Exception e) {
-            throw new ClientException("Unable to retrieve UserManager service",
-                    e);
+            throw new ClientException("Unable to retrieve UserManager service", e);
         }
     }
 
