@@ -49,13 +49,9 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.audio.core",
-        "org.nuxeo.ecm.platform.filemanager.api",
-        "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core" })
+@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.audio.core",
+        "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core",
+        "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core" })
 public class TestAudioImporter {
 
     protected static final String AUDIO_TYPE = "Audio";
@@ -69,8 +65,7 @@ public class TestAudioImporter {
     protected DocumentModel root;
 
     private File getTestFile() {
-        return new File(
-                FileUtils.getResourcePathFromContext("test-data/sample.wav"));
+        return new File(FileUtils.getResourcePathFromContext("test-data/sample.wav"));
     }
 
     @Before
@@ -92,8 +87,7 @@ public class TestAudioImporter {
         // TODO: check get/set properties on common properties of audios
 
         // Create a new DocumentModel of our type in memory
-        DocumentModel docModel = session.createDocumentModel("/", "doc",
-                AUDIO_TYPE);
+        DocumentModel docModel = session.createDocumentModel("/", "doc", AUDIO_TYPE);
         assertNotNull(docModel);
 
         assertNull(docModel.getPropertyValue("common:icon"));
@@ -109,12 +103,10 @@ public class TestAudioImporter {
         DocumentModel docModelResult = session.createDocument(docModel);
         assertNotNull(docModelResult);
 
-        assertEquals("/icons/audio.png",
-                docModelResult.getPropertyValue("common:icon"));
+        assertEquals("/icons/audio.png", docModelResult.getPropertyValue("common:icon"));
         assertEquals("testTitle", docModelResult.getPropertyValue("dc:title"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
-        assertEquals("133",
-                docModelResult.getPropertyValue("aud:duration").toString());
+        assertEquals("133", docModelResult.getPropertyValue("aud:duration").toString());
     }
 
     @Test
@@ -127,8 +119,8 @@ public class TestAudioImporter {
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
-        DocumentModel docModel = fileManagerService.createDocumentFromBlob(
-                session, blob, rootPath, true, "test-data/sample.wav");
+        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, rootPath, true,
+                "test-data/sample.wav");
 
         assertNotNull(docModel);
         DocumentRef ref = docModel.getRef();

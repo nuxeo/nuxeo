@@ -34,13 +34,12 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This class will create a Document of type "Audio" from the uploaded file, if the uploaded file
- * matches any of the mime types listed in the filemanager-plugins.xml file.
+ * This class will create a Document of type "Audio" from the uploaded file, if the uploaded file matches any of the
+ * mime types listed in the filemanager-plugins.xml file.
  * <p>
- * If an existing document with the same title is found, it will overwrite it and increment the
- * version number if the overwrite flag is set to true;
- * Otherwise, it will generate a new title and create a new Document of type Audio with that title.
- *
+ * If an existing document with the same title is found, it will overwrite it and increment the version number if the
+ * overwrite flag is set to true; Otherwise, it will generate a new title and create a new Document of type Audio with
+ * that title.
  */
 public class AudioImporter extends AbstractFileImporter {
 
@@ -51,9 +50,8 @@ public class AudioImporter extends AbstractFileImporter {
 
     public static final String AUDIO_TYPE = "Audio";
 
-    public DocumentModel create(CoreSession documentManager, Blob content,
-            String path, boolean overwrite, String fullname,
-            TypeManager typeService) throws ClientException, IOException {
+    public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
+            String fullname, TypeManager typeService) throws ClientException, IOException {
 
         String filename = FileManagerUtils.fetchFileName(fullname);
 

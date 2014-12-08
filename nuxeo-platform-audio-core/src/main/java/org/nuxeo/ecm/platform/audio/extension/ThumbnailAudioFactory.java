@@ -46,8 +46,7 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
     private static final Log log = LogFactory.getLog(ThumbnailAudioFactory.class);
 
     @Override
-    public Blob getThumbnail(DocumentModel doc, CoreSession session)
-            throws ClientException {
+    public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
         if (!doc.hasFacet("Audio")) {
             throw new ClientException("Document is not audio type");
         }
@@ -61,9 +60,8 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
         }
         if (thumbnailBlob == null) {
             TypeInfo docType = doc.getAdapter(TypeInfo.class);
-            return new FileBlob(
-                    FileUtils.getResourceFileFromContext("nuxeo.war"
-                            + File.separator + docType.getBigIcon()));
+            return new FileBlob(FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator
+                    + docType.getBigIcon()));
         }
         return thumbnailBlob;
     }
@@ -83,13 +81,11 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
                 if (it != null && it.hasNext()) {
                     ID3v23Frame id3v2 = (ID3v23Frame) it.next();
                     FrameBodyAPIC framePic = (FrameBodyAPIC) id3v2.getBody();
-                    InputStream is = new ByteArrayInputStream(
-                            framePic.getImageData());
+                    InputStream is = new ByteArrayInputStream(framePic.getImageData());
                     thumbnailBlob = new FileBlob(is);
                 }
             }
-        } catch (IOException | TagException | InvalidAudioFrameException
-                | ReadOnlyFileException | ClientException e) {
+        } catch (IOException | TagException | InvalidAudioFrameException | ReadOnlyFileException | ClientException e) {
             log.warn("Unable to get the audio file cover art", e);
         }
         return thumbnailBlob;
