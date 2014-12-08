@@ -89,10 +89,8 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Work task to import form a CSV file. Because the file is read from the local
- * filesystem, this must be executed in a local queue.
- *
- * Since NXP-15252 the CSV reader manages "records", not "lines".
+ * Work task to import form a CSV file. Because the file is read from the local filesystem, this must be executed in a
+ * local queue. Since NXP-15252 the CSV reader manages "records", not "lines".
  *
  * @since 5.7
  */
@@ -170,8 +168,7 @@ public class CSVImporterWork extends AbstractWork {
         super(id);
     }
 
-    public CSVImporterWork(String repositoryName, String parentPath,
-            String username, File csvFile, String csvFileName,
+    public CSVImporterWork(String repositoryName, String parentPath, String username, File csvFile, String csvFileName,
             CSVImporterOptions options) {
         super(CSVImportId.create(repositoryName, parentPath, csvFile));
         setDocument(repositoryName, null);
@@ -205,8 +202,7 @@ public class CSVImporterWork extends AbstractWork {
                 CSVParser parser = CSVFormat.DEFAULT.withHeader().parse(in)) {
             doImport(parser);
         } catch (IOException e) {
-            logError(0, "Error while doing the import: %s",
-                    LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
+            logError(0, "Error while doing the import: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
             log.debug(e, e);
         }
         if (options.sendEmail()) {
@@ -220,14 +216,11 @@ public class CSVImporterWork extends AbstractWork {
         log.info(String.format("Importing CSV file: %s", csvFileName));
         Map<String, Integer> header = parser.getHeaderMap();
         if (header == null) {
-            logError(0, "No header line, empty file?",
-                    LABEL_CSV_IMPORTER_EMPTY_FILE);
+            logError(0, "No header line, empty file?", LABEL_CSV_IMPORTER_EMPTY_FILE);
             return;
         }
-        if (!header.containsKey(CSV_NAME_COL)
-                || !header.containsKey(CSV_TYPE_COL)) {
-            logError(0, "Missing 'name' or 'type' column",
-                    LABEL_CSV_IMPORTER_MISSING_NAME_OR_TYPE_COLUMN);
+        if (!header.containsKey(CSV_NAME_COL) || !header.containsKey(CSV_TYPE_COL)) {
+            logError(0, "Missing 'name' or 'type' column", LABEL_CSV_IMPORTER_MISSING_NAME_OR_TYPE_COLUMN);
             return;
         }
 
@@ -237,8 +230,7 @@ public class CSVImporterWork extends AbstractWork {
             for (CSVRecord record : parser) {
                 if (record.size() == 0) {
                     // empty record
-                    importLogs.add(new CSVImportLog(record.getRecordNumber(),
-                            Status.SKIPPED, "Empty record",
+                    importLogs.add(new CSVImportLog(record.getRecordNumber(), Status.SKIPPED, "Empty record",
                             LABEL_CSV_IMPORTER_EMPTY_LINE));
                     continue;
                 }
@@ -253,10 +245,8 @@ public class CSVImporterWork extends AbstractWork {
                 } catch (ClientException e) {
                     // try next line
                     Throwable unwrappedException = unwrapException(e);
-                    logError(parser.getRecordNumber(),
-                            "Error while importing line: %s",
-                            LABEL_CSV_IMPORTER_ERROR_IMPORTING_LINE,
-                            unwrappedException.getMessage());
+                    logError(parser.getRecordNumber(), "Error while importing line: %s",
+                            LABEL_CSV_IMPORTER_ERROR_IMPORTING_LINE, unwrappedException.getMessage());
                     log.debug(unwrappedException, unwrappedException);
                 }
             }
@@ -265,8 +255,8 @@ public class CSVImporterWork extends AbstractWork {
                 session.save();
             } catch (ClientException e) {
                 Throwable ue = unwrapException(e);
-                logError(parser.getRecordNumber(), "Unable to save: %s",
-                        LABEL_CSV_IMPORTER_UNABLE_TO_SAVE, ue.getMessage());
+                logError(parser.getRecordNumber(), "Unable to save: %s", LABEL_CSV_IMPORTER_UNABLE_TO_SAVE,
+                        ue.getMessage());
                 log.debug(ue, ue);
             }
         } finally {
@@ -281,9 +271,7 @@ public class CSVImporterWork extends AbstractWork {
      *
      * @param record
      * @param header
-     * @return {@code true} if a document has been created or updated,
-     *         {@code false} otherwise.
-     *
+     * @return {@code true} if a document has been created or updated, {@code false} otherwise.
      * @since 6.0
      */
     protected boolean importRecord(CSVRecord record, Map<String, Integer> header) {
@@ -291,52 +279,44 @@ public class CSVImporterWork extends AbstractWork {
         final String type = record.get(CSV_TYPE_COL);
         if (StringUtils.isBlank(name)) {
             log.debug("record.isSet=" + record.isSet(CSV_NAME_COL));
-            logError(record.getRecordNumber(), "Missing 'name' value",
-                    LABEL_CSV_IMPORTER_MISSING_NAME_VALUE);
+            logError(record.getRecordNumber(), "Missing 'name' value", LABEL_CSV_IMPORTER_MISSING_NAME_VALUE);
             return false;
         }
         if (StringUtils.isBlank(type)) {
             log.debug("record.isSet=" + record.isSet(CSV_TYPE_COL));
-            logError(record.getRecordNumber(), "Missing 'type' value",
-                    LABEL_CSV_IMPORTER_MISSING_TYPE_VALUE);
+            logError(record.getRecordNumber(), "Missing 'type' value", LABEL_CSV_IMPORTER_MISSING_TYPE_VALUE);
             return false;
         }
-        DocumentType docType = Framework.getLocalService(SchemaManager.class).getDocumentType(
-                type);
+        DocumentType docType = Framework.getLocalService(SchemaManager.class).getDocumentType(type);
         if (docType == null) {
-            logError(record.getRecordNumber(), "The type '%s' does not exist",
-                    LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE, type);
+            logError(record.getRecordNumber(), "The type '%s' does not exist", LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE,
+                    type);
             return false;
         }
-        Map<String, Serializable> values = computePropertiesMap(record,
-                docType, header);
+        Map<String, Serializable> values = computePropertiesMap(record, docType, header);
         if (values == null) {
             // skip this line
             return false;
         }
-        return createOrUpdateDocument(record.getRecordNumber(), name, type,
-                values);
+        return createOrUpdateDocument(record.getRecordNumber(), name, type, values);
     }
 
     /**
      * @since 6.0
      */
-    protected Map<String, Serializable> computePropertiesMap(CSVRecord record,
-            DocumentType docType, Map<String, Integer> header) {
+    protected Map<String, Serializable> computePropertiesMap(CSVRecord record, DocumentType docType,
+            Map<String, Integer> header) {
         Map<String, Serializable> values = new HashMap<>();
         for (String headerValue : header.keySet()) {
             String lineValue = record.get(headerValue);
             lineValue = lineValue.trim();
             String fieldName = headerValue;
-            if (!CSV_NAME_COL.equals(headerValue)
-                    && !CSV_TYPE_COL.equals(headerValue)) {
+            if (!CSV_NAME_COL.equals(headerValue) && !CSV_TYPE_COL.equals(headerValue)) {
                 if (!docType.hasField(fieldName)) {
                     fieldName = fieldName.split(":")[1];
                 }
-                if (docType.hasField(fieldName)
-                        && !StringUtils.isBlank(lineValue)) {
-                    Serializable convertedValue = convertValue(docType,
-                            fieldName, headerValue, lineValue,
+                if (docType.hasField(fieldName) && !StringUtils.isBlank(lineValue)) {
+                    Serializable convertedValue = convertValue(docType, fieldName, headerValue, lineValue,
                             record.getRecordNumber());
                     if (convertedValue == null) {
                         return null;
@@ -348,8 +328,8 @@ public class CSVImporterWork extends AbstractWork {
         return values;
     }
 
-    protected Serializable convertValue(DocumentType docType, String fieldName,
-            String headerValue, String stringValue, long lineNumber) {
+    protected Serializable convertValue(DocumentType docType, String fieldName, String headerValue, String stringValue,
+            long lineNumber) {
         if (docType.hasField(fieldName)) {
             Field field = docType.getField(fieldName);
             if (field != null) {
@@ -359,18 +339,15 @@ public class CSVImporterWork extends AbstractWork {
                     if (fieldType.isComplexType()) {
                         if (fieldType.getName().equals(CONTENT_FILED_TYPE_NAME)) {
                             String blobsFolderPath = Framework.getProperty(NUXEO_CSV_BLOBS_FOLDER);
-                            String path = FilenameUtils.normalize(blobsFolderPath
-                                    + "/" + stringValue);
+                            String path = FilenameUtils.normalize(blobsFolderPath + "/" + stringValue);
                             File file = new File(path);
                             if (file.exists()) {
                                 FileBlob blob = new FileBlob(file);
                                 blob.setFilename(file.getName());
                                 fieldValue = blob;
                             } else {
-                                logError(lineNumber,
-                                        "The file '%s' does not exist",
-                                        LABEL_CSV_IMPORTER_NOT_EXISTING_FILE,
-                                        stringValue);
+                                logError(lineNumber, "The file '%s' does not exist",
+                                        LABEL_CSV_IMPORTER_NOT_EXISTING_FILE, stringValue);
                                 return null;
                             }
                         }
@@ -409,25 +386,21 @@ public class CSVImporterWork extends AbstractWork {
                                 } else if (type instanceof BooleanType) {
                                     fieldValue = Boolean.valueOf(stringValue);
                                 } else if (type instanceof DateType) {
-                                    fieldValue = getDateFormat().parse(
-                                            stringValue);
+                                    fieldValue = getDateFormat().parse(stringValue);
                                 }
                             }
                         }
                     }
                     return fieldValue;
                 } catch (ParseException | NumberFormatException e) {
-                    logError(lineNumber,
-                            "Unable to convert field '%s' with value '%s'",
-                            LABEL_CSV_IMPORTER_CANNOT_CONVERT_FIELD_VALUE,
-                            headerValue, stringValue);
+                    logError(lineNumber, "Unable to convert field '%s' with value '%s'",
+                            LABEL_CSV_IMPORTER_CANNOT_CONVERT_FIELD_VALUE, headerValue, stringValue);
                     log.debug(e, e);
                 }
             }
         } else {
-            logError(lineNumber, "Field '%s' does not exist on type '%s'",
-                    LABEL_CSV_IMPORTER_NOT_EXISTING_FIELD, headerValue,
-                    docType.getName());
+            logError(lineNumber, "Field '%s' does not exist on type '%s'", LABEL_CSV_IMPORTER_NOT_EXISTING_FIELD,
+                    headerValue, docType.getName());
         }
         return null;
     }
@@ -440,85 +413,73 @@ public class CSVImporterWork extends AbstractWork {
         return dateformat;
     }
 
-    protected boolean createOrUpdateDocument(long lineNumber, String name,
-            String type, Map<String, Serializable> properties)
-            throws ClientException {
+    protected boolean createOrUpdateDocument(long lineNumber, String name, String type,
+            Map<String, Serializable> properties) throws ClientException {
         Path targetPath = new Path(parentPath).append(name);
         name = targetPath.lastSegment();
         String newParentPath = targetPath.removeLastSegments(1).toString();
         DocumentRef docRef = new PathRef(targetPath.toString());
-        if (options.getCSVImporterDocumentFactory().exists(session,
-                newParentPath, name, type, properties)) {
+        if (options.getCSVImporterDocumentFactory().exists(session, newParentPath, name, type, properties)) {
             return updateDocument(lineNumber, docRef, properties);
         } else {
-            return createDocument(lineNumber, newParentPath, name, type,
-                    properties);
+            return createDocument(lineNumber, newParentPath, name, type, properties);
         }
     }
 
-    protected boolean createDocument(long lineNumber, String newParentPath,
-            String name, String type, Map<String, Serializable> properties) {
+    protected boolean createDocument(long lineNumber, String newParentPath, String name, String type,
+            Map<String, Serializable> properties) {
         try {
             DocumentRef parentRef = new PathRef(newParentPath);
             if (session.exists(parentRef)) {
                 DocumentModel parent = session.getDocument(parentRef);
 
                 TypeManager typeManager = Framework.getLocalService(TypeManager.class);
-                if (options.checkAllowedSubTypes()
-                        && !typeManager.isAllowedSubType(type, parent.getType())) {
-                    logError(lineNumber, "'%s' type is not allowed in '%s'",
-                            LABEL_CSV_IMPORTER_NOT_ALLOWED_SUB_TYPE, type,
-                            parent.getType());
+                if (options.checkAllowedSubTypes() && !typeManager.isAllowedSubType(type, parent.getType())) {
+                    logError(lineNumber, "'%s' type is not allowed in '%s'", LABEL_CSV_IMPORTER_NOT_ALLOWED_SUB_TYPE,
+                            type, parent.getType());
                 } else {
-                    options.getCSVImporterDocumentFactory().createDocument(
-                            session, newParentPath, name, type, properties);
-                    importLogs.add(new CSVImportLog(lineNumber, Status.SUCCESS,
-                            "Document created",
+                    options.getCSVImporterDocumentFactory().createDocument(session, newParentPath, name, type,
+                            properties);
+                    importLogs.add(new CSVImportLog(lineNumber, Status.SUCCESS, "Document created",
                             LABEL_CSV_IMPORTER_DOCUMENT_CREATED));
                     return true;
                 }
             } else {
-                logError(lineNumber, "Parent document '%s' does not exist",
-                        LABEL_CSV_IMPORTER_PARENT_DOES_NOT_EXIST, newParentPath);
+                logError(lineNumber, "Parent document '%s' does not exist", LABEL_CSV_IMPORTER_PARENT_DOES_NOT_EXIST,
+                        newParentPath);
             }
         } catch (RuntimeException e) {
             Throwable unwrappedException = unwrapException(e);
-            logError(lineNumber, "Unable to create document: %s",
-                    LABEL_CSV_IMPORTER_UNABLE_TO_CREATE,
+            logError(lineNumber, "Unable to create document: %s", LABEL_CSV_IMPORTER_UNABLE_TO_CREATE,
                     unwrappedException.getMessage());
             log.debug(unwrappedException, unwrappedException);
         }
         return false;
     }
 
-    protected boolean updateDocument(long lineNumber, DocumentRef docRef,
-            Map<String, Serializable> properties) {
+    protected boolean updateDocument(long lineNumber, DocumentRef docRef, Map<String, Serializable> properties) {
         if (options.updateExisting()) {
             try {
-                options.getCSVImporterDocumentFactory().updateDocument(session,
-                        docRef, properties);
-                importLogs.add(new CSVImportLog(lineNumber, Status.SUCCESS,
-                        "Document updated", LABEL_CSV_IMPORTER_DOCUMENT_UPDATED));
+                options.getCSVImporterDocumentFactory().updateDocument(session, docRef, properties);
+                importLogs.add(new CSVImportLog(lineNumber, Status.SUCCESS, "Document updated",
+                        LABEL_CSV_IMPORTER_DOCUMENT_UPDATED));
                 return true;
             } catch (RuntimeException e) {
                 Throwable unwrappedException = unwrapException(e);
-                logError(lineNumber, "Unable to update document: %s",
-                        LABEL_CSV_IMPORTER_UNABLE_TO_UPDATE,
+                logError(lineNumber, "Unable to update document: %s", LABEL_CSV_IMPORTER_UNABLE_TO_UPDATE,
                         unwrappedException.getMessage());
                 log.debug(unwrappedException, unwrappedException);
             }
         } else {
-            importLogs.add(new CSVImportLog(lineNumber, Status.SKIPPED,
-                    "Document already exists",
+            importLogs.add(new CSVImportLog(lineNumber, Status.SKIPPED, "Document already exists",
                     LABEL_CSV_IMPORTER_DOCUMENT_ALREADY_EXISTS));
         }
         return false;
     }
 
-    protected void logError(long lineNumber, String message,
-            String localizedMessage, String... params) {
-        importLogs.add(new CSVImportLog(lineNumber, ERROR, String.format(
-                message, (Object[]) params), localizedMessage, params));
+    protected void logError(long lineNumber, String message, String localizedMessage, String... params) {
+        importLogs.add(new CSVImportLog(lineNumber, ERROR, String.format(message, (Object[]) params), localizedMessage,
+                params));
         String lineMessage = String.format("Line %d", lineNumber);
         String errorMessage = String.format(message, (Object[]) params);
         log.error(String.format("%s: %s", lineMessage, errorMessage));
@@ -529,9 +490,7 @@ public class CSVImporterWork extends AbstractWork {
         NuxeoPrincipal principal = userManager.getPrincipal(username);
         String email = principal.getEmail();
         if (email == null) {
-            log.info(String.format(
-                    "Not sending import result email to '%s', no email configured",
-                    username));
+            log.info(String.format("Not sending import result email to '%s', no email configured", username));
             return;
         }
 
@@ -541,8 +500,7 @@ public class CSVImporterWork extends AbstractWork {
         CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
         List<CSVImportLog> importerLogs = csvImporter.getImportLogs(getId());
         CSVImportResult importResult = CSVImportResult.fromImportLogs(importerLogs);
-        List<CSVImportLog> skippedAndErrorImportLogs = csvImporter.getImportLogs(
-                getId(), Status.SKIPPED, Status.ERROR);
+        List<CSVImportLog> skippedAndErrorImportLogs = csvImporter.getImportLogs(getId(), Status.SKIPPED, Status.ERROR);
         ctx.put("importResult", importResult);
         ctx.put("skippedAndErrorImportLogs", skippedAndErrorImportLogs);
         ctx.put("csvFilename", csvFileName);
@@ -562,14 +520,13 @@ public class CSVImporterWork extends AbstractWork {
 
         try {
             OperationChain chain = new OperationChain("SendMail");
-            chain.add(SendMail.ID).set("from", from).set("to", to).set("HTML",
-                    true).set("subject", subject).set("message", message);
+            chain.add(SendMail.ID).set("from", from).set("to", to).set("HTML", true).set("subject", subject).set(
+                    "message", message);
             Framework.getLocalService(AutomationService.class).run(ctx, chain);
         } catch (Exception e) {
             ExceptionUtils.checkInterrupt(e);
-            log.error(String.format(
-                    "Unable to notify user '%s' for import result of '%s': %s",
-                    username, csvFileName, e.getMessage()));
+            log.error(String.format("Unable to notify user '%s' for import result of '%s': %s", username, csvFileName,
+                    e.getMessage()));
             log.debug(e, e);
             throw ExceptionUtils.runtimeException(e);
         }
@@ -585,8 +542,7 @@ public class CSVImporterWork extends AbstractWork {
         params.put("username", username);
         DocumentView docView = new DocumentViewImpl(null, null, params);
         URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
-        return urlPolicyService.getUrlFromDocumentView("user", docView,
-                notificationService.getServerUrlPrefix());
+        return urlPolicyService.getUrlFromDocumentView("user", docView, notificationService.getServerUrlPrefix());
     }
 
     protected StringList buildRecipientsList(String userEmail) {
@@ -599,8 +555,7 @@ public class CSVImporterWork extends AbstractWork {
     }
 
     private static String loadTemplate(String key) {
-        InputStream io = CSVImporterWork.class.getClassLoader().getResourceAsStream(
-                key);
+        InputStream io = CSVImporterWork.class.getClassLoader().getResourceAsStream(key);
         if (io != null) {
             try {
                 return IOUtils.toString(io, Charsets.UTF_8);
