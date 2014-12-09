@@ -56,7 +56,7 @@ public class OperationAdapter extends DefaultAdapter {
     @Path("{operationName}")
     public Response doPost(@PathParam("operationName")
     String oid, @Context
-    HttpServletRequest request, ExecutionRequest xreq) {
+    HttpServletRequest request, ExecutionRequest xreq) throws Exception {
         try {
             AutomationServer srv = Framework.getLocalService(AutomationServer.class);
             if (!srv.accept(oid, false, request)) {
