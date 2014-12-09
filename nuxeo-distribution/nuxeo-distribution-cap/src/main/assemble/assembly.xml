@@ -1,19 +1,13 @@
-<project name="nuxeo-assembly"
-         default="build"
-         xmlns:nx="urn:nuxeo-build"
-         xmlns:artifact="urn:nuxeo-artifact">
+<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-           uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
 
   <target name="build" description="Build Nuxeo CAP NXR">
     <echo>Building Nuxeo CAP NXR</echo>
     <property name="outdir" value="${maven.project.build.directory}" />
     <artifact:nuxeo-expand includeTestScope="true" />
     <artifact:print output="${outdir}/artifacts-cap.properties" mode="sdk" />
-    <artifact:print output="${outdir}/test-artifacts-cap.properties"
-                    mode="sdk"
-                    scopes="test" />
+    <artifact:print output="${outdir}/test-artifacts-cap.properties" mode="sdk" scopes="test" />
     <artifact:print output="${outdir}/dependency-tree.log" />
 
     <property name="nxr" value="${outdir}/nxr" />
@@ -43,11 +37,8 @@
     <copy file="${outdir}/artifacts-cap.properties" todir="${nxr}" />
     <copy file="${outdir}/test-artifacts-cap.properties" todir="${nxr}" />
 
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-         basedir="${nxr}" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     type="zip" />
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" basedir="${nxr}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" type="zip" />
   </target>
 
 </project>
