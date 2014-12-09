@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -90,7 +89,7 @@ public class OperationAdapter extends DefaultAdapter {
                     getContext().getCoreSession());
             Object result = service.run(ctx, oid, xreq.getParams());
 
-            int customHttpStatus = xreq.getCtx().getHttpStatus();
+            int customHttpStatus = xreq.getRestOperationContext().getHttpStatus();
             if (customHttpStatus >= 100) {
                 return Response.status(customHttpStatus).entity(result).build();
             }

@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RestOperationException extends OperationException {
 
-    private static final long serialVersionUID = 7123858603327032114L;
+    private static final long serialVersionUID = 1L;
 
     protected int status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 

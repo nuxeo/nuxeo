@@ -27,7 +27,7 @@ public class ExecutionRequest {
 
     protected Object input;
 
-    protected RestOperationContext ctx;
+    protected RestOperationContext restOperationContext;
 
     protected Map<String, Object> params;
 
@@ -36,7 +36,7 @@ public class ExecutionRequest {
     }
 
     public ExecutionRequest(Object input) {
-        ctx = new RestOperationContext();
+        restOperationContext = new RestOperationContext();
         this.input = input;
         this.params = new HashMap<String, Object>();
     }
@@ -50,11 +50,11 @@ public class ExecutionRequest {
     }
 
     public void setContextParam(String key, Object value) {
-        ctx.put(key, value);
+        restOperationContext.put(key, value);
     }
 
     public void setContextParam(String key, String value) {
-        ctx.put(key, value);
+        restOperationContext.put(key, value);
     }
 
     public void setParam(String key, Object jsonObject) {
@@ -80,17 +80,17 @@ public class ExecutionRequest {
 
     public OperationContext createContext(HttpServletRequest request,
             CoreSession session) {
-        ctx.addRequestCleanupHandler(request);
-        ctx.setCoreSession(session);
-        ctx.setInput(input);
-        ctx.put("request", request);
-        return ctx;
+        restOperationContext.addRequestCleanupHandler(request);
+        restOperationContext.setCoreSession(session);
+        restOperationContext.setInput(input);
+        restOperationContext.put("request", request);
+        return restOperationContext;
     }
 
     /**
      * @since 7.1
      */
-    public RestOperationContext getCtx() {
-        return ctx;
+    public RestOperationContext getRestOperationContext() {
+        return restOperationContext;
     }
 }

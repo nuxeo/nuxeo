@@ -61,7 +61,7 @@ public abstract class ExecutableResource {
                 return ResponseHelper.notFound();
             }
             Object result = execute(xreq);
-            int customHttpStatus = xreq.getCtx().getHttpStatus();
+            int customHttpStatus = xreq.getRestOperationContext().getHttpStatus();
             if (customHttpStatus >= 100) {
                 return ResponseHelper.getResponse(result, request, customHttpStatus);
             }
