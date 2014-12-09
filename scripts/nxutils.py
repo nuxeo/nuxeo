@@ -130,7 +130,7 @@ class Repository(object):
             os.chdir(module)
             system_with_retries("git fetch %s" % (self.alias))
         else:
-            system_with_retries("git clone %s" % (repo_url))
+            system_with_retries("git clone %s --origin %s" % (repo_url, self.alias))
             os.chdir(module)
         self.git_update(version, fallback_branch)
         os.chdir(cwd)
