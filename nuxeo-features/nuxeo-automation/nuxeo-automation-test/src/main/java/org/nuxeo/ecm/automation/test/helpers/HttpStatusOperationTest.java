@@ -60,7 +60,7 @@ public class HttpStatusOperationTest {
                 throw exception;
             } else {
                 context.setHttpStatus(HttpServletResponse
-                        .SC_METHOD_NOT_ALLOWED);
+                        .SC_PARTIAL_CONTENT);
             }
         }// else context is instanceof OperationContext
         return root;
