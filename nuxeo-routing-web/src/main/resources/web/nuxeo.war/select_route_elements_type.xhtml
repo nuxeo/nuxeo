@@ -6,8 +6,10 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
   <script>
-    jQuery('##{widget.id}_target').empty();
-    loadGraph('#{currentDocument.id}', currentUserLang, '#{widget.id}_target');
+    jQuery(document).ready(function() {
+      jQuery('##{widget.id}_target').empty();
+      loadGraph('#{currentDocument.id}', currentUserLang, '#{widget.id}_target');
+    });
   </script>
   <div id="#{widget.id}_graphView_box">
     <!-- div container for the graph -->
