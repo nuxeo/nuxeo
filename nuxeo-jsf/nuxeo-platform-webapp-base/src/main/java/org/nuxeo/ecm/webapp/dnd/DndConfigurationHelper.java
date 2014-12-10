@@ -27,7 +27,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
-import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
+import org.nuxeo.common.utils.UserAgentMatcher;
 
 /**
  * Seam component used to outject a Session scoped flag that indicates if client's browser supports HTML5 (plugin free)

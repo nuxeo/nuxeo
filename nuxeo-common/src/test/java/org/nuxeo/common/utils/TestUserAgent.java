@@ -15,7 +15,7 @@
  *     Thomas Roger <troger@nuxeo.com>
  */
 
-package org.nuxeo.ecm.platform.web.common;
+package org.nuxeo.common.utils;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
-import org.nuxeo.common.utils.FileUtils;
 
 public class TestUserAgent {
 
