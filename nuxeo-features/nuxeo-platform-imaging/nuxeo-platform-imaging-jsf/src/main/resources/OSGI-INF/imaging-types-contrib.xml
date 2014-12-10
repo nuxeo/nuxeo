@@ -12,7 +12,6 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
-        <layout>picturebook</layout>
       </layouts>
       <contentViews category="content">
         <contentView>document_content</contentView>
