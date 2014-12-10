@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,11 +11,14 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +32,7 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.deploy.FilterDef;
 import org.apache.catalina.deploy.FilterMap;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.SessionFactory;
 import org.apache.chemistry.opencmis.client.bindings.CmisBindingFactory;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
@@ -48,13 +52,29 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.resource.Resource;
 import org.mortbay.thread.QueuedThreadPool;
 import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.service.FilterConfigDescriptor;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Binder;
 
 /**
- * Test case of the high-level session using a client-server connection.
+ * Feature that starts an embedded server configured for CMIS.
+ * <p>
+ * This is abstract, so subclasses can specify if AtomPub, Browser Bindings or Web Services are used
  */
-public abstract class NuxeoSessionClientServerTestCase extends NuxeoSessionTestCase {
+@Deploy({ "org.nuxeo.ecm.platform.web.common" // for request controller
+})
+public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
 
-    private static final Log log = LogFactory.getLog(NuxeoSessionClientServerTestCase.class);
+    private static final Log log = LogFactory.getLog(CmisFeatureSessionHttp.class);
+
+    public static final String BASE_RESOURCE = "/jetty-test";
 
     public static final String HOST = "localhost";
 
@@ -62,20 +82,40 @@ public abstract class NuxeoSessionClientServerTestCase extends NuxeoSessionTestC
 
     public static final boolean USE_TOMCAT = true;
 
+    // Jetty server
     public Server server;
+
+    // Tomcat server
+    public Tomcat tomcat;
 
     public URI serverURI;
 
-    public Tomcat tomcat;
+    public Session session;
 
     @Override
-    public void setUpCmisSession() throws Exception {
-        setUpCmisSession(USERNAME);
+    public void beforeRun(FeaturesRunner runner) throws Exception {
+        String repositoryName = runner.getFeature(CoreFeature.class).getRepository().getName();
+        setUpServer();
+        setUpCmisSession(repositoryName);
     }
 
     @Override
-    protected void setUpCmisSession(String username) throws Exception {
-        setUpServer();
+    public void configure(FeaturesRunner runner, Binder binder) {
+        super.configure(runner, binder);
+        binder.bind(Session.class).toInstance(session);
+    }
+
+    @Override
+    public void afterRun(FeaturesRunner runner) throws Exception {
+        try {
+            tearDownCmisSession();
+        } finally {
+            tearDownServer();
+        }
+    }
+
+    @Override
+    public Session setUpCmisSession(String repositoryName) {
 
         SessionFactory sf = SessionFactoryImpl.newInstance();
         Map<String, String> params = new HashMap<String, String>();
@@ -86,31 +126,56 @@ public abstract class NuxeoSessionClientServerTestCase extends NuxeoSessionTestC
         params.put(SessionParameter.CACHE_SIZE_TYPES, "100");
         params.put(SessionParameter.CACHE_SIZE_OBJECTS, "100");
 
-        params.put(SessionParameter.REPOSITORY_ID, getRepositoryId());
-        params.put(SessionParameter.USER, username);
+        params.put(SessionParameter.REPOSITORY_ID, repositoryName);
+        params.put(SessionParameter.USER, USERNAME);
         params.put(SessionParameter.PASSWORD, PASSWORD);
+
+        params.put(SessionParameter.HTTP_INVOKER_CLASS, StatusLoggingDefaultHttpInvoker.class.getName());
 
         addParams(params);
 
         session = sf.createSession(params);
-    }
-
-    /** Adds protocol-specific parameters. */
-    protected void addParams(Map<String, String> params) {
-        params.put(SessionParameter.HTTP_INVOKER_CLASS, StatusLoggingDefaultHttpInvoker.class.getName());
+        return session;
     }
 
     @Override
-    public void tearDownCmisSession() throws Exception {
+    public void tearDownCmisSession() {
         if (session != null) {
             session.clear();
             session = null;
         }
+    }
 
-        tearDownServer();
+    /** Adds protocol-specific parameters. */
+    protected abstract void addParams(Map<String, String> params);
+
+    protected abstract EventListener[] getEventListeners();
+
+    protected abstract Servlet getServlet();
+
+    protected List<FilterAndName> getFilters() {
+        return Arrays.asList( //
+                new FilterAndName(new NuxeoRequestControllerFilter(), "NuxeoRequestController"), //
+                new FilterAndName(new TrustingNuxeoAuthFilter(), "NuxeoAuthenticationFilter"));
+    }
+
+    public static class FilterAndName {
+        public Filter filter;
+
+        public String name;
+
+        public FilterAndName(Filter filter, String name) {
+            this.filter = filter;
+            this.name = name;
+        }
     }
 
     protected void setUpServer() throws Exception {
+        RequestControllerService ctrl = (RequestControllerService) Framework.getService(RequestControllerManager.class);
+        // use transactional config
+        FilterConfigDescriptor conf = new FilterConfigDescriptor("cmis-test", ".*", true, true, false, false, false,
+                null);
+        ctrl.registerFilterConfig(conf);
         if (USE_TOMCAT) {
             setUpTomcat();
         } else {
@@ -177,7 +242,7 @@ public abstract class NuxeoSessionClientServerTestCase extends NuxeoSessionTestC
     }
 
     protected void setUpTomcat() throws Exception {
-        Tomcat tomcat = new Tomcat();
+        tomcat = new Tomcat();
         tomcat.setBaseDir("."); // for tmp dir
         tomcat.setHostname(HOST);
         tomcat.setPort(PORT);
@@ -189,7 +254,8 @@ public abstract class NuxeoSessionClientServerTestCase extends NuxeoSessionTestC
         // endpoint.getSocketProperties().setSoReuseAddress(true);
         endpoint.setMaxKeepAliveRequests(1); // vital for clean shutdown
 
-        URL url = getResource(BASE_RESOURCE);
+        URL url = getClass().getResource(BASE_RESOURCE);
+        assertNotNull(url);
         File docBase = new File(url.getPath());
         org.apache.catalina.Context context = tomcat.addContext("/", docBase.getAbsolutePath());
         String SERVLET_NAME = "testServlet";
@@ -199,22 +265,23 @@ public abstract class NuxeoSessionClientServerTestCase extends NuxeoSessionTestC
         servlet.addInitParameter(CmisAtomPubServlet.PARAM_CMIS_VERSION, CmisVersion.CMIS_1_1.value());
         context.addServletMapping("/*", SERVLET_NAME);
         context.setApplicationLifecycleListeners(getEventListeners());
-        Filter filter = getFilter();
-        if (filter != null) {
-            String FILTER_NAME = "NuxeoAuthenticationFilter";
-            FilterDef filterDef = new FilterDef();
-            filterDef.setFilterName(FILTER_NAME);
-            filterDef.setFilterClass(filter.getClass().getName());
-            context.addFilterDef(filterDef);
-            FilterMap filterMap = new FilterMap();
-            filterMap.setFilterName(FILTER_NAME);
-            filterMap.addServletName(SERVLET_NAME);
-            context.addFilterMap(filterMap);
+        for (FilterAndName f : getFilters()) {
+            addFilter(context, SERVLET_NAME, f.name, f.filter);
         }
 
         serverURI = new URI("http://" + HOST + ':' + PORT + '/');
         tomcat.start();
-        this.tomcat = tomcat;
+    }
+
+    protected void addFilter(org.apache.catalina.Context context, String servletName, String filterName, Filter filter) {
+        FilterDef filterDef = new FilterDef();
+        filterDef.setFilterName(filterName);
+        filterDef.setFilterClass(filter.getClass().getName());
+        context.addFilterDef(filterDef);
+        FilterMap filterMap = new FilterMap();
+        filterMap.setFilterName(filterName);
+        filterMap.addServletName(servletName);
+        context.addFilterMap(filterMap);
     }
 
     protected void tearDownTomcat() throws Exception {
@@ -267,11 +334,5 @@ public abstract class NuxeoSessionClientServerTestCase extends NuxeoSessionTestC
         f.setAccessible(true);
         return f.get(object);
     }
-
-    protected abstract EventListener[] getEventListeners();
-
-    protected abstract Servlet getServlet();
-
-    protected abstract Filter getFilter();
 
 }

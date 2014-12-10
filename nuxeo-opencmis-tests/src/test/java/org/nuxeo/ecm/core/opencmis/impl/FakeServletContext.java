@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -20,6 +20,8 @@ import javax.servlet.ServletContext;
 
 public class FakeServletContext implements InvocationHandler {
 
+    public static final String BASE_RESOURCE = "jetty-test";
+
     public static ServletContext getServletContext() {
         FakeServletContext handler = new FakeServletContext();
         return (ServletContext) Proxy.newProxyInstance(FakeServletContext.class.getClassLoader(),
@@ -35,7 +37,7 @@ public class FakeServletContext implements InvocationHandler {
             if (!name.startsWith("/")) {
                 name = "/" + name;
             }
-            name = TestNuxeoSessionLocal.BASE_RESOURCE + name;
+            name = BASE_RESOURCE + name;
             ClassLoader cl = getClass().getClassLoader();
             InputStream res = cl.getResourceAsStream(name);
             return res;

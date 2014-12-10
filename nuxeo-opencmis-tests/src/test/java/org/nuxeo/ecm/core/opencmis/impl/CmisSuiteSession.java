@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -75,9 +75,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -92,15 +92,26 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
-import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.google.inject.Inject;
 
 /**
- * Tests that hit the high-level Session abstraction.
+ * Test the high-level session using a local connection.
  */
-public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CmisFeature.class)
+@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
+public class CmisSuiteSession {
 
     public static final String BASE_RESOURCE = "jetty-test";
 
@@ -117,6 +128,16 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     public static final String NOT_NULL = "CONSTRAINT_NOT_NULL";
 
+    @Inject
+    protected RuntimeHarness harness;
+
+    @Inject
+    protected CmisFeatureSession cmisFeatureSession;
+
+    @Inject
+    protected CoreSession coreSession;
+
+    @Inject
     protected Session session;
 
     protected String rootFolderId;
@@ -129,105 +150,25 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     protected Map<String, String> repoDetails;
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.core.query");
-        deployBundle("org.nuxeo.ecm.platform.query.api");
-        deployBundle("org.nuxeo.ecm.platform.ws");
-
-        // deployed for fulltext indexing
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        // MyDocType
-        deployBundle("org.nuxeo.ecm.core.opencmis.tests");
-        // MIME Type Icon Updater for renditions
-        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.api");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener");
-        // Rendition Service
-        deployBundle("org.nuxeo.ecm.platform.rendition.api");
-        deployBundle("org.nuxeo.ecm.platform.rendition.core");
-        deployBundle("org.nuxeo.ecm.automation.core");
-        // Audit Service
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployBundle("org.nuxeo.ecm.platform.audit.api");
-        deployBundle("org.nuxeo.ecm.platform.audit");
-        deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/audit-persistence-config.xml");
-        // NuxeoCmisServiceFactoryManager registration
-        deployBundle("org.nuxeo.ecm.core.opencmis.bindings");
-        // QueryMaker registration
-        deployBundle("org.nuxeo.ecm.core.opencmis.impl");
-        // these deployments needed for NuxeoAuthenticationFilter.loginAs
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployBundle("org.nuxeo.ecm.platform.login");
-        deployBundle("org.nuxeo.ecm.platform.web.common");
-        fireFrameworkStarted();
-
-        openSession(); // nuxeo
-
-        setUpCmisSession();
-
         setUpData();
+        session.clear(); // clear cache
 
-        RepositoryInfo rid = session.getBinding().getRepositoryService().getRepositoryInfo(getRepositoryId(), null);
+        RepositoryInfo rid = session.getBinding().getRepositoryService().getRepositoryInfo(
+                coreSession.getRepositoryName(), null);
         assertNotNull(rid);
         rootFolderId = rid.getRootFolderId();
         assertNotNull(rootFolderId);
 
-        isHttp = this instanceof NuxeoSessionClientServerTestCase;
-        isAtomPub = this instanceof TestNuxeoSessionAtomPub;
-        isBrowser = this instanceof TestNuxeoSessionBrowser;
+        isHttp = cmisFeatureSession.isHttp;
+        isAtomPub = cmisFeatureSession.isAtomPub;
+        isBrowser = cmisFeatureSession.isBrowser;
     }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        tearDownData();
-        tearDownCmisSession();
-        closeSession();
-        super.tearDown();
-    }
-
-    /** Sets up the client, fills "session". */
-    public abstract void setUpCmisSession() throws Exception;
-
-    /** Sets up the client, fills "session". */
-    protected abstract void setUpCmisSession(String username) throws Exception;
-
-    /** Tears down the client. */
-    public abstract void tearDownCmisSession() throws Exception;
 
     protected void setUpData() throws Exception {
-        repoDetails = Helper.makeNuxeoRepository(super.session);
-        database.sleepForFulltext();
-    }
-
-    protected void tearDownData() {
-    }
-
-    protected CoreSession getCoreSession() {
-        return super.session;
-    }
-
-    protected String getRepositoryId() {
-        return super.session.getRepositoryName();
-    }
-
-    protected String getRootFolderId() {
-        try {
-            return super.session.getRootDocument().getId();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        repoDetails = Helper.makeNuxeoRepository(coreSession);
+        DatabaseHelper.DATABASE.sleepForFulltext();
     }
 
     @Test
@@ -926,8 +867,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     @Test
     public void testUserWorkspace() throws ClientException {
-        String wsPath = Helper.createUserWorkspace(getCoreSession(), (isAtomPub || isBrowser) ? USERNAME
-                : "Administrator");
+        String wsPath = Helper.createUserWorkspace(coreSession, (isAtomPub || isBrowser) ? USERNAME : "Administrator");
         Folder ws = (Folder) session.getObjectByPath(wsPath);
         assertNotNull(ws);
     }
@@ -939,13 +879,12 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             return;
         }
 
-        tearDownData();
-        tearDownCmisSession();
+        cmisFeatureSession.tearDownCmisSession();
         Thread.sleep(1000); // otherwise sometimes fails to set up again
         // deploy the LastModifiedServiceWrapper
-        deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/test-servicefactorymanager-contrib.xml");
-        setUpCmisSession();
-        setUpData();
+        harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                "OSGI-INF/test-servicefactorymanager-contrib.xml");
+        session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());
 
         GregorianCalendar lastModifiedCalendar = Helper.getCalendar(2007, 4, 11, 12, 0, 0); // in GMT-02
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
@@ -954,6 +893,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         properties.put("dc:modified", lastModifiedCalendar);
         folder.updateProperties(properties, true);
         // TODO XXX fix timezone issues with H2 / SQL Server
+        DatabaseHelper database = DatabaseHelper.DATABASE;
         if (!(database instanceof DatabaseH2 || database instanceof DatabaseSQLServer)) {
             assertEquals(lastModifiedCalendar.getTimeInMillis(),
                     ((GregorianCalendar) folder.getPropertyValue("dc:modified")).getTimeInMillis());
@@ -992,11 +932,11 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     }
 
     private boolean isDocumentLocked(CmisObject ob) throws ClientException {
-        return getCoreSession().getDocument(new IdRef(ob.getId())).isLocked();
+        return coreSession.getDocument(new IdRef(ob.getId())).isLocked();
     }
 
     private Lock lockDocument(CmisObject ob) throws ClientException {
-        return getCoreSession().getDocument(new IdRef(ob.getId())).setLock();
+        return coreSession.getDocument(new IdRef(ob.getId())).setLock();
     }
 
     protected static Set<String> set(String... strings) {
@@ -1024,7 +964,6 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         Map<String, Set<String>> expected = new HashMap<>();
         expected.put("bob", set("Browse"));
         expected.put("members*", set(READ, "Read"));
-        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
         expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
         assertEquals(expected, actual);
 
@@ -1037,15 +976,12 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         actual = getActualAcl(acl);
         expected = new HashMap<>();
         expected.put("members*", set(READ));
-        expected.put("administrators*", set(READ, WRITE, ALL));
         expected.put("Administrator*", set(READ, WRITE, ALL));
         assertEquals(expected, actual);
     }
 
     @Test
     public void testGetACL() throws Exception {
-        CoreSession coreSession = getCoreSession();
-
         String folder1Id = coreSession.getDocument(new PathRef("/testfolder1")).getId();
         String file1Id = coreSession.getDocument(new PathRef("/testfolder1/testfile1")).getId();
         String file4Id = coreSession.getDocument(new PathRef("/testfolder2/testfolder3/testfile4")).getId();
@@ -1081,6 +1017,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             coreSession.setACP(new IdRef(file4Id), acp, true);
 
             coreSession.save();
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
 
         Acl acl = session.getAcl(session.createObjectId(file1Id), false);
@@ -1095,7 +1033,6 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         expected.put("steve*", set(READ, "Read"));
         expected.put("mary*", set(READ, "Read"));
         expected.put("members*", set(READ, "Read"));
-        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
         expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
         assertEquals(expected, actual);
 
@@ -1146,13 +1083,12 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         expected.put("bob", set("Browse"));
         expected.put("mary", set(READ, "Read"));
         expected.put("members*", set(READ, "Read"));
-        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
         expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
         assertEquals(expected, actual);
 
         // remove
 
-        ace = new AccessControlEntryImpl(p, Arrays.asList(READ));
+        ace = new AccessControlEntryImpl(p, Arrays.asList(READ, "Read"));
         addAces = null;
         removeAces = Arrays.asList(ace);
         acl = session.applyAcl(session.createObjectId(file1Id), addAces, removeAces, null);
@@ -1164,22 +1100,19 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         expected = new HashMap<>();
         expected.put("bob", set("Browse"));
         expected.put("members*", set(READ, "Read"));
-        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
         expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
         assertEquals(expected, actual);
     }
 
     @Test
     public void testRecoverableException() throws Exception {
+        cmisFeatureSession.tearDownCmisSession();
+        Thread.sleep(1000); // otherwise sometimes fails to set up again
         // listener that will cause a RecoverableClientException to be thrown
         // when a doc whose name starts with "throw" is created
-        tearDownData();
-        tearDownCmisSession();
-        Thread.sleep(1000); // otherwise sometimes fails to set up again
-        // deploy the LastModifiedServiceWrapper
-        deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/recoverable-exc-listener-contrib.xml");
-        setUpCmisSession();
-        setUpData();
+        harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                "OSGI-INF/recoverable-exc-listener-contrib.xml");
+        session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());
 
         Map<String, Serializable> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
@@ -1198,7 +1131,9 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
                 // assertEquals(400, status);
             } else {
                 Throwable cause = e.getCause();
-                assertTrue(String.valueOf(cause), cause instanceof RecoverableClientException);
+                if (!(cause instanceof RecoverableClientException)) {
+                    throw e;
+                }
             }
         }
     }

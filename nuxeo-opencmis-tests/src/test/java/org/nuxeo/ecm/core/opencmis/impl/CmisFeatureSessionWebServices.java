@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,12 +14,12 @@ package org.nuxeo.ecm.core.opencmis.impl;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -28,11 +28,11 @@ import javax.xml.ws.WebServiceException;
 
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
-import org.junit.Ignore;
-import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.ecm.core.opencmis.bindings.LoginProvider;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import com.google.inject.Binder;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser.AdapterFactory;
@@ -43,24 +43,21 @@ import com.sun.xml.ws.transport.http.servlet.WSServlet;
 import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
 
 /**
- * Test the high-level session using a WebServices connection.
+ * Feature that starts a Web Services session.
  */
-@Ignore
-public class TestNuxeoSessionWebServices extends NuxeoSessionClientServerTestCase {
+public class CmisFeatureSessionWebServices extends CmisFeatureSessionHttp {
 
     public static final String JAXWS_XML = "/sun-jaxws.xml";
 
     @Override
-    public void setUp() throws Exception {
-        JavaUtilLoggingHelper.redirectToApacheCommons();
-        super.setUp();
+    public void configure(FeaturesRunner runner, Binder binder) {
+        super.configure(runner, binder);
+        setWebServices();
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        JavaUtilLoggingHelper.reset();
-    }
+    // JavaUtilLoggingHelper.redirectToApacheCommons();
+
+    // JavaUtilLoggingHelper.reset();
 
     @Override
     protected void setUpServer() throws Exception {
@@ -77,7 +74,6 @@ public class TestNuxeoSessionWebServices extends NuxeoSessionClientServerTestCas
 
     @Override
     protected void addParams(Map<String, String> params) {
-        super.addParams(params);
         String uri = serverURI.toString();
         uri += "services/"; // from sun-jaxws.xml
         params.put(SessionParameter.BINDING_TYPE, BindingType.WEBSERVICES.value());
@@ -98,8 +94,8 @@ public class TestNuxeoSessionWebServices extends NuxeoSessionClientServerTestCas
     }
 
     @Override
-    protected Filter getFilter() {
-        return null;
+    protected List<FilterAndName> getFilters() {
+        return Collections.emptyList(); // XXX TODO
     }
 
     @Override

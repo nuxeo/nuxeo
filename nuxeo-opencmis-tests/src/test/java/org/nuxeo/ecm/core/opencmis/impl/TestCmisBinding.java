@@ -51,12 +51,11 @@ import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_U
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_VIEW_CONTENT_OBJECT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -121,15 +120,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntry
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
-import org.apache.chemistry.opencmis.commons.spi.AclService;
-import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
-import org.apache.chemistry.opencmis.commons.spi.DiscoveryService;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
-import org.apache.chemistry.opencmis.commons.spi.MultiFilingService;
-import org.apache.chemistry.opencmis.commons.spi.NavigationService;
-import org.apache.chemistry.opencmis.commons.spi.ObjectService;
-import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
-import org.apache.chemistry.opencmis.commons.spi.VersioningService;
 import org.apache.chemistry.opencmis.server.support.query.CalendarHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -137,9 +128,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
@@ -149,18 +140,30 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoBinding;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+
+import com.google.inject.Inject;
 
 /**
  * Tests that hit directly the server APIs.
  * <p>
  * Uses CMISQL to NXQL conversion for queries, which disallows JOINs.
  */
-public class TestNuxeoBinding extends NuxeoBindingTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ CmisFeature.class, CmisFeatureConfiguration.class })
+@LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
+@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
+public class TestCmisBinding extends TestCmisBindingBase {
 
     public static final String NUXEO_ROOT_TYPE = "Root"; // from Nuxeo
 
@@ -171,48 +174,29 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     public static final String COMPLEX_TITLE = "Is this my/your caf\u00e9?";
 
-    protected RepositoryService repoService;
+    @Inject
+    protected RuntimeHarness harness;
 
-    protected ObjectService objService;
+    @Inject
+    protected CoreSession coreSession;
 
-    protected NavigationService navService;
-
-    protected MultiFilingService filingService;
-
-    protected DiscoveryService discService;
-
-    protected VersioningService verService;
-
-    protected AclService aclService;
-
-    protected String file5id;
-
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        Map<String, String> info = Helper.makeNuxeoRepository(nuxeotc.session);
-        sleepForFulltext();
-        file5id = info.get("file5id");
+        setUpBinding(coreSession);
+        setUpData(coreSession);
     }
 
-    @Override
-    public void initBinding(String username) throws Exception {
-        super.initBinding(username);
-        repoService = binding.getRepositoryService();
-        objService = binding.getObjectService();
-        navService = binding.getNavigationService();
-        filingService = binding.getMultiFilingService();
-        discService = binding.getDiscoveryService();
-        verService = binding.getVersioningService();
-        aclService = binding.getAclService();
-    }
-
-    @Override
     @After
-    public void tearDown() throws Exception {
-        super.tearDown();
+    public void tearDown() {
+        tearDownBinding();
     }
+
+    public void reSetUp(String username) {
+        tearDownBinding();
+        setUpBinding(coreSession, username);
+    }
+
+    // -----
 
     protected String createDocument(String name, String folderId, String typeId) {
         return objService.createDocument(repositoryId, createBaseDocumentProperties(name, typeId), folderId, null,
@@ -225,7 +209,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     protected Properties createBaseDocumentProperties(String name, String typeId) {
-        BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
         props.add(factory.createPropertyStringData(PropertyIds.NAME, name));
         props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, typeId));
@@ -233,7 +216,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     protected Properties createProperties(String key, String value) {
-        BindingsObjectFactory factory = binding.getObjectFactory();
         PropertyString prop = factory.createPropertyStringData(key, value);
         return factory.createPropertiesData(Collections.<PropertyData<?>> singletonList(prop));
     }
@@ -644,7 +626,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     protected String createDocumentMyDocType() {
-        BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
         props.add(factory.createPropertyStringData(PropertyIds.NAME, COMPLEX_TITLE));
         props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, "MyDocType"));
@@ -715,7 +696,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testCreateDocumentImplicitType() throws Exception {
-        BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
         props.add(factory.createPropertyStringData(PropertyIds.NAME, "doc.txt"));
         props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, "cmis:document"));
@@ -1015,7 +995,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         String id = objService.createDocumentFromSource(repositoryId, ob.getId(), props, rootFolderId, null, null,
                 null, null, null);
         assertNotNull(id);
-        assertNotSame(id, ob.getId());
+        assertNotEquals(id, ob.getId());
         // fetch
         ObjectData copy = getObjectByPath("/testfile1");
         assertNotNull(copy);
@@ -1268,8 +1248,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         assertEquals(3, res.getNumItems().intValue());
 
-        closeBinding();
-        initBinding("bob");
+        reSetUp("bob");
 
         statement = "SELECT cmis:objectId FROM File";
         res = query(statement);
@@ -1477,8 +1456,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(initiallyQueryableFilesCount, res.getNumItems().intValue());
 
         // delete another file:
-        nuxeotc.session.followTransition(new PathRef("/testfolder1/testfile1"), "delete");
-        nuxeotc.session.save();
+        coreSession.followTransition(new PathRef("/testfolder1/testfile1"), "delete");
+        coreSession.save();
+        nextTransaction();
 
         // by default 'deleted' files are filtered out
         statement = "SELECT cmis:name FROM File";
@@ -1532,14 +1512,14 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectList res;
         List<ObjectData> objects;
 
-        CoreSession session = nuxeotc.session;
-        DocumentModel ofolder = session.createDocumentModel("/", "ordered", "OrderedFolder");
-        session.createDocument(ofolder);
-        DocumentModel odoc1 = session.createDocumentModel("/ordered", "odoc1", "File");
-        session.createDocument(odoc1);
-        DocumentModel odoc2 = session.createDocumentModel("/ordered", "odoc2", "File");
-        session.createDocument(odoc2);
-        session.save();
+        DocumentModel ofolder = coreSession.createDocumentModel("/", "ordered", "OrderedFolder");
+        coreSession.createDocument(ofolder);
+        DocumentModel odoc1 = coreSession.createDocumentModel("/ordered", "odoc1", "File");
+        coreSession.createDocument(odoc1);
+        DocumentModel odoc2 = coreSession.createDocumentModel("/ordered", "odoc2", "File");
+        coreSession.createDocument(odoc2);
+        coreSession.save();
+        nextTransaction();
 
         statement = "SELECT nuxeo:pos FROM File WHERE nuxeo:pos >= 0 ORDER BY nuxeo:pos";
         res = query(statement);
@@ -1747,14 +1727,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectList res;
 
         // add some instance facets on 2 documents
-        DocumentModel doc1 = nuxeotc.session.getDocument(new PathRef("/testfolder1/testfile1"));
+        DocumentModel doc1 = coreSession.getDocument(new PathRef("/testfolder1/testfile1"));
         assertTrue(doc1.addFacet("CustomFacetWithoutSchema"));
-        nuxeotc.session.saveDocument(doc1);
-        DocumentModel doc2 = nuxeotc.session.getDocument(new PathRef("/testfolder1/testfile2"));
+        coreSession.saveDocument(doc1);
+        DocumentModel doc2 = coreSession.getDocument(new PathRef("/testfolder1/testfile2"));
         assertTrue(doc2.addFacet("CustomFacetWithMySchema2"));
         doc2.setPropertyValue("my2:long", 12);
-        nuxeotc.session.saveDocument(doc2);
-        nuxeotc.session.save();
+        coreSession.saveDocument(doc2);
+        coreSession.save();
+        nextTransaction();
 
         // ... = ANY ...
         statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE 'Versionable' = ANY nuxeo:secondaryObjectTypeIds";
@@ -1810,20 +1791,21 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     @SuppressWarnings("boxing")
     @Test
     public void testQueryMixinTypesJoin() throws Exception {
-        assumeTrue(supportsJoins());
+        assumeSupportsJoins();
 
         String statement;
         ObjectList res;
 
         // add some instance facets on 2 documents
-        DocumentModel doc1 = nuxeotc.session.getDocument(new PathRef("/testfolder1/testfile1"));
+        DocumentModel doc1 = coreSession.getDocument(new PathRef("/testfolder1/testfile1"));
         assertTrue(doc1.addFacet("CustomFacetWithoutSchema"));
-        nuxeotc.session.saveDocument(doc1);
-        DocumentModel doc2 = nuxeotc.session.getDocument(new PathRef("/testfolder1/testfile2"));
+        coreSession.saveDocument(doc1);
+        DocumentModel doc2 = coreSession.getDocument(new PathRef("/testfolder1/testfile2"));
         assertTrue(doc2.addFacet("CustomFacetWithMySchema2"));
         doc2.setPropertyValue("my2:long", 12);
-        nuxeotc.session.saveDocument(doc2);
-        nuxeotc.session.save();
+        coreSession.saveDocument(doc2);
+        coreSession.save();
+        nextTransaction();
 
         // ... = ANY ...
         // with several qualifiers (therefore a JOIN)
@@ -2001,7 +1983,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
-        BindingsObjectFactory factory = binding.getObjectFactory();
         PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new title1");
         PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
         Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
@@ -2053,7 +2034,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
-        BindingsObjectFactory factory = binding.getObjectFactory();
         PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new title1");
         PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
         Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
@@ -2123,7 +2103,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoin() throws Exception {
-        assumeTrue(supportsJoins());
+        assumeSupportsJoins();
 
         String statement;
         ObjectList res;
@@ -2156,7 +2136,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithSubQueryMulti() throws Exception {
-        assumeTrue(supportsJoins());
+        assumeSupportsJoins();
 
         String statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
                 + " FROM cmis:document A" //
@@ -2168,7 +2148,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithSubQueryMultiIsNull() throws Exception {
-        assumeTrue(supportsJoins());
+        assumeSupportsJoins();
 
         String statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
                 + " FROM cmis:document A" //
@@ -2180,10 +2160,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithSecurity() throws Exception {
-        assumeTrue(supportsJoins());
+        assumeSupportsJoins();
 
-        closeBinding();
-        initBinding("bob");
+        reSetUp("bob");
         // only testfile1 and testfile2 are accessible by bob
 
         String statement;
@@ -2226,7 +2205,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithFacets() throws Exception {
-        assumeTrue(supportsJoins());
+        assumeSupportsJoins();
 
         String statement = "SELECT A.cmis:objectId" //
                 + " FROM cmis:folder A" //
@@ -2238,7 +2217,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinReturnVirtualColumns() throws Exception {
-        assumeTrue(supportsJoins());
+        assumeSupportsJoins();
 
         String statement = "SELECT A.cmis:objectId, A.nuxeo:contentStreamDigest, B.cmis:path" //
                 + " FROM cmis:document A" //
@@ -2254,7 +2233,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithMultipleTypes() throws Exception {
-        assumeTrue(supportsJoins());
+        assumeSupportsJoins();
 
         String statement = "SELECT A.cmis:objectId, A.cmis:name, B.filename, C.note" //
                 + " FROM cmis:document A" //
@@ -2269,7 +2248,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithMultipleTypes2() throws Exception {
-        assumeTrue(supportsJoins());
+        assumeSupportsJoins();
 
         String statement = "SELECT A.cmis:objectId, B.cmis:objectId, C.cmis:objectId" //
                 + " FROM cmis:document A" //
@@ -2717,11 +2696,11 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         if (addHidden) {
             // add a doc whose type is not known to CMIS
-            CoreSession session = nuxeotc.session;
-            DocumentModel doc = session.createDocumentModel("/", "hidden", "HiddenFolder");
+            DocumentModel doc = coreSession.createDocumentModel("/", "hidden", "HiddenFolder");
             Helper.sleepForAuditGranularity();
-            session.createDocument(doc);
-            session.save();
+            coreSession.createDocument(doc);
+            coreSession.save();
+            nextTransaction();
         }
 
         sleepForAudit();
@@ -2753,12 +2732,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         ObjectData ob1 = getObjectByPath("/testfolder1/testfile1");
         objService.deleteObject(repositoryId, ob1.getId(), Boolean.TRUE, null);
+        nextTransaction();
 
         // get latest change log token
         sleepForAudit();
         String clt2 = repoService.getRepositoryInfo(repositoryId, null).getLatestChangeLogToken();
         assertNotNull(clt2);
-        assertNotSame(clt2, clt1);
+        assertNotEquals(clt2, clt1);
 
         changeLogTokenHolder.setValue(clt2); // just the last
         ObjectList changes;
@@ -2774,18 +2754,18 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         Holder<String> changeLogTokenHolder = new Holder<String>();
 
         // add docs whose type is not known to CMIS
-        CoreSession session = nuxeotc.session;
         for (int i = 0; i < 15; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "hidden" + i, "HiddenFolder");
+            DocumentModel doc = coreSession.createDocumentModel("/", "hidden" + i, "HiddenFolder");
             Helper.sleepForAuditGranularity();
-            doc = session.createDocument(doc);
-            session.save();
+            doc = coreSession.createDocument(doc);
+            coreSession.save();
         }
         // add a regular doc
-        DocumentModel doc = session.createDocumentModel("/", "regular", "File");
+        DocumentModel doc = coreSession.createDocumentModel("/", "regular", "File");
         Helper.sleepForAuditGranularity();
-        doc = session.createDocument(doc);
-        session.save();
+        doc = coreSession.createDocument(doc);
+        coreSession.save();
+        nextTransaction();
 
         sleepForAudit();
         String clt1 = repoService.getRepositoryInfo(repositoryId, null).getLatestChangeLogToken();
@@ -2849,7 +2829,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testRelationship() throws Exception {
-        assumeTrue(supportsJoins());
+        assumeSupportsJoins();
 
         String id1 = getObjectByPath("/testfolder1/testfile1").getId();
         String id2 = getObjectByPath("/testfolder1/testfile2").getId();
@@ -2857,7 +2837,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // create relationship
         String statement;
         ObjectList res;
-        BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
         props.add(factory.createPropertyIdData(PropertyIds.NAME, "rel"));
         props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, "Relation"));
@@ -2906,8 +2885,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(id2, getValue(od, PropertyIds.TARGET_ID));
 
         // normal user has security applied to its queries
-        closeBinding();
-        initBinding("john");
+        reSetUp("john");
 
         statement = "SELECT A.cmis:objectId, B.cmis:objectId" + " FROM cmis:document A"
                 + " JOIN cmis:relationship R ON R.cmis:sourceId = A.cmis:objectId"
@@ -2917,8 +2895,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(0, res.getNumItems().intValue());
 
         // bob has Browse on testfile1 and testfile2
-        closeBinding();
-        initBinding("bob");
+        reSetUp("bob");
 
         // no security check on relationship itself
         statement = "SELECT A.cmis:objectId, B.cmis:objectId" + " FROM cmis:document A"
@@ -2937,11 +2914,11 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryWithSecurityPolicy() throws Exception {
-        CoreSession session = nuxeotc.session;
-        DocumentModel doc = session.getDocument(new PathRef("/testfolder1/testfile1"));
+        DocumentModel doc = coreSession.getDocument(new PathRef("/testfolder1/testfile1"));
         doc.setPropertyValue("dc:title", "SECRET should not be listed");
-        session.saveDocument(doc);
-        session.save();
+        coreSession.saveDocument(doc);
+        coreSession.save();
+        nextTransaction();
 
         ObjectList res = query("SELECT cmis:objectId FROM File");
         assertEquals(3, res.getNumItems().intValue());
@@ -2953,7 +2930,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         if (!supportsNXQLQueryTransformers()) {
             // deploy a security policy with a non-trivial query transformer
             // that has no CMISQL equivalent
-            nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/security-policy-contrib.xml");
+            harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/security-policy-contrib.xml");
             // check that queries now fail
             try {
                 query("SELECT cmis:objectId FROM File");
@@ -2961,22 +2938,28 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             } catch (CmisRuntimeException e) {
                 String msg = e.getMessage();
                 assertTrue(msg, msg.contains("Security policy"));
+            } finally {
+                harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                        "OSGI-INF/security-policy-contrib.xml");
             }
 
             // without it it works again
-            nuxeotc.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/security-policy-contrib.xml");
             res = query("SELECT cmis:objectId FROM File");
             assertEquals(3, res.getNumItems().intValue());
         }
 
         // deploy a security policy with a transformer
-        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                supportsNXQLQueryTransformers() ? "OSGI-INF/security-policy-contrib3.xml"
-                        : "OSGI-INF/security-policy-contrib2.xml");
+        String contrib = supportsNXQLQueryTransformers() ? "OSGI-INF/security-policy-contrib3.xml"
+                : "OSGI-INF/security-policy-contrib2.xml";
+        harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", contrib);
+        try {
         res = query("SELECT cmis:objectId FROM File");
         assertEquals(2, res.getNumItems().intValue());
         res = query("SELECT cmis:objectId FROM File WHERE dc:title <> 'something'");
         assertEquals(2, res.getNumItems().intValue());
+        } finally {
+            harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", contrib);
+        }
     }
 
     /** Get ACL, using * suffix on username to denote non-direct. */
@@ -2998,7 +2981,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         Map<String, Set<String>> expected = new HashMap<>();
         expected.put("bob", set("Browse"));
         expected.put("members*", set(READ, "Read"));
-        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
         expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
         assertEquals(expected, actual);
 
@@ -3009,15 +2991,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         actual = getActualAcl(acl);
         expected = new HashMap<>();
         expected.put("members*", set(READ));
-        expected.put("administrators*", set(READ, WRITE, ALL));
         expected.put("Administrator*", set(READ, WRITE, ALL));
         assertEquals(expected, actual);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testGetACL() throws Exception {
-        CoreSession coreSession = nuxeotc.session;
-
         String folder1Id = getObjectByPath("/testfolder1").getId();
         String file1Id = getObjectByPath("/testfolder1/testfile1").getId();
         String file4Id = getObjectByPath("/testfolder2/testfolder3/testfile4").getId();
@@ -3053,8 +3033,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             coreSession.setACP(new IdRef(file4Id), acp, true);
 
             coreSession.save();
-            // process invalidations
-            ((NuxeoBinding) binding).getCoreSession().save();
+            nextTransaction();
+            // // process invalidations
+            // ((NuxeoBinding) binding).getCoreSession().save();
         }
 
         Acl acl = aclService.getAcl(repositoryId, file1Id, Boolean.FALSE, null);
@@ -3067,7 +3048,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         expected.put("steve*", set(READ, "Read"));
         expected.put("mary*", set(READ, "Read"));
         expected.put("members*", set(READ, "Read"));
-        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
         expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
         assertEquals(expected, actual);
 
@@ -3112,7 +3092,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         expected.put("bob", set("Browse"));
         expected.put("mary", set(READ, "Read"));
         expected.put("members*", set(READ, "Read"));
-        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
         expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
         assertEquals(expected, actual);
 
@@ -3128,7 +3107,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         expected = new HashMap<>();
         expected.put("bob", set("Browse"));
         expected.put("members*", set(READ, "Read"));
-        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
         expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
         assertEquals(expected, actual);
     }
@@ -3137,7 +3115,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void testRecoverableException() throws Exception {
         // listener that will cause a RecoverableClientException to be thrown
         // when a doc whose name starts with "throw" is created
-        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+        harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
                 "OSGI-INF/recoverable-exc-listener-contrib.xml");
         try {
             createDocument("throw_foo", rootFolderId, "File");
@@ -3145,6 +3123,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         } catch (CmisRuntimeException e) {
             Throwable cause = e.getCause();
             assertTrue(String.valueOf(cause), cause instanceof RecoverableClientException);
+        } finally {
+            harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                    "OSGI-INF/recoverable-exc-listener-contrib.xml");
         }
     }
 
