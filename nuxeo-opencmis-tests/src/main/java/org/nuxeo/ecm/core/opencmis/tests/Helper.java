@@ -23,6 +23,8 @@ import java.util.TimeZone;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -33,6 +35,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Various static methods used in several test cases.
@@ -88,6 +91,12 @@ public class Helper {
      * Creates data in the repository using the Nuxeo API. This is then used as a starting point by unit tests.
      */
     public static Map<String, String> makeNuxeoRepository(CoreSession session) throws Exception {
+        // remove default-domain
+        DocumentRef defaultDomain = new PathRef("/default-domain");
+        if (session.exists(defaultDomain)) {
+            session.removeDocument(defaultDomain);
+        }
+
         Map<String, String> info = new HashMap<String, String>();
 
         DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
@@ -169,6 +178,10 @@ public class Helper {
         info.put("file5id", file5.getId());
 
         session.save();
+        if (TransactionHelper.isTransactionActive()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
@@ -184,6 +197,8 @@ public class Helper {
 
     public static DocumentModel createDocument(CoreSession session, DocumentModel doc) throws Exception {
         sleepForAuditGranularity();
+        // avoid changes in last contributor in these tests
+        doc.putContextData("disableDublinCoreListener", Boolean.TRUE);
         return session.createDocument(doc);
     }
 
@@ -215,6 +230,10 @@ public class Helper {
         }
 
         repo.save();
+        if (TransactionHelper.isTransactionActive()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
         return ws.getPathAsString();
     }
 }

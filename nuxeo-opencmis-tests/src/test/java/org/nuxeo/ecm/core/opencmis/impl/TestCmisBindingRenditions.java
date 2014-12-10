@@ -21,50 +21,47 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.impl.Constants;
-import org.apache.chemistry.opencmis.commons.spi.ObjectService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
-import org.nuxeo.ecm.core.opencmis.tests.Helper;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestNuxeoBindingRenditions extends NuxeoBindingTestCase {
+import com.google.inject.Inject;
 
-    protected ObjectService objService;
+@RunWith(FeaturesRunner.class)
+@Features({ CmisFeature.class, CmisFeatureConfiguration.class })
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", //
+        "org.nuxeo.ecm.core.convert.api", //
+        "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.core.convert.plugins", //
+        "org.nuxeo.ecm.platform.convert", //
+        "org.nuxeo.ecm.platform.rendition.api", //
+        "org.nuxeo.ecm.platform.rendition.core", //
+        "org.nuxeo.ecm.automation.core" //
+})
+@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
+public class TestCmisBindingRenditions extends TestCmisBindingBase {
 
-    @Override
+    @Inject
+    protected CoreSession coreSession;
+
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        Helper.makeNuxeoRepository(nuxeotc.session);
-        sleepForFulltext();
+        setUpBinding(coreSession);
+        setUpData(coreSession);
     }
 
-    @Override
     @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    @Override
-    protected void deployBundles() throws Exception {
-        super.deployBundles();
-        nuxeotc.deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        nuxeotc.deployBundle("org.nuxeo.ecm.core.convert.api");
-        nuxeotc.deployBundle("org.nuxeo.ecm.core.convert");
-        nuxeotc.deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        nuxeotc.deployBundle("org.nuxeo.ecm.platform.convert");
-        nuxeotc.deployBundle("org.nuxeo.ecm.platform.rendition.api");
-        nuxeotc.deployBundle("org.nuxeo.ecm.platform.rendition.core");
-        nuxeotc.deployBundle("org.nuxeo.ecm.automation.core");
-        // start OOoManagerComponent
-        nuxeotc.fireFrameworkStarted();
-    }
-
-    @Override
-    public void initBinding() throws Exception {
-        super.initBinding();
-        objService = binding.getObjectService();
+    public void tearDown() {
+        tearDownBinding();
     }
 
     protected ObjectData getObjectByPath(String path) {
