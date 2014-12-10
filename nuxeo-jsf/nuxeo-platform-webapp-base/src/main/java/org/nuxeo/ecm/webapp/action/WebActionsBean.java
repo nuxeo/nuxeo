@@ -42,6 +42,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.nuxeo.common.utils.UserAgentMatcher;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -51,7 +52,6 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 

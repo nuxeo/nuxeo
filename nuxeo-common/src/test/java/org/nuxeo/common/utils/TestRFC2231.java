@@ -21,8 +21,9 @@
 
 package org.nuxeo.common.utils;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author Florent Guillaume
@@ -45,12 +46,15 @@ public class TestRFC2231 {
     @Test
     public void testEncodeContentDisposition() throws Exception {
         assertEquals("inline; filename*=UTF-8''caf%C3%A9",
-                RFC2231.encodeContentDisposition("caf\u00e9", true, "Firefox"));
-        assertEquals("attachment; filename=caf%C3%A9", RFC2231.encodeContentDisposition("caf\u00e9", false, "MSIE"));
+                RFC2231.encodeContentDisposition("caf\u00e9", true, TestUserAgent.FF_30));
+        assertEquals("attachment; filename=caf%C3%A9",
+                RFC2231.encodeContentDisposition("caf\u00e9", false, TestUserAgent.MSIE7_UA));
         assertEquals("attachment; filename=caf\u00e9", RFC2231.encodeContentDisposition("caf\u00e9", false, null));
-        assertEquals(
-                "attachment; filename*=UTF-8''R%C3%A9sultat%20d%27Activit%C3%A9%20%28%3Bprovisoire/draft%29.",
-                RFC2231.encodeContentDisposition("R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).", false, "Firefox"));
+        assertEquals("attachment; filename*=UTF-8''R%C3%A9sultat%20d%27Activit%C3%A9%20%28%3Bprovisoire/draft%29.",
+                RFC2231.encodeContentDisposition("R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).", false,
+                        TestUserAgent.FF_30));
+        assertEquals("attachment; filename*=UTF-8''%E5%B9%B3%E4%BB%AE%E5%90%8D%20-%20good.txt",
+                RFC2231.encodeContentDisposition("平仮名 - good.txt", false, TestUserAgent.MSIE11));
     }
 
 }

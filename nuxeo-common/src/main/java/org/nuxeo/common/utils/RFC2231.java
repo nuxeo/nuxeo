@@ -21,6 +21,11 @@
 
 package org.nuxeo.common.utils;
 
+import static org.nuxeo.common.utils.UserAgentMatcher.isChrome;
+import static org.nuxeo.common.utils.UserAgentMatcher.isFirefox3;
+import static org.nuxeo.common.utils.UserAgentMatcher.isFirefox4OrMore;
+import static org.nuxeo.common.utils.UserAgentMatcher.isMSIE6or7;
+
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -81,13 +86,14 @@ public class RFC2231 {
         if (userAgent == null) {
             userAgent = "";
         }
-        if (userAgent.contains("Firefox") || userAgent.contains("Chrome")) {
+        if (isFirefox3(userAgent) || isFirefox4OrMore(userAgent) || isChrome(userAgent)
+                || UserAgentMatcher.isMSIE10OrMore(userAgent)) {
             // proper RFC2231
             buf.append("filename*=UTF-8''");
             percentEscape(buf, filename);
         } else {
             buf.append("filename=");
-            if (userAgent.contains("MSIE")) {
+            if (isMSIE6or7(userAgent)) {
                 // MSIE understands straight %-encoding
                 percentEscape(buf, filename);
             } else {
