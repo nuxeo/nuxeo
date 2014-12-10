@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
+import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -73,6 +74,8 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.test", "test-usermanagerimpl/directory-config.xml");
         deployContrib(TEST_BUNDLE, "OSGI-INF/test-sql-directories-contrib.xml");
         deployContrib(TEST_BUNDLE, "OSGI-INF/test-graph-types-contrib.xml");
+        deployContrib(TaskUTConstants.CORE_BUNDLE_NAME, "OSGI-INF/task-core-types-contrib.xml");
+        deployContrib(TaskUTConstants.CORE_BUNDLE_NAME, "OSGI-INF/task-lifecycle-contrib.xml");
         deployBundle(TestConstants.CORE_BUNDLE);
         CounterListener.resetCouner();
 

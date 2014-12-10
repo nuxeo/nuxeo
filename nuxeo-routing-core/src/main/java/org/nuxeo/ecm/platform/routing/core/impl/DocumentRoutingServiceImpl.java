@@ -787,6 +787,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
+    @Deprecated
     public void makeRoutingTasks(CoreSession coreSession, final List<Task> tasks) throws ClientException {
         new UnrestrictedSessionRunner(coreSession) {
             @Override

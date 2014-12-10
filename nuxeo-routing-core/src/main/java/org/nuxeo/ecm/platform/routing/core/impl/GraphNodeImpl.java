@@ -31,7 +31,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mvel2.CompileException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -438,7 +437,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         nodeVariables.put("button", button);
         nodeVariables.put("numberOfProcessedTasks", getProcessedTasksInfo().size());
         nodeVariables.put("numberOfTasks", getTasksInfo().size());
-        nodeVariables.put("tasks", (Serializable) new TasksInfoWrapper(getTasksInfo()));
+        nodeVariables.put("tasks", new TasksInfoWrapper(getTasksInfo()));
         context.put("NodeVariables", (Serializable) nodeVariables);
         context.put("nodeId", getId());
         String state = getState().name().toLowerCase();
@@ -741,8 +740,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     @Override
     public String getTaskDocType() {
         String taskDocType = (String) getProperty(PROP_TASK_DOC_TYPE);
-        if (StringUtils.isEmpty(taskDocType)) {
-            taskDocType = TaskConstants.TASK_TYPE_NAME;
+        if (StringUtils.isEmpty(taskDocType) || TaskConstants.TASK_TYPE_NAME.equals(taskDocType)) {
+            taskDocType = DocumentRoutingConstants.ROUTING_TASK_DOC_TYPE;
         }
         return taskDocType;
     }
@@ -805,7 +804,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         }
         OperationContext context = getExecutionContext(getSession());
         String res = valueOrExpression(String.class, subRouteModelExpr, context, "Sub-workflow id expression");
-        return StringUtils.defaultIfBlank((String) res, null);
+        return StringUtils.defaultIfBlank(res, null);
     }
 
     protected String getSubRouteInstanceId() {

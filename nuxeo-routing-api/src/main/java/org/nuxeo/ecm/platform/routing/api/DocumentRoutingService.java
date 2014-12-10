@@ -413,7 +413,11 @@ public interface DocumentRoutingService {
      * @param session the session
      * @param tasks the tasks
      * @since 5.6, was on RoutingTaskService before
+     *
+     * @deprecated The facet RoutingTask is statically attached to the new
+     *             RoutingTask Document type since 7.1
      */
+    @Deprecated
     void makeRoutingTasks(CoreSession session, List<Task> tasks) throws ClientException;
 
     /**

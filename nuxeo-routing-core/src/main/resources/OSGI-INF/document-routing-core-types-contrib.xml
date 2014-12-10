@@ -2,6 +2,7 @@
   version="1.0">
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.ecm.plateform.task.type</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="schema">
@@ -22,14 +23,14 @@
     point="doctype">
 
     <facet name="Routable" />
-    <facet name="DocumentRoute" />
+    <facet name="DocumentRoute" perDocumentQuery="false" />
 
     <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <facet name="RouteStep" />
     <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <facet name="StepFolder" />
 
-    <facet name="RoutingTask" />
+    <facet name="RoutingTask" perDocumentQuery="false" />
 
     <facet name="CommentsInfoHolder">
       <schema name="info_comments" />
@@ -39,6 +40,10 @@
     <facet name="ConditionalStepFolder">
       <schema name="conditional_step_folder" />
     </facet>
+
+    <doctype name="RoutingTask" extends="TaskDoc">
+      <facet name="RoutingTask"/>
+    </doctype>
 
     <doctype name="DocumentRouteInstancesRoot" extends="Folder">
       <facet name="HiddenInNavigation" />

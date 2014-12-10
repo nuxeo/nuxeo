@@ -192,5 +192,10 @@ public interface DocumentRoutingConstants {
 
     public static final String ROUTING_TASK_FACET_NAME = "RoutingTask";
 
+    /**
+     * @since 7.1
+     */
+    public static final String ROUTING_TASK_DOC_TYPE = "RoutingTask";
+
     public static final String ROUTE_TASK_LOCAL_ACL = "routingTask";
 }

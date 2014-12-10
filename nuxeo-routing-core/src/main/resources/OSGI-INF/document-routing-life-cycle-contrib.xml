@@ -116,6 +116,7 @@
       </type>
       <type name="DocumentRouteStep">documentRouteElement</type>
       <type name="RouteNode">documentRouteElement</type>
+      <type name="RoutingTask">task</type>
     </types>
   </extension>
 
