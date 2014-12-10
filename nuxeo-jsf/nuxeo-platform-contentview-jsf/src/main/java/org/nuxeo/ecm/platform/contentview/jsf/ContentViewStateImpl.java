@@ -32,6 +32,8 @@ public class ContentViewStateImpl implements ContentViewState {
 
     protected String contentViewName;
 
+    protected String pageProviderName;
+
     protected Long pageSize;
 
     protected Long currentPage;
@@ -108,6 +110,14 @@ public class ContentViewStateImpl implements ContentViewState {
 
     public void setResultColumns(List<String> resultColumns) {
         this.resultColumns = resultColumns;
+    }
+
+    public String getPageProviderName() {
+        return pageProviderName;
+    }
+
+    public void setPageProviderName(String pageProviderName) {
+        this.pageProviderName = pageProviderName;
     }
 
 }

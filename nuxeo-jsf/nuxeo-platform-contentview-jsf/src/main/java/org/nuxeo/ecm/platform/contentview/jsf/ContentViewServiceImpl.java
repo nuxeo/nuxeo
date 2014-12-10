@@ -304,10 +304,10 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         }
         if (desc.getCoreQueryPageProvider() != null) {
 
-            ppService.unregisterPageProviderDefinition((PageProviderDefinition) desc.getCoreQueryPageProvider());
+            ppService.unregisterPageProviderDefinition(desc.getCoreQueryPageProvider());
         }
         if (desc.getGenericPageProvider() != null) {
-            ppService.unregisterPageProviderDefinition((PageProviderDefinition) desc.getGenericPageProvider());
+            ppService.unregisterPageProviderDefinition(desc.getGenericPageProvider());
         }
     }
 
@@ -364,6 +364,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         // provider info
         PageProvider<?> pp = contentView.getCurrentPageProvider();
         if (pp != null) {
+            state.setPageProviderName(pp.getName());
             state.setSearchDocumentModel(pp.getSearchDocumentModel());
             state.setCurrentPage(new Long(pp.getCurrentPageIndex()));
             state.setQueryParameters(pp.getParameters());
