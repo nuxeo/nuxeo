@@ -64,4 +64,14 @@ public interface ContentViewState extends Serializable {
 
     void setResultColumns(List<String> resultColumns);
 
+    /**
+     * @since 7.1
+     */
+    String getPageProviderName();
+
+    /**
+     * @since 7.1
+     */
+    void setPageProviderName(String name);
+
 }

@@ -77,6 +77,7 @@ public class JSONContentViewState {
         // build json
         JSONObject jsonObject = new JSONObject();
         jsonObject.element("contentViewName", state.getContentViewName());
+        jsonObject.element("pageProviderName", state.getPageProviderName());
         jsonObject.element("pageSize", state.getPageSize());
         jsonObject.element("currentPage", state.getCurrentPage());
 
@@ -157,6 +158,7 @@ public class JSONContentViewState {
         ContentViewState state = new ContentViewStateImpl();
 
         state.setContentViewName(jsonObject.getString("contentViewName"));
+        state.setPageProviderName(jsonObject.optString("pageProviderName", null));
         state.setPageSize(Long.valueOf(jsonObject.optLong("pageSize", -1)));
         state.setCurrentPage(Long.valueOf(jsonObject.optLong("currentPage", -1)));
 

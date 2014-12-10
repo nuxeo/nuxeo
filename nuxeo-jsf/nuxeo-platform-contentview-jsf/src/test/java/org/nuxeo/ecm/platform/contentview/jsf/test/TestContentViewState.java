@@ -124,6 +124,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         ContentViewState state = service.saveContentView(contentView);
         assertNotNull(state);
         assertEquals("CURRENT_DOCUMENT_CHILDREN", state.getContentViewName());
+        assertNull(state.getPageProviderName());
         assertNull(state.getCurrentPage());
         assertNull(state.getPageSize());
 
@@ -147,12 +148,17 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         contentView.getPageProviderWithParams("test_parent_id");
         contentView.setCurrentResultLayoutColumns(Arrays.asList(new String[] { "column_1" }));
         state = service.saveContentView(contentView);
-        checkContentViewState(state);
+        checkContentViewState(state, true);
     }
 
-    protected void checkContentViewState(ContentViewState state) {
+    protected void checkContentViewState(ContentViewState state, boolean withPP) {
         assertNotNull(state);
         assertEquals("CURRENT_DOCUMENT_CHILDREN", state.getContentViewName());
+        if (withPP) {
+            assertEquals("CURRENT_DOCUMENT_CHILDREN", state.getPageProviderName());
+        } else {
+            assertNull(state.getPageProviderName());
+        }
         assertEquals(new Long(0), state.getCurrentPage());
         assertEquals(new Long(2), state.getPageSize());
 
@@ -199,6 +205,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         // build state
         ContentViewState state = new ContentViewStateImpl();
         state.setContentViewName("CURRENT_DOCUMENT_CHILDREN");
+        state.setPageProviderName("CURRENT_DOCUMENT_CHILDREN");
         state.setCurrentPage(new Long(0));
         state.setPageSize(new Long(2));
         Object[] queryParams = new Object[] { "test_parent_id" };
@@ -260,6 +267,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         String json = JSONContentViewState.toJSON(state, false);
         String expectedJson = "{"
                 + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN\","
+                + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN\","
                 + "\"pageSize\":2,"
                 + "\"currentPage\":0,"
                 + "\"queryParameters\":[\"test_parent_id\"],"
@@ -271,7 +279,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
         assertEquals(
-                "H4sIAAAAAAAAAF1Qy07DMBD8lz1bLXD0DSWVqFRK1NcFVZFxlsaSYwd7rRKi%2FjvrpFw4eTyamZ3dEbR3hI5OBq9b1SFIKI673Wp7qMu34viaQfGy3pRMgYBeXXBvflj2JECnENhaMQfyQcBXwjBUKnAMYYgg34EwUt2rLKtNA2cBEVXQbel16pgE6ZK1zPpAa%2Ffps2mcfoW3qXNcp9GSDFmEWfUcNbrGuAtICglvHBkwJksbNfjEgSO4eY%2FmPqO2JlI2CJiDJFj1gXbxX7CwcwTrgnLRKsLDbMiTBBi%2BVaWo5YBlxnHZDfld9FN4bP212J9W3z3XvLf7KzdvM51ET7B%2BhPPtFy6T5JJ%2BAQAA",
+                "H4sIAAAAAAAAAI2QT0%2FDMAzFv4vPVQccc0PtJCaNUe3fBU1VSM0aKU1K4jBKte%2BO044LJ05xnp5%2FfvYIyllCS0eNl43sEAQUh%2B12udnX5UtxeE5F8bRalyxBBr08Y%2BXdp27Q%2F9O%2B099se8hARe95UsUaiLsMPiL6oZKeMYQ%2BgHgFwkB1L5Ot1g2cMggovWpLp2LHIggbjWHVeVrZd5eaxulXOBM7y3EaJUiTQZhdj0GhbbQ9gyAf8cpIjyEaWsvBRQaOYOc9mtuM2uhAqSGDGSTAyDc0%2BV9DbmYE%2B7y0wUjC%2FdyQJmWg%2BbSVpJYBi1SHRTekN%2B8neGjdpdgdl189x7yl%2Bw03bzOdRE1lfQ%2Bn6w%2BK7%2FZrrQEAAA%3D%3D",
                 encodedJson);
     }
 
@@ -289,11 +297,11 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"resultLayout\":{\"name\":\"document_listing\",\"title\":\"label.document_listing.layout\",\"translateTitle\":true,\"iconPath\":\"/icons/myicon.png\",\"showCSVExport\":true},"
                 + "\"resultColumns\":[\"column_1\"]" + "}";
         ContentViewState state = JSONContentViewState.fromJSON(json, false);
-        checkContentViewState(state);
+        checkContentViewState(state, false);
 
         String encodedJson = "H4sIAAAAAAAAAF1Qy07DMBD8lz1bLXD0DSWVqFRK1NcFVZFxlsaSYwd7rRKi%2FjvrpFw4eTyamZ3dEbR3hI5OBq9b1SFIKI673Wp7qMu34viaQfGy3pRMgYBeXXBvflj2JECnENhaMQfyQcBXwjBUKnAMYYgg34EwUt2rLKtNA2cBEVXQbel16pgE6ZK1zPpAa%2Ffps2mcfoW3qXNcp9GSDFmEWfUcNbrGuAtICglvHBkwJksbNfjEgSO4eY%2FmPqO2JlI2CJiDJFj1gXbxX7CwcwTrgnLRKsLDbMiTBBi%2BVaWo5YBlxnHZDfld9FN4bP212J9W3z3XvLf7KzdvM51ET7B%2BhPPtFy6T5JJ%2BAQAA";
         state = JSONContentViewState.fromJSON(encodedJson, true);
-        checkContentViewState(state);
+        checkContentViewState(state, false);
     }
 
     @Test
@@ -305,6 +313,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         ContentViewState state = service.saveContentView(contentView);
         assertNotNull(state);
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", state.getContentViewName());
+        assertNull(state.getPageProviderName());
         assertNull(state.getCurrentPage());
         assertNull(state.getPageSize());
 
@@ -326,13 +335,18 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         contentView.getPageProvider();
         contentView.setCurrentResultLayoutColumns(Arrays.asList(new String[] { "column_1" }));
         state = service.saveContentView(contentView);
-        checkContentViewStateWithSearchDoc(state, true, true);
+        checkContentViewStateWithSearchDoc(state, true, true, true);
     }
 
     protected void checkContentViewStateWithSearchDoc(ContentViewState state, boolean withQueryParams,
-            boolean withSortInfos) throws ClientException {
+            boolean withSortInfos, boolean withPP) throws ClientException {
         assertNotNull(state);
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", state.getContentViewName());
+        if (withPP) {
+            assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", state.getPageProviderName());
+        } else {
+            assertNull(state.getPageProviderName());
+        }
         assertEquals(new Long(0), state.getCurrentPage());
         assertEquals(new Long(2), state.getPageSize());
 
@@ -497,6 +511,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         String json = JSONContentViewState.toJSON(state, false);
         String expectedJson = "{"
                 + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\","
+                + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\","
                 + "\"pageSize\":2,"
                 + "\"currentPage\":0,"
                 + "\"queryParameters\":[],"
@@ -506,14 +521,17 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         JSONAssert.assertEquals(expectedJson, json, true);
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
+        // XXX: this check does not seem to pass on some OS (?), hence the two following asserts
+        // assertEquals(
+        // "H4sIAAAAAAAAAKWR0WqDQBBFf6XMaw1okrawb0FTFNI0GNM8lCCiY7pUd9Nxt8GK%2F97ZhOYHuk%2Bzd%2B6cuTADlFoZVOZN4nldtAgCwl2aLtdZHr2GuxdXhHGyiljK90kW59vlIg3jWxc8OBVH3JD%2BlhXSfxhb%2BcOzUw9KS8SZNqyB8D34skj9piBmG6QOxPvBgw4LKj8iXdqWvSAGMP3J7X6WDToi6ROSkdi5XlWKVleyllixZeoH84k%2FnwSPWfAgZk9iPrv3%2BfEYG400jQNdN9x9Yn%2FWVHXcrBl9WT%2BOHECTSVStnTBcfqFubKt48ga5uhZdiaqS6gjCkMWR0xN2tjGroteWsyvbNH%2FaFeKgfBtX5gEcxl%2BeQOxkqQEAAA%3D%3D",
+        // encodedJson);
         JSONAssert.assertEquals(expectedJson,
                 JSONContentViewState.toJSON(JSONContentViewState.fromJSON(encodedJson, true), false), true);
-
         JSONAssert.assertEquals(
                 expectedJson,
                 JSONContentViewState.toJSON(
                         JSONContentViewState.fromJSON(
-                                "H4sIAAAAAAAAAD2Q3WqDQBCFX6XMbQ1oYlvYu6ApCmkajGkvShDRMV2qu3Z%2FCFZ8985Gkr2aPXPmO8OMUElhUJgPjpdd2SEwiI5ZttnlRfweHd9cESXpNiap%2BEzzpDhs1lmU3LvgQV%2Be8cD%2FaHbpQWWVIt6eNGC%2BB78W1bAvFbENKg3s6%2BSBxlJV37GsbEdeYCOYoXfZr7xFR1SyR2U4aterK9bJmjcca7Is%2FSBc%2BOEieM6DJ7Z6YeHq0adHY2Q03LQONCc8%2FOBwkarW1GwIfY2fJlpAKpOKRjphvP4i2dpO0OQdMrvWukJRc3EGZpTFibZXqG1rtuUgLe0ubNvetBnioHRXVxYBnKZ%2F2JEe%2BWUBAAA%3D",
+                                "H4sIAAAAAAAAAKWR0WqDQBBFf6XMaw1okrawb0FTFNI0GNM8lCCiY7pUd9Nxt8GK%2F97ZhOYHuk%2Bzd%2B6cuTADlFoZVOZN4nldtAgCwl2aLtdZHr2GuxdXhHGyiljK90kW59vlIg3jWxc8OBVH3JD%2BlhXSfxhb%2BcOzUw9KS8SZNqyB8D34skj9piBmG6QOxPvBgw4LKj8iXdqWvSAGMP3J7X6WDToi6ROSkdi5XlWKVleyllixZeoH84k%2FnwSPWfAgZk9iPrv3%2BfEYG400jQNdN9x9Yn%2FWVHXcrBl9WT%2BOHECTSVStnTBcfqFubKt48ga5uhZdiaqS6gjCkMWR0xN2tjGroteWsyvbNH%2FaFeKgfBtX5gEcxl%2BeQOxkqQEAAA%3D%3D",
                                 true), false), true);
     }
 
@@ -541,6 +559,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertNull(service.saveContentView(null));
         String json = "{"
                 + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\","
+                + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\","
                 + "\"pageSize\":2,"
                 + "\"currentPage\":0,"
                 + "\"queryParameters\":[],"
@@ -548,12 +567,12 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}]," + "\"resultLayout\":null,"
                 + "\"resultColumns\":[\"column_1\"]" + "}";
         ContentViewState state = JSONContentViewState.fromJSON(json, false);
-        checkContentViewStateWithSearchDoc(state, false, true);
+        checkContentViewStateWithSearchDoc(state, false, true, true);
 
         String encodedJson = "H4sIAAAAAAAAAD2QUWuDMBSF%2F8q4r7OgrayQt6IdCl1XrN0eRhGJ1y5MExcTihP%2F%2B24q7dvNued855IRuJIGpfkQeN2XLQKD6JRl231exO%2FR6c0NUZLuYpKKzzRPiuN2k0XJYwsedOUFj%2BKPsksPuNWaeAfSgPke%2FFrUw6HUxDaoe2BfZw96LDX%2FjhW3LXmBjWCGznW%2FigYdUasOtRHYu13FWasqUQusyLL0g3Dhh4vgJQ%2FWbLVm4erZX%2Fo%2BxchohGkcaG54%2BsHhqnTV07Im9K1%2BmugApU0qa%2BWE8faKVGNbSckHZHZteo6yEvICzGiLE12vsbeN2ZWDsnS7tE1z12aIg9K%2FurEI4Dz9A2Tpu0RlAQAA";
 
         state = JSONContentViewState.fromJSON(encodedJson, true);
-        checkContentViewStateWithSearchDoc(state, false, true);
+        checkContentViewStateWithSearchDoc(state, false, true, false);
     }
 
 }
