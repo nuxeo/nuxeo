@@ -32,17 +32,19 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
-import org.nuxeo.ecm.platform.query.core.PageProviderServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -59,7 +61,7 @@ public class NXQLQueryBuilder {
     // @since 5.9
     public static final String SORTED_COLUMN = "SORTED_COLUMN";
 
-    public static final String REGEXP_NAMED_PARAMETER = "[^a-zA-Z]:\\s*" + "([a-zA-Z0-9]*)";
+    public static final String REGEXP_NAMED_PARAMETER = "[^a-zA-Z]:\\s*" + "([a-zA-Z0-9:]*)";
 
     public static final String REGEXP_EXCLUDE_QUOTE = "'[^']*'";
 
@@ -175,10 +177,9 @@ public class NXQLQueryBuilder {
             pattern = pattern.replace(SORTED_COLUMN, sortedColumn);
         }
         StringBuilder queryBuilder;
-        Map<String, Object> namedParameters = searchDocumentModel != null ? (Map<String, Object>) searchDocumentModel.getContextData().getScopedValue(
-                ScopeType.DEFAULT, PageProviderServiceImpl.NAMED_PARAMETERS)
-                : null;
-        if (namedParameters != null) {
+
+        // handle named parameters replacements
+        if (searchDocumentModel != null) {
             // Find all query named parameters as ":parameter" not between
             // quotes and add them to matches
             String query = pattern.replaceAll(REGEXP_EXCLUDE_DOUBLE_QUOTE, StringUtils.EMPTY);
@@ -190,7 +191,7 @@ public class NXQLQueryBuilder {
                 matches.add(m1.group().substring(m1.group().indexOf(":") + 1));
             }
             for (String key : matches) {
-                Object parameter = namedParameters.get(key);
+                Object parameter = getRawValue(searchDocumentModel, new FieldDescriptor(key));
                 if (parameter == null) {
                     continue;
                 }
@@ -217,10 +218,12 @@ public class NXQLQueryBuilder {
                     }
                 }
             }
-            queryBuilder = new StringBuilder(pattern);
-        } else if (params == null) {
+        }
+
+        if (params == null) {
             queryBuilder = new StringBuilder(pattern + ' ');
         } else {
+            // handle "standard" parameters replacements (referenced by ? characters)
             // XXX: the + " " is a workaround for the buggy implementation
             // of the split function in case the pattern ends with '?'
             String[] queryStrList = (pattern + ' ').split("\\?");
@@ -566,11 +569,16 @@ public class NXQLQueryBuilder {
                     field = model.getProperty(xpath).getField();
                 }
             } else {
-                Schema schemaObj = typeManager.getSchema(schema);
-                if (schemaObj == null) {
-                    throw new ClientException("failed to obtain schema: " + schema);
+                if (schema != null) {
+                    Schema schemaObj = typeManager.getSchema(schema);
+                    if (schemaObj == null) {
+                        throw new ClientException("failed to obtain schema: " + schema);
+                    }
+                    field = schemaObj.getField(name);
+                } else {
+                    // assume named parameter use case: hard-code on String in this case
+                    return StringType.ID;
                 }
-                field = schemaObj.getField(name);
             }
             if (field == null) {
                 throw new ClientException("failed to obtain field: " + schema + ":" + name);
@@ -582,6 +590,7 @@ public class NXQLQueryBuilder {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static Object getRawValue(DocumentModel model, PredicateFieldDefinition fieldDescriptor) {
         String xpath = fieldDescriptor.getXpath();
         String schema = fieldDescriptor.getSchema();
@@ -589,12 +598,26 @@ public class NXQLQueryBuilder {
         try {
             if (xpath != null) {
                 return model.getPropertyValue(xpath);
+            } else if (schema == null) {
+                return model.getPropertyValue(name);
             } else {
                 return model.getProperty(schema, name);
+            }
+        } catch (PropertyNotFoundException e) {
+            // fall back on named parameters if any
+            Map<String, Object> params = (Map<String, Object>) model.getContextData().getScopedValue(ScopeType.DEFAULT,
+                    PageProviderService.NAMED_PARAMETERS);
+            if (params != null) {
+                if (xpath != null) {
+                    return params.get(xpath);
+                } else {
+                    return params.get(name);
+                }
             }
         } catch (ClientException e) {
             return null;
         }
+        return null;
     }
 
     public static String getStringValue(DocumentModel model, PredicateFieldDefinition fieldDescriptor)

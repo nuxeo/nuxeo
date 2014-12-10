@@ -136,6 +136,35 @@ public class QueryAndFetchOperationTest {
 
     }
 
+    @Test
+    public void testResultSetPageProviderWithNamedParamsAndDoc() throws Exception {
+
+        OperationContext ctx = new OperationContext(session);
+
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        String providerName = "CURRENT_DOCUMENT_CHILDREN_FETCH_NAMED_PARAMS_WITH_DOC";
+
+        params.put("providerName", providerName);
+        Map<String, String> namedParameters = new HashMap<>();
+        namedParameters.put("npd:title", session.getRootDocument().getId());
+        Properties namedProperties = new Properties(namedParameters);
+        params.put("namedParameters", namedProperties);
+
+        PaginableRecordSetImpl result = (PaginableRecordSetImpl) service.run(ctx, ResultSetPageProviderOperation.ID,
+                params);
+
+        // test page size
+        assertEquals(2, result.getPageSize());
+        assertEquals(2, result.getNumberOfPages());
+        assertEquals(2, result.size());
+
+        // test column
+        assertEquals("WS1", result.get(0).get("dc:title"));
+        assertEquals(ws1.getId(), result.get(0).get("ecm:uuid"));
+
+    }
+
     // @Test
     public void XXXtestDirectNXQL() throws Exception {
 

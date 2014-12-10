@@ -1,5 +1,6 @@
-<component name="org.nuxeo.ecm.core.automation.test-provider"
-  version="1.0">
+<component name="org.nuxeo.ecm.core.automation.test-provider" version="1.0">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
     point="providers">
@@ -7,7 +8,8 @@
     <genericPageProvider name="CURRENT_DOCUMENT_CHILDREN_FETCH"
       class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <pattern>
-        SELECT dc:title, ecm:uuid FROM Document WHERE ecm:parentId = ? AND
+        SELECT dc:title, ecm:uuid FROM Document WHERE ecm:parentId = ?
+        AND
         ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
         AND
         ecm:currentLifeCycleState != 'deleted'
@@ -17,10 +19,28 @@
     </genericPageProvider>
 
     <genericPageProvider name="CURRENT_DOCUMENT_CHILDREN_FETCH_NAMED_PARAMS"
-                         class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <searchDocumentType>NamedParamDoc</searchDocumentType>
       <pattern>
-        SELECT dc:title, ecm:uuid FROM Document WHERE ecm:parentId = :parentIdVar AND
-        ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+        SELECT dc:title, ecm:uuid FROM Document WHERE ecm:parentId =
+        :parentIdVar AND
+        ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+        'HiddenInNavigation'
+        AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </genericPageProvider>
+
+
+    <genericPageProvider name="CURRENT_DOCUMENT_CHILDREN_FETCH_NAMED_PARAMS_WITH_DOC"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <pattern>
+        SELECT dc:title, ecm:uuid FROM Document WHERE ecm:parentId =
+        :npd:title AND
+        ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+        'HiddenInNavigation'
         AND
         ecm:currentLifeCycleState != 'deleted'
       </pattern>
@@ -30,5 +50,14 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="named_param" src="schemas/named_param.xsd" prefix="np" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="NamedParamDoc" extends="Document">
+      <schema name="named_param" />
+    </doctype>
+  </extension>
 
 </component>

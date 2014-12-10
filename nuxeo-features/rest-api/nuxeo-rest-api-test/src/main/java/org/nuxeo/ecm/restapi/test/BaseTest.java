@@ -219,6 +219,15 @@ public class BaseTest {
         return result;
     }
 
+    /**
+     * @since 7.1
+     */
+    protected String getErrorMessage(JsonNode node) {
+        assertEquals("exception", node.get("entity-type").getValueAsText());
+        assertTrue(node.get("message").isTextual());
+        return node.get("message").getValueAsText();
+    }
+
     protected void assertEntityEqualsDoc(InputStream in, DocumentModel doc) throws Exception {
 
         JsonNode node = mapper.readTree(in);

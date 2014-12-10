@@ -30,10 +30,8 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  */
 public class PaginablePageProvider<T> extends ArrayList<T> implements Paginable<T> {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
+
     protected PageProvider<T> pageProvider;
 
     public PaginablePageProvider(PageProvider<T> pageProvider) {

@@ -11,7 +11,14 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.query;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -28,15 +35,8 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
-import org.nuxeo.ecm.platform.query.core.PageProviderServiceImpl;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @since 6.0 Result set query operation to perform queries on the repository.
@@ -70,7 +70,7 @@ public class ResultSetPaginatedQuery {
             NXQL.NXQL, CMIS })
     protected String lang = NXQL.NXQL;
 
-    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
+    @Param(name = PageProviderService.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
             + "fill in query variables.")
     protected Properties namedParameters;
 
@@ -92,7 +92,7 @@ public class ResultSetPaginatedQuery {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public RecordSet run() throws Exception {
+    public RecordSet run() throws OperationException {
         // Ordered parameters
         Object[] orderedParameters = null;
         if (strParameters != null && !strParameters.isEmpty()) {
@@ -139,14 +139,18 @@ public class ResultSetPaginatedQuery {
         SimpleDocumentModel searchDocumentModel = null;
         if (namedParameters != null && !namedParameters.isEmpty()) {
             searchDocumentModel = new SimpleDocumentModel();
-            searchDocumentModel.putContextData(PageProviderServiceImpl.NAMED_PARAMETERS, namedParameters);
+            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParameters);
         }
         QueryAndFetchProviderDescriptor desc = new QueryAndFetchProviderDescriptor();
         desc.setPattern(query);
         PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) pageProviderService.getPageProvider(
                 StringUtils.EMPTY, desc, searchDocumentModel, sortInfoList, targetPageSize, targetPage, props,
                 orderedParameters);
-        return new PaginableRecordSetImpl(pp);
+        PaginableRecordSetImpl res = new PaginableRecordSetImpl(pp);
+        if (res.hasError()) {
+            throw new OperationException(res.getErrorMessage());
+        }
+        return res;
     }
 
     @SuppressWarnings("unchecked")

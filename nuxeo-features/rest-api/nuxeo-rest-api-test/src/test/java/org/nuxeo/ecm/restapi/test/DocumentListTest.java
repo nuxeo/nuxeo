@@ -187,6 +187,106 @@ public class DocumentListTest extends BaseTest {
         assertEquals(2, getLogEntries(node).size());
     }
 
+    /**
+     * @since 6.0
+     */
+    @Test
+    public void iCanPerformPageProviderWithNamedParametersInvalid() throws Exception {
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderInvalid");
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(
+                "Failed to execute query: Lexical Error: Illegal character <:> at offset 38 in query: SELECT * FROM Document where dc:title=:foo",
+                getErrorMessage(node));
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void iCanPerformPageProviderWithNamedParametersAndDoc() throws Exception {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("np:title", "Folder 0");
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithDoc",
+                queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, getLogEntries(node).size());
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void iCanPerformPageProviderWithNamedParametersAndDocInvalid() throws Exception {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("np:title", "Folder 0");
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithDocInvalid",
+                queryParams);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(
+                "Failed to execute query: Lexical Error: Illegal character <:> at offset 38 in query: SELECT * FROM Document where dc:title=:foo",
+                getErrorMessage(node));
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void iCanPerformPageProviderWithNamedParametersInWhereClause() throws Exception {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("parameter1", "Folder 0");
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithWhereClause",
+                queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, getLogEntries(node).size());
+
+        // retry without params
+        response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithWhereClause");
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, getLogEntries(node).size());
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void iCanPerformPageProviderWithNamedParametersInWhereClauseWithDoc() throws Exception {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("np:title", "Folder 0");
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithWhereClauseWithDoc",
+                queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, getLogEntries(node).size());
+
+        // retry without params
+        response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithWhereClauseWithDoc");
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, getLogEntries(node).size());
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void iCanPerformPageProviderWithNamedParametersComplex() throws Exception {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("np:title", "Folder 0");
+        queryParams.add("np:isCheckedIn", Boolean.FALSE.toString());
+        queryParams.add("np:dateMin", "2007-01-30 01:02:03+04:00");
+        queryParams.add("np:dateMax", "2007-03-23 01:02:03+04:00");
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderComplex",
+                queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, getLogEntries(node).size());
+    }
+
     @Test
     public void itCanGetAdapterForRootDocument() throws Exception {
         // Given the root document

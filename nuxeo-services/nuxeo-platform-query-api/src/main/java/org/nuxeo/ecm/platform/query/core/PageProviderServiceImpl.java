@@ -50,14 +50,16 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     // @since 6.0
     public static final String REPLACER_EP = "replacers";
 
+    /**
+     * @deprecated since 6.0, use {@link PageProviderService#NAMED_PARAMETERS} instead.
+     */
+    @Deprecated
     public static final String NAMED_PARAMETERS = "namedParameters";
 
     protected PageProviderRegistry providerReg = new PageProviderRegistry();
 
     // @since 6.0
     protected PageProviderClassReplacerRegistry replacersReg = new PageProviderClassReplacerRegistry();
-
-    private static final Log log = LogFactory.getLog(PageProviderServiceImpl.class);
 
     @Override
     public PageProviderDefinition getPageProviderDefinition(String name) {

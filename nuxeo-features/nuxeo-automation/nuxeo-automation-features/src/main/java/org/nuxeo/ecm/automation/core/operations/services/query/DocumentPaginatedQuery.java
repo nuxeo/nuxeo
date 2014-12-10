@@ -11,7 +11,14 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.query;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -29,14 +36,7 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
-import org.nuxeo.ecm.platform.query.core.PageProviderServiceImpl;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @since 6.0 Document query operation to perform queries on the repository.
@@ -83,13 +83,13 @@ public class DocumentPaginatedQuery {
             ASC, DESC })
     protected String sortOrder;
 
-    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
+    @Param(name = PageProviderService.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
             + "fill in query variables.")
     protected Properties namedParameters;
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public DocumentModelList run() throws Exception {
+    public DocumentModelList run() throws OperationException {
         // Ordered parameters
         Object[] orderedParameters = null;
         if (strParameters != null && !strParameters.isEmpty()) {
@@ -135,12 +135,17 @@ public class DocumentPaginatedQuery {
         SimpleDocumentModel searchDocumentModel = null;
         if (namedParameters != null && !namedParameters.isEmpty()) {
             searchDocumentModel = new SimpleDocumentModel();
-            searchDocumentModel.putContextData(PageProviderServiceImpl.NAMED_PARAMETERS, namedParameters);
+            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParameters);
         }
         CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
         desc.setPattern(query);
-        return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                StringUtils.EMPTY, desc, searchDocumentModel, sortInfoList, targetPageSize, targetPage, props,
-                orderedParameters), null);
+        PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
+                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(StringUtils.EMPTY, desc,
+                        searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, orderedParameters), null);
+        if (res.hasError()) {
+            throw new OperationException(res.getErrorMessage());
+        }
+        return res;
+
     }
 }
