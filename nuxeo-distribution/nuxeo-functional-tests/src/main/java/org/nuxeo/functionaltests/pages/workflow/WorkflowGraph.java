@@ -20,32 +20,33 @@ package org.nuxeo.functionaltests.pages.workflow;
 
 import java.util.List;
 
-import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
  * @since 7.1
  */
-public class WorkflowGraph {
+public class WorkflowGraph extends AbstractPage {
 
-    protected String id;
-
+    @Required
+    @FindBy(id = "nxw_TAB_DOCUMENT_ROUTE_ELEMENTS_tab_content_graphView_box")
     protected WebElement element;
+
+    @Required
+    @FindBy(name = "graphInitDone")
+    protected WebElement graphInitDone;
+
+    public WorkflowGraph(WebDriver driver) {
+        super(driver);
+    }
 
     protected static final String END_NODE_CSS_CLASS = "end_node";
 
     protected static final String START_NODE_CSS_CLASS = "start_node";
-
-    public WorkflowGraph(final String id) {
-        this.id = id;
-        this.element = AbstractTest.driver.findElement(By.id(id));
-    }
-
-    public WorkflowGraph(final WebElement element) {
-        this.element = element;
-        this.id = element.getAttribute("id");
-    }
 
     public List<WebElement> getWorkflowEndNodes() {
         return element.findElements(By.cssSelector("." + END_NODE_CSS_CLASS));

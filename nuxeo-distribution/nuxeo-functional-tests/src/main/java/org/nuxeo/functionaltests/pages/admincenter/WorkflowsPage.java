@@ -20,7 +20,6 @@ package org.nuxeo.functionaltests.pages.admincenter;
 
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.workflow.WorkflowGraph;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -31,8 +30,6 @@ import org.openqa.selenium.support.FindBy;
  * @since 7.1
  */
 public class WorkflowsPage extends AdminCenterBasePage {
-
-    private static final String NXW_TAB_DOCUMENT_ROUTE_ELEMENTS_TAB_CONTENT_GRAPH_VIEW_BOX = "nxw_TAB_DOCUMENT_ROUTE_ELEMENTS_tab_content_graphView_box";
 
     @Required
     @FindBy(id = "admin_workflow_models")
@@ -52,16 +49,12 @@ public class WorkflowsPage extends AdminCenterBasePage {
 
     public WorkflowGraph getParallelDocumentReviewGraph() {
         parallelDocumentReviewLink.click();
-        Locator.waitUntilElementPresent(By.id(NXW_TAB_DOCUMENT_ROUTE_ELEMENTS_TAB_CONTENT_GRAPH_VIEW_BOX));
-        return new WorkflowGraph(
-                NXW_TAB_DOCUMENT_ROUTE_ELEMENTS_TAB_CONTENT_GRAPH_VIEW_BOX);
+        return asPage(WorkflowGraph.class);
     }
 
     public WorkflowGraph getSerialDocumentReviewGraph() {
         serialDocumentReviewLink.click();
-        Locator.waitUntilElementPresent(By.id(NXW_TAB_DOCUMENT_ROUTE_ELEMENTS_TAB_CONTENT_GRAPH_VIEW_BOX));
-        return new WorkflowGraph(
-                NXW_TAB_DOCUMENT_ROUTE_ELEMENTS_TAB_CONTENT_GRAPH_VIEW_BOX);
+        return asPage(WorkflowGraph.class);
     }
 
 }
