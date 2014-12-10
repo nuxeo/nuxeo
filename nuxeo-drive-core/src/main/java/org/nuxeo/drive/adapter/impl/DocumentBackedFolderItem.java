@@ -99,15 +99,35 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         props.put(CORE_SESSION_PROPERTY, (Serializable) getSession());
         PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                 FOLDER_ITEM_CHILDREN_PAGE_PROVIDER, null, null, 0L, props, docId);
-        List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
+        Long pageSize = childrenPageProvider.getPageSize();
 
-        List<FileSystemItem> children = new ArrayList<FileSystemItem>(dmChildren.size());
-        for (DocumentModel dmChild : dmChildren) {
-            FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this);
-            if (child != null) {
-                children.add(child);
+        List<FileSystemItem> children = new ArrayList<FileSystemItem>();
+        int nbChildren = 0;
+        boolean reachedPageSize = false;
+        boolean hasNextPage = true;
+        // Since query results are filtered, make sure we iterate on PageProvider to get at most its page size number of
+        // FileSystemItems
+        while (nbChildren < pageSize && hasNextPage) {
+            List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
+            for (DocumentModel dmChild : dmChildren) {
+                FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this);
+                if (child != null) {
+                    children.add(child);
+                    nbChildren++;
+                    if (nbChildren == pageSize) {
+                        reachedPageSize = true;
+                        break;
+                    }
+                }
+            }
+            if (!reachedPageSize) {
+                hasNextPage = childrenPageProvider.isNextPageAvailable();
+                if (hasNextPage) {
+                    childrenPageProvider.nextPage();
+                }
             }
         }
+
         return children;
     }
 
