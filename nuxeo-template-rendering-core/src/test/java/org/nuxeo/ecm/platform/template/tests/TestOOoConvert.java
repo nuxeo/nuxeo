@@ -17,8 +17,7 @@ public class TestOOoConvert extends BaseConverterTest {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        String converterName = cs.getConverterName(bh.getBlob().getMimeType(),
-                ODT_MT);
+        String converterName = cs.getConverterName(bh.getBlob().getMimeType(), ODT_MT);
         assertEquals("any2odt", converterName);
 
         if (cs.isConverterAvailable(converterName).isAvailable()) {
@@ -46,13 +45,11 @@ public class TestOOoConvert extends BaseConverterTest {
     @Test
     public void testOfficeConverter2() throws Exception {
 
-        BlobHolder bh = getBlobFromPath("data/Spec_ModelNux.odt",
-                "application/vnd.oasis.opendocument.text");
+        BlobHolder bh = getBlobFromPath("data/Spec_ModelNux.odt", "application/vnd.oasis.opendocument.text");
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        String converterName = cs.getConverterName(bh.getBlob().getMimeType(),
-                "application/pdf");
+        String converterName = cs.getConverterName(bh.getBlob().getMimeType(), "application/pdf");
         assertEquals("any2pdf", converterName);
 
         if (cs.isConverterAvailable(converterName).isAvailable()) {

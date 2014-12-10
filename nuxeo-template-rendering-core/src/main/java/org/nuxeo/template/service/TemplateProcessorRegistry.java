@@ -8,8 +8,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
-public class TemplateProcessorRegistry extends
-        ContributionFragmentRegistry<TemplateProcessorDescriptor> {
+public class TemplateProcessorRegistry extends ContributionFragmentRegistry<TemplateProcessorDescriptor> {
 
     protected Map<String, TemplateProcessorDescriptor> processors = new HashMap<String, TemplateProcessorDescriptor>();
 
@@ -32,8 +31,7 @@ public class TemplateProcessorRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, TemplateProcessorDescriptor tpd,
-            TemplateProcessorDescriptor newTpd) {
+    public void contributionUpdated(String id, TemplateProcessorDescriptor tpd, TemplateProcessorDescriptor newTpd) {
         if (tpd == null || !tpd.isEnabled()) {
             processors.remove(id);
         } else {
@@ -51,8 +49,7 @@ public class TemplateProcessorRegistry extends
     }
 
     @Override
-    public void merge(TemplateProcessorDescriptor srcTpd,
-            TemplateProcessorDescriptor descTpd) {
+    public void merge(TemplateProcessorDescriptor srcTpd, TemplateProcessorDescriptor descTpd) {
         descTpd.merge(srcTpd);
     }
 

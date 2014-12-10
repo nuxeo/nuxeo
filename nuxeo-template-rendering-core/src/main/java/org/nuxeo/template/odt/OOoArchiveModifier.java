@@ -34,16 +34,14 @@ import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- *
- * Helper used to modify a ODT/Zip archive for addition Pictures
- * (and potentially fragments)
+ * Helper used to modify a ODT/Zip archive for addition Pictures (and potentially fragments)
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class OOoArchiveModifier {
 
     public File updateArchive(File workingDir, File oooFile, List<Blob> blobs) throws Exception {
-        if (blobs==null || blobs.size()==0) {
+        if (blobs == null || blobs.size() == 0) {
             return oooFile;
         }
 
@@ -75,7 +73,7 @@ public class OOoArchiveModifier {
             blobsManifest.append("<manifest:file-entry manifest:media-type=\"");
             blobsManifest.append(blob.getMimeType());
             if (blob.getMimeType().startsWith("image")) {
-               blobsManifest.append("\" manifest:full-path=\"Pictures/");
+                blobsManifest.append("\" manifest:full-path=\"Pictures/");
             } else {
                 blobsManifest.append("\" manifest:full-path=\"Content/");
             }
@@ -83,10 +81,10 @@ public class OOoArchiveModifier {
             blobsManifest.append("\"/>\n");
         }
 
-        File xmlManifestFile = new File (unzipDir.getPath() + "/META-INF/manifest.xml");
+        File xmlManifestFile = new File(unzipDir.getPath() + "/META-INF/manifest.xml");
         String xmlManifest = FileUtils.readFile(xmlManifestFile);
         int idx = xmlManifest.indexOf("</manifest:manifest>");
-        xmlManifest = xmlManifest.substring(0,idx) + blobsManifest.toString() + xmlManifest.substring(idx);
+        xmlManifest = xmlManifest.substring(0, idx) + blobsManifest.toString() + xmlManifest.substring(idx);
         FileUtils.writeFile(xmlManifestFile, xmlManifest.getBytes());
 
         String path = oooFile.getAbsolutePath();
@@ -96,7 +94,7 @@ public class OOoArchiveModifier {
         oooFile = new File(path);
         oooFile.createNewFile();
 
-        //ZipUtils.zip(unzipDir.listFiles(), oooFile);
+        // ZipUtils.zip(unzipDir.listFiles(), oooFile);
         mkOOoZip(unzipDir, oooFile);
 
         FileUtils.deleteTree(unzipDir);
@@ -121,7 +119,8 @@ public class OOoArchiveModifier {
         zipOutputStream.close();
     }
 
-    protected void writeOOoEntry(ZipOutputStream zipOutputStream, String entryName, File fileEntry, int zipMethod) throws Exception {
+    protected void writeOOoEntry(ZipOutputStream zipOutputStream, String entryName, File fileEntry, int zipMethod)
+            throws Exception {
 
         if (fileEntry.isDirectory()) {
             entryName = entryName + "/";

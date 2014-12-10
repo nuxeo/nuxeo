@@ -27,47 +27,39 @@ public class TestParametersBindings extends SimpleTemplateDocTestCase {
     @Test
     public void testParametersViaAdapters() throws Exception {
 
-
         TemplateBasedDocument adapter = setupTestDocs();
         DocumentModel testDoc = adapter.getAdaptedDoc();
         assertNotNull(testDoc);
 
-        TemplateSourceDocument src =  adapter.getSourceTemplate(TEMPLATE_NAME);
+        TemplateSourceDocument src = adapter.getSourceTemplate(TEMPLATE_NAME);
         assertNotNull(src);
         List<TemplateInput> params = src.getParams();
-        assertEquals(2,params.size());
+        assertEquals(2, params.size());
         assertEquals("variableA", params.get(0).getName());
         assertEquals("variableB", params.get(1).getName());
 
-
-
         src.setTemplateBlob(getTemplateBlobWithOneParam(), true);
         params = src.getParams();
-        assertEquals(1,params.size());
+        assertEquals(1, params.size());
         assertEquals("variable1", params.get(0).getName());
 
-
     }
-
-
 
     @Test
     public void testParametersViaDoc() throws Exception {
 
-
         TemplateBasedDocument adapter = setupTestDocs();
         DocumentModel testDoc = adapter.getAdaptedDoc();
         assertNotNull(testDoc);
 
-        TemplateSourceDocument src =  adapter.getSourceTemplate(TEMPLATE_NAME);
+        TemplateSourceDocument src = adapter.getSourceTemplate(TEMPLATE_NAME);
         assertNotNull(src);
         List<TemplateInput> params = src.getParams();
-        assertEquals(2,params.size());
+        assertEquals(2, params.size());
         assertEquals("variableA", params.get(0).getName());
         assertEquals("variableB", params.get(1).getName());
 
-
-        DocumentModel doc = src .getAdaptedDoc();
+        DocumentModel doc = src.getAdaptedDoc();
 
         doc.setPropertyValue("file:content", (Serializable) getTemplateBlobWithOneParam());
         doc = session.saveDocument(doc);
@@ -75,13 +67,12 @@ public class TestParametersBindings extends SimpleTemplateDocTestCase {
         src = doc.getAdapter(TemplateSourceDocument.class);
 
         params = src.getParams();
-        assertEquals(1,params.size());
+        assertEquals(1, params.size());
         assertEquals("variable1", params.get(0).getName());
 
         doc = session.saveDocument(doc);
 
     }
-
 
     @Override
     protected Blob getTemplateBlob() {

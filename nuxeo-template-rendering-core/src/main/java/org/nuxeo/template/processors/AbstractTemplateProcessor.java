@@ -30,7 +30,6 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
  * Common code between the implementations of {@link TemplateProcessor}
  * 
  * @author Tiry (tdelprat@nuxeo.com)
- * 
  */
 public abstract class AbstractTemplateProcessor implements TemplateProcessor {
 
@@ -39,8 +38,7 @@ public abstract class AbstractTemplateProcessor implements TemplateProcessor {
     protected static final Log log = LogFactory.getLog(AbstractTemplateProcessor.class);
 
     protected File getWorkingDir() {
-        String dirPath = System.getProperty("java.io.tmpdir")
-                + "/NXTemplateProcessor" + System.currentTimeMillis();
+        String dirPath = System.getProperty("java.io.tmpdir") + "/NXTemplateProcessor" + System.currentTimeMillis();
         File workingDir = new File(dirPath);
         if (workingDir.exists()) {
             FileUtils.deleteTree(workingDir);
@@ -49,8 +47,7 @@ public abstract class AbstractTemplateProcessor implements TemplateProcessor {
         return workingDir;
     }
 
-    protected Blob getSourceTemplateBlob(
-            TemplateBasedDocument templateBasedDocument, String templateName)
+    protected Blob getSourceTemplateBlob(TemplateBasedDocument templateBasedDocument, String templateName)
             throws Exception {
         Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob(templateName);
 

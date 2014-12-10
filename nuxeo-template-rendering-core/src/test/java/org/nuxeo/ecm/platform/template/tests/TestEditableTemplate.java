@@ -30,18 +30,12 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.dublincore");
         deployBundle("org.nuxeo.template.manager.api");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/life-cycle-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/adapter-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-service.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/listener-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/core-types-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/life-cycle-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/adapter-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/templateprocessor-service.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/templateprocessor-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/listener-contrib.xml");
         openSession();
     }
 
@@ -50,8 +44,8 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         // create template
-        DocumentModel templateDoc = session.createDocumentModel(
-                root.getPathAsString(), "templatedDoc", "TemplateSource");
+        DocumentModel templateDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc",
+                "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         File file = FileUtils.getResourceFileFromContext("data/test.ftl");
         Blob fileBlob = new FileBlob(file);
@@ -61,8 +55,7 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
         templateDoc = session.createDocument(templateDoc);
 
         // now create a template based doc
-        DocumentModel testDoc = session.createDocumentModel(
-                root.getPathAsString(), "templatedBasedDoc",
+        DocumentModel testDoc = session.createDocumentModel(root.getPathAsString(), "templatedBasedDoc",
                 "TemplateBasedFile");
         testDoc.setProperty("dublincore", "title", "MyTestDoc");
         testDoc.setProperty("dublincore", "description", "some description");

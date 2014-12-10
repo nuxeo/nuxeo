@@ -24,8 +24,7 @@ import java.util.Map;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
 
-public class OutputFormatRegistry extends
-        ContributionFragmentRegistry<OutputFormatDescriptor> {
+public class OutputFormatRegistry extends ContributionFragmentRegistry<OutputFormatDescriptor> {
 
     protected Map<String, OutputFormatDescriptor> outputFormats = new HashMap<String, OutputFormatDescriptor>();
 
@@ -48,9 +47,7 @@ public class OutputFormatRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            OutputFormatDescriptor outFormat,
-            OutputFormatDescriptor newoutFormat) {
+    public void contributionUpdated(String id, OutputFormatDescriptor outFormat, OutputFormatDescriptor newoutFormat) {
         if (outFormat == null || !outFormat.isEnabled()) {
             outputFormats.remove(id);
         } else {
@@ -64,8 +61,7 @@ public class OutputFormatRegistry extends
     }
 
     @Override
-    public void merge(OutputFormatDescriptor srcOutFormat,
-            OutputFormatDescriptor descOutFormat) {
+    public void merge(OutputFormatDescriptor srcOutFormat, OutputFormatDescriptor descOutFormat) {
         descOutFormat.merge(srcOutFormat);
     }
 

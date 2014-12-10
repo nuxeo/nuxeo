@@ -32,8 +32,7 @@ public class TemplateDeletionGuard implements EventListener {
                         event.cancel();
                         // XXX should do better
                         FacesMessages.instance().clearGlobalMessages();
-                        FacesMessages.instance().addFromResourceBundleOrDefault(
-                                StatusMessage.Severity.WARN,
+                        FacesMessages.instance().addFromResourceBundleOrDefault(StatusMessage.Severity.WARN,
                                 "label.template.canNotDeletedATemplateInUse",
                                 "Can not delete a template that is still in use.");
                     }

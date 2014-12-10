@@ -37,18 +37,12 @@ public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.dublincore");
         deployBundle("org.nuxeo.template.manager.api");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/life-cycle-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/adapter-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-service.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/listener-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/core-types-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/life-cycle-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/adapter-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/templateprocessor-service.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/templateprocessor-contrib.xml");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/listener-contrib.xml");
         openSession();
     }
 
@@ -57,8 +51,8 @@ public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         // create template
-        DocumentModel templateDoc = session.createDocumentModel(
-                root.getPathAsString(), "templatedDoc", "TemplateSource");
+        DocumentModel templateDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc",
+                "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
         Blob fileBlob = getTemplateBlob();
@@ -70,8 +64,7 @@ public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
         assertEquals(TEMPLATE_NAME, templateSource.getName());
 
         // now create a template based doc
-        DocumentModel testDoc = session.createDocumentModel(
-                root.getPathAsString(), "templatedBasedDoc",
+        DocumentModel testDoc = session.createDocumentModel(root.getPathAsString(), "templatedBasedDoc",
                 "TemplateBasedFile");
         testDoc.setProperty("dublincore", "title", "MyTestDoc");
         testDoc.setProperty("dublincore", "description", "some description");
@@ -113,8 +106,7 @@ public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
         TemplateInput input3 = new TemplateInput("Description");
         input3.setType(InputType.PictureProperty);
         input3.setSource("dc:description");
-        TemplateInput input4 = new TemplateInput("BooleanVar", new Boolean(
-                false));
+        TemplateInput input4 = new TemplateInput("BooleanVar", new Boolean(false));
         TemplateInput input5 = new TemplateInput("picture");
         input5.setType(InputType.PictureProperty);
         input5.setSource("files:files/0/file");

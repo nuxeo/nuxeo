@@ -20,15 +20,12 @@ import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
 
-public class XSLTProcessor extends AbstractTemplateProcessor implements
-        TemplateProcessor {
+public class XSLTProcessor extends AbstractTemplateProcessor implements TemplateProcessor {
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument,
-            String templateName) throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws Exception {
 
-        BlobHolder bh = templateBasedDocument.getAdaptedDoc().getAdapter(
-                BlobHolder.class);
+        BlobHolder bh = templateBasedDocument.getAdaptedDoc().getAdapter(BlobHolder.class);
         if (bh == null) {
             return null;
         }
@@ -38,29 +35,24 @@ public class XSLTProcessor extends AbstractTemplateProcessor implements
             return null;
         }
 
-        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument,
-                templateName);
+        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument, templateName);
 
         TransformerFactory tFactory = TransformerFactory.newInstance();
-        Transformer transformer = tFactory.newTransformer(new StreamSource(
-                sourceTemplateBlob.getStream()));
+        Transformer transformer = tFactory.newTransformer(new StreamSource(sourceTemplateBlob.getStream()));
         transformer.setErrorListener(new ErrorListener() {
 
             @Override
-            public void warning(TransformerException exception)
-                    throws TransformerException {
+            public void warning(TransformerException exception) throws TransformerException {
                 log.warn("Problem during transformation", exception);
             }
 
             @Override
-            public void fatalError(TransformerException exception)
-                    throws TransformerException {
+            public void fatalError(TransformerException exception) throws TransformerException {
                 log.error("Fatal error during transformation", exception);
             }
 
             @Override
-            public void error(TransformerException exception)
-                    throws TransformerException {
+            public void error(TransformerException exception) throws TransformerException {
                 log.error("Error during transformation", exception);
             }
         });
@@ -68,8 +60,7 @@ public class XSLTProcessor extends AbstractTemplateProcessor implements
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        transformer.transform(new StreamSource(xmlContent.getStream()),
-                new StreamResult(out));
+        transformer.transform(new StreamSource(xmlContent.getStream()), new StreamResult(out));
 
         Blob result = new ByteArrayBlob(out.toByteArray(), "text/xml");
         String targetFileName = FileUtils.getFileNameNoExt(templateBasedDocument.getAdaptedDoc().getTitle());
@@ -81,8 +72,7 @@ public class XSLTProcessor extends AbstractTemplateProcessor implements
     }
 
     @Override
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob)
-            throws Exception {
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
         return new ArrayList<TemplateInput>();
     }
 

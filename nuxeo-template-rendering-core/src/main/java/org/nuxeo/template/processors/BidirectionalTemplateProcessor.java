@@ -23,17 +23,14 @@ import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 /**
- * Interface for {@link TemplateProcessor} that allow reverse mapping. i.e.
- * update the {@link DocumentModel} from data inside the template file. (This
- * can only be done for some implementation because it depends on the target
- * File format)
+ * Interface for {@link TemplateProcessor} that allow reverse mapping. i.e. update the {@link DocumentModel} from data
+ * inside the template file. (This can only be done for some implementation because it depends on the target File
+ * format)
  * 
  * @author Tiry (tdelprat@nuxeo.com)
- * 
  */
 public interface BidirectionalTemplateProcessor extends TemplateProcessor {
 
-    public DocumentModel updateDocumentFromBlob(
-            TemplateBasedDocument templateDocument, String templateName)
+    public DocumentModel updateDocumentFromBlob(TemplateBasedDocument templateDocument, String templateName)
             throws Exception;
 }

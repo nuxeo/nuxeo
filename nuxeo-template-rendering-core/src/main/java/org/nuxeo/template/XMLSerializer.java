@@ -37,12 +37,10 @@ import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 
 /**
- * {@link TemplateInput} parameters are stored in the {@link DocumentModel} as a
- * single String Property via XML Serialization. This class contains the
- * Serialization/Deserialization logic.
+ * {@link TemplateInput} parameters are stored in the {@link DocumentModel} as a single String Property via XML
+ * Serialization. This class contains the Serialization/Deserialization logic.
  * 
  * @author Tiry (tdelprat@nuxeo.com)
- * 
  */
 public class XMLSerializer {
 
@@ -52,17 +50,13 @@ public class XMLSerializer {
 
     public static final String XML_NAMESPACE_PREFIX = "nxdt";
 
-    public static final Namespace ns = new Namespace(XML_NAMESPACE_PREFIX,
-            XML_NAMESPACE);
+    public static final Namespace ns = new Namespace(XML_NAMESPACE_PREFIX, XML_NAMESPACE);
 
-    public static final QName fieldsTag = DocumentFactory.getInstance().createQName(
-            "templateParams", ns);
+    public static final QName fieldsTag = DocumentFactory.getInstance().createQName("templateParams", ns);
 
-    public static final QName fieldTag = DocumentFactory.getInstance().createQName(
-            "field", ns);
+    public static final QName fieldTag = DocumentFactory.getInstance().createQName("field", ns);
 
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat(
-            "yyyy-MM-dd hh:mm:ss:sss");
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:sss");
 
     public static String serialize(List<TemplateInput> params) {
 
@@ -91,8 +85,7 @@ public class XMLSerializer {
             if (InputType.StringValue.equals(type)) {
                 field.addAttribute("value", input.getStringValue());
             } else if (InputType.DateValue.equals(type)) {
-                field.addAttribute("value",
-                        dateFormat.format(input.getDateValue()));
+                field.addAttribute("value", dateFormat.format(input.getDateValue()));
             } else if (InputType.BooleanValue.equals(type)) {
                 field.addAttribute("value", input.getBooleanValue().toString());
             } else {
