@@ -37,10 +37,8 @@ public class Vars {
         return expand(vars, null);
     }
 
-    public static Map<String, String> expand(final Map<String, String> vars,
-            final Resolver resolver) {
-        final Map<String, String> result = new HashMap<String, String>(
-                vars.size());
+    public static Map<String, String> expand(final Map<String, String> vars, final Resolver resolver) {
+        final Map<String, String> result = new HashMap<String, String>(vars.size());
         Resolver resolver2 = new Resolver() {
             @Override
             public String get(String key) {
@@ -101,8 +99,7 @@ public class Vars {
         return expand(expression, 0, s, e, resolver);
     }
 
-    private static String expand(String expression, int offset, int s, int e,
-            Resolver resolver) {
+    private static String expand(String expression, int offset, int s, int e, Resolver resolver) {
         StringBuilder buf = new StringBuilder();
 
         do {

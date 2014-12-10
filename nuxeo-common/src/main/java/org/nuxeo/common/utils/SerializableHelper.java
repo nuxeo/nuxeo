@@ -63,20 +63,18 @@ public final class SerializableHelper {
     }
 
     /**
-     * Serializes and unserializes back an object to test whether it is
-     * correctly rebuilt (to be used in unit tests as sanity checks).
+     * Serializes and unserializes back an object to test whether it is correctly rebuilt (to be used in unit tests as
+     * sanity checks).
      *
      * @param ob the actual object we want to test
      * @return true if the object is serializable.
      */
-    public static Object serializeUnserialize(Object ob) throws IOException,
-            ClassNotFoundException {
+    public static Object serializeUnserialize(Object ob) throws IOException, ClassNotFoundException {
         Serializable in = (Serializable) ob;
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
         ObjectOutputStream outStream = new ObjectOutputStream(byteOutStream);
         outStream.writeObject(in);
-        ByteArrayInputStream byteInStream = new ByteArrayInputStream(
-                byteOutStream.toByteArray());
+        ByteArrayInputStream byteInStream = new ByteArrayInputStream(byteOutStream.toByteArray());
         ObjectInputStream inStream = new ObjectInputStream(byteInStream);
         return inStream.readObject();
     }

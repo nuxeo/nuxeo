@@ -40,8 +40,7 @@ public class TestPrimitiveArrays {
         myColl = Arrays.asList(0, 1);
 
         @SuppressWarnings("unchecked")
-        int[] result = (int[]) PrimitiveArrays.toPrimitiveArray(myColl,
-                Integer.TYPE);
+        int[] result = (int[]) PrimitiveArrays.toPrimitiveArray(myColl, Integer.TYPE);
         assertEquals(2, result.length);
         assertEquals(0, result[0]);
         assertEquals(1, result[1]);
@@ -58,8 +57,7 @@ public class TestPrimitiveArrays {
         myColl = Arrays.asList(0L, 1L);
 
         @SuppressWarnings("unchecked")
-        long[] result = (long[]) PrimitiveArrays.toPrimitiveArray(myColl,
-                Long.TYPE);
+        long[] result = (long[]) PrimitiveArrays.toPrimitiveArray(myColl, Long.TYPE);
         assertEquals(2, result.length, 2);
         assertEquals(0L, result[0]);
         assertEquals(1L, result[1]);
@@ -76,8 +74,7 @@ public class TestPrimitiveArrays {
         myColl = Arrays.asList(0.0, 1.0);
 
         @SuppressWarnings("unchecked")
-        double[] result = (double[]) PrimitiveArrays.toPrimitiveArray(myColl,
-                Double.TYPE);
+        double[] result = (double[]) PrimitiveArrays.toPrimitiveArray(myColl, Double.TYPE);
         assertEquals(2, result.length);
         assertEquals(0.0, result[0], 1e-8);
         assertEquals(1.0, result[1], 1e-8);

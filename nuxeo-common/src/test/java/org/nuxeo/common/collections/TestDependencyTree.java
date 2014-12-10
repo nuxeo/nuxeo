@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -27,8 +27,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestDependencyTree {
 
@@ -77,7 +76,6 @@ public class TestDependencyTree {
         assertFalse(dt.isRegistered("c"));
         assertFalse(dt.isResolved("c"));
         assertNull(dt.get("c"));
-
 
         dt.add("c", "c", "a");
 

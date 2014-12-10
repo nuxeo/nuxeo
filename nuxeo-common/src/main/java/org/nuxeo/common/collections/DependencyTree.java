@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -32,12 +32,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // TODO handle dependencies cycles.
-@SuppressWarnings({"ClassWithoutToString"})
+@SuppressWarnings({ "ClassWithoutToString" })
 public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>> {
 
     private final Map<K, Entry<K, T>> registry;
@@ -58,7 +56,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         return registry.values().iterator();
     }
 
-    public void add(K key, T object, K ... requires) {
+    public void add(K key, T object, K... requires) {
         add(key, object, Arrays.asList(requires));
     }
 
@@ -70,7 +68,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         } else if (entry.object == null) {
             entry.object = object;
         } else {
-            //TODO object already exists
+            // TODO object already exists
             return;
         }
         updateDependencies(entry, requires);
@@ -92,7 +90,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         }
     }
 
-    public void unregister(Entry <K, T> entry) {
+    public void unregister(Entry<K, T> entry) {
         if (entry.isResolved()) {
             unresolve(entry);
         }
@@ -223,7 +221,6 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         }
     }
 
-
     protected void updateDependencies(Entry<K, T> entry, Collection<K> requires) {
         if (requires != null) {
             for (K req : requires) {
@@ -244,7 +241,6 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
             }
         }
     }
-
 
     private void notifyRegistered(Entry<K, T> entry) {
         if (eventHandler != null) {
@@ -272,8 +268,11 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
 
     public static class Entry<K, T> {
         private final K key;
+
         private T object;
+
         private Set<Entry<K, T>> waitsFor;
+
         private Set<Entry<K, T>> dependsOnMe;
 
         public Entry(K key, T object) {
@@ -312,7 +311,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
             dependsOnMe.add(entry);
         }
 
-        public Set<Entry<K, T>>getDependsOnMe() {
+        public Set<Entry<K, T>> getDependsOnMe() {
             return dependsOnMe;
         }
 

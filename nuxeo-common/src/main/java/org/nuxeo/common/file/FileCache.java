@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Florent Guillaume
  */
@@ -29,10 +29,9 @@ import java.io.InputStream;
  * <p>
  * To check presence in the cache, use {@link #getFile}.
  * <p>
- * To put a new {@link InputStream} in the cache, use
- * {@link #putFile(String, InputStream)}. Or if you'd like a {@link File} object
- * into which to write some data, get one using {@link #getTempFile}, put the
- * actual binary in it, then pass this file to {@link #putFile(String, File)}.
+ * To put a new {@link InputStream} in the cache, use {@link #putFile(String, InputStream)}. Or if you'd like a
+ * {@link File} object into which to write some data, get one using {@link #getTempFile}, put the actual binary in it,
+ * then pass this file to {@link #putFile(String, File)}.
  *
  * @see LRUFileCache
  */
@@ -66,8 +65,8 @@ public interface FileCache {
     /**
      * Puts a file in the cache.
      * <p>
-     * The file must have been created through {@link #getTempFile()}. The file
-     * is "given" to this method, who will delete it or rename it.
+     * The file must have been created through {@link #getTempFile()}. The file is "given" to this method, who will
+     * delete it or rename it.
      *
      * @param key the cache key
      * @param file the file to cache
@@ -79,9 +78,8 @@ public interface FileCache {
     /**
      * Gets a file from the cache.
      * <p>
-     * A returned file will never be deleted from the filesystem while the
-     * returned file object is still referenced, although it may be purged from
-     * the cache.
+     * A returned file will never be deleted from the filesystem while the returned file object is still referenced,
+     * although it may be purged from the cache.
      *
      * @param key the cache key
      * @return the cached file, or {@code null} if absent
@@ -91,8 +89,7 @@ public interface FileCache {
     /**
      * Clears the cache.
      * <p>
-     * Files will not be deleted from the filesystm while the returned file
-     * objects are still referenced.
+     * Files will not be deleted from the filesystm while the returned file objects are still referenced.
      */
     void clear();
 

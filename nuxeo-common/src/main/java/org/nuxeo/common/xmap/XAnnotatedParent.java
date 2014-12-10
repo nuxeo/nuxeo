@@ -24,8 +24,7 @@ package org.nuxeo.common.xmap;
 import org.w3c.dom.Element;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class XAnnotatedParent extends XAnnotatedMember {
 

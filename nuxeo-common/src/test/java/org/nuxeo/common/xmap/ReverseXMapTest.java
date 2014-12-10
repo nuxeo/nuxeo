@@ -39,8 +39,7 @@ public class ReverseXMapTest {
     public void testReverse() throws Exception {
         XMap xmap = new XMap();
         xmap.register(Author.class);
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                "test-xmap.xml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap.xml");
         Author author = (Author) xmap.load(url);
         try {
             xmap.toXML(new String());

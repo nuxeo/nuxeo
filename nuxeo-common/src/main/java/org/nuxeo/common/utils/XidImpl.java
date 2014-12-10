@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Florent Guillaume
  *     Sun Seng David TAN
@@ -26,8 +26,7 @@ import java.util.Arrays;
 import javax.transaction.xa.Xid;
 
 /**
- * A Serializable {@link Xid} independent of the transaction manager
- * implementation.
+ * A Serializable {@link Xid} independent of the transaction manager implementation.
  */
 public class XidImpl implements Xid, Serializable {
 
@@ -96,8 +95,7 @@ public class XidImpl implements Xid, Serializable {
         if (other == this) {
             return true;
         }
-        return fid == other.fid && Arrays.equals(gtrid, other.gtrid)
-                && Arrays.equals(bqual, other.bqual);
+        return fid == other.fid && Arrays.equals(gtrid, other.gtrid) && Arrays.equals(bqual, other.bqual);
     }
 
 }

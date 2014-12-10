@@ -20,9 +20,7 @@ import org.apache.commons.logging.LogFactory;
  * Simple wrapper around codec library to preserve backward compatibility
  *
  * @author bstefanescu
- * @deprecated Since 5.6. Use {@link org.apache.commons.codec.binary.Base64}
- *             instead.
- *
+ * @deprecated Since 5.6. Use {@link org.apache.commons.codec.binary.Base64} instead.
  */
 @Deprecated
 public class Base64 {
@@ -31,9 +29,7 @@ public class Base64 {
 
     public final static String encodeBytes(byte[] source) {
         try {
-            return new String(
-                    org.apache.commons.codec.binary.Base64.encodeBase64(source),
-                    "US-ASCII").trim();
+            return new String(org.apache.commons.codec.binary.Base64.encodeBase64(source), "US-ASCII").trim();
         } catch (UnsupportedEncodingException e) {
             log.error(e);
             return "";

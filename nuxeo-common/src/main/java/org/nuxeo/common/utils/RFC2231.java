@@ -24,9 +24,8 @@ package org.nuxeo.common.utils;
 import java.io.UnsupportedEncodingException;
 
 /**
- * RFC-2231 specifies how a MIME parameter value, like {@code
- * Content-Disposition}'s {@code filename}, can be encoded to contain arbitrary
- * character sets.
+ * RFC-2231 specifies how a MIME parameter value, like {@code Content-Disposition}'s {@code filename}, can be encoded to
+ * contain arbitrary character sets.
  *
  * @author Florent Guillaume
  */
@@ -41,8 +40,7 @@ public class RFC2231 {
     }
 
     /**
-     * Does a simple %-escaping of the UTF-8 bytes of the value. Keep only some
-     * know safe characters.
+     * Does a simple %-escaping of the UTF-8 bytes of the value. Keep only some know safe characters.
      *
      * @param buf the buffer to which escaped chars are appended
      * @param value the value to escape
@@ -70,20 +68,16 @@ public class RFC2231 {
     }
 
     /**
-     * Encodes a {@code Content-Disposition} header. For some user agents the
-     * full RFC-2231 encoding won't be performed as they don't understand it.
+     * Encodes a {@code Content-Disposition} header. For some user agents the full RFC-2231 encoding won't be performed
+     * as they don't understand it.
      *
      * @param filename the filename
-     * @param inline {@code true} for an inline disposition, {@code false} for
-     *            an attachment
+     * @param inline {@code true} for an inline disposition, {@code false} for an attachment
      * @param userAgent the userAgent
-     * @return a full string to set as value of a {@code Content-Disposition}
-     *         header
+     * @return a full string to set as value of a {@code Content-Disposition} header
      */
-    public static String encodeContentDisposition(String filename,
-            boolean inline, String userAgent) {
-        StringBuilder buf = new StringBuilder(inline ? "inline; "
-                : "attachment; ");
+    public static String encodeContentDisposition(String filename, boolean inline, String userAgent) {
+        StringBuilder buf = new StringBuilder(inline ? "inline; " : "attachment; ");
         if (userAgent == null) {
             userAgent = "";
         }

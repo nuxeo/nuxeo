@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  *
@@ -21,10 +21,8 @@
 
 package org.nuxeo.common.utils;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FilePathPattern {
 
@@ -58,7 +56,7 @@ public class FilePathPattern {
             if (k == patterns.length) {
                 return false;
             }
-            FileNamePattern  pattern = patterns[k];
+            FileNamePattern pattern = patterns[k];
             if (pattern == null) { // segment wildcard **
                 k++;
                 if (k == patterns.length) {
@@ -67,7 +65,8 @@ public class FilePathPattern {
                 pattern = patterns[k];
                 while (i < segments.length) {
                     if (pattern.match(segments[i])) {
-                        k++; continue START;
+                        k++;
+                        continue START;
                     }
                     i++;
                 }

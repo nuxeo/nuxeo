@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -28,8 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class PrimitiveArrays {
 
@@ -37,7 +36,7 @@ public final class PrimitiveArrays {
     private PrimitiveArrays() {
     }
 
-    @SuppressWarnings({"ObjectEquality"})
+    @SuppressWarnings({ "ObjectEquality" })
     public static Object toPrimitiveArray(Collection<Object> col, Class primitiveArrayType) {
         if (primitiveArrayType == Integer.TYPE) {
             return toIntArray(col);
@@ -147,7 +146,6 @@ public final class PrimitiveArrays {
         return ar;
     }
 
-
     public static Object[] toObjectArray(Object array) {
         Class<?> arrType = array.getClass().getComponentType();
         if (arrType == null) {
@@ -157,49 +155,49 @@ public final class PrimitiveArrays {
             if (arrType == Integer.TYPE) {
                 int[] ar = (int[]) array;
                 Integer[] result = new Integer[ar.length];
-                for (int i=0; i<ar.length; i++) {
+                for (int i = 0; i < ar.length; i++) {
                     result[i] = ar[i];
                 }
                 return result;
             } else if (arrType == Long.TYPE) {
                 long[] ar = (long[]) array;
                 Long[] result = new Long[ar.length];
-                for (int i=0; i<ar.length; i++) {
+                for (int i = 0; i < ar.length; i++) {
                     result[i] = ar[i];
                 }
                 return result;
             } else if (arrType == Double.TYPE) {
                 double[] ar = (double[]) array;
                 Double[] result = new Double[ar.length];
-                for (int i=0; i<ar.length; i++) {
+                for (int i = 0; i < ar.length; i++) {
                     result[i] = ar[i];
                 }
                 return result;
             } else if (arrType == Float.TYPE) {
                 float[] ar = (float[]) array;
                 Float[] result = new Float[ar.length];
-                for (int i=0; i<ar.length; i++) {
+                for (int i = 0; i < ar.length; i++) {
                     result[i] = ar[i];
                 }
                 return result;
             } else if (arrType == Character.TYPE) {
                 char[] ar = (char[]) array;
                 Character[] result = new Character[ar.length];
-                for (int i=0; i<ar.length; i++) {
+                for (int i = 0; i < ar.length; i++) {
                     result[i] = ar[i];
                 }
                 return result;
             } else if (arrType == Byte.TYPE) {
                 byte[] ar = (byte[]) array;
                 Byte[] result = new Byte[ar.length];
-                for (int i=0; i<ar.length; i++) {
+                for (int i = 0; i < ar.length; i++) {
                     result[i] = ar[i];
                 }
                 return result;
             } else if (arrType == Short.TYPE) {
                 short[] ar = (short[]) array;
                 Short[] result = new Short[ar.length];
-                for (int i=0; i<ar.length; i++) {
+                for (int i = 0; i < ar.length; i++) {
                     result[i] = ar[i];
                 }
                 return result;

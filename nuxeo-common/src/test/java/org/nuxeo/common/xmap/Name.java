@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -27,8 +27,7 @@ import org.nuxeo.common.xmap.annotation.XParent;
 import org.w3c.dom.Element;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject
 public class Name {
@@ -47,12 +46,8 @@ public class Name {
 
     @Override
     public String toString() {
-        return "Name {\n"
-                + "  myself: " + myself + '\n'
-                + "  owner: " + owner.getClass() + '#' + owner.hashCode() + '\n'
-                + "  firstName: " + firstName + '\n'
-                + "  lastName: " + lastName + '\n'
-                + '}';
+        return "Name {\n" + "  myself: " + myself + '\n' + "  owner: " + owner.getClass() + '#' + owner.hashCode()
+                + '\n' + "  firstName: " + firstName + '\n' + "  lastName: " + lastName + '\n' + '}';
     }
 
 }

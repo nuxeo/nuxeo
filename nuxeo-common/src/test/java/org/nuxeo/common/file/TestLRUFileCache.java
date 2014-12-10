@@ -18,15 +18,14 @@
  */
 package org.nuxeo.common.file;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.common.file.LRUFileCache;
 import org.nuxeo.common.utils.FileUtils;
 
 public class TestLRUFileCache {

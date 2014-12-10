@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -21,12 +21,13 @@
 
 package org.nuxeo.common.utils;
 
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 public class TestExceptionUtils {
 
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+    @SuppressWarnings({ "ThrowableResultOfMethodCallIgnored" })
     @Test
     public void testExceptionCause() {
         Exception e1 = new Exception("root");
