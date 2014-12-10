@@ -81,7 +81,7 @@ public class RFC2231 {
         if (userAgent == null) {
             userAgent = "";
         }
-        if (userAgent.contains("Firefox") || userAgent.contains("Chrome")) {
+        if (userAgent.contains("Firefox") || userAgent.contains("Chrome") || userAgent.contains("Trident")) {
             // proper RFC2231
             buf.append("filename*=UTF-8''");
             percentEscape(buf, filename);
