@@ -130,6 +130,8 @@ function displayGraph(data, divContainerTargetId) {
 			}
 		});
 	});
+	jQuery(document.getElementById(divContainerTargetId)).append(
+            "<input type='hidden' name='graphInitDone' value='true' />");
 };
 
 function invokeGetGraphOp(routeId, currentLang, divContainerTargetId) {
