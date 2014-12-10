@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -21,8 +21,12 @@
 
 package org.nuxeo.common.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author sfermigier
@@ -57,25 +61,25 @@ public class TestPath {
         assertEquals(new Path("/a/b/c"), path.removeLastSegments(1));
     }
 
-    @SuppressWarnings({"ObjectEqualsNull"})
+    @SuppressWarnings({ "ObjectEqualsNull" })
     @Test
     public void testEquals() {
         Path path = new Path("/a/b/c/d");
         Path path2 = new Path("/a/b/c/d/");
         Path path3 = new Path("/a/b/c////d/");
         Path path4 = new Path("/a/b/././c/./e/../d/");
-        //Path path5 = new Path("../a/b/c/d");
+        // Path path5 = new Path("../a/b/c/d");
 
         assertEquals(path, path);
         assertEquals(path, path2);
         assertEquals(path, path3);
         assertEquals(path, path4);
-        //assertEquals(path, path5);
+        // assertEquals(path, path5);
 
         assertEquals(path.hashCode(), path2.hashCode());
         assertEquals(path.hashCode(), path3.hashCode());
         assertEquals(path.hashCode(), path4.hashCode());
-        //assertEquals(path.hashCode(), path5.hashCode());
+        // assertEquals(path.hashCode(), path5.hashCode());
 
         assertFalse(path.equals(null));
 

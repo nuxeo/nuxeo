@@ -45,7 +45,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class FileUtils {
 
@@ -81,8 +80,7 @@ public final class FileUtils {
         return new byte[preferredSize];
     }
 
-    public static void copy(InputStream in, OutputStream out)
-            throws IOException {
+    public static void copy(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = createBuffer(in.available());
         int read;
         while ((read = in.read(buffer)) != -1) {
@@ -93,9 +91,8 @@ public final class FileUtils {
     /**
      * Read the byte stream as a string assuming a UTF-8 encoding.
      *
-     * @deprecated use org.apache.commons.io.IOUtils.toString(in, "UTF-8")
-     *             explicitly instead (or any other encoding when provided by
-     *             the source of the byte stream).
+     * @deprecated use org.apache.commons.io.IOUtils.toString(in, "UTF-8") explicitly instead (or any other encoding
+     *             when provided by the source of the byte stream).
      */
     @Deprecated
     public static String read(InputStream in) throws IOException {
@@ -171,8 +168,7 @@ public final class FileUtils {
         return lines;
     }
 
-    public static void writeLines(File file, List<String> lines)
-            throws IOException {
+    public static void writeLines(File file, List<String> lines) throws IOException {
         PrintWriter out = null;
         try {
             out = new PrintWriter(new FileOutputStream(file));
@@ -209,8 +205,7 @@ public final class FileUtils {
      * @throws IOException
      * @since 5.5
      */
-    public static void writeFile(File file, byte[] buf, boolean append)
-            throws IOException {
+    public static void writeFile(File file, byte[] buf, boolean append) throws IOException {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(file, append);
@@ -233,8 +228,7 @@ public final class FileUtils {
      * @throws IOException
      * @since 5.5
      */
-    public static void writeFile(File file, String buf, boolean append)
-            throws IOException {
+    public static void writeFile(File file, String buf, boolean append) throws IOException {
         writeFile(file, buf.getBytes(), append);
     }
 
@@ -252,11 +246,8 @@ public final class FileUtils {
     }
 
     /**
-     * @deprecated Since 5.6. Use
-     *             {@link org.apache.commons.io.FileUtils#deleteDirectory(File)}
-     *             or
-     *             {@link org.apache.commons.io.FileUtils#deleteQuietly(File)}
-     *             instead.
+     * @deprecated Since 5.6. Use {@link org.apache.commons.io.FileUtils#deleteDirectory(File)} or
+     *             {@link org.apache.commons.io.FileUtils#deleteQuietly(File)} instead.
      */
     @Deprecated
     public static void deleteTree(File dir) {
@@ -265,11 +256,8 @@ public final class FileUtils {
     }
 
     /**
-     * @deprecated Since 5.6. Use
-     *             {@link org.apache.commons.io.FileUtils#deleteDirectory(File)}
-     *             or
-     *             {@link org.apache.commons.io.FileUtils#deleteQuietly(File)}
-     *             instead.
+     * @deprecated Since 5.6. Use {@link org.apache.commons.io.FileUtils#deleteDirectory(File)} or
+     *             {@link org.apache.commons.io.FileUtils#deleteQuietly(File)} instead.
      */
     @Deprecated
     public static void emptyDirectory(File dir) {
@@ -308,8 +296,7 @@ public final class FileUtils {
         append(src, dst, false);
     }
 
-    public static void append(File src, File dst, boolean appendNewLine)
-            throws IOException {
+    public static void append(File src, File dst, boolean appendNewLine) throws IOException {
         InputStream in = null;
         try {
             in = new FileInputStream(src);
@@ -325,8 +312,7 @@ public final class FileUtils {
         append(in, file, false);
     }
 
-    public static void append(InputStream in, File file, boolean appendNewLine)
-            throws IOException {
+    public static void append(InputStream in, File file, boolean appendNewLine) throws IOException {
         OutputStream out = null;
         try {
             out = new BufferedOutputStream(new FileOutputStream(file, true));
@@ -346,8 +332,8 @@ public final class FileUtils {
     }
 
     /**
-     * Copies source to destination. If source and destination are the same,
-     * does nothing. Both single files and directories are handled.
+     * Copies source to destination. If source and destination are the same, does nothing. Both single files and
+     * directories are handled.
      *
      * @param src the source file or directory
      * @param dst the destination file or directory
@@ -412,8 +398,7 @@ public final class FileUtils {
         }
     }
 
-    public static void copyTree(File src, File dst, PathFilter filter)
-            throws IOException {
+    public static void copyTree(File src, File dst, PathFilter filter) throws IOException {
         copyTree(src, dst, new Path("/"), filter);
     }
 
@@ -427,8 +412,8 @@ public final class FileUtils {
         }
     }
 
-    protected static void copyTree(int rootIndex, File src, File dst,
-            Path prefix, PathFilter filter) throws IOException {
+    protected static void copyTree(int rootIndex, File src, File dst, Path prefix, PathFilter filter)
+            throws IOException {
         if (src.isFile()) {
             String relPath = src.getPath().substring(rootIndex);
             if (!filter.accept(new Path(relPath))) {
@@ -439,7 +424,7 @@ public final class FileUtils {
                 String pff = prefix.toString();
                 int prefixIndex = path.lastIndexOf(pff);
                 if (prefixIndex > 0) {
-                    path = path.substring(0, prefixIndex) + path.substring(prefixIndex+pff.length());
+                    path = path.substring(0, prefixIndex) + path.substring(prefixIndex + pff.length());
                     dst = new File(path.toString());
                 }
             }
@@ -522,8 +507,7 @@ public final class FileUtils {
      * @return the decoded path.
      */
     public static String getResourcePathFromContext(String resource) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                resource);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(resource);
         return getFilePathFromUrl(url);
     }
 
@@ -562,8 +546,7 @@ public final class FileUtils {
         return result.toArray(new File[result.size()]);
     }
 
-    public static void collectFiles(File root, FileNamePattern pattern,
-            List<File> result) {
+    public static void collectFiles(File root, FileNamePattern pattern, List<File> result) {
         File[] files = root.listFiles();
         for (File file : files) {
             if (pattern.match(file.getName())) {
@@ -606,9 +589,8 @@ public final class FileUtils {
     }
 
     /**
-     * Create a file handler (this doesn't create a real file) given a file URI.
-     * This method can be used to create files from invalid URL strings (e.g.
-     * containing spaces ..)
+     * Create a file handler (this doesn't create a real file) given a file URI. This method can be used to create files
+     * from invalid URL strings (e.g. containing spaces ..)
      *
      * @return a file object
      */
@@ -662,8 +644,7 @@ public final class FileUtils {
 
         if (expected.length() != source.length()) {
             // Prevent from comparing files with Windows EOL
-            return expected.replace("\r\n", "\n").equals(
-                    source.replace("\r\n", "\n"));
+            return expected.replace("\r\n", "\n").equals(source.replace("\r\n", "\n"));
         } else {
             return expected.equals(source);
         }

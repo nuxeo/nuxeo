@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -33,7 +33,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-@SuppressWarnings({"SuppressionAnnotation"})
+@SuppressWarnings({ "SuppressionAnnotation" })
 public final class ArrayUtils {
 
     // This is an utility class.
@@ -43,8 +43,7 @@ public final class ArrayUtils {
     /**
      * Merges any number of Array.
      * <p>
-     * Comes from :
-     * http://forum.java.sun.com/thread.jspa?threadID=202127&messageID=676603
+     * Comes from : http://forum.java.sun.com/thread.jspa?threadID=202127&messageID=676603
      *
      * @param arrays several arrays
      * @return a merged array
@@ -74,16 +73,14 @@ public final class ArrayUtils {
     }
 
     /**
-     * Method for intersecting arrays elements. Copy of the first array and
-     * remove progressively elements if not found in the other arrays.
+     * Method for intersecting arrays elements. Copy of the first array and remove progressively elements if not found
+     * in the other arrays.
      * <p>
-     * This method will keep the initial order of elements (as found in the
-     * first array).
+     * This method will keep the initial order of elements (as found in the first array).
      */
     @SuppressWarnings("unchecked")
     public static <T> T[] intersect(final T[]... arrays) {
-        final Class type = arrays.getClass().getComponentType()
-                .getComponentType();
+        final Class type = arrays.getClass().getComponentType().getComponentType();
         if (arrays.length == 0) {
             return (T[]) Array.newInstance(type, 0);
         }

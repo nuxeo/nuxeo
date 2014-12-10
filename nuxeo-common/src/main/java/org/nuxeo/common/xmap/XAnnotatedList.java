@@ -70,17 +70,14 @@ public class XAnnotatedList extends XAnnotatedMember {
     protected Object getValue(Context ctx, Element base) throws Exception {
         List<Object> values = new ArrayList<Object>();
         if (xao != null) {
-            DOMHelper.visitNodes(ctx, this, base, path, elementListVisitor,
-                    values);
+            DOMHelper.visitNodes(ctx, this, base, path, elementListVisitor, values);
         } else {
             if (path.attribute != null) {
                 // attribute list
-                DOMHelper.visitNodes(ctx, this, base, path, attributeVisitor,
-                        values);
+                DOMHelper.visitNodes(ctx, this, base, path, attributeVisitor, values);
             } else {
                 // element list
-                DOMHelper.visitNodes(ctx, this, base, path, elementVisitor,
-                        values);
+                DOMHelper.visitNodes(ctx, this, base, path, elementVisitor, values);
             }
         }
 
@@ -92,11 +89,9 @@ public class XAnnotatedList extends XAnnotatedMember {
             if (type.isArray()) {
                 if (componentType.isPrimitive()) {
                     // primitive arrays cannot be casted to Object[]
-                    return PrimitiveArrays.toPrimitiveArray(values,
-                            componentType);
+                    return PrimitiveArrays.toPrimitiveArray(values, componentType);
                 } else {
-                    return values.toArray((Object[]) Array.newInstance(
-                            componentType, values.size()));
+                    return values.toArray((Object[]) Array.newInstance(componentType, values.size()));
                 }
             } else {
                 Collection col = (Collection) type.newInstance();
@@ -147,8 +142,7 @@ class ElementVisitor implements DOMHelper.NodeVisitor {
     private static final Log log = LogFactory.getLog(ElementVisitor.class);
 
     @Override
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
-            Collection<Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
         try {
             result.add(xam.xao.newInstance(ctx, (Element) node));
         } catch (Exception e) {
@@ -159,8 +153,7 @@ class ElementVisitor implements DOMHelper.NodeVisitor {
 
 class ElementValueVisitor implements DOMHelper.NodeVisitor {
     @Override
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
-            Collection<Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
         String val = node.getTextContent();
         if (xam.trim) {
             val = val.trim();
@@ -176,8 +169,7 @@ class ElementValueVisitor implements DOMHelper.NodeVisitor {
 
 class AttributeValueVisitor implements DOMHelper.NodeVisitor {
     @Override
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
-            Collection<Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
         String val = node.getNodeValue();
         if (xam.valueFactory != null) {
             result.add(xam.valueFactory.deserialize(ctx, val));

@@ -36,7 +36,6 @@ import org.w3c.dom.DocumentFragment;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject(value = "author", order = { "item1", "item2" })
 public class Author {
@@ -154,12 +153,10 @@ public class Author {
 
     @Override
     public String toString() {
-        return "Author {\n" + "  title: " + title + '\n' + "  description: "
-                + description + '\n' + "  id: " + id + '\n' + "  nameType: "
-                + nameType + '\n' + "  name: " + name + '\n' + "  age: " + age
-                + '\n' + "  items: " + items + '\n' + "  itemIds: " + itemIds
-                + '\n' + "  content: <" + content + '>' + '\n' + "  friends: "
-                + friends + '\n' + "  properties: " + properties + '\n' + '}';
+        return "Author {\n" + "  title: " + title + '\n' + "  description: " + description + '\n' + "  id: " + id
+                + '\n' + "  nameType: " + nameType + '\n' + "  name: " + name + '\n' + "  age: " + age + '\n'
+                + "  items: " + items + '\n' + "  itemIds: " + itemIds + '\n' + "  content: <" + content + '>' + '\n'
+                + "  friends: " + friends + '\n' + "  properties: " + properties + '\n' + '}';
     }
 
     // getter used to reverse xmap

@@ -23,9 +23,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Compare versions of files as they are usually set. Maven classifiers are not
- * managed: a classifier will be considered as being part of the version. Maven
- * "SNAPSHOT" keyword is taken in account. Rule is: x-SNAPSHOT < x <
+ * Compare versions of files as they are usually set. Maven classifiers are not managed: a classifier will be considered
+ * as being part of the version. Maven "SNAPSHOT" keyword is taken in account. Rule is: x-SNAPSHOT < x <
  * x-AnythingButSNAPSHOT < x.y-SNAPSHOT < x.y
  *
  * @since 5.5
@@ -118,13 +117,10 @@ public class FileVersion implements Comparable<FileVersion> {
 
     @Override
     public int compareTo(FileVersion o) {
-        if (snapshot && getVersionWithoutSnapshot().equals(o.getVersion())
-                || specialQualifier
+        if (snapshot && getVersionWithoutSnapshot().equals(o.getVersion()) || specialQualifier
                 && getVersionWithoutQualifier().equals(o.getVersion())) {
             return -1;
-        } else if (o.isSnapshot()
-                && version.equals(o.getVersionWithoutSnapshot())
-                || o.hasSpecialQualifier()
+        } else if (o.isSnapshot() && version.equals(o.getVersionWithoutSnapshot()) || o.hasSpecialQualifier()
                 && version.equals(o.getVersionWithoutQualifier())) {
             return 1;
         }
@@ -143,8 +139,7 @@ public class FileVersion implements Comparable<FileVersion> {
             }
             result = number - oNumber;
             index++;
-        } while (result == 0
-                && (splitVersion.length > index || o.getSplitVersion().length > index));
+        } while (result == 0 && (splitVersion.length > index || o.getSplitVersion().length > index));
         if (result == 0) {
             result = qualifier.compareTo(o.getQualifier());
         }
@@ -153,8 +148,7 @@ public class FileVersion implements Comparable<FileVersion> {
 
     @Override
     public boolean equals(Object o) {
-        return (this == o || o != null && (o instanceof FileVersion)
-                && compareTo((FileVersion) o) == 0);
+        return (this == o || o != null && (o instanceof FileVersion) && compareTo((FileVersion) o) == 0);
     }
 
     public String getVersion() {

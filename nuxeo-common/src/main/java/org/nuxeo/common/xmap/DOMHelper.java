@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -47,11 +47,9 @@ public final class DOMHelper {
     }
 
     /**
-     * Gets the value of the node at the given path relative to the given base
-     * element.
+     * Gets the value of the node at the given path relative to the given base element.
      * <p>
-     * For element nodes the value is the text content and for the attributes
-     * node the attribute value.
+     * For element nodes the value is the text content and for the attributes node the attribute value.
      *
      * @return the node value or null if no such node was found
      */
@@ -71,8 +69,7 @@ public final class DOMHelper {
     /**
      * Visits the nodes selected by the given path using the given visitor.
      */
-    public static void visitNodes(Context ctx, XAnnotatedList xam,
-            Element base, Path path, NodeVisitor visitor,
+    public static void visitNodes(Context ctx, XAnnotatedList xam, Element base, Path path, NodeVisitor visitor,
             Collection<Object> result) {
         Node el = base;
         int len = path.segments.length - 1;
@@ -91,9 +88,8 @@ public final class DOMHelper {
         }
     }
 
-    public static void visitAttributes(Context ctx, XAnnotatedList xam,
-            Node base, String name, String attrName, NodeVisitor visitor,
-            Collection<Object> result) {
+    public static void visitAttributes(Context ctx, XAnnotatedList xam, Node base, String name, String attrName,
+            NodeVisitor visitor, Collection<Object> result) {
         Node p = base.getFirstChild();
         while (p != null) {
             if (p.getNodeType() == Node.ELEMENT_NODE) {
@@ -108,8 +104,7 @@ public final class DOMHelper {
         }
     }
 
-    public static void visitElements(Context ctx, XAnnotatedList xam,
-            Node base, String name, NodeVisitor visitor,
+    public static void visitElements(Context ctx, XAnnotatedList xam, Node base, String name, NodeVisitor visitor,
             Collection<Object> result) {
         Node p = base.getFirstChild();
         while (p != null) {
@@ -122,8 +117,7 @@ public final class DOMHelper {
         }
     }
 
-    public static void visitMapNodes(Context ctx, XAnnotatedMap xam,
-            Element base, Path path, NodeMapVisitor visitor,
+    public static void visitMapNodes(Context ctx, XAnnotatedMap xam, Element base, Path path, NodeMapVisitor visitor,
             Map<String, Object> result) {
         Node el = base;
         int len = path.segments.length - 1;
@@ -136,16 +130,14 @@ public final class DOMHelper {
         String name = path.segments[len];
 
         if (path.attribute != null) {
-            visitMapAttributes(ctx, xam, el, name, path.attribute, visitor,
-                    result);
+            visitMapAttributes(ctx, xam, el, name, path.attribute, visitor, result);
         } else {
             visitMapElements(ctx, xam, el, name, visitor, result);
         }
     }
 
-    public static void visitMapAttributes(Context ctx, XAnnotatedMap xam,
-            Node base, String name, String attrName, NodeMapVisitor visitor,
-            Map<String, Object> result) {
+    public static void visitMapAttributes(Context ctx, XAnnotatedMap xam, Node base, String name, String attrName,
+            NodeMapVisitor visitor, Map<String, Object> result) {
         Node p = base.getFirstChild();
         while (p != null) {
             if (p.getNodeType() == Node.ELEMENT_NODE) {
@@ -163,8 +155,7 @@ public final class DOMHelper {
         }
     }
 
-    public static void visitMapElements(Context ctx, XAnnotatedMap xam,
-            Node base, String name, NodeMapVisitor visitor,
+    public static void visitMapElements(Context ctx, XAnnotatedMap xam, Node base, String name, NodeMapVisitor visitor,
             Map<String, Object> result) {
         Node p = base.getFirstChild();
         while (p != null) {
@@ -210,21 +201,18 @@ public final class DOMHelper {
 
     public interface NodeVisitor {
 
-        void visitNode(Context ctx, XAnnotatedMember xam, Node node,
-                Collection<Object> result);
+        void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result);
 
     }
 
     public interface NodeMapVisitor {
 
-        void visitNode(Context ctx, XAnnotatedMember xam, Node node,
-                String key, Map<String, Object> result);
+        void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result);
 
     }
 
     /**
-     * Parses a string containing XML and returns a DocumentFragment containing
-     * the nodes of the parsed XML.
+     * Parses a string containing XML and returns a DocumentFragment containing the nodes of the parsed XML.
      */
     public static void loadFragment(Element el, String fragment) {
         // Wrap the fragment in an arbitrary element
@@ -232,8 +220,7 @@ public final class DOMHelper {
         try {
             // Create a DOM builder and parse the fragment
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            Document d = factory.newDocumentBuilder().parse(
-                    new InputSource(new StringReader(fragment)));
+            Document d = factory.newDocumentBuilder().parse(new InputSource(new StringReader(fragment)));
 
             Document doc = el.getOwnerDocument();
 

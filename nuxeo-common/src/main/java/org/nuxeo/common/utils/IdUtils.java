@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -66,9 +66,8 @@ public final class IdUtils {
     /**
      * Generates an id from a non-null String.
      * <p>
-     * Replaces accented characters from a string by their ascii equivalent,
-     * removes non alphanumerical characters and replaces spaces by the given
-     * wordSeparator character.
+     * Replaces accented characters from a string by their ascii equivalent, removes non alphanumerical characters and
+     * replaces spaces by the given wordSeparator character.
      *
      * @param s the original String
      * @param wordSeparator the word separator to use (usually '-')
@@ -76,8 +75,7 @@ public final class IdUtils {
      * @param maxChars maximum longer of identifier characters
      * @return the identifier String
      */
-    public static String generateId(String s, String wordSeparator,
-            boolean lower, int maxChars) {
+    public static String generateId(String s, String wordSeparator, boolean lower, int maxChars) {
         s = StringUtils.toAscii(s);
         s = s.trim();
         if (lower) {
@@ -121,9 +119,8 @@ public final class IdUtils {
      * <p>
      * Uses default values for wordSeparator: '-', lower: true, maxChars: 24.
      *
-     * @deprecated use {@link #generatePathSegment} instead, or
-     *             {@link #generateId(String, String, boolean, int)} depending
-     *             on the use cases
+     * @deprecated use {@link #generatePathSegment} instead, or {@link #generateId(String, String, boolean, int)}
+     *             depending on the use cases
      */
     @Deprecated
     public static String generateId(String s) {
@@ -135,8 +132,7 @@ public final class IdUtils {
     /**
      * Generates a Nuxeo path segment from a non-null String.
      * <p>
-     * Basically all characters are kept, except for slashes and
-     * initial/trailing spaces.
+     * Basically all characters are kept, except for slashes and initial/trailing spaces.
      *
      * @deprecated use {@link PathSegmentService} instead
      */
@@ -151,7 +147,7 @@ public final class IdUtils {
 
     /**
      * Check if a given string has the pattern for UUID type 4
-     * 
+     *
      * @since 5.7
      */
     public static boolean isValidUUID(String uuid) {

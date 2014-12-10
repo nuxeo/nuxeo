@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -24,24 +24,25 @@ package org.nuxeo.common.collections;
 import java.util.Map;
 
 /**
- * A mixture of an array list and a map used to store
- * small table of elements using both indices and keys.
+ * A mixture of an array list and a map used to store small table of elements using both indices and keys.
  * <p>
  * This map accepts null values.
  * <p>
  * The map is implemented using an array of successive [key, value] pairs.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings({"ClassWithoutToString"})
+@SuppressWarnings({ "ClassWithoutToString" })
 public class ArrayMap<K, V> {
 
     // 4 keys, 4 values
     protected static final int DEFAULT_SIZE = 8;
-    protected static final int GROW_SIZE = 10;
-    protected int count = 0;
-    protected Object[] elements;
 
+    protected static final int GROW_SIZE = 10;
+
+    protected int count = 0;
+
+    protected Object[] elements;
 
     public ArrayMap() {
     }

@@ -20,15 +20,14 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 /**
- * Used to force installation of URLStreamHandlerFactory as the default
- * mechanism in Java is failing to set a new factory if one was already set.
+ * Used to force installation of URLStreamHandlerFactory as the default mechanism in Java is failing to set a new
+ * factory if one was already set.
  * <p>
- * This class provides the capability to stack any number of factories - each
- * factory having precedence over the last one.
+ * This class provides the capability to stack any number of factories - each factory having precedence over the last
+ * one.
  * <p>
- * Thus, when querying for a URL protocol handler all factories will be asked in
- * turn (from the newest one to the older one) until a stream handler is
- * obtained.
+ * Thus, when querying for a URL protocol handler all factories will be asked in turn (from the newest one to the older
+ * one) until a stream handler is obtained.
  * <p>
  * Contains some code from Eclipse Framework class.
  *
@@ -68,14 +67,14 @@ public class URLStreamHandlerFactoryInstaller {
 
     public static void uninstallURLStreamHandlerFactory() {
         try {
-           Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
+            Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
             if (factoryField == null) {
                 return; // oh well, we tried
             }
             factoryField.set(null, null);
             resetURLStreamHandlers();
         } catch (Exception e) {
-           // ignore and continue closing the framework
+            // ignore and continue closing the framework
         }
     }
 
@@ -121,7 +120,7 @@ public class URLStreamHandlerFactoryInstaller {
         return null;
     }
 
-    public static void resetURLStreamHandlers()  {
+    public static void resetURLStreamHandlers() {
         Field handlersField = getStaticField(URL.class, Hashtable.class);
         if (handlersField != null) {
             Hashtable<?, ?> handlers;
@@ -152,9 +151,8 @@ public class URLStreamHandlerFactoryInstaller {
     /**
      * Get the underlying stack.
      * <p>
-     * This should not be used to register/unregister factories (since it is not
-     * synchronized). To install / uninstall factories use the static method of
-     * that class.
+     * This should not be used to register/unregister factories (since it is not synchronized). To install / uninstall
+     * factories use the static method of that class.
      */
     public static FactoryStack getStack() {
         return factoryStack;

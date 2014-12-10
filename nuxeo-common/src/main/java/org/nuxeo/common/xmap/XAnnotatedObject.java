@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -34,14 +34,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.w3c.dom.Element;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class XAnnotatedObject {
 
     final XMap xmap;
+
     final Class<?> klass;
+
     final Constructor<?> ctor;
+
     final Path path;
 
     final List<XAnnotatedMember> members;

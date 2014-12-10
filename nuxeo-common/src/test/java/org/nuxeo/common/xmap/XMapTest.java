@@ -33,7 +33,6 @@ import org.nuxeo.common.xmap.Author.Gender;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class XMapTest {
 
@@ -42,8 +41,7 @@ public class XMapTest {
         XMap xmap = new XMap();
         xmap.register(Author.class);
 
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                "test-xmap.xml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap.xml");
 
         checkAuthor((Author) xmap.load(url));
     }
@@ -53,8 +51,7 @@ public class XMapTest {
         XMap xmap = new XMap();
         xmap.register(InheritedAuthor.class);
 
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                "second-test-xmap.xml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("second-test-xmap.xml");
         InheritedAuthor inheritedAuthor = (InheritedAuthor) xmap.load(url);
         checkAuthor(inheritedAuthor);
         assertEquals("dummyContent", inheritedAuthor.notInherited);

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
@@ -22,14 +22,12 @@ package org.nuxeo.common;
 import java.util.Calendar;
 
 /**
- * This class is used for transmitting dirty tag context on server and client
- * side from EJB invokes to the core API (NXP-4914).
+ * This class is used for transmitting dirty tag context on server and client side from EJB invokes to the core API
+ * (NXP-4914).
  * <p>
- * Core API is loaded in a
- * separate class loader and cannot be accessed by the interceptor. In any
- * context, nuxeo common classes are always accessible by any class loaders.
- * This is the only place identified for putting that kind of logic without
- * modifying the server assemblies.
+ * Core API is loaded in a separate class loader and cannot be accessed by the interceptor. In any context, nuxeo common
+ * classes are always accessible by any class loaders. This is the only place identified for putting that kind of logic
+ * without modifying the server assemblies.
  *
  * @author matic
  */

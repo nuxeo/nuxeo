@@ -34,15 +34,13 @@ import org.apache.commons.io.IOUtils;
 /**
  * A LRU cache of {@link File}s with capped filesystem size.
  * <p>
- * When a new file is put in the cache, if the total size becomes more that the
- * maximum size then least recently access entries are removed until the new
- * file fits.
+ * When a new file is put in the cache, if the total size becomes more that the maximum size then least recently access
+ * entries are removed until the new file fits.
  * <p>
- * A file will never be actually removed from the filesystem while the File
- * object returned by {@link #getFile} is still referenced.
+ * A file will never be actually removed from the filesystem while the File object returned by {@link #getFile} is still
+ * referenced.
  * <p>
- * The cache keys are restricted to a subset of ASCII: letters, digits and
- * dashes. Usually a MD5 or SHA1 hash is used.
+ * The cache keys are restricted to a subset of ASCII: letters, digits and dashes. Usually a MD5 or SHA1 hash is used.
  */
 public class LRUFileCache implements FileCache {
 
@@ -57,9 +55,8 @@ public class LRUFileCache implements FileCache {
     protected final Map<String, LRUFileCacheEntry> cache;
 
     /**
-     * Referenced files on the filesystem. Contains all the cached files, plus
-     * all those that have been marked for deletion but haven't been deleted
-     * yet. Because of the latter, this is a weak value map.
+     * Referenced files on the filesystem. Contains all the cached files, plus all those that have been marked for
+     * deletion but haven't been deleted yet. Because of the latter, this is a weak value map.
      */
     protected final Map<String, File> files;
 
@@ -82,8 +79,7 @@ public class LRUFileCache implements FileCache {
     }
 
     /**
-     * Constructs a cache in the given directory with the given maximum size (in
-     * bytes).
+     * Constructs a cache in the given directory with the given maximum size (in bytes).
      *
      * @param dir the directory to use to store cached files
      * @param maxSize the maximum size of the cache (in bytes)
@@ -122,8 +118,7 @@ public class LRUFileCache implements FileCache {
      * The key is used as a file name in the directory cache.
      */
     @Override
-    public synchronized File putFile(String key, InputStream in)
-            throws IOException {
+    public synchronized File putFile(String key, InputStream in) throws IOException {
         try {
             // check the cache
             LRUFileCacheEntry entry = cache.get(key);
@@ -159,8 +154,7 @@ public class LRUFileCache implements FileCache {
      * The key is used as a file name in the directory cache.
      */
     @Override
-    public synchronized File putFile(String key, File file)
-            throws IllegalArgumentException, IOException {
+    public synchronized File putFile(String key, File file) throws IllegalArgumentException, IOException {
         // check the cache
         LRUFileCacheEntry entry = cache.get(key);
         if (entry != null) {
@@ -187,8 +181,7 @@ public class LRUFileCache implements FileCache {
     }
 
     /**
-     * Puts a file that's already in the correct filesystem location in the
-     * internal cache datastructures.
+     * Puts a file that's already in the correct filesystem location in the internal cache datastructures.
      */
     protected File putFileInCache(String key, File file) {
         // remove oldest entries until size fits
@@ -205,8 +198,7 @@ public class LRUFileCache implements FileCache {
     }
 
     protected void checkKey(String key) throws IllegalArgumentException {
-        if (!SIMPLE_ASCII.matcher(key).matches() || ".".equals(key)
-                || "..".equals(key)) {
+        if (!SIMPLE_ASCII.matcher(key).matches() || ".".equals(key) || "..".equals(key)) {
             throw new IllegalArgumentException("Invalid key: " + key);
         }
     }

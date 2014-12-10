@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -24,14 +24,15 @@ package org.nuxeo.common.xmap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class XMethodAccessor implements XAccessor {
 
     private final Method setter;
+
     private final Class klass;
+
     Method getter;
 
     public XMethodAccessor(Method method, Class klass) {
@@ -84,8 +85,7 @@ public class XMethodAccessor implements XAccessor {
             try {
                 return klass.getMethod(getterName, new Class[0]);
             } catch (Exception e) {
-                throw new IllegalArgumentException(
-                        "there is NO getter defined for annotated setter: " + setterName, e);
+                throw new IllegalArgumentException("there is NO getter defined for annotated setter: " + setterName, e);
             }
         }
         return null;

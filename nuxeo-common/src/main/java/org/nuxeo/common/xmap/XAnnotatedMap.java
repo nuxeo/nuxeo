@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -32,7 +32,7 @@ import org.w3c.dom.Node;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings( { "SuppressionAnnotation" })
+@SuppressWarnings({ "SuppressionAnnotation" })
 public class XAnnotatedMap extends XAnnotatedList {
 
     protected static final ElementMapVisitor elementMapVisitor = new ElementMapVisitor();
@@ -59,21 +59,17 @@ public class XAnnotatedMap extends XAnnotatedList {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Object getValue(Context ctx, Element base)
-            throws IllegalAccessException, InstantiationException {
+    protected Object getValue(Context ctx, Element base) throws IllegalAccessException, InstantiationException {
         Map<String, Object> values = (Map) type.newInstance();
         if (xao != null) {
-            DOMHelper.visitMapNodes(ctx, this, base, path, elementMapVisitor,
-                    values);
+            DOMHelper.visitMapNodes(ctx, this, base, path, elementMapVisitor, values);
         } else {
             if (path.attribute != null) {
                 // attribute list
-                DOMHelper.visitMapNodes(ctx, this, base, path,
-                        attributeVisitor, values);
+                DOMHelper.visitMapNodes(ctx, this, base, path, attributeVisitor, values);
             } else {
                 // element list
-                DOMHelper.visitMapNodes(ctx, this, base, path, elementVisitor,
-                        values);
+                DOMHelper.visitMapNodes(ctx, this, base, path, elementVisitor, values);
             }
         }
         if (isNullByDefault && values.isEmpty()) {
@@ -90,8 +86,7 @@ public class XAnnotatedMap extends XAnnotatedList {
             if (xao == null) {
                 for (Map.Entry<String, ?> entry : map.entrySet()) {
                     String entryKey = entry.getKey();
-                    String value = valueFactory.serialize(null,
-                            entry.getValue());
+                    String value = valueFactory.serialize(null, entry.getValue());
                     Element e = XMLBuilder.addElement(parent, path);
                     Element keyElement = XMLBuilder.getOrCreateElement(e, key);
                     XMLBuilder.fillField(keyElement, entryKey, key.attribute);
@@ -114,8 +109,7 @@ class ElementMapVisitor implements DOMHelper.NodeMapVisitor {
 
     private static final Log log = LogFactory.getLog(ElementMapVisitor.class);
 
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
-            String key, Map<String, Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
         try {
             result.put(key, xam.xao.newInstance(ctx, (Element) node));
         } catch (Exception e) {
@@ -125,8 +119,7 @@ class ElementMapVisitor implements DOMHelper.NodeMapVisitor {
 }
 
 class ElementValueMapVisitor implements DOMHelper.NodeMapVisitor {
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
-            String key, Map<String, Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
         String val = node.getTextContent();
         if (xam.trim) {
             val = val.trim();
@@ -141,8 +134,7 @@ class ElementValueMapVisitor implements DOMHelper.NodeMapVisitor {
 }
 
 class AttributeValueMapVisitor implements DOMHelper.NodeMapVisitor {
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
-            String key, Map<String, Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
         String val = node.getNodeValue();
         if (xam.valueFactory != null) {
             result.put(key, xam.valueFactory.deserialize(ctx, val));

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -33,11 +33,9 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Scoped map holding data for a given scope.
  * <p>
- * Used to store context data and invalidate some data given its scope.
- * Implements Map for easier use from interface.
+ * Used to store context data and invalidate some data given its scope. Implements Map for easier use from interface.
  *
  * @see ScopeType
- *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class ScopedMap extends HashMap<String, Serializable> {
@@ -92,12 +90,9 @@ public class ScopedMap extends HashMap<String, Serializable> {
     /**
      * Sets value for given scope and given key.
      */
-    public void putScopedValue(ScopeType scope, String key,
-            Serializable value) {
+    public void putScopedValue(ScopeType scope, String key, Serializable value) {
         if (scope == null || key == null) {
-            log.error(String.format(
-                    "Cannot set scope value using scopeType=%s and key=%s",
-                    scope, key));
+            log.error(String.format("Cannot set scope value using scopeType=%s and key=%s", scope, key));
         } else {
             put(scope.getScopedKey(key), value);
         }

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -75,8 +75,7 @@ public final class DOMSerializer {
         return toString(element, of);
     }
 
-    public static String toString(Element element, OutputFormat format)
-            throws IOException {
+    public static String toString(Element element, OutputFormat format) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         write(element, format, baos);
         return baos.toString();
@@ -86,8 +85,7 @@ public final class DOMSerializer {
         return toString(fragment, DEFAULT_FORMAT);
     }
 
-    public static String toString(DocumentFragment fragment, OutputFormat format)
-            throws IOException {
+    public static String toString(DocumentFragment fragment, OutputFormat format) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         write(fragment, format, baos);
         return baos.toString();
@@ -97,31 +95,26 @@ public final class DOMSerializer {
         return toString(doc, DEFAULT_FORMAT);
     }
 
-    public static String toString(Document doc, OutputFormat format)
-            throws IOException {
+    public static String toString(Document doc, OutputFormat format) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         write(doc, format, baos);
         return baos.toString();
     }
 
-    public static void write(Element element, OutputStream out)
-            throws IOException {
+    public static void write(Element element, OutputStream out) throws IOException {
         write(element, DEFAULT_FORMAT, out);
     }
 
-    public static void write(Element element, OutputFormat format,
-            OutputStream out) throws IOException {
+    public static void write(Element element, OutputFormat format, OutputStream out) throws IOException {
         XMLSerializer serializer = new XMLSerializer(out, format);
         serializer.asDOMSerializer().serialize(element);
     }
 
-    public static void write(DocumentFragment fragment, OutputStream out)
-            throws IOException {
+    public static void write(DocumentFragment fragment, OutputStream out) throws IOException {
         write(fragment, DEFAULT_FORMAT, out);
     }
 
-    public static void write(DocumentFragment fragment, OutputFormat format,
-            OutputStream out) throws IOException {
+    public static void write(DocumentFragment fragment, OutputFormat format, OutputStream out) throws IOException {
         XMLSerializer serializer = new XMLSerializer(out, format);
         serializer.asDOMSerializer().serialize(fragment);
     }
@@ -130,8 +123,7 @@ public final class DOMSerializer {
         write(doc, DEFAULT_FORMAT, out);
     }
 
-    public static void write(Document doc, OutputFormat format, OutputStream out)
-            throws IOException {
+    public static void write(Document doc, OutputFormat format, OutputStream out) throws IOException {
         XMLSerializer serializer = new XMLSerializer(out, format);
         serializer.asDOMSerializer().serialize(doc);
     }

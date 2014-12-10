@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  *
@@ -24,14 +24,12 @@ package org.nuxeo.common.collections;
 import java.util.HashMap;
 
 /**
- * A Class keyed map sensitive to class hierarchy.
- * This map provides an additional method {@link #find(Class)}
- * that can be used to lookup a class compatible to the given one
- * depending on the class hierarchy.
+ * A Class keyed map sensitive to class hierarchy. This map provides an additional method {@link #find(Class)} that can
+ * be used to lookup a class compatible to the given one depending on the class hierarchy.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ClassMap<T> extends HashMap<Class<?>, T>{
+public class ClassMap<T> extends HashMap<Class<?>, T> {
 
     private static final long serialVersionUID = 1L;
 

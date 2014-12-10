@@ -65,8 +65,7 @@ public final class URIUtils {
                         if (value == null) {
                             value = "";
                         }
-                        items.add(String.format("%s=%s",
-                                URLEncoder.encode(key, "UTF-8"),
+                        items.add(String.format("%s=%s", URLEncoder.encode(key, "UTF-8"),
                                 URLEncoder.encode(value, "UTF-8")));
                     }
                 }
@@ -107,13 +106,10 @@ public final class URIUtils {
                         String[] param = item.split("=");
                         if (param != null) {
                             if (param.length == 2) {
-                                parameters.put(
-                                        URLDecoder.decode(param[0], "UTF-8"),
+                                parameters.put(URLDecoder.decode(param[0], "UTF-8"),
                                         URLDecoder.decode(param[1], "UTF-8"));
                             } else if (param.length == 1) {
-                                parameters.put(
-                                        URLDecoder.decode(param[0], "UTF-8"),
-                                        null);
+                                parameters.put(URLDecoder.decode(param[0], "UTF-8"), null);
                             }
                         }
                     }
@@ -125,8 +121,7 @@ public final class URIUtils {
         return parameters;
     }
 
-    public static String addParametersToURIQuery(String uriString,
-            Map<String, String> parameters) {
+    public static String addParametersToURIQuery(String uriString, Map<String, String> parameters) {
         String res = uriString;
         try {
             String uriPath = getURIPath(uriString);
@@ -154,16 +149,14 @@ public final class URIUtils {
     }
 
     /**
-     * Quotes a URI path component, with ability to quote "/" and "@" characters
-     * or not depending on the URI path
+     * Quotes a URI path component, with ability to quote "/" and "@" characters or not depending on the URI path
      *
      * @since 5.6
      * @param the uri path to quote
      * @param quoteSlash true if "/" character should be quoted
      * @param quoteAt true if "@" character should be quoted
      */
-    public static String quoteURIPathComponent(String s, boolean quoteSlash,
-            boolean quoteAt) {
+    public static String quoteURIPathComponent(String s, boolean quoteSlash, boolean quoteAt) {
         if ("".equals(s)) {
             return s;
         }

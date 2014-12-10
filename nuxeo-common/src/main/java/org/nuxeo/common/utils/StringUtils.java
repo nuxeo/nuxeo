@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Utils for String manipulations.
  *
@@ -35,9 +34,9 @@ import java.util.Map;
 public final class StringUtils {
 
     private static final String PLAIN_ASCII =
-            // grave
-            "AaEeIiOoUu"
-            // acute
+    // grave
+    "AaEeIiOoUu"
+    // acute
             + "AaEeIiOoUuYy"
             // circumflex
             + "AaEeIiOoUuYy"
@@ -54,16 +53,15 @@ public final class StringUtils {
             + "\u00C1\u00E1\u00C9\u00E9\u00CD\u00ED\u00D3\u00F3\u00DA\u00FA\u00DD\u00FD"
             + "\u00C2\u00E2\u00CA\u00EA\u00CE\u00EE\u00D4\u00F4\u00DB\u00FB\u0176\u0177"
             + "\u00C2\u00E2\u00CA\u00EA\u00CE\u00EE\u00D4\u00F4\u00DB\u00FB\u0176\u0177"
-            + "\u00C4\u00E4\u00CB\u00EB\u00CF\u00EF\u00D6\u00F6\u00DC\u00FC\u0178\u00FF"
-            + "\u00C5\u00E5" + "\u00C7\u00E7";
+            + "\u00C4\u00E4\u00CB\u00EB\u00CF\u00EF\u00D6\u00F6\u00DC\u00FC\u0178\u00FF" + "\u00C5\u00E5"
+            + "\u00C7\u00E7";
 
     // This is an utility class.
     private StringUtils() {
     }
 
     /**
-     * Replaces accented characters from a non-null String by their ascii
-     * equivalent.
+     * Replaces accented characters from a non-null String by their ascii equivalent.
      */
     public static String toAscii(String s) {
         StringBuilder sb = new StringBuilder();
@@ -88,8 +86,7 @@ public final class StringUtils {
             return null;
         }
         int arraySize = array.length;
-        int bufSize = arraySize == 0 ? 0
-                : ((array[0] == null ? 16 : array[0].toString().length()) + 1) * arraySize;
+        int bufSize = arraySize == 0 ? 0 : ((array[0] == null ? 16 : array[0].toString().length()) + 1) * arraySize;
         StringBuilder buf = new StringBuilder(bufSize);
 
         for (int i = 0; i < arraySize; i++) {
@@ -184,7 +181,7 @@ public final class StringUtils {
             if (trim) {
                 str = str.trim();
             }
-            return new String[] {str};
+            return new String[] { str };
         }
         List<String> ar = new ArrayList<String>();
         do {
@@ -221,16 +218,14 @@ public final class StringUtils {
     }
 
     /**
-     * Expands any variable found in the given expression with the values in the
-     * given map.
+     * Expands any variable found in the given expression with the values in the given map.
      * <p>
      * The variable format is ${property_key}.
      *
      * @param expression the expression to expand
      * @param properties a map containing variables
      */
-    public static String expandVars(String expression,
-            Map<?, ?> properties) {
+    public static String expandVars(String expression, Map<?, ?> properties) {
         return Vars.expand(expression, properties);
     }
 

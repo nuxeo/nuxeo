@@ -35,8 +35,7 @@ import org.w3c.dom.Node;
 /**
  * Value factories are used to decode values from XML strings.
  * <p>
- * To register a new factory for a given XMap instance use the method
- * {@link XMap#setValueFactory(Class, XValueFactory)}.
+ * To register a new factory for a given XMap instance use the method {@link XMap#setValueFactory(Class, XValueFactory)}.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -50,14 +49,12 @@ public abstract class XValueFactory {
 
     public abstract String serialize(Context context, Object value);
 
-    public final Object getElementValue(Context context, Node element,
-            boolean trim) {
+    public final Object getElementValue(Context context, Node element, boolean trim) {
         String text = element.getTextContent();
         return deserialize(context, trim ? text.trim() : text);
     }
 
-    public final Object getAttributeValue(Context context, Node element,
-            String name) {
+    public final Object getAttributeValue(Context context, Node element, String name) {
         Node at = element.getAttributes().getNamedItem(name);
         return at != null ? deserialize(context, at.getNodeValue()) : null;
     }

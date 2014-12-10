@@ -115,8 +115,7 @@ public class Environment {
     public static final String LOG_DIR = "org.nuxeo.app.log";
 
     /**
-     * The application layout (optional):
-     * directory containing nuxeo runtime osgi bundles.
+     * The application layout (optional): directory containing nuxeo runtime osgi bundles.
      */
     public static final String BUNDLES_DIR = "nuxeo.osgi.app.bundles";
 
@@ -340,8 +339,7 @@ public class Environment {
     }
 
     /**
-     * Initialization with System properties to avoid issues due to home set
-     * with runtime home instead of server home.
+     * Initialization with System properties to avoid issues due to home set with runtime home instead of server home.
      *
      * @since 5.4.1
      */
@@ -377,9 +375,8 @@ public class Environment {
     }
 
     /**
-     * This method always returns the server home (or null if
-     * {@link #NUXEO_HOME_DIR} is not set), whereas {@link #getHome()} may
-     * return runtime home.
+     * This method always returns the server home (or null if {@link #NUXEO_HOME_DIR} is not set), whereas
+     * {@link #getHome()} may return runtime home.
      *
      * @since 5.4.2
      * @return Server home
@@ -400,14 +397,12 @@ public class Environment {
     }
 
     private void initServerHome() {
-        String homeDir = System.getProperty(NUXEO_HOME,
-                System.getProperty(NUXEO_HOME_DIR));
+        String homeDir = System.getProperty(NUXEO_HOME, System.getProperty(NUXEO_HOME_DIR));
         if (homeDir != null && !homeDir.isEmpty()) {
             serverHome = new File(homeDir);
         } else {
-            logger.warn(String.format(
-                    "Could not get %s neither %s system properties, will use %s",
-                    NUXEO_HOME, NUXEO_HOME_DIR, home));
+            logger.warn(String.format("Could not get %s neither %s system properties, will use %s", NUXEO_HOME,
+                    NUXEO_HOME_DIR, home));
             serverHome = home;
         }
         logger.debug(this);

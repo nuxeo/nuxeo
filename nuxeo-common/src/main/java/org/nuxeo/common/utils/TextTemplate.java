@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *     bstefanescu, jcarsique
@@ -40,13 +40,11 @@ import java.util.regex.Pattern;
 /**
  * Text template processing.
  * <p>
- * Copy files or directories replacing parameters matching pattern
- * '${[a-zA-Z_0-9\-\.]+}' with values from a {@link Map} (deprecated) or a
- * {@link Properties}.
+ * Copy files or directories replacing parameters matching pattern '${[a-zA-Z_0-9\-\.]+}' with values from a {@link Map}
+ * (deprecated) or a {@link Properties}.
  * <p>
- * Method {@link #setParsingExtensions(String)} allow to set list of files being
- * processed when using {@link #processDirectory(File, File)} or #pro, others
- * are simply copied.
+ * Method {@link #setParsingExtensions(String)} allow to set list of files being processed when using
+ * {@link #processDirectory(File, File)} or #pro, others are simply copied.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -92,8 +90,7 @@ public class TextTemplate {
     }
 
     /**
-     * @deprecated prefer use of {@link #getVariables()} then {@link Properties}
-     *             .load()
+     * @deprecated prefer use of {@link #getVariables()} then {@link Properties} .load()
      */
     @Deprecated
     public void setVariables(Map<String, String> vars) {
@@ -141,28 +138,25 @@ public class TextTemplate {
     }
 
     /**
-     * Recursive call {@link #process(InputStream, OutputStream, boolean)} on
-     * each file from "in" directory to "out" directory.
+     * Recursive call {@link #process(InputStream, OutputStream, boolean)} on each file from "in" directory to "out"
+     * directory.
      *
      * @param in Directory to read files from
      * @param out Directory to write files to
      */
-    public void processDirectory(File in, File out)
-            throws FileNotFoundException, IOException {
+    public void processDirectory(File in, File out) throws FileNotFoundException, IOException {
         if (in.isFile()) {
             if (out.isDirectory()) {
                 out = new File(out, in.getName());
             }
 
             int extIndex = in.getName().lastIndexOf('.');
-            String extension = extIndex == -1 ? "" : in.getName().substring(
-                    extIndex + 1).toLowerCase();
+            String extension = extIndex == -1 ? "" : in.getName().substring(extIndex + 1).toLowerCase();
             FileInputStream is = null;
             FileOutputStream os = new FileOutputStream(out);
             try {
                 is = new FileInputStream(in);
-                process(is, os,
-                        extensions == null || extensions.contains(extension));
+                process(is, os, extensions == null || extensions.contains(extension));
             } finally {
                 if (is != null) {
                     is.close();
@@ -187,8 +181,7 @@ public class TextTemplate {
     /**
      * @param processText if true, text is processed for parameters replacement
      */
-    public void process(InputStream is, OutputStream os, boolean processText)
-            throws IOException {
+    public void process(InputStream is, OutputStream os, boolean processText) throws IOException {
         if (processText) {
             String text = FileUtils.read(is);
             text = process(text);

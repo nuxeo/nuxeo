@@ -21,10 +21,8 @@ package org.nuxeo.common.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Vars {
 
@@ -32,12 +30,12 @@ public class Vars {
         String get(String key);
     }
 
-    public static Map<String,String> expand(final Map<String,String> vars) {
+    public static Map<String, String> expand(final Map<String, String> vars) {
         return expand(vars, null);
     }
 
-    public static Map<String,String> expand(final Map<String,String> vars, final Resolver resolver) {
-        final Map<String,String> result = new HashMap<String, String>(vars.size());
+    public static Map<String, String> expand(final Map<String, String> vars, final Resolver resolver) {
+        final Map<String, String> result = new HashMap<String, String>(vars.size());
         Resolver resolver2 = new Resolver() {
             @Override
             public String get(String key) {
@@ -51,9 +49,9 @@ public class Vars {
                 return v;
             }
         };
-        for (Map.Entry<?,?> entry : vars.entrySet()) {
-            String key = (String)entry.getKey();
-            String v = (String)entry.getValue();
+        for (Map.Entry<?, ?> entry : vars.entrySet()) {
+            String key = (String) entry.getKey();
+            String v = (String) entry.getValue();
             if (v == null) {
                 result.put(key, null);
             } else {
@@ -68,12 +66,12 @@ public class Vars {
         return result;
     }
 
-    public static String expand(String expression, final Map<?,?> vars) {
+    public static String expand(String expression, final Map<?, ?> vars) {
         int s = expression.indexOf("${", 0);
         if (s == -1) {
             return expression;
         }
-        int e = expression.indexOf('}', s+2);
+        int e = expression.indexOf('}', s + 2);
         if (e == -1) {
             return expression;
         }
@@ -91,7 +89,7 @@ public class Vars {
         if (s == -1) {
             return expression;
         }
-        int e = expression.indexOf('}', s+2);
+        int e = expression.indexOf('}', s + 2);
         if (e == -1) {
             return expression;
         }
@@ -105,9 +103,9 @@ public class Vars {
             if (s > offset) {
                 buf.append(expression.substring(offset, s));
             }
-            String v = resolveVar(expression.substring(s+2, e), resolver);
+            String v = resolveVar(expression.substring(s + 2, e), resolver);
             if (v == null) {
-                buf.append(expression.substring(s,e+1));
+                buf.append(expression.substring(s, e + 1));
             } else {
                 buf.append(v);
             }
@@ -116,7 +114,7 @@ public class Vars {
             if (s == -1) {
                 break;
             }
-            e = expression.indexOf('}', s+2);
+            e = expression.indexOf('}', s + 2);
             if (e == -1) {
                 break;
             }
@@ -138,7 +136,7 @@ public class Vars {
             if (v != null) {
                 return v.toString();
             } else {
-                return var.substring(i+1);
+                return var.substring(i + 1);
             }
         }
         Object v = resolver.get(key);
