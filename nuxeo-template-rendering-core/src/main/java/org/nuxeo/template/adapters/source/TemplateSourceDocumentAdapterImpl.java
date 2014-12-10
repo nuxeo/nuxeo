@@ -114,6 +114,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
         String dataPath = getTemplateParamsXPath();
         String xml = XMLSerializer.serialize(params);
         adaptedDoc.setPropertyValue(dataPath, xml);
+        adaptedDoc.putContextData(TemplateSourceDocument.INIT_DONE_FLAG, true);
         if (save) {
             doSave();
         }
