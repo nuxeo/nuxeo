@@ -34,20 +34,17 @@ public class TemplateTypeBindingListener implements PostCommitFilteringEventList
         }
         // we cannot directly adapt the ShallowDocumentModel,
         // so check the adapter factory manually
-        return TemplateAdapterFactory.isAdaptable(doc,
-                TemplateSourceDocument.class);
+        return TemplateAdapterFactory.isAdaptable(doc, TemplateSourceDocument.class);
     }
 
     @Override
     public void handleEvent(EventBundle eventBundle) throws ClientException {
-        if (eventBundle.containsEventName(DOCUMENT_CREATED)
-                || eventBundle.containsEventName(DOCUMENT_UPDATED)) {
+        if (eventBundle.containsEventName(DOCUMENT_CREATED) || eventBundle.containsEventName(DOCUMENT_UPDATED)) {
 
             TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 
             for (Event event : eventBundle) {
-                if (DOCUMENT_CREATED.equals(event.getName())
-                        || DOCUMENT_UPDATED.equals(event.getName())) {
+                if (DOCUMENT_CREATED.equals(event.getName()) || DOCUMENT_UPDATED.equals(event.getName())) {
                     EventContext ctx = event.getContext();
                     if (ctx instanceof DocumentEventContext) {
                         DocumentEventContext docCtx = (DocumentEventContext) ctx;
@@ -57,8 +54,7 @@ public class TemplateTypeBindingListener implements PostCommitFilteringEventList
                             continue;
                         }
                         if (targetDoc instanceof ShallowDocumentModel) {
-                            log.warn("Skip unconnected document with type "
-                                    + targetDoc.getType() + " and path "
+                            log.warn("Skip unconnected document with type " + targetDoc.getType() + " and path "
                                     + targetDoc.getPathAsString());
                             continue;
                         }
@@ -71,9 +67,7 @@ public class TemplateTypeBindingListener implements PostCommitFilteringEventList
                                 targetDoc.getCoreSession().save();
                             }
                         } catch (Throwable e) {
-                            log.warn(
-                                    "Unable to get adapter to check type binding",
-                                    e);
+                            log.warn("Unable to get adapter to check type binding", e);
                         }
                     }
                 }

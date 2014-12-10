@@ -19,8 +19,7 @@ public class CoreExtensions {
     }
 
     public List<Object> getChildren() throws Exception {
-        List<DocumentModel> children = doc.getCoreSession().getChildren(
-                doc.getRef());
+        List<DocumentModel> children = doc.getCoreSession().getChildren(doc.getRef());
         List<Object> docs = new ArrayList<Object>();
         for (DocumentModel child : children) {
             docs.add(nuxeoWrapper.wrap(child));

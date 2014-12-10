@@ -21,8 +21,7 @@ import org.nuxeo.template.processors.AbstractTemplateProcessor;
 
 import freemarker.cache.StringTemplateLoader;
 
-public class FreeMarkerProcessor extends AbstractTemplateProcessor implements
-        TemplateProcessor {
+public class FreeMarkerProcessor extends AbstractTemplateProcessor implements TemplateProcessor {
 
     protected StringTemplateLoader loader = new StringTemplateLoader();
 
@@ -40,12 +39,10 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements
 
     protected final static Pattern XMLStartPattern = Pattern.compile("<\\?xml");
 
-    protected final static Pattern HtmlTagPattern = Pattern.compile(
-            "<(\\S+?)(.*?)>(.*?)</\\1>", Pattern.CASE_INSENSITIVE
-                    | Pattern.DOTALL | Pattern.MULTILINE);
+    protected final static Pattern HtmlTagPattern = Pattern.compile("<(\\S+?)(.*?)>(.*?)</\\1>",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 
-    protected String guessMimeType(StringBlob result, MimetypeRegistry mreg)
-            throws Exception {
+    protected String guessMimeType(StringBlob result, MimetypeRegistry mreg) throws Exception {
 
         if (result == null) {
             return null;
@@ -64,8 +61,7 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements
         return mreg.getMimetypeFromBlobWithDefault(result, "text/plain");
     }
 
-    protected void setBlobAttributes(StringBlob result,
-            TemplateBasedDocument templateBasedDocument) throws Exception {
+    protected void setBlobAttributes(StringBlob result, TemplateBasedDocument templateBasedDocument) throws Exception {
 
         // try to guess mimetype and extension of the resulting Blob
 
@@ -94,11 +90,9 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements
     }
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument,
-            String templateName) throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws Exception {
 
-        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument,
-                templateName);
+        Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument, templateName);
 
         String fmTemplateKey = "main" + System.currentTimeMillis();
 
@@ -106,12 +100,10 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements
 
         loader.putTemplate(fmTemplateKey, ftl);
 
-        Map<String, Object> ctx = fmContextBuilder.build(templateBasedDocument,
-                templateName);
+        Map<String, Object> ctx = fmContextBuilder.build(templateBasedDocument, templateName);
 
         FMBindingResolver resolver = new FMBindingResolver();
-        resolver.resolve(templateBasedDocument.getParams(templateName), ctx,
-                templateBasedDocument);
+        resolver.resolve(templateBasedDocument.getParams(templateName), ctx, templateBasedDocument);
 
         StringWriter writer = new StringWriter();
         getEngine().render(fmTemplateKey, ctx, writer);
@@ -123,8 +115,7 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements
     }
 
     @Override
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob)
-            throws Exception {
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
         List<TemplateInput> params = new ArrayList<TemplateInput>();
 
         if (blob != null) {

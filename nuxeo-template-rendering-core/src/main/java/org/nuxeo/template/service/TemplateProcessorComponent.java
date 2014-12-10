@@ -35,14 +35,11 @@ import org.nuxeo.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.template.processors.IdentityProcessor;
 
 /**
- * Runtime Component used to handle Extension Points and expose the
- * {@link TemplateProcessorService} interface
- *
+ * Runtime Component used to handle Extension Points and expose the {@link TemplateProcessorService} interface
+ * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
-public class TemplateProcessorComponent extends DefaultComponent implements
-        TemplateProcessorService {
+public class TemplateProcessorComponent extends DefaultComponent implements TemplateProcessorService {
 
     protected static final Log log = LogFactory.getLog(TemplateProcessorComponent.class);
 
@@ -76,8 +73,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         outputFormatRegistry = null;
     }
 
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (PROCESSOR_XP.equals(extensionPoint)) {
             processorRegistry.addContribution((TemplateProcessorDescriptor) contribution);
@@ -90,8 +86,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         }
     }
 
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (PROCESSOR_XP.equals(extensionPoint)) {
             processorRegistry.removeContribution((TemplateProcessorDescriptor) contribution);
@@ -138,8 +133,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         return processor;
     }
 
-    public void addContextExtensions(DocumentModel currentDocument,
-            DocumentWrapper wrapper, Map<String, Object> ctx) {
+    public void addContextExtensions(DocumentModel currentDocument, DocumentWrapper wrapper, Map<String, Object> ctx) {
 
         Map<String, ContextExtensionFactoryDescriptor> factories = contextExtensionRegistry.getExtensionFactories();
         for (String name : factories.keySet()) {
@@ -193,8 +187,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         return null;
     }
 
-    protected TemplateProcessorDescriptor findProcessorByExtension(
-            String extension) {
+    protected TemplateProcessorDescriptor findProcessorByExtension(String extension) {
 
         List<TemplateProcessorDescriptor> candidates = new ArrayList<TemplateProcessorDescriptor>();
         for (TemplateProcessorDescriptor desc : processorRegistry.getRegistredProcessors()) {
@@ -238,14 +231,12 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             sb.append(" AND ecm:isCheckedInVersion = 0");
         }
         if (targetType != null) {
-            sb.append(" AND tmpl:applicableTypes IN ( 'all', '" + targetType
-                    + "')");
+            sb.append(" AND tmpl:applicableTypes IN ( 'all', '" + targetType + "')");
         }
         return sb.toString();
     }
 
-    public List<DocumentModel> getAvailableTemplateDocs(CoreSession session,
-            String targetType) throws ClientException {
+    public List<DocumentModel> getAvailableTemplateDocs(CoreSession session, String targetType) throws ClientException {
 
         String query = buildTemplateSearchQuery(targetType);
 
@@ -263,8 +254,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         return result;
     }
 
-    public List<TemplateSourceDocument> getAvailableOfficeTemplates(
-            CoreSession session, String targetType) throws ClientException {
+    public List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType)
+            throws ClientException {
 
         String query = buildTemplateSearchQuery(targetType);
         query = query + " AND tmpl:useAsMainContent=1";
@@ -272,21 +263,18 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         return wrap(docs, TemplateSourceDocument.class);
     }
 
-    public List<TemplateSourceDocument> getAvailableTemplates(
-            CoreSession session, String targetType) throws ClientException {
-        List<DocumentModel> filtredResult = getAvailableTemplateDocs(session,
-                targetType);
+    public List<TemplateSourceDocument> getAvailableTemplates(CoreSession session, String targetType)
+            throws ClientException {
+        List<DocumentModel> filtredResult = getAvailableTemplateDocs(session, targetType);
         return wrap(filtredResult, TemplateSourceDocument.class);
     }
 
     @Override
-    public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(
-            DocumentModel source) throws ClientException {
+    public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) throws ClientException {
 
         StringBuffer sb = new StringBuffer(
                 "select * from Document where ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND ");
-        sb.append(TemplateBindings.BINDING_PROP_NAME + "/*/"
-                + TemplateBinding.TEMPLATE_ID_KEY);
+        sb.append(TemplateBindings.BINDING_PROP_NAME + "/*/" + TemplateBinding.TEMPLATE_ID_KEY);
         sb.append(" = '");
         sb.append(source.getId());
         sb.append("'");
@@ -315,8 +303,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
                     try {
                         fetcher.runUnrestricted();
                     } catch (ClientException e) {
-                        log.error("Unable to fetch templates 2 types mapping",
-                                e);
+                        log.error("Unable to fetch templates 2 types mapping", e);
                     }
                     type2Template.putAll(fetcher.getMapping());
                 }
@@ -325,8 +312,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         return type2Template;
     }
 
-    public synchronized void registerTypeMapping(DocumentModel doc)
-            throws ClientException {
+    public synchronized void registerTypeMapping(DocumentModel doc) throws ClientException {
         TemplateSourceDocument tmpl = doc.getAdapter(TemplateSourceDocument.class);
         if (tmpl != null) {
             Map<String, List<String>> mapping = getTypeMapping();
@@ -361,17 +347,16 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         }
     }
 
-    public DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc,
-            DocumentModel sourceTemplateDoc, boolean save)
-            throws ClientException {
+    public DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc, DocumentModel sourceTemplateDoc,
+            boolean save) throws ClientException {
         targetDoc.addFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
         TemplateBasedDocument tmplBased = targetDoc.getAdapter(TemplateBasedDocument.class);
         // bind the template
         return tmplBased.setTemplate(sourceTemplateDoc, save);
     }
 
-    public DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc,
-            String templateName, boolean save) throws ClientException {
+    public DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc, String templateName, boolean save)
+            throws ClientException {
         DocumentModel docAfterDetach = null;
         TemplateBasedDocument tbd = targetDoc.getAdapter(TemplateBasedDocument.class);
         if (tbd != null) {
@@ -381,11 +366,9 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             if (tbd.getTemplateNames().size() == 1) {
                 // remove the whole facet since there is no more binding
                 targetDoc.removeFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
-                log.error("detach after removeFacet, ck="
-                        + targetDoc.getCacheKey());
+                log.error("detach after removeFacet, ck=" + targetDoc.getCacheKey());
                 if (save) {
-                    docAfterDetach = targetDoc.getCoreSession().saveDocument(
-                            targetDoc);
+                    docAfterDetach = targetDoc.getCoreSession().saveDocument(targetDoc);
                 }
             } else {
                 // only remove the binding
@@ -404,8 +387,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     }
 
     @Override
-    public OutputFormatDescriptor getOutputFormatDescriptor(
-            String outputFormatId) {
+    public OutputFormatDescriptor getOutputFormatDescriptor(String outputFormatId) {
         return outputFormatRegistry.getOutputFormatById(outputFormatId);
     }
 }

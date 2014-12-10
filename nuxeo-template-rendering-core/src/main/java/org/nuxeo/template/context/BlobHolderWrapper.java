@@ -11,11 +11,9 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Class helper used to expose Document as a {@link BlobHolder} in FreeMarker
- * context
+ * Class helper used to expose Document as a {@link BlobHolder} in FreeMarker context
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class BlobHolderWrapper {
 

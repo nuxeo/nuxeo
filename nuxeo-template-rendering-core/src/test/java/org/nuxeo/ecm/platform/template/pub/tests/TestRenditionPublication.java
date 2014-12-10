@@ -61,24 +61,15 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RenditionPublicationRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.mimetype.api",
-        "org.nuxeo.ecm.platform.mimetype.core",
-        "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
-        "org.nuxeo.ecm.platform.rendition.api",
-        "org.nuxeo.ecm.platform.rendition.core",
-        "org.nuxeo.ecm.platform.rendition.publisher",
-        "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.platform.versioning.api",
-        "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.relations",
-        "org.nuxeo.ecm.relations.jena",
-        "org.nuxeo.ecm.platform.publisher.core.contrib",
-        "org.nuxeo.ecm.platform.publisher.core",
-        "org.nuxeo.ecm.platform.publisher.task",
+@Deploy({ "org.nuxeo.ecm.platform.mimetype.api", "org.nuxeo.ecm.platform.mimetype.core",
+        "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.rendition.api",
+        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.rendition.publisher",
+        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning.api", "org.nuxeo.ecm.platform.versioning",
+        "org.nuxeo.ecm.relations", "org.nuxeo.ecm.relations.jena", "org.nuxeo.ecm.platform.publisher.core.contrib",
+        "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.publisher.task",
         TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
-        "org.nuxeo.ecm.platform.rendition.publisher",
-        "org.nuxeo.template.manager" })
+        "org.nuxeo.ecm.platform.rendition.publisher", "org.nuxeo.template.manager" })
 @LocalDeploy("org.nuxeo.template.manager:relations-default-jena-contrib.xml")
 public class TestRenditionPublication {
 
@@ -101,8 +92,8 @@ public class TestRenditionPublication {
         DocumentModel root = session.getRootDocument();
 
         // create the template
-        DocumentModel templateDoc = session.createDocumentModel(
-                root.getPathAsString(), "templatedDoc", "TemplateSource");
+        DocumentModel templateDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc",
+                "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         // File file =
         // FileUtils.getResourceFileFromContext("data/DocumentsAttributes.odt");
@@ -137,13 +128,11 @@ public class TestRenditionPublication {
         assertEquals("htmlPreview", inputParam.getSource());
 
         // create the Note
-        DocumentModel testDoc = session.createDocumentModel(
-                root.getPathAsString(), "testDoc", "Note");
+        DocumentModel testDoc = session.createDocumentModel(root.getPathAsString(), "testDoc", "Note");
         testDoc.setProperty("dublincore", "title", "MyTestNoteDoc");
         testDoc.setProperty("dublincore", "description", "Simple note sample");
 
-        testDoc.setProperty("note", "note",
-                "<html><body><p> Simple <b> Note </b> with <i>text</i></body></html>");
+        testDoc.setProperty("note", "note", "<html><body><p> Simple <b> Note </b> with <i>text</i></body></html>");
 
         testDoc = session.createDocument(testDoc);
 
@@ -163,15 +152,13 @@ public class TestRenditionPublication {
         TemplateBasedDocument templateBased = templateBasedDoc.getAdapter(TemplateBasedDocument.class);
         assertNotNull(templateBased);
 
-        templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName(
-                null, true);
+        templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName(null, true);
 
         List<RenditionDefinition> defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
         // one blob => pdf rendition
         assertEquals(1, defs.size());
 
-        templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName(
-                "webView", true);
+        templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName("webView", true);
         defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
         // blob, + delivery rendition binding => 2 rendition
         assertEquals(2, defs.size());
@@ -182,10 +169,8 @@ public class TestRenditionPublication {
     public void shouldPublishATemplateRendition() throws Exception {
 
         // setup tree
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        PublicationTree tree = publisherService.getPublicationTree(
-                defaultTreeName, session, null);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        PublicationTree tree = publisherService.getPublicationTree(defaultTreeName, session, null);
 
         List<PublicationNode> nodes = tree.getChildrenNodes();
         assertEquals(1, nodes.size());
@@ -198,9 +183,8 @@ public class TestRenditionPublication {
         DocumentModel templateBasedDoc = createTemplateBasedDoc();
 
         // publish
-        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) tree.publish(
-                templateBasedDoc, targetNode, Collections.singletonMap(
-                        RENDITION_NAME_PARAMETER_KEY, "webView"));
+        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) tree.publish(templateBasedDoc,
+                targetNode, Collections.singletonMap(RENDITION_NAME_PARAMETER_KEY, "webView"));
 
         // check rendition is done
         DocumentModel proxy = publishedDocument.getProxy();
@@ -237,9 +221,8 @@ public class TestRenditionPublication {
         assertEquals("0.1+", templateBasedDoc.getVersionLabel());
 
         // republish
-        publishedDocument = (SimpleCorePublishedDocument) tree.publish(
-                templateBasedDoc, targetNode, Collections.singletonMap(
-                        RENDITION_NAME_PARAMETER_KEY, "webView"));
+        publishedDocument = (SimpleCorePublishedDocument) tree.publish(templateBasedDoc, targetNode,
+                Collections.singletonMap(RENDITION_NAME_PARAMETER_KEY, "webView"));
 
         proxy = publishedDocument.getProxy();
         assertTrue(proxy.hasFacet(RENDITION_FACET));

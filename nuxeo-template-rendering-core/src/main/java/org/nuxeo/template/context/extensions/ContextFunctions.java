@@ -30,8 +30,7 @@ public class ContextFunctions {
         this.nuxeoWrapper = nuxeoWrapper;
     }
 
-    public String getVocabularyTranslatedLabel(String voc_name, String key,
-            String lang) throws Exception {
+    public String getVocabularyTranslatedLabel(String voc_name, String key, String lang) throws Exception {
 
         String labelKey = getVocabularyLabel(voc_name, key);
         if (labelKey == null) {
@@ -48,9 +47,7 @@ public class ContextFunctions {
                     result = result + " / ";
                 }
                 try {
-                    result = result
-                            + I18NUtils.getMessageString("messages", parts[i],
-                                    null, locale);
+                    result = result + I18NUtils.getMessageString("messages", parts[i], null, locale);
                 } catch (MissingResourceException e) {
                     result = result + parts[i];
                 }
@@ -58,16 +55,14 @@ public class ContextFunctions {
             return result;
         } else {
             try {
-                return I18NUtils.getMessageString("messages", labelKey, null,
-                        locale);
+                return I18NUtils.getMessageString("messages", labelKey, null, locale);
             } catch (MissingResourceException e) {
                 return labelKey;
             }
         }
     }
 
-    public String getVocabularyLabel(String voc_name, String key)
-            throws Exception {
+    public String getVocabularyLabel(String voc_name, String key) throws Exception {
 
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
         if (ds == null) {
@@ -103,8 +98,7 @@ public class ContextFunctions {
                     try {
                         DocumentModel entry = session.getEntry(keyValue);
                         if (entry != null) {
-                            values.add((String) entry.getProperty(schema,
-                                    "label"));
+                            values.add((String) entry.getProperty(schema, "label"));
                         }
                     } finally {
                         if (session != null) {

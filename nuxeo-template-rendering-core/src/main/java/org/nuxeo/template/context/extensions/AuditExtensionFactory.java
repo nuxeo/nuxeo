@@ -24,16 +24,14 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
     protected static final Log log = LogFactory.getLog(AuditExtensionFactory.class);
 
     @Override
-    public Object getExtension(DocumentModel currentDocument,
-            DocumentWrapper wrapper, Map<String, Object> ctx) {
+    public Object getExtension(DocumentModel currentDocument, DocumentWrapper wrapper, Map<String, Object> ctx) {
 
         try {
             // add audit context info
             DocumentHistoryReader historyReader = Framework.getLocalService(DocumentHistoryReader.class);
             List<LogEntry> auditEntries = null;
             if (historyReader != null) {
-                auditEntries = historyReader.getDocumentHistory(
-                        currentDocument, 0, 1000);
+                auditEntries = historyReader.getDocumentHistory(currentDocument, 0, 1000);
             } else {
                 if (Framework.isTestModeSet() && testAuditEntries != null) {
                     auditEntries = testAuditEntries;
@@ -44,11 +42,9 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
             }
             if (auditEntries != null) {
                 try {
-                    auditEntries = preprocessAuditEntries(auditEntries,
-                            currentDocument.getCoreSession(), "en");
+                    auditEntries = preprocessAuditEntries(auditEntries, currentDocument.getCoreSession(), "en");
                 } catch (Throwable e) {
-                    log.warn("Unable to preprocess Audit entries : "
-                            + e.getMessage());
+                    log.warn("Unable to preprocess Audit entries : " + e.getMessage());
                 }
                 ctx.put("auditEntries", wrapper.wrap(auditEntries));
             }
@@ -63,23 +59,20 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
         return null;
     }
 
-    protected List<LogEntry> preprocessAuditEntries(
-            List<LogEntry> auditEntries, CoreSession session, String lang) {
+    protected List<LogEntry> preprocessAuditEntries(List<LogEntry> auditEntries, CoreSession session, String lang) {
         CommentProcessorHelper helper = new CommentProcessorHelper(session);
         for (LogEntry entry : auditEntries) {
             String comment = helper.getLogComment(entry);
             if (comment == null) {
                 comment = "";
             } else {
-                String i18nComment = I18NUtils.getMessageString("messages",
-                        comment, null, new Locale(lang));
+                String i18nComment = I18NUtils.getMessageString("messages", comment, null, new Locale(lang));
                 if (i18nComment != null) {
                     comment = i18nComment;
                 }
             }
             String eventId = entry.getEventId();
-            String i18nEventId = I18NUtils.getMessageString("messages",
-                    eventId, null, new Locale(lang));
+            String i18nEventId = I18NUtils.getMessageString("messages", eventId, null, new Locale(lang));
             if (i18nEventId != null) {
                 entry.setEventId(i18nEventId);
             }

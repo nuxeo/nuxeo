@@ -40,8 +40,8 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
 
         // create template
-        DocumentModel templateDoc = session.createDocumentModel(
-                root.getPathAsString(), "templatedDoc", "TemplateSource");
+        DocumentModel templateDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc",
+                "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         File file = FileUtils.getResourceFileFromContext("data/test.ftl");
         Blob fileBlob = new FileBlob(file);
@@ -51,8 +51,7 @@ public class TestEditableTemplate extends SQLRepositoryTestCase {
         templateDoc = session.createDocument(templateDoc);
 
         // now create a template based doc
-        DocumentModel testDoc = session.createDocumentModel(
-                root.getPathAsString(), "templatedBasedDoc",
+        DocumentModel testDoc = session.createDocumentModel(root.getPathAsString(), "templatedBasedDoc",
                 "TemplateBasedFile");
         testDoc.setProperty("dublincore", "title", "MyTestDoc");
         testDoc.setProperty("dublincore", "description", "some description");

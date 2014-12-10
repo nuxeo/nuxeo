@@ -37,14 +37,13 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 /**
- * Default implementation of {@link TemplateSourceDocument}. It mainly expect
- * from the underlying DocumentModel to have the "Template" facet.
+ * Default implementation of {@link TemplateSourceDocument}. It mainly expect from the underlying DocumentModel to have
+ * the "Template" facet.
  * 
  * @author Tiry (tdelprat@nuxeo.com)
- * 
  */
-public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
-        implements Serializable, TemplateSourceDocument {
+public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument implements Serializable,
+        TemplateSourceDocument {
 
     public static final String TEMPLATE_DATA_PROP = "tmpl:templateData";
 
@@ -111,8 +110,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         return false;
     }
 
-    public DocumentModel saveParams(List<TemplateInput> params, boolean save)
-            throws Exception {
+    public DocumentModel saveParams(List<TemplateInput> params, boolean save) throws Exception {
         String dataPath = getTemplateParamsXPath();
         String xml = XMLSerializer.serialize(params);
         adaptedDoc.setPropertyValue(dataPath, xml);
@@ -164,8 +162,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public String getTemplateType() {
         try {
-            String ttype = (String) getAdaptedDoc().getPropertyValue(
-                    TEMPLATE_TYPE_PROP);
+            String ttype = (String) getAdaptedDoc().getPropertyValue(TEMPLATE_TYPE_PROP);
             if (TEMPLATE_TYPE_AUTO.equals(ttype)) {
                 return null;
             }
@@ -178,25 +175,21 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public void initTemplate(boolean save) throws Exception {
         // avoid duplicate init
-        if (getAdaptedDoc().getContextData(
-                TemplateSourceDocument.INIT_DONE_FLAG) == null) {
+        if (getAdaptedDoc().getContextData(TemplateSourceDocument.INIT_DONE_FLAG) == null) {
             Blob blob = getTemplateBlob();
             if (blob != null) {
                 if (getTemplateType() == null) {
                     TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
                     String templateType = tps.findProcessorName(blob);
                     if (templateType != null) {
-                        getAdaptedDoc().setPropertyValue(TEMPLATE_TYPE_PROP,
-                                templateType);
+                        getAdaptedDoc().setPropertyValue(TEMPLATE_TYPE_PROP, templateType);
                     }
                 }
 
-                String tmplName = (String) getAdaptedDoc().getPropertyValue(
-                        TEMPLATE_NAME_PROP);
+                String tmplName = (String) getAdaptedDoc().getPropertyValue(TEMPLATE_NAME_PROP);
                 if (tmplName == null || tmplName.isEmpty()) {
                     tmplName = computeTemplateName();
-                    getAdaptedDoc().setPropertyValue(TEMPLATE_NAME_PROP,
-                            tmplName);
+                    getAdaptedDoc().setPropertyValue(TEMPLATE_NAME_PROP, tmplName);
                 }
 
                 TemplateProcessor processor = getTemplateProcessor();
@@ -204,8 +197,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
                     List<TemplateInput> params = processor.getInitialParametersDefinition(blob);
                     saveParams(params, save);
                 }
-                getAdaptedDoc().getContextData().put(
-                        TemplateSourceDocument.INIT_DONE_FLAG, true);
+                getAdaptedDoc().getContextData().put(TemplateSourceDocument.INIT_DONE_FLAG, true);
             }
         }
     }
@@ -216,8 +208,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public boolean allowInstanceOverride() {
         try {
-            Boolean allowOverride = (Boolean) getAdaptedDoc().getPropertyValue(
-                    TEMPLATE_OVERRIDE_PROP);
+            Boolean allowOverride = (Boolean) getAdaptedDoc().getPropertyValue(TEMPLATE_OVERRIDE_PROP);
             if (allowOverride == null) {
                 allowOverride = true;
             }
@@ -231,8 +222,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     public void initTypesBindings() throws Exception {
 
         // manage applicable types
-        String[] applicableTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
-                TEMPLATE_APPLICABLE_TYPES_PROP);
+        String[] applicableTypesArray = (String[]) getAdaptedDoc().getPropertyValue(TEMPLATE_APPLICABLE_TYPES_PROP);
 
         String[] newApplicableTypesArray = null;
 
@@ -247,13 +237,11 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
             }
         }
         if (newApplicableTypesArray != null) {
-            getAdaptedDoc().setPropertyValue(TEMPLATE_APPLICABLE_TYPES_PROP,
-                    newApplicableTypesArray);
+            getAdaptedDoc().setPropertyValue(TEMPLATE_APPLICABLE_TYPES_PROP, newApplicableTypesArray);
         }
 
         // manage forcedTypes
-        String[] forcedTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
-                TEMPLATE_FORCED_TYPES_PROP);
+        String[] forcedTypesArray = (String[]) getAdaptedDoc().getPropertyValue(TEMPLATE_FORCED_TYPES_PROP);
         String[] newForcedTypesArray = null;
         if (forcedTypesArray == null || forcedTypesArray.length == 0) {
             newForcedTypesArray = new String[] { TEMPLATE_FORCED_TYPES_NONE };
@@ -266,23 +254,19 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
             }
         }
         if (newForcedTypesArray != null) {
-            getAdaptedDoc().setPropertyValue(TEMPLATE_FORCED_TYPES_PROP,
-                    newForcedTypesArray);
+            getAdaptedDoc().setPropertyValue(TEMPLATE_FORCED_TYPES_PROP, newForcedTypesArray);
         }
 
     }
 
     public List<String> getApplicableTypes() {
         try {
-            String[] applicableTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
-                    TEMPLATE_APPLICABLE_TYPES_PROP);
+            String[] applicableTypesArray = (String[]) getAdaptedDoc().getPropertyValue(TEMPLATE_APPLICABLE_TYPES_PROP);
             List<String> applicableTypes = new ArrayList<String>();
             if (applicableTypesArray != null) {
                 applicableTypes.addAll((Arrays.asList(applicableTypesArray)));
             }
-            if (applicableTypes.size() > 0
-                    && applicableTypes.get(0).equals(
-                            TEMPLATE_APPLICABLE_TYPES_ALL)) {
+            if (applicableTypes.size() > 0 && applicableTypes.get(0).equals(TEMPLATE_APPLICABLE_TYPES_ALL)) {
                 applicableTypes.remove(0);
             }
             return applicableTypes;
@@ -294,14 +278,12 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public List<String> getForcedTypes() {
         try {
-            String[] forcedTypesArray = (String[]) getAdaptedDoc().getPropertyValue(
-                    TEMPLATE_FORCED_TYPES_PROP);
+            String[] forcedTypesArray = (String[]) getAdaptedDoc().getPropertyValue(TEMPLATE_FORCED_TYPES_PROP);
             List<String> applicableTypes = new ArrayList<String>();
             if (forcedTypesArray != null) {
                 applicableTypes.addAll((Arrays.asList(forcedTypesArray)));
             }
-            if (applicableTypes.size() > 0
-                    && applicableTypes.get(0).equals(TEMPLATE_FORCED_TYPES_NONE)) {
+            if (applicableTypes.size() > 0 && applicableTypes.get(0).equals(TEMPLATE_FORCED_TYPES_NONE)) {
                 applicableTypes.remove(0);
             }
             return applicableTypes;
@@ -311,43 +293,32 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         }
     }
 
-    public void removeForcedType(String type, boolean save)
-            throws ClientException {
+    public void removeForcedType(String type, boolean save) throws ClientException {
         List<String> types = getForcedTypes();
         if (types.contains(type)) {
             types.remove(type);
             String[] typesArray = types.toArray(new String[types.size()]);
-            getAdaptedDoc().setPropertyValue(
-                    TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP,
-                    typesArray);
+            getAdaptedDoc().setPropertyValue(TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP, typesArray);
             if (save) {
-                adaptedDoc = getAdaptedDoc().getCoreSession().saveDocument(
-                        getAdaptedDoc());
+                adaptedDoc = getAdaptedDoc().getCoreSession().saveDocument(getAdaptedDoc());
             }
         }
     }
 
-    public void setForcedTypes(String[] forcedTypes, boolean save)
-            throws ClientException {
-        getAdaptedDoc().setPropertyValue(
-                TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP,
-                forcedTypes);
+    public void setForcedTypes(String[] forcedTypes, boolean save) throws ClientException {
+        getAdaptedDoc().setPropertyValue(TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_PROP, forcedTypes);
         if (save) {
-            adaptedDoc = getAdaptedDoc().getCoreSession().saveDocument(
-                    getAdaptedDoc());
+            adaptedDoc = getAdaptedDoc().getCoreSession().saveDocument(getAdaptedDoc());
         }
     }
 
-    public List<TemplateBasedDocument> getTemplateBasedDocuments()
-            throws ClientException {
-        return Framework.getLocalService(TemplateProcessorService.class).getLinkedTemplateBasedDocuments(
-                adaptedDoc);
+    public List<TemplateBasedDocument> getTemplateBasedDocuments() throws ClientException {
+        return Framework.getLocalService(TemplateProcessorService.class).getLinkedTemplateBasedDocuments(adaptedDoc);
     }
 
     public String getOutputFormat() {
         try {
-            return (String) getAdaptedDoc().getPropertyValue(
-                    TEMPLATE_OUTPUT_PROP);
+            return (String) getAdaptedDoc().getPropertyValue(TEMPLATE_OUTPUT_PROP);
         } catch (Exception e) {
             log.error("Error while getting output format", e);
             return null;
@@ -367,8 +338,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public boolean useAsMainContent() {
         try {
-            Boolean useAsMain = (Boolean) getAdaptedDoc().getPropertyValue(
-                    TEMPLATE_USEASMAIN_PROP);
+            Boolean useAsMain = (Boolean) getAdaptedDoc().getPropertyValue(TEMPLATE_USEASMAIN_PROP);
             if (useAsMain == null) {
                 useAsMain = false;
             }
@@ -400,8 +370,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public String getName() {
         try {
-            String name = (String) getAdaptedDoc().getPropertyValue(
-                    TEMPLATE_NAME_PROP);
+            String name = (String) getAdaptedDoc().getPropertyValue(TEMPLATE_NAME_PROP);
             if (name == null) {
                 name = getAdaptedDoc().getTitle();
             }
@@ -446,8 +415,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     @Override
     public String getTargetRenditionName() throws ClientException {
         try {
-            String targetRendition = (String) getAdaptedDoc().getPropertyValue(
-                    TEMPLATE_RENDITION_PROP);
+            String targetRendition = (String) getAdaptedDoc().getPropertyValue(TEMPLATE_RENDITION_PROP);
             if (TEMPLATE_RENDITION_NONE.equals(targetRendition)) {
                 return null;
             }
@@ -457,8 +425,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         }
     }
 
-    public void setTargetRenditioName(String renditionName, boolean save)
-            throws ClientException {
+    public void setTargetRenditioName(String renditionName, boolean save) throws ClientException {
         getAdaptedDoc().setPropertyValue(TEMPLATE_RENDITION_PROP, renditionName);
         if (save) {
             doSave();

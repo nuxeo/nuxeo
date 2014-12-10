@@ -17,7 +17,6 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
  * Operation to wrapp the rendition process
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 @Operation(id = RenderWithTemplateOperation.ID, category = Constants.CAT_CONVERSION, label = "Render with template", description = "Render the target document with the associated template if any. Returns the rendered Blob or the main Blob if no template is associated to the document.")
 public class RenderWithTemplateOperation {

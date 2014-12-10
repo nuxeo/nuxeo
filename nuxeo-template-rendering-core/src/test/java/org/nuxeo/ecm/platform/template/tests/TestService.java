@@ -39,8 +39,7 @@ public class TestService extends NXRuntimeTestCase {
     public void testRegisterMergeUnRegisterContrib() throws Exception {
 
         // test simple registration
-        deployTestContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-contrib1.xml");
+        deployTestContrib("org.nuxeo.template.manager", "OSGI-INF/templateprocessor-contrib1.xml");
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 
@@ -50,8 +49,7 @@ public class TestService extends NXRuntimeTestCase {
 
         assertEquals("TestProcessor", desc.getName());
         assertEquals("Test Processor", desc.getLabel());
-        assertEquals(FreeMarkerProcessor.class.getSimpleName(),
-                desc.getProcessor().getClass().getSimpleName());
+        assertEquals(FreeMarkerProcessor.class.getSimpleName(), desc.getProcessor().getClass().getSimpleName());
         assertEquals(false, desc.isDefaultProcessor());
 
         Blob fakeBlob = new StringBlob("Empty");
@@ -75,15 +73,13 @@ public class TestService extends NXRuntimeTestCase {
         assertNull(tps.findProcessor(fakeBlob));
 
         // test merge registration
-        deployContrib("org.nuxeo.template.manager.test",
-                "OSGI-INF/templateprocessor-contrib2.xml");
+        deployContrib("org.nuxeo.template.manager.test", "OSGI-INF/templateprocessor-contrib2.xml");
 
         assertNotNull(tps.getProcessor("TestProcessor"));
         desc = ((TemplateProcessorComponent) tps).getDescriptor("TestProcessor");
         assertEquals("TestProcessor", desc.getName());
         assertEquals("Test Processor", desc.getLabel());
-        assertEquals(FreeMarkerProcessor.class.getSimpleName(),
-                desc.getProcessor().getClass().getSimpleName());
+        assertEquals(FreeMarkerProcessor.class.getSimpleName(), desc.getProcessor().getClass().getSimpleName());
         assertEquals(true, desc.isDefaultProcessor()); // Rest the default flag
                                                        // !
 
@@ -98,8 +94,7 @@ public class TestService extends NXRuntimeTestCase {
         assertNotNull(tps.findProcessor(fakeBlob));
 
         // check undeploy
-        undeployContrib("org.nuxeo.template.manager.test",
-                "OSGI-INF/templateprocessor-contrib2.xml");
+        undeployContrib("org.nuxeo.template.manager.test", "OSGI-INF/templateprocessor-contrib2.xml");
 
         fakeBlob.setFilename("bidon.bidon");
         assertNull(tps.findProcessor(fakeBlob));
@@ -111,7 +106,6 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testDefaultContrib() throws Exception {
-
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 
@@ -125,16 +119,14 @@ public class TestService extends NXRuntimeTestCase {
         TemplateProcessor processor = tps.findProcessor(fakeBlob);
         assertNotNull(processor);
 
-        assertEquals(FreeMarkerProcessor.class.getSimpleName(),
-                processor.getClass().getSimpleName());
+        assertEquals(FreeMarkerProcessor.class.getSimpleName(), processor.getClass().getSimpleName());
 
         fakeBlob.setFilename("bidon.xml");
 
         processor = tps.findProcessor(fakeBlob);
         assertNotNull(processor);
 
-        assertEquals(XSLTProcessor.class.getSimpleName(),
-                processor.getClass().getSimpleName());
+        assertEquals(XSLTProcessor.class.getSimpleName(), processor.getClass().getSimpleName());
 
         Collection<TemplateProcessorDescriptor> processors = tps.getRegisteredTemplateProcessors();
         TemplateProcessorDescriptor processorDesc = processors.iterator().next();
