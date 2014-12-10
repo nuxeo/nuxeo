@@ -18,6 +18,7 @@ package org.nuxeo.ecm.restapi.test;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.LogFactory;
@@ -66,6 +67,14 @@ public class RestServerInit implements RepositoryInit {
         for (int i = 0; i < 5; i++) {
             DocumentModel doc = session.createDocumentModel("/", "folder_" + i, "Folder");
             doc.setPropertyValue("dc:title", "Folder " + i);
+            if (i == 0) {
+                // set dc:issued value for queries on dates
+                Calendar cal = Calendar.getInstance();
+                cal.set(Calendar.YEAR, 2007);
+                cal.set(Calendar.MONTH, 1); // 0-based
+                cal.set(Calendar.DAY_OF_MONTH, 17);
+                doc.setPropertyValue("dc:issued", cal);
+            }
             doc = session.createDocument(doc);
         }
 

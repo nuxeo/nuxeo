@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -218,6 +217,15 @@ public class BaseTest {
             result.add(elements.next());
         }
         return result;
+    }
+
+    /**
+     * @since 7.1
+     */
+    protected String getErrorMessage(JsonNode node) {
+        assertEquals("exception", node.get("entity-type").getValueAsText());
+        assertTrue(node.get("message").isTextual());
+        return node.get("message").getValueAsText();
     }
 
     protected void assertEntityEqualsDoc(InputStream in, DocumentModel doc) throws Exception {

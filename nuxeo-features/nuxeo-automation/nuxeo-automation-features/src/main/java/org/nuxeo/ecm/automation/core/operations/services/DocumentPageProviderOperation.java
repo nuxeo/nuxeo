@@ -12,12 +12,23 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.el.ELContext;
+import javax.el.ValueExpression;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.lang.FunctionMapperImpl;
 import org.jboss.seam.el.EL;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -31,28 +42,17 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.actions.seam.SeamActionContext;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
-import org.nuxeo.ecm.platform.query.core.PageProviderServiceImpl;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-import org.nuxeo.runtime.api.Framework;
-
-import javax.el.ELContext;
-import javax.el.ValueExpression;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
- * Operation to execute a query or a named provider with support for Pagination
+ * Operation to execute a query or a named provider with support for Pagination.
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
@@ -132,7 +132,7 @@ public class DocumentPageProviderOperation {
     /**
      * @since 6.0
      */
-    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
+    @Param(name = PageProviderService.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
             + "fill in query variables.")
     protected Properties namedParameters;
 
@@ -151,12 +151,10 @@ public class DocumentPageProviderOperation {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public PaginableDocumentModelListImpl run() throws IOException {
-
-        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
-
+    public PaginableDocumentModelListImpl run() throws OperationException {
         List<SortInfo> sortInfos = null;
         if (sortInfoAsStringList != null) {
+            // BBB
             sortInfos = new ArrayList<SortInfo>();
             for (String sortInfoDesc : sortInfoAsStringList) {
                 SortInfo sortInfo;
@@ -203,7 +201,7 @@ public class DocumentPageProviderOperation {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        if (query == null && (providerName == null || providerName.length() == 0)) {
+        if (query == null && StringUtils.isBlank(providerName)) {
             // provide a defaut query
             query = "SELECT * from Document";
         }
@@ -220,28 +218,9 @@ public class DocumentPageProviderOperation {
             targetPageSize = pageSize.longValue();
         }
 
-        DocumentModel searchDocumentModel = null;
-        if (namedParameters != null && !namedParameters.isEmpty()) {
-            // Setup the search document model
-            if (providerName != null) {
-                PageProviderDefinition pageProviderDefinition = pps.getPageProviderDefinition(providerName);
-                if (pageProviderDefinition != null) {
-                    String searchDocType = pageProviderDefinition.getSearchDocumentType();
-                    if (searchDocType != null) {
-                        searchDocumentModel = session.createDocumentModel(searchDocType);
-                        DocumentHelper.setJSONProperties(null, searchDocumentModel, namedParameters);
-                    }
-                } else {
-                    log.error("No page provider definition found for " + providerName);
-                }
-            }
-            // Setup the named parameters map
-            if (searchDocumentModel == null) {
-                searchDocumentModel = new SimpleDocumentModel();
-            }
-            searchDocumentModel.putContextData(PageProviderServiceImpl.NAMED_PARAMETERS, namedParameters);
-        }
+        DocumentModel searchDocumentModel = getSearchDocumentModel(session, ppService, providerName, namedParameters);
 
+        PaginableDocumentModelListImpl res;
         if (query != null) {
             CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
             desc.setPattern(query);
@@ -249,15 +228,19 @@ public class DocumentPageProviderOperation {
                 // set the maxResults to avoid slowing down queries
                 desc.getProperties().put("maxResults", maxResults);
             }
-            return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pps.getPageProvider("", desc,
-                    searchDocumentModel, sortInfos, targetPageSize, targetPage, props, parameters), documentLinkBuilder);
+            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider("", desc,
+                    searchDocumentModel, sortInfos, targetPageSize, targetPage, props, parameters);
+            res = new PaginableDocumentModelListImpl(pp, documentLinkBuilder);
         } else {
-            return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pps.getPageProvider(providerName,
+            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(providerName,
                     searchDocumentModel, sortInfos, targetPageSize, targetPage, props,
-                    context.containsKey("seamActionContext") ? getParameters(providerName, parameters) : parameters),
-                    documentLinkBuilder);
+                    context.containsKey("seamActionContext") ? getParameters(providerName, parameters) : parameters);
+            res = new PaginableDocumentModelListImpl(pp, documentLinkBuilder);
         }
-
+        if (res.hasError()) {
+            throw new OperationException(res.getErrorMessage());
+        }
+        return res;
     }
 
     /**
@@ -293,4 +276,48 @@ public class DocumentPageProviderOperation {
         }
         return resolvedParams;
     }
+
+    /**
+     * @since 7.1
+     */
+    public static DocumentModel getSearchDocumentModel(CoreSession session, PageProviderService pps,
+            String providerName, Properties namedParameters) {
+        // generate search document model if type specified on the definition
+        DocumentModel searchDocumentModel = null;
+        if (!StringUtils.isBlank(providerName)) {
+            PageProviderDefinition pageProviderDefinition = pps.getPageProviderDefinition(providerName);
+            if (pageProviderDefinition != null) {
+                String searchDocType = pageProviderDefinition.getSearchDocumentType();
+                if (searchDocType != null) {
+                    searchDocumentModel = session.createDocumentModel(searchDocType);
+                } else if (pageProviderDefinition.getWhereClause() != null) {
+                    // avoid later error on null search doc, in case where clause is only referring to named parameters
+                    // (and no namedParameters are given)
+                    searchDocumentModel = new SimpleDocumentModel();
+                }
+            } else {
+                log.error("No page provider definition found for " + providerName);
+            }
+        }
+
+        if (namedParameters != null && !namedParameters.isEmpty()) {
+            // fall back on simple document if no type defined on page provider
+            if (searchDocumentModel == null) {
+                searchDocumentModel = new SimpleDocumentModel();
+            }
+            for (Map.Entry<String, String> entry : namedParameters.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                try {
+                    DocumentHelper.setProperty(session, searchDocumentModel, key, value, true);
+                } catch (PropertyNotFoundException | IOException e) {
+                    // assume this is a "pure" named parameter, not part of the search doc schema
+                    continue;
+                }
+            }
+            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParameters);
+        }
+        return searchDocumentModel;
+    }
+
 }

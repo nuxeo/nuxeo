@@ -32,6 +32,13 @@ import org.nuxeo.ecm.core.api.SortInfo;
 public interface PageProviderService extends Serializable {
 
     /**
+     * Name of the search document model context map property holding named parameters.
+     *
+     * @since 7.1
+     */
+    public static final String NAMED_PARAMETERS = "namedParameters";
+
+    /**
      * Returns a named page provider definition.
      * <p>
      * Useful to share the definition between the page provider service, and the content view service (as content views

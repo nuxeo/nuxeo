@@ -11,8 +11,17 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -22,22 +31,14 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.RecordSet;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
-import org.nuxeo.ecm.platform.query.core.PageProviderServiceImpl;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-import org.nuxeo.runtime.api.Framework;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Operation to execute a query or a named provider with support for Pagination
@@ -53,6 +54,8 @@ import java.util.Map;
         + "operation. If no query or provider name is given, a query returning "
         + "all the documents that the user has access to will be executed.", addToStudio = false)
 public class ResultSetPageProviderOperation {
+
+    private static final Log log = LogFactory.getLog(ResultSetPageProviderOperation.class);
 
     public static final String ID = "Resultset.PageProvider";
 
@@ -71,6 +74,9 @@ public class ResultSetPageProviderOperation {
 
     @Context
     protected CoreSession session;
+
+    @Context
+    protected PageProviderService ppService;
 
     @Param(name = "providerName", required = false)
     protected String providerName;
@@ -112,7 +118,7 @@ public class ResultSetPageProviderOperation {
     /**
      * @since 6.0
      */
-    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
+    @Param(name = PageProviderService.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
             + "fill in query variables.")
     protected Properties namedParameters;
 
@@ -131,9 +137,7 @@ public class ResultSetPageProviderOperation {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public RecordSet run() {
-
-        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
+    public RecordSet run() throws OperationException {
 
         List<SortInfo> sortInfos = null;
         if (sortInfoAsStringList != null) {
@@ -183,7 +187,7 @@ public class ResultSetPageProviderOperation {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        if (query == null && (providerName == null || providerName.length() == 0)) {
+        if (query == null && StringUtils.isEmpty(providerName)) {
             // provide a defaut query
             query = "SELECT * from Document";
         }
@@ -197,11 +201,8 @@ public class ResultSetPageProviderOperation {
             targetPageSize = pageSize.longValue();
         }
 
-        SimpleDocumentModel searchDocumentModel = null;
-        if (namedParameters != null && !namedParameters.isEmpty()) {
-            searchDocumentModel = new SimpleDocumentModel();
-            searchDocumentModel.putContextData(PageProviderServiceImpl.NAMED_PARAMETERS, namedParameters);
-        }
+        DocumentModel searchDocumentModel = DocumentPageProviderOperation.getSearchDocumentModel(session, ppService,
+                providerName, namedParameters);
 
         final class QueryAndFetchProviderDescriptor extends GenericPageProviderDescriptor {
             private static final long serialVersionUID = 1L;
@@ -211,7 +212,7 @@ public class ResultSetPageProviderOperation {
                 try {
                     this.klass = (Class<PageProvider<?>>) Class.forName(CoreQueryAndFetchPageProvider.class.getName());
                 } catch (ClassNotFoundException e) {
-
+                    log.error(e, e);
                 }
             }
         }
@@ -224,13 +225,17 @@ public class ResultSetPageProviderOperation {
                 // set the maxResults to avoid slowing down queries
                 desc.getProperties().put("maxResults", maxResults);
             }
-            pp = (CoreQueryAndFetchPageProvider) pps.getPageProvider("", desc, searchDocumentModel, sortInfos,
+            pp = (CoreQueryAndFetchPageProvider) ppService.getPageProvider("", desc, searchDocumentModel, sortInfos,
                     targetPageSize, targetPage, props, parameters);
         } else {
-            pp = (PageProvider<Map<String, Serializable>>) pps.getPageProvider(providerName, searchDocumentModel,
+            pp = (PageProvider<Map<String, Serializable>>) ppService.getPageProvider(providerName, searchDocumentModel,
                     sortInfos, targetPageSize, targetPage, props, parameters);
         }
-        return new PaginableRecordSetImpl(pp);
+        PaginableRecordSetImpl res = new PaginableRecordSetImpl(pp);
+        if (res.hasError()) {
+            throw new OperationException(res.getErrorMessage());
+        }
+        return res;
 
     }
 }

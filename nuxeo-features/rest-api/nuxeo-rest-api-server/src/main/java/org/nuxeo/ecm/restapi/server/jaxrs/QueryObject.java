@@ -16,34 +16,6 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.core.util.DocumentHelper;
-import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
-import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.core.PageProviderServiceImpl;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
-import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
-import org.nuxeo.runtime.api.Framework;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,6 +23,37 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.core.util.DocumentHelper;
+import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
+import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
+import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 6.0 Search endpoint to perform queries on the repository through rest api.
@@ -106,7 +109,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     @SuppressWarnings("unchecked")
-    protected DocumentModelList getQuery(UriInfo uriInfo, String langOrProviderName) {
+    protected DocumentModelList getQuery(UriInfo uriInfo, String langOrProviderName) throws RestOperationException {
         // Fetching all parameters
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         // Look if provider name is given
@@ -124,7 +127,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
 
         // If no query or provider name has been found
         // Execute big select
-        if (query == null && (providerName == null || providerName.length() == 0)) {
+        if (query == null && StringUtils.isBlank(providerName)) {
             // provide a defaut query
             query = "SELECT * from Document";
         }
@@ -168,32 +171,8 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
 
-        // Named parameter management
-        DocumentModel searchDocumentModel = null;
-        if (!namedParameters.isEmpty()) {
-            // Setup the search document model
-            if (providerName != null) {
-                PageProviderDefinition pageProviderDefinition = pageProviderService.getPageProviderDefinition(providerName);
-                if (pageProviderDefinition != null) {
-                    String searchDocType = pageProviderDefinition.getSearchDocumentType();
-                    if (searchDocType != null) {
-                        searchDocumentModel = ctx.getCoreSession().createDocumentModel(searchDocType);
-                        try {
-                            DocumentHelper.setJSONProperties(null, searchDocumentModel, namedParameters);
-                        } catch (IOException e) {
-                            throw WebException.wrap(e);
-                        }
-                    }
-                } else {
-                    log.error("No page provider definition found for " + providerName);
-                }
-            }
-            // Setup the named parameters map
-            if (searchDocumentModel == null) {
-                searchDocumentModel = new SimpleDocumentModel();
-            }
-            searchDocumentModel.putContextData(PageProviderServiceImpl.NAMED_PARAMETERS, namedParameters);
-        }
+        DocumentModel searchDocumentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService,
+                providerName, namedParameters);
 
         // Sort Info Management
         List<SortInfo> sortInfoList = new ArrayList<>();
@@ -210,6 +189,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
             }
         }
 
+        PaginableDocumentModelListImpl res;
         if (query != null) {
             PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(SearchAdapter.pageProviderName);
             ppdefinition.setPattern(query);
@@ -217,14 +197,60 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
                 // set the maxResults to avoid slowing down queries
                 ppdefinition.getProperties().put("maxResults", maxResults);
             }
-            return new PaginableDocumentModelListImpl(
-                    (PageProvider<DocumentModel>) pageProviderService.getPageProvider(StringUtils.EMPTY, ppdefinition,
-                            searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, parameters), null);
+            res = new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                    StringUtils.EMPTY, ppdefinition, searchDocumentModel, sortInfoList, targetPageSize, targetPage,
+                    props, parameters), null);
         } else {
-            return new PaginableDocumentModelListImpl(
-                    (PageProvider<DocumentModel>) pageProviderService.getPageProvider(providerName,
-                            searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, parameters), null);
+            res = new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                    providerName, searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, parameters),
+                    null);
         }
+        if (res.hasError()) {
+            RestOperationException err = new RestOperationException(res.getErrorMessage());
+            err.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            throw err;
+        }
+        return res;
+    }
+
+    protected DocumentModel getSearchDocumentModel(CoreSession session, PageProviderService pps, String providerName,
+            Properties namedParameters) {
+        // generate search document model if type specified on the definition
+        DocumentModel searchDocumentModel = null;
+        if (!StringUtils.isBlank(providerName)) {
+            PageProviderDefinition pageProviderDefinition = pps.getPageProviderDefinition(providerName);
+            if (pageProviderDefinition != null) {
+                String searchDocType = pageProviderDefinition.getSearchDocumentType();
+                if (searchDocType != null) {
+                    searchDocumentModel = session.createDocumentModel(searchDocType);
+                } else if (pageProviderDefinition.getWhereClause() != null) {
+                    // avoid later error on null search doc, in case where clause is only referring to named parameters
+                    // (and no namedParameters are given)
+                    searchDocumentModel = new SimpleDocumentModel();
+                }
+            } else {
+                log.error("No page provider definition found for " + providerName);
+            }
+        }
+
+        if (namedParameters != null && !namedParameters.isEmpty()) {
+            // fall back on simple document if no type defined on page provider
+            if (searchDocumentModel == null) {
+                searchDocumentModel = new SimpleDocumentModel();
+            }
+            for (Map.Entry<String, String> entry : namedParameters.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                try {
+                    DocumentHelper.setProperty(session, searchDocumentModel, key, value, true);
+                } catch (PropertyNotFoundException | IOException e) {
+                    // assume this is a "pure" named parameter, not part of the search doc schema
+                    continue;
+                }
+            }
+            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParameters);
+        }
+        return searchDocumentModel;
     }
 
     /**
@@ -234,7 +260,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
      * @return Document Listing
      */
     @GET
-    public Object doQuery(@Context UriInfo uriInfo) {
+    public Object doQuery(@Context UriInfo uriInfo) throws RestOperationException {
         return getQuery(uriInfo, NXQL);
     }
 
@@ -247,7 +273,8 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
      */
     @GET
     @Path("{langOrProviderName}")
-    public Object doSpecificQuery(@Context UriInfo uriInfo, @PathParam("langOrProviderName") String langOrProviderName) {
+    public Object doSpecificQuery(@Context UriInfo uriInfo, @PathParam("langOrProviderName") String langOrProviderName)
+            throws RestOperationException {
         return getQuery(uriInfo, langOrProviderName);
     }
 

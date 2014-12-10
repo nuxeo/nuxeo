@@ -13,8 +13,11 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,9 +27,9 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
-
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -59,6 +62,11 @@ public class CoreProviderTest {
     public void initRepo() throws Exception {
         DocumentModel ws1 = session.createDocumentModel("/", "ws1", "Workspace");
         ws1.setPropertyValue("dc:title", "WS1");
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2007);
+        cal.set(Calendar.MONTH, 1); // 0-based
+        cal.set(Calendar.DAY_OF_MONTH, 17);
+        ws1.setPropertyValue("dc:issued", cal);
         ws1 = session.createDocument(ws1);
 
         DocumentModel ws2 = session.createDocumentModel("/", "ws2", "Workspace");
@@ -72,7 +80,6 @@ public class CoreProviderTest {
         ws3.setPropertyValue("dc:creator", fakeContributors[0]);
         ws3 = session.createDocument(ws3);
         session.save();
-
     }
 
     @Test
@@ -237,21 +244,149 @@ public class CoreProviderTest {
         assertEquals(3, list.size());
     }
 
+    protected Map<String, Object> getNamedParamsProps(String providerName, String propName, String propValue) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("providerName", providerName);
+        if (propName != null) {
+            Map<String, String> namedParameters = new HashMap<>();
+            namedParameters.put(propName, propValue);
+            Properties namedProperties = new Properties(namedParameters);
+            params.put("namedParameters", namedProperties);
+        }
+        return params;
+    }
+
     /**
      * @since 6.0
      */
     @Test
     public void testPageProviderWithNamedParameters() throws Exception {
         OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = new HashMap<String, Object>();
-        String providerName = "namedParamProvider1";
+        Map<String, Object> params = getNamedParamsProps("namedParamProvider", "parameter1", "WS1");
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
+                DocumentPageProviderOperation.ID, params);
 
-        params.put("providerName", providerName);
+        // test page size
+        assertEquals(2, result.getPageSize());
+        assertEquals(1, result.getNumberOfPages());
+        assertEquals(1, result.size());
+    }
+
+    /**
+     * @since 6.0
+     */
+    @Test
+    public void testPageProviderWithNamedParametersInvalid() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps("namedParamProviderInvalid", null, null);
+        try {
+            service.run(ctx, DocumentPageProviderOperation.ID, params);
+            fail("Should have raised an OperationException");
+        } catch (OperationException e) {
+            assertNotNull(e.getMessage());
+            assertTrue(e.getMessage().contains(
+                    "Lexical Error: Illegal character <:> at offset 38 in query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title"));
+        }
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void testPageProviderWithNamedParametersAndDoc() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps("namedParamProviderWithDoc", "np:title", "WS1");
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
+                DocumentPageProviderOperation.ID, params);
+
+        // test page size
+        assertEquals(2, result.getPageSize());
+        assertEquals(1, result.getNumberOfPages());
+        assertEquals(1, result.size());
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void testPageProviderWithNamedParametersAndDocInvalid() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps("namedParamProviderWithDocInvalid", "np:title", "WS1");
+        try {
+            service.run(ctx, DocumentPageProviderOperation.ID, params);
+            fail("Should have raised an OperationException");
+        } catch (OperationException e) {
+            assertNotNull(e.getMessage());
+            assertTrue(e.getMessage().contains(
+                    "Lexical Error: Illegal character <:> at offset 38 in query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title"));
+        }
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void testPageProviderWithNamedParametersInWhereClause() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps("namedParamProviderWithWhereClause", "parameter1", "WS1");
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
+                DocumentPageProviderOperation.ID, params);
+
+        // test page size
+        assertEquals(2, result.getPageSize());
+        assertEquals(1, result.getNumberOfPages());
+        assertEquals(1, result.size());
+
+        // retry without params
+        params = getNamedParamsProps("namedParamProviderWithWhereClause", null, null);
+        result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
+
+        // test page size
+        assertEquals(2, result.getPageSize());
+        assertEquals(2, result.getNumberOfPages());
+        assertEquals(2, result.size());
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void testPageProviderWithNamedParametersInWhereClauseWithDoc() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps("namedParamProviderWithWhereClauseWithDoc", "np:title", "WS1");
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
+                DocumentPageProviderOperation.ID, params);
+
+        // test page size
+        assertEquals(2, result.getPageSize());
+        assertEquals(1, result.getNumberOfPages());
+        assertEquals(1, result.size());
+
+        // retry without params
+        params = getNamedParamsProps("namedParamProviderWithWhereClauseWithDoc", null, null);
+        result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
+
+        // test page size
+        assertEquals(2, result.getPageSize());
+        assertEquals(2, result.getNumberOfPages());
+        assertEquals(2, result.size());
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void testPageProviderWithNamedParametersComplex() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("providerName", "namedParamProviderComplex");
         Map<String, String> namedParameters = new HashMap<>();
-        namedParameters.put("parameter1", "WS1");
+        namedParameters.put("np:title", "WS1");
+        namedParameters.put("np:isCheckedIn", Boolean.FALSE.toString());
+        namedParameters.put("np:dateMin", "2007-01-30 01:02:03+04:00");
+        namedParameters.put("np:dateMax", "2007-03-23 01:02:03+04:00");
         Properties namedProperties = new Properties(namedParameters);
         params.put("namedParameters", namedProperties);
-
         PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
                 DocumentPageProviderOperation.ID, params);
 
